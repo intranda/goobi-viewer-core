@@ -68,7 +68,9 @@ public final class AuthorizationFlowTools {
      * @param pi
      * @param fileName
      * @return List<Service>
+     * @deprecated Added for testing, remove when finished.
      */
+    @Deprecated
     private static List<Service> getAuthServicesFlat(String pi, String fileName) {
         String baseUrl = DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "api/v2" + AUTH;
 

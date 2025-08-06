@@ -64,6 +64,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
@@ -236,66 +237,91 @@ public class AuthorizationFlowResource {
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "")
-    public AuthProbeResult2 probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
-            @Parameter(description = "Content file name") @PathParam("filename") String filename) {
+    public Response probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
+            @Parameter(description = "Content file name") @PathParam("filename") String filename, @HeaderParam("Origin") String origin)
+            throws JsonProcessingException {
         logger.debug("probeResource: {}/{}", pi, filename);
         debugRequest();
-        AuthProbeResult2 ret = new AuthProbeResult2();
-
+        if (StringUtils.isEmpty(origin)) {
+            logger.warn("No Origin header found.");
+        }
         String authHeader = servletRequest.getHeader("Authorization");
-        logger.debug("Authorization: {}", authHeader);
-        if (authHeader != null) {
-            if (!authHeader.startsWith("Bearer ")) {
-                ret.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
-                ret.getHeading().put("en", "Authorization: bad format");
-                ret.getNote().put("en", "Authorization: bad format");
-                return ret;
-            }
-
-            String tokenValue = authHeader.substring(7);
-            logger.debug("Token: {}", tokenValue);
-            AuthAccessToken2 token = getTokenFromSession(tokenValue);
-            if (token != null) {
-                String key = pi + "_" + filename;
-                Boolean access = token.hasPermission(key);
-                if (access == null) {
-                    try {
-                        BaseMimeType baseMimeType = FileTools.getBaseMimeType(FileTools.getMimeTypeFromFile(Paths.get(filename)));
-                        logger.trace("Base mime type: {}", baseMimeType);
-                        if (BaseMimeType.APPLICATION.equals(baseMimeType) && "pdf".equalsIgnoreCase(FilenameUtils.getExtension(filename))) {
-                            // TODO Page PDF access check
-                            access = false;
-                        } else {
-                            // Image/text access check
-                            access = AccessConditionUtils.checkAccess(servletRequest, baseMimeType.getName(), pi, filename, false).isGranted();
-                        }
-                        token.addPermission(key, access);
-                    } catch (IndexUnreachableException | DAOException | IOException e) {
-                        logger.error(e.getMessage());
-                        ret.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-                        ret.getHeading().put("en", "Error");
-                        ret.getNote().put("en", e.getMessage());
-                        access = false;
-                    }
-                }
-                if (access) {
-                    ret.setStatus(Response.Status.OK.getStatusCode());
-                    logger.debug("access granted");
-                } else {
-                    ret.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
-                    logger.debug("access denied");
-                }
-            } else {
-                logger.debug("Token not found in session.");
-                ret.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
-                ret.getHeading().put("en", "Token not found");
-                ret.getNote().put("en", "Token not found");
-            }
-
-            return ret;
+        if (authHeader == null) {
+            return Response
+                    .ok(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
+                            MediaType.APPLICATION_JSON)
+                    .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
+                    .header("Access-Control-Allow-Origin", origin)
+                    .header("Access-Control-Allow-Credentials", "true")
+                    .build();
         }
 
-        return ret;
+        logger.debug("Authorization: {}", authHeader);
+        if (!authHeader.startsWith("Bearer ")) {
+            AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
+            service.getErrorHeading().put("en", "Authorization: bad format");
+            service.getErrorNote().put("en", "Authorization: bad format");
+            return Response.ok(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", origin)
+                    .header("Access-Control-Allow-Credentials", "true")
+                    .build();
+        }
+
+        String tokenValue = authHeader.substring(7);
+        logger.debug("Token: {}", tokenValue);
+        AuthAccessToken2 token = getTokenFromSession(tokenValue);
+        if (token == null) {
+            logger.debug("Token not found in session.");
+            AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
+            service.getErrorHeading().put("en", "Token not found");
+            service.getErrorNote().put("en", "Token not found");
+            return Response.ok(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", origin)
+                    .header("Access-Control-Allow-Credentials", "true")
+                    .build();
+        }
+
+        String key = pi + "_" + filename;
+        Boolean access = token.hasPermission(key);
+        if (access == null) {
+            try {
+                BaseMimeType baseMimeType = FileTools.getBaseMimeType(FileTools.getMimeTypeFromFile(Paths.get(filename)));
+                logger.trace("Base mime type: {}", baseMimeType);
+                if (BaseMimeType.APPLICATION.equals(baseMimeType) && "pdf".equalsIgnoreCase(FilenameUtils.getExtension(filename))) {
+                    // TODO Page PDF access check
+                    access = false;
+                } else {
+                    // Image/text access check
+                    access = AccessConditionUtils.checkAccess(servletRequest, baseMimeType.getName(), pi, filename, false).isGranted();
+                }
+                token.addPermission(key, access);
+
+            } catch (IndexUnreachableException | DAOException | IOException e) {
+                logger.error(e.getMessage());
+                AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
+                service.getErrorHeading().put("en", "Error");
+                service.getErrorNote().put("en", e.getMessage());
+                return Response.ok(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", origin)
+                        .header("Access-Control-Allow-Credentials", "true")
+                        .build();
+            }
+        }
+
+        AuthProbeResult2 result = new AuthProbeResult2();
+        if (access) {
+            result.setStatus(Response.Status.OK.getStatusCode());
+            logger.debug("access granted");
+        } else {
+            result.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
+            logger.debug("access denied");
+        }
+
+        return Response.ok(JsonTools.getAsJson(result), MediaType.APPLICATION_JSON)
+                .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
+                .header("Access-Control-Allow-Origin", origin)
+                .header("Access-Control-Allow-Credentials", "true")
+                .build();
     }
 
     @GET
