@@ -49,6 +49,7 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.JsonTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.UserBean;
@@ -157,17 +158,15 @@ public class AuthorizationFlowResource {
 
             //            if (sessionId.equals(servletRequest.getSession().getId())) {
             AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
-            addTokenToSession(token);
+            // addTokenToSession(token);
+            DataManager.getInstance().getBearerTokenManager().addToken(token, servletRequest.getSession());
             return generateOkResponse(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML, origin);
             //            }
         }
 
-        return Response
-                .ok(getTokenServiceResponseBody(JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_REQUEST)), origin),
-                        MediaType.TEXT_HTML)
-                .header("Access-Control-Allow-Origin", origin)
-                .header("Access-Control-Allow-Credentials", "true")
-                .build();
+        return generateOkResponse(
+                getTokenServiceResponseBody(JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_REQUEST)), origin),
+                MediaType.TEXT_HTML, origin);
     }
 
     /**
@@ -195,7 +194,7 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response handleProbePreflight(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Content file name") @PathParam("filename") String filename, @HeaderParam("Origin") String origin) {
-        logger.debug("probeResource: {}/{}", pi, filename);
+        logger.debug("handleProbePreflight: {}/{}", pi, filename);
         debugRequest();
         if (StringUtils.isEmpty(origin)) {
             logger.warn("No Origin header found.");
@@ -241,7 +240,8 @@ public class AuthorizationFlowResource {
 
         String tokenValue = authHeader.substring(7);
         logger.debug("Token: {}", tokenValue);
-        AuthAccessToken2 token = getTokenFromSession(tokenValue);
+        // AuthAccessToken2 token = getTokenFromSession(tokenValue);
+        AuthAccessToken2 token = DataManager.getInstance().getBearerTokenManager().getTokenMap().get(tokenValue);
         if (token == null) {
             logger.debug("Token not found in session.");
             AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
@@ -261,7 +261,10 @@ public class AuthorizationFlowResource {
                     access = false;
                 } else {
                     // Image/text access check
-                    access = AccessConditionUtils.checkAccess(servletRequest, baseMimeType.getName(), pi, filename, false).isGranted();
+                    access = AccessConditionUtils
+                            .checkAccess(DataManager.getInstance().getBearerTokenManager().getTokenSessionMap().get(tokenValue),
+                                    baseMimeType.getName(), pi, filename, NetTools.getIpAddress(servletRequest), false)
+                            .isGranted();
                 }
                 token.addPermission(key, access);
 

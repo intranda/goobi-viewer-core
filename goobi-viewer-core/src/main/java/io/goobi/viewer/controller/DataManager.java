@@ -29,15 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.faces.context.FacesContext;
-import jakarta.servlet.ServletContext;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
+import io.goobi.viewer.api.rest.v2.auth.BearerTokenManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -55,6 +53,8 @@ import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.DefaultURLBuilder;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.ServletContext;
 
 /**
  * <p>
@@ -114,6 +114,8 @@ public final class DataManager {
     private SecurityManager securityManager = null;
 
     private UsageStatisticsRecorder usageStatisticsRecorder = null;
+
+    private BearerTokenManager bearerTokenManager = null;
 
     /**
      * @deprecated apparently shut down but never used
@@ -604,6 +606,19 @@ public final class DataManager {
 
     public void setUsageStatisticsRecorder(UsageStatisticsRecorder usageStatisticsRecorder) {
         this.usageStatisticsRecorder = usageStatisticsRecorder;
+    }
+
+    /**
+     * @return the bearerTokenManager
+     */
+    public BearerTokenManager getBearerTokenManager() {
+        if (bearerTokenManager == null) {
+            synchronized (LOCK) {
+                bearerTokenManager = new BearerTokenManager();
+            }
+        }
+
+        return bearerTokenManager;
     }
 
     /**
