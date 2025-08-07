@@ -779,7 +779,6 @@ public final class AccessConditionUtils {
      * Checks access permission of the given privilege type for the given image and puts the permission status into the corresponding session map.
      * 
      * @param session {@link HttpSession}
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
      * @param privilegeType a {@link java.lang.String} object.

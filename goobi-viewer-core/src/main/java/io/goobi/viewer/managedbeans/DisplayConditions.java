@@ -236,7 +236,7 @@ public class DisplayConditions implements Serializable {
      * <dd><i>Possible values:</i> An array of any of the string values of the 'PRIV_' constants defined in {@link IPrivilegeHolder}, which is the
      * name of the constant without the 'PRIV_' prefix</dd>
      * <dd><i>Description:</i> The access privilege which must be satisfied by the current request for the current record and page. Calls the method
-     * {@link AccessConditionUtils#checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest, String, String, String)} to check
+     * {@link AccessConditionUtils#checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpSession, String, String, String)} to check
      * access</dd>
      * </dl>
      * </li>

@@ -574,7 +574,7 @@ public final class BeanUtils {
      * getUserBeanFromSession.
      * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
      */
     public static UserBean getUserBeanFromSession(HttpSession session) {
