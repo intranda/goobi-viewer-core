@@ -41,12 +41,12 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import de.intranda.api.iiif.auth.v2.AuthAccessService2;
 import de.intranda.api.iiif.auth.v2.AuthAccessToken2;
 import de.intranda.api.iiif.auth.v2.AuthAccessTokenError2;
 import de.intranda.api.iiif.auth.v2.AuthAccessTokenError2.Profile;
 import de.intranda.api.iiif.auth.v2.AuthProbeResult2;
 import de.intranda.api.iiif.auth.v2.AuthProbeService2;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -80,7 +80,7 @@ import jakarta.ws.rs.ext.RuntimeDelegate;
 
 @jakarta.ws.rs.Path(AUTH)
 @ViewerRestServiceBinding
-//@CORSBinding
+@CORSBinding
 public class AuthorizationFlowResource {
 
     private static final Logger logger = LogManager.getLogger(AuthorizationFlowResource.class);
@@ -137,8 +137,6 @@ public class AuthorizationFlowResource {
         return Response.temporaryRedirect(loginRedirectUri)
                 .header("Set-Cookie", generateCookie())
                 .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
-                .header("Access-Control-Allow-Origin", origin)
-                .header("Access-Control-Allow-Credentials", "true")
                 .build();
     }
 
@@ -233,8 +231,6 @@ public class AuthorizationFlowResource {
         }
         if (origin != null) {
             return Response.ok()
-                    .header("Access-Control-Allow-Origin", origin)
-                    .header("Access-Control-Allow-Credentials", "true")
                     .header("Access-Control-Allow-Methods", "GET, OPTIONS")
                     .header("Access-Control-Allow-Headers", "Authorization, Content-Type")
                     .header("Access-Control-Max-Age", "3600")
@@ -431,8 +427,6 @@ public class AuthorizationFlowResource {
         return Response.ok(entity, mediaType)
                 .header("Set-Cookie", generateCookie())
                 .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
-                .header("Access-Control-Allow-Origin", origin)
-                .header("Access-Control-Allow-Credentials", "true")
                 .build();
     }
 
