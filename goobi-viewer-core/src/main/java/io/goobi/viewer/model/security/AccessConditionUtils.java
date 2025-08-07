@@ -710,8 +710,7 @@ public final class AccessConditionUtils {
     public static AccessPermission checkAccessPermissionForImage(HttpSession session, String pi, String contentFileName, String ipAddress)
             throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionForImage: {}/{}", pi, contentFileName); //NOSONAR Debug
-        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName,
-                IPrivilegeHolder.PRIV_VIEW_IMAGES, ipAddress);
+        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES, ipAddress);
     }
 
     /**
@@ -771,8 +770,8 @@ public final class AccessConditionUtils {
             throw new IllegalArgumentException("Illegal filePath value: " + filePath);
         }
 
-        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, filePathSplit[1], filePathSplit[2], privilegeType,
-                NetTools.getIpAddress(request));
+        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, filePathSplit[1],
+                filePathSplit[2], privilegeType, NetTools.getIpAddress(request));
     }
 
     /**

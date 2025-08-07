@@ -47,7 +47,7 @@ public class BearerTokenManager {
 
     /**
      * 
-     * @return
+     * @return Number of purged tokens
      */
     public int purgeExpiredTokens() {
         Set<String> toPurge = new HashSet<>();
