@@ -30,9 +30,7 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE_REQUEST;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -86,7 +84,6 @@ public class AuthorizationFlowResource {
     private static final Logger logger = LogManager.getLogger(AuthorizationFlowResource.class);
 
     private static final String KEY_ORIGIN = "IIIF_origin";
-    private static final String KEY_TOKENS = "IIIF_AuthAccessTokens";
 
     @Context
     private HttpServletRequest servletRequest;
@@ -143,8 +140,8 @@ public class AuthorizationFlowResource {
     /**
      * Token service. Issues a bearer token, if conditions are met.
      * 
-     * @param messageId
-     * @param origin
+     * @param messageId Client-generated message ID; Must be included in the response
+     * @param origin Mandatory origin parameter from the client
      * @return {@link Response}
      * @throws JsonProcessingException
      */
@@ -181,7 +178,6 @@ public class AuthorizationFlowResource {
 
             //            if (sessionId.equals(servletRequest.getSession().getId())) {
             AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
-            // addTokenToSession(token);
             DataManager.getInstance().getBearerTokenManager().addToken(token, servletRequest.getSession());
             return generateOkResponse(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML, origin);
             //            }
@@ -193,9 +189,10 @@ public class AuthorizationFlowResource {
     }
 
     /**
+     * Builds a postMessage response body.
      * 
-     * @param jsonMsg
-     * @param origin
+     * @param jsonMsg JSON content
+     * @param origin Client origin
      * @return {@link String}
      */
     private static String getTokenServiceResponseBody(String jsonMsg, String origin) {
@@ -213,9 +210,9 @@ public class AuthorizationFlowResource {
 
     /**
      * 
-     * @param pi
-     * @param filename
-     * @param origin
+     * @param pi Record identifier
+     * @param filename Content file name
+     * @param origin Client origin
      * @return {@link Response}
      */
     @OPTIONS
@@ -240,6 +237,14 @@ public class AuthorizationFlowResource {
         return Response.status(Response.Status.FORBIDDEN).build();
     }
 
+    /**
+     * 
+     * @param pi Record identifier
+     * @param filename Content file name
+     * @param origin Client origin
+     * @return {@link Response}
+     * @throws JsonProcessingException
+     */
     @GET
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -254,12 +259,14 @@ public class AuthorizationFlowResource {
         }
         String authHeader = servletRequest.getHeader("Authorization");
         if (authHeader == null) {
+            // No token? No service!
             return generateOkResponse(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
                     MediaType.APPLICATION_JSON, origin);
         }
 
         logger.debug("Authorization: {}", authHeader);
         if (!authHeader.startsWith("Bearer ")) {
+            // Invalid token header value
             AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
             service.getErrorHeading().put("en", "Authorization: bad format");
             service.getErrorNote().put("en", "Authorization: bad format");
@@ -268,7 +275,6 @@ public class AuthorizationFlowResource {
 
         String tokenValue = authHeader.substring(7);
         logger.debug("Token: {}", tokenValue);
-        // AuthAccessToken2 token = getTokenFromSession(tokenValue);
         AuthAccessToken2 token = DataManager.getInstance().getBearerTokenManager().getTokenMap().get(tokenValue);
         if (token == null) {
             logger.debug("Token not found in session.");
@@ -341,57 +347,7 @@ public class AuthorizationFlowResource {
 
     /**
      * 
-     * @param token
-     * @return true if successful; false otherwise
-     */
-    @SuppressWarnings("unchecked")
-    private boolean addTokenToSession(AuthAccessToken2 token) {
-        if (token == null) {
-            throw new IllegalArgumentException("token may not be null");
-        }
-        HttpSession session = servletRequest.getSession();
-        if (session != null) {
-            //  Add token to bean or session
-            Map<String, AuthAccessToken2> tokenMap = (Map<String, AuthAccessToken2>) session.getAttribute(KEY_TOKENS);
-            if (tokenMap == null) {
-                tokenMap = new HashMap<>();
-                session.setAttribute(KEY_TOKENS, tokenMap);
-            }
-            tokenMap.put(token.getAccessToken(), token);
-            logger.debug("Added token '{}' to session '{}'.", token.getAccessToken(), session.getId());
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Retrieves {@link AuthAccessToken2} with the given token value from SessionBean.
-     * 
-     * @param token Token string
-     * @return {@link AuthAccessToken2}; null if none found
-     */
-    @SuppressWarnings("unchecked")
-    private AuthAccessToken2 getTokenFromSession(String token) {
-        if (token == null) {
-            throw new IllegalArgumentException("token may not be null");
-        }
-        HttpSession session = servletRequest.getSession();
-        if (session != null) {
-            Map<String, AuthAccessToken2> tokenMap = (Map<String, AuthAccessToken2>) session.getAttribute(KEY_TOKENS);
-            if (tokenMap == null) {
-                tokenMap = new HashMap<>();
-                session.setAttribute(KEY_TOKENS, tokenMap);
-            }
-            return tokenMap.get(token);
-        }
-
-        return null;
-    }
-
-    /**
-     * 
-     * @return
+     * @return origin values from the session; null if none found
      */
     private String getOriginFromSession() {
         HttpSession session = servletRequest.getSession();
@@ -405,8 +361,8 @@ public class AuthorizationFlowResource {
 
     /**
      * 
-     * @param origin
-     * @return
+     * @param origin Client origin
+     * @return true if origin has been successfully added to the session; false otherwise
      */
     private boolean addOriginToSession(String origin) {
         if (origin == null) {
@@ -423,6 +379,14 @@ public class AuthorizationFlowResource {
         return false;
     }
 
+    /**
+     * Generates Response object. Most of the time, the client will expect a HTTP 200 status, with actual error details packaged in the response body.
+     * 
+     * @param entity JSON entity
+     * @param mediaType Response mime type
+     * @param origin Client origin
+     * @return {@link Response}
+     */
     private Response generateOkResponse(Object entity, String mediaType, String origin) {
         return Response.ok(entity, mediaType)
                 .header("Set-Cookie", generateCookie())
@@ -440,19 +404,6 @@ public class AuthorizationFlowResource {
 
         return RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class).toString(sessionCookie) + "; SameSite=None";
     }
-
-    //    public String generateTestCookie() {
-    //        NewCookie testCookie = new NewCookie.Builder("DEBUG_COOKIE")
-    //                .value("test123")
-    //                .path("/")
-    //                .secure(true)
-    //                .httpOnly(true)
-    //                .build();
-    //
-    //        return RuntimeDelegate.getInstance()
-    //                .createHeaderDelegate(NewCookie.class)
-    //                .toString(testCookie) + "; SameSite=None";
-    //    }
 
     private void debugRequest() {
         if (servletRequest != null) {
