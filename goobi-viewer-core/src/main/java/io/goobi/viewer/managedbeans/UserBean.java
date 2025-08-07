@@ -390,7 +390,7 @@ public class UserBean implements Serializable {
                         throw new AuthenticationProviderException("errLoginError");
                     }
 
-                    BeanUtils.wipeSessionAttributes(request.getSession());
+                    BeanUtils.wipeSessionAttributes(session);
 
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
