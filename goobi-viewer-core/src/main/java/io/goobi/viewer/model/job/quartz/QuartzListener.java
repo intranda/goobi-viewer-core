@@ -174,6 +174,7 @@ public class QuartzListener implements ServletContextListener {
 
         addTrigger(storedTriggers, triggers, TaskType.INDEX_USAGE_STATISTICS, TaskTriggerStatus.RUNNING);
         addTrigger(storedTriggers, triggers, TaskType.NOTIFY_SEARCH_UPDATE, TaskTriggerStatus.RUNNING);
+        addTrigger(storedTriggers, triggers, TaskType.PURGE_EXPIRED_BEARER_TOKENS, TaskTriggerStatus.RUNNING);
         addTrigger(storedTriggers, triggers, TaskType.PURGE_EXPIRED_DOWNLOAD_TICKETS, TaskTriggerStatus.RUNNING);
         addTrigger(storedTriggers, triggers, TaskType.UPDATE_SITEMAP, TaskTriggerStatus.RUNNING);
         addTrigger(storedTriggers, triggers, TaskType.UPDATE_UPLOAD_JOBS, TaskTriggerStatus.RUNNING);
