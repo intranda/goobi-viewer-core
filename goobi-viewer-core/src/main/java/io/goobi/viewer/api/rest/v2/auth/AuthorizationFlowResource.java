@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
@@ -40,6 +41,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import de.intranda.api.iiif.auth.v2.AuthAccessService2;
 import de.intranda.api.iiif.auth.v2.AuthAccessToken2;
 import de.intranda.api.iiif.auth.v2.AuthAccessTokenError2;
 import de.intranda.api.iiif.auth.v2.AuthAccessTokenError2.Profile;
@@ -54,6 +56,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.viewer.BaseMimeType;
@@ -63,7 +66,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.OPTIONS;
@@ -107,6 +109,12 @@ public class AuthorizationFlowResource {
         return AuthorizationFlowTools.getAuthServicesEmbedded("PPN123", "00000001.xml");
     }
 
+    /**
+     * Access (login) service.
+     * 
+     * @param origin Mandatory origin parameter from the client
+     * @return {@link Response}
+     */
     @GET
     @jakarta.ws.rs.Path(AUTH_LOGIN)
     @Produces({ MediaType.TEXT_HTML })
@@ -134,19 +142,26 @@ public class AuthorizationFlowResource {
                 .build();
     }
 
+    /**
+     * Token service. Issues a bearer token, if conditions are met.
+     * 
+     * @param messageId
+     * @param origin
+     * @return {@link Response}
+     * @throws JsonProcessingException
+     */
     @GET
     @jakarta.ws.rs.Path(AUTH_ACCESS_TOKEN)
     @Produces({ MediaType.TEXT_HTML })
     @Operation(tags = { "records", "iiif" }, summary = "")
-    public Response accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin,
-            @CookieParam("JSESSIONID") String sessionId) throws JsonProcessingException {
+    public Response accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin)
+            throws JsonProcessingException {
         logger.debug("accessTokenService");
         debugRequest();
         logger.debug("messageId: {}", messageId);
         logger.debug("origin: {}", origin);
-        logger.debug("JSESSIONID from cookie: {}", sessionId);
-        if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin)) {
 
+        if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin)) {
             // Validate origin
             if (!origin.equals(getOriginFromSession())) {
                 logger.debug("Invalid origin, expected: {}", getOriginFromSession());
@@ -154,6 +169,16 @@ public class AuthorizationFlowResource {
                         .ok(getTokenServiceResponseBody(JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_ORIGIN)), origin),
                                 MediaType.TEXT_HTML)
                         .build();
+            }
+
+            // Check whether someone actually logged in
+            if (BeanUtils.getUserFromSession(servletRequest.getSession()) == null) {
+                logger.debug("Not logged in");
+                AuthAccessTokenError2 error = new AuthAccessTokenError2(messageId, Profile.MISSING_ASPECT);
+                for (Locale locale : ViewerResourceBundle.getAllLocales()) {
+                    error.getHeading().put(locale.getLanguage(), ViewerResourceBundle.getTranslation("notLoggedIn", locale));
+                }
+                return Response.ok(getTokenServiceResponseBody(JsonTools.getAsJson(error), origin), MediaType.TEXT_HTML).build();
             }
 
             //            if (sessionId.equals(servletRequest.getSession().getId())) {
@@ -188,6 +213,13 @@ public class AuthorizationFlowResource {
         return sb.toString();
     }
 
+    /**
+     * 
+     * @param pi
+     * @param filename
+     * @param origin
+     * @return {@link Response}
+     */
     @OPTIONS
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -398,7 +430,6 @@ public class AuthorizationFlowResource {
     private Response generateOkResponse(Object entity, String mediaType, String origin) {
         return Response.ok(entity, mediaType)
                 .header("Set-Cookie", generateCookie())
-                .header("Set-Cookie", generateTestCookie())
                 .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
                 .header("Access-Control-Allow-Origin", origin)
                 .header("Access-Control-Allow-Credentials", "true")
@@ -416,18 +447,18 @@ public class AuthorizationFlowResource {
         return RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class).toString(sessionCookie) + "; SameSite=None";
     }
 
-    public String generateTestCookie() {
-        NewCookie testCookie = new NewCookie.Builder("DEBUG_COOKIE")
-                .value("test123")
-                .path("/")
-                .secure(true)
-                .httpOnly(true)
-                .build();
-
-        return RuntimeDelegate.getInstance()
-                .createHeaderDelegate(NewCookie.class)
-                .toString(testCookie) + "; SameSite=None";
-    }
+    //    public String generateTestCookie() {
+    //        NewCookie testCookie = new NewCookie.Builder("DEBUG_COOKIE")
+    //                .value("test123")
+    //                .path("/")
+    //                .secure(true)
+    //                .httpOnly(true)
+    //                .build();
+    //
+    //        return RuntimeDelegate.getInstance()
+    //                .createHeaderDelegate(NewCookie.class)
+    //                .toString(testCookie) + "; SameSite=None";
+    //    }
 
     private void debugRequest() {
         if (servletRequest != null) {

@@ -30,6 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import de.intranda.api.iiif.auth.v2.AuthAccessToken2;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Application scoped cache of issued bearer tokens for IIIF Auth Flow 2.0. Necessary because the client will not necessarily reuse the same session.
+ */
 public class BearerTokenManager {
 
     private final Map<String, AuthAccessToken2> tokenMap = new ConcurrentHashMap<>();
@@ -39,6 +42,7 @@ public class BearerTokenManager {
      * 
      * @param token
      * @param session
+     * @should add token correctly
      */
     public void addToken(AuthAccessToken2 token, HttpSession session) {
         tokenMap.put(token.getAccessToken(), token);
@@ -48,6 +52,7 @@ public class BearerTokenManager {
     /**
      * 
      * @return Number of purged tokens
+     * @should purge expired tokens only
      */
     public int purgeExpiredTokens() {
         Set<String> toPurge = new HashSet<>();
