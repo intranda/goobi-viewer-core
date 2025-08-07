@@ -31,6 +31,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -121,7 +122,9 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
         boolean access = false;
         try {
             if (FilterTools.isThumbnail(request)) {
-                access = AccessConditionUtils.checkAccessPermissionForThumbnail(request, pi, contentFileName).isGranted();
+                access = AccessConditionUtils
+                        .checkAccessPermissionForThumbnail(request.getSession(), pi, contentFileName, NetTools.getIpAddress(request))
+                        .isGranted();
                 // logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Debug
             } else {
                 String[] privileges = getRequiredPrivileges(request);
@@ -133,7 +136,9 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 } else if (StringUtils.isNotBlank(contentFileName)) {
                     for (String privilege : privileges) {
                         access = AccessConditionUtils
-                                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, privilege)
+                                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, contentFileName, privilege,
+                                        NetTools.getIpAddress(
+                                                request))
                                 .isGranted();
                     }
                 } else {

@@ -60,6 +60,7 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -714,8 +715,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return false;
         }
 
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                IPrivilegeHolder.PRIV_VIEW_IMAGES).isGranted();
+        HttpServletRequest request = BeanUtils.getRequest();
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_IMAGES, NetTools.getIpAddress(request)).isGranted();
     }
 
     /**
@@ -791,8 +793,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return false;
         }
 
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT).isGranted();
+        HttpServletRequest request = BeanUtils.getRequest();
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), getPi(), filename,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request)).isGranted();
     }
 
     /**
@@ -855,8 +858,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 return false;
             }
 
-            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT).isGranted();
+            HttpServletRequest request = BeanUtils.getRequest();
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), getPi(), filename,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request)).isGranted();
         } catch (FileNotFoundException | IndexUnreachableException | DAOException e) {
             return false;
         }
@@ -1429,7 +1433,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return true;
         } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName).isGranted();
+            return AccessConditionUtils.checkAccessPermissionForImage(request.getSession(), pi, fileName, NetTools.getIpAddress(request)).isGranted();
         } else {
             logger.trace("FacesContext not found");
         }
@@ -1470,7 +1474,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         }
 
-        return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName).isGranted()
+        return AccessConditionUtils.checkAccessPermissionForImage(request.getSession(), pi, fileName, NetTools.getIpAddress(request)).isGranted()
                 && FilterTools.checkForConcurrentViewLimit(pi, request);
     }
 
@@ -1485,8 +1489,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isAccessPermissionImageZoom() throws IndexUnreachableException, DAOException {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
-                    IPrivilegeHolder.PRIV_ZOOM_IMAGES).isGranted();
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, fileName,
+                    IPrivilegeHolder.PRIV_ZOOM_IMAGES, NetTools.getIpAddress(request)).isGranted();
         }
         logger.trace("FacesContext not found");
         return false;
@@ -1502,8 +1506,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isAccessPermissionImageDownload() throws IndexUnreachableException, DAOException {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
-                    IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES).isGranted();
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, fileName,
+                    IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES, NetTools.getIpAddress(request)).isGranted();
         }
         logger.trace("FacesContext not found");
 
@@ -1553,8 +1557,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isAccessPermissionBornDigital() throws IndexUnreachableException, DAOException {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
-                    IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
+            AccessPermission access =
+                    AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, fileName,
+                            IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, NetTools.getIpAddress(request));
             // logger.trace("Born digital access for page {} is granted: {}", order, access.isGranted()); //NOSONAR Debug
             bornDigitalDownloadTicketRequired = access.isTicketRequired();
             // logger.trace("Ticket required for page {}: {}", order, access.isTicketRequired()); //NOSONAR Debug
@@ -1601,8 +1606,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             logger.trace("FacesContext not found");
         }
 
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT).isGranted();
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, fileName,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request)).isGranted();
     }
 
     /**

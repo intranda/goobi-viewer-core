@@ -240,7 +240,7 @@ public class RecordsFilesImageResource extends ImageResource {
         ImageInformation info = super.getInfoAsJson();
         try {
             // Add auth services if access not granted
-            if (!AccessConditionUtils.checkAccessPermissionForImage(request, pi, filename).isGranted()) {
+            if (!AccessConditionUtils.checkAccessPermissionForImage(request.getSession(), pi, filename, NetTools.getIpAddress(request)).isGranted()) {
                 for (Service service : AuthorizationFlowTools.getAuthServices(pi, filename)) {
                     info.addService(service);
                 }

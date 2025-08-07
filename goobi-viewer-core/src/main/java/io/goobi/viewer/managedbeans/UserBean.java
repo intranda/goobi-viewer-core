@@ -382,14 +382,14 @@ public class UserBean implements Serializable {
                             if (isCloseTabAfterLogin()) {
                                 logger.debug("Closing login tab...");
                                 doRedirect(response, DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "logincomplete/");
-                            } 
+                            }
                             return;
                         }
                         // Exception if different user logged in
                         throw new AuthenticationProviderException("errLoginError");
                     }
 
-                    BeanUtils.wipeSessionAttributes(request);
+                    BeanUtils.wipeSessionAttributes(request.getSession());
 
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
@@ -511,7 +511,7 @@ public class UserBean implements Serializable {
             if (sessionTimeoutMonitorTimer != null) {
                 sessionTimeoutMonitorTimer.cancel();
             }
-            BeanUtils.wipeSessionAttributes(request);
+            BeanUtils.wipeSessionAttributes(request.getSession());
             SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
             throw new AuthenticationProviderException(e);
