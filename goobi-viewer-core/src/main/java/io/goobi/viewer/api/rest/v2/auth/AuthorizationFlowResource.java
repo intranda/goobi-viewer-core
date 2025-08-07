@@ -276,15 +276,19 @@ public class AuthorizationFlowResource {
         String tokenValue = authHeader.substring(7);
         logger.debug("Token: {}", tokenValue);
         AuthAccessToken2 token = DataManager.getInstance().getBearerTokenManager().getTokenMap().get(tokenValue);
-        if (token == null || token.isExpired()) {
-            logger.debug("Token not found or expired.");
-            if (token != null) {
-                DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
-            }
+        if (token == null) {
+            logger.debug("Token not found.");
             AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
-            service.getErrorHeading().put("en", "Token not found or expired");
-            service.getErrorNote().put("en", "Token not found or expired");
+            service.getErrorHeading().put("en", "Token not found");
+            service.getErrorNote().put("en", "Token not found");
             return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
+        }
+        
+        if (token.isExpired()) {
+            logger.debug("Token expired.");
+            DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
+            return generateOkResponse(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
+                    MediaType.APPLICATION_JSON, origin);
         }
 
         String key = pi + "_" + filename;
