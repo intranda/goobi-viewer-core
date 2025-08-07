@@ -276,11 +276,14 @@ public class AuthorizationFlowResource {
         String tokenValue = authHeader.substring(7);
         logger.debug("Token: {}", tokenValue);
         AuthAccessToken2 token = DataManager.getInstance().getBearerTokenManager().getTokenMap().get(tokenValue);
-        if (token == null) {
-            logger.debug("Token not found in session.");
+        if (token == null || token.isExpired()) {
+            logger.debug("Token not found or expired.");
+            if (token != null) {
+                DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
+            }
             AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
-            service.getErrorHeading().put("en", "Token not found");
-            service.getErrorNote().put("en", "Token not found");
+            service.getErrorHeading().put("en", "Token not found or expired");
+            service.getErrorNote().put("en", "Token not found or expired");
             return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
         }
 
