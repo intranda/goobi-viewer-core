@@ -358,6 +358,7 @@ public class UserBean implements Serializable {
         logger.debug("completeLogin: {}", Thread.currentThread().threadId());
         HttpServletResponse response = result.getResponse();
         HttpServletRequest request = result.getRequest();
+        HttpSession session = request != null ? request.getSession(false) : null;
         try {
             Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
             if (result.isRefused()) {
@@ -398,9 +399,9 @@ public class UserBean implements Serializable {
                         logger.error("Could not update user in DB.");
                     }
                     setUser(u);
-                    if (request != null && request.getSession(false) != null) {
-                        request.getSession(false).setAttribute("user", u);
-                        logger.trace("Added user to HTTP session ID {}: {}", request.getSession(false).getId(), u.getId());
+                    if (session != null) {
+                        session.setAttribute("user", u);
+                        logger.trace("Added user to HTTP session ID {}: {}", session.getId(), u.getId());
                     }
 
                     // Start timer
