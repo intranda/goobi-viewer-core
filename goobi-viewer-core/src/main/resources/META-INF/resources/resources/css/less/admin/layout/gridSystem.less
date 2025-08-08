@@ -1,19 +1,34 @@
 /* ==============================================================
-   Admin Widgets
-   style declarations for admin widgets
+	Admin basic elements styles
    ==============================================================*/
-/* ADMIN WIDGETS */
-
-/* LINK MODIFIERS */
 .admin {
-	.rss-elem-title a {
-		color: @blue;
-		&:hover {
-			color: @hoverblue;
-		}
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	.h1,
+	.h2,
+	.h3,
+	.h4,
+	.h5 {
+		font-weight: 600;
+	}
+
+	h2,
+	.h2 {
+		font-size: 1.8rem;
+	}
+
+	h3,
+	.h3 {
+		font-size: 1.6rem;
+	}
+
+	dt {
+		font-weight: 600;
 	}
 }
-
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {}

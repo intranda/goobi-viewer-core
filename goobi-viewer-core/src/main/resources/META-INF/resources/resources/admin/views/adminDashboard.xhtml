@@ -48,24 +48,20 @@
 										</div>
                                 	</div>
                                 </div>
+                                
+                                <p><h:outputText value="#{msg.admin__dashboard_support}" escape="false" /></p>
 
-                                <div class="row">
-                                    <div class="col-12">
-                                        <h:outputText value="#{msg.admin__dashboard_support}" escape="false" />
-                                    </div>
-                                </div>
                             </div>
 
 
                             <!-- CMS PAGES -->
                             <ui:fragment rendered="#{userBean.admin}">
                             <div class="admin__boxed-entry pb-0 -no-actions -w66">
-                                <div class="row">
-                                    <h2 class="col-9">#{msg.cms_overview}</h2>
-                                </div>
-								<div id="last-CMS-pages-table" class="admin__table-content -slim" role="grid" aria-label="#{msg.cms_overview}: #{msg.aria_label__table__actions}">
+								<h2>#{msg.cms_overview}</h2>
+								<div id="last-CMS-pages-table" class="admin__grid-table -columns-2-2-1-1 admin__table-content -slim" role="grid" aria-label="#{msg.cms_overview}: #{msg.aria_label__table__actions}">
+                                    
                                     <!-- TITLE ROW -->
-                                    <div class="row no-gutters admin__table-title" role="row">
+                                    <div class="admin__table-title admin__" role="row">
                                         <div class="col-6 d-flex" role="columnheader">
                                             <span>#{msg.page}</span>
                                         </div>
@@ -96,10 +92,10 @@
                                         </div>
                                         <div class="col-4" role="gridcell">
                                             <ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
-                                            <span class="badge badge-warning">#{msg.admin__cms_static_page}</span>
+                                            <span class="admin__badge-warning">#{msg.admin__cms_static_page}</span>
                                             </ui:fragment>
 	    									<ui:repeat value="#{page.categories}" var="category">
-	                                            <div class="badge badge-violet">#{category.name}</div>
+	                                            <div class="admin__badge-violet">#{category.name}</div>
 	                                        </ui:repeat>
                                         </div>
                                         <div class="col-2 d-flex" role="gridcell">
