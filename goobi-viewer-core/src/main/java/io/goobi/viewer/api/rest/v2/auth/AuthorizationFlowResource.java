@@ -216,6 +216,27 @@ public class AuthorizationFlowResource {
 
     /**
      * 
+     * @param origin
+     * @param logContext
+     * @return {@link Response}
+     */
+    private static Response handleProbePreflightCommon(String origin, String logContext) {
+        logger.debug("handleProbePreflight: {}", logContext);
+        if (StringUtils.isEmpty(origin)) {
+            logger.warn("No Origin header found.");
+        }
+        if (origin != null) {
+            return Response.ok()
+                    .header("Access-Control-Allow-Methods", "GET, OPTIONS")
+                    .header("Access-Control-Allow-Headers", "Authorization, Content-Type")
+                    .header("Access-Control-Max-Age", "3600")
+                    .build();
+        }
+        return Response.status(Response.Status.FORBIDDEN).build();
+    }
+
+    /**
+     * 
      * @param pi Record identifier
      * @param filename Content file name
      * @param origin Client origin
@@ -227,20 +248,7 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response handleProbePreflight(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Content file name") @PathParam("filename") String filename, @HeaderParam("Origin") String origin) {
-        logger.debug("handleProbePreflight: {}/{}", pi, filename);
-        // debugRequest();
-        if (StringUtils.isEmpty(origin)) {
-            logger.warn("No Origin header found.");
-        }
-        if (origin != null) {
-            return Response.ok()
-                    .header("Access-Control-Allow-Methods", "GET, OPTIONS")
-                    .header("Access-Control-Allow-Headers", "Authorization, Content-Type")
-                    .header("Access-Control-Max-Age", "3600")
-                    .build();
-        }
-
-        return Response.status(Response.Status.FORBIDDEN).build();
+        return handleProbePreflightCommon(origin, pi + "/" + filename);
     }
 
     /**
@@ -350,20 +358,7 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response handleProbePreflight(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Page number") @PathParam("order") int order, @HeaderParam("Origin") String origin) {
-        logger.debug("handleProbePreflight: pdf/{}/{}", pi, order);
-        // debugRequest();
-        if (StringUtils.isEmpty(origin)) {
-            logger.warn("No Origin header found.");
-        }
-        if (origin != null) {
-            return Response.ok()
-                    .header("Access-Control-Allow-Methods", "GET, OPTIONS")
-                    .header("Access-Control-Allow-Headers", "Authorization, Content-Type")
-                    .header("Access-Control-Max-Age", "3600")
-                    .build();
-        }
-
-        return Response.status(Response.Status.FORBIDDEN).build();
+        return handleProbePreflightCommon(origin, "pdf/" + pi + "/" + order);
     }
 
     /**
@@ -465,20 +460,7 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response handleProbePreflight(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @HeaderParam("Origin") String origin) {
-        logger.debug("handleProbePreflight: resolver/{}", pi);
-        // debugRequest();
-        if (StringUtils.isEmpty(origin)) {
-            logger.warn("No Origin header found.");
-        }
-        if (origin != null) {
-            return Response.ok()
-                    .header("Access-Control-Allow-Methods", "GET, OPTIONS")
-                    .header("Access-Control-Allow-Headers", "Authorization, Content-Type")
-                    .header("Access-Control-Max-Age", "3600")
-                    .build();
-        }
-
-        return Response.status(Response.Status.FORBIDDEN).build();
+        return handleProbePreflightCommon(origin, "resolver/" + pi);
     }
 
     /**
