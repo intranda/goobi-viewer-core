@@ -4,7 +4,6 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_ACCESS_TOKEN;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGIN;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGOUT;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -23,6 +22,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 
 public final class AuthorizationFlowTools {
 
+    public static final String PATH_PROBE = "/probe/";
+
     private AuthorizationFlowTools() {
     }
 
@@ -34,19 +35,25 @@ public final class AuthorizationFlowTools {
      * @return List<Service>
      */
     public static List<Service> getAuthServices(String pi, String fileName) {
-        return Collections.singletonList(getAuthServicesEmbedded(pi, fileName));
-        // return getAuthServicesFlat(pi, fileName);
+        return Collections.singletonList(getAuthServicesEmbedded(PATH_PROBE + pi + "/" + fileName + "/"));
+    }
+
+    public static List<Service> getAuthServices(String path) {
+        return Collections.singletonList(getAuthServicesEmbedded(path));
+    }
+
+    static AuthProbeService2 getAuthServicesEmbedded(String pi, String fileName) {
+        return getAuthServicesEmbedded(PATH_PROBE + pi + "/" + fileName + "/");
     }
 
     /**
      * 
-     * @param pi
-     * @param fileName
+     * @param path API endpoint path
      * @return {@link AuthProbeService2}
      */
-    static AuthProbeService2 getAuthServicesEmbedded(String pi, String fileName) {
+    static AuthProbeService2 getAuthServicesEmbedded(String path) {
         String baseUrl = DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "api/v2" + AUTH;
-        AuthProbeService2 ret = new AuthProbeService2(URI.create(baseUrl + AUTH_PROBE + "/" + pi + "/" + fileName + "/"),
+        AuthProbeService2 ret = new AuthProbeService2(URI.create(baseUrl + path),
                 Collections
                         .singletonList(
                                 new AuthAccessService2(URI.create(baseUrl + AUTH_LOGIN), AuthAccessService2.Profile.ACTIVE, new HashMap<>(),
@@ -75,7 +82,7 @@ public final class AuthorizationFlowTools {
         String baseUrl = DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "api/v2" + AUTH;
 
         List<Service> ret = new ArrayList<>();
-        AuthProbeService2 probeService = new AuthProbeService2(URI.create(baseUrl + AUTH_PROBE + "/" + pi + "/" + fileName + "/"), null);
+        AuthProbeService2 probeService = new AuthProbeService2(URI.create(baseUrl + PATH_PROBE + pi + "/" + fileName + "/"), null);
         ret.add(probeService);
         AuthAccessService2 loginService =
                 new AuthAccessService2(URI.create(baseUrl + AUTH_LOGIN), AuthAccessService2.Profile.ACTIVE, new HashMap<>(), null, null);

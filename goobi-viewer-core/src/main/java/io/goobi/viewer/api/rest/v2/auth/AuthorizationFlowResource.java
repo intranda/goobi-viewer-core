@@ -26,6 +26,7 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_ACCESS_TOKEN;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGIN;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGOUT;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE_REQUEST;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE_REQUEST_RESOLVER;
 
 import java.io.IOException;
 import java.net.URI;
@@ -52,10 +53,12 @@ import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -238,11 +241,10 @@ public class AuthorizationFlowResource {
     }
 
     /**
-     * Probe service endpoint. The session will probably be different here from previous login/token queries.
-     * 
-     * @param pi Record identifier
-     * @param filename Content file name
-     * @param origin Client origin
+     * Probe service endpoint (image and text). The session will probably be different here from previous login/token queries.
+     * @param pi
+     * @param filename
+     * @param origin
      * @return {@link Response}
      * @throws JsonProcessingException
      */
@@ -313,6 +315,120 @@ public class AuthorizationFlowResource {
             } catch (IndexUnreachableException | DAOException | IOException e) {
                 logger.error(e.getMessage());
                 AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
+                service.getErrorHeading().put("en", "Error");
+                service.getErrorNote().put("en", e.getMessage());
+                return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
+            }
+        }
+
+        AuthProbeResult2 result = new AuthProbeResult2();
+        if (access) {
+            result.setStatus(Response.Status.OK.getStatusCode());
+            logger.debug("access granted");
+        } else {
+            result.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
+            logger.debug("access denied");
+        }
+
+        return generateOkResponse(JsonTools.getAsJson(result), MediaType.APPLICATION_JSON, origin);
+    }
+
+    /**
+     * Probe pre-flight endpoint (METS resolver).
+     * 
+     * @param pi Record identifier
+     * @param origin Client origin
+     * @return {@link Response}
+     */
+    @OPTIONS
+    @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_RESOLVER)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "")
+    public Response handleProbePreflight(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
+            @HeaderParam("Origin") String origin) {
+        logger.debug("handleProbePreflight: resolver/{}", pi);
+        // debugRequest();
+        if (StringUtils.isEmpty(origin)) {
+            logger.warn("No Origin header found.");
+        }
+        if (origin != null) {
+            return Response.ok()
+                    .header("Access-Control-Allow-Methods", "GET, OPTIONS")
+                    .header("Access-Control-Allow-Headers", "Authorization, Content-Type")
+                    .header("Access-Control-Max-Age", "3600")
+                    .build();
+        }
+
+        return Response.status(Response.Status.FORBIDDEN).build();
+    }
+
+    /**
+     * Probe service endpoint (METS resolver). The session will probably be different here from previous login/token queries.
+     * 
+     * @param pi Record identifier
+     * @param filename Content file name
+     * @param origin Client origin
+     * @return {@link Response}
+     * @throws JsonProcessingException
+     */
+    @GET
+    @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_RESOLVER)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "")
+    public Response probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi, @HeaderParam("Origin") String origin)
+            throws JsonProcessingException {
+        logger.debug("probeResource: resolver/{}", pi);
+        // debugRequest();
+        if (StringUtils.isEmpty(origin)) {
+            logger.warn("No Origin header found.");
+        }
+        String authHeader = servletRequest.getHeader("Authorization");
+        if (authHeader == null) {
+            // No token? No service!
+            return generateOkResponse(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
+                    MediaType.APPLICATION_JSON, origin);
+        }
+
+        logger.debug("Authorization: {}", authHeader);
+        String path = "/probe/resolver/" + pi + "/";
+        if (!authHeader.startsWith("Bearer ")) {
+            // Invalid token header value
+            AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(path);
+            service.getErrorHeading().put("en", "Authorization: bad format");
+            service.getErrorNote().put("en", "Authorization: bad format");
+            return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
+        }
+
+        String tokenValue = authHeader.substring(7);
+        logger.trace("Token: {}", tokenValue);
+        AuthAccessToken2 token = DataManager.getInstance().getBearerTokenManager().getTokenMap().get(tokenValue);
+        if (token == null) {
+            logger.debug("Token not found.");
+            AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(path);
+            service.getErrorHeading().put("en", "Token not found");
+            service.getErrorNote().put("en", "Token not found");
+            return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
+        }
+
+        if (token.isExpired()) {
+            logger.debug("Token expired.");
+            DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
+            return generateOkResponse(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
+                    MediaType.APPLICATION_JSON, origin);
+        }
+
+        String key = "resolver/" + pi;
+        Boolean access = token.hasPermission(key);
+        if (access == null) {
+            try {
+                // Resolver access check
+                access = AccessConditionUtils
+                        .checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, servletRequest)
+                        .isGranted();
+                token.addPermission(key, access);
+            } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+                logger.error(e.getMessage());
+                AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(path);
                 service.getErrorHeading().put("en", "Error");
                 service.getErrorNote().put("en", e.getMessage());
                 return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
