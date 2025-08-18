@@ -468,11 +468,23 @@ public class ManifestBuilder extends AbstractBuilder {
             IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoLido());
             LabeledResource resolver =
                     new LabeledResource(getLidoResolverUrl(ele), "Dataset", Format.TEXT_XML.getLabel(), "http://www.lido-schema.org", label);
+            if (!ele.isAccessPermissionDownloadMetadata()) {
+                // Add auth services
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    resolver.addService(service);
+                }
+            }
             manifest.addSeeAlso(resolver);
         } else if (DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoMets()) {
             IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoMets());
             LabeledResource resolver =
                     new LabeledResource(getMetsResolverUrl(ele), "Dataset", Format.TEXT_XML.getLabel(), "http://www.loc.gov/METS/", label);
+            if (!ele.isAccessPermissionDownloadMetadata()) {
+                // Add auth services
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    resolver.addService(service);
+                }
+            }
             manifest.addSeeAlso(resolver);
         }
 
@@ -501,8 +513,7 @@ public class ManifestBuilder extends AbstractBuilder {
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
             LabeledResource resource = pdf.getResource(uri);
             if (!page.isAccessPermissionPdf()) {
-                // TODO Find correct PDF file name and add auth services
-                // resource.addService(AuthorizationFlowTools.getAuthServices(ele.getPi(), page.getImageToPdfUrl()));
+                resource.addService(AuthorizationFlowTools.getAuthServices("/pdf/" + ele.getPi() + "/" + page.getImageToPdfUrl() + "/").get(0));
                 logger.trace("Added auth services for PDF.");
             }
             manifest.addRendering(resource);

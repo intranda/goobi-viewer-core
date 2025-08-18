@@ -440,9 +440,7 @@ public class ManifestBuilder extends AbstractBuilder {
                 break;
             case PDF:
                 if (!page.get().isAccessPermissionPdf()) {
-                    // TODO Find correct PDF file name and add auth services
-                    // return AuthorizationFlowTools.getAuthServices(page.get().getPi(), page.get().getImageToPdfUrl());
-                    return Collections.emptyList();
+                    return AuthorizationFlowTools.getAuthServices("/pdf/" + page.get().getPi() + "/" + page.get().getOrder() + "/");
                 }
                 break;
             default:

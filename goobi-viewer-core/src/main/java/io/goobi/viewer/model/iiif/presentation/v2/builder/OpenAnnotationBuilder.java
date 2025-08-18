@@ -278,7 +278,6 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
         AnnotationList list = new AnnotationList(uri);
         getCrowdsourcingAnnotations(pi, urlsOnly, request).entrySet()
                 .stream()
-                // TODO use Objects.equals(Object, Object)
                 .filter(entry -> Objects.equals(page, entry.getKey()))
                 .map(Entry::getValue)
                 .flatMap(List::stream)

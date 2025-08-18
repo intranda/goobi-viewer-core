@@ -285,7 +285,6 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
             throws DAOException {
         List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly).entrySet()
                 .stream()
-                // TODO Use Objects.equals()
                 .filter(entry -> Objects.equals(pageNo, entry.getKey()))
                 .map(Entry::getValue)
                 .flatMap(List::stream)

@@ -344,8 +344,7 @@ public class CanvasBuilder extends AbstractBuilder {
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
             LabeledResource resource = pdf.getResource(uri);
             if (!page.isAccessPermissionFulltext()) {
-                // TODO Find correct PDF file name and add auth services
-                // resource.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName()));
+                resource.addService(AuthorizationFlowTools.getAuthServices("/pdf/" + page.getPi() + "/" + page.getAltoFileName() + "/").get(0));
                 logger.trace("Added auth services for PDF.");
             }
             canvas.addRendering(resource);
