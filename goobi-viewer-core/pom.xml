@@ -86,7 +86,7 @@
 
 		<!-- other libraries -->
 		<activemq.version>6.1.7</activemq.version>
-		<angus-mail.version>2.0.3</angus-mail.version>
+		<angus-mail.version>2.0.4</angus-mail.version>
 		<citationstyles.version>25.4</citationstyles.version>
 		<citeproc-java.version>3.3.0</citeproc-java.version>
 		<commons-collections4.version>4.5.0</commons-collections4.version>
@@ -94,7 +94,7 @@
 		<commons-io.version>2.20.0</commons-io.version>
 		<commons-jxpath.version>1.4.0</commons-jxpath.version>
 		<commons-lang3.version>3.18.0</commons-lang3.version>
-		<commons-net.version>3.11.1</commons-net.version>
+		<commons-net.version>3.12.0</commons-net.version>
 		<commons-text.version>1.14.0</commons-text.version>
 		<cron-expression-descriptor.version>1.2.10</cron-expression-descriptor.version>
 		<dbunit.version>3.0.0</dbunit.version>
@@ -123,14 +123,14 @@
 		<jaxb-api.version>4.0.2</jaxb-api.version>
 		<jaxb-runtime.version>4.0.5</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
-		<jersey.version>3.1.10</jersey.version>
+		<jersey.version>3.1.11</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20250517</json.version>
 		<jsoup.version>1.21.1</jsoup.version>
 		<junit.version>5.13.4</junit.version>
 		<log4j.version>2.25.1</log4j.version>
-		<mariadb-java-client.version>3.5.4</mariadb-java-client.version>
+		<mariadb-java-client.version>3.5.5</mariadb-java-client.version>
 		<mockito.version>5.18.0</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
 		<omnifaces.version>4.6.5</omnifaces.version>
@@ -143,7 +143,7 @@
 		<spring.version>6.2.9</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.9.0</solr.version>
-		<swagger.version>2.2.34</swagger.version>
+		<swagger.version>2.2.35</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
 		<weld-servlet-shaded.version>5.1.6.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -862,7 +862,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.5.0</version>
+				<version>3.6.1</version>
 				<executions>
 					<execution>
 						<id>enforce-maven</id>
@@ -1158,7 +1158,7 @@
 			<plugin>
 				<groupId>org.owasp</groupId>
 				<artifactId>dependency-check-maven</artifactId>
-				<version>12.1.1</version>
+				<version>12.1.3</version>
 				<configuration>
 					<!--failBuildOnCVSS>5.0</failBuildOnCVSS-->
 					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
@@ -1187,7 +1187,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.26.1</version>
+						<version>11.0.0</version>
 					</dependency>
 				</dependencies>
 				<executions>
