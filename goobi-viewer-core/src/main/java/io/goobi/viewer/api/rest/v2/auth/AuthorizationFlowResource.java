@@ -152,7 +152,7 @@ public class AuthorizationFlowResource {
     public Response accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin)
             throws JsonProcessingException {
         logger.debug("accessTokenService");
-        debugRequest();
+        // debugRequest();
         logger.debug("messageId: {}", messageId);
         logger.debug("origin: {}", origin);
 
@@ -222,7 +222,7 @@ public class AuthorizationFlowResource {
     public Response handleProbePreflight(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Content file name") @PathParam("filename") String filename, @HeaderParam("Origin") String origin) {
         logger.debug("handleProbePreflight: {}/{}", pi, filename);
-        debugRequest();
+        // debugRequest();
         if (StringUtils.isEmpty(origin)) {
             logger.warn("No Origin header found.");
         }
@@ -238,6 +238,7 @@ public class AuthorizationFlowResource {
     }
 
     /**
+     * Probe service endpoint. The session will probably be different here from previous login/token queries.
      * 
      * @param pi Record identifier
      * @param filename Content file name
@@ -253,7 +254,7 @@ public class AuthorizationFlowResource {
             @Parameter(description = "Content file name") @PathParam("filename") String filename, @HeaderParam("Origin") String origin)
             throws JsonProcessingException {
         logger.debug("probeResource: {}/{}", pi, filename);
-        debugRequest();
+        // debugRequest();
         if (StringUtils.isEmpty(origin)) {
             logger.warn("No Origin header found.");
         }
@@ -274,7 +275,7 @@ public class AuthorizationFlowResource {
         }
 
         String tokenValue = authHeader.substring(7);
-        logger.debug("Token: {}", tokenValue);
+        logger.trace("Token: {}", tokenValue);
         AuthAccessToken2 token = DataManager.getInstance().getBearerTokenManager().getTokenMap().get(tokenValue);
         if (token == null) {
             logger.debug("Token not found.");
@@ -283,7 +284,7 @@ public class AuthorizationFlowResource {
             service.getErrorNote().put("en", "Token not found");
             return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
         }
-        
+
         if (token.isExpired()) {
             logger.debug("Token expired.");
             DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
@@ -298,7 +299,7 @@ public class AuthorizationFlowResource {
                 BaseMimeType baseMimeType = FileTools.getBaseMimeType(FileTools.getMimeTypeFromFile(Paths.get(filename)));
                 logger.trace("Base mime type: {}", baseMimeType);
                 if (BaseMimeType.APPLICATION.equals(baseMimeType) && "pdf".equalsIgnoreCase(FilenameUtils.getExtension(filename))) {
-                    // TODO Page PDF access check
+                    // FUTURE: Page PDF access check
                     access = false;
                 } else {
                     // Image/text access check
@@ -401,6 +402,10 @@ public class AuthorizationFlowResource {
                 .build();
     }
 
+    /**
+     * 
+     * @return Cookie as string
+     */
     public String generateCookie() {
         NewCookie sessionCookie = new NewCookie.Builder("JSESSIONID")
                 .value(servletRequest.getSession().getId())
@@ -412,6 +417,9 @@ public class AuthorizationFlowResource {
         return RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class).toString(sessionCookie) + "; SameSite=None";
     }
 
+    /**
+     * Logs some session/cookie information for debugging.
+     */
     private void debugRequest() {
         if (servletRequest != null) {
             if (servletRequest.getSession() != null) {

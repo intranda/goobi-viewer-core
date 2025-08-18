@@ -322,7 +322,7 @@ public class UserBean implements Serializable {
         if ("#".equals(this.redirectUrl)) {
             this.redirectUrl = buildRedirectUrl();
         }
-        logger.debug("login: {}", Thread.currentThread().threadId());
+        logger.trace("login: {}", Thread.currentThread().threadId());
         if (provider != null) {
             try {
                 // Set provider so it can be accessed from outsde
@@ -514,6 +514,7 @@ public class UserBean implements Serializable {
             }
             BeanUtils.wipeSessionAttributes(request.getSession());
             SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
+            DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
             throw new AuthenticationProviderException(e);
         }
