@@ -162,7 +162,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     logger.error(getRootCause(t).getMessage());
                     String msg = getRootCause(t).getMessage();
                     if (msg.contains(DownloadException.class.getSimpleName() + ":")) {
-                        msg = msg.substring(StringUtils.lastIndexOf(msg, ":") + 1).trim();
+                        msg = msg.substring(msg.lastIndexOf(":") + 1).trim();
                     }
                     handleError(msg, "download");
                 } else if (t instanceof IllegalUrlParameterException || isCausedByExceptionType(t, IllegalUrlParameterException.class.getName())) {
