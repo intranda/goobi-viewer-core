@@ -140,7 +140,7 @@
 		<quartz.version>2.5.0</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
-		<spring.version>6.2.9</spring.version>
+		<spring.version>6.2.10</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.9.0</solr.version>
 		<swagger.version>2.2.35</swagger.version>
