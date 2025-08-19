@@ -182,7 +182,7 @@ public class MetsResolver extends HttpServlet {
                 }
             }
         }
-        boolean superuserAccess = user != null ? user.isSuperuser() : false;
+        boolean superuserAccess = user != null && user.isSuperuser();
 
         String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
         String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);

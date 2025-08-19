@@ -33,8 +33,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Locale;
+import java.util.function.Predicate;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -236,6 +236,77 @@ public class AuthorizationFlowResource {
     }
 
     /**
+     * Common probe endpoint code.
+     * 
+     * @param origin
+     * @param path
+     * @param accessCheck
+     * @return {@link Response}
+     * @throws JsonProcessingException
+     */
+    private Response handleProbeCommon(String origin, String path, Predicate<AuthAccessToken2> accessCheck) throws JsonProcessingException {
+        String authHeader = servletRequest.getHeader("Authorization");
+        if (authHeader == null) {
+            // No token? No service!
+            logger.debug("Authorization header missing.");
+            return generateOkResponse(
+                    JsonTools.getAsJson(new AuthProbeResult2()
+                            .setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
+                    MediaType.APPLICATION_JSON, origin);
+        }
+
+        logger.debug("Authorization: {}", authHeader);
+        if (!authHeader.startsWith("Bearer ")) {
+            // Invalid token header value
+            logger.debug("Authorization header has bad format.");
+            AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(path);
+            service.getErrorHeading().put("en", "Authorization: bad format");
+            service.getErrorNote().put("en", "Authorization: bad format");
+            return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
+        }
+
+        String tokenValue = authHeader.substring(7);
+        logger.trace("Token: {}", tokenValue);
+        AuthAccessToken2 token = DataManager.getInstance()
+                .getBearerTokenManager()
+                .getTokenMap()
+                .get(tokenValue);
+
+        if (token == null) {
+            // Token not found
+            logger.debug("Token not found.");
+            AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(path);
+            service.getErrorHeading().put("en", "Token not found");
+            service.getErrorNote().put("en", "Token not found");
+            return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
+        }
+
+        if (token.isExpired()) {
+            // Token expired
+            logger.debug("Token expired.");
+            DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
+            return generateOkResponse(
+                    JsonTools.getAsJson(new AuthProbeResult2()
+                            .setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
+                    MediaType.APPLICATION_JSON, origin);
+        }
+
+        // Run the resource-specific access check
+        Boolean access = accessCheck.test(token);
+
+        AuthProbeResult2 result = new AuthProbeResult2();
+        if (Boolean.TRUE.equals(access)) {
+            result.setStatus(Response.Status.OK.getStatusCode());
+            logger.debug("access granted");
+        } else {
+            result.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
+            logger.debug("access denied");
+        }
+
+        return generateOkResponse(JsonTools.getAsJson(result), MediaType.APPLICATION_JSON, origin);
+    }
+
+    /**
      * 
      * @param pi Record identifier
      * @param filename Content file name
@@ -272,77 +343,35 @@ public class AuthorizationFlowResource {
         if (StringUtils.isEmpty(origin)) {
             logger.warn("No Origin header found.");
         }
-        String authHeader = servletRequest.getHeader("Authorization");
-        if (authHeader == null) {
-            // No token? No service!
-            return generateOkResponse(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
-                    MediaType.APPLICATION_JSON, origin);
-        }
 
-        logger.debug("Authorization: {}", authHeader);
-        if (!authHeader.startsWith("Bearer ")) {
-            // Invalid token header value
-            AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
-            service.getErrorHeading().put("en", "Authorization: bad format");
-            service.getErrorNote().put("en", "Authorization: bad format");
-            return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
-        }
-
-        String tokenValue = authHeader.substring(7);
-        logger.trace("Token: {}", tokenValue);
-        AuthAccessToken2 token = DataManager.getInstance().getBearerTokenManager().getTokenMap().get(tokenValue);
-        if (token == null) {
-            logger.debug("Token not found.");
-            AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
-            service.getErrorHeading().put("en", "Token not found");
-            service.getErrorNote().put("en", "Token not found");
-            return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
-        }
-
-        if (token.isExpired()) {
-            logger.debug("Token expired.");
-            DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
-            return generateOkResponse(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
-                    MediaType.APPLICATION_JSON, origin);
-        }
-
-        String key = pi + "_" + filename;
-        Boolean access = token.hasPermission(key);
-        if (access == null) {
-            try {
-                BaseMimeType baseMimeType = FileTools.getBaseMimeType(FileTools.getMimeTypeFromFile(Paths.get(filename)));
-                logger.trace("Base mime type: {}", baseMimeType);
-                if (BaseMimeType.APPLICATION.equals(baseMimeType) && "pdf".equalsIgnoreCase(FilenameUtils.getExtension(filename))) {
-                    // FUTURE: Page PDF access check
-                    access = false;
-                } else {
-                    // Image/text access check
-                    access = AccessConditionUtils
-                            .checkAccess(DataManager.getInstance().getBearerTokenManager().getTokenSessionMap().get(tokenValue),
-                                    baseMimeType.getName(), pi, filename, NetTools.getIpAddress(servletRequest), false)
-                            .isGranted();
+        // Delegate to common handler
+        String path = pi + "/" + filename;
+        return handleProbeCommon(origin, path, token -> {
+            String key = pi + "_" + filename;
+            Boolean access = token.hasPermission(key);
+            if (access == null) {
+                try {
+                    BaseMimeType baseMimeType = FileTools.getBaseMimeType(
+                            FileTools.getMimeTypeFromFile(Paths.get(filename)));
+                    logger.trace("Base mime type: {}", baseMimeType);
+                    if (BaseMimeType.IMAGE.equals(baseMimeType)) {
+                        // Image/text access check
+                        access = AccessConditionUtils
+                                .checkAccess(DataManager.getInstance().getBearerTokenManager().getTokenSessionMap().get(token.getAccessToken()),
+                                        baseMimeType.getName(), pi, filename, NetTools.getIpAddress(servletRequest), false)
+                                .isGranted();
+                    } else {
+                        // FUTURE: ALTO/plaintext access check
+                        access = false;
+                    }
+                    token.addPermission(key, access);
+                } catch (IndexUnreachableException | DAOException | IOException e) {
+                    logger.error(e.getMessage());
+                    return false;
                 }
-                token.addPermission(key, access);
-
-            } catch (IndexUnreachableException | DAOException | IOException e) {
-                logger.error(e.getMessage());
-                AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
-                service.getErrorHeading().put("en", "Error");
-                service.getErrorNote().put("en", e.getMessage());
-                return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
             }
-        }
-
-        AuthProbeResult2 result = new AuthProbeResult2();
-        if (access) {
-            result.setStatus(Response.Status.OK.getStatusCode());
-            logger.debug("access granted");
-        } else {
-            result.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
-            logger.debug("access denied");
-        }
-
-        return generateOkResponse(JsonTools.getAsJson(result), MediaType.APPLICATION_JSON, origin);
+            return access;
+        });
     }
 
     /**
@@ -382,69 +411,24 @@ public class AuthorizationFlowResource {
         if (StringUtils.isEmpty(origin)) {
             logger.warn("No Origin header found.");
         }
-        String authHeader = servletRequest.getHeader("Authorization");
-        if (authHeader == null) {
-            // No token? No service!
-            return generateOkResponse(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
-                    MediaType.APPLICATION_JSON, origin);
-        }
 
-        logger.debug("Authorization: {}", authHeader);
+        // Delegate to common handler
         String path = "/probe/resolver/" + pi + "/";
-        if (!authHeader.startsWith("Bearer ")) {
-            // Invalid token header value
-            AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(path);
-            service.getErrorHeading().put("en", "Authorization: bad format");
-            service.getErrorNote().put("en", "Authorization: bad format");
-            return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
-        }
-
-        String tokenValue = authHeader.substring(7);
-        logger.trace("Token: {}", tokenValue);
-        AuthAccessToken2 token = DataManager.getInstance().getBearerTokenManager().getTokenMap().get(tokenValue);
-        if (token == null) {
-            logger.debug("Token not found.");
-            AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(path);
-            service.getErrorHeading().put("en", "Token not found");
-            service.getErrorNote().put("en", "Token not found");
-            return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
-        }
-
-        if (token.isExpired()) {
-            logger.debug("Token expired.");
-            DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
-            return generateOkResponse(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
-                    MediaType.APPLICATION_JSON, origin);
-        }
-
-        String key = "/pdf/" + pi + "/" + order + "/";
-        Boolean access = token.hasPermission(key);
-        if (access == null) {
-            try {
-                PhysicalElement page = new PhysicalElementBuilder().setPi(pi).setOrder(order).build();
-                access = AccessConditionUtils.checkAccessPermissionForPagePdf(servletRequest, page).isGranted();
-                token.addPermission(key, access);
-            } catch (IndexUnreachableException | DAOException e) {
-                logger.error(e.getMessage());
-                AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(path);
-                service.getErrorHeading().put("en", "Error");
-                service.getErrorNote().put("en", e.getMessage());
-                return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
+        return handleProbeCommon(origin, path, token -> {
+            String key = "/pdf/" + pi + "/" + order + "/";
+            Boolean access = token.hasPermission(key);
+            if (access == null) {
+                try {
+                    PhysicalElement page = new PhysicalElementBuilder().setPi(pi).setOrder(order).build();
+                    access = AccessConditionUtils.checkAccessPermissionForPagePdf(servletRequest, page).isGranted();
+                    token.addPermission(key, access);
+                } catch (IndexUnreachableException | DAOException e) {
+                    logger.error(e.getMessage());
+                    return false;
+                }
             }
-        }
-
-        AuthProbeResult2 result = new AuthProbeResult2();
-        if (access) {
-            result.setStatus(Response.Status.OK.getStatusCode());
-            logger.debug("access granted");
-        } else {
-            result.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
-            logger.debug("access denied");
-        }
-
-        return
-
-        generateOkResponse(JsonTools.getAsJson(result), MediaType.APPLICATION_JSON, origin);
+            return access;
+        });
     }
 
     /**
@@ -482,69 +466,26 @@ public class AuthorizationFlowResource {
         if (StringUtils.isEmpty(origin)) {
             logger.warn("No Origin header found.");
         }
-        String authHeader = servletRequest.getHeader("Authorization");
-        if (authHeader == null) {
-            // No token? No service!
-            return generateOkResponse(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
-                    MediaType.APPLICATION_JSON, origin);
-        }
 
-        logger.debug("Authorization: {}", authHeader);
+        // Delegate to common handler
         String path = "/probe/resolver/" + pi + "/";
-        if (!authHeader.startsWith("Bearer ")) {
-            // Invalid token header value
-            AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(path);
-            service.getErrorHeading().put("en", "Authorization: bad format");
-            service.getErrorNote().put("en", "Authorization: bad format");
-            return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
-        }
-
-        String tokenValue = authHeader.substring(7);
-        logger.trace("Token: {}", tokenValue);
-        AuthAccessToken2 token = DataManager.getInstance().getBearerTokenManager().getTokenMap().get(tokenValue);
-        if (token == null) {
-            logger.debug("Token not found.");
-            AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(path);
-            service.getErrorHeading().put("en", "Token not found");
-            service.getErrorNote().put("en", "Token not found");
-            return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
-        }
-
-        if (token.isExpired()) {
-            logger.debug("Token expired.");
-            DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
-            return generateOkResponse(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
-                    MediaType.APPLICATION_JSON, origin);
-        }
-
-        String key = "resolver/" + pi;
-        Boolean access = token.hasPermission(key);
-        if (access == null) {
-            try {
-                // Resolver access check
-                access = AccessConditionUtils
-                        .checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, servletRequest)
-                        .isGranted();
-                token.addPermission(key, access);
-            } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
-                logger.error(e.getMessage());
-                AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(path);
-                service.getErrorHeading().put("en", "Error");
-                service.getErrorNote().put("en", e.getMessage());
-                return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
+        return handleProbeCommon(origin, path, token -> {
+            String key = "resolver/" + pi;
+            Boolean access = token.hasPermission(key);
+            if (access == null) {
+                try {
+                    // Resolver access check
+                    access = AccessConditionUtils
+                            .checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, servletRequest)
+                            .isGranted();
+                    token.addPermission(key, access);
+                } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+                    logger.error(e.getMessage());
+                    return false;
+                }
             }
-        }
-
-        AuthProbeResult2 result = new AuthProbeResult2();
-        if (access) {
-            result.setStatus(Response.Status.OK.getStatusCode());
-            logger.debug("access granted");
-        } else {
-            result.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
-            logger.debug("access denied");
-        }
-
-        return generateOkResponse(JsonTools.getAsJson(result), MediaType.APPLICATION_JSON, origin);
+            return access;
+        });
     }
 
     @GET
