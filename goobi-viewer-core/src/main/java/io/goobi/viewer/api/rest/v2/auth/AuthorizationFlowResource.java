@@ -345,7 +345,7 @@ public class AuthorizationFlowResource {
         }
 
         // Delegate to common handler
-        String path = pi + "/" + filename;
+        String path = pi + "/" + filename + "/"; //NOSONAR URL, not path
         return handleProbeCommon(origin, path, token -> {
             String key = pi + "_" + filename;
             Boolean access = token.hasPermission(key);
@@ -361,8 +361,7 @@ public class AuthorizationFlowResource {
                                         baseMimeType.getName(), pi, filename, NetTools.getIpAddress(servletRequest), false)
                                 .isGranted();
                     } else {
-                        // FUTURE: ALTO/plaintext access check
-                        access = false;
+                        logger.warn("Unsupported mime type: {}", baseMimeType.getName());
                     }
                     token.addPermission(key, access);
                 } catch (IndexUnreachableException | DAOException | IOException e) {
@@ -413,7 +412,7 @@ public class AuthorizationFlowResource {
         }
 
         // Delegate to common handler
-        String path = "/probe/resolver/" + pi + "/";
+        String path = "/probe/resolver/" + pi + "/"; //NOSONAR URL, not path
         return handleProbeCommon(origin, path, token -> {
             String key = "/pdf/" + pi + "/" + order + "/";
             Boolean access = token.hasPermission(key);
@@ -468,7 +467,7 @@ public class AuthorizationFlowResource {
         }
 
         // Delegate to common handler
-        String path = "/probe/resolver/" + pi + "/";
+        String path = "/probe/resolver/" + pi + "/"; //NOSONAR URL, not path
         return handleProbeCommon(origin, path, token -> {
             String key = "resolver/" + pi;
             Boolean access = token.hasPermission(key);
