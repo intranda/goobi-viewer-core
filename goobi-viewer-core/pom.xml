@@ -118,7 +118,7 @@
 		<jakarta.websocket.version>2.2.0</jakarta.websocket.version>
 		<jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
-		<jwks-rsa.version>0.22.2</jwks-rsa.version>
+		<jwks-rsa.version>0.23.0</jwks-rsa.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<jaxb-api.version>4.0.2</jaxb-api.version>
 		<jaxb-runtime.version>4.0.5</jaxb-runtime.version>
@@ -131,7 +131,7 @@
 		<junit.version>5.13.4</junit.version>
 		<log4j.version>2.25.1</log4j.version>
 		<mariadb-java-client.version>3.5.5</mariadb-java-client.version>
-		<mockito.version>5.18.0</mockito.version>
+		<mockito.version>5.19.0</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
 		<omnifaces.version>4.6.5</omnifaces.version>
 		<openpdf.version>2.2.4</openpdf.version>
@@ -140,10 +140,10 @@
 		<quartz.version>2.5.0</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
-		<spring.version>6.2.9</spring.version>
+		<spring.version>6.2.10</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.9.0</solr.version>
-		<swagger.version>2.2.35</swagger.version>
+		<swagger.version>2.2.36</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
 		<weld-servlet-shaded.version>5.1.6.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
