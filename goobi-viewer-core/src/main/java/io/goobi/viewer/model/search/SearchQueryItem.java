@@ -82,7 +82,6 @@ public class SearchQueryItem implements Serializable {
     private volatile boolean displaySelectItems = false;
     /** If >0, proximity search will be applied to phrase searches. */
     private int proximitySearchDistance = 0;
-    private String preselectValue;
 
     /**
      * Zero-argument constructor.
@@ -796,20 +795,6 @@ public class SearchQueryItem implements Serializable {
 
     public int getProximitySearchDistance() {
         return proximitySearchDistance;
-    }
-
-    /**
-     * @return the preselectValue
-     */
-    public String getPreselectValue() {
-        return preselectValue;
-    }
-
-    /**
-     * @param preselectValue the preselectValue to set
-     */
-    public void setPreselectValue(String preselectValue) {
-        this.preselectValue = preselectValue;
     }
 
     /** {@inheritDoc} */

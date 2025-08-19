@@ -50,7 +50,7 @@ public class SearchQueryGroup implements Serializable {
     /** List of query items in this group. */
     private final List<SearchQueryItem> queryItems = new ArrayList<>();
     private final String template;
-    
+
     private SearchQueryGroupOperator operator = SearchQueryGroupOperator.AND;
 
     /**
@@ -89,7 +89,10 @@ public class SearchQueryGroup implements Serializable {
                     SearchQueryItem item = new SearchQueryItem(template)
                             .setLabel(fieldConfig.getLabel());
                     item.setField(fieldConfig.getField());
-                    item.setPreselectValue(fieldConfig.getPreselectValue());
+                    // Add configured preselectValue to set values for this item
+                    if (StringUtils.isNotEmpty(fieldConfig.getPreselectValue())) {
+                        item.getValues().add(fieldConfig.getPreselectValue());
+                    }
                     queryItems.add(item);
                 }
             }
