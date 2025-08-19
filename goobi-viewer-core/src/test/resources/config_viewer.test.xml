@@ -466,7 +466,7 @@
 				    <field>MD_FOO_LANG_EN</field>
 				    <field>MD_FOO_LANG_DE</field>
 				    <field>MD_FOO_LANG_ES</field>
-                    <field displaySelectItemsThreshold="20" selectType="badges">DOCSTRCT</field>
+                    <field displaySelectItemsThreshold="20" selectType="badges" preselectValue="monograph">DOCSTRCT</field>
                 </template>
                 <template name="person" query="DOCSTRCT:person">
                     <field untokenizeForPhraseSearch="true" visible="true">MD_NAME</field>

@@ -1922,6 +1922,7 @@ public class Configuration extends AbstractConfiguration {
             String selectType = subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
             String replaceRegex = subElement.getString("[@replaceRegex]");
             String replaceWith = subElement.getString("[@replaceWith]");
+            String preselectValue = subElement.getString("[@preselectValue]");
 
             ret.add(new AdvancedSearchFieldConfiguration(field)
                     .setLabel(label)
@@ -1933,7 +1934,8 @@ public class Configuration extends AbstractConfiguration {
                     .setDisplaySelectItemsThreshold(displaySelectItemsThreshold)
                     .setSelectType(selectType)
                     .setReplaceRegex(replaceRegex)
-                    .setReplaceWith(replaceWith));
+                    .setReplaceWith(replaceWith)
+                    .setPreselectValue(preselectValue));
         }
 
         return ret;

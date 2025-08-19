@@ -1654,6 +1654,7 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(result.get(7).isDisabled());
         assertEquals(20, result.get(9).getDisplaySelectItemsThreshold());
         assertEquals(AdvancedSearchFieldConfiguration.SELECT_TYPE_BADGES, result.get(9).getSelectType());
+        assertEquals("monograph", result.get(9).getPreselectValue());
     }
 
     /**

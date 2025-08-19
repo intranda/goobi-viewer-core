@@ -82,6 +82,7 @@ public class SearchQueryItem implements Serializable {
     private volatile boolean displaySelectItems = false;
     /** If >0, proximity search will be applied to phrase searches. */
     private int proximitySearchDistance = 0;
+    private String preselectValue;
 
     /**
      * Zero-argument constructor.
@@ -157,6 +158,8 @@ public class SearchQueryItem implements Serializable {
                 ret = new ArrayList<>();
                 logger.warn("No values found for field: {}", field);
             }
+
+            // TODO preselect
 
             return ret;
         }
@@ -791,14 +794,27 @@ public class SearchQueryItem implements Serializable {
         return sbItem.toString().replace("\\~", "~");
     }
 
+    public int getProximitySearchDistance() {
+        return proximitySearchDistance;
+    }
+
+    /**
+     * @return the preselectValue
+     */
+    public String getPreselectValue() {
+        return preselectValue;
+    }
+
+    /**
+     * @param preselectValue the preselectValue to set
+     */
+    public void setPreselectValue(String preselectValue) {
+        this.preselectValue = preselectValue;
+    }
+
     /** {@inheritDoc} */
     @Override
     public String toString() {
         return field + " " + operator + " " + getValue();
     }
-
-    public int getProximitySearchDistance() {
-        return proximitySearchDistance;
-    }
-
 }

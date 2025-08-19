@@ -29,6 +29,7 @@ public class AdvancedSearchFieldConfiguration {
     public static final int DEFAULT_THRESHOLD = 10;
 
     public static final String SELECT_TYPE_BADGES = "badges";
+    public static final String SELECT_TYPE_CHECKBOXES = "checkboxes";
     public static final String SELECT_TYPE_DROPDOWN = "dropdown";
 
     private final String field;
@@ -42,6 +43,7 @@ public class AdvancedSearchFieldConfiguration {
     private String selectType = SELECT_TYPE_DROPDOWN;
     private String replaceRegex;
     private String replaceWith;
+    private String preselectValue;
 
     /**
      *
@@ -219,6 +221,22 @@ public class AdvancedSearchFieldConfiguration {
      */
     public AdvancedSearchFieldConfiguration setReplaceWith(String replaceWith) {
         this.replaceWith = replaceWith;
+        return this;
+    }
+
+    /**
+     * @return the preselectValue
+     */
+    public String getPreselectValue() {
+        return preselectValue;
+    }
+
+    /**
+     * @param preselectValue the preselectValue to set
+     * @return this
+     */
+    public AdvancedSearchFieldConfiguration setPreselectValue(String preselectValue) {
+        this.preselectValue = preselectValue;
         return this;
     }
 }
