@@ -60,7 +60,6 @@ import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
 import io.goobi.viewer.model.job.mq.DownloadExternalResourceHandler;
 import jakarta.servlet.http.HttpSession;
-import jakarta.websocket.Endpoint;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -74,7 +73,7 @@ import jakarta.ws.rs.core.UriBuilder;
  * Endpoint that maps HTTP session IDs to connected web sockets.
  */
 @ServerEndpoint(value = "/tasks/download/monitor.socket", configurator = GetHttpSessionConfigurator.class)
-public class DownloadTaskEndpoint extends Endpoint {
+public class DownloadTaskEndpoint {
 
     private static final Logger logger = LogManager.getLogger(DownloadTaskEndpoint.class);
 
@@ -85,7 +84,6 @@ public class DownloadTaskEndpoint extends Endpoint {
     private Session session;
 
     @OnOpen
-    @Override
     public void onOpen(Session session, EndpointConfig config) {
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         this.session = session;
@@ -341,7 +339,6 @@ public class DownloadTaskEndpoint extends Endpoint {
         logger.debug("Closing socket for session {}", this.httpSession);
     }
 
-    @Override
     @OnError
     public void onError(Session session, Throwable t) {
         if (!(t instanceof EOFException)) {

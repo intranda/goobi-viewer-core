@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.CronScheduleBuilder;
@@ -127,7 +127,7 @@ public class QuartzListener implements ServletContextListener {
 
                 //first check trigger cron expression and update it if necessary
                 String cronExpression = config.getQuartzSchedulerCronExpression(trigger.getTaskType());
-                if (!StringUtils.equals(trigger.getScheduleExpression(), cronExpression)) {
+                if (!Strings.CS.equals(trigger.getScheduleExpression(), cronExpression)) {
                     trigger.setScheduleExpression(cronExpression);
                     this.dao.updateRecurringTaskTrigger(trigger);
                 }
@@ -174,6 +174,7 @@ public class QuartzListener implements ServletContextListener {
 
         addTrigger(storedTriggers, triggers, TaskType.INDEX_USAGE_STATISTICS, TaskTriggerStatus.RUNNING);
         addTrigger(storedTriggers, triggers, TaskType.NOTIFY_SEARCH_UPDATE, TaskTriggerStatus.RUNNING);
+        addTrigger(storedTriggers, triggers, TaskType.PURGE_EXPIRED_BEARER_TOKENS, TaskTriggerStatus.RUNNING);
         addTrigger(storedTriggers, triggers, TaskType.PURGE_EXPIRED_DOWNLOAD_TICKETS, TaskTriggerStatus.RUNNING);
         addTrigger(storedTriggers, triggers, TaskType.UPDATE_SITEMAP, TaskTriggerStatus.RUNNING);
         addTrigger(storedTriggers, triggers, TaskType.UPDATE_UPLOAD_JOBS, TaskTriggerStatus.RUNNING);

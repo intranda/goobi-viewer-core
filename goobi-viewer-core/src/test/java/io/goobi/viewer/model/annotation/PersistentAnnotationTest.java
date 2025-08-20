@@ -31,8 +31,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -61,6 +61,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.security.user.User;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * @author florian
@@ -74,6 +75,7 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     private Question generator;
     private IResource body;
     private IResource target;
+    private URI targetCanvas;
 
     private static AbstractApiUrlManager urls;
     private static AnnotationsResourceBuilder annoBuilder;
@@ -116,9 +118,9 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         annotation.setCreator(new Agent(URI.create(creator.getId().toString()), AgentType.PERSON, creator.getNickName()));
         annotation.setGenerator(new Agent(URI.create(generator.getId().toString()), AgentType.SOFTWARE, ""));
 
+        targetCanvas = UriBuilder.fromUri(urls.getApiUrl()).path("records/{pi}/pages/{order}/canvas/").build("7", "10");
         body = new TextualResource("annotation text");
-        target = new SpecificResource(URI.create("http://www.example.com/manifest/7/canvas/10"),
-                new FragmentSelector(new Rectangle(10, 20, 100, 200)));
+        target = new SpecificResource(targetCanvas, new FragmentSelector(new Rectangle(10, 20, 100, 200)));
 
         annotation.setBody(body);
         annotation.setTarget(target);
@@ -143,8 +145,8 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
         String targetString = daoAnno.getTarget();
         Assertions.assertEquals(
-                "{\"type\":\"SpecificResource\",\"selector\":{\"value\":\"xywh=10,20,100,200\",\"type\":\"FragmentSelector\"},\"source\":\"http://www.example.com/manifest/7/canvas/10\"}"
-                        + "",
+                "{\"type\":\"SpecificResource\",\"selector\":{\"value\":\"xywh=10,20,100,200\",\"type\":\"FragmentSelector\"},\"source\":\"{sourceUri}\"}"
+                        .replace("{sourceUri}", targetCanvas.toString()),
                 targetString);
 
         IResource retrievedBody = converter.getBodyAsResource(daoAnno);

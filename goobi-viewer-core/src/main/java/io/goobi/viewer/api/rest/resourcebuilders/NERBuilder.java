@@ -42,6 +42,7 @@ import io.goobi.viewer.api.rest.model.ner.TagGroup;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -119,7 +120,8 @@ public class NERBuilder {
                         if (!altoFileName.contains("/")) {
                             altoFileName = topStructPi + "/" + altoFileName;
                         }
-                        if (AccessConditionUtils.checkAccess(request, "text", topStructPi, altoFileName, false).isGranted()) {
+                        if (AccessConditionUtils.checkAccess(request.getSession(), "text", topStructPi, altoFileName,
+                                NetTools.getIpAddress(request), false).isGranted()) {
 
                             String altoString = "";
                             String charset = null;

@@ -34,11 +34,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.util.ClientUtils;
@@ -69,6 +66,9 @@ import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * This bean provides the data for collection and term browsing.
@@ -775,7 +775,7 @@ public class BrowseBean implements Serializable {
     public void setCurrentStringFilter(final String currentStringFilter) {
         synchronized (this) {
             String useCurrentStringFilter = currentStringFilter;
-            if (StringUtils.equals(useCurrentStringFilter, "-")) {
+            if (Strings.CS.equals(useCurrentStringFilter, "-")) {
                 useCurrentStringFilter = "";
             }
             try {

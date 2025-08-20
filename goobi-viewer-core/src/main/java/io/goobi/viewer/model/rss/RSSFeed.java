@@ -29,13 +29,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import com.ibm.icu.text.SimpleDateFormat;
 import com.rometools.rome.feed.synd.SyndContent;
@@ -68,6 +66,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -478,6 +477,7 @@ public final class RSSFeed {
         }
 
         for (SolrDocument doc : docs) {
+            Long dateCreated = (Long) doc.getFieldValue(SolrConstants.DATECREATED);
             String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
             boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
             boolean child = !anchor

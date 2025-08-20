@@ -71,6 +71,7 @@ import de.intranda.api.iiif.presentation.v3.Collection3;
 import de.intranda.api.iiif.presentation.v3.IIIFAgent;
 import de.intranda.api.iiif.presentation.v3.LabeledResource;
 import de.intranda.api.iiif.presentation.v3.Manifest3;
+import de.intranda.api.services.Service;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -81,6 +82,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
@@ -747,7 +749,7 @@ public abstract class AbstractBuilder {
         return provider;
     }
 
-    private IIIFAgent getProvider(ProviderConfiguration providerConfig, VariableReplacer variableReplacer) {
+    private static IIIFAgent getProvider(ProviderConfiguration providerConfig, VariableReplacer variableReplacer) {
         IIIFAgent provider = new IIIFAgent(providerConfig.getUri(), ViewerResourceBundle.getTranslations(providerConfig.getLabel(), false));
 
         providerConfig.getHomepages().forEach(homepageConfig -> {
@@ -775,6 +777,7 @@ public abstract class AbstractBuilder {
         ImageResource thumb;
         AbstractApiUrlManager um = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(null);
         if (um != null) {
+            // TODO Check permissions?
             thumb = new ImageResource(urls.path(RECORDS_RECORD, RECORDS_IMAGE).params(pi).build(), thumbWidth, thumbHeight);
         } else {
             thumb = new ImageResource(URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(pi)));
@@ -783,6 +786,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
+     * Thumbnail (record).
      * 
      * @param ele
      * @return {@link ImageResource}
@@ -791,8 +795,17 @@ public abstract class AbstractBuilder {
         try {
             String thumbUrl = this.thumbs.getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
-                ImageResource thumb = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
-                return thumb;
+                ImageResource resource = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
+                // Add auth services
+                //                if (true) { // TODO Check access
+                //                    for (ImageInformation ii : resource.getServices()) {
+                //                        logger.trace("adding auth services to thumbnail");
+                // for (Service service : AuthorizationFlowTools.getAuthServices(ele.getPi(), ele.getMetadataValue(SolrConstants.THUMBNAIL))) {
+                //                            ii.addService(service);
+                //                        }
+                //                    }
+                //                }
+                return resource;
             }
         } catch (URISyntaxException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
@@ -800,40 +813,73 @@ public abstract class AbstractBuilder {
         return null;
     }
 
-    private String getFormat(String thumbUrl) {
+    private static String getFormat(String thumbUrl) {
         return ImageFileFormat.getImageFileFormatFromFileExtension(thumbUrl).getMimeType();
     }
 
-    private Optional<ImageInformation> getImageInfoIfIIIF(String thumbUrl) {
+    private static Optional<ImageInformation> getImageInfoIfIIIF(String thumbUrl) {
         if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
             String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
             return Optional.of(new ImageInformation3(imageInfoURI));
-        } else {
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 
+    /**
+     * Thumbnail (page manifest).
+     * 
+     * @param ele
+     * @param pageNo
+     * @return {@link ImageResource}
+     */
     protected ImageResource getThumbnail(StructElement ele, int pageNo) {
         try {
-            String thumbUrl = this.thumbs.getThumbnailUrl(pageNo, ele.getPi());
-            if (StringUtils.isNotBlank(thumbUrl)) {
-                ImageResource thumb = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
-                return thumb;
+            PhysicalElement page = DataManager.getInstance().getSearchIndex().getPage(ele.getPi(), pageNo);
+            if (page != null) {
+                String thumbUrl = this.thumbs.getThumbnailUrl(page);
+                if (StringUtils.isNotBlank(thumbUrl)) {
+                    ImageResource resource = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
+                    // Add auth services
+                    if (!page.isAccessPermissionImage()) {
+                        for (ImageInformation ii : resource.getServices()) {
+                            logger.trace("adding auth services to thumbnail");
+                            for (Service service : AuthorizationFlowTools.getAuthServices(ele.getPi(), page.getFileName())) {
+                                ii.addService(service);
+                            }
+                        }
+                    }
+                    return resource;
+                }
             }
-        } catch (URISyntaxException | IndexUnreachableException | PresentationException | DAOException | ViewerConfigurationException e) {
+        } catch (URISyntaxException | IndexUnreachableException | PresentationException | DAOException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
         return null;
     }
 
+    /**
+     * Thumbnail (individual pages of a record manifest).
+     * 
+     * @param page
+     * @return {@link ImageResource}
+     */
     protected ImageResource getThumbnail(PhysicalElement page) {
         try {
             String thumbUrl = this.thumbs.getThumbnailUrl(page);
             if (StringUtils.isNotBlank(thumbUrl)) {
-                ImageResource thumb = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
-                return thumb;
+                ImageResource resource = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
+                // Add auth services
+                if (!page.isAccessPermissionImage()) {
+                    for (ImageInformation ii : resource.getServices()) {
+                        logger.trace("adding auth services to thumbnail");
+                        for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName())) {
+                            ii.addService(service);
+                        }
+                    }
+                }
+                return resource;
             }
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException | IndexUnreachableException | DAOException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
         return null;
@@ -879,8 +925,7 @@ public abstract class AbstractBuilder {
     public Optional<URI> getExternalManifestURI(String pi) {
         if (this.config.useExternalManifestUrls()) {
             try {
-                Optional<URI> externalURI = readURIFromSolr(pi);
-                return externalURI;
+                return readURIFromSolr(pi);
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.warn("Error reading manifest url from for PI {}", pi);
             } catch (URISyntaxException e) {
@@ -901,9 +946,8 @@ public abstract class AbstractBuilder {
                 }
             }
             return Optional.empty();
-        } else {
-            throw new PresentationException("No solr field configured containing external manifest urls");
         }
+        throw new PresentationException("No solr field configured containing external manifest urls");
     }
 
     protected String escapeURI(String uri) {

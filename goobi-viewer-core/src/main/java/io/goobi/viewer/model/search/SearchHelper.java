@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -63,6 +64,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
 
@@ -290,15 +292,21 @@ public final class SearchHelper {
                     String altoFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO);
                     String plaintextFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
                     String pi = (String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
+                    HttpServletRequest request = BeanUtils.getRequest();
                     if (StringUtils.isNotBlank(plaintextFilename)) {
-                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, plaintextFilename, false).isGranted();
+                        boolean access = AccessConditionUtils
+                                .checkAccess(request.getSession(), "text", pi, plaintextFilename, NetTools.getIpAddress(request), false)
+                                .isGranted();
                         if (access) {
                             fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false);
                         } else {
                             fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
                         }
                     } else if (StringUtils.isNotBlank(altoFilename)) {
-                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, altoFilename, false).isGranted();
+                        boolean access =
+                                AccessConditionUtils
+                                        .checkAccess(request.getSession(), "text", pi, altoFilename, NetTools.getIpAddress(request), false)
+                                        .isGranted();
                         if (access) {
                             fulltext = DataFileTools.loadFulltext(altoFilename, null, false);
                         } else {
@@ -1537,7 +1545,7 @@ public final class SearchHelper {
             return false;
         }
 
-        return StringUtils.contains(phrase, term);
+        return Strings.CS.contains(phrase, term);
     }
 
     /**
@@ -1770,30 +1778,32 @@ public final class SearchHelper {
         } else {
             facetFieldNames.add(useFacetFieldName);
         }
-
-        QueryResponse resp = DataManager.getInstance()
-                .getSearchIndex()
-                .searchFacetsAndStatistics(query, null, facetFieldNames, facetMinCount, facetPrefix, params, false);
-        FacetField facetField = resp.getFacetField(useFacetFieldName);
-        if (json && resp.getJsonFacetingResponse() != null && resp.getJsonFacetingResponse().getStatValue(useFacetFieldName) != null) {
-            return Collections.singletonList(String.valueOf(resp.getJsonFacetingResponse().getStatValue(useFacetFieldName)));
-        }
-
-        if (facetField == null) {
-            return Collections.emptyList();
-        }
-
-        List<String> ret = new ArrayList<>(facetField.getValueCount());
-        for (Count count : facetField.getValues()) {
-            if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= facetMinCount) {
-                if (count.getName().startsWith("\\u0001")) {
-                    continue;
-                }
-                ret.add(count.getName());
+        try {
+            QueryResponse resp = DataManager.getInstance()
+                    .getSearchIndex()
+                    .searchFacetsAndStatistics(query, null, facetFieldNames, facetMinCount, facetPrefix, params, false);
+            FacetField facetField = resp.getFacetField(useFacetFieldName);
+            if (json && resp.getJsonFacetingResponse() != null && resp.getJsonFacetingResponse().getStatValue(useFacetFieldName) != null) {
+                return Collections.singletonList(String.valueOf(resp.getJsonFacetingResponse().getStatValue(useFacetFieldName)));
             }
-        }
 
-        return ret;
+            if (facetField == null) {
+                return Collections.emptyList();
+            }
+
+            List<String> ret = new ArrayList<>(facetField.getValueCount());
+            for (Count count : facetField.getValues()) {
+                if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= facetMinCount) {
+                    if (count.getName().startsWith("\\u0001")) {
+                        continue;
+                    }
+                    ret.add(count.getName());
+                }
+            }
+            return ret;
+        } catch (SolrException e) {
+            throw new IndexUnreachableException("Error communication with solr: " + e.toString());
+        }
     }
 
     /**
@@ -1832,7 +1842,7 @@ public final class SearchHelper {
         if (resp.getFacetField(facetField) != null) {
             for (Count count : resp.getFacetField(facetField).getValues()) {
                 if (count.getCount() == 0
-                        || (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase()))) {
+                        || (StringUtils.isNotEmpty(startsWith) && !Strings.CI.startsWith(count.getName(), startsWith.toLowerCase()))) {
                     continue;
                 }
                 ret++;
@@ -1988,7 +1998,7 @@ public final class SearchHelper {
             if (useField != null) {
                 for (Count count : resp.getFacetField(useField).getValues()) {
                     if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith)
-                            && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith)) {
+                            && !Strings.CI.startsWith(count.getName(), startsWith)) {
                         // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Debug
                         // term, compareTerm, sortTerm, bmfc.isTranslate());
                         continue;
@@ -2164,7 +2174,7 @@ public final class SearchHelper {
                 String bestMatch = null;
                 // Look for exact match
                 for (String val : facetifiedSortTermValues) {
-                    if (StringUtils.equalsIgnoreCase(val, term)) {
+                    if (Strings.CI.equals(val, term)) {
                         bestMatch = val;
                         break;
                     }
@@ -2183,7 +2193,7 @@ public final class SearchHelper {
                 compareTerm = BrowseTermComparator.normalizeString(compareTerm,
                         DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars()).trim();
             }
-            if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith) && !StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
+            if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith) && !Strings.CI.startsWith(compareTerm, startsWith)) {
                 // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Debug
                 // term, compareTerm, sortTerm, bmfc.isTranslate()); //NOSONAR Debug
                 continue;

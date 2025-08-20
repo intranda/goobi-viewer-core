@@ -180,8 +180,9 @@ public class MessageQueueBean implements Serializable {
     public Map<String, Integer> getQueueContent() {
         Map<String, Integer> fastQueueContent = new TreeMap<>();
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            fastQueueContent.putAll(messageBroker.countMessagesInQueue(MessageQueueManager.QUEUE_NAME_VIEWER));
-            fastQueueContent.putAll(messageBroker.countMessagesInQueue(MessageQueueManager.QUEUE_NAME_PDF));
+            for (String queueName : MessageQueueManager.QUEUE_NAMES) {
+                fastQueueContent.putAll(messageBroker.countMessagesInQueue(queueName));
+            }
         }
         return fastQueueContent;
     }
@@ -197,8 +198,10 @@ public class MessageQueueBean implements Serializable {
      */
     public void pauseQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            paused = this.messageBroker.pauseQueue(MessageQueueManager.QUEUE_NAME_VIEWER)
-                    && this.messageBroker.pauseQueue(MessageQueueManager.QUEUE_NAME_PDF);
+            paused = true;
+            for (String queueName : MessageQueueManager.QUEUE_NAMES) {
+                paused &= this.messageBroker.pauseQueue(queueName);
+            }
             updateMessageQueueState();
         }
     }
@@ -210,8 +213,11 @@ public class MessageQueueBean implements Serializable {
      */
     public void resumeQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            paused = !(this.messageBroker.resumeQueue(MessageQueueManager.QUEUE_NAME_VIEWER)
-                    && this.messageBroker.resumeQueue(MessageQueueManager.QUEUE_NAME_PDF));
+            paused = false;
+            for (String queueName : MessageQueueManager.QUEUE_NAMES) {
+                // 'false' indicates an error during resume -> still paused
+                paused |= !this.messageBroker.resumeQueue(queueName);
+            }
             updateMessageQueueState();
         }
     }
@@ -223,8 +229,9 @@ public class MessageQueueBean implements Serializable {
      */
     public void clearQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            this.messageBroker.clearQueue(MessageQueueManager.QUEUE_NAME_VIEWER);
-            this.messageBroker.clearQueue(MessageQueueManager.QUEUE_NAME_PDF);
+            for (String queueName : MessageQueueManager.QUEUE_NAMES) {
+                this.messageBroker.clearQueue(queueName);
+            }
             updateMessageQueueState();
         }
     }

@@ -75,7 +75,7 @@ public final class FilterTools {
      */
     public static boolean checkForConcurrentViewLimit(String pi, HttpServletRequest request) {
         // logger.trace("filterForConcurrentViewLimit: {}", request.getSession().getId()); //NOSONAR Debug
-        HttpSession session = request.getSession();
+        HttpSession session = request != null ? request.getSession() : null;
         // Release all locks for this session except the current record
         if (session != null) {
             DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(session.getId(), Collections.singletonList(pi));
@@ -105,14 +105,13 @@ public final class FilterTools {
                 if (session != null) {
                     return !LockRecordResult.LIMIT_EXCEEDED
                             .equals(DataManager.getInstance().getRecordLockManager().lockRecord(pi, session.getId(), Integer.valueOf(limits.get(0))));
-                } else {
-                    logger.debug("No session found, unable to lock limited view record {}", pi);
-                    return false; //requests without session should not be allowed
                 }
+                logger.debug("No session found, unable to lock limited view record {}", pi);
+                return false; //requests without session should not be allowed
             }
             return true;
         } catch (PresentationException | IndexUnreachableException | DAOException | RecordNotFoundException e) {
-            logger.warn("Serving this image is currently impossible due to " + e.getMessage());
+            logger.warn("Serving this image is currently impossible due to {}", e.getMessage());
             return false;
         }
     }

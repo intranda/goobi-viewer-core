@@ -25,10 +25,10 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Objects;
 
-import org.apache.commons.codec.binary.StringUtils;
-import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -141,7 +141,7 @@ public class Location implements Serializable {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             Location other = (Location) obj;
-            return StringUtils.equals(this.label, other.label)
+            return Strings.CS.equals(this.label, other.label)
                     && Objects.equals(this.uri, other.uri)
                     && Objects.equals(this.area, other.area);
         }

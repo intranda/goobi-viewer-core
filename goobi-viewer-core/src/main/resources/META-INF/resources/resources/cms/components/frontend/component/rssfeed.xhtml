@@ -33,7 +33,7 @@
 
 				<div class="tpl-rss__feed">
 					<ui:repeat var="item"
-						value="#{rssBean.getRssFeedChannel(cc.attrs.component.getContentItem('rss').content.elementsPerPage, cc.attrs.filterQuery, cc.attrs.widget.sortField, cc.attrs.widget.descendingSorting).items}">
+						value="#{rssBean.getRssFeedChannel(cc.attrs.component.getContentItem('rss').content.elementsPerPage, cc.attrs.component.getContentItem('rss').content.filterQuery, 'DATECREATED', true).items}">
 						<div class="tpl-rss__item">
 							<div class="tpl-rss__grid">
 

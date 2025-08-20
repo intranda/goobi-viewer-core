@@ -23,11 +23,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Named;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,6 +41,9 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Backing bean for pages adminClientEdit.xhtml and adminClients.xhtml
@@ -235,10 +235,10 @@ public class AdminClientsBean implements Serializable {
                     //sorting
                     int sortDirectionFactor = SortOrder.DESCENDING.equals(sortOrder) ? -1 : 1; // desc - asc
                     if ("name".equals(sortField)) {
-                        stream = stream.sorted((c1, c2) -> sortDirectionFactor * StringUtils.compare(c1.getName(), c2.getName()))
-                                .sorted((c1, c2) -> sortDirectionFactor * StringUtils.compare(c1.getClientIdentifier(), c2.getClientIdentifier()));
+                        stream = stream.sorted((c1, c2) -> sortDirectionFactor * Strings.CS.compare(c1.getName(), c2.getName()))
+                                .sorted((c1, c2) -> sortDirectionFactor * Strings.CS.compare(c1.getClientIdentifier(), c2.getClientIdentifier()));
                     } else if ("ip".equals(sortField)) {
-                        stream = stream.sorted((c1, c2) -> sortDirectionFactor * StringUtils.compare(c1.getClientIp(), c2.getClientIp()));
+                        stream = stream.sorted((c1, c2) -> sortDirectionFactor * Strings.CS.compare(c1.getClientIp(), c2.getClientIp()));
                     } else if ("dateRegistered".equals(sortField)) {
                         stream = stream.sorted((c1, c2) -> sortDirectionFactor * c1.getDateRegistered().compareTo(c2.getDateRegistered()));
                     } else if ("dateLastAccess".equals(sortField)) {

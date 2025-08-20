@@ -11,6 +11,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -108,8 +109,9 @@ public class PhysicalResource {
     private boolean isAccessPermissionBornDigital() throws IndexUnreachableException, DAOException {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, getFileName(),
-                    IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
+            AccessPermission access =
+                    AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, getFileName(),
+                            IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, NetTools.getIpAddress(request));
             downloadTicketRequired = access.isTicketRequired();
             return access.isGranted();
         }

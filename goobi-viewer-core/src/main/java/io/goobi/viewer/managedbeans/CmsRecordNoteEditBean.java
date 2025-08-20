@@ -189,9 +189,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
                 logger.warn("Attempting to save note, but no note is selected");
                 return;
             }
-            CMSRecordNote persistentNote = this.note.copy();
             if (!testMode) {
-                String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsRecordNoteEdit", persistentNote.getId());
+                String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsRecordNotes");
                 try {
                     facesContext.getExternalContext().redirect(url);
                 } catch (IOException | NullPointerException e) {

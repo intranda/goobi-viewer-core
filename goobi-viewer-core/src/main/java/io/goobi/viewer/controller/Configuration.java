@@ -57,6 +57,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -408,6 +409,7 @@ public class Configuration extends AbstractConfiguration {
             logger.error("no metadata lists found");
             return new ArrayList<>(); // must be a mutable list!
         }
+        // TODO Combine local and global types?
 
         List<String> ret = new ArrayList<>();
         for (HierarchicalConfiguration<ImmutableNode> metadataList : metadataLists) {
@@ -1078,17 +1080,20 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @return Configured values
+     * @should return correct configuration
      */
     public Metadata getSidebarWidgetCitationCitationRecommendationSource() {
-        // TODO
-        HierarchicalConfiguration<ImmutableNode> sub = null;
-        try {
-            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citationRecommendation.source.metadata");
-        } catch (IllegalArgumentException e) {
-            // no or multiple occurrences
-        }
-        if (sub != null) {
-            return getMetadataFromSubnodeConfig(sub, false, 0);
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("citation");
+        if (widgetConfig != null) {
+            HierarchicalConfiguration<ImmutableNode> sub = null;
+            try {
+                sub = widgetConfig.configurationAt("citationRecommendation.source.metadata");
+            } catch (IllegalArgumentException e) {
+                // no or multiple occurrences
+            }
+            if (sub != null) {
+                return getMetadataFromSubnodeConfig(sub, false, 0);
+            }
         }
 
         return new Metadata();
@@ -2979,15 +2984,26 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param path
      * @param name
+     * @param globalFallback If true, search in global config if desired name not found in local
      * @return HierarchicalConfiguration<ImmutableNode>; null if none found
      */
-    private HierarchicalConfiguration<ImmutableNode> getSubConfigurationByNameAttribute(String path, String name) {
+    private HierarchicalConfiguration<ImmutableNode> getSubConfigurationByNameAttribute(String path, String name, boolean globalFallback) {
+        List<HierarchicalConfiguration<ImmutableNode>> allConfigs = new ArrayList<>();
+
+        // Local lists
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt(path);
-        if (configs == null) {
-            return null;
+        if (configs != null) {
+            allConfigs.addAll(configs);
+        }
+        // Global lists
+        if (globalFallback) {
+            configs = getLocalConfigurationsAt(getConfig(), null, path);
+            if (configs != null) {
+                allConfigs.addAll(configs);
+            }
         }
 
-        for (HierarchicalConfiguration<ImmutableNode> subElement : configs) {
+        for (HierarchicalConfiguration<ImmutableNode> subElement : allConfigs) {
             if (subElement.getString(XML_PATH_ATTRIBUTE_NAME, "").equals(name)) {
                 return subElement;
 
@@ -3003,7 +3019,7 @@ public class Configuration extends AbstractConfiguration {
      * @return Configured values
      */
     private HierarchicalConfiguration<ImmutableNode> getSidebarViewConfiguration(String name) {
-        return getSubConfigurationByNameAttribute("sidebar.views.view", name);
+        return getSubConfigurationByNameAttribute("sidebar.views.view", name, false);
     }
 
     /**
@@ -3012,7 +3028,7 @@ public class Configuration extends AbstractConfiguration {
      * @return Configured values
      */
     private HierarchicalConfiguration<ImmutableNode> getSidebarWidgetConfiguration(String name) {
-        return getSubConfigurationByNameAttribute("sidebar.widgets.widget", name);
+        return getSubConfigurationByNameAttribute("sidebar.widgets.widget", name, true);
     }
 
     /**
@@ -3806,7 +3822,7 @@ public class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
         for (HierarchicalConfiguration<ImmutableNode> conf : fieldConfigs) {
             String configField = conf.getString(".");
-            if (StringUtils.equals(configField, field)) {
+            if (Strings.CS.equals(configField, field)) {
                 return Optional.ofNullable(conf.getString("[@dropDownAscMessageKey]", null));
             }
         }
@@ -3822,7 +3838,7 @@ public class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
         for (HierarchicalConfiguration<ImmutableNode> conf : fieldConfigs) {
             String configField = conf.getString(".");
-            if (StringUtils.equals(configField, field)) {
+            if (Strings.CS.equals(configField, field)) {
                 return Optional.ofNullable(conf.getString("[@dropDownDescMessageKey]", null));
             }
         }

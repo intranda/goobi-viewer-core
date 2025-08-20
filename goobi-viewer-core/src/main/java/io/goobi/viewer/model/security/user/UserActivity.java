@@ -24,6 +24,7 @@ package io.goobi.viewer.model.security.user;
 import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
@@ -160,7 +161,7 @@ public class UserActivity {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             UserActivity other = (UserActivity) obj;
-            return this.type.equals(other.type) && StringUtils.equals(this.label, other.label);
+            return this.type.equals(other.type) && Strings.CS.equals(this.label, other.label);
         }
         return false;
     }

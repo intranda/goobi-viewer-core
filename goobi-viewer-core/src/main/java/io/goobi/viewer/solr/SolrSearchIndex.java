@@ -530,8 +530,8 @@ public class SolrSearchIndex {
         // logger.trace("getDocumentByIddoc: {}", iddoc); //NOSONAR Debug
         SolrDocument ret = null;
         SolrDocumentList hits =
-                search(new StringBuilder(SolrConstants.PI).append(':').append(SolrTools.cleanUpQuery(pi)).toString(), 0, 1, null, null, null)
-                        .getResults();
+                search(new StringBuilder(SolrConstants.PI).append(':').append(SolrTools.cleanUpQuery('"' + pi + '"')).toString(), 0, 1, null, null,
+                        null).getResults();
         if (hits != null && !hits.isEmpty()) {
             ret = hits.get(0);
         }

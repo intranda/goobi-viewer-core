@@ -64,7 +64,7 @@ public class AdminLoggedInFilter implements ContainerRequestFilter {
     }
 
     public static boolean isAdminLoggedIn(HttpServletRequest request) {
-        User user = BeanUtils.getUserFromRequest(request);
+        User user = BeanUtils.getUserFromSession(request.getSession());
         return user != null && user.isSuperuser();
     }
 

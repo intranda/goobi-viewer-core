@@ -13,7 +13,7 @@
 	<composite:interface></composite:interface>
 
 	<composite:implementation>
-		<c:if
+		<c:if 
 			test="#{userBean.admin}">
 			<ui:param name="stats"
 				value="#{statisticsBean.getUsageStatisticsForRecord(activeDocumentBean.viewManager.pi)}" />
@@ -89,26 +89,6 @@
 						</div>
 					</div>
 
-
-
-					<!-- WIDGET WORK COUNT FOLDOUT -->
-					<h:panelGroup rendered="#{cc.attrs.collapse == true}">
-						<div id="widget-usage-statistics"
-							class="widget widget-usage-statistics">
-							<div class="widget__topbar widget-usage-statistics__topbar">
-								<h2 class="widget__title widget-usage-statistics__title">
-									<a href="#usageStatisticsCollapse" data-toggle="collapse"
-										aria-expanded="false" aria-controls="usageStatisticsCollapse">
-									</a>
-								</h2>
-							</div>
-
-							<div id="usageStatisticsCollapse"
-								class="widget__body widget-usage-statistics__body collapse">
-								<div id="usageStatistics" />
-							</div>
-						</div>
-					</h:panelGroup>
 				</h:form>
 			</div>
 		</c:if>

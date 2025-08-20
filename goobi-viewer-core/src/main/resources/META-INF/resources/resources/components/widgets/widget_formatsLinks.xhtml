@@ -5,7 +5,7 @@
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:jsf="http://xmlns.jcp.org/jsf" 
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" >
@@ -15,21 +15,23 @@
     <composite:implementation>
             <div jsf:id="widgetFormatLinks" class="widget widget-format-links" rendered="#{displayConditions.getTag('widgetFormatLinks').getChildCount('widget-element') > 0}">
 
-	            <div class="widget__topbar widget-format-links__topbar 
-	            	#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links')  ? 'collapsible' : ''}
-	            	#{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'formats-links')  ? 'in' : ''}"
-					tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links') ? '0' : ''}"
-					role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links') ? 'button' : ''}">
-					
+			<div tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links') ? '0' : ''}"
+				role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links') ? 'button' : ''}"
+				class="widget__topbar 
+				widget-format-links__topbar #{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links')  ? 'collapsible' : ''}
+				#{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'formats-links')  ? '' : ''}">
+
 					<h2 class="widget__title widget-format-links__title">
 	                    #{msg.widget_formatsLinks}
 	                </h2>
 					
 	                <div class="widget__topbar-icons-container">
-		              	<i class="fa fa-angle-down" aria-hidden="true"></i>
 	                    <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
 							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 						</div>
+
+						<i class="widget__topbar-icon-collapsible fa fa-angle-down" aria-hidden="true"></i>
+
 	                </div>
 				</div>
  

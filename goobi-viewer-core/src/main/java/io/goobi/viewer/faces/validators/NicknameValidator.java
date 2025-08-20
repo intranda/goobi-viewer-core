@@ -24,20 +24,20 @@ package io.goobi.viewer.faces.validators;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.component.UIComponent;
-import jakarta.faces.context.FacesContext;
-import jakarta.faces.validator.FacesValidator;
-import jakarta.faces.validator.Validator;
-import jakarta.faces.validator.ValidatorException;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.validator.FacesValidator;
+import jakarta.faces.validator.Validator;
+import jakarta.faces.validator.ValidatorException;
 
 /**
  * Allowed characters and uniqueness validator for user nicknames (displayed names).
@@ -103,7 +103,7 @@ public class NicknameValidator implements Validator<String> {
         User currentUser = BeanUtils.getUserBean().getUser();
         if (otherUser != null && currentUser != null && StringUtils.isNotBlank(otherUser.getNickName())
                 && StringUtils.isNotBlank(currentUser.getNickName())
-                && StringUtils.equalsIgnoreCase(otherUser.getNickName().trim(), currentUser.getNickName().trim())) {
+                && Strings.CI.equals(otherUser.getNickName().trim(), currentUser.getNickName().trim())) {
             return otherUser.getId().equals(currentUser.getId());
         }
 

@@ -39,6 +39,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrException;
 
 import com.ocpsoft.pretty.PrettyContext;
 
@@ -185,6 +186,8 @@ public class SolrFeatureSet extends FeatureSet {
                     AbstractFeatureDataProvider.getDataProvider(getSearchScope() == null ? SolrSearchScope.ALL : getSearchScope(),
                             ListUtils.union(coordinateFields, ListUtils.union(markerLabels.getFieldsToQuery(), itemLabels.getFieldsToQuery())));
             hits = queryGenerator.getResults(getSolrQuery(), MAX_RECORD_HITS);
+        } catch (SolrException e) {
+            throw new IndexUnreachableException("SOLR communication failed:" + e.toString());
         }
         try (Time t = DataManager.getInstance().getTiming().takeTime("features")) {
             FeatureGenerator featureGenerator = new FeatureGenerator(coordinateFields, getItemFilter().getFields(), markerLabels, itemLabels);

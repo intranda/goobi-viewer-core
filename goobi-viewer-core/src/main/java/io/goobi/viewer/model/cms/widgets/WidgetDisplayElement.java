@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.PrettyUrlTools;
@@ -134,9 +134,9 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     public TranslatedText getDescriptionOrTypeDescription() {
         if (getDescription().isEmpty()) {
             return new TranslatedText(ViewerResourceBundle.getTranslations(getContentType().getDescription()));
-        } else {
-            return getDescription();
         }
+        
+        return getDescription();
     }
 
     /**
@@ -240,7 +240,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     public int compareTo(WidgetDisplayElement other) {
         int typeCompare = Integer.compare(this.generationType.ordinal(), other.generationType.ordinal());
         if (typeCompare == 0) {
-            return StringUtils.compare(this.getTitle().getText(), other.getTitle().getText());
+            return Strings.CS.compare(this.getTitle().getText(), other.getTitle().getText());
         }
         return typeCompare;
     }
@@ -249,12 +249,10 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
         if (this.getId() != null) {
             if (this.contentType.equals(AutomaticWidgetType.WIDGET_CMSGEOMAP)) {
                 return PrettyUrlTools.getAbsolutePageUrl("adminCmsGeoMapEdit", this.getId());
-            } else {
-                return PrettyUrlTools.getAbsolutePageUrl("adminCmsWidgetsEdit", this.getId());
             }
-        } else {
-            return PrettyUrlTools.getAbsolutePageUrl("adminCmsWidgetsAdd");
+            return PrettyUrlTools.getAbsolutePageUrl("adminCmsWidgetsEdit", this.getId());
         }
+        
+        return PrettyUrlTools.getAbsolutePageUrl("adminCmsWidgetsAdd");
     }
-
 }

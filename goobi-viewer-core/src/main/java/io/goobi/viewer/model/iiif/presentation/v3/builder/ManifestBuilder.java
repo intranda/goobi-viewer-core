@@ -59,6 +59,7 @@ import de.intranda.api.iiif.presentation.v3.Manifest3;
 import de.intranda.api.iiif.presentation.v3.Range3;
 import de.intranda.api.iiif.search.AutoSuggestService;
 import de.intranda.api.iiif.search.SearchService;
+import de.intranda.api.services.Service;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -66,6 +67,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
+import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
@@ -183,6 +185,13 @@ public class ManifestBuilder extends AbstractBuilder {
         }
     }
 
+    /**
+     * 
+     * @param pi
+     * @param pageNo
+     * @param manifest
+     * @param request
+     */
     private void addAnnotations(String pi, int pageNo, Manifest3 manifest, HttpServletRequest request) {
         try {
             ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
@@ -255,8 +264,8 @@ public class ManifestBuilder extends AbstractBuilder {
         } else {
             ele.setImageNumber(1);
             manifest = new Manifest3(getManifestURI(ele.getPi()));
-            SearchService search = new SearchService(v1Builder.getSearchServiceURI(ele.getPi()));
-            AutoSuggestService autoComplete = new AutoSuggestService(v1Builder.getAutoCompleteServiceURI(ele.getPi()));
+            SearchService search = new SearchService(this.getSearchServiceURI(ele.getPi()));
+            AutoSuggestService autoComplete = new AutoSuggestService(this.getAutoCompleteServiceURI(ele.getPi()));
             search.addService(autoComplete);
             manifest.addService(search);
         }
@@ -296,7 +305,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     public void addPage(Manifest3 manifest, PhysicalElement page)
-            throws IndexUnreachableException, ContentLibException, URISyntaxException, PresentationException {
+            throws IndexUnreachableException, ContentLibException, URISyntaxException, PresentationException, DAOException {
         if (page != null) {
             Canvas3 canvas = canvasBuilder.build(page);
             manifest.addItem(canvas);
@@ -349,7 +358,13 @@ public class ManifestBuilder extends AbstractBuilder {
                     }
                 })
                 .ifPresentOrElse(
-                        page -> addRelatedResources(manifest, ele, page),
+                        page -> {
+                            try {
+                                addRelatedResources(manifest, ele, page);
+                            } catch (IndexUnreachableException | DAOException e) {
+                                logger.error(e.toString());
+                            }
+                        },
                         () -> addRelatedResources(manifest, ele));
 
         return manifest;
@@ -360,7 +375,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @param ele
      */
     private void addRelatedResources(AbstractPresentationModelElement3 manifest, StructElement ele) {
-
+        logger.trace("addRelatedResources (record)");
         // metadata document
         if (ele.isLidoRecord() && DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoLido()) {
             IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoLido());
@@ -435,18 +450,41 @@ public class ManifestBuilder extends AbstractBuilder {
 
     }
 
-    private void addRelatedResources(AbstractPresentationModelElement3 manifest, StructElement ele, PhysicalElement page) {
+    /**
+     * Page manifest resources.
+     * 
+     * @param manifest
+     * @param ele
+     * @param page
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    private void addRelatedResources(AbstractPresentationModelElement3 manifest, StructElement ele, PhysicalElement page)
+            throws IndexUnreachableException, DAOException {
+        logger.trace("addRelatedResources (page)");
 
         // metadata document
         if (ele.isLidoRecord() && DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoLido()) {
             IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoLido());
             LabeledResource resolver =
                     new LabeledResource(getLidoResolverUrl(ele), "Dataset", Format.TEXT_XML.getLabel(), "http://www.lido-schema.org", label);
+            if (!ele.isAccessPermissionDownloadMetadata()) {
+                // Add auth services
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    resolver.addService(service);
+                }
+            }
             manifest.addSeeAlso(resolver);
         } else if (DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoMets()) {
             IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoMets());
             LabeledResource resolver =
                     new LabeledResource(getMetsResolverUrl(ele), "Dataset", Format.TEXT_XML.getLabel(), "http://www.loc.gov/METS/", label);
+            if (!ele.isAccessPermissionDownloadMetadata()) {
+                // Add auth services
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    resolver.addService(service);
+                }
+            }
             manifest.addSeeAlso(resolver);
         }
 
@@ -473,7 +511,12 @@ public class ManifestBuilder extends AbstractBuilder {
             URI uri = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(ele.getPi(), escapeURI(page.getFileName())).buildURI();
             LinkingProperty pdf =
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
-            manifest.addRendering(pdf.getResource(uri));
+            LabeledResource resource = pdf.getResource(uri);
+            if (!page.isAccessPermissionPdf()) {
+                resource.addService(AuthorizationFlowTools.getAuthServices("/pdf/" + ele.getPi() + "/" + page.getImageToPdfUrl() + "/").get(0));
+                logger.trace("Added auth services for PDF.");
+            }
+            manifest.addRendering(resource);
         }
 
         if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto() && page.isAltoAvailable()) {
@@ -482,7 +525,14 @@ public class ManifestBuilder extends AbstractBuilder {
                     .buildURI();
             LinkingProperty alto =
                     new LinkingProperty(LinkingTarget.ALTO, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));
-            manifest.addSeeAlso(alto.getResource(uri));
+            LabeledResource resource = alto.getResource(uri);
+            if (!page.isAccessPermissionFulltext()) {
+                // Add auth services
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    resource.addService(service);
+                }
+            }
+            manifest.addSeeAlso(resource);
         }
 
         if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext() && page.isFulltextAvailable()) {
@@ -492,7 +542,14 @@ public class ManifestBuilder extends AbstractBuilder {
                     .buildURI();
             LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT,
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));
-            manifest.addRendering(text.getResource(uri));
+            LabeledResource resource = text.getResource(uri);
+            if (!page.isAccessPermissionFulltext()) {
+                // Add auth services
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    resource.addService(service);
+                }
+            }
+            manifest.addRendering(resource);
         }
 
         List<ManifestLinkConfiguration> linkConfigurations = DataManager.getInstance().getConfiguration().getIIIFSeeAlsoMetadataConfigurations();
