@@ -89,9 +89,10 @@ public class SearchQueryGroup implements Serializable {
                     SearchQueryItem item = new SearchQueryItem(template)
                             .setLabel(fieldConfig.getLabel());
                     item.setField(fieldConfig.getField());
-                    // Add configured preselectValue to set values for this item
+                    // Add configured preselectValue to set values for this item (displaySelectItems should be set correctly after calling item.setField())
                     if (StringUtils.isNotEmpty(fieldConfig.getPreselectValue())) {
-                        item.getValues().add(fieldConfig.getPreselectValue());
+                        item.setPreselectValue(fieldConfig.getPreselectValue());
+                        // item.getValues().add(fieldConfig.getPreselectValue());
                     }
                     queryItems.add(item);
                 }
