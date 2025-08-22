@@ -159,7 +159,9 @@ public class SearchQueryGroup implements Serializable {
      * <p>
      * addNewQueryItem.
      * </p>
-     *
+     * 
+     * @param field Index field for the new item
+     * @param after Item after which to place new new item
      * @return true if operation successful; false otherwise
      * @should add item correctly
      */
