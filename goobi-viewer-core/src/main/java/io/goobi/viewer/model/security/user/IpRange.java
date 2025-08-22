@@ -85,11 +85,6 @@ public class IpRange extends AbstractLicensee implements Serializable {
     @PrivateOwned
     private List<License> licenses = new ArrayList<>();
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -99,11 +94,6 @@ public class IpRange extends AbstractLicensee implements Serializable {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -189,7 +179,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
             return AccessPermission.granted();
         }
 
-        Map<String, AccessPermission> permissionMap = new HashMap<>(requiredAccessConditions.size());
+        Map<String, AccessPermission> permissionMap = HashMap.newHashMap(requiredAccessConditions.size());
         for (String accessCondition : requiredAccessConditions) {
             AccessPermission access = hasLicense(accessCondition, privilegeName, pi);
             if (access.isGranted()) {

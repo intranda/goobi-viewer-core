@@ -32,16 +32,6 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_TEXT;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,11 +50,19 @@ import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.CanvasBuilder;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.ManifestBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * @author florian
@@ -102,7 +100,7 @@ public class RecordPagesResource {
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 canvas for page")
     @IIIFPresentationBinding
     public IPresentationModelElement getCanvas()
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
         return new CanvasBuilder(urls).build(pi, pageNo);
     }
 
@@ -112,7 +110,7 @@ public class RecordPagesResource {
     @Operation(tags = { "records", "iiif" }, summary = "Get media resources for page")
     @IIIFPresentationBinding
     public AnnotationPage getMedia()
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
         URI itemId = urls.path(RECORDS_PAGES, RECORDS_PAGES_MEDIA).params(pi, pageNo).buildURI();
         return new CanvasBuilder(urls).build(pi, pageNo)
                 .getItems()
@@ -129,7 +127,7 @@ public class RecordPagesResource {
     @IIIFPresentationBinding
     public IAnnotation getMediaItem(
             @Parameter(description = "Identifier string of the annotation") @PathParam("itemid") String itemId)
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
         URI itemUrl = urls.path(RECORDS_PAGES, RECORDS_PAGES_MEDIA, "/" + itemId).params(pi, pageNo).buildURI();
         return new CanvasBuilder(urls).build(pi, pageNo)
                 .getItems()
@@ -146,7 +144,7 @@ public class RecordPagesResource {
     @Operation(tags = { "records", "iiif" }, summary = "Get fulltext annotations for page")
     @IIIFPresentationBinding
     public AnnotationPage getFulltext()
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
         return new CanvasBuilder(urls).buildFulltextAnnotations(pi, pageNo);
     }
 
@@ -188,8 +186,7 @@ public class RecordPagesResource {
                             + " Default is 'iiif' which returns the full IIIF manifest with all resources."
                             + " 'thumbs' Does not read width and height of canvas resources and 'iiif_simple'"
                             + " ignores all resources from files") @QueryParam("mode") String mode)
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
-            DAOException, ContentLibException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, DAOException, ContentLibException {
         return new ManifestBuilder(urls).build(pi, pageNo, servletRequest);
     }
 

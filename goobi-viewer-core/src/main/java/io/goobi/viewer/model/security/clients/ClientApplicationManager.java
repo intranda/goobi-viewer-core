@@ -141,8 +141,8 @@ public class ClientApplicationManager {
     public static Optional<ClientApplication> getClientFromSession(HttpSession session) {
         if (session != null) {
             Object client = session.getAttribute(CLIENT_SESSION_ATTRIBUTE);
-            if (client instanceof ClientApplication) {
-                return Optional.of((ClientApplication) client);
+            if (client instanceof ClientApplication clientApplication) {
+                return Optional.of(clientApplication);
             }
         }
         return Optional.empty();

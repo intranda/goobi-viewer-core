@@ -27,6 +27,8 @@ import io.goobi.viewer.modules.IModule;
 public enum TaskType implements ITaskType {
     /** Send emails to all search owners if their searches have changed results */
     NOTIFY_SEARCH_UPDATE("0 42 8,12,17 * * ?"),
+    /** Remove expired IIIF authorization bearer tokens from application scope. */
+    PURGE_EXPIRED_BEARER_TOKENS("0 0 * * * ?"),
     /** Remove expired born digital content download tickets from the DB */
     PURGE_EXPIRED_DOWNLOAD_TICKETS("0 40 0 * * ?"),
     /** Handle asynchronous generation of excel sheets with search results */
@@ -78,7 +80,7 @@ public enum TaskType implements ITaskType {
                 }
             }
         }
- 
+
         return null;
     }
 

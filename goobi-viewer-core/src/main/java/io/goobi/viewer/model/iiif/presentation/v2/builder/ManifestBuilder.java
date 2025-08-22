@@ -54,6 +54,7 @@ import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.intranda.api.iiif.search.AutoSuggestService;
 import de.intranda.api.iiif.search.SearchService;
+import de.intranda.api.services.Service;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -62,6 +63,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
@@ -335,13 +337,16 @@ public class ManifestBuilder extends AbstractBuilder {
 
         this.getRenderings().forEach(link -> {
             try {
-                URI id = page.map(p -> {
-                    return getLinkingPropertyUri(p, link.getTarget());
-                }).orElse(getLinkingPropertyUri(ele, link.getTarget()));
+                URI id = page.map(p -> getLinkingPropertyUri(p, link.getTarget())).orElse(getLinkingPropertyUri(ele, link.getTarget()));
                 if (id != null) {
-                    manifest.addRendering(link.getLinkingContent(id));
+                    LinkingContent content = link.getLinkingContent(id);
+                    List<Service> authServices = getAuthServicesIfResourceRestricted(page, link.getTarget());
+                    for (Service authService : authServices) {
+                        content.addService(authService);
+                    }
+                    manifest.addRendering(content);
                 }
-            } catch (URISyntaxException | PresentationException | IndexUnreachableException e) {
+            } catch (URISyntaxException | PresentationException | IndexUnreachableException | DAOException e) {
                 logger.error("Error building linking property url", e);
             }
         });
@@ -401,6 +406,48 @@ public class ManifestBuilder extends AbstractBuilder {
                 break;
         }
         return uri;
+    }
+
+    /**
+     * 
+     * @param page
+     * @param target
+     * @return AuthProbeService2 (and other auth services) if access to resource is restricted; empty list otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    private static List<Service> getAuthServicesIfResourceRestricted(Optional<PhysicalElement> page, LinkingTarget target)
+            throws IndexUnreachableException, DAOException {
+        if (page.isEmpty() || target == null) {
+            return Collections.emptyList();
+        }
+
+        switch (target) {
+            case VIEWER:
+                if (!page.get().isAccessPermissionObject()) {
+                    return AuthorizationFlowTools.getAuthServices(page.get().getPi(), page.get().getFileName());
+                }
+                break;
+            case ALTO:
+                if (page.get().isAltoAvailable() && !page.get().isAccessPermissionFulltext()) {
+                    return AuthorizationFlowTools.getAuthServices(page.get().getPi(), page.get().getAltoFileName());
+                }
+                break;
+            case PLAINTEXT:
+                if (page.get().isFulltextAvailable() && !page.get().isAccessPermissionFulltext()) {
+                    return AuthorizationFlowTools.getAuthServices(page.get().getPi(), page.get().getFulltextFileName());
+                }
+                break;
+            case PDF:
+                if (!page.get().isAccessPermissionPdf()) {
+                    return AuthorizationFlowTools.getAuthServices("/pdf/" + page.get().getPi() + "/" + page.get().getOrder() + "/");
+                }
+                break;
+            default:
+                break;
+        }
+
+        return Collections.emptyList();
     }
 
     /**

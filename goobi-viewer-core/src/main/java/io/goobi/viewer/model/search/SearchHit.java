@@ -56,6 +56,7 @@ import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -357,8 +358,10 @@ public class SearchHit implements Comparable<SearchHit> {
 
         try {
             String fulltext = null;
-            if (BeanUtils.getRequest() != null
-                    && AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false).isGranted()) {
+            HttpServletRequest request = BeanUtils.getRequest();
+            if (request != null
+                    && AccessConditionUtils.checkAccess(request.getSession(), "text", browseElement.getPi(), teiFilename,
+                            NetTools.getIpAddress(request), false).isGranted()) {
                 fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), lang);
             }
             if (fulltext != null) {
@@ -577,14 +580,18 @@ public class SearchHit implements Comparable<SearchHit> {
         String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
         try {
             if (StringUtils.isNotBlank(plaintextFilename)) {
-                boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false).isGranted();
+                boolean access =
+                        AccessConditionUtils.checkAccess(request.getSession(), "text", pi, plaintextFilename, NetTools.getIpAddress(request), false)
+                                .isGranted();
                 if (access) {
                     fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false);
                 } else {
                     throw new AccessDeniedException("Access denied to resource " + pi + " / " + plaintextFilename);
                 }
             } else if (StringUtils.isNotBlank(altoFilename)) {
-                boolean access = AccessConditionUtils.checkAccess(request, "text", pi, altoFilename, false).isGranted();
+                boolean access =
+                        AccessConditionUtils.checkAccess(request.getSession(), "text", pi, altoFilename, NetTools.getIpAddress(request), false)
+                                .isGranted();
                 if (access) {
                     if (StringUtils.isNotEmpty(authorityIdentifier)) {
                         // If authority identifier is used, load NE tags and match word with identifier

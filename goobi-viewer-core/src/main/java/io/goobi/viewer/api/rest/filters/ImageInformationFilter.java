@@ -52,6 +52,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.imaging.WatermarkHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -144,7 +145,9 @@ public class ImageInformationFilter implements ContainerResponseFilter {
             String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
             try {
                 return AccessConditionUtils
-                        .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename, IPrivilegeHolder.PRIV_ZOOM_IMAGES)
+                        .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(), pi, filename,
+                                IPrivilegeHolder.PRIV_ZOOM_IMAGES, NetTools.getIpAddress(
+                                        servletRequest))
                         .isGranted();
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(e.toString(), e);

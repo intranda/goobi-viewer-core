@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
-import java.awt.Canvas;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -43,8 +42,6 @@ import de.intranda.api.iiif.presentation.v2.Canvas2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;

@@ -497,7 +497,8 @@ public class ViewManager implements Serializable {
                 return UriBuilder.fromUri(info.getId()).path("info.json").build().toString();
             }
             return JsonTools.getAsJson(info);
-        } catch (ContentLibException | ViewerConfigurationException | URISyntaxException | JsonProcessingException e) {
+        } catch (ContentLibException | ViewerConfigurationException | URISyntaxException | JsonProcessingException | IndexUnreachableException
+                | DAOException e) {
             logger.warn("Error creating image information for {}: {}", page, e.toString());
             return imageDeliveryBean.getImages().getImageUrl(page, pageType);
         }

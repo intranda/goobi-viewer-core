@@ -49,7 +49,8 @@ public class SearchQueryGroup implements Serializable {
 
     /** List of query items in this group. */
     private final List<SearchQueryItem> queryItems = new ArrayList<>();
-
+    private final String template;
+    
     private SearchQueryGroupOperator operator = SearchQueryGroupOperator.AND;
 
     /**
@@ -61,6 +62,7 @@ public class SearchQueryGroup implements Serializable {
      * @param template
      */
     public SearchQueryGroup(List<AdvancedSearchFieldConfiguration> fieldConfigs, String template) {
+        this.template = template;
         init(fieldConfigs, template);
     }
 
@@ -151,7 +153,7 @@ public class SearchQueryGroup implements Serializable {
      * @should add item correctly
      */
     public boolean addNewQueryItem() {
-        return queryItems.add(new SearchQueryItem());
+        return queryItems.add(new SearchQueryItem(template));
     }
 
     /**

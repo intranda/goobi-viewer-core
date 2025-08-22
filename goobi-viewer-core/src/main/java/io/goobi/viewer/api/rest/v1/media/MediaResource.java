@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -145,7 +146,8 @@ public class MediaResource {
     public void checkAccess(String action, String pi, String contentFilename) throws WebApplicationException {
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccess(request, action, pi, contentFilename, false).isGranted();
+            access = AccessConditionUtils.checkAccess(request.getSession(), action, pi, contentFilename, NetTools.getIpAddress(request), false)
+                    .isGranted();
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
         } catch (DAOException e) {
