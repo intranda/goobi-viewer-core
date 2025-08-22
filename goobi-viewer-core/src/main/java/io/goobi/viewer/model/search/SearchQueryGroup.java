@@ -161,20 +161,20 @@ public class SearchQueryGroup implements Serializable {
      * </p>
      * 
      * @param field Index field for the new item
-     * @param after Item after which to place new new item
+     * @param afterIndex Item index after which to place new new item
      * @return true if operation successful; false otherwise
      * @should add item correctly
      */
-    public boolean addNewQueryItem(String field, SearchQueryItem after) {
-        logger.trace("addNewQueryItem: {} ({})", after, this);
-        if (after != null) {
+    public boolean addNewQueryItem(String field, int afterIndex) {
+        logger.trace("addNewQueryItem: {}", afterIndex);
+        if (afterIndex >= 0) {
             SearchQueryItem newItem = new SearchQueryItem(template);
             newItem.setField(field);
             if (newItem.isAllowMultipleItems()) {
                 newItem.setDisplayAddNewItemButton(true).setAdditionalCopy(true);
-                after.setDisplayAddNewItemButton(false);
+                queryItems.get(afterIndex).setDisplayAddNewItemButton(false);
             }
-            queryItems.add(queryItems.indexOf(after) + 1, newItem);
+            queryItems.add(afterIndex + 1, newItem);
 
             return true;
         }

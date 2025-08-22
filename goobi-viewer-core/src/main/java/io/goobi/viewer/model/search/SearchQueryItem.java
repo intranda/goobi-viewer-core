@@ -867,9 +867,9 @@ public class SearchQueryItem implements Serializable {
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return field + " " + operator + " " + getValue();
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    public String toString() {
+//        return field + " " + operator + " " + getValue();
+//    }
 }
