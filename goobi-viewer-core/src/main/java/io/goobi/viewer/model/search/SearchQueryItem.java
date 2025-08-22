@@ -84,6 +84,10 @@ public class SearchQueryItem implements Serializable {
     private int proximitySearchDistance = 0;
     /** Optional pre-selected value. */
     private String preselectValue;
+    /** Last copy in the list of items with the same field. */
+    private boolean displayAddNewItemButton = false;
+    /** Indicates whether this is a duplicate of an item for the same index field. */
+    private boolean additionalCopy = false;
 
     /**
      * Zero-argument constructor.
@@ -189,7 +193,6 @@ public class SearchQueryItem implements Serializable {
      */
     public List<CheckboxSelectable<String>> getCheckboxSelectables(String language, String... additionalValues)
             throws DAOException, PresentationException, IndexUnreachableException {
-        logger.trace("getCheckboxSelectables: {}", language);
         List<CheckboxSelectable<String>> ret = this.getSelectItems(language)
                 .stream()
                 .map(item -> new CheckboxSelectable<String>(this.values, item.getOne(), s -> item.getTwo()))
@@ -252,6 +255,13 @@ public class SearchQueryItem implements Serializable {
      */
     public boolean isUntokenizeForPhraseSearch() {
         return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(field, template, true);
+    }
+
+    /**
+     * @return a boolean
+     */
+    public boolean isAllowMultipleItems() {
+        return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldAllowMultipleItems(field, template, false);
     }
 
     /**
@@ -354,6 +364,7 @@ public class SearchQueryItem implements Serializable {
      * @param operator the operator to set
      */
     public void setOperator(SearchItemOperator operator) {
+        // logger.trace("setOperator: {}", operator);StringTools
         this.operator = operator;
     }
 
@@ -822,6 +833,38 @@ public class SearchQueryItem implements Serializable {
      */
     public void setPreselectValue(String preselectValue) {
         this.preselectValue = preselectValue;
+    }
+
+    /**
+     * @return the displayAddNewItemButton
+     */
+    public boolean isDisplayAddNewItemButton() {
+        return displayAddNewItemButton;
+    }
+
+    /**
+     * @param displayAddNewItemButton the displayAddNewItemButton to set
+     * @return this
+     */
+    public SearchQueryItem setDisplayAddNewItemButton(boolean displayAddNewItemButton) {
+        this.displayAddNewItemButton = displayAddNewItemButton;
+        return this;
+    }
+
+    /**
+     * @return the additionalCopy
+     */
+    public boolean isAdditionalCopy() {
+        return additionalCopy;
+    }
+
+    /**
+     * @param additionalCopy the additionalCopy to set
+     * @return this
+     */
+    public SearchQueryItem setAdditionalCopy(boolean additionalCopy) {
+        this.additionalCopy = additionalCopy;
+        return this;
     }
 
     /** {@inheritDoc} */

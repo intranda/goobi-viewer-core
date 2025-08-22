@@ -1692,6 +1692,18 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isAdvancedSearchFieldAllowMultipleItems(String)
+     * @verifies return correct value
+     */
+    @Test
+    void isAdvancedSearchFieldAllowMultipleItems_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldAllowMultipleItems(SolrConstants.DC, null, false));
+        assertTrue(DataManager.getInstance()
+                .getConfiguration()
+                .isAdvancedSearchFieldAllowMultipleItems("MD_NAME", "person", false));
+    }
+
+    /**
      * @see Configuration#isAdvancedSearchFieldUntokenizeForPhraseSearch(String)
      * @verifies return correct value
      */

@@ -39,6 +39,7 @@ public class AdvancedSearchFieldConfiguration {
     private boolean untokenizeForPhraseSearch;
     private boolean disabled;
     private boolean visible = false;
+    private boolean allowMultipleItems = false;
     private int displaySelectItemsThreshold = DEFAULT_THRESHOLD;
     private String selectType = SELECT_TYPE_DROPDOWN;
     private String replaceRegex;
@@ -149,6 +150,22 @@ public class AdvancedSearchFieldConfiguration {
      */
     public boolean isVisible() {
         return visible;
+    }
+
+    /**
+     * @return the allowMultipleItems
+     */
+    public boolean isAllowMultipleItems() {
+        return allowMultipleItems;
+    }
+
+    /**
+     * @param allowMultipleItems the allowMultipleItems to set
+     * @return this
+     */
+    public AdvancedSearchFieldConfiguration setAllowMultipleItems(boolean allowMultipleItems) {
+        this.allowMultipleItems = allowMultipleItems;
+        return this;
     }
 
     /**

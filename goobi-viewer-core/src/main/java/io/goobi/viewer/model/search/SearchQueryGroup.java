@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -37,6 +39,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 public class SearchQueryGroup implements Serializable {
 
     private static final long serialVersionUID = 609291421340747521L;
+
+    private static final Logger logger = LogManager.getLogger(SearchQueryGroup.class);
 
     public enum SearchQueryGroupOperator {
         AND,
@@ -49,7 +53,7 @@ public class SearchQueryGroup implements Serializable {
 
     /** List of query items in this group. */
     private final List<SearchQueryItem> queryItems = new ArrayList<>();
-    private final String template;
+    private String template;
 
     private SearchQueryGroupOperator operator = SearchQueryGroupOperator.AND;
 
@@ -76,6 +80,7 @@ public class SearchQueryGroup implements Serializable {
     public void init(List<AdvancedSearchFieldConfiguration> fieldConfigs, String template) {
         queryItems.clear();
         operator = SearchQueryGroupOperator.AND;
+        this.template = template;
 
         if (template == null || StringConstants.DEFAULT_NAME.equals(template)) {
             SearchQueryItem firstItem = new SearchQueryItem(template);
@@ -89,6 +94,7 @@ public class SearchQueryGroup implements Serializable {
                     SearchQueryItem item = new SearchQueryItem(template)
                             .setLabel(fieldConfig.getLabel());
                     item.setField(fieldConfig.getField());
+                    item.setDisplayAddNewItemButton(fieldConfig.isAllowMultipleItems());
                     // Add configured preselectValue to set values for this item
                     // displaySelectItems should be set correctly after calling item.setField()
                     if (StringUtils.isNotEmpty(fieldConfig.getPreselectValue())) {
@@ -157,7 +163,20 @@ public class SearchQueryGroup implements Serializable {
      * @return true if operation successful; false otherwise
      * @should add item correctly
      */
-    public boolean addNewQueryItem() {
+    public boolean addNewQueryItem(String field, SearchQueryItem after) {
+        logger.trace("addNewQueryItem: {} ({})", after, this);
+        if (after != null) {
+            SearchQueryItem newItem = new SearchQueryItem(template);
+            newItem.setField(field);
+            if (newItem.isAllowMultipleItems()) {
+                newItem.setDisplayAddNewItemButton(true).setAdditionalCopy(true);
+                after.setDisplayAddNewItemButton(false);
+            }
+            queryItems.add(queryItems.indexOf(after) + 1, newItem);
+
+            return true;
+        }
+
         return queryItems.add(new SearchQueryItem(template));
     }
 

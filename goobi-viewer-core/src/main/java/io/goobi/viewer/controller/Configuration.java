@@ -1918,6 +1918,7 @@ public class Configuration extends AbstractConfiguration {
             boolean range = subElement.getBoolean("[@range]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
             boolean visible = subElement.getBoolean("[@visible]", false);
+            boolean allowMultipleItems = subElement.getBoolean("[@allowMultipleItems]", false);
             int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 50);
             String selectType = subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
             String replaceRegex = subElement.getString("[@replaceRegex]");
@@ -1931,6 +1932,7 @@ public class Configuration extends AbstractConfiguration {
                     .setUntokenizeForPhraseSearch(untokenizeForPhraseSearch)
                     .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
                     .setVisible(visible)
+                    .setAllowMultipleItems(allowMultipleItems)
                     .setDisplaySelectItemsThreshold(displaySelectItemsThreshold)
                     .setSelectType(selectType)
                     .setReplaceRegex(replaceRegex)
@@ -2074,6 +2076,22 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isAdvancedSearchFieldRange(String field, String template, boolean fallbackToDefaultTemplate) {
         return isAdvancedSearchFieldHasAttribute(field, "range", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * <p>
+     * isAdvancedSearchFieldAllowMultipleItems.
+     * </p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return a boolean.
+     * @should return correct value
+     */
+    public boolean isAdvancedSearchFieldAllowMultipleItems(String field, String template, boolean fallbackToDefaultTemplate) {
+        logger.trace("isAdvancedSearchFieldAllowMultipleItems: {}/{}/{}", field, template, fallbackToDefaultTemplate);
+        return isAdvancedSearchFieldHasAttribute(field, "allowMultipleItems", template, fallbackToDefaultTemplate);
     }
 
     /**
