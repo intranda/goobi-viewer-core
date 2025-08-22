@@ -116,7 +116,7 @@ class SearchQueryGroupTest extends AbstractSolrEnabledTest {
     void addNewQueryItem_shouldAddItemCorrectly() {
         SearchQueryGroup group = new SearchQueryGroup(null, null);
         Assertions.assertEquals(1, group.getQueryItems().size());
-        Assertions.assertTrue(group.addNewQueryItem());
+        Assertions.assertTrue(group.addNewQueryItem("MD_FOO", null));
         Assertions.assertEquals(2, group.getQueryItems().size());
     }
 
