@@ -67,7 +67,8 @@ public class SolrEADParser extends ArchiveParser {
     private static final List<String> SOLR_FIELDS_DATABASES =
             Arrays.asList(SolrConstants.ACCESSCONDITION, SolrConstants.DATEINDEXED, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE);
     private static final String[] SOLR_FIELDS_ENTRIES = { SolrConstants.ACCESSCONDITION, SolrConstants.EAD_NODE_ID, SolrConstants.IDDOC,
-            SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ENTRY_LEVEL, SolrConstants.LOGID, SolrConstants.PI_TOPSTRUCT, SolrConstants.TITLE };
+            SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ENTRY_LEVEL, FIELD_ARCHIVE_ENTRY_OTHERLEVEL, SolrConstants.LOGID, SolrConstants.PI_TOPSTRUCT,
+            SolrConstants.TITLE };
 
     private Map<String, Map<String, List<SolrDocument>>> archiveDocMap = new HashMap<>();
     /** Map of IDDOCs and their parent IDDOCs */
