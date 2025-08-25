@@ -155,14 +155,12 @@ public class RecordsListResource {
                     Object value = doc.getFirstValue(fieldConfig.get("solrField"));
                     if (value != null) {
                         jsonObj.put(fieldConfig.get("jsonField"), value);
-                        logger.trace("added value: " + fieldConfig.get("jsonField") + ":" + value);
                     }
                 }
             }
             if (!jsonObj.isEmpty()) {
                 jsonArray.put(jsonObj);
             }
-            //logger.trace(JsonTools.getAsJson(jsonObj));
 
         }
 
