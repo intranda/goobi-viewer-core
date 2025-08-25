@@ -48,6 +48,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
+import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -386,17 +387,20 @@ public final class JsonTools {
         jsonObj.put("url", url);
 
         // Load remaining fields from config
-        for (Map<String, String> fieldConfig : DataManager.getInstance().getConfiguration().getWebApiFields()) {
-            if (StringUtils.isEmpty(fieldConfig.get("jsonField")) || StringUtils.isEmpty(fieldConfig.get("luceneField"))) {
-                continue;
-            }
-            if ("true".equals(fieldConfig.get("multivalue"))) {
-                Collection<Object> values = doc.getFieldValues(fieldConfig.get("luceneField"));
-                if (values != null) {
-                    jsonObj.put(fieldConfig.get("jsonField"), values);
+        JsonMetadataConfiguration config = DataManager.getInstance().getConfiguration().getWebApiFields("_DEFAULT");
+        if (config != null) {
+            for (Map<String, String> fieldConfig : config.getFields()) {
+                if (StringUtils.isEmpty(fieldConfig.get("jsonField")) || StringUtils.isEmpty(fieldConfig.get("luceneField"))) {
+                    continue;
                 }
-            } else {
-                jsonObj.put(fieldConfig.get("jsonField"), doc.getFirstValue(fieldConfig.get("luceneField")));
+                if ("true".equals(fieldConfig.get("multivalue"))) {
+                    Collection<Object> values = doc.getFieldValues(fieldConfig.get("luceneField"));
+                    if (values != null) {
+                        jsonObj.put(fieldConfig.get("jsonField"), values);
+                    }
+                } else {
+                    jsonObj.put(fieldConfig.get("jsonField"), doc.getFirstValue(fieldConfig.get("luceneField")));
+                }
             }
         }
 

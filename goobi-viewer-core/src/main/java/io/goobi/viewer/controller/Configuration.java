@@ -64,6 +64,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
+import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
 import io.goobi.viewer.controller.model.FeatureSetConfiguration;
 import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
@@ -5068,26 +5069,33 @@ public class Configuration extends AbstractConfiguration {
      * getWebApiFields.
      * </p>
      *
+     * @param template
+     * @return {@link JsonMetadataConfiguration}
      * @should return all configured elements
-     * @return a {@link java.util.List} object.
      */
-    public List<Map<String, String>> getWebApiFields() {
-        List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("webapi.fields.field");
-        if (elements == null) {
-            return new ArrayList<>();
+    public JsonMetadataConfiguration getWebApiFields(String template) {
+        List<HierarchicalConfiguration<ImmutableNode>> templates = getLocalConfigurationsAt("webapi.json.template");
+        if (templates == null) {
+            return null;
         }
 
-        List<Map<String, String>> ret = new ArrayList<>(elements.size());
-        for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
-            Map<String, String> fieldConfig = new HashMap<>();
-            fieldConfig.put("jsonField", sub.getString("[@jsonField]", null));
-            fieldConfig.put("luceneField", sub.getString("[@solrField]", null)); // deprecated
-            fieldConfig.put("solrField", sub.getString("[@solrField]", null));
-            fieldConfig.put("multivalue", sub.getString("[@multivalue]", null));
-            ret.add(fieldConfig);
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templates) {
+            if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
+                String query = subElement.getString("[@query]");
+                List<HierarchicalConfiguration<ImmutableNode>> fieldsNodes = subElement.configurationsAt("field");
+                List<Map<String, String>> fields = new ArrayList<>(fieldsNodes.size());
+                for (HierarchicalConfiguration<ImmutableNode> fieldNode : fieldsNodes) {
+                    Map<String, String> fieldConfig = new HashMap<>();
+                    fieldConfig.put("jsonField", fieldNode.getString("[@jsonField]", null));
+                    fieldConfig.put("solrField", fieldNode.getString("[@solrField]", null));
+                    fieldConfig.put("multivalue", fieldNode.getString("[@multivalue]", null));
+                    fields.add(fieldConfig);
+                }
+                return new JsonMetadataConfiguration(template, query, fields);
+            }
         }
 
-        return ret;
+        return null;
     }
 
     /**
