@@ -63,6 +63,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_CHANGES_PAGE = "/{pageNo}";
 
     public static final String RECORDS_LIST = "/records/list";
+    public static final String RECORDS_LIST_JSON = "/json/{template}";
 
     public static final String RECORDS_RECORD = "/records/{pi}";
     public static final String RECORDS_RIS_TEXT = "/ris.txt";

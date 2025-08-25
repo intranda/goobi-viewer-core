@@ -22,21 +22,33 @@
 package io.goobi.viewer.api.rest.v1.records;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LIST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LIST_JSON;
 
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
@@ -46,6 +58,8 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.JsonTools;
+import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -102,6 +116,57 @@ public class RecordsListResource {
         page.setOrderedItems(items);
 
         return page;
+    }
+
+    /**
+     * 
+     * @param template JSON configuration template name
+     * @return {@link Response}
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_LIST_JSON)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and filed mapping are configured statically.")
+    public Response getRecordMetadataAsJson(@PathParam("template") String template) throws IndexUnreachableException, PresentationException {
+        logger.trace("getRecordMetadataAsJson: {}", template);
+        JsonMetadataConfiguration config = DataManager.getInstance().getConfiguration().getWebApiFields(template);
+        if (config == null) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template not found: " + template).build();
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        SolrDocumentList docs =
+                DataManager.getInstance().getSearchIndex().search(SearchHelper.buildFinalQuery(config.getQuery(), false, servletRequest, null));
+        logger.trace("{} hits.", docs.size());
+        for (SolrDocument doc : docs) {
+            JSONObject jsonObj = new JSONObject();
+            for (Map<String, String> fieldConfig : config.getFields()) {
+                if (StringUtils.isEmpty(fieldConfig.get("jsonField")) || StringUtils.isEmpty(fieldConfig.get("solrField"))) {
+                    continue;
+                }
+                if ("true".equals(fieldConfig.get("multivalue"))) {
+                    Collection<Object> values = doc.getFieldValues(fieldConfig.get("solrField"));
+                    if (values != null) {
+                        jsonObj.put(fieldConfig.get("jsonField"), values);
+                    }
+                } else {
+                    Object value = doc.getFirstValue(fieldConfig.get("solrField"));
+                    if (value != null) {
+                        jsonObj.put(fieldConfig.get("jsonField"), value);
+                        logger.trace("added value: " + fieldConfig.get("jsonField") + ":" + value);
+                    }
+                }
+            }
+            if (!jsonObj.isEmpty()) {
+                jsonArray.put(jsonObj);
+            }
+            //logger.trace(JsonTools.getAsJson(jsonObj));
+
+        }
+
+        return Response.ok(jsonArray.toString(), MediaType.APPLICATION_JSON).build();
     }
 
     /**

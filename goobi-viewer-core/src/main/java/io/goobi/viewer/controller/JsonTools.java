@@ -390,16 +390,16 @@ public final class JsonTools {
         JsonMetadataConfiguration config = DataManager.getInstance().getConfiguration().getWebApiFields("_DEFAULT");
         if (config != null) {
             for (Map<String, String> fieldConfig : config.getFields()) {
-                if (StringUtils.isEmpty(fieldConfig.get("jsonField")) || StringUtils.isEmpty(fieldConfig.get("luceneField"))) {
+                if (StringUtils.isEmpty(fieldConfig.get("jsonField")) || StringUtils.isEmpty(fieldConfig.get("solrField"))) {
                     continue;
                 }
                 if ("true".equals(fieldConfig.get("multivalue"))) {
-                    Collection<Object> values = doc.getFieldValues(fieldConfig.get("luceneField"));
+                    Collection<Object> values = doc.getFieldValues(fieldConfig.get("solrField"));
                     if (values != null) {
                         jsonObj.put(fieldConfig.get("jsonField"), values);
                     }
                 } else {
-                    jsonObj.put(fieldConfig.get("jsonField"), doc.getFirstValue(fieldConfig.get("luceneField")));
+                    jsonObj.put(fieldConfig.get("jsonField"), doc.getFirstValue(fieldConfig.get("solrField")));
                 }
             }
         }

@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 
 /**
  * Search query group for the advanced search.
@@ -170,9 +171,13 @@ public class SearchQueryGroup implements Serializable {
         if (afterIndex >= 0) {
             SearchQueryItem newItem = new SearchQueryItem(template);
             newItem.setField(field);
+            newItem.setOperator(SearchItemOperator.OR);
             if (newItem.isAllowMultipleItems()) {
                 newItem.setDisplayAddNewItemButton(true).setAdditionalCopy(true);
                 queryItems.get(afterIndex).setDisplayAddNewItemButton(false);
+                if (afterIndex == 0) {
+                    queryItems.get(afterIndex).setOperator(SearchItemOperator.OR);
+                }
             }
             queryItems.add(afterIndex + 1, newItem);
 
