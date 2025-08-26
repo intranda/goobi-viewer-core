@@ -29,6 +29,29 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import de.intranda.api.iiif.discovery.OrderedCollectionPage;
+import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.search.SearchHelper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,34 +62,6 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import org.apache.logging.log4j.LogManager;
-
-import de.intranda.api.iiif.discovery.OrderedCollectionPage;
-import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.JsonTools;
-import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.search.SearchHelper;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 
 /**
  *
