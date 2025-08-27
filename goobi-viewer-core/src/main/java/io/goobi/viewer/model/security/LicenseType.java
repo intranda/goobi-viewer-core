@@ -108,6 +108,8 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private boolean redirect = false;
     @Column(name = "redirect_url")
     private String redirectUrl;
+    @Column(name = "ticket_required")
+    private boolean ticketRequired = false;
 
     /** Privileges that everyone else has (users without this license, users that are not logged in). */
     @ElementCollection(fetch = FetchType.EAGER)
@@ -441,15 +443,6 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      * @param redirect the redirect to set
      */
     public void setRedirect(boolean redirect) {
-        // Automatically remove any privileges except listing, if redirect mode is on
-        //        if (redirect) {
-        //            privilegesCopy.clear();
-        //            privilegesCopy.add(PRIV_LIST);
-        //        } else if (this.redirect) {
-        //            //only remove LIST if redirect is changed from true to false. 
-        //            //Otherwise LIST is removed each time the form is submitted
-        //            privilegesCopy.remove(PRIV_LIST);
-        //        }
         this.redirect = redirect;
     }
 
@@ -465,6 +458,20 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      */
     public void setRedirectUrl(String redirectUrl) {
         this.redirectUrl = redirectUrl;
+    }
+
+    /**
+     * @return the ticketRequired
+     */
+    public boolean isTicketRequired() {
+        return ticketRequired;
+    }
+
+    /**
+     * @param ticketRequired the ticketRequired to set
+     */
+    public void setTicketRequired(boolean ticketRequired) {
+        this.ticketRequired = ticketRequired;
     }
 
     /**

@@ -96,6 +96,29 @@
 	                                </div>
                                 </div>
                                 
+                                <!-- ACCESS TICKET -->
+                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="keepFunctions">
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <span>#{msg.admin__license_ticket_required_label}:</span>
+                                        </div>
+                                        <div class="col-9 admin__form-input mb-3">
+                                            <div class="admin__radio-switch ticketRequiredToggle">
+                                                <h:selectOneRadio group="ticketRequiredToggle" value="#{adminLicenseBean.currentLicenseType.ticketRequired}"
+                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                </h:selectOneRadio>
+                                                <h:selectOneRadio group="ticketRequiredToggle" value="#{adminLicenseBean.currentLicenseType.ticketRequired}"
+                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                </h:selectOneRadio>
+                                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                            </div>
+                                            <span class="admin__form-help-text in">#{msg.admin__license_ticket_required_desc}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <!-- REDIRECT TO PAGE -->
                                 <h:panelGroup layout="block" id="urlInputGroup">
                                 <div class="#{adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}" data-watched-element="exclusiveAndInput">

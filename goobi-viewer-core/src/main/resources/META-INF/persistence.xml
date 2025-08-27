@@ -95,16 +95,17 @@
 		<class>io.goobi.viewer.model.security.License</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
 		<class>io.goobi.viewer.model.security.Role</class>
+        <class>io.goobi.viewer.model.security.clients.ClientApplication</class>
+        <class>io.goobi.viewer.model.security.tickets.RecordAccessTicket</class>
 		<class>io.goobi.viewer.model.security.user.IpRange</class>
 		<class>io.goobi.viewer.model.security.user.User</class>
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
-		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
-		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
-		<class>io.goobi.viewer.model.translations.Translation</class>
-		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
 		<class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
+        <class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
+        <class>io.goobi.viewer.model.translations.Translation</class>
+        <class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
 
 		<properties>
              <property name="eclipselink.jdbc.datasource" value="java:comp/env/viewer"/>
@@ -222,11 +223,12 @@
 		<class>io.goobi.viewer.model.security.License</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
 		<class>io.goobi.viewer.model.security.Role</class>
+        <class>io.goobi.viewer.model.security.clients.ClientApplication</class>
 		<class>io.goobi.viewer.model.security.user.IpRange</class>
 		<class>io.goobi.viewer.model.security.user.User</class>
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
-		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
+        <class>io.goobi.viewer.model.security.tickets.RecordAccessTicket</class>
 		<class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
         <class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
