@@ -5089,6 +5089,7 @@ public class Configuration extends AbstractConfiguration {
                     fieldConfig.put("jsonField", fieldNode.getString("[@jsonField]", null));
                     fieldConfig.put("solrField", fieldNode.getString("[@solrField]", null));
                     fieldConfig.put("multivalue", fieldNode.getString("[@multivalue]", null));
+                    fieldConfig.put("constantValue", fieldNode.getString("[@constantValue]", null));
                     fields.add(fieldConfig);
                 }
                 return new JsonMetadataConfiguration(template, query, fields);

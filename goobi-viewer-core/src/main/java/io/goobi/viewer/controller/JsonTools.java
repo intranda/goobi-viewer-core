@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -532,8 +534,45 @@ public final class JsonTools {
                 }
             }
             return "";
-        } else {
-            return json.get(key).toString();
         }
+        return json.get(key).toString();
+    }
+
+    /**
+     * 
+     * @param doc Solr doc containing the source metadata
+     * @param fields Field mappings
+     * @return {@link JSONObject}
+     */
+    public static JSONObject createJsonObjectFromSolrDoc(SolrDocument doc, List<Map<String, String>> fields) {
+        if (doc == null) {
+            throw new IllegalArgumentException("doc may not be null");
+        }
+        if (fields == null) {
+            throw new IllegalArgumentException("fields may not be null");
+        }
+
+        JSONObject ret = new JSONObject();
+        for (Map<String, String> fieldConfig : fields) {
+            if (StringUtils.isEmpty(fieldConfig.get("jsonField"))) {
+                logger.warn("jsonField attribute missing!");
+                continue;
+            }
+            if (StringUtils.isNotEmpty(fieldConfig.get("constantValue"))) {
+                ret.put(fieldConfig.get("jsonField"), fieldConfig.get("constantValue"));
+            } else if ("true".equals(fieldConfig.get("multivalue"))) {
+                Collection<Object> values = doc.getFieldValues(fieldConfig.get("solrField"));
+                if (values != null) {
+                    ret.put(fieldConfig.get("jsonField"), values);
+                }
+            } else {
+                Object value = doc.getFirstValue(fieldConfig.get("solrField"));
+                if (value != null) {
+                    ret.put(fieldConfig.get("jsonField"), value);
+                }
+            }
+        }
+
+        return ret;
     }
 }

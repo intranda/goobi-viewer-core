@@ -50,9 +50,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -651,29 +649,13 @@ public class RecordResource {
                         .getSearchIndex()
                         .search(SearchHelper.buildFinalQuery(query, false, servletRequest, null));
         logger.trace("{} hits.", docs.size());
-        JSONObject jsonObj = new JSONObject();
-        if (!docs.isEmpty()) {
-            SolrDocument doc = docs.get(0);
-            for (Map<String, String> fieldConfig : config.getFields()) {
-                if (StringUtils.isEmpty(fieldConfig.get("jsonField")) || StringUtils.isEmpty(fieldConfig.get("solrField"))) {
-                    continue;
-                }
-                if ("true".equals(fieldConfig.get("multivalue"))) {
-                    Collection<Object> values = doc.getFieldValues(fieldConfig.get("solrField"));
-                    if (values != null) {
-                        jsonObj.put(fieldConfig.get("jsonField"), values);
-                    }
-                } else {
-                    Object value = doc.getFirstValue(fieldConfig.get("solrField"));
-                    if (value != null) {
-                        jsonObj.put(fieldConfig.get("jsonField"), value);
-                    }
-                }
-            }
+        if (docs.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
 
-        return Response.ok(jsonObj.toString(), MediaType.APPLICATION_JSON).build();
+        JSONObject jsonObj = JsonTools.createJsonObjectFromSolrDoc(docs.get(0), config.getFields());
 
+        return Response.ok(jsonObj.toString(), MediaType.APPLICATION_JSON).build();
     }
 
     /**
