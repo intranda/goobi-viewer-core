@@ -643,10 +643,13 @@ public class RecordResource {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template not found: " + template).build();
         }
 
+        String query =
+                "+(" + SolrConstants.PI + ":\"" + pi + "\")" + (StringUtils.isNotEmpty(config.getQuery()) ? ("+(" + config.getQuery() + ")") : "");
+        logger.trace(query);
         SolrDocumentList docs =
                 DataManager.getInstance()
                         .getSearchIndex()
-                        .search(SearchHelper.buildFinalQuery(SolrConstants.PI + ":\"" + pi + '"', false, servletRequest, null));
+                        .search(SearchHelper.buildFinalQuery(query, false, servletRequest, null));
         logger.trace("{} hits.", docs.size());
         JSONObject jsonObj = new JSONObject();
         if (!docs.isEmpty()) {
