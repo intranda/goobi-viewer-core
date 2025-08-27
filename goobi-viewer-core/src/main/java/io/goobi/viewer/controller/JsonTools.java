@@ -543,6 +543,8 @@ public final class JsonTools {
      * @param doc Solr doc containing the source metadata
      * @param fields Field mappings
      * @return {@link JSONObject}
+     * @should create json object correctly
+     * @should throw IllegalArgumentException if args missing
      */
     public static JSONObject createJsonObjectFromSolrDoc(SolrDocument doc, List<Map<String, String>> fields) {
         if (doc == null) {
