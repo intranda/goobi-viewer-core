@@ -41,7 +41,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.AccessConditionUtils;
-import io.goobi.viewer.model.security.tickets.DownloadTicket;
+import io.goobi.viewer.model.security.tickets.AccessTicket;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -105,8 +105,8 @@ public class BornDigitalBean implements Serializable {
         }
 
         try {
-            String hash = BCrypt.hashpw(downloadTicketPassword, DownloadTicket.SALT);
-            DownloadTicket ticket = DataManager.getInstance().getDao().getDownloadTicketByPasswordHash(hash);
+            String hash = BCrypt.hashpw(downloadTicketPassword, AccessTicket.SALT);
+            AccessTicket ticket = DataManager.getInstance().getDao().getTicketByPasswordHash(hash);
             String pi = activeDocumentBean.getPersistentIdentifier();
             if ("-".equals(pi)) {
                 Messages.error("errPassword");
@@ -152,7 +152,7 @@ public class BornDigitalBean implements Serializable {
             return "";
         }
 
-        DownloadTicket ticket = new DownloadTicket();
+        AccessTicket ticket = new AccessTicket();
         if (activeDocumentBean != null && activeDocumentBean.isRecordLoaded()) {
             ticket.setPi(activeDocumentBean.getPersistentIdentifier());
             ticket.setTitle(activeDocumentBean.getViewManager().getTopDocumentTitle());
@@ -162,7 +162,7 @@ public class BornDigitalBean implements Serializable {
             ticket.setRequestMessage(downloadTicketRequestMessage);
         }
 
-        if (DataManager.getInstance().getDao().addDownloadTicket(ticket)) {
+        if (DataManager.getInstance().getDao().addTicket(ticket)) {
             downloadTicketEmail = null;
             downloadTicketRequestMessage = null;
 

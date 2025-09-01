@@ -71,7 +71,6 @@ import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
-import io.goobi.viewer.model.security.tickets.DownloadTicket;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -899,99 +898,6 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteTicket(AccessTicket ticket) throws DAOException;
-
-    // DownloadTicket
-
-    /**
-     * 
-     * @param id
-     * @return {@link DownloadTicket} with the given id
-     * @throws DAOException
-     */
-    @Deprecated
-    public DownloadTicket getDownloadTicket(Long id) throws DAOException;
-
-    /**
-     * 
-     * @param passwordHash
-     * @return {@link DownloadTicket} with the given passwordHash
-     * @throws DAOException
-     */
-    @Deprecated
-    public DownloadTicket getDownloadTicketByPasswordHash(String passwordHash) throws DAOException;
-
-    /**
-     * <p>
-     * getActiveDownloadTicketCount.
-     * </p>
-     *
-     * @param filters Selected filters
-     * @return Number of found rows
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public long getActiveDownloadTicketCount(Map<String, String> filters) throws DAOException;
-
-    /**
-     * <p>
-     * getActiveDownloadTickets.
-     * </p>
-     *
-     * @param first First row index
-     * @param pageSize Number of rows
-     * @param sortField a {@link java.lang.String} object.
-     * @param descending true if descending order requested; false otherwise
-     * @param filters Selected filters
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public List<DownloadTicket> getActiveDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
-            throws DAOException;
-
-    /**
-     * 
-     * @return {@link DownloadTicket}s with the requested status
-     * @throws DAOException
-     */
-    @Deprecated
-    public List<DownloadTicket> getDownloadTicketRequests() throws DAOException;
-
-    /**
-     * <p>
-     * addDownloadTicket.
-     * </p>
-     *
-     * @param downloadTicket a {@link io.goobi.viewer.model.security.tickets.DownloadTicket} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public boolean addDownloadTicket(DownloadTicket downloadTicket) throws DAOException;
-
-    /**
-     * <p>
-     * updateDownloadTicket.
-     * </p>
-     *
-     * @param downloadTicket a {@link io.goobi.viewer.model.security.tickets.DownloadTicket} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public boolean updateDownloadTicket(DownloadTicket downloadTicket) throws DAOException;
-
-    /**
-     * <p>
-     * deleteDownloadTicket.
-     * </p>
-     *
-     * @param downloadTicket a {@link io.goobi.viewer.model.security.tickets.DownloadTicket} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public boolean deleteDownloadTicket(DownloadTicket downloadTicket) throws DAOException;
 
     // IpRange
 

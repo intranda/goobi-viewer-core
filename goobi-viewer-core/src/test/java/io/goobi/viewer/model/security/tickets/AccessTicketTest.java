@@ -19,8 +19,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.security;
-
+package io.goobi.viewer.model.security.tickets;
 
 import java.time.LocalDateTime;
 
@@ -28,53 +27,52 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.model.security.tickets.DownloadTicket;
 
-class DownloadTicketTest extends AbstractTest {
-    
+class AccessTicketTest extends AbstractTest {
+
     /**
-    * @see DownloadTicket#checkPassword(String)
-    * @verifies check password correctly
-    */
+     * @see AccessTicket#checkPassword(String)
+     * @verifies check password correctly
+     */
     @Test
     void checkPassword_shouldCheckPasswordCorrectly() throws Exception {
-        DownloadTicket ticket = new DownloadTicket();
+        AccessTicket ticket = new AccessTicket();
         ticket.setPasswordHash("$2a$10$H580saN37o2P03A5myUCm.V0ac/lO.79AfkiNjVhDzljqS3RGojzO");
-        
+
         Assertions.assertFalse(ticket.checkPassword("foo"));
         Assertions.assertTrue(ticket.checkPassword("halbgeviertstrich"));
     }
 
     /**
-     * @see DownloadTicket#isActive()
+     * @see AccessTicket#isActive()
      * @verifies return true if ticket active
      */
     @Test
     void isActive_shouldReturnTrueIfTicketActive() throws Exception {
-        DownloadTicket ticket = new DownloadTicket();
+        AccessTicket ticket = new AccessTicket();
         ticket.setPasswordHash("abcde");
         ticket.setExpirationDate(LocalDateTime.now().plusDays(1));
         Assertions.assertFalse(ticket.isExpired());
     }
 
     /**
-     * @see DownloadTicket#isExpired()
+     * @see AccessTicket#isExpired()
      * @verifies return true if expiration date before now
      */
     @Test
     void isExpired_shouldReturnTrueIfExpirationDateBeforeNow() throws Exception {
-        DownloadTicket ticket = new DownloadTicket();
+        AccessTicket ticket = new AccessTicket();
         ticket.setExpirationDate(LocalDateTime.now().minusDays(1));
         Assertions.assertTrue(ticket.isExpired());
     }
 
     /**
-     * @see DownloadTicket#isExpired()
+     * @see AccessTicket#isExpired()
      * @verifies return false if expiration date after now
      */
     @Test
     void isExpired_shouldReturnFalseIfExpirationDateAfterNow() throws Exception {
-        DownloadTicket ticket = new DownloadTicket();
+        AccessTicket ticket = new AccessTicket();
         ticket.setExpirationDate(LocalDateTime.now().plusDays(1));
         Assertions.assertFalse(ticket.isExpired());
     }

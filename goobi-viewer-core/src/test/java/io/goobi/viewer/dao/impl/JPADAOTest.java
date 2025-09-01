@@ -103,6 +103,7 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
+import io.goobi.viewer.model.security.tickets.AccessTicket.AccessTicketType;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -3288,7 +3289,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getActiveTickets_shouldFilterRowsCorrectly() throws Exception {
-        assertEquals(2, DataManager.getInstance().getDao().getActiveTickets(0, 10, null, false, null).size());
+        assertEquals(2,
+                DataManager.getInstance()
+                        .getDao()
+                        .getActiveTickets(0, 10, null, false, Collections.singletonMap("c", AccessTicketType.DOWNLOAD.name()))
+                        .size());
         assertEquals(0,
                 DataManager.getInstance()
                         .getDao()

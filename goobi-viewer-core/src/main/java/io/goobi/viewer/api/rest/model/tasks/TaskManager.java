@@ -24,6 +24,7 @@ package io.goobi.viewer.api.rest.model.tasks;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -53,7 +54,8 @@ import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
-import io.goobi.viewer.model.security.tickets.DownloadTicket;
+import io.goobi.viewer.model.security.tickets.AccessTicket;
+import io.goobi.viewer.model.security.tickets.AccessTicket.AccessTicketType;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
 import io.goobi.viewer.model.statistics.usage.StatisticsIndexTask;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -226,10 +228,10 @@ public class TaskManager {
      */
     static int deleteExpiredDownloadTickets() throws DAOException {
         int count = 0;
-        for (DownloadTicket ticket : DataManager.getInstance()
+        for (AccessTicket ticket : DataManager.getInstance()
                 .getDao()
-                .getActiveDownloadTickets(0, Integer.MAX_VALUE, null, false, null)) {
-            if (ticket.isExpired() && DataManager.getInstance().getDao().deleteDownloadTicket(ticket)) {
+                .getActiveTickets(0, Integer.MAX_VALUE, null, false, Collections.singletonMap("type", AccessTicketType.DOWNLOAD.name()))) {
+            if (ticket.isExpired() && DataManager.getInstance().getDao().deleteTicket(ticket)) {
                 count++;
             }
         }
