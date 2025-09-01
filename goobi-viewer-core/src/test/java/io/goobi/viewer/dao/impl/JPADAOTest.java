@@ -3292,7 +3292,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(2,
                 DataManager.getInstance()
                         .getDao()
-                        .getActiveTickets(0, 10, null, false, Collections.singletonMap("c", AccessTicketType.DOWNLOAD.name()))
+                        .getActiveTickets(0, 10, null, false, Collections.singletonMap("type", AccessTicketType.DOWNLOAD.name()))
                         .size());
         assertEquals(0,
                 DataManager.getInstance()
