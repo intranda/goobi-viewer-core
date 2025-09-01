@@ -162,7 +162,7 @@
 
 		<!-- ACTIVE DOWNLOAD TICKETS TABLE -->
 		<ui:fragment
-			rendered="#{adminLicenseBean.lazyModelDownloadTickets.sizeOfDataList > 0 or not empty adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email_title_requestMessage').value}">
+			rendered="#{adminLicenseBean.lazyModelTickets.sizeOfDataList > 0 or not empty adminLicenseBean.lazyModelTickets.getFilter('pi_email_title_requestMessage').value}">
 			<div class="admin__download-tickets-active-tickets-table-wrapper">
 
 				<h2 class="admin__download-tickets-heading">
@@ -172,13 +172,13 @@
 					<!-- PAGINATOR -->
 					<div class="admin__table-paginator">
 						<viewerComponent:dataTablePaginator
-							tableValues="#{adminLicenseBean.lazyModelDownloadTickets}" />
+							tableValues="#{adminLicenseBean.lazyModelTickets}" />
 					</div>
 					<!-- FILTER -->
 					<div class="admin__table-filter">
 						<viewerComponent:dataTableColumnFilter
 							key="admin__download_tickets__search"
-							filter="#{adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email_title_requestMessage')}" />
+							filter="#{adminLicenseBean.lazyModelTickets.getFilter('pi_email_title_requestMessage')}" />
 					</div>
 				</div>
 

@@ -33,6 +33,8 @@ import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.StringTools;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,6 +48,11 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "tickets")
 public class AccessTicket {
+
+    public enum AccessTicketType {
+        DOWNLOAD,
+        RECORD;
+    }
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(AccessTicket.class);
@@ -61,6 +68,10 @@ public class AccessTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ticket_id")
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ticket_type", nullable = false)
+    private AccessTicketType type;
 
     @Column(name = "date_created", nullable = false)
     private LocalDateTime dateCreated;

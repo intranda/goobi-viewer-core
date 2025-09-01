@@ -60,7 +60,6 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
-import io.goobi.viewer.model.security.tickets.DownloadTicket;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 import jakarta.annotation.PostConstruct;

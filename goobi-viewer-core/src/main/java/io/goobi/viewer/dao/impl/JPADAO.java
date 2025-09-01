@@ -1659,7 +1659,7 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM AbstractTicket a");
+            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM AccessTicket a");
             Map<String, String> params = new HashMap<>();
             String filterQuery = createFilterQuery(null, filters, params);
             if (StringUtils.isEmpty(filterQuery)) {
@@ -1685,7 +1685,7 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            StringBuilder sbQuery = new StringBuilder("SELECT a FROM AbstractTicket a");
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM AccessTicket a");
             Map<String, String> params = new HashMap<>();
             String filterQuery = createFilterQuery(null, filters, params);
             if (StringUtils.isEmpty(filterQuery)) {

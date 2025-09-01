@@ -147,7 +147,7 @@
                             </ui:fragment>
 
                             <!-- DOWNLOAD TICKETS -->
-                            <ui:fragment rendered="#{userBean.admin and fn:length(adminLicenseBean.downloadTicketRequests) > 0}">
+                            <ui:fragment rendered="#{userBean.admin and fn:length(adminLicenseBean.ticketRequests) > 0}">
                                 <div class="admin__boxed-entry -no-actions -w33 -warning">
                                     <div class="row">
                                         <!-- NOT CONFIGURED TICKETS -->
@@ -160,7 +160,7 @@
                                         
 											<!-- LIMIT TICKETS TO A MAXIMUM OF X IN DASHBOARD -->
                                         	<ui:param name="limitTickets" value="4"/>
-                                            <ui:repeat var="ticket" varStatus="status" value="#{adminLicenseBean.downloadTicketRequests}">
+                                            <ui:repeat var="ticket" varStatus="status" value="#{adminLicenseBean.ticketRequests}">
     											<ui:fragment rendered="#{status.index lt limitTickets}">
 								                    <a href="#{navigationHelper.applicationUrl}admin/rights/"
 								                        class="row -textlink admin__license-unconfigured-entry mb-2">

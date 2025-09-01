@@ -102,7 +102,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.tickets.DownloadTicket;
+import io.goobi.viewer.model.security.tickets.AccessTicket;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -3271,33 +3271,33 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getDownloadTicketCount(Map)
+     * @see JPADAO#getTicketCount(Map)
      * @verifies return correct count
      */
     @Test
-    void getDownloadTicketCount_shouldReturnCorrectCount() throws Exception {
-        assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.emptyMap()));
+    void getTicketCount_shouldReturnCorrectCount() throws Exception {
+        assertEquals(2, DataManager.getInstance().getDao().getActiveTicketCount(Collections.emptyMap()));
         assertEquals(2,
-                DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.singletonMap("pi_email", "user1@example.com")));
-        assertEquals(1, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.singletonMap("pi_email", "PPN456")));
+                DataManager.getInstance().getDao().getActiveTicketCount(Collections.singletonMap("pi_email", "user1@example.com")));
+        assertEquals(1, DataManager.getInstance().getDao().getActiveTicketCount(Collections.singletonMap("pi_email", "PPN456")));
     }
 
     /**
-     * @see JPADAO#getActiveDownloadTickets(int,int,String,boolean,Map)
+     * @see JPADAO#getActiveTickets(int,int,String,boolean,Map)
      * @verifies filter rows correctly
      */
     @Test
-    void getActiveDownloadTickets_shouldFilterRowsCorrectly() throws Exception {
-        assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTickets(0, 10, null, false, null).size());
+    void getActiveTickets_shouldFilterRowsCorrectly() throws Exception {
+        assertEquals(2, DataManager.getInstance().getDao().getActiveTickets(0, 10, null, false, null).size());
         assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getActiveDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "user2@example.com"))
+                        .getActiveTickets(0, 10, null, false, Collections.singletonMap("pi_email", "user2@example.com"))
                         .size());
         assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getActiveDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "PPN456"))
+                        .getActiveTickets(0, 10, null, false, Collections.singletonMap("pi_email", "PPN456"))
                         .size());
     }
 
@@ -3344,12 +3344,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getDownloadTicketRequests()
+     * @see JPADAO#getTicketRequests()
      * @verifies return tickets that have never been activated
      */
     @Test
-    void getDownloadTicketRequests_shouldReturnTicketsThatHaveNeverBeenActivated() throws Exception {
-        List<DownloadTicket> result = DataManager.getInstance().getDao().getDownloadTicketRequests();
+    void getTicketRequests_shouldReturnTicketsThatHaveNeverBeenActivated() throws Exception {
+        List<AccessTicket> result = DataManager.getInstance().getDao().getTicketRequests();
         assertEquals(1, result.size());
         assertEquals(Long.valueOf(3), result.get(0).getId());
     }
