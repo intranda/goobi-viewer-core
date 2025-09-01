@@ -14,7 +14,7 @@
 
 		<!-- NOT (YET) ACCEPTED DOWNLOAD REQUESTS -->
 		<ui:fragment
-			rendered="#{not empty adminLicenseBean.downloadTicketRequests}">
+			rendered="#{not empty adminLicenseBean.ticketRequests}">
 
 			<!-- PENDING TICKETS HEADING -->
 			<h2 class="admin__download-tickets-heading">#{msg.admin__download_tickets__pending_requests}</h2>
@@ -22,7 +22,7 @@
 			<div class="admin__download-tickets-pending-tickets-wrapper">
 
 				<ui:repeat var="ticket"
-					value="#{adminLicenseBean.downloadTicketRequests}"
+					value="#{adminLicenseBean.ticketRequests}"
 					varStatus="status">
 
 					<div
@@ -136,14 +136,14 @@
 								data-target="ticketActivationButton"
 								data-require-confirmation="false"
 								data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm, ticket.email, ticket.pi)}"
-								jsf:action="#{adminLicenseBean.activateDownloadTicketAction(ticket)}"
+								jsf:action="#{adminLicenseBean.activateTicketAction(ticket)}"
 								aria-label="#{msg.action__activate}: #{ticket.id}">
 								#{msg.action__accept}</button>
 							<button class="btn btn--danger"
 								data-target="ticketRejectionButton"
 								data-require-confirmation="true"
 								data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_reject_confirm, ticket.email, ticket.pi)}"
-								jsf:action="#{adminLicenseBean.rejectDownloadTicketAction(ticket)}"
+								jsf:action="#{adminLicenseBean.rejectTicketAction(ticket)}"
 								aria-label="#{msg.activate}: #{ticket.id}">
 								#{msg.action__reject}</button>
 						</div>
@@ -211,7 +211,7 @@
 					<div class="admin__grid-table-data-row-area">
 
 						<ui:repeat var="ticket"
-							value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
+							value="#{adminLicenseBean.lazyModelTickets.paginatorList}">
 
 							<div class="admin__grid-table-data-row" role="row">
 								<div class="admin__grid-table-data" role="gridcell">
@@ -234,7 +234,7 @@
 												data-trigger="hover"
 												data-require-confirmation="true"
 												data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.label, ticket.defaultValidityAsString)}"
-												jsf:action="#{adminLicenseBean.extendDownloadTicketAction(ticket)}"
+												jsf:action="#{adminLicenseBean.extendTicketAction(ticket)}"
 												aria-label="#{msg.extend}: #{ticket.id}">
 												#{msg.admin__download_tickets_extend}</button>
 										</ui:fragment>
@@ -247,7 +247,7 @@
 												data-trigger="hover"
 												data-require-confirmation="true"
 												data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_renew_confirm, ticket.email, ticket.label, ticket.defaultValidityAsString)}"
-												jsf:action="#{adminLicenseBean.renewDownloadTicketAction(ticket)}"
+												jsf:action="#{adminLicenseBean.renewTicketAction(ticket)}"
 												aria-label="#{msg.extend}: #{ticket.id}">
 												#{msg.admin__download_tickets_renew}</button>
 										</ui:fragment>
@@ -255,7 +255,7 @@
 										<button class="admin__table-action-link -redlink"
 											data-require-confirmation="true"
 											data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_delete_confirm, ticket.email, ticket.label)}"
-											jsf:action="#{adminLicenseBean.deleteDownloadTicketAction(ticket)}"
+											jsf:action="#{adminLicenseBean.deleteTicketAction(ticket)}"
 											aria-label="#{msg.delete}: #{ticket.id}">
 											#{msg.delete}</button>
 

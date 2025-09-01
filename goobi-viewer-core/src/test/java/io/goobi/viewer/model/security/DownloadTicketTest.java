@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.model.security.tickets.DownloadTicket;
 
 class DownloadTicketTest extends AbstractTest {
     

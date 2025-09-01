@@ -422,11 +422,16 @@ public class ActiveDocumentBean implements Serializable {
                                     new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topStructElement.getPi()).toString(),
                                     (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                     if (!access.isGranted()) {
-                        logger.debug("User may not open {}", topStructElement.getPi());
-                        try {
-                            throw new RecordNotFoundException(lastReceivedIdentifier);
-                        } finally {
-                            lastReceivedIdentifier = null;
+                        if (access.isTicketRequired()) {
+                            // Do not abort here if 
+                            viewManager.setRecordAccessTicketRequired(true);
+                        } else {
+                            logger.debug("User may not open {}", topStructElement.getPi());
+                            try {
+                                throw new RecordNotFoundException(lastReceivedIdentifier);
+                            } finally {
+                                lastReceivedIdentifier = null;
+                            }
                         }
                     }
                     // If license type is configured to redirect to a URL, redirect here

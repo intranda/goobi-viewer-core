@@ -92,11 +92,13 @@ import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
-import io.goobi.viewer.model.security.DownloadTicket;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.tickets.AbstractTicket;
+import io.goobi.viewer.model.security.tickets.DownloadTicket;
+import io.goobi.viewer.model.security.tickets.RecordAccessTicket;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -1615,6 +1617,176 @@ public class JPADAO implements IDAO {
             }
             // H2
             return (long) q.getResultList().get(0);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AbstractTicket getTicket(Long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(RecordAccessTicket.class, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AbstractTicket getTicketByPasswordHash(String passwordHash) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<AbstractTicket> cq = cb.createQuery(AbstractTicket.class);
+            Root<AbstractTicket> root = cq.from(AbstractTicket.class);
+            cq.select(root).where(cb.equal(root.get("passwordHash"), passwordHash));
+            return em.createQuery(cq).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getActiveTicketCount(Map<String, String> filters) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM AbstractTicket a");
+            Map<String, String> params = new HashMap<>();
+            String filterQuery = createFilterQuery(null, filters, params);
+            if (StringUtils.isEmpty(filterQuery)) {
+                sbQuery.append(QUERY_ELEMENT_WHERE);
+            } else {
+                sbQuery.append(filterQuery).append(QUERY_ELEMENT_AND);
+            }
+            // Only tickets that aren't requests
+            sbQuery.append("a.passwordHash IS NOT NULL AND a.expirationDate IS NOT NULL");
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<AbstractTicket> getActiveTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM AbstractTicket a");
+            Map<String, String> params = new HashMap<>();
+            String filterQuery = createFilterQuery(null, filters, params);
+            if (StringUtils.isEmpty(filterQuery)) {
+                sbQuery.append(QUERY_ELEMENT_WHERE);
+            } else {
+                sbQuery.append(filterQuery).append(QUERY_ELEMENT_AND);
+            }
+            // Only tickets that aren't requests
+            sbQuery.append("a.passwordHash IS NOT NULL AND a.expirationDate IS NOT NULL");
+            if (StringUtils.isNotBlank(sortField)) {
+                String[] sortFields = sortField.split("_");
+                sbQuery.append(" ORDER BY ");
+                for (String sf : sortFields) {
+                    sbQuery.append("a.").append(sf);
+                    if (descending) {
+                        sbQuery.append(QUERY_ELEMENT_DESC);
+                    }
+                    sbQuery.append(",");
+                }
+                sbQuery.deleteCharAt(sbQuery.length() - 1);
+            }
+
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+            return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<AbstractTicket> getTicketRequests() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<AbstractTicket> cq = cb.createQuery(AbstractTicket.class);
+            Root<AbstractTicket> root = cq.from(AbstractTicket.class);
+            cq.select(root).where(cb.and(root.get("passwordHash").isNull(), root.get("expirationDate").isNull()));
+            return em.createQuery(cq).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addTicket(AbstractTicket ticket) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(ticket);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error(e.getMessage());
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateTicket(AbstractTicket ticket) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(ticket);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error(e.getMessage());
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteTicket(AbstractTicket ticket) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            AbstractTicket o = em.getReference(AbstractTicket.class, ticket.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error(e.getMessage());
+            handleException(em);
+            return false;
         } finally {
             close(em);
         }

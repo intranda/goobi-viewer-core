@@ -32,7 +32,7 @@ import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.security.DownloadTicket;
+import io.goobi.viewer.model.security.tickets.DownloadTicket;
 
 public class PurgeExpiredDownloadsHandler implements MessageHandler<MessageStatus> {
 

@@ -66,11 +66,13 @@ import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
-import io.goobi.viewer.model.security.DownloadTicket;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.tickets.AbstractTicket;
+import io.goobi.viewer.model.security.tickets.DownloadTicket;
+import io.goobi.viewer.model.security.tickets.RecordAccessTicket;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -814,6 +816,91 @@ public interface IDAO {
      */
     public long getLicenseCount(LicenseType licenseType) throws DAOException;
 
+    // AbstractTicket
+
+    /**
+     * 
+     * @param id
+     * @return {@link AbstractTicket} with the given id
+     * @throws DAOException
+     */
+    public AbstractTicket getTicket(Long id) throws DAOException;
+
+    /**
+     * 
+     * @param passwordHash
+     * @return {@link AbstractTicket} with the given passwordHash
+     * @throws DAOException
+     */
+    public AbstractTicket getTicketByPasswordHash(String passwordHash) throws DAOException;
+
+    /**
+     * <p>
+     * getActiveTicketCount.
+     * </p>
+     *
+     * @param filters Selected filters
+     * @return Number of found rows
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public long getActiveTicketCount(Map<String, String> filters) throws DAOException;
+
+    /**
+     * <p>
+     * getActiveRecordAccessTickets.
+     * </p>
+     *
+     * @param first First row index
+     * @param pageSize Number of rows
+     * @param sortField a {@link java.lang.String} object.
+     * @param descending true if descending order requested; false otherwise
+     * @param filters Selected filters
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<AbstractTicket> getActiveTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException;
+
+    /**
+     * 
+     * @return {@link AbstractTicket}s with the requested status
+     * @throws DAOException
+     */
+    public List<AbstractTicket> getTicketRequests() throws DAOException;
+
+    /**
+     * <p>
+     * addTicket.
+     * </p>
+     *
+     * @param downloadTicket a {@link AbstractTicket} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean addTicket(AbstractTicket ticket) throws DAOException;
+
+    /**
+     * <p>
+     * updateTicket.
+     * </p>
+     *
+     * @param downloadTicket a {@link RecordAccessTicket} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean updateTicket(AbstractTicket ticket) throws DAOException;
+
+    /**
+     * <p>
+     * deleteTicket.
+     * </p>
+     *
+     * @param ticket a {@link RecordAccessTicket} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean deleteTicket(AbstractTicket ticket) throws DAOException;
+
     // DownloadTicket
 
     /**
@@ -822,6 +909,7 @@ public interface IDAO {
      * @return {@link DownloadTicket} with the given id
      * @throws DAOException
      */
+    @Deprecated
     public DownloadTicket getDownloadTicket(Long id) throws DAOException;
 
     /**
@@ -830,6 +918,7 @@ public interface IDAO {
      * @return {@link DownloadTicket} with the given passwordHash
      * @throws DAOException
      */
+    @Deprecated
     public DownloadTicket getDownloadTicketByPasswordHash(String passwordHash) throws DAOException;
 
     /**
@@ -841,6 +930,7 @@ public interface IDAO {
      * @return Number of found rows
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Deprecated
     public long getActiveDownloadTicketCount(Map<String, String> filters) throws DAOException;
 
     /**
@@ -856,6 +946,7 @@ public interface IDAO {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Deprecated
     public List<DownloadTicket> getActiveDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
 
@@ -864,6 +955,7 @@ public interface IDAO {
      * @return {@link DownloadTicket}s with the requested status
      * @throws DAOException
      */
+    @Deprecated
     public List<DownloadTicket> getDownloadTicketRequests() throws DAOException;
 
     /**
@@ -875,6 +967,7 @@ public interface IDAO {
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Deprecated
     public boolean addDownloadTicket(DownloadTicket downloadTicket) throws DAOException;
 
     /**
@@ -886,6 +979,7 @@ public interface IDAO {
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Deprecated
     public boolean updateDownloadTicket(DownloadTicket downloadTicket) throws DAOException;
 
     /**
@@ -897,6 +991,7 @@ public interface IDAO {
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Deprecated
     public boolean deleteDownloadTicket(DownloadTicket downloadTicket) throws DAOException;
 
     // IpRange

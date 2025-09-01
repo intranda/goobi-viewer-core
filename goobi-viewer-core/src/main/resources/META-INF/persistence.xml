@@ -91,12 +91,12 @@
         <class>io.goobi.viewer.model.maps.SolrFeatureSet</class>
         <class>io.goobi.viewer.model.maps.SearchResultFeatureSet</class>
 		<class>io.goobi.viewer.model.search.Search</class>
-        <class>io.goobi.viewer.model.security.DownloadTicket</class>
 		<class>io.goobi.viewer.model.security.License</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
 		<class>io.goobi.viewer.model.security.Role</class>
         <class>io.goobi.viewer.model.security.clients.ClientApplication</class>
         <class>io.goobi.viewer.model.security.tickets.AbstractTicket</class>
+        <class>io.goobi.viewer.model.security.tickets.DownloadTicket</class>
         <class>io.goobi.viewer.model.security.tickets.RecordAccessTicket</class>
 		<class>io.goobi.viewer.model.security.user.IpRange</class>
 		<class>io.goobi.viewer.model.security.user.User</class>
@@ -220,7 +220,6 @@
         <class>io.goobi.viewer.model.maps.SolrFeatureSet</class>
         <class>io.goobi.viewer.model.maps.SearchResultFeatureSet</class>
 		<class>io.goobi.viewer.model.search.Search</class>
-        <class>io.goobi.viewer.model.security.DownloadTicket</class>
 		<class>io.goobi.viewer.model.security.License</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
 		<class>io.goobi.viewer.model.security.Role</class>
@@ -230,6 +229,7 @@
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
         <class>io.goobi.viewer.model.security.tickets.AbstractTicket</class>
+        <class>io.goobi.viewer.model.security.tickets.DownloadTicket</class>
         <class>io.goobi.viewer.model.security.tickets.RecordAccessTicket</class>
 		<class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>

@@ -35,8 +35,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,10 +53,11 @@ import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
-import io.goobi.viewer.model.security.DownloadTicket;
+import io.goobi.viewer.model.security.tickets.DownloadTicket;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
 import io.goobi.viewer.model.statistics.usage.StatisticsIndexTask;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Manages (possibly timeconsuming) {@link Task tasks} within the viewer which can be triggered and monitored via the {@link TasksResource}. The tasks

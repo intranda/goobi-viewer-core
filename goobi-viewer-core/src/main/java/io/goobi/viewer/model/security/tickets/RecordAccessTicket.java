@@ -54,14 +54,8 @@ public class RecordAccessTicket extends AbstractTicket implements Serializable {
     @Column(name = "password_hash")
     private String passwordHash;
 
-    @Column(name = "pi", nullable = false)
-    private String pi;
-
     @Column(name = "title")
     private String title;
-
-    @Column(name = "email", nullable = false)
-    private String email;
 
     @Column(name = "request_message", columnDefinition = "MEDIUMTEXT")
     private String requestMessage;
@@ -79,34 +73,6 @@ public class RecordAccessTicket extends AbstractTicket implements Serializable {
      * @return title if present; otherwise pi
      */
     public String getLabel() {
-        return StringUtils.isNotEmpty(title) ? title : pi;
-    }
-
-    /**
-     * @return the pi
-     */
-    public String getPi() {
-        return pi;
-    }
-
-    /**
-     * @param pi the pi to set
-     */
-    public void setPi(String pi) {
-        this.pi = pi;
-    }
-
-    /**
-     * @return the email
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * @param email the email to set
-     */
-    public void setEmail(String email) {
-        this.email = email;
+        return StringUtils.isNotEmpty(title) ? title : getPi();
     }
 }

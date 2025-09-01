@@ -79,6 +79,12 @@ public abstract class AbstractTicket {
     @Column(name = "password_hash")
     private String passwordHash;
 
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "pi", nullable = false)
+    private String pi;
+
     @Column(name = "title")
     private String title;
 
@@ -262,6 +268,34 @@ public abstract class AbstractTicket {
      */
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return the pi
+     */
+    public String getPi() {
+        return pi;
+    }
+
+    /**
+     * @param pi the pi to set
+     */
+    public void setPi(String pi) {
+        this.pi = pi;
     }
 
     /**
