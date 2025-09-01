@@ -32,13 +32,10 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.StringTools;
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -48,12 +45,10 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "tickets")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "ticket_type")
-public abstract class AbstractTicket {
+public class AccessTicket {
 
     /** Logger for this class. */
-    private static final Logger logger = LogManager.getLogger(AbstractTicket.class);
+    private static final Logger logger = LogManager.getLogger(AccessTicket.class);
 
     /** Default validity for a ticket in days. */
     public static final int VALIDITY_DAYS = 30;
@@ -73,14 +68,14 @@ public abstract class AbstractTicket {
     @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
 
+    @Column(name = "email", nullable = false)
+    private String email;
+
     @Transient
     private transient String password;
 
     @Column(name = "password_hash")
     private String passwordHash;
-
-    @Column(name = "email", nullable = false)
-    private String email;
 
     @Column(name = "pi", nullable = false)
     private String pi;
@@ -94,7 +89,7 @@ public abstract class AbstractTicket {
     @Transient
     protected transient BCrypt bcrypt = new BCrypt();
 
-    public AbstractTicket() {
+    public AccessTicket() {
         dateCreated = LocalDateTime.now();
     }
 

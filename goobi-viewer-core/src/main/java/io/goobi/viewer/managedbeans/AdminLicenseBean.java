@@ -59,7 +59,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.tickets.AbstractTicket;
+import io.goobi.viewer.model.security.tickets.AccessTicket;
 import io.goobi.viewer.model.security.tickets.DownloadTicket;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
@@ -90,7 +90,7 @@ public class AdminLicenseBean implements Serializable {
 
     static final int DEFAULT_ROWS_PER_PAGE = 15;
 
-    private TableDataProvider<AbstractTicket> lazyModelTickets;
+    private TableDataProvider<AccessTicket> lazyModelTickets;
 
     private Role currentRole = null;
     private LicenseType currentLicenseType = null;
@@ -112,10 +112,10 @@ public class AdminLicenseBean implements Serializable {
      */
     @PostConstruct
     public void init() {
-        lazyModelTickets = new TableDataProvider<>(new TableDataSource<AbstractTicket>() {
+        lazyModelTickets = new TableDataProvider<>(new TableDataSource<AccessTicket>() {
 
             @Override
-            public List<AbstractTicket> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
+            public List<AccessTicket> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
                     Map<String, String> filters) {
                 logger.trace("getEntries<DownloadTicket>, {}-{}", first, first + pageSize);
                 try {
@@ -582,7 +582,7 @@ public class AdminLicenseBean implements Serializable {
      *
      * @return the lazyModelTickets
      */
-    public TableDataProvider<AbstractTicket> getLazyModelTickets() {
+    public TableDataProvider<AccessTicket> getLazyModelTickets() {
         return lazyModelTickets;
     }
 
@@ -593,7 +593,7 @@ public class AdminLicenseBean implements Serializable {
      *
      * @return a {@link java.util.List} object.
      */
-    public List<AbstractTicket> getPageTickets() {
+    public List<AccessTicket> getPageTickets() {
         return lazyModelTickets.getPaginatorList();
     }
 
@@ -602,7 +602,7 @@ public class AdminLicenseBean implements Serializable {
      * @return List of existing tickets that are in request status
      * @throws DAOException
      */
-    public List<AbstractTicket> getTicketRequests() throws DAOException {
+    public List<AccessTicket> getTicketRequests() throws DAOException {
         return DataManager.getInstance().getDao().getTicketRequests();
     }
 
@@ -611,7 +611,7 @@ public class AdminLicenseBean implements Serializable {
      * @param ticket
      * @throws DAOException
      */
-    private static void saveTicket(AbstractTicket ticket) throws DAOException {
+    private static void saveTicket(AccessTicket ticket) throws DAOException {
         if (ticket == null) {
             throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
         }
@@ -633,7 +633,7 @@ public class AdminLicenseBean implements Serializable {
      * @param emailBodyParams
      * @return Navigation outcome
      */
-    private static String notifyOwner(AbstractTicket ticket, String emailSubjectKey, String emailBodyKey, List<String> emailBodyParams) {
+    private static String notifyOwner(AccessTicket ticket, String emailSubjectKey, String emailBodyKey, List<String> emailBodyParams) {
         if (ticket == null) {
             throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
         }
@@ -672,7 +672,7 @@ public class AdminLicenseBean implements Serializable {
      * @return Navigation outcome
      * @throws DAOException
      */
-    public String activateAction(AbstractTicket ticket) throws DAOException {
+    public String activateAction(AccessTicket ticket) throws DAOException {
         if (ticket == null) {
             throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
         }
@@ -694,14 +694,14 @@ public class AdminLicenseBean implements Serializable {
      * @return Navigation outcome
      * @throws DAOException
      */
-    public String extendTicketAction(AbstractTicket ticket) throws DAOException {
+    public String extendTicketAction(AccessTicket ticket) throws DAOException {
         if (ticket == null) {
             throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
         }
         logger.trace("extendTicketAction: {}", ticket.getId());
 
         // Set new expiration date
-        ticket.extend(AbstractTicket.VALIDITY_DAYS);
+        ticket.extend(AccessTicket.VALIDITY_DAYS);
 
         saveTicket(ticket);
 
@@ -715,7 +715,7 @@ public class AdminLicenseBean implements Serializable {
      * @return Navigation outcome
      * @throws DAOException
      */
-    public String renewTicketAction(AbstractTicket ticket) throws DAOException {
+    public String renewTicketAction(AccessTicket ticket) throws DAOException {
         if (ticket == null) {
             throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
         }
@@ -737,7 +737,7 @@ public class AdminLicenseBean implements Serializable {
      * @return Navigation outcome
      * @throws DAOException
      */
-    public String rejectTicketAction(AbstractTicket ticket) throws DAOException {
+    public String rejectTicketAction(AccessTicket ticket) throws DAOException {
         if (ticket == null) {
             throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
         }
@@ -760,7 +760,7 @@ public class AdminLicenseBean implements Serializable {
      * @return Navigation outcome
      * @throws DAOException
      */
-    public String deleteTicketAction(AbstractTicket ticket) throws DAOException {
+    public String deleteTicketAction(AccessTicket ticket) throws DAOException {
         if (ticket == null) {
             throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
         }

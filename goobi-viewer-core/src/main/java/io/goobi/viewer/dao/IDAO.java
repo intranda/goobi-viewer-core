@@ -70,9 +70,8 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.clients.ClientApplication;
-import io.goobi.viewer.model.security.tickets.AbstractTicket;
+import io.goobi.viewer.model.security.tickets.AccessTicket;
 import io.goobi.viewer.model.security.tickets.DownloadTicket;
-import io.goobi.viewer.model.security.tickets.RecordAccessTicket;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -816,23 +815,23 @@ public interface IDAO {
      */
     public long getLicenseCount(LicenseType licenseType) throws DAOException;
 
-    // AbstractTicket
+    // AccessTicket
 
     /**
      * 
      * @param id
-     * @return {@link AbstractTicket} with the given id
+     * @return {@link AccessTicket} with the given id
      * @throws DAOException
      */
-    public AbstractTicket getTicket(Long id) throws DAOException;
+    public AccessTicket getTicket(Long id) throws DAOException;
 
     /**
      * 
      * @param passwordHash
-     * @return {@link AbstractTicket} with the given passwordHash
+     * @return {@link AccessTicket} with the given passwordHash
      * @throws DAOException
      */
-    public AbstractTicket getTicketByPasswordHash(String passwordHash) throws DAOException;
+    public AccessTicket getTicketByPasswordHash(String passwordHash) throws DAOException;
 
     /**
      * <p>
@@ -858,48 +857,48 @@ public interface IDAO {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<AbstractTicket> getActiveTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+    public List<AccessTicket> getActiveTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
 
     /**
      * 
-     * @return {@link AbstractTicket}s with the requested status
+     * @return {@link AccessTicket}s with the requested status
      * @throws DAOException
      */
-    public List<AbstractTicket> getTicketRequests() throws DAOException;
+    public List<AccessTicket> getTicketRequests() throws DAOException;
 
     /**
      * <p>
      * addTicket.
      * </p>
      *
-     * @param downloadTicket a {@link AbstractTicket} object.
+     * @param ticket a {@link AccessTicket} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addTicket(AbstractTicket ticket) throws DAOException;
+    public boolean addTicket(AccessTicket ticket) throws DAOException;
 
     /**
      * <p>
      * updateTicket.
      * </p>
      *
-     * @param downloadTicket a {@link RecordAccessTicket} object.
+     * @param ticket a {@link AccessTicket} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateTicket(AbstractTicket ticket) throws DAOException;
+    public boolean updateTicket(AccessTicket ticket) throws DAOException;
 
     /**
      * <p>
      * deleteTicket.
      * </p>
      *
-     * @param ticket a {@link RecordAccessTicket} object.
+     * @param ticket a {@link AccessTicket} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean deleteTicket(AbstractTicket ticket) throws DAOException;
+    public boolean deleteTicket(AccessTicket ticket) throws DAOException;
 
     // DownloadTicket
 
@@ -963,7 +962,7 @@ public interface IDAO {
      * addDownloadTicket.
      * </p>
      *
-     * @param downloadTicket a {@link io.goobi.viewer.model.security.DownloadTicket} object.
+     * @param downloadTicket a {@link io.goobi.viewer.model.security.tickets.DownloadTicket} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -975,7 +974,7 @@ public interface IDAO {
      * updateDownloadTicket.
      * </p>
      *
-     * @param downloadTicket a {@link io.goobi.viewer.model.security.DownloadTicket} object.
+     * @param downloadTicket a {@link io.goobi.viewer.model.security.tickets.DownloadTicket} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -987,7 +986,7 @@ public interface IDAO {
      * deleteDownloadTicket.
      * </p>
      *
-     * @param downloadTicket a {@link io.goobi.viewer.model.security.DownloadTicket} object.
+     * @param downloadTicket a {@link io.goobi.viewer.model.security.tickets.DownloadTicket} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
