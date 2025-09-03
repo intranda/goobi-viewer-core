@@ -485,7 +485,7 @@ public class ClientApplication implements ILicensee, Serializable {
         if (!permissionMap.isEmpty()) {
             // TODO Prefer license with ticket requirement?
             for (Entry<String, AccessPermission> entry : permissionMap.entrySet()) {
-                if (entry.getValue().isTicketRequired()) {
+                if (entry.getValue().isDownloadTicketRequired()) {
                     return entry.getValue();
                 }
             }
@@ -512,7 +512,7 @@ public class ClientApplication implements ILicensee, Serializable {
                 if (license.getPrivileges().contains(privilegeName)) {
                     if (StringUtils.isEmpty(license.getConditions())) {
                         return AccessPermission.granted()
-                                .setTicketRequired(license.isTicketRequired())
+                                .setDownloadTicketRequired(license.isTicketRequired())
                                 .setRedirect(license.getLicenseType().isRedirect())
                                 .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                     } else if (StringUtils.isNotEmpty(pi)) {
@@ -523,7 +523,7 @@ public class ClientApplication implements ILicensee, Serializable {
                                 .getSearchIndex()
                                 .getFirstDoc(sbQuery.toString(), Collections.singletonList(SolrConstants.IDDOC)) != null) {
                             return AccessPermission.granted()
-                                    .setTicketRequired(license.isTicketRequired())
+                                    .setDownloadTicketRequired(license.isTicketRequired())
                                     .setRedirect(license.getLicenseType().isRedirect())
                                     .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                         }

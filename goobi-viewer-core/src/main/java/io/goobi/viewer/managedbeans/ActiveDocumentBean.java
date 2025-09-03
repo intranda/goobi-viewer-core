@@ -422,8 +422,9 @@ public class ActiveDocumentBean implements Serializable {
                                     new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topStructElement.getPi()).toString(),
                                     (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                     if (!access.isGranted()) {
-                        if (access.isTicketRequired()) {
-                            // Do not abort here if 
+                        if (access.isAccessTicketRequired()) {
+                            // Do not abort here if record can be unlocked with an access ticket
+                            logger.trace("Access ticket required");
                             viewManager.setRecordAccessTicketRequired(true);
                         } else {
                             logger.debug("User may not open {}", topStructElement.getPi());

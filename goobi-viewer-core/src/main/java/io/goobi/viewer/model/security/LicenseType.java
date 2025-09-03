@@ -108,8 +108,8 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private boolean redirect = false;
     @Column(name = "redirect_url")
     private String redirectUrl;
-    @Column(name = "ticket_required")
-    private boolean ticketRequired = false;
+    @Column(name = "access_ticket_required")
+    private boolean accessTicketRequired = false;
 
     /** Privileges that everyone else has (users without this license, users that are not logged in). */
     @ElementCollection(fetch = FetchType.EAGER)
@@ -461,17 +461,17 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * @return the ticketRequired
+     * @return the accessTicketRequired
      */
-    public boolean isTicketRequired() {
-        return ticketRequired;
+    public boolean isAccessTicketRequired() {
+        return accessTicketRequired;
     }
 
     /**
-     * @param ticketRequired the ticketRequired to set
+     * @param accessTicketRequired the accessTicketRequired to set
      */
-    public void setTicketRequired(boolean ticketRequired) {
-        this.ticketRequired = ticketRequired;
+    public void setAccessTicketRequired(boolean accessTicketRequired) {
+        this.accessTicketRequired = accessTicketRequired;
     }
 
     /**

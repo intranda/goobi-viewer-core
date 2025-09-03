@@ -196,7 +196,7 @@ public class ViewManager implements Serializable {
     private Boolean accessPermissionPdf = null;
     private Boolean allowUserComments = null;
     /** True if an access ticket is required before anything in this record may be viewed.. Value is set during the access permission check. */
-    private Boolean recordAccessTicketRequired = null;
+    private boolean recordAccessTicketRequired = false;
     private List<StructElementStub> docHierarchy = null;
     private String mimeType = null;
     private Boolean filesOnly = null;
@@ -2511,7 +2511,6 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isRecordAccessTicketRequired() throws IndexUnreachableException, DAOException {
-        isAccessPermission("TODO");
         logger.trace("isRecordAccessTicketRequired: {}", recordAccessTicketRequired); //NOSONAR Debug
 
         // If license requires a download ticket, check agent session for loaded ticket
