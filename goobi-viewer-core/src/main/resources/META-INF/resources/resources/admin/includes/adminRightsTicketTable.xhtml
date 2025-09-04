@@ -33,6 +33,16 @@
 							<h2 class="admin__download-tickets-pending-ticket-title">#{msg.admin__dashboard_download_ticket_request_by}
 								#{ticket.email}</h2>
 						</div>
+						
+                        <!-- PENDING TICKET TYPE -->
+                        <div
+                            class="admin__download-tickets-pending-ticket-key-value-wrapper">
+                            <div class="admin__download-tickets-pending-ticket-key">
+                                #{msg.type}:</div>
+                            <div class="admin__download-tickets-pending-ticket-value">
+                                #{ticket.type}
+                            </div>
+                        </div>
 
 						<!-- PENDING TICKET RECORD TITLE -->
 						<div
