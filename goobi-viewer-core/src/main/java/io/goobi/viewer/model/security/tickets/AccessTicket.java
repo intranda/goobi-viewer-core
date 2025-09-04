@@ -46,7 +46,7 @@ import jakarta.persistence.Transient;
  * known as core license types.
  */
 @Entity
-@Table(name = "tickets")
+@Table(name = "access_tickets")
 public class AccessTicket {
 
     public enum AccessTicketType {
@@ -218,6 +218,20 @@ public class AccessTicket {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return the type
+     */
+    public AccessTicketType getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(AccessTicketType type) {
+        this.type = type;
     }
 
     /**
