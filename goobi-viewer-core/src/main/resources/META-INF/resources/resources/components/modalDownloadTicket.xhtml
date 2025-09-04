@@ -54,7 +54,7 @@
 									
 									<div class="col-12 col-lg-9">
 										<h:inputSecret id="download-ticket-modal__downloadTicketPassword" styleClass="form-control"
-											value="#{bornDigitalBean.downloadTicketPassword}"
+											value="#{accessTicketBean.ticketPassword}"
 											requiredMessage="#{msg.required}"
 											aria-labelledby="labelDownloadTicketPassword" pt:data-require-input-text="passwordRequired" pt:autocomplete="new-password">
 											<f:passThroughAttribute name="aria-labelledby"
@@ -77,7 +77,7 @@
 									<div class="col-sm-12 d-flex justify-content-end">
 										<h:commandButton styleClass="btn btn--full"
 											value="#{msg.submit}"
-											action="#{bornDigitalBean.checkDownloadTicketPasswordAction}"  
+											action="#{accessTicketBean.checkTicketPasswordAction}"  
 											pt:data-require-input="passwordRequired"/>
 									</div>
 								</div>
@@ -116,8 +116,8 @@
                                             </div>
                                         </div>
                                         <h:inputText id="download-ticket-modal__email" label="downloadTicketEmail"
-                                            required="true"
-                                            value="#{bornDigitalBean.downloadTicketEmail}" styleClass="form-control" pt:data-require-input-text="ticketRequired" pt:data-target="mailValidatorCheck">
+                                            required="true" value="#{accessTicketBean.ticketEmail}" styleClass="form-control"
+                                            pt:data-require-input-text="ticketRequired" pt:data-target="mailValidatorCheck">
                                             <f:passThroughAttribute name="aria-labelledby"
                                                 value="download-ticket-modal__labelDownloadTicket" />
                                             <f:passThroughAttribute name="type"
@@ -136,7 +136,7 @@
                                     
                                     <div class="col-12">
                                         <h:inputTextarea id="download-ticket-modal__requestMessage"
-                                            styleClass="form-control" value="#{bornDigitalBean.downloadTicketRequestMessage}"
+                                            styleClass="form-control" value="#{accessTicketBean.ticketRequestMessage}"
                                             aria-labelledby="labelDownloadTicketRequestMessage">
                                             <f:passThroughAttribute name="aria-labelledby"
                                                 value="download-ticket-modal__labelUploadJobDescription" />
@@ -210,7 +210,7 @@
 		                                <div class="col-sm-12 d-flex justify-content-end">
 		                                    <h:commandButton styleClass="btn btn--full"
 		                                        value="#{msg.submit}"
-		                                        action="#{bornDigitalBean.requestNewDownloadTicketAction}" pt:data-require-input="ticketRequired"
+		                                        action="#{accessTicketBean.requestNewDownloadTicketAction}" pt:data-require-input="ticketRequired"
 		                                        pt:data-target="buttonLoaderClickEvent">
 		                                    </h:commandButton>
 		                                </div>

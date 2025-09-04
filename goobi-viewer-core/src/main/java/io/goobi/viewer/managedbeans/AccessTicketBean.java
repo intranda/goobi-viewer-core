@@ -42,6 +42,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
+import io.goobi.viewer.model.security.tickets.AccessTicket.AccessTicketType;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -52,11 +53,11 @@ import jakarta.mail.MessagingException;
  */
 @Named
 @SessionScoped
-public class BornDigitalBean implements Serializable {
+public class AccessTicketBean implements Serializable {
 
     private static final long serialVersionUID = -371794671604543166L;
 
-    private static final Logger logger = LogManager.getLogger(BornDigitalBean.class);
+    private static final Logger logger = LogManager.getLogger(AccessTicketBean.class);
 
     @Inject
     private ActiveDocumentBean activeDocumentBean;
@@ -65,9 +66,9 @@ public class BornDigitalBean implements Serializable {
     @Inject
     private UserBean userBean;
 
-    private transient String downloadTicketPassword;
-    private String downloadTicketEmail;
-    private String downloadTicketRequestMessage;
+    private transient String ticketPassword;
+    private String ticketEmail;
+    private String ticketRequestMessage;
 
     /**
      * 
@@ -85,9 +86,9 @@ public class BornDigitalBean implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    public String checkDownloadTicketPasswordAction() throws DAOException, IndexUnreachableException {
+    public String checkTicketPasswordAction() throws DAOException, IndexUnreachableException {
         logger.trace("checkDownloadTicketPasswordAction");
-        if (StringUtils.isEmpty(downloadTicketPassword)) {
+        if (StringUtils.isEmpty(ticketPassword)) {
             Messages.error(StringConstants.MSG_ERR_PASSWORD_INCORRECT);
             return "";
         }
@@ -105,14 +106,14 @@ public class BornDigitalBean implements Serializable {
         }
 
         try {
-            String hash = BCrypt.hashpw(downloadTicketPassword, AccessTicket.SALT);
+            String hash = BCrypt.hashpw(ticketPassword, AccessTicket.SALT);
             AccessTicket ticket = DataManager.getInstance().getDao().getTicketByPasswordHash(hash);
             String pi = activeDocumentBean.getPersistentIdentifier();
             if ("-".equals(pi)) {
                 Messages.error("errPassword");
                 return "";
             }
-            if (ticket != null && ticket.isActive() && ticket.getPi().equals(pi) && ticket.checkPassword(downloadTicketPassword)
+            if (ticket != null && ticket.isActive() && ticket.getPi().equals(pi) && ticket.checkPassword(ticketPassword)
                     && AccessConditionUtils.addDownloadTicketToSession(pi, BeanUtils.getSession())) {
                 logger.trace("Born digital download permission for {} added to user session.", pi);
                 DataManager.getInstance().getSecurityManager().resetFailedLoginAttemptForIpAddress(ipAddress);
@@ -125,7 +126,7 @@ public class BornDigitalBean implements Serializable {
             Messages.error(StringConstants.MSG_ERR_PASSWORD_INCORRECT);
             return "";
         } finally {
-            downloadTicketPassword = null;
+            ticketPassword = null;
         }
     }
 
@@ -135,8 +136,29 @@ public class BornDigitalBean implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      */
+    public String requestNewRecordAccessTicketAction() throws DAOException, IndexUnreachableException {
+        return requestNewdTicketAction(AccessTicketType.RECORD);
+    }
+
+    /**
+     * 
+     * @return empty string
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
     public String requestNewDownloadTicketAction() throws DAOException, IndexUnreachableException {
-        if (StringUtils.isEmpty(downloadTicketEmail)) {
+        return requestNewdTicketAction(AccessTicketType.DOWNLOAD);
+    }
+
+    /**
+     * 
+     * @param type
+     * @return
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    private String requestNewdTicketAction(AccessTicketType type) throws DAOException, IndexUnreachableException {
+        if (StringUtils.isEmpty(ticketEmail)) {
             Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
             return "";
         }
@@ -153,18 +175,19 @@ public class BornDigitalBean implements Serializable {
         }
 
         AccessTicket ticket = new AccessTicket();
+        ticket.setType(type);
         if (activeDocumentBean != null && activeDocumentBean.isRecordLoaded()) {
             ticket.setPi(activeDocumentBean.getPersistentIdentifier());
             ticket.setTitle(activeDocumentBean.getViewManager().getTopDocumentTitle());
         }
-        ticket.setEmail(downloadTicketEmail);
-        if (StringUtils.isNotEmpty(downloadTicketRequestMessage)) {
-            ticket.setRequestMessage(downloadTicketRequestMessage);
+        ticket.setEmail(ticketEmail);
+        if (StringUtils.isNotEmpty(ticketRequestMessage)) {
+            ticket.setRequestMessage(ticketRequestMessage);
         }
 
         if (DataManager.getInstance().getDao().addTicket(ticket)) {
-            downloadTicketEmail = null;
-            downloadTicketRequestMessage = null;
+            ticketEmail = null;
+            ticketRequestMessage = null;
 
             // Notify the requesting party of a successful request via e-mail
             sendEmailNotification(Collections.singletonList(ticket.getEmail()),
@@ -213,45 +236,45 @@ public class BornDigitalBean implements Serializable {
     /**
      * @return the downloadTicketPassword
      */
-    public String getDownloadTicketPassword() {
-        return downloadTicketPassword;
+    public String getTicketPassword() {
+        return ticketPassword;
     }
 
     /**
-     * @param downloadTicketPassword the downloadTicketPassword to set
+     * @param ticketPassword the ticketPassword to set
      */
-    public void setDownloadTicketPassword(String downloadTicketPassword) {
-        this.downloadTicketPassword = downloadTicketPassword;
+    public void setTicketPassword(String ticketPassword) {
+        this.ticketPassword = ticketPassword;
     }
 
     /**
-     * @return the downloadTicketEmail
+     * @return the ticketEmail
      */
-    public String getDownloadTicketEmail() {
-        if (downloadTicketEmail == null && userBean != null && userBean.getUser() != null) {
-            downloadTicketEmail = userBean.getUser().getEmail();
+    public String getTicketEmail() {
+        if (ticketEmail == null && userBean != null && userBean.getUser() != null) {
+            ticketEmail = userBean.getUser().getEmail();
         }
-        return downloadTicketEmail;
+        return ticketEmail;
     }
 
     /**
-     * @param downloadTicketEmail the downloadTicketEmail to set
+     * @param ticketEmail the ticketEmail to set
      */
-    public void setDownloadTicketEmail(String downloadTicketEmail) {
-        this.downloadTicketEmail = downloadTicketEmail;
+    public void setTicketEmail(String ticketEmail) {
+        this.ticketEmail = ticketEmail;
     }
 
     /**
-     * @return the downloadTicketRequestMessage
+     * @return the ticketRequestMessage
      */
-    public String getDownloadTicketRequestMessage() {
-        return downloadTicketRequestMessage;
+    public String getTicketRequestMessage() {
+        return ticketRequestMessage;
     }
 
     /**
-     * @param downloadTicketRequestMessage the downloadTicketRequestMessage to set
+     * @param ticketRequestMessage the ticketRequestMessage to set
      */
-    public void setDownloadTicketRequestMessage(String downloadTicketRequestMessage) {
-        this.downloadTicketRequestMessage = downloadTicketRequestMessage;
+    public void setTicketRequestMessage(String ticketRequestMessage) {
+        this.ticketRequestMessage = ticketRequestMessage;
     }
 }
