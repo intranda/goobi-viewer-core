@@ -416,23 +416,18 @@ public class ActiveDocumentBean implements Serializable {
 
                 // Do not open records who may not be listed for the current user
                 List<String> requiredAccessConditions = topStructElement.getMetadataValues(SolrConstants.ACCESSCONDITION);
+                boolean accessTicketRequired = false;
                 if (requiredAccessConditions != null && !requiredAccessConditions.isEmpty()) {
                     AccessPermission access =
                             AccessConditionUtils.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
                                     new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topStructElement.getPi()).toString(),
                                     (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                     if (!access.isGranted()) {
-                        if (access.isAccessTicketRequired()) {
-                            // Do not abort here if record can be unlocked with an access ticket
-                            logger.trace("Access ticket required");
-                            viewManager.setRecordAccessTicketRequired(true);
-                        } else {
-                            logger.debug("User may not open {}", topStructElement.getPi());
-                            try {
-                                throw new RecordNotFoundException(lastReceivedIdentifier);
-                            } finally {
-                                lastReceivedIdentifier = null;
-                            }
+                        logger.debug("User may not open {}", topStructElement.getPi());
+                        try {
+                            throw new RecordNotFoundException(lastReceivedIdentifier);
+                        } finally {
+                            lastReceivedIdentifier = null;
                         }
                     }
                     // If license type is configured to redirect to a URL, redirect here
@@ -449,12 +444,17 @@ public class ActiveDocumentBean implements Serializable {
                             return;
                         }
                     }
-
+                    // Access token required
+                    if (access.isAccessTicketRequired()) {
+                        logger.trace("Access ticket required");
+                        accessTicketRequired = true;
+                    }
                 }
 
                 viewManager = new ViewManager(topStructElement, AbstractPageLoader.create(topStructElement), topDocumentIddoc,
                         logid, topStructElement.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 viewManager.setToc(createTOC());
+                viewManager.setRecordAccessTicketRequired(accessTicketRequired);
 
                 HttpSession session = BeanUtils.getSession();
                 // Release all locks for this session except the current record
