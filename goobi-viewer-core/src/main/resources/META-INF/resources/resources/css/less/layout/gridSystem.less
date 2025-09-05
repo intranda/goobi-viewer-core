@@ -1,0 +1,127 @@
+/* ==============================================================
+   Grid column system
+   ==============================================================*/
+
+  // REPLACING BOOTSTRAP
+  
+// -----------------------------------
+// VARIABLES
+// -----------------------------------
+
+@column-keys: 100, 90, 80, 75, 66, 60, 50, 40, 33, 30, 25, 20, 10;
+
+@breakpoints: sm, md, lg, xl;
+@breakpoint-values: 576px, 768px, 992px, 1200px;
+
+@gutter-left-right: 15px;
+
+@gutter-keys: 0, 10, 15, 30;
+@gutter-values: 0px, 5px, 7.5px, 15px;
+
+// -----------------------------------
+// MIXINS
+// -----------------------------------
+
+// Generate base/responsive columns 
+.generate-columns(@prefix: '') {
+	.loop(@i) when (@i > 0) {
+		@key: extract(@column-keys, @i);
+
+		.selector() when (@prefix ='') {
+			.column-@{key} {
+				flex: 0 0~"@{key}%";
+				max-width:~"@{key}%";
+				padding-left: @gutter-left-right;
+				padding-right: @gutter-left-right;
+				box-sizing: border-box;
+			}
+		}
+
+		.selector() when not (@prefix ='') {
+			.column-@{prefix}@{key} {
+				flex: 0 0~"@{key}%";
+				max-width:~"@{key}%";
+				padding-left: @gutter-left-right;
+				padding-right: @gutter-left-right;
+				box-sizing: border-box;
+			}
+		}
+
+		.selector();
+		.loop(@i - 1);
+	}
+
+	.loop(length(@column-keys));
+}
+
+// Generate responsive columns
+.generate-responsive-columns() {
+	.loop-bp(@i) when (@i > 0) {
+		@bp: extract(@breakpoints, @i);
+		@width: extract(@breakpoint-values, @i);
+
+		@media (min-width: @width) {
+			.generate-columns(~"@{bp}-");
+		}
+
+		.loop-bp(@i - 1);
+	}
+
+	.loop-bp(length(@breakpoints));
+}
+
+// Generate gutter utilities
+.generate-gutters() {
+	.loop-gutter(@i) when (@i > 0) {
+		@key: extract(@gutter-keys, @i);
+		@value: extract(@gutter-values, @i);
+
+		.gutter-@{key} {
+			margin-left: -@value;
+			margin-right: -@value;
+
+			>[class*="column-"] {
+				padding-left: @value;
+				padding-right: @value;
+				box-sizing: border-box;
+			}
+		}
+
+		.loop-gutter(@i - 1);
+	}
+
+	.loop-gutter(length(@gutter-keys));
+}
+
+// -----------------------------------
+// CORE CLASSES
+// -----------------------------------
+
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	margin-left: -@gutter-left-right;
+	margin-right: -@gutter-left-right;
+}
+
+// -----------------------------------
+// BUILD SYSTEM
+// -----------------------------------
+
+.generate-columns(); // .column-50, etc.
+.generate-responsive-columns(); // .md-column-50, etc.
+.generate-gutters(); // .gutter-15, etc.
+
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

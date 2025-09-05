@@ -1,0 +1,102 @@
+/* ==============================================================
+   Admin Layout
+   Basic style definitions for admin backend
+   ==============================================================*/
+
+.admin {
+	position: relative;
+	font-family: @fontBackend;
+	display: flex;
+
+	&__content {
+		min-height: 100vh;
+		width: calc(~"100vw - 270px");
+		background-color: @neutralgray2;
+		padding: 1.5rem;
+		position: relative;
+		padding-top: 1.4rem;
+
+		&.fixed-top,
+		&.fixed-bottom {
+			position: fixed;
+			padding-right: 15px;
+		}
+
+		&.fixed-top {
+			top: 0;
+		}
+
+		&.fixed-bottom {
+			bottom: 0;
+		}
+	}
+
+	&__content-inner {
+		font-size: 1.4rem;
+	}
+
+	&__content-inner-title {
+		margin: 0;
+		padding: 15px 0 0 15px;
+		font-size: 3.2rem;
+	}
+
+	&__content-inner-title-exit {
+		display: block;
+		width: 32px;
+		height: 32px;
+		background-image: url("@{images}/icons/icon_fs-exit.svg");
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: 24px;
+		margin-left: auto;
+	}
+
+	&__content-inner-content {
+		padding: 15px;
+
+		h2.admin__h2 {
+			margin-bottom: 1rem;
+			font-size: 1.8rem;
+		}
+	}
+
+	&__title-bar {
+		display: flex;
+		align-items: center;
+		padding: 15px;
+	}
+
+	&__title {
+		margin: 0;
+		padding: 0;
+		font-size: 3.2rem;
+		line-height: 1;
+	}
+
+	&__title-bar-action {
+		margin-left: 3rem;
+		font-size: 1.4rem;
+		padding: 0.4rem 0.8rem;
+	}
+
+	&__content-background {
+		height: 100%;
+		width: 100%;
+		background: @neutralgray2;
+		position: fixed;
+	}
+
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

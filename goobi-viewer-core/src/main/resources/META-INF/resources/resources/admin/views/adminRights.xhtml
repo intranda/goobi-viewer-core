@@ -82,46 +82,46 @@
 	                                            <dd class="col-sm-8">
 	                                                <!-- Allowed subthemes -->
 	                                                <ui:fragment rendered="#{license.privCmsAllSubthemes}">
-	                                                   <div class="badge badge-dark" title="#{msg.admin__license_all_subthemes}">
+	                                                   <div class="admin__badge-dark" title="#{msg.admin__license_all_subthemes}">
 	                                                       #{msg.admin__license_all_subthemes}
 	                                                   </div>
 	                                                </ui:fragment>
 	                                                <ui:repeat rendered="#{!license.privCmsAllSubthemes}" var="subtheme" value="#{license.subthemeDiscriminatorValues}">
-	                                                    <div class="badge badge-dark" title="#{msg[subtheme]}">#{msg[subtheme]}</div>
+	                                                    <div class="admin__badge-dark" title="#{msg[subtheme]}">#{msg[subtheme]}</div>
 	                                                </ui:repeat>
 	                                                <!-- Allowed categories -->
                                                     <ui:fragment rendered="#{license.privCmsAllCategories}">
-                                                       <div class="badge badge-violet" title="#{msg.admin__license_all_categories}">
+                                                       <div class="admin__badge-violet" title="#{msg.admin__license_all_categories}">
                                                            #{msg.admin__license_all_categories}
                                                        </div>
                                                     </ui:fragment>
 	                                                <ui:repeat rendered="#{!license.privCmsAllCategories}" var="cat" value="#{license.allowedCategories}">
-	                                                    <div class="badge badge-violet" title="#{msg[cat.name]}">#{msg[cat.name]}</div>
+	                                                    <div class="admin__badge-violet" title="#{msg[cat.name]}">#{msg[cat.name]}</div>
 	                                                </ui:repeat>
 	                                                <!-- Allowed CMS templates -->
                                                     <ui:fragment rendered="#{license.privCmsAllTemplates}">
-                                                       <div class="badge badge-primary" title="#{msg.admin__license_all_cms_templates}">
+                                                       <div class="admin__badge-primary" title="#{msg.admin__license_all_cms_templates}">
                                                            #{msg.admin__license_all_cms_templates}
                                                        </div>
                                                     </ui:fragment>
 	                                                <ui:repeat rendered="#{!license.privCmsAllTemplates}" var="selectable" value="#{license.selectableTemplates}">
 	                                                    <ui:fragment rendered="#{selectable.selected}">
-	                                                        <div class="badge badge-primary" title="#{msg[selectable.value.name]}">
+	                                                        <div class="admin__badge-primary" title="#{msg[selectable.value.name]}">
 	                                                            #{msg[selectable.value.name]}
 	                                                        </div>
 	                                                    </ui:fragment>
 	                                                </ui:repeat>
 	                                                <!-- Added to this license -->
 	                                                <ui:repeat var="priv" value="#{license.getSortedPrivileges(license.privileges)}">
-	                                                    <div class="badge badge-success" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                    <div class="admin__badge-active" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
 	                                                </ui:repeat>
 	                                                <!-- Inherited from the selected license type -->
 	                                                <ui:repeat var="priv" value="#{license.getSortedPrivileges(license.licenseType.privileges)}">
-	                                                    <div class="badge badge-secondary" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                    <div class="admin__badge-secondary" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
 	                                                </ui:repeat>
 	                                                <!-- All other -->
 	                                                <ui:repeat var="priv" value="#{license.getAvailablePrivileges(license.privileges)}">
-	                                                    <div class="badge badge-light -light" aria-disabled="true" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                    <div class="admin__badge-light -light" aria-disabled="true" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
 	                                                </ui:repeat>
 	                                            </dd>
 	                                        </dl>
