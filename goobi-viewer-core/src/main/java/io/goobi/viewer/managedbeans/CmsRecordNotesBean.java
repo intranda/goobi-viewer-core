@@ -29,14 +29,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
@@ -51,6 +47,12 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
+import io.goobi.viewer.servlets.IdentifierResolver;
+import io.goobi.viewer.solr.SolrConstants;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  *
@@ -146,9 +148,22 @@ public class CmsRecordNotesBean implements Serializable {
         return false;
     }
 
-    public String getRecordUrl(CMSSingleRecordNote note) {
+    /**
+     * 
+     * @param note
+     * @return Record URL
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getRecordUrl(CMSSingleRecordNote note) throws PresentationException, IndexUnreachableException {
         if (note != null) {
-            return navigationHelper.getImageUrl() + "/" + note.getRecordPi() + "/";
+            SolrDocument doc =
+                    DataManager.getInstance().getSearchIndex().getFirstDoc("+" + SolrConstants.PI + ":\"" + note.getRecordPi() + '"', null);
+            if (doc != null) {
+                return IdentifierResolver.constructUrl(doc, false);
+            }
+
+            return navigationHelper.getMetadataUrl() + "/" + note.getRecordPi() + "/";
         }
         return "";
     }
