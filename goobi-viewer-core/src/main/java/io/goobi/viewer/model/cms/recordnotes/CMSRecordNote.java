@@ -25,6 +25,7 @@ import java.io.Serializable;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.translations.TranslatedText;
@@ -39,6 +40,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget
@@ -84,6 +86,9 @@ public abstract class CMSRecordNote implements Serializable {
 
     @Column(name = "style_class", nullable = true)
     private String styleClass = "";
+
+    @Transient
+    private SolrDocument solrDoc;
 
     protected CMSRecordNote() {
     }
@@ -190,6 +195,20 @@ public abstract class CMSRecordNote implements Serializable {
 
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
+    }
+
+    /**
+     * @return the solrDoc
+     */
+    public SolrDocument getSolrDoc() {
+        return solrDoc;
+    }
+
+    /**
+     * @param solrDoc the solrDoc to set
+     */
+    public void setSolrDoc(SolrDocument solrDoc) {
+        this.solrDoc = solrDoc;
     }
 
     public abstract CMSRecordNote copy();

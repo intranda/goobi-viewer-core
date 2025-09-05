@@ -34,8 +34,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -135,9 +137,17 @@ public class CmsRecordNotesBean implements Serializable {
      */
     public String getThumbnailUrl(CMSSingleRecordNote note, int width, int height)
             throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        if (StringUtils.isNotBlank(note.getRecordPi())) {
-            return images.getThumbs().getThumbnailUrl(note.getRecordPi(), width, height);
+        if (note != null && StringUtils.isNotBlank(note.getRecordPi())) {
+            // return images.getThumbs().getThumbnailUrl(note.getRecordPi(), width, height);
+            if (note.getSolrDoc() == null) {
+                note.setSolrDoc(
+                        DataManager.getInstance().getSearchIndex().getFirstDoc("+" + SolrConstants.PI + ":\"" + note.getRecordPi() + '"', null));
+            }
+            if (note.getSolrDoc() != null) {
+                return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(note.getSolrDoc(), width, height);
+            }
         }
+
         return "";
     }
 
@@ -157,10 +167,12 @@ public class CmsRecordNotesBean implements Serializable {
      */
     public String getRecordUrl(CMSSingleRecordNote note) throws PresentationException, IndexUnreachableException {
         if (note != null) {
-            SolrDocument doc =
-                    DataManager.getInstance().getSearchIndex().getFirstDoc("+" + SolrConstants.PI + ":\"" + note.getRecordPi() + '"', null);
-            if (doc != null) {
-                return IdentifierResolver.constructUrl(doc, false);
+            if (note.getSolrDoc() == null) {
+                note.setSolrDoc(
+                        DataManager.getInstance().getSearchIndex().getFirstDoc("+" + SolrConstants.PI + ":\"" + note.getRecordPi() + '"', null));
+            }
+            if (note.getSolrDoc() != null) {
+                return IdentifierResolver.constructUrl(note.getSolrDoc(), false);
             }
 
             return navigationHelper.getMetadataUrl() + "/" + note.getRecordPi() + "/";
