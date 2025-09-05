@@ -27,21 +27,20 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
 
 /**
  * @author florian
  *
  */
-class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
+class CmsRecordNotesBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     CmsRecordNotesBean bean;
     AbstractApiUrlManager urls;
@@ -97,9 +96,9 @@ class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     void testGetThumbnailUrl() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
         String url = bean.getThumbnailUrl(note, 333, 444);
-        String reference = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF).params("PI1", "full", "!333,444", "0", "default", "jpg").build();
+        String reference =
+                urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF).params("PI1", "full", "!333,444", "0", "default", "jpg").build();
         assertEquals(reference, url);
     }
-
 
 }
