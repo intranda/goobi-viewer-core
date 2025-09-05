@@ -92,10 +92,10 @@
                                         </div>
                                         <div class="col-4" role="gridcell">
                                             <ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
-                                            <span class="admin__badge-warning">#{msg.admin__cms_static_page}</span>
+                                            <span class="admin__badge admin__badge-warning">#{msg.admin__cms_static_page}</span>
                                             </ui:fragment>
 	    									<ui:repeat value="#{page.categories}" var="category">
-	                                            <div class="admin__badge-violet">#{category.name}</div>
+	                                            <div class="admin__badge admin__badge-violet">#{category.name}</div>
 	                                        </ui:repeat>
                                         </div>
                                         <div class="col-2 d-flex" role="gridcell">

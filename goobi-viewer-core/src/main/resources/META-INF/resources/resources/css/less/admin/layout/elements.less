@@ -1,8 +1,7 @@
 /* ==============================================================
-	Admin basic elements styles
+	Admin single elements styles
    ==============================================================*/
 .admin {
-	
 	&__default-block {
 		h3 {
 			font-size: 1.5rem;
@@ -16,7 +15,6 @@
 		// border: 1px solid @middlegray;
 		border-radius: 7px;
 		border: 1px solid rgb(228, 231, 236);
- 
 
 		&.-danger {
 			border-top: 5px solid @redBar;
@@ -60,40 +58,53 @@
 		}
 	}
 	
+	// slightly different badge styling in info texts
+	&__info-text {
+		.admin__badge {
+			background-color: #fff;
+			margin-right: 0;
+		}
+		.admin__badge-warning {
+			background-color: #ffc107;
+			color: #212529;
+		}
+	}
+
 	// ADMIN BADGES
 	&__badge {
+
 		// GENERAL MIXIN FOR ADMIN BADGES
 		.badge-variant(@border-color: #222, @text-color: #222, @bg-color: transparent) {
-			  display: inline-flex;
-			  align-items: center;        // korrigiert: "align-elements" gibt es nicht
-			  gap: 5px;
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
 
-			  padding: .3rem .6rem;
-			  margin-right: .5rem;
-			  margin-bottom: .5rem;
+			padding: .3rem .6rem;
+			margin-right: .5rem;
+			margin-bottom: .5rem;
 
-			  font-size: 1.4rem;
-			  font-weight: normal;
-			  line-height: 1;
-			  text-align: center;
-			  white-space: nowrap;
-			  text-overflow: ellipsis;
-			  overflow: hidden;
+			font-size: 1.4rem;
+			font-weight: normal;
+			line-height: 1;
+			text-align: center;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: hidden;
 
-			  vertical-align: baseline;
-			  border: 1px solid @border-color;
-			  border-radius: 0;
+			vertical-align: baseline;
+			border: 1px solid @border-color;
+			border-radius: 0;
 
-			  color: @text-color;
-			  background-color: @bg-color;
+			color: @text-color;
+			background-color: @bg-color;
 
-			  transition: 
-			    color 0.15s ease-in-out, 
-			    background-color 0.15s ease-in-out, 
-			    border-color 0.15s ease-in-out, 
-			    box-shadow 0.15s ease-in-out;
-			}
-		
+			transition:
+				color 0.15s ease-in-out,
+				background-color 0.15s ease-in-out,
+				border-color 0.15s ease-in-out,
+				box-shadow 0.15s ease-in-out;
+		}
+
 		&-light {
 			cursor: default;
 			padding: 0;
@@ -118,10 +129,10 @@
 		}
 
 		&-danger {
-			.badge-variant(#dc3545, #fff ,#dc3545);
+			.badge-variant(#dc3545, #fff, #dc3545);
 		}
 
-		&-active{
+		&-active {
 			.badge-variant(#008a00, #008a00);
 		}
 
@@ -137,12 +148,14 @@
 			text-transform: uppercase;
 			.badge-variant(#ccc, #212529, #ccc);
 		}
+
 		&-hover {
 			.badge-active {
 				&:hover {
 					color: @black;
 				}
 			}
+
 			.badge-dark {
 				&:hover {
 					background-color: #F5F5F5;

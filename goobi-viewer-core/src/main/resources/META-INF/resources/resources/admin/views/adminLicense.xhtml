@@ -161,7 +161,7 @@
                                         <div class="col-9 badge-hover pb-3">
                                             <c:forEach var="priv" items="#{adminLicenseBean.currentLicenseType.getSortedPrivileges(adminLicenseBean.currentLicenseType.privilegesCopy)}">
                                                 <button 
-                                                    class="btn btn--link admin__badge-active admin__license-action" 
+                                                    class="btn btn--link admin__badge admin__badge-active admin__license-action" 
                                                     jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
                                                         <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
                                                         <!-- remove button -->
@@ -182,7 +182,7 @@
                                         <div class="col-9 badge-hover">
                                             <c:forEach var="priv" items="#{adminLicenseBean.currentLicenseType.availablePrivileges}">
                                                 <button 
-                                                    class="btn btn--link admin__badge-dark admin__license-action" 
+                                                    class="btn btn--link admin__badge admin__badge-dark admin__license-action" 
                                                     jsf:action="#{adminLicenseBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
                                                         #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
                                                         <!-- add button -->
