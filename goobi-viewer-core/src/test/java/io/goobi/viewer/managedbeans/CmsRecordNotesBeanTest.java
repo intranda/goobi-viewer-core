@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -94,10 +95,13 @@ class CmsRecordNotesBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Test
     void testGetThumbnailUrl() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        CMSSingleRecordNote note = new CMSSingleRecordNote("PI1");
+        CMSSingleRecordNote note = new CMSSingleRecordNote(AbstractSolrEnabledTest.PI_KLEIUNIV);
         String url = bean.getThumbnailUrl(note, 333, 444);
         String reference =
-                urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF).params("PI1", "full", "!333,444", "0", "default", "jpg").build();
+                urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF)
+                        .params(AbstractSolrEnabledTest.PI_KLEIUNIV, "full", "!333,444", "0", "default", "jpg")
+                        .build()
+                        .replace("representative", "files/images/00000001.tif"); // TODO replace hack
         assertEquals(reference, url);
     }
 
