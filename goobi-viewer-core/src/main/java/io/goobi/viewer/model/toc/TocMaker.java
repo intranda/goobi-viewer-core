@@ -99,7 +99,7 @@ public final class TocMaker {
     }
 
     /**
-     * Returns a list of fields to be used as the field filter for Solr queries. The list constists of statically defined fields in REQUIRED_FIELDS
+     * Returns a list of fields to be used as the field filter for Solr queries. The list consists of statically defined fields in REQUIRED_FIELDS
      * and any additional fields configured for the TOC label.
      *
      * @should return both static and configured fields
@@ -711,7 +711,7 @@ public final class TocMaker {
                         .append(SolrConstants.PI)
                         .append(":*")
                         .toString();
-                logger.debug("Sibling query: {}", siblingQuery);
+                logger.trace("Sibling query: {}", siblingQuery);
                 SolrDocumentList childDocs = DataManager.getInstance()
                         .getSearchIndex()
                         .search(siblingQuery, SolrSearchIndex.MAX_HITS,

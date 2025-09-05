@@ -4,9 +4,10 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
     version="2.1"
     xmlns="http://xmlns.jcp.org/xml/ns/persistence">
-	<persistence-unit name="intranda_viewer_tomcat" transaction-type="JTA">
+	<persistence-unit name="intranda_viewer_tomcat" transaction-type="RESOURCE_LOCAL">
+        <non-jta-data-source>java:comp/env/viewer</non-jta-data-source>
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <jta-data-source>java:comp/env/viewer</jta-data-source>
+<!--         <jta-data-source>java:comp/env/viewer</jta-data-source> -->
 
         <class>io.goobi.viewer.controller.mq.ViewerMessage</class>
         <class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
@@ -106,6 +107,8 @@
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
 
 		<properties>
+             <property name="eclipselink.jdbc.datasource" value="java:comp/env/viewer"/>
+        
 			<!-- EclipseLink should create the database schema automatically -->
 			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<property name="eclipselink.ddl-generation.output-mode" value="database" />
@@ -119,8 +122,8 @@
 
             <!-- EclipseLink does not support MariaDB directly, so let's set it to MySQL for now, see
                  https://jira.mariadb.org/browse/CONJ-702?focusedCommentId=205084&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-205084 -->
-            <property name="eclipselink.target-database" value="MySQL"/>
-
+            <property name="eclipselink.target-database" value="MariaDB"/>
+            
 			<!-- <property name="eclipselink.cache.shared.default" value="false" /> -->
             <!-- <property name="eclipselink.logging.logger" value="ServerLogger" /> -->
 			<!-- <property name="eclipselink.logging.level.sql" value="ALL" /> -->

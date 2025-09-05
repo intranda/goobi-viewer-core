@@ -95,18 +95,18 @@
                                     <h:panelGroup>
                                         <!-- Admin -->
                                         <ui:fragment rendered="#{user.superuser}">
-                                            <div class="admin__badge-danger admin__table-badges">#{msg.admin}</div>
+                                            <div class="admin__badge admin__badge-danger admin__table-badges">#{msg.admin}</div>
                                         </ui:fragment>
 
                                         <!-- TODO This might get expensive -->
                                         <!-- Ownerships -->
                                         <ui:repeat var="group" value="#{user.userGroupOwnerships}">
-                                        <div class="admin__badge-info admin__table-badges">#{group.name}</div>
+                                        <div class="admin__badge admin__badge-info admin__table-badges">#{group.name}</div>
                                         </ui:repeat>
 
                                         <!-- Memberships -->
                                         <ui:repeat var="role" value="#{user.userGroupMemberships}">
-                                            <div class="admin__badge-dark admin__table-badges">#{role.userGroup.name}</div>
+                                            <div class="admin__badge admin__badge-dark admin__table-badges">#{role.userGroup.name}</div>
                                         </ui:repeat>
                                     </h:panelGroup>
                                 </div>

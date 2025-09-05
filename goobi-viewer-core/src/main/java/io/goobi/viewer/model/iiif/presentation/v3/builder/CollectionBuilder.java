@@ -118,7 +118,7 @@ public class CollectionBuilder extends AbstractBuilder {
         List<CollectionResult> collections = dataRetriever.getChildCollections(collectionField, collectionName);
         for (CollectionResult collectionResult : collections) {
             Collection3 collection = createCollection(collectionField, collectionResult.getName());
-            CollectionExtent extent = new CollectionExtent(collectionResult.getChildCount().intValue(), (int) collectionResult.getCount().intValue());
+            CollectionExtent extent = new CollectionExtent(collectionResult.getChildCount().intValue(), collectionResult.getCount().intValue());
             collection.addService(extent);
             baseCollection.addItem(collection);
         }
@@ -191,6 +191,7 @@ public class CollectionBuilder extends AbstractBuilder {
             AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getCMSMediaImageApiManager(Version.v2);
             if (urls != null) {
                 String thumbURI = urls.path(CMS_MEDIA, CMS_MEDIA_FILES_FILE).params(cmsCollection.getMediaItem().getFileName()).build();
+                // TODO Check access?
                 thumb = new ImageResource(thumbURI, thumbWidth, thumbHeight);
             } else {
                 thumb = new ImageResource(cmsCollection.getIconURI(thumbWidth, thumbHeight));

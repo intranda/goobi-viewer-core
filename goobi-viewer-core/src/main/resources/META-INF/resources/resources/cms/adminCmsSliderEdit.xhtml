@@ -332,7 +332,7 @@
 																	id="selectedCategories">
 																	<ui:repeat var="category"
 																		value="#{cmsSliderEditBean.selectableCategories.stream().filter(sel -> sel.selected).map(sel -> sel.value.name).toList()}">
-																		<div class="badge badge-violet">#{msg[category]}</div>
+																		<div class="admin__badge admin__badge-violet">#{msg[category]}</div>
 																	</ui:repeat>
 																</h:panelGroup>
 															</div>

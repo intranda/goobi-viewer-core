@@ -53,7 +53,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.filters.LoginFilter;
-import io.goobi.viewer.managedbeans.storage.SessionBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -124,6 +123,8 @@ public class UserBean implements Serializable {
     private String lastName;
     /** Redirect URL after successful login. */
     private String redirectUrl = null;
+    /** External origin, e.g. IIIF Auth client. */
+    private String origin = null;
     private String transkribusUserName;
     private String transkribusPassword;
     private Boolean hasAdminBackendAccess;
@@ -357,6 +358,7 @@ public class UserBean implements Serializable {
         logger.debug("completeLogin: {}", Thread.currentThread().threadId());
         HttpServletResponse response = result.getResponse();
         HttpServletRequest request = result.getRequest();
+        HttpSession session = request != null ? request.getSession(false) : null;
         try {
             Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
             if (result.isRefused()) {
@@ -378,13 +380,17 @@ public class UserBean implements Serializable {
                     if (this.user != null) {
                         if (this.user.equals(u)) {
                             logger.debug("User already logged in");
+                            if (isCloseTabAfterLogin()) {
+                                logger.debug("Closing login tab...");
+                                doRedirect(response, DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "logincomplete/");
+                            }
                             return;
                         }
                         // Exception if different user logged in
                         throw new AuthenticationProviderException("errLoginError");
                     }
 
-                    BeanUtils.wipeSessionAttributes(request);
+                    BeanUtils.wipeSessionAttributes(session);
 
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
@@ -393,29 +399,34 @@ public class UserBean implements Serializable {
                         logger.error("Could not update user in DB.");
                     }
                     setUser(u);
-                    if (request != null && request.getSession(false) != null) {
-                        request.getSession(false).setAttribute("user", u);
-                        logger.trace("Added user to HTTP session ID {}: {}", request.getSession(false).getId(), u.getId());
+                    if (session != null) {
+                        session.setAttribute("user", u);
+                        logger.trace("Added user to HTTP session ID {}: {}", session.getId(), u.getId());
                     }
 
                     // Start timer
                     //                    sessionTimeoutMonitorTimer = new Timer();
                     //                    sessionTimeoutMonitorTimer.scheduleAtFixedRate(new SessionTimeoutMonitorTask(), 0, 10000);
 
-                    if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
-                        logger.trace("Redirecting to {}", redirectUrl);
-                        String url = this.redirectUrl;
-                        this.redirectUrl = "";
-                        doRedirect(response, url);
-                    } else if (response != null) {
-                        Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(request);
-                        if (currentPath.isPresent()) {
-                            logger.trace("Redirecting to current URL: {}", currentPath.get().getCombinedPrettyfiedUrl());
-                            doRedirect(response, ServletUtils.getServletPathWithHostAsUrlFromRequest(request)
-                                    + currentPath.get().getCombinedPrettyfiedUrl());
+                    if (response != null) {
+                        if (isCloseTabAfterLogin()) {
+                            logger.debug("Closing login tab...");
+                            doRedirect(response, DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "logincomplete/");
+                        } else if (StringUtils.isNotEmpty(redirectUrl)) {
+                            logger.debug("Redirecting to {}", redirectUrl);
+                            String url = this.redirectUrl;
+                            this.redirectUrl = "";
+                            doRedirect(response, url);
                         } else {
-                            logger.trace("Redirecting to start page");
-                            doRedirect(response, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                            Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(request);
+                            if (currentPath.isPresent()) {
+                                logger.trace("Redirecting to current URL: {}", currentPath.get().getCombinedPrettyfiedUrl());
+                                doRedirect(response, ServletUtils.getServletPathWithHostAsUrlFromRequest(request)
+                                        + currentPath.get().getCombinedPrettyfiedUrl());
+                            } else {
+                                logger.trace("Redirecting to start page");
+                                doRedirect(response, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                            }
                         }
                     }
 
@@ -486,8 +497,10 @@ public class UserBean implements Serializable {
         HttpServletRequest request = BeanUtils.getRequest();
         String url = redirect(request);
 
-        user.setTranskribusSession(null);
-        setUser(null);
+        if (user != null) {
+            user.setTranskribusSession(null);
+            setUser(null);
+        }
         password = null;
         hasAdminBackendAccess = null;
         if (loggedInProvider != null) {
@@ -499,8 +512,9 @@ public class UserBean implements Serializable {
             if (sessionTimeoutMonitorTimer != null) {
                 sessionTimeoutMonitorTimer.cancel();
             }
-            BeanUtils.wipeSessionAttributes(request);
+            BeanUtils.wipeSessionAttributes(request.getSession());
             SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
+            DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
             throw new AuthenticationProviderException(e);
         }
@@ -870,6 +884,10 @@ public class UserBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isShowOpenIdConnect();
     }
 
+    public boolean isCloseTabAfterLogin() {
+        return StringUtils.isNotEmpty(origin);
+    }
+
     /**
      * <p>
      * Getter for the field <code>authenticationProviders</code>.
@@ -1067,6 +1085,21 @@ public class UserBean implements Serializable {
             this.redirectUrl = redirectUrl;
             logger.trace("Redirect URL: {}", redirectUrl);
         }
+    }
+
+    /**
+     * @return the origin
+     */
+    public String getOrigin() {
+        return origin;
+    }
+
+    /**
+     * @param origin the origin to set
+     */
+    public void setOrigin(String origin) {
+        logger.debug("setOrigin: {}", origin);
+        this.origin = origin;
     }
 
     /**

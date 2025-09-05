@@ -61,6 +61,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
@@ -270,14 +271,14 @@ public class RecordFileResource {
 
         try {
             if (BaseMimeType.IMAGE == BaseMimeType.getByName(FileTools.getMimeTypeFromFile(Path.of(filename)))) {
-                return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename,
-                        IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES).isGranted();
+                return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(), pi, filename,
+                        IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES, NetTools.getIpAddress(servletRequest)).isGranted();
             }
         } catch (IOException e) {
             logger.warn("Unable to read mimetype of file {}", filename);
         }
-        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename,
-                IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES).isGranted();
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(), pi, filename,
+                IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, NetTools.getIpAddress(servletRequest)).isGranted();
     }
 
     @GET
@@ -352,7 +353,8 @@ public class RecordFileResource {
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccess(servletRequest, "text", pi, filename, false).isGranted();
+            access = AccessConditionUtils.checkAccess(servletRequest.getSession(), "text", pi, filename, NetTools.getIpAddress(servletRequest), false)
+                    .isGranted();
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(String.format("Cannot check fulltext access for pi %s and file %s: %s", pi, filename, e.toString()));
         }

@@ -182,7 +182,7 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "500", description = "Internal error")
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");
-        Optional<NavigationHelper> nh = BeanUtils.getBeanFromRequest(servletRequest, "navigationHelper", NavigationHelper.class);
+        Optional<NavigationHelper> nh = BeanUtils.getBeanFromSession(servletRequest.getSession(), "navigationHelper", NavigationHelper.class);
         if (redirectUrl != null && (!nh.isPresent() || !redirectUrl.startsWith(nh.get().getApplicationUrl()))) {
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_ILLEGAL_REDIRECT_URL)
                     .build();

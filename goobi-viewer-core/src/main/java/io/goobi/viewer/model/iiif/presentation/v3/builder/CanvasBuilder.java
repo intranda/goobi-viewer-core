@@ -47,6 +47,8 @@ import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.v3.Canvas3;
+import de.intranda.api.iiif.presentation.v3.LabeledResource;
+import de.intranda.api.services.Service;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -54,9 +56,11 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
+import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ImageHandler;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
@@ -96,9 +100,10 @@ public class CanvasBuilder extends AbstractBuilder {
      * @throws IndexUnreachableException
      * @throws ContentLibException
      * @throws URISyntaxException
+     * @throws DAOException
      */
     public Canvas3 build(String pi, int order)
-            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException {
+            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, DAOException {
         StructElement topStruct = this.dataRetriever.getDocument(pi);
         PhysicalElement page = AbstractPageLoader.loadPage(topStruct, order);
         if (page != null) {
@@ -117,9 +122,10 @@ public class CanvasBuilder extends AbstractBuilder {
      * @throws URISyntaxException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws DAOException
      */
     public AnnotationPage buildFulltextAnnotations(String pi, int order)
-            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
         StructElement topStruct = this.dataRetriever.getDocument(pi);
         PhysicalElement page = AbstractPageLoader.loadPage(topStruct, order);
         Canvas3 canvas = build(page);
@@ -134,9 +140,10 @@ public class CanvasBuilder extends AbstractBuilder {
      * @throws URISyntaxException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws DAOException
      */
     public Canvas3 build(PhysicalElement page)
-            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
         URI canvasUri = this.urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(page.getPi(), page.getOrder()).buildURI();
         Canvas3 canvas = new Canvas3(canvasUri);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
@@ -181,11 +188,20 @@ public class CanvasBuilder extends AbstractBuilder {
      *
      * @param page
      * @return The annotation page, or null if no fulltext is available for the given page
+     * @throws DAOException
+     * @throws IndexUnreachableException
      */
-    private AnnotationPage getFulltextAnnotationsReference(PhysicalElement page) {
+    private AnnotationPage getFulltextAnnotationsReference(PhysicalElement page) throws IndexUnreachableException, DAOException {
         if (page.isFulltextAvailable()) {
             URI annoPageUri = this.urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_TEXT).params(page.getPi(), page.getOrder()).buildURI();
-            return new AnnotationPage(annoPageUri, false);
+            AnnotationPage ret = new AnnotationPage(annoPageUri, false);
+            if (!page.isAccessPermissionFulltext()) {
+                // Add auth services
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    ret.addService(service);
+                }
+            }
+            return ret;
         }
 
         return null;
@@ -252,9 +268,10 @@ public class CanvasBuilder extends AbstractBuilder {
      * @throws PresentationException
      * @throws URISyntaxException
      * @throws ContentLibException
+     * @throws DAOException
      */
     private void addImageResource(Canvas3 canvas, PhysicalElement page)
-            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
         if (page.getImageWidth() > 0 && page.getImageHeight() > 0) {
             canvas.setWidth(page.getImageWidth());
             canvas.setHeight(page.getImageHeight());
@@ -271,14 +288,24 @@ public class CanvasBuilder extends AbstractBuilder {
         if (page.isHasImage()) {
             String filename = page.getFileName();
             URI mediaId = imageUrlManager.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_MEDIA).params(page.getPi(), page.getOrder()).buildURI();
-            if ((ImageHandler.isExternalUrl(filename))) {
+            if (ImageHandler.isExternalUrl(filename)) {
                 // Hotfix for URIs that contain spaces in the image file name
                 String imageId = ImageHandler.getIIIFBaseUrl(filename.replace(" ", "+"));
-                canvas.addMedia(mediaId, new ImageResource(imageId, thumbWidth, thumbHeight));
+                ImageResource imageResource = new ImageResource(imageId, thumbWidth, thumbHeight);
+                canvas.addMedia(mediaId, imageResource);
             } else {
                 String escFilename = StringTools.encodeUrl(filename);
                 String imageId = imageUrlManager.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), escFilename).build();
-                canvas.addMedia(mediaId, new ImageResource(imageId, thumbWidth, thumbHeight));
+                ImageResource imageResource = new ImageResource(imageId, thumbWidth, thumbHeight);
+                boolean access = page.isAccessPermissionImage();
+                if (!access) {
+                    for (ImageInformation ii : imageResource.getServices()) {
+                        for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName())) {
+                            ii.addService(service);
+                        }
+                    }
+                }
+                canvas.addMedia(mediaId, imageResource);
             }
         }
 
@@ -288,8 +315,10 @@ public class CanvasBuilder extends AbstractBuilder {
      * 
      * @param canvas
      * @param page
+     * @throws DAOException
+     * @throws IndexUnreachableException
      */
-    private void addRelatedResources(Canvas3 canvas, PhysicalElement page) {
+    private void addRelatedResources(Canvas3 canvas, PhysicalElement page) throws IndexUnreachableException, DAOException {
 
         if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer()) {
             PageType pageType = PageType.viewMetadata;
@@ -313,14 +342,26 @@ public class CanvasBuilder extends AbstractBuilder {
                     .buildURI();
             LinkingProperty pdf =
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
-            canvas.addRendering(pdf.getResource(uri));
+            LabeledResource resource = pdf.getResource(uri);
+            if (!page.isAccessPermissionFulltext()) {
+                resource.addService(AuthorizationFlowTools.getAuthServices("/pdf/" + page.getPi() + "/" + page.getAltoFileName() + "/").get(0));
+                logger.trace("Added auth services for PDF.");
+            }
+            canvas.addRendering(resource);
         }
 
         if (StringUtils.isNotBlank(page.getAltoFileName()) && DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto()) {
             URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), getFilename(page.getAltoFileName())).buildURI();
             LinkingProperty alto =
                     new LinkingProperty(LinkingTarget.ALTO, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));
-            canvas.addSeeAlso(alto.getResource(uri));
+            LabeledResource resource = alto.getResource(uri);
+            if (!page.isAccessPermissionFulltext()) {
+                // Add auth services
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    resource.addService(service);
+                }
+            }
+            canvas.addSeeAlso(resource);
         }
 
         if (StringUtils.isNotBlank(page.getFulltextFileName())
@@ -334,7 +375,14 @@ public class CanvasBuilder extends AbstractBuilder {
             URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), getFilename(page.getAltoFileName())).buildURI();
             LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT,
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));
-            canvas.addRendering(text.getResource(uri));
+            LabeledResource resource = text.getResource(uri);
+            if (!page.isAccessPermissionFulltext()) {
+                // Add auth services
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    resource.addService(service);
+                }
+            }
+            canvas.addRendering(resource);
         }
     }
 }

@@ -292,15 +292,21 @@ public final class SearchHelper {
                     String altoFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO);
                     String plaintextFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
                     String pi = (String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
+                    HttpServletRequest request = BeanUtils.getRequest();
                     if (StringUtils.isNotBlank(plaintextFilename)) {
-                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, plaintextFilename, false).isGranted();
+                        boolean access = AccessConditionUtils
+                                .checkAccess(request.getSession(), "text", pi, plaintextFilename, NetTools.getIpAddress(request), false)
+                                .isGranted();
                         if (access) {
                             fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false);
                         } else {
                             fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
                         }
                     } else if (StringUtils.isNotBlank(altoFilename)) {
-                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, altoFilename, false).isGranted();
+                        boolean access =
+                                AccessConditionUtils
+                                        .checkAccess(request.getSession(), "text", pi, altoFilename, NetTools.getIpAddress(request), false)
+                                        .isGranted();
                         if (access) {
                             fulltext = DataFileTools.loadFulltext(altoFilename, null, false);
                         } else {

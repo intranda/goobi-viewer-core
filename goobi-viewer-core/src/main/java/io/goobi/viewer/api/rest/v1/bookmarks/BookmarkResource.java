@@ -101,7 +101,7 @@ public class BookmarkResource {
     public BookmarkResource(@Context HttpServletRequest servletRequest, @Context HttpServletResponse servletResponse) {
         this.servletRequest = servletRequest;
         this.servletResponse = servletResponse;
-        UserBean bean = BeanUtils.getUserBeanFromRequest(servletRequest);
+        UserBean bean = BeanUtils.getUserBeanFromSession(servletRequest.getSession());
         if (bean != null) {
             User currentUser = bean.getUser();
             if (currentUser != null) {
