@@ -2553,7 +2553,73 @@
 // EOL admin__
 }
 
+.radio-button-tree {
+	&__wrapper {
+		
+	}
+	&__connected-top,
+	&__connected-middle,
+	&__connected-bottom {
+		padding-left: 35px;
+		padding-top: 10px;
+		background-position: 0px top;
+		padding-bottom: 10px;
+		background-repeat: no-repeat;
+	}
+	&__connected-top {
+		background-image: url(../../images/backend/radio_choice_top.svg);
+	}
+	&__connected-middle	{
+		background-image: url(../../images/backend/radio_choice_middle.svg);
+		background-position: 0px -24px;
+	}
+	&__connected-bottom {
+		background-image: url(../../images/backend/radio_choice_bottom.svg);
+	}
+	input[type="radio"]:checked+label {
+	    font-weight: bold;
+	}
+	
+	.custom-radio {
+	  display: flex;
+	  align-items: center;
+	  cursor: pointer;
+	  margin-bottom: 0.5rem;
+	  position: relative;
+	  font-size: 16px; 
+	}
 
+	.custom-radio input[type="radio"] {
+	 // appearance: none; /* entfernt native Styles */
+	 // -webkit-appearance: none;
+	 // position: absolute;
+	 // opacity: 0;
+	  // pointer-events: none;
+	}
+
+	.radio-indicator {
+	  width: 18px;
+	  height: 18px;
+	  border: 2px solid #333;
+	  border-radius: 50%;
+	  margin-right: 10px;
+	  position: relative;
+	  box-sizing: border-box;
+	  transition: all 0.2s ease-in-out;
+	}
+
+	.custom-radio input[type="radio"]:checked + .radio-indicator::after {
+	  content: "";
+	  position: absolute;
+	  top: 4px;
+	  left: 4px;
+	  width: 8px;
+	  height: 8px;
+	  background-color: #333;
+	  border-radius: 50%;
+	}
+	
+}
 
 // VISUALLY CONNECTED RADIO BUTTONS
 

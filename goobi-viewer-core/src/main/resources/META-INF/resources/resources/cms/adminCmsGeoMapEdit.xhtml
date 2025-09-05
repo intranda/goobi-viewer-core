@@ -320,17 +320,104 @@
 													
 													<div class="d-flex admin__geomap-radio-group-wrapper">
 													
-														<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope" />
-														<ui:repeat value="#{SolrSearchScope.values()}" var="scope">
-															<div class="admin__geomap-radio-group">
-															    <h:selectOneRadio group="featuresetSearchScopeRadioGroup" immediate="true" value="#{featureSet.searchScope}">
-															    	<f:selectItem itemValue="#{scope}" itemLabel="#{msg[scope.label]}" />  
-															    	<f:ajax render="featuresetSearchScopeRadioGroup" />
-															    </h:selectOneRadio>
-														    </div>
-														</ui:repeat>
+<!-- 														<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope" /> -->
+														
+<!-- 														<ui:repeat value="#{SolrSearchScope.values()}" var="scope" varStatus="status"> -->
+															
+															
+															
+<!-- 															<div class="admin__geomap-radio-group"> -->
+<!-- 															    <h:selectOneRadio group="featuresetSearchScopeRadioGroup" immediate="true" value="#{featureSet.searchScope}"> -->
+<!-- 															    	<f:selectItem itemValue="#{scope}" itemLabel="#{msg[scope.label]}" />   -->
+<!-- 															    	<f:ajax render="featuresetSearchScopeRadioGroup" /> -->
+<!-- 															    </h:selectOneRadio> -->
+<!-- 														    </div> -->
+														    
+														    
+														    
+<!-- 														</ui:repeat> -->
+														
+														
+														
 														
 													</div>
+													
+													<!-- NEW STRUCTURES -->
+											<div class="radio-button-tree">
+
+
+											<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope" />
+											
+
+											    <h:commandScript name="changeSearchScope"
+											                     action="#{featureSetBean.updateSearchScope}"
+											                     render="@form">
+											        <f:param name="newScope" value="" />
+											    </h:commandScript>
+											
+											    <div class="custom-radio-group">
+											        <ui:repeat value="#{SolrSearchScope.values()}" var="scope" varStatus="status">
+											            
+											            <div class="#{status.first ? 'connected-top' : ''} 
+											                        #{!status.first and !status.last ? 'connected-middle' : ''}
+											                        #{status.last ? 'connected-bottom' : ''}">
+											                       
+											                        
+											                <label class="custom-radio" for="scopeRadio_#{status.index}">
+											                    
+											                    <input type="radio"
+											                          jsf:id="scopeRadio_#{status.index}"
+											                           name="searchScope"
+											                           value="#{scope.name()}"
+											                           
+											                           checked="#{featureSet.searchScope.name() == scope.name()}"
+											                          
+											                           onchange="changeSearchScope(this.value)" />
+											                           
+											                    <span class="radio-indicator"></span>
+											                    #{msg[scope.label]}
+											                </label>
+											                
+											                
+											            </div>
+											        </ui:repeat>
+											    </div>
+
+
+												
+
+
+												
+												
+												
+<!-- 												<ui:repeat value="#{SolrSearchScope.values()}" var="scope" varStatus="status"> -->
+												
+<!-- 												    <div class="#{status.first ? 'connected-top' : ''}  -->
+<!--  												                #{status.last ? 'connected-bottom' : ''} -->
+<!--  												                #{!status.first and !status.last ? 'connected-middle' : ''}"> -->
+												
+<!-- 												        <label class="custom-radio"> -->
+<!-- 												            <input type="radio" -->
+<!-- 												                   name="featuresetSearchScopeRadioGroup" -->
+<!-- 												                   value="#{scope}" -->
+<!-- 												                   onchange="#{facesContext.externalContext.requestContextPath}/featuresetSearchScopeRadioGroupForm:submit()" /> -->
+<!-- 												            <span class="radio-indicator"></span> -->
+<!-- 												            #{msg[scope.label]} -->
+<!-- 												        </label> -->
+												
+<!-- 												    </div> -->
+												
+<!-- 												</ui:repeat> -->
+												
+												
+												
+												
+
+
+												</div>	
+													
+													
+													
 													
 													
 													

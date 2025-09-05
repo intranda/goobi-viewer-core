@@ -100,16 +100,18 @@ var viewerJS = ( function( viewer ) {
 			}
 			
 			if(config.initFrontend) {
+				// procudes weird jumps and is commented out for now, since it is probably not needed anymore
+
 				// toggle collapsible widgets
-	       		viewer.toggledCollapsible.subscribe(e => {
-	            	var pos = $(e.target).position().top;
-		       		var offset = $(e.target).offset().top;
-		       		var currentPos = document.documentElement.scrollTop;
-		       		if(currentPos > pos) {
-	            		window.scrollTo(0,pos);
-					}		       		
-     				viewerJS.stickyElements.refresh.next();
-				});
+//	       		viewer.toggledCollapsible.subscribe(e => {
+//	            	var pos = $(e.target).position().top;
+//		       		var offset = $(e.target).offset().top;
+//		       		var currentPos = document.documentElement.scrollTop;
+//		       		if(currentPos > pos) {
+//	            		window.scrollTo(0,pos);
+//					}		       		
+//     				viewerJS.stickyElements.refresh.next();
+//				});
 				
 				// sticky sidebar
 			 	$('[data-target="sticky-sidebar"]').hcSticky({

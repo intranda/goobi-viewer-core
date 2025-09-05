@@ -5,11 +5,11 @@
         <nav aria-label="{opts.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
             <ul>
                 <li if="{this.currentItem > this.opts.firstItem}" class="numeric-paginator__navigate navigate_prev">
-                    <a if="{isRenderLinks()}" href="{getItemUrl(currentItem-1)}" aria-label="{msg.aria_label__pagination_previous}">
+                    <a if="{isRenderLinks()}" href="{getItemUrl(currentItem-1)}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}">
                         <i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i>
                         <i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i>
                     </a>
-                    <button if="{isRenderButtons()}" onclick="{navigateToPrevItem}" aria-label="{msg.aria_label__pagination_previous}">
+                    <button if="{isRenderButtons()}" onclick="{navigateToPrevItem}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}">
                         <i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i>
                         <i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i>
                     </button>
@@ -42,11 +42,11 @@
                     </button>
                 </li>
                 <li if="{this.currentItem < this.opts.lastItem}" class="numeric-paginator__navigate navigate_next">
-                    <a if="{isRenderLinks()}" href="{getItemUrl(currentItem+1)}" aria-label="{msg.aria_label__pagination_next}">
+                    <a if="{isRenderLinks()}" href="{getItemUrl(currentItem+1)}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}">
                         <i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i>
                         <i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i>
                     </a>
-                    <button if="{isRenderButtons()}" onclick="{navigateToNextItem}" aria-label="{msg.aria_label__pagination_next}">
+                    <button if="{isRenderButtons()}" onclick="{navigateToNextItem}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}">
                         <i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i>
                         <i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i>
                     </button>
