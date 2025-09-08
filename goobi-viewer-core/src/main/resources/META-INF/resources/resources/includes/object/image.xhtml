@@ -61,11 +61,62 @@
 
 	<!-- OPEN SEADRAGON -->
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
-    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
-    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/imageView.min.js"></script>
+    <script type="text/javascript" src="#{request.contextPath}/resources/js/dist/imageView.min.js"></script>
     <script type="text/javascript">
   		//<![CDATA[
 
+  		import("#{request.contextPath}/resources/javascript/dev/modules/viewer/viewerJS.zoomImage.mjs").then(module => {
+  			window.zoomImage = new module.ZoomImage({
+  				access: {
+	  				allowed:  #{activeDocumentBean.viewManager.currentPage.accessPermissionImage},
+	  				accessDeniedMessage: $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' )
+  				},
+  				record: {
+	  				page : "#{navigationHelper.currentPage}",
+	  				recordPi : "#{activeDocumentBean.viewManager.pi}",
+	  				currentLogId : "#{activeDocumentBean.logid}"
+  				},
+  				imageSources : #{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)},
+  				divId: "imageMap", 
+  				viewMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}",
+  				persistence: {  					
+  					zoom: #{configurationBean.rememberImageZoom},
+  	        		rotation: #{configurationBean.rememberImageRotation},
+  	        		id: "#{activeDocumentBean.topDocumentIddoc}" + "_" + "#{navigationHelper.currentPage}",
+  				},
+  				footer: {  					
+  	        		height: () => #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
+  	        		urlTemplate : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}"
+  				},
+	        	navigator: {
+	        		show: #{configurationBean.showImageNavigator(navigationHelper.currentPage, activeDocumentBean.viewManager.currentPage.mimeType)}
+	        	},
+  	        	highlightCoords: [
+  	        		{
+  	        			name: "searchHighlighting",
+  	        			coordinates: #{activeDocumentBean.viewManager.currentSearchResultCoords},
+  	        			displayTooltip: false,
+  	        			pageIndex : #{activeDocumentBean.viewManager.currentPageSourceIndex},
+  	        		},
+  			        {
+  			            name: "ugc",
+  		                coordinates: (function(coords){
+  		                    	return coords ? coords: [];
+  		                	})(#{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}),
+  		                displayTooltip: #{configurationBean.displayAnnotationTextInImage}
+  		            }, {
+  		                name: "annotations",
+  		                coordinates: window.location.hash,
+  		                displayTooltip: false
+  		            }
+  	       		],
+  	        	pageAreaConfig : {
+					areas : #{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson},
+  	                currentLogId : "#{activeDocumentBean.logid}"
+  	            }
+  			})
+  		});
+  			
   			
   		const changeImageOrder = new rxjs.Subject();	//call next() to set image in canvas, pass image order as parameter
        	const imageOrderChanged = new rxjs.Subject();	//Called when image is changed from within the canvas. subscribe to get notified of changes. image order is passed as parameter
