@@ -42,6 +42,7 @@
 		transition: background 0.2s ease;
 		border: 1px solid @middlegray;
 		position: relative;
+		border-radius: 7px;
 
 		&:hover {
 			box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
@@ -533,6 +534,7 @@
 		padding: 0 2rem 0rem 2rem;
 		border: 1px solid @middlegray;
 		margin-bottom: 2rem;
+		border-radius: 7px;
 
 		&.-slim {
 			border: none;
@@ -555,7 +557,8 @@
 		margin-right: -2rem;
 		padding-right: 2rem;
 		z-index: 950;
-
+		border-top-right-radius: 7px;
+		border-top-left-radius: 7px;
 	}
 
 	// PREVIEW BOX (ADD WIDGET)
@@ -1801,6 +1804,11 @@
 			color: @white;
 		}
 	}
+	
+	.tab-pane {
+		border-bottom-left-radius: 7px;
+		border-bottom-right-radius: 7px;
+	}
 
 	// LANGUAGE TABS
 	&__language-tabs {
@@ -1810,6 +1818,10 @@
 		.nav-tabs {
 			background: transparent;
 			border-bottom: none;
+		}
+		& + .admin__default-block {
+			border-top-left-radius: 0;
+			border-top-right-radius: 0;
 		}
 	}
 
@@ -1828,7 +1840,8 @@
 			text-align: center;
 			padding: 1rem 0;
 			color: #666;
-
+			border-top-right-radius: 7px;
+			border-top-left-radius: 7px;
 			&:hover {
 				border: 1px solid #ccc;
 				border-bottom: none;
