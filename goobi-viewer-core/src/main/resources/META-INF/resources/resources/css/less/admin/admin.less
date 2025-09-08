@@ -159,7 +159,7 @@
 
 	&__sidebar-progressbar {
 		background: @grayBar;
-		height: 30px;
+		height: 15px;
 		width: 100%;
 		display: flex;
 	}
@@ -297,16 +297,15 @@
 	&__sidebar-progressbar-partially {
 		background: @yellowBar;
 	}
-
-	&__sidebar-progress-header {
+	&__sidebar-progress-wrapper {
 		display: flex;
+		justify-content: space-between;
 	}
-
+	&__sidebar-progress-header {
+		font-weight: 400;
+		font-size: 16px;
+	}
 	&__sidebar-progress-count {
-		text-align: right;
-		margin-left: auto;
-		font-size: 14px;
-		align-self: center;
 	}
 
 	&__translations-all-keys-list div:last-child {
@@ -1354,7 +1353,7 @@
 
 	&__cms-collections-progress-bar {
 		background: @grayBar;
-		height: 12px;
+		height: 15px;
 		width: auto;
 		position: relative;
 		display: flex;
@@ -1364,14 +1363,17 @@
 		position: relative;
 		display: flex;
 		justify-content: space-between;
+		margin-bottom: 3px;
 	}
 	
 	&__cms-collections-progress-heading {
-		
+		font-weight: 400;
+		font-size: 14px;
 	}
 	
 	&__cms-collections-progress-bar-numbers {
-		
+		font-weight: 400;
+		font-size: 14px;
 	}
 
 	&__cms-collections-description-toggle {
