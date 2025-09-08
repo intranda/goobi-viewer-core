@@ -134,7 +134,7 @@
                                             <span class="admin__badge admin__badge-warning">#{msg.admin__cms_static_page}</span>
                                         </ui:fragment>
                                         <ui:fragment rendered="#{page.published == false}">
-                                            <span class="badge badge-gray">#{msg.cms_pageMetadata_private}</span>
+                                            <span class="admin__badge admin__badge-gray">#{msg.cms_pageMetadata_private}</span>
                                         </ui:fragment>
                                         <ui:repeat value="#{page.categories}" var="category">
                                             <div class="admin__badge admin__badge-violet">#{category.name}</div>
