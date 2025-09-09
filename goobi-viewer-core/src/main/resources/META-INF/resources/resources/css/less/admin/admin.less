@@ -413,6 +413,7 @@
 		background: #fff;
 		border: 1px solid #ccc;
 		margin-bottom: 2rem;
+		border-radius: 7px;
 
 		&.-columns-3-2-1 {
 
@@ -438,6 +439,8 @@
 		position: sticky;
 		top: 35px;
 		background: white;
+		border-top-right-radius: 7px;
+		border-top-left-radius: 7px;
 	}
 
 	&__grid-table-sorting-wrapper {
@@ -1490,6 +1493,10 @@
 		border: 1px solid #ccc;
 		padding: 2rem;
 	}
+	.user-settings__profile-image-box,
+	.user-settings__form-wrapper {
+		border-radius: 7px;
+	}
 
 	// ADMIN CROWD ANNOTATION STYLES
 	&__annotations-download-all-butto0n-wrapper {
@@ -1806,8 +1813,13 @@
 	}
 	
 	.tab-pane {
-		border-bottom-left-radius: 7px;
-		border-bottom-right-radius: 7px;
+		border-radius: 7px;
+	}
+	.nav-tabs + .tab-content .tab-pane {
+		border-top-left-radius: 0px;
+	}
+	.-noTopRightRoundedBorder {
+		border-top-right-radius: 0px;
 	}
 
 	// LANGUAGE TABS
@@ -1819,9 +1831,8 @@
 			background: transparent;
 			border-bottom: none;
 		}
-		& + .admin__default-block {
+		& + .admin__default-block { 
 			border-top-left-radius: 0;
-			border-top-right-radius: 0;
 		}
 	}
 
