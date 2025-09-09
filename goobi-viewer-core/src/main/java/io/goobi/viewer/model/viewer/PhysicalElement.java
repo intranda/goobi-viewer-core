@@ -821,13 +821,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (fulltextAccessPermission == null) {
             fulltextAccessPermission = false;
             try {
-                fulltextAccessPermission =
-                        AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                                BeanUtils.getRequest()).isGranted();
+                //                fulltextAccessPermission =
+                //                        AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                //                                BeanUtils.getRequest()).isGranted();
+                fulltextAccessPermission = AccessConditionUtils
+                        .checkAccessPermissionByIdentifierAndPageOrder(this, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest())
+                        .isGranted();
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(String.format("Cannot check fulltext access for pi %s and pageNo %d: %s", pi, order, e.toString()));
-            } catch (RecordNotFoundException e) {
-                logger.error("Record not found in index: {}", pi);
             }
         }
 
