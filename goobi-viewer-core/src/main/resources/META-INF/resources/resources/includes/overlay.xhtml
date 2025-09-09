@@ -9,8 +9,16 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-	<div class="overlay" role="region">
-		<div id="overlayModal">
+	<div class="overlay overlay-plain" role="region">
+		<button type="button" class="close" aria-label="Close"
+			data-overlay-action="dismiss">
+			<i data-overlay-action="dismiss" class="fa fa-times" role="button"
+				aria-label="#{msg.overlay__close}"></i>
+		</button>
+	</div>
+
+	<div class="overlay overlay-modal" role="region">
+		<div id="overlayModal" class="modal">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h3 class="modal-title" data-overlay-area="header"></h3>

@@ -84,7 +84,7 @@ var viewerJS = ( function( viewer ) {
 	            if($areaHeader.length > 0 && $contentHeader.length > 0) {
 	                $areaHeader.append($contentHeader);
 	            }
-				console.log("append ", $contentBody, " to ", $areaBody);
+				console.log("Append ", $contentBody, " to ", $areaBody);
 	            if($areaBody.length > 0 && $contentBody.length > 0) {
 	                $areaBody.append($contentBody);
 	            }
@@ -104,6 +104,7 @@ var viewerJS = ( function( viewer ) {
 	                return closable;
 	            })
 	            $modal.on("shown.bs.modal", event => {
+	            	console.log("shown modal", event);
 	            	resolve(node);
 	            });
 	            $modal.on("hidden.bs.modal", event => {
@@ -138,7 +139,7 @@ var viewerJS = ( function( viewer ) {
     viewer.overlay.open = function(node, closable, fullscreen, onClose) {
    
    		return new Promise( (resolve, reject) => {
-	        let $overlay = $(".overlay");
+	        let $overlay = $(".overlay.overlay-plain");
    		// console.log("open overlay", node, $overlay);
 	        if($overlay.length > 0) {
 	            if($overlay.hasClass("active")) {
@@ -157,7 +158,7 @@ var viewerJS = ( function( viewer ) {
 		        	close: function() {
 		        		($node).detach();
 		                $overlay.removeClass("active");
-		                $overlay.removeClass("fullscreen");
+		                $overlay.removeClass("overlay-fullscreen");
 		                $( 'html' ).removeClass( 'no-overflow' );
 		                if(onClose) {
 		                	onClose(node);
@@ -190,7 +191,7 @@ var viewerJS = ( function( viewer ) {
 	            }
 	            
 	            if(fullscreen) {
-	                $overlay.addClass("fullscreen");
+	                $overlay.addClass("overlay-fullscreen");
 	            }
 	            resolve(overlay);
 	        } else {
