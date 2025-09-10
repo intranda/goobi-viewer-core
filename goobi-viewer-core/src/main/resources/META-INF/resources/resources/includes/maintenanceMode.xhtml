@@ -19,7 +19,7 @@
 						<i class="fa fa-coffee maintenance-banner__icon"></i>
 						<h:panelGroup styleClass="maintenance-banner__text"  layout="block">
 						<h:outputText escape="false" 
-							value="#{adminBean.maintenanceMode.getText(navigationHelper.localeString)}"></h:outputText>
+							value="#{adminBean.maintenanceMode.getTextOrDefault(navigationHelper.localeString)}"></h:outputText>
 						</h:panelGroup>
 
 						<button type="button"

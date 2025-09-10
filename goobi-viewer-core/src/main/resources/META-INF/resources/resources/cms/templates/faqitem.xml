@@ -6,7 +6,7 @@
 	</jsfComponent>
 	<label>cms_component__faqitem__label</label>
 	<description>cms_component__faqitem__desc</description>
-	<icon>cms/components/frontend/component/icon/text.png</icon>
+	<type>faq</type>
 	<content>
 		<item id="title">
 			<label>cms_content__faqitem_title__label</label>

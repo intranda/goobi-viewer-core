@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
-import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.Translation;
@@ -31,7 +30,7 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "maintenance_mode")
 public class MaintenanceMode implements IPolyglott {
-    
+
     private static final Logger logger = LogManager.getLogger(MaintenanceMode.class);
 
     @Id
@@ -114,6 +113,14 @@ public class MaintenanceMode implements IPolyglott {
      */
     public String getText(String language) {
         return Translation.getTranslation(translations, language, "text");
+    }
+
+    /**
+     * @param language
+     * @return Text value in the given language
+     */
+    public String getTextOrDefault(String language) {
+        return Translation.getTranslation(translations, language, "text", true);
     }
 
     /**

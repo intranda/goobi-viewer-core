@@ -6,7 +6,7 @@
 	</jsfComponent>
 	<label>cms_components__media_file</label>
 	<description>cms_component__image__desc</description>
-	<icon>cms/components/frontend/component/icon/image.png</icon>
+	<type>image</type>
 	<content>
 		<item id="image">
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</className>

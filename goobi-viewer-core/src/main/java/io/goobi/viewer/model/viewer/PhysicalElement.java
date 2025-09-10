@@ -68,7 +68,6 @@ import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -821,9 +820,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (fulltextAccessPermission == null) {
             fulltextAccessPermission = false;
             try {
-                //                fulltextAccessPermission =
-                //                        AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                //                                BeanUtils.getRequest()).isGranted();
                 fulltextAccessPermission = AccessConditionUtils
                         .checkAccessPermissionByIdentifierAndPageOrder(this, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest())
                         .isGranted();
