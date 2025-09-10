@@ -6,7 +6,7 @@
 	</jsfComponent>
 	<label>cms_component__rss_label</label>
 	<description>cms_component__rss_desc</description>
-	<icon>cms/components/frontend/component/icon/rss.png</icon>
+	<type>search</type>
 	<content>
 		<item id="rss">
 			<label>cms_component__rss_label</label>

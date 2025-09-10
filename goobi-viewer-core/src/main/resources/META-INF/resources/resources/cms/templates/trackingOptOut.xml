@@ -6,5 +6,5 @@
 	</jsfComponent>
 	<label>cms_component__trackingoptout_label</label>
 	<description>cms_component__trackingoptout_desc</description>
-	<icon>cms/components/frontend/component/icon/trackingoptout.png</icon>
+	<type>security</type>
 </component>

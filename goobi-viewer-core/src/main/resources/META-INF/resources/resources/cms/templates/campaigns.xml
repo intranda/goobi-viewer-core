@@ -6,5 +6,5 @@
 	</jsfComponent>
 	<label>cms_component__campaigns__label</label>
 	<description>cms_component__campaigns__desc</description>
-	<icon>cms/components/frontend/component/icon/campaigns.png</icon>
+	<type>crowdsourcing</type>
 </component>
