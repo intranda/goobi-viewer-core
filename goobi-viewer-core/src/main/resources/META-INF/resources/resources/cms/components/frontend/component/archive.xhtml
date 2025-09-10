@@ -40,7 +40,7 @@
 
 						<h:form>
 							<h:commandScript name="reloadTree"
-								render="#{cc.clientId}:archivesForm">
+								render="#{cc.clientId}:treeform1">
 							</h:commandScript>
 						</h:form>
 
@@ -72,6 +72,7 @@
 								<ui:param name="render" value="@none" />
 								<ui:param name="renderOnExpand" value="@none" />
 								<ui:param name="selectEntryAction" value="open" />
+								<ui:param name="formId" value="treeform1" />
 							</ui:include>
 
 						</h:panelGroup>
@@ -115,7 +116,7 @@
 			
 									<h:form>
 										<h:commandScript name="reloadTree"
-											render="#{cc.clientId}:archivesForm">
+											render="#{cc.clientId}:treeform2">
 										</h:commandScript>
 									</h:form>
 			
@@ -148,6 +149,7 @@
 											<ui:param name="render" value="@none" />
 											<ui:param name="renderOnExpand" value="@none" />
 											<ui:param name="selectEntryAction" value="open" />
+											<ui:param name="formId" value="treeform2" />
 										</ui:include>
 									</h:panelGroup>
 								</div>
