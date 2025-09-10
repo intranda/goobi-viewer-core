@@ -39,8 +39,7 @@
 				<h:panelGroup>
 
 					<!-- Call to trigger a noop ajax call to update the url of the page (to set the query "selected" to the correct record) -->
-					<h:commandScript id="url-updater" name="updateUrl">
-					</h:commandScript>
+					<h:commandScript name="updateUrl"></h:commandScript>
 
 					<h:outputLabel value="#{msg.hitsZero}" rendered="#{empty visibleTree}"></h:outputLabel>
 

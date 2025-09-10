@@ -17,8 +17,8 @@
 		</button>
 	</div>
 
-	<div class="overlay overlay-modal" role="region">
-		<div id="overlayModal" class="modal">
+	<div id="overlayModal" class="overlay overlay-modal modal" aria-modal="true" role="dialog">
+		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h3 class="modal-title" data-overlay-area="header"></h3>
@@ -32,6 +32,7 @@
 				<div class="modal-footer" data-overlay-area="footer"></div>
 			</div>
 		</div>
+
 	</div>
 
 </ui:composition>
