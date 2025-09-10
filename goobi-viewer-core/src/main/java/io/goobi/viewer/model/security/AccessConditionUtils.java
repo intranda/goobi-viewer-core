@@ -337,8 +337,8 @@ public final class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static AccessPermission checkAccessPermissionByIdentifierAndPageOrder(PhysicalElement page, String privilegeName, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException {
+    public static AccessPermission checkAccessPermissionByIdentifierAndPageOrder(PhysicalElement page, String privilegeName,
+            HttpServletRequest request) throws IndexUnreachableException, DAOException {
         if (page == null) {
             throw new IllegalArgumentException("page may not be null");
         }

@@ -330,7 +330,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
             if (BeanUtils.getUserBean() != null && BeanUtils.getUserBean().isAdmin()) {
                 return email;
             }
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             logger.warn(e.getMessage());
         }
 
