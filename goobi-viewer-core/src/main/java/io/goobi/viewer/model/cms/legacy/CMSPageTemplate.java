@@ -225,7 +225,7 @@ public class CMSPageTemplate implements Serializable {
             jsfLibraryPath = componentPath.getParent().toString();
         }
         JsfComponent jsfComponent = new JsfComponent(jsfLibraryPath, componentPath.getFileName().toString());
-        CMSComponent component = new CMSComponent(jsfComponent, this.name, this.description, ICONS_PATH + this.iconFileName,
+        CMSComponent component = new CMSComponent(jsfComponent, this.name, this.description, Collections.emptyList(),
                 this.templateFileName, scope, this.attributes, null, null);
         for (CMSContentItemTemplate itemTemplate : contentItems) {
             CMSContentItem item = itemTemplate.createCMSContentItem(component);

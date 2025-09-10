@@ -96,7 +96,8 @@ public class CMSContentItem {
      * @param owningComponent
      * @param required
      */
-    public CMSContentItem(String itemId, CMSContent content, String label, String description, String htmlGroup, JsfComponent jsfComponent,
+    public CMSContentItem(String itemId, CMSContent content, String label, String description, String htmlGroup,
+            JsfComponent jsfComponent,
             CMSComponent owningComponent, boolean required) {
         if (StringUtils.isNotBlank(itemId)) {
             this.itemId = itemId;
