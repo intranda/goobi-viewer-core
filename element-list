@@ -35,6 +35,7 @@ io.goobi.viewer.api.rest.v1.statistics.usage
 io.goobi.viewer.api.rest.v1.tasks
 io.goobi.viewer.api.rest.v2
 io.goobi.viewer.api.rest.v2.annotations
+io.goobi.viewer.api.rest.v2.auth
 io.goobi.viewer.api.rest.v2.cms
 io.goobi.viewer.api.rest.v2.collections
 io.goobi.viewer.api.rest.v2.media
@@ -95,6 +96,7 @@ io.goobi.viewer.model.email
 io.goobi.viewer.model.export
 io.goobi.viewer.model.files.external
 io.goobi.viewer.model.files.upload
+io.goobi.viewer.model.iiif.auth
 io.goobi.viewer.model.iiif.discovery
 io.goobi.viewer.model.iiif.presentation.v2.builder
 io.goobi.viewer.model.iiif.presentation.v3.builder
