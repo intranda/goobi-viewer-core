@@ -18,7 +18,7 @@
 		<div class="admin__content-component-input-group">
 
 			<!-- LABEL -->
-			<ui:fragment rendered="#{not empty cc.attrs.contentItem.content.mapId}">
+			<ui:fragment rendered="#{not empty cc.attrs.contentItem.label}">
 				<div class="admin__content-component-input-label">#{msg[cc.attrs.contentItem.label]}#{cc.attrs.contentItem.mandatory?'*':''}:</div>
 			</ui:fragment>
 			

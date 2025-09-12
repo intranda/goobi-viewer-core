@@ -36,7 +36,7 @@
 					</div>
 
 				<h:form id="activateTermsOfUse" styleClass="form-horizontal form-group" prependId="false">
-						<div class="row no-gutters mb-3 align-items-center">
+						<div class="d-flex mb-3 align-items-center">
 							<div class="control-label mr-3 admin__form-label">#{msg.admin__terms_of_use__is_active}:</div>
 							<div class="admin__form-input">
 								<viewerComponent:toggleSwitch
@@ -119,7 +119,7 @@
 
 							<!-- SAVE TERMS OF USE TEXT -->
 							<div
-								class="row no-gutters justify-content-end admin__final-actions">
+								class="admin__final-actions">
 								<h:commandButton class="btn btn--success" value="#{msg.save}"
 									action="#{termsOfUseEditBean.save()}">
 									<f:ajax render="@form :messages" execute="@form"></f:ajax>

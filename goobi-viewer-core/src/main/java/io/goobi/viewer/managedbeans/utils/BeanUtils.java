@@ -331,6 +331,10 @@ public final class BeanUtils {
             }
         } catch (NullPointerException e) {
             logger.error("Error when getting bean by name '{}'", name, e);
+        } catch (IllegalArgumentException e) {
+            logger.error("Bean of name '{}' is not of type '{}", name, clazz);
+        } catch (IllegalStateException e) {
+            logger.error("Trying to find bean in context at illegal state. Probably before initialization or outside of jsf context: {}", e);
         }
 
         return null;
@@ -571,19 +575,19 @@ public final class BeanUtils {
 
     /**
      * <p>
-     * getUserBeanFromRequest.
+     * getUserBeanFromSession.
      * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
      */
-    public static UserBean getUserBeanFromRequest(HttpServletRequest request) {
-        if (request != null && request.getSession() != null) {
-            Object bean = request.getSession().getAttribute("userBean");
+    public static UserBean getUserBeanFromSession(HttpSession session) {
+        if (session != null) {
+            Object bean = session.getAttribute("userBean");
             if (bean != null) {
                 return (UserBean) bean;
             }
-            return findInstanceInSessionAttributes(request, UserBean.class)
+            return findInstanceInSessionAttributes(session, UserBean.class)
                     .orElse(null);
         }
 
@@ -592,23 +596,23 @@ public final class BeanUtils {
 
     /**
      * <p>
-     * getBeanFromRequest.
+     * getBeanFromSession.
      * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object
+     * @param session a {@link jakarta.servlet.http.HttpSession} object
      * @param beanName a {@link java.lang.String} object
      * @param clazz a {@link java.lang.Class} object
      * @param <T> a T class
      * @return a {@link java.util.Optional} object
      */
     @SuppressWarnings("unchecked")
-    public static <T> Optional<T> getBeanFromRequest(HttpServletRequest request, String beanName, Class<T> clazz) {
-        if (request != null && request.getSession() != null) {
-            Object bean = request.getSession().getAttribute(beanName);
+    public static <T> Optional<T> getBeanFromSession(HttpSession session, String beanName, Class<T> clazz) {
+        if (session != null) {
+            Object bean = session.getAttribute(beanName);
             if (bean != null && bean.getClass().equals(clazz)) {
                 return Optional.of(bean).map(o -> (T) o);
             }
-            return findInstanceInSessionAttributes(request, clazz);
+            return findInstanceInSessionAttributes(session, clazz);
         }
 
         return Optional.empty();
@@ -616,14 +620,14 @@ public final class BeanUtils {
 
     /**
      * <p>
-     * getUserFromRequest.
+     * getUserFromSession.
      * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @return a {@link io.goobi.viewer.model.security.user.User} object.
      */
-    public static User getUserFromRequest(HttpServletRequest request) {
-        UserBean ub = getUserBeanFromRequest(request);
+    public static User getUserFromSession(HttpSession session) {
+        UserBean ub = getUserBeanFromSession(session);
         if (ub != null) {
             return ub.getUser();
         }
@@ -648,17 +652,17 @@ public final class BeanUtils {
      * findInstanceInSessionAttributes.
      * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object
+     * @param session a {@link jakarta.servlet.http.HttpSession} object
      * @param clazz a {@link java.lang.Class} object
      * @param <T> a T class
      * @return a {@link java.util.Optional} object
      */
     @SuppressWarnings({ "unchecked" })
-    public static <T> Optional<T> findInstanceInSessionAttributes(HttpServletRequest request, Class<T> clazz) {
-        Enumeration<String> attributeNames = request.getSession().getAttributeNames();
+    public static <T> Optional<T> findInstanceInSessionAttributes(HttpSession session, Class<T> clazz) {
+        Enumeration<String> attributeNames = session.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             String attributeName = attributeNames.nextElement();
-            Object attributeValue = request.getSession().getAttribute(attributeName);
+            Object attributeValue = session.getAttribute(attributeName);
             if (attributeValue != null && attributeValue.getClass().equals(clazz)) {
                 return Optional.of(attributeValue).map(o -> (T) o);
             } else if (attributeValue instanceof SerializableContextualInstance serializableContextualInstance) {
@@ -719,40 +723,37 @@ public final class BeanUtils {
     /**
      * Removes the user and permission attributes from the session.
      * 
-     * @param request {@link HttpServletRequest}
+     * @param session {@link HttpSession}
      */
-    public static void wipeSessionAttributes(HttpServletRequest request) {
+    public static void wipeSessionAttributes(HttpSession session) {
         logger.trace("wipeSession");
-        if (request == null) {
-            return;
-        }
-        HttpSession session = request.getSession(false);
         if (session == null) {
             return;
         }
+
         session.removeAttribute("user");
 
         // Remove priv maps
         AccessConditionUtils.clearSessionPermissions(session);
 
-        getBeanFromRequest(request, "sessionBean", SessionBean.class)
+        getBeanFromSession(session, "sessionBean", SessionBean.class)
                 .ifPresentOrElse(SessionBean::cleanObjects,
                         () -> logger.trace("Cannot invalidate SessionBean. Not instantiated yet?"));
-        getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
+        getBeanFromSession(session, "collectionViewBean", CollectionViewBean.class)
                 .ifPresentOrElse(CollectionViewBean::invalidate,
                         () -> logger.trace("Cannot invalidate CollectionViewBean. Not instantiated yet?"));
-        getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
+        getBeanFromSession(session, "activeDocumentBean", ActiveDocumentBean.class)
                 .ifPresentOrElse(ActiveDocumentBean::resetAccess,
                         () -> logger.trace("Cannot reset access permissions in ActiveDocumentBean. Not instantiated yet?"));
-        getBeanFromRequest(request, "displayConditions", DisplayConditions.class)
+        getBeanFromSession(session, "displayConditions", DisplayConditions.class)
                 .ifPresentOrElse(DisplayConditions::clearCache,
                         () -> logger.trace("Cannot clear DosplayConditions cache. Not instantiated yet?"));
         // Reset loaded user-generated content lists
-        getBeanFromRequest(request, "contentBean", ContentBean.class)
+        getBeanFromSession(session, "contentBean", ContentBean.class)
                 .ifPresentOrElse(ContentBean::resetContentList,
                         () -> logger.trace("Cannot reset content list. Not instantiated yet?"));
         // Reset visible navigation menu
-        getBeanFromRequest(request, "cmsBean", CmsBean.class)
+        getBeanFromSession(session, "cmsBean", CmsBean.class)
                 .ifPresentOrElse(CmsBean::resetNavigationMenuItems,
                         () -> logger.trace("Cannot reset navigation menu items. Not instantiated yet?"));
     }

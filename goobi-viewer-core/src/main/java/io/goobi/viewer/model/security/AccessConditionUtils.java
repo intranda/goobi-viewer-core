@@ -91,19 +91,21 @@ public final class AccessConditionUtils {
      * checkAccess.
      * </p>
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @param action a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
+     * @param ipAddress
      * @param isThumbnail a boolean.
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static AccessPermission checkAccess(HttpServletRequest request, String action, String pi, String contentFileName, boolean isThumbnail)
+    public static AccessPermission checkAccess(HttpSession session, String action, String pi, String contentFileName, String ipAddress,
+            boolean isThumbnail)
             throws IndexUnreachableException, DAOException {
-        if (request == null) {
-            throw new IllegalArgumentException("request may not be null");
+        if (session == null) {
+            throw new IllegalArgumentException("session may not be null");
         }
         if (action == null) {
             throw new IllegalArgumentException("action may not be null");
@@ -116,29 +118,34 @@ public final class AccessConditionUtils {
             case "image":
             case "application":
                 if ("pdf".equalsIgnoreCase(FilenameUtils.getExtension(contentFileName))) {
-                    return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                            IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
+                    return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName,
+                            IPrivilegeHolder.PRIV_DOWNLOAD_PDF, ipAddress);
                 }
                 if (isThumbnail) {
-                    return checkAccessPermissionForThumbnail(request, pi, contentFileName);
+                    return checkAccessPermissionForThumbnail(session, pi, contentFileName, ipAddress);
                     // logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Debug
                 }
-                return checkAccessPermissionForImage(request, pi, contentFileName);
+                return checkAccessPermissionForImage(session, pi, contentFileName, ipAddress);
             // logger.trace("Checked image access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Debug
             case "text":
             case "ocrdump":
-                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                        ipAddress);
             case "pdf":
             case "epub":
-                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
+                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
+                        ipAddress);
             case "video":
-                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_VIDEO);
+                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_VIDEO,
+                        ipAddress);
             case "audio":
-                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_AUDIO);
+                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_AUDIO,
+                        ipAddress);
             case "dimensions":
             case "version":
                 // TODO is priv checking needed here?
-                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES);
+                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES,
+                        ipAddress);
             default: // nothing
                 break;
         }
@@ -258,14 +265,15 @@ public final class AccessConditionUtils {
      *
      * @param identifier Work identifier (PI).
      * @param fileName Image file name. For all files of a record, use "*".
-     * @param request Calling HttpServiceRequest.
      * @param privilegeName a {@link java.lang.String} object.
+     * @param ipAddress
+     * @param session
      * @return true if access is granted; false otherwise.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     static Map<String, AccessPermission> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
-            HttpServletRequest request) throws IndexUnreachableException, DAOException {
+            String ipAddress, HttpSession session) throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, privilegeName); //NOSONAR Debug
         if (StringUtils.isEmpty(identifier)) {
             return Collections.emptyMap();
@@ -297,7 +305,7 @@ public final class AccessConditionUtils {
                 }
             }
 
-            User user = BeanUtils.getUserFromRequest(request);
+            User user = BeanUtils.getUserFromSession(session);
             if (user == null) {
                 UserBean userBean = BeanUtils.getUserBean();
                 if (userBean != null) {
@@ -305,11 +313,11 @@ public final class AccessConditionUtils {
                 }
             }
 
-            Map<String, AccessPermission> ret = new HashMap<>(requiredAccessConditions.size());
+            Map<String, AccessPermission> ret = HashMap.newHashMap(requiredAccessConditions.size());
             for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
                 Set<String> pageAccessConditions = entry.getValue();
                 AccessPermission access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
-                        privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
+                        privilegeName, user, ipAddress, ClientApplicationManager.getClientFromSession(session), query);
                 ret.put(entry.getKey(), access);
             }
             return ret;
@@ -329,15 +337,15 @@ public final class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    static AccessPermission checkAccessPermissionByIdentifierAndPageOrder(PhysicalElement page, String privilegeName, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException {
+    public static AccessPermission checkAccessPermissionByIdentifierAndPageOrder(PhysicalElement page, String privilegeName,
+            HttpServletRequest request) throws IndexUnreachableException, DAOException {
         if (page == null) {
             throw new IllegalArgumentException("page may not be null");
         }
 
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + page.getPi() + " +" + SolrConstants.ORDER + ":" + page.getOrder();
         try {
-            User user = BeanUtils.getUserFromRequest(request);
+            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
             if (user == null) {
                 UserBean userBean = BeanUtils.getUserBean();
                 if (userBean != null) {
@@ -368,13 +376,13 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermissionByIdentifierAndLogId(String identifier, String logId, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException, RecordNotFoundException {
-        // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName); //NOSONAR Debug
+        logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName); //NOSONAR Debug
         if (StringUtils.isEmpty(identifier)) {
             return AccessPermission.denied();
         }
 
         String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeName + "_" + identifier + "_" + logId;
-        AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, request);
+        AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, request != null ? request.getSession() : null);
         if (ret != null) {
             // logger.trace("Permission '{}' already in session: {}", attributeName, ret.isGranted()); //NOSONAR Debug
             return ret;
@@ -414,7 +422,7 @@ public final class AccessConditionUtils {
             ret = checkAccessPermissionBySolrDoc(results.get(0), query, privilegeName, request);
 
             // Add permission check outcome to user session
-            addSessionPermission(attributeName, ret, request);
+            addSessionPermission(attributeName, ret, request != null ? request.getSession() : null);
 
             return ret;
         } catch (PresentationException e) {
@@ -451,7 +459,7 @@ public final class AccessConditionUtils {
                 }
             }
 
-            User user = BeanUtils.getUserFromRequest(request);
+            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
             if (user == null) {
                 UserBean userBean = BeanUtils.getUserBean();
                 if (userBean != null) {
@@ -486,9 +494,10 @@ public final class AccessConditionUtils {
     public static Map<String, AccessPermission> checkAccessPermissionByIdentiferForAllLogids(String identifier, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
         logger.trace("checkAccessPermissionByIdentiferForAllLogids({}, {})", identifier, privilegeName);
+        HttpSession session = request != null ? request.getSession() : null;
 
         String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeName + "_" + identifier;
-        Map<String, AccessPermission> ret = (Map<String, AccessPermission>) getSessionPermission(attributeName, request);
+        Map<String, AccessPermission> ret = (Map<String, AccessPermission>) getSessionPermission(attributeName, session);
         if (ret != null) {
             return ret;
         }
@@ -511,7 +520,7 @@ public final class AccessConditionUtils {
                         .search(query, SolrSearchIndex.MAX_HITS, null,
                                 Arrays.asList(SolrConstants.LOGID, SolrConstants.ACCESSCONDITION));
                 if (results != null) {
-                    User user = BeanUtils.getUserFromRequest(request);
+                    User user = BeanUtils.getUserFromSession(session);
                     if (user == null) {
                         UserBean userBean = BeanUtils.getUserBean();
                         if (userBean != null) {
@@ -546,7 +555,7 @@ public final class AccessConditionUtils {
         }
 
         // Add permission check outcome to user session
-        addSessionPermission(attributeName, ret, request);
+        addSessionPermission(attributeName, ret, session);
 
         logger.trace("Found access permisstions for {} elements.", ret.size());
         return ret;
@@ -564,8 +573,9 @@ public final class AccessConditionUtils {
     public static AccessPermission checkContentFileAccessPermission(String identifier, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
         // logger.trace("checkContentFileAccessPermission: {}", identifier); //NOSONAR Debug
+        HttpSession session = request != null ? request.getSession() : null;
         String attributeName = IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT + "_" + identifier;
-        AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, request);
+        AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, session);
         if (ret != null) {
             // logger.trace("Permission for '{}' already in session: {}", attributeName, ret.isGranted()); //NOSONAR Debug
             return ret;
@@ -599,7 +609,7 @@ public final class AccessConditionUtils {
         }
 
         // Add permission check outcome to user session
-        addSessionPermission(attributeName, ret, request);
+        addSessionPermission(attributeName, ret, session);
 
         //return only the access status for the relevant files
         return ret;
@@ -617,7 +627,8 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermissionByImageUrn(String imageUrn, String privilegeName, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionByImageUrn({}, {}, {}, {})", imageUrn, privilegeName, request.getAttributeNames()); //NOSONAR Debug
+        logger.trace("checkAccessPermissionByImageUrn({}, {}, {}, {})", imageUrn, privilegeName,
+                request != null ? request.getAttributeNames() : "null"); //NOSONAR Debug
         if (StringUtils.isEmpty(imageUrn)) {
             return AccessPermission.denied();
         }
@@ -643,7 +654,7 @@ public final class AccessConditionUtils {
                 }
             }
 
-            User user = BeanUtils.getUserFromRequest(request);
+            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
             if (user == null) {
                 UserBean userBean = BeanUtils.getUserBean();
                 if (userBean != null) {
@@ -674,7 +685,7 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query,
             HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
-        User user = BeanUtils.getUserFromRequest(request);
+        User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
         if (user == null) {
             UserBean userBean = BeanUtils.getUserBean();
             if (userBean != null) {
@@ -688,32 +699,35 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission for the given image and puts the permission status into the corresponding session map.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
+     * @param ipAddress
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static AccessPermission checkAccessPermissionForImage(HttpServletRequest request, String pi, String contentFileName)
+    public static AccessPermission checkAccessPermissionForImage(HttpSession session, String pi, String contentFileName, String ipAddress)
             throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionForImage: {}/{}", pi, contentFileName); //NOSONAR Debug
-        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES, ipAddress);
     }
 
     /**
      * Checks access permission for the given thumbnail and puts the permission status into the corresponding session map.
      *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
+     * @param ipAddress
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static AccessPermission checkAccessPermissionForThumbnail(HttpServletRequest request, String pi, String contentFileName)
+    public static AccessPermission checkAccessPermissionForThumbnail(HttpSession session, String pi, String contentFileName, String ipAddress)
             throws IndexUnreachableException, DAOException {
-        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
+        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName,
+                IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, ipAddress);
     }
 
     /**
@@ -756,41 +770,43 @@ public final class AccessConditionUtils {
             throw new IllegalArgumentException("Illegal filePath value: " + filePath);
         }
 
-        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, filePathSplit[1], filePathSplit[2], privilegeType);
+        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, filePathSplit[1],
+                filePathSplit[2], privilegeType, NetTools.getIpAddress(request));
     }
 
     /**
      * Checks access permission of the given privilege type for the given image and puts the permission status into the corresponding session map.
-     *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * 
+     * @param session {@link HttpSession}
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
      * @param privilegeType a {@link java.lang.String} object.
+     * @param ipAddress
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @SuppressWarnings("unchecked")
-    public static AccessPermission checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi,
-            String contentFileName, String privilegeType) throws IndexUnreachableException, DAOException {
+    public static AccessPermission checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpSession session, String pi,
+            String contentFileName, String privilegeType, String ipAddress) throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType); //NOSONAR Debug
         if (privilegeType == null) {
             throw new IllegalArgumentException("privilegeType may not be null");
         }
-        // logger.debug("session id: " + request.getSession().getId()); //NOSONAR Debug
+        // logger.debug("session id: " + session.getId()); //NOSONAR Debug
         // Session persistent permission check: Servlet-local method.
         String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeType + "_" + pi + "_" + contentFileName;
         // logger.trace("Checking session attribute: {}", attributeName); //NOSONAR Debug
-        Map<String, AccessPermission> permissions = (Map<String, AccessPermission>) getSessionPermission(attributeName, request);
+        Map<String, AccessPermission> permissions = (Map<String, AccessPermission>) getSessionPermission(attributeName, session);
         if (permissions == null) {
             permissions = new HashMap<>();
             // logger.trace("Session attribute not found, creating new"); //NOSONAR Debug
         }
         // logger.debug("Permissions found, " + permissions.size() + " items."); //NOSONAR Debug
         // new pi -> create an new empty map in the session
-        if (request != null && !pi.equals(request.getSession().getAttribute("currentPi"))) {
-            request.getSession().setAttribute("currentPi", pi);
-            request.getSession().removeAttribute(attributeName);
+        if (session != null && !pi.equals(session.getAttribute("currentPi"))) {
+            session.setAttribute("currentPi", pi);
+            session.removeAttribute(attributeName);
             permissions = new HashMap<>();
             // logger.trace("PI has changed, permissions map reset."); //NOSONAR Debug
         }
@@ -801,10 +817,11 @@ public final class AccessConditionUtils {
         if (permissions.containsKey(key) && permissions.get(key) != null) {
             return permissions.get(key);
             // logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType,
-            // ret.isGranted(), pi, contentFileName, request.getSession().getId()); //NOSONAR Debug
+            // ret.isGranted(), pi, contentFileName, session.getId()); //NOSONAR Debug
         }
         // TODO check for all images and save to map
-        Map<String, AccessPermission> accessMap = checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, request);
+        Map<String, AccessPermission> accessMap =
+                checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, ipAddress, session);
         for (Entry<String, AccessPermission> entry : accessMap.entrySet()) {
             String newKey = new StringBuilder(pi).append('_').append(entry.getKey()).toString();
             AccessPermission pageAccess = entry.getValue();
@@ -812,7 +829,7 @@ public final class AccessConditionUtils {
         }
 
         // Add permission check outcome to user session
-        addSessionPermission(attributeName, permissions, request);
+        addSessionPermission(attributeName, permissions, session);
 
         return permissions.get(key) != null ? permissions.get(key) : AccessPermission.denied();
         // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName, ret.isGranted()); //NOSONAR Deb
@@ -837,7 +854,7 @@ public final class AccessConditionUtils {
             return AccessPermission.granted();
         }
 
-        User user = BeanUtils.getUserFromRequest(request);
+        User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
         if (user == null) {
             UserBean userBean = BeanUtils.getUserBean();
             if (userBean != null) {
@@ -1257,31 +1274,31 @@ public final class AccessConditionUtils {
     /**
      * 
      * @param attributeName
-     * @param request
+     * @param session
      * @return Object found in session; null otherwise
      */
-    public static Object getSessionPermission(String attributeName, HttpServletRequest request) {
-        if (request == null || request.getSession() == null) {
+    public static Object getSessionPermission(String attributeName, HttpSession session) {
+        if (session == null) {
             return null;
         }
 
-        return request.getSession().getAttribute(attributeName);
+        return session.getAttribute(attributeName);
     }
 
     /**
      * 
      * @param attributeName
      * @param attributeValue
-     * @param request
+     * @param session
      * @return true if successful; false otherwise
      */
-    public static boolean addSessionPermission(String attributeName, Object attributeValue, HttpServletRequest request) {
+    public static boolean addSessionPermission(String attributeName, Object attributeValue, HttpSession session) {
         // logger.trace("addSessionPermission: {}", attributeName); //NOSONAR Debug
-        if (request == null || request.getSession() == null) {
+        if (session == null) {
             return false;
         }
 
-        request.getSession().setAttribute(attributeName, attributeValue);
+        session.setAttribute(attributeName, attributeValue);
         return true;
     }
 

@@ -28,13 +28,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-
 import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,13 +37,17 @@ import org.jdom2.JDOMException;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.XmlTools;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * <p>
@@ -92,7 +89,8 @@ public class OpenSearchResource {
                         .replace("{description}", DataManager.getInstance().getConfiguration().getDescription())
                         .replace("{applicationUrl}", rootUrl);
                 Matcher resourceUrlMatcher = Pattern.compile(RESOURCE_URL_REGEX).matcher(xml);
-                Optional<NavigationHelper> onh = BeanUtils.getBeanFromRequest(servletRequest, "navigationHelper", NavigationHelper.class);
+                Optional<NavigationHelper> onh =
+                        BeanUtils.getBeanFromSession(servletRequest.getSession(), "navigationHelper", NavigationHelper.class);
                 while (resourceUrlMatcher.find()) {
                     String path = resourceUrlMatcher.group(1);
                     String resourcePath = onh.map(nh -> nh.getResource(path))

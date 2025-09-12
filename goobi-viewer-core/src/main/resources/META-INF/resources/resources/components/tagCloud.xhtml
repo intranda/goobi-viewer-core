@@ -16,7 +16,7 @@
 		<div class="tags">
 		
 			<h:form id="tagCloudForm" styleClass="formTagCloud tag-cloud__form" >
-			<h:panelGroup id="tagcloud">
+			<h:panelGroup layout="block" id="tagcloud" styleClass="tag-cloud__inner">
 			
 				<ui:repeat value="#{cc.attrs.tagMethod}" var="tag">
 					<div class="tagcloudElement tag-cloud__element tag#{tag.css}">

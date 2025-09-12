@@ -42,7 +42,7 @@
                 <!-- PREV / NEXT (RTL) -->
                 <h:panelGroup rendered="#{cc.attrs.itemActive gt cc.attrs.firstItem}">
                     <li class="numeric-paginator__navigate navigate_prev">
-                        <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_previous}">
+                        <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}" data-target="paginatorPrevPage" aria-label="#{msg.aria_label__pagination_previous}">
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
                                 <i class="fa #{msg.numericPaginator_prev}" aria-hidden="true"></i>
                             </ui:fragment>
@@ -125,7 +125,7 @@
                 <!-- NEXT / PREV (RTL) -->
                 <h:panelGroup rendered="#{cc.attrs.itemActive lt cc.attrs.lastItem }">
                     <li class="numeric-paginator__navigate navigate_next">
-                        <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_next}">
+                        <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}" data-target="paginatorNextPage" aria-label="#{msg.aria_label__pagination_next}">
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
                                 <i class="fa #{msg.numericPaginator_next}" aria-hidden="true"></i>
                             </ui:fragment>
@@ -145,10 +145,10 @@
        		} else {
        			// console.log('not already defined');
                	var paginatorConfig = {
-               	        previous: () => doClick(".numeric-paginator__navigate.navigate_prev a"),
-               	        next: () => doClick(".numeric-paginator__navigate.navigate_next a"),
-               	        first: () => doClick(".numeric-paginator .navigate_first a"),
-               	        last: () => doClick(".numeric-paginator .navigate_last a"),
+               	        previous: () => doClick('[data-target="paginatorPrevPage"]'),
+               	        next: () => doClick('[data-target="paginatorNextPage"]'),
+               	        first: () => doClick('[data-target="paginatorFirstPage"]'),
+               	        last: () => doClick('[data-target="paginatorLastPage"]'),
                	        rightToLeft: "#{activeDocumentBean.viewManager.topStructElement.rtl}"
                	}
                	function doClick(selector) {

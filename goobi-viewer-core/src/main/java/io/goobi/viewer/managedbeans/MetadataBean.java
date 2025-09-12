@@ -535,7 +535,7 @@ public class MetadataBean {
             try {
                 metadata.populate(struct, struct.getLuceneId(), metadata.getSortFields(), currentMetadataLocale);
             } catch (IndexUnreachableException | PresentationException e) {
-                logger.error("Error populationg metadata {} with  docStruct {}", metadata, struct, e);
+                logger.error("Error populating metadata {} with docStruct {}", metadata, struct, e);
             }
         });
         return metadataList;

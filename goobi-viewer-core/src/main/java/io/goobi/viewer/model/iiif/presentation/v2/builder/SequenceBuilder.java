@@ -65,12 +65,14 @@ import de.intranda.api.iiif.presentation.v2.AnnotationList;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
 import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.intranda.api.iiif.presentation.v2.Sequence;
+import de.intranda.api.services.Service;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
+import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -313,9 +315,10 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws DAOException
      */
     public Canvas2 generateCanvas(String pi, PhysicalElement page)
-            throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
+            throws URISyntaxException, ViewerConfigurationException, IndexUnreachableException, PresentationException, DAOException {
         if (pi == null || page == null) {
             return null;
         }
@@ -337,7 +340,6 @@ public class SequenceBuilder extends AbstractBuilder {
             }
 
             if (page.getMimeType().toLowerCase().startsWith("image") && StringUtils.isNotBlank(page.getFilepath())) {
-
                 String thumbnailUrl = page.getThumbnailUrl();
                 ImageContent resource = new ImageContent(new URI(thumbnailUrl));
                 if (size.getWidth() * size.getHeight() > 0) {
@@ -345,7 +347,13 @@ public class SequenceBuilder extends AbstractBuilder {
                     resource.setHeight(size.height);
                     if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
                         URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl));
-                        resource.setService(new ImageInformation(imageInfoURI.toString()));
+                        ImageInformation imageInfo = new ImageInformation(imageInfoURI.toString());
+                        if (!page.isAccessPermissionImage()) {
+                            for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName())) {
+                                imageInfo.addService(service);
+                            }
+                        }
+                        resource.setService(imageInfo);
                     }
                 } else {
                     try {

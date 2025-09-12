@@ -270,7 +270,7 @@ public class AnnotationResource {
      * @return {@link User}
      */
     public User getUser() {
-        UserBean userBean = BeanUtils.getUserBeanFromRequest(servletRequest);
+        UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession());
         if (userBean != null) {
             return userBean.getUser();
         }

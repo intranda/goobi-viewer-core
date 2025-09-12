@@ -150,10 +150,10 @@
 	                                                <dt class="col-sm-4">#{msg.admin__license_functions}:</dt>
 	                                                <dd class="col-sm-8">
 	                                                    <ui:repeat var="priv" value="#{licenseType.getSortedPrivileges(licenseType.privileges)}">
-	                                                       <div class="badge badge-success" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                       <div class="admin__badge admin__badge-active" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
 	                                                    </ui:repeat>
 	                                                    <ui:repeat var="priv" value="#{licenseType.getAvailablePrivileges(licenseType.privileges)}">
-	                                                       <div class="badge badge-light -light" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}" aria-disabled="true">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                       <div class="admin__badge admin__badge-light -light" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}" aria-disabled="true">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
 	                                                    </ui:repeat>
 	                                                </dd>
 	                                            </ui:fragment>

@@ -23,17 +23,14 @@ package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
 
+import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
-
-import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.security.user.User;
-
 
 /**
  * Only allow requests from a session with a logged in Goobi viewer user.
@@ -62,8 +59,6 @@ public class UserLoggedInFilter implements ContainerRequestFilter {
     }
 
     public static boolean isUserLoggedIn(HttpServletRequest request) {
-        User user = BeanUtils.getUserFromRequest(request);
-        return user != null;
+        return BeanUtils.getUserFromSession(request.getSession()) != null;
     }
-
 }

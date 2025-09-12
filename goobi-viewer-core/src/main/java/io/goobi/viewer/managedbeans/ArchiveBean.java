@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -281,7 +282,7 @@ public class ArchiveBean implements Serializable {
      */
     public void setSearchString(String searchString) {
         logger.trace("setSearchString: {}", searchString);
-        if (!StringUtils.equals(this.searchString, searchString)) {
+        if (!Strings.CS.equals(this.searchString, searchString)) {
             this.setSelectedEntryId(null);
         }
         this.searchString = searchString;

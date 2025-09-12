@@ -6,7 +6,7 @@
 	</jsfComponent>
 	<label>cms_component__split_text__label</label>
 	<description>cms_component__split_text__desc</description>
-	
+	<type>text</type>
 	<content>
 		<item id="heading">
 			<label>heading</label>

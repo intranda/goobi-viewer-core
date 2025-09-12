@@ -83,7 +83,7 @@
                             <dt>#{msg.admin__categories}:</dt>
                             <dd>
                                 <ui:repeat var="category" value="#{media.categories}">
-                                    <span class="badge badge-violet">#{category.name}</span>
+                                    <span class="admin__badge admin__badge-violet">#{category.name}</span>
                                 </ui:repeat>
                             </dd>
                             
@@ -235,7 +235,7 @@
                                 </div>
                                 <div class="cms-module__option-selected">
                                     <ui:repeat var="displayedCategory" value="#{media.categories}">
-                                        <span class="badge badge-violet">#{displayedCategory.name}</span>
+                                        <span class="admin__badge admin__badge-violet">#{displayedCategory.name}</span>
                                     </ui:repeat>
                                 </div>
                                 <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_categories}</span>

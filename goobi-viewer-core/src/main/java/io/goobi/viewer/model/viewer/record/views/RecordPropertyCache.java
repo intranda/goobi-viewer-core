@@ -11,6 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.model.CachingMap;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -46,7 +47,7 @@ public class RecordPropertyCache {
     }
 
     public Collection<FileType> getFileTypesForPage(PhysicalElement page, boolean localFilesOnly)
-            throws IndexUnreachableException, PresentationException, DAOException, RecordNotFoundException {
+            throws IndexUnreachableException, DAOException, RecordNotFoundException {
 
         Pair<String, Integer> key = Pair.of(page.getPi(), page.getOrder());
         Collection<FileType> fileTypes = pageFileTypes.get(key);
@@ -62,7 +63,7 @@ public class RecordPropertyCache {
     }
 
     public AccessPermission getPermissionForRecord(ViewManager viewManager, String privilege, HttpServletRequest request)
-            throws IndexUnreachableException, PresentationException, DAOException, RecordNotFoundException {
+            throws IndexUnreachableException, DAOException, RecordNotFoundException {
 
         try {
             Map<String, AccessPermission> permissionMap = recordPermissions.computeIfAbsent(viewManager.getPi(), s -> new HashMap<>());
@@ -79,7 +80,7 @@ public class RecordPropertyCache {
     }
 
     public AccessPermission getPermissionForPage(PhysicalElement page, String privilege, HttpServletRequest request)
-            throws IndexUnreachableException, PresentationException, DAOException, RecordNotFoundException {
+            throws IndexUnreachableException, DAOException {
         try {
             Pair<String, Integer> key = Pair.of(page.getPi(), page.getOrder());
             Map<String, AccessPermission> permissionMap = pagePermissions.computeIfAbsent(key, s -> new HashMap<>());
@@ -95,21 +96,18 @@ public class RecordPropertyCache {
         }
     }
 
-    private AccessPermission checkAccessPermissionForRecord(ViewManager viewManager, String privilege, HttpServletRequest request)
+    private static AccessPermission checkAccessPermissionForRecord(ViewManager viewManager, String privilege, HttpServletRequest request)
             throws IndexUnreachableException, DAOException, RecordNotFoundException {
-        AccessPermission accessPermission =
-                AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(viewManager.getPi(), null,
-                        privilege,
-                        request);
-        return accessPermission;
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(viewManager.getPi(), null,
+                privilege,
+                request);
     }
 
-    private AccessPermission checkAccessPermissionForPage(PhysicalElement page, String privilege, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException, RecordNotFoundException {
-        AccessPermission accessPermission =
-                AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, page.getPi(), page.getFileName(),
-                        privilege);
-        return accessPermission;
+    private static AccessPermission checkAccessPermissionForPage(PhysicalElement page, String privilege, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException {
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), page.getPi(),
+                page.getFileName(),
+                privilege, NetTools.getIpAddress(request));
     }
 
 }

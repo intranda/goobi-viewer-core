@@ -33,13 +33,12 @@ import org.mockito.Mockito;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.util.PathConverter;
-import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -56,6 +55,7 @@ class ImageHandlerTest extends AbstractTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -64,7 +64,7 @@ class ImageHandlerTest extends AbstractTest {
     }
 
     //    @Test
-    void testGetImageInformation() throws IllegalPathSyntaxException, URISyntaxException, ContentLibException {
+    void testGetImageInformation() throws URISyntaxException, ContentLibException {
         String url1 = "http://localhost:8081/ics/iiif/image/18979459-1830/00375666.png/info.json";
         String url2 = "18979459-1830/00375666.png";
 
@@ -153,7 +153,7 @@ class ImageHandlerTest extends AbstractTest {
 
     @Test
     void testGetImageInformationFromPage()
-            throws URISyntaxException, ContentLibException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            throws URISyntaxException, ContentLibException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
         Mockito.when(page.getFilepath()).thenReturn("00000318.tif");
         Mockito.when(page.getImageWidth()).thenReturn(800);

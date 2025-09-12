@@ -1,0 +1,19 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	template="/resources/themes/#{navigationHelper.theme}/templateBlankUnstyled.html"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    lang="#{navigationHelper.localeString}">
+
+    <!-- Landing page for IIIF Auth Flow login. If opened in an iframe, it will close the login tab, triggering the continuation of the flow in the client. -->
+ 	<ui:define name="content">
+
+    	<script>
+    	   window.opener.postMessage({ type: 'login', status: 'ok' }, '#{userBean.origin}');
+    	   window.close();
+		</script>
+		
+	</ui:define>
+
+</ui:composition>

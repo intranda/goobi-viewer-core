@@ -66,6 +66,7 @@ import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.model.viewer.BaseMimeType;
 
 /**
  * File I/O utilities.
@@ -607,6 +608,20 @@ public final class FileTools {
         }
 
         return mimeType;
+    }
+    
+    /**
+     * @param mimeType Full mime type
+     * @return First part of the mime type
+     * @should return correct base mime type
+     * @should return image if base mime type not found
+     */
+    public static BaseMimeType getBaseMimeType(String mimeType) {
+        BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
+        if (BaseMimeType.UNKNOWN.equals(baseMimeType)) {
+            return BaseMimeType.IMAGE;
+        }
+        return baseMimeType;
     }
 
     /**

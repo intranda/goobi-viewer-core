@@ -6,7 +6,7 @@
 	</jsfComponent>
 	<label>cms_component__text_label</label>
 	<description>cms_component__text_desc</description>
-	<icon>cms/components/frontend/component/icon/text.png</icon>
+	<type>text</type>
 	<content>
 		<item id="text">
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>

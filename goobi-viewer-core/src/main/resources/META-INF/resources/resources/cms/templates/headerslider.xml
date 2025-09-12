@@ -6,7 +6,7 @@
 	</jsfComponent>
 	<label>cms_component__headerslider__label</label>
 	<description>cms_component__headerslider__desc</description>
-	<icon>cms/components/frontend/component/icon/image.png</icon>
+	<type>image</type>
 	<scope>pageheader</scope>
 	<content>
 		<item id="slider">

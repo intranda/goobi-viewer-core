@@ -34,6 +34,14 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String API = "/api/v2";
 
+    public static final String AUTH = "/auth";
+    public static final String AUTH_LOGIN = "/login";
+    public static final String AUTH_ACCESS_TOKEN = "/token";
+    public static final String AUTH_LOGOUT = "/logout";
+    public static final String AUTH_PROBE_REQUEST = "/probe/{pi}/{filename}";
+    public static final String AUTH_PROBE_REQUEST_PDF = "/probe/pdf/{pi}/{page}";
+    public static final String AUTH_PROBE_REQUEST_RESOLVER = "/probe/resolver/{pi}";
+
     public static final String CACHE = "/cache";
     public static final String CACHE_RECORD = "/{pi}";
 

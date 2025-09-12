@@ -57,8 +57,6 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     private final String description;
 
-    private final String iconPath;
-
     private Integer order = null;
 
     private final List<Property> properties;
@@ -66,6 +64,11 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     private final Map<String, CMSComponentAttribute> attributes;
 
     private final PersistentCMSComponent persistentComponent;
+
+    /**
+     * Used for sorting of component selection menu
+     */
+    private final List<String> types;
 
     private transient UIComponent uiComponent;
     private transient UIComponent backendUiComponent;
@@ -78,7 +81,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
      * @param items
      */
     public CMSComponent(CMSComponent template, List<CMSContentItem> items) {
-        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(),
+        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.types, template.getTemplateFilename(),
                 template.getScope(), template.getAttributes(), template.getProperties(), template.getOrder(),
                 Optional.ofNullable(template.getPersistentComponent()));
         List<CMSContentItem> newItems = items.stream().map(item -> new CMSContentItem(item, this)).toList();
@@ -91,7 +94,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
      * @param jpa
      */
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
-        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(),
+        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.types, template.getTemplateFilename(),
                 template.getScope(),
                 CMSComponent.initializeAttributes(template.getAttributes(),
                         jpa.map(PersistentCMSComponent::getAttributes).orElse(Collections.emptyMap())),
@@ -111,16 +114,16 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
      * @param jsfComponent
      * @param label
      * @param description
-     * @param iconPath
+     * @param types
      * @param templateFilename
      * @param scope
      * @param attributes
      * @param properties
      * @param order
      */
-    public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename,
+    public CMSComponent(JsfComponent jsfComponent, String label, String description, List<String> types, String templateFilename,
             CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, List<Property> properties, Integer order) {
-        this(jsfComponent, label, description, iconPath, templateFilename, scope, attributes, properties, order, Optional.empty());
+        this(jsfComponent, label, description, types, templateFilename, scope, attributes, properties, order, Optional.empty());
     }
 
     /**
@@ -128,20 +131,20 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
      * @param jsfComponent
      * @param label
      * @param description
-     * @param iconPath
+     * @param types
      * @param templateFilename
      * @param scope
      * @param attributes
      * @param order
      * @param jpa
      */
-    private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename,
+    private CMSComponent(JsfComponent jsfComponent, String label, String description, List<String> types, String templateFilename,
             CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, List<Property> properties, Integer order,
             Optional<PersistentCMSComponent> jpa) {
         this.jsfComponent = jsfComponent;
         this.label = label;
         this.description = description;
-        this.iconPath = iconPath;
+        this.types = types == null ? Collections.emptyList() : types;
         this.templateFilename = templateFilename;
         this.attributes = attributes == null ? Collections.emptyMap() : attributes;
         this.properties = properties == null ? Collections.emptyList() : properties;
@@ -264,10 +267,6 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     public String getDescription() {
         return description;
-    }
-
-    public String getIconPath() {
-        return iconPath;
     }
 
     public String getTemplateFilename() {
@@ -553,6 +552,14 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     public boolean isPaged() {
         return this.contentItems.stream().map(CMSContentItem::getContent).anyMatch(PagedCMSContent.class::isInstance);
+    }
+
+    public List<String> getTypes() {
+        if (this.types == null || this.types.isEmpty()) {
+            return List.of("other");
+        } else {
+            return this.types;
+        }
     }
 
     public List<Property> getProperties() {

@@ -1099,6 +1099,11 @@ public class NavigationHelper implements Serializable {
             }
             // Reset access permissions in session (user might not have the same permissions for a different subtheme)
             logger.trace("{} access premissions removed from user session.", AccessConditionUtils.clearSessionPermissions(BeanUtils.getSession()));
+            
+            // Reset navigation menu
+            if (cmsBean != null && cmsBean.getCurrentPage() != null) {
+                cmsBean.resetNavigationMenuItems();
+            }
         }
     }
 
