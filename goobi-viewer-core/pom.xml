@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>25.07-SNAPSHOT</version>
+	<version>25.09-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Goobi viewer - Core</name>
 	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
@@ -130,7 +130,7 @@
 		<jsoup.version>1.21.2</jsoup.version>
 		<junit.version>5.13.4</junit.version>
 		<log4j.version>2.25.1</log4j.version>
-		<mariadb-java-client.version>3.5.5</mariadb-java-client.version>
+		<mariadb-java-client.version>3.5.6</mariadb-java-client.version>
 		<mockito.version>5.19.0</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
 		<omnifaces.version>4.6.5</omnifaces.version>
@@ -140,7 +140,7 @@
 		<quartz.version>2.5.0</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
-		<spring.version>6.2.10</spring.version>
+		<spring.version>6.2.11</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.9.0</solr.version>
 		<swagger.version>2.2.36</swagger.version>
@@ -1115,7 +1115,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.11.2</version>
+				<version>3.11.3</version>
 				<configuration>
 					<doclint>none</doclint>
 					<failOnWarnings>true</failOnWarnings>
@@ -1167,7 +1167,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.18.0</version>
+				<version>2.19.0</version>
 				<configuration>
 					<rulesUri>file://${basedir}/version-number-rules.xml</rulesUri>
 				</configuration>

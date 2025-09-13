@@ -278,6 +278,9 @@
 													<div class="d-flex admin__geomap-radio-group-wrapper">
 													</div>
 													
+													
+													
+													
 													<!-- NEW STRUCTURES -->
 											<div class="radio-button-tree">
 
@@ -290,101 +293,21 @@
 											                     render="@form">
 											        <f:param name="newScope" value="" />
 											    </h:commandScript>
-											
-											    <div class="custom-radio-group">
-											    
-											    	<!-- ALL -->
-										    		<div class="connected-top">
-										    			<label class="custom-radio" for="scopeRadio_all">
-											    			<input type="radio" jsf:id="scopeRadio_all" name="searchScope" 
-											    					value="ALL" checked="#{featureSet.searchScope.name() == 'ALL'}"
-											    					onchange="changeSearchScope(this.value)" />
-											    			<span class="radio-indicator"></span>
-											                #{msg.label__geomap_search_scope__all}
-											             </label>
-											             <div id="popupContentHelp_searchScope_all" class="admin__form-help-text">#{msg.desc__geomap_search_scope__all}
-														 </div>
-														 <div class="col-1 admin__form-help-icon">
-															<button type="button" class="btn btn--clean"
-																data-toggle="helptext" aria-label="inline help icon">
-																<i class="fa fa-question-circle" aria-hidden="true"></i>
-															</button>
-														</div>
-										    		</div>
-										    		
-										    		<!-- RECORDS -->
-										    		<div class="connected-middle">
-										    			<label class="custom-radio" for="scopeRadio_records">
-											    			<input type="radio" jsf:id="scopeRadio_records" name="searchScope" 
-											    					value="RECORDS" checked="#{featureSet.searchScope.name() == 'RECORDS'}"
-											    					onchange="changeSearchScope(this.value)" />
-											    			<span class="radio-indicator"></span>
-											                #{msg.label__geomap_search_scope__records}
-											             </label>
-											             <div id="popupContentHelp_searchScope_records" class="admin__form-help-text">#{msg.desc__geomap_search_scope__records}
-														 </div>
-														 <div class="col-1 admin__form-help-icon">
-															<button type="button" class="btn btn--clean"
-																data-toggle="helptext" aria-label="inline help icon">
-																<i class="fa fa-question-circle" aria-hidden="true"></i>
-															</button>
-														</div>
-										    		</div>
-										    		
-										    		<!-- METADATA -->
-										    		<div class="connected-middle">
-										    			<label class="custom-radio" for="scopeRadio_metadata">
-											    			<input type="radio" jsf:id="scopeRadio_metadata" name="searchScope" 
-											    					value="METADATA" checked="#{featureSet.searchScope.name() == 'METADATA'}"
-											    					onchange="changeSearchScope(this.value)" />
-											    			<span class="radio-indicator"></span>
-											                #{msg.label__geomap_search_scope__metadata}
-											             </label>
-											             <div id="popupContentHelp_searchScope_metadata" class="admin__form-help-text">#{msg.desc__geomap_search_scope__metadata}</div>
-														 <div class="col-1 admin__form-help-icon">
-															<button type="button" class="btn btn--clean"
-																data-toggle="helptext" aria-label="inline help icon">
-																<i class="fa fa-question-circle" aria-hidden="true"></i>
-															</button>
-														</div>
-										    		</div>
-										    		
-										    		<!-- RELATIONSHIPS -->
-										    		<div class="connected-middle">
-										    			<label class="custom-radio" for="scopeRadio_relations">
-											    			<input type="radio" jsf:id="scopeRadio_relations" name="searchScope" 
-											    					value="RELATIONSHIPS" checked="#{featureSet.searchScope.name() == 'RELATIONSHIPS'}"
-											    					onchange="changeSearchScope(this.value)" />
-											    			<span class="radio-indicator"></span>
-											                #{msg.label__geomap_search_scope__relations}
-											             </label>
-											             <div id="popupContentHelp_searchScope_relations" class="admin__form-help-text">#{msg.desc__geomap_search_scope__relations}</div>
-														 <div class="col-1 admin__form-help-icon">
-															<button type="button" class="btn btn--clean"
-																data-toggle="helptext" aria-label="inline help icon">
-																<i class="fa fa-question-circle" aria-hidden="true"></i>
-															</button>
-														</div>
-										    		</div> 
-											    		
-											    	<!-- DOCSTRUCTS -->	
-											    	<div class="connected-bottom">
-										    			<label class="custom-radio" for="scopeRadio_docStructs">
-											    			<input type="radio" jsf:id="scopeRadio_docStructs" name="searchScope" 
-											    					value="DOCSTRUCTS" checked="#{featureSet.searchScope.name() == 'DOCSTRUCTS'}"
-											    					onchange="changeSearchScope(this.value)" />
-											    			<span class="radio-indicator"></span>
-											                #{msg.label__geomap_search_scope__docStructs}
-											             </label>
-											             <div id="popupContentHelp_searchScope_docStructs" class="admin__form-help-text">#{msg.desc__geomap_search_scope__docStructs}</div>
-														 <div class="col-1 admin__form-help-icon">
-															<button type="button" class="btn btn--clean"
-																data-toggle="helptext" aria-label="inline help icon">
-																<i class="fa fa-question-circle" aria-hidden="true"></i>
-															</button>
-														</div>
-										    		</div>
-										    	</div>
+
+
+													<ul class="custom-radio-group">
+													    <ui:repeat id="items" value="#{SolrSearchScope.values()}" var="scope" varStatus="status">
+													        <li class="#{status.first ? 'radio-button-tree__connected-top' : ''} 
+											                        #{!status.first and !status.last ? 'radio-button-tree__connected-middle' : ''}
+											                        #{status.last ? 'radio-button-tree__connected-bottom' : ''}">
+													            <h:selectOneRadio group="searchScopeGroup#{featureSet.id}" value="#{featureSet.searchScope}">
+													                <f:selectItem itemValue="#{scope}" itemLabel="#{msg[scope.label]}"/>
+													            </h:selectOneRadio>
+													        </li>
+													    </ui:repeat>
+													</ul>
+
+
 										    </div>
 
 													
