@@ -693,7 +693,7 @@ public final class TocMaker {
             if (StringUtils.isNotEmpty(queryValue)) {
                 String filterQuery = DataManager.getInstance().getConfiguration().getAncestorIdentifierFieldFilterQuery(ancestorField);
                 if (StringUtils.isNotEmpty(filterQuery)) {
-                    filterQuery = " +(" + filterQuery + ")";
+                    filterQuery = " " + filterQuery;
                 }
                 String siblingQuery = new StringBuilder("+").append(ancestorField)
                         .append(":\"")
