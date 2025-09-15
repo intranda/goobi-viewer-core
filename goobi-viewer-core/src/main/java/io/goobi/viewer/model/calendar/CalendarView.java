@@ -83,7 +83,7 @@ public class CalendarView implements Serializable {
     public boolean isDisplay() throws PresentationException, IndexUnreachableException {
         boolean empty = true;
         for (CalendarItemMonth item : calendarItems) {
-            if (item.getHits() > 0) {
+            if (item.getHits() > 1) {
                 empty = false;
                 break;
             }
