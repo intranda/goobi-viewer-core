@@ -99,8 +99,8 @@ public final class TocMaker {
     }
 
     /**
-     * Returns a list of fields to be used as the field filter for Solr queries. The list consists of statically defined fields in REQUIRED_FIELDS
-     * and any additional fields configured for the TOC label.
+     * Returns a list of fields to be used as the field filter for Solr queries. The list consists of statically defined fields in REQUIRED_FIELDS and
+     * any additional fields configured for the TOC label.
      *
      * @should return both static and configured fields
      * @param template a {@link java.lang.String} object.
@@ -235,19 +235,6 @@ public final class TocMaker {
         int level = 0;
         List<String> mainDocumentChain = new ArrayList<>();
         mainDocumentChain.add((String) doc.getFieldValue(SolrConstants.IDDOC));
-
-        //                if (structElement.isGroupMember()) {
-        //                    // If this record belongs to groups, start with the groups
-        //                    for (String groupIdField : structElement.getGroupMemberships().keySet()) {
-        //                        logger.debug("adding toc element: " + groupIdField);
-        //                        ret.add(new TocElementFlat(structElement.getGroupMemberships().get(groupIdField),
-        //                        null, null, String.valueOf(structElement
-        //                                .getLuceneId()), false, null, level, structElement.getGroupMemberships().get(groupIdField), null, null,
-        //                                sourceFormatPdfAllowed, true));
-        //
-        //                    }
-        //                    ++level;
-        //                }
 
         List<String> ancestorFields = DataManager.getInstance().getConfiguration().getAncestorIdentifierFields();
         if (!ancestorFields.contains(SolrConstants.PI_PARENT)) {
@@ -704,12 +691,17 @@ public final class TocMaker {
             // (SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT)));
             // TODO determine child docstruct type before fetching the child docs to determine the required fields
             if (StringUtils.isNotEmpty(queryValue)) {
+                String filterQuery = DataManager.getInstance().getConfiguration().getAncestorIdentifierFieldFilterQuery(ancestorField);
+                if (StringUtils.isNotEmpty(filterQuery)) {
+                    filterQuery = " +(" + filterQuery + ")";
+                }
                 String siblingQuery = new StringBuilder("+").append(ancestorField)
                         .append(":\"")
                         .append(queryValue)
                         .append("\" +")
                         .append(SolrConstants.PI)
                         .append(":*")
+                        .append(filterQuery)
                         .toString();
                 logger.trace("Sibling query: {}", siblingQuery);
                 SolrDocumentList childDocs = DataManager.getInstance()

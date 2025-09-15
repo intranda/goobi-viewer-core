@@ -4995,11 +4995,35 @@ public class Configuration extends AbstractConfiguration {
      * isTocListSiblingRecords.
      * </p>
      *
-     * @should return correctValue
      * @return a boolean.
+     * @should return correctValue
      */
     public boolean isTocListSiblingRecords() {
         return getLocalBoolean("toc.ancestorIdentifierFields[@listSiblingRecords]", false);
+    }
+    
+    /**
+     * <p>
+     * getAncestorIdentifierFieldFilterQuery(String).
+     * </p>
+     * 
+     * @param field
+     * @return Configured filter query for the given field; empty string is none found
+     * @should return correctValue
+     */
+    public String getAncestorIdentifierFieldFilterQuery(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("toc.ancestorIdentifierFields.field");
+        if (fieldList == null) {
+            return "";
+        }
+
+        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
+            if (subElement.getString(".").equals(field)) {
+                return subElement.getString("[@filterQuery]", "");
+            }
+        }
+
+        return "";
     }
 
     /**
