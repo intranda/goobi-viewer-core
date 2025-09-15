@@ -1,0 +1,753 @@
+const gulp = require('gulp');
+const path = require('path');
+const fs = require('fs');
+const os = require('os');
+const XML = require('pixl-xml');
+
+const less = require('gulp-less');
+const sourcemaps = require('gulp-sourcemaps');
+const concat = require('gulp-concat');
+const header = require('gulp-header');
+const riot = require('gulp-riot');
+const rename = require('gulp-rename');
+const merge = require('merge-stream');
+const through = require('through2');
+const colors = require('ansi-colors');
+const log = require('fancy-log');
+const { spawn } = require('child_process');
+
+const { depsPathsJS, depsPathsCSS } = require('./gulp/depsPaths');
+
+const paths = {
+    jsDevRoot: 'src/main/resources/META-INF/resources/resources/javascript/dev/',
+    jsModulesRoot: 'src/main/resources/META-INF/resources/resources/javascript/dev/modules/',
+    jsDistRoot: 'src/main/resources/META-INF/resources/resources/javascript/dist/',
+    cssRoot: 'src/main/resources/META-INF/resources/resources/css/',
+    cssDistRoot: 'src/main/resources/META-INF/resources/resources/css/dist/',
+    lessRoot: 'src/main/resources/META-INF/resources/resources/css/less/',
+    staticRoot: 'src/main/resources/META-INF/resources',
+};
+
+const banner = `/*!
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ * - http://www.intranda.com
+ * - http://digiverso.com
+ * GPLv2 or later. NO WARRANTY.
+ */\n`;
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ 2) Resolve deployment/Core/Theme directories                         ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Computes `DEPLOYMENT_DIR` (running webapp root) and local repo roots.
+ * Honors environment overrides and falls back to a standard ~/git layout.
+ *
+ * Env overrides (all optional):
+ *   GV_CORE_DIR   : absolute path to the core repo
+ *   GV_THEME_DIR  : absolute path to the theme repo
+ *   GV_VIEWER_CFG : absolute path to config_viewer.xml
+ *   GV_GULP_CFG   : absolute path to ~/.config/gulp_userconfig.json
+ *
+ * @returns {{DEPLOYMENT_DIR:string, CORE_DIR:string, THEME_DIR:string}}
+ * @throws {Error} If the user config or viewer XML cannot be read/parsed.
+ */
+function resolveDirs() {
+    const home = os.homedir();
+
+    const gulpCfgPath =
+        process.env.GV_GULP_CFG || path.join(home, '.config', 'gulp_userconfig.json');
+    const viewerCfgPath =
+        process.env.GV_VIEWER_CFG ||
+        (process.platform.toLowerCase().startsWith('win')
+            ? 'c:/opt/digiverso/viewer/config/config_viewer.xml'
+            : '/opt/digiverso/viewer/config/config_viewer.xml');
+
+    // Read gulp user config (JSON)
+    let cfg;
+    try {
+        cfg = JSON.parse(fs.readFileSync(gulpCfgPath, 'utf-8'));
+    } catch (e) {
+        throw new Error(`Cannot parse ${gulpCfgPath}: ${e.message}`);
+    }
+
+    // Read viewer XML config
+    let viewerConfig;
+    try {
+        viewerConfig = XML.parse(fs.readFileSync(viewerCfgPath, 'utf-8'));
+    } catch (e) {
+        throw new Error(`Cannot parse ${viewerCfgPath}: ${e.message}`);
+    }
+
+    const theme = viewerConfig?.viewer?.theme || {};
+    const special = theme.specialName && String(theme.specialName);
+    const deployed = String(theme.deployedTargetFolder).toLowerCase() === 'true';
+    const mainTheme = String(theme.mainTheme || 'reference');
+
+    // Deployment target
+    let deployDir;
+    if (special && special.length) {
+        deployDir = path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`);
+    } else if (deployed) {
+        const candidate = path.join(
+            home,
+            'git',
+            'goobi-viewer',
+            'goobi-viewer-theme-reference',
+            'goobi-viewer-theme-reference',
+            'target',
+            'viewer'
+        );
+        deployDir = fs.existsSync(candidate)
+            ? candidate
+            : path.join(cfg.tomcat_dir, `goobi-viewer-theme-${mainTheme}`);
+    } else {
+        deployDir = path.join(cfg.tomcat_dir, `goobi-viewer-theme-${mainTheme}`);
+    }
+
+    // Repo roots
+    const coreDir =
+        process.env.GV_CORE_DIR ||
+        path.join(home, 'git', 'goobi-viewer', 'goobi-viewer-core', 'goobi-viewer-core');
+
+    let themeDir = process.env.GV_THEME_DIR || null;
+    if (!themeDir) {
+        if (deployed) {
+            themeDir = path.resolve(deployDir, '..', '..');
+        } else if (special && special.length) {
+            themeDir = path.join(
+                home,
+                'git',
+                'goobi-viewer',
+                `goobi-viewer-theme-${special}`,
+                `goobi-viewer-theme-${special}`
+            );
+        } else {
+            themeDir = path.join(
+                home,
+                'git',
+                'goobi-viewer',
+                'goobi-viewer-theme-reference',
+                'goobi-viewer-theme-reference'
+            );
+        }
+    }
+
+    return { DEPLOYMENT_DIR: deployDir, CORE_DIR: coreDir, THEME_DIR: themeDir };
+}
+
+/**
+ * Validates that a directory exists and is a directory.
+ *
+ * @param {string} label Short name used in error messages.
+ * @param {string} dir Absolute path to check.
+ * @throws {Error} If the path does not exist or is not a directory.
+ */
+function assertDirExists(label, dir) {
+    if (!dir) throw new Error(`${label} not resolved`);
+    try {
+        const st = fs.statSync(dir);
+        if (!st.isDirectory()) throw new Error(`${label} is not a directory: ${dir}`);
+    } catch {
+        throw new Error(`${label} does not exist: ${dir}`);
+    }
+}
+
+/* Resolve once on load (we never auto-create deployment root) */
+const { DEPLOYMENT_DIR, CORE_DIR, THEME_DIR } = (() => {
+    const dirs = resolveDirs();
+    assertDirExists('DEPLOYMENT_DIR', dirs.DEPLOYMENT_DIR);
+    return dirs;
+})();
+
+/**
+ * Returns a safe destination stream into a deployment subfolder.
+ * If the target subfolder does not exist, emits a warning and returns a no-op
+ * passthrough (so nothing is written and the watcher stays alive).
+ *
+ * @param {string} subPath Subdirectory inside `DEPLOYMENT_DIR`.
+ * @returns {NodeJS.ReadWriteStream} A gulp destination or a no-op stream.
+ */
+function safeDest(subPath) {
+    const full = path.join(DEPLOYMENT_DIR, subPath);
+    if (!fs.existsSync(full)) {
+        log(colors.yellow(`[deploy] target does not exist, skipping: ${full}`));
+        return through.obj((f, _e, cb) => cb(null, f)); // swallow output
+    }
+    return gulp.dest(full);
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ 3) Error guard (optional plumber) & small utilities                  ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Optional gulp-plumber integration.
+ * If installed, prevents pipe breaking on plugin errors and logs them.
+ * If not installed, returns a no-op passthrough so pipelines keep working.
+ *
+ * @returns {NodeJS.ReadWriteStream} A transform stream usable in Gulp pipes.
+ */
+let plumber = null;
+try {
+    plumber = require('gulp-plumber');
+} catch {
+}
+const noopThrough = () => through.obj((f, _e, cb) => cb(null, f));
+
+function guard() {
+    return plumber
+        ? plumber({
+            errorHandler(err) {
+                log(colors.red(err && err.message ? err.message : String(err)));
+                if (this && typeof this.emit === 'function') this.emit('end');
+            },
+        })
+        : noopThrough();
+}
+
+/**
+ * Formats a high-resolution timer difference into milliseconds string.
+ *
+ * @param {bigint} t0 A monotonic timestamp from `process.hrtime.bigint()`.
+ * @returns {string} e.g. "123 ms".
+ */
+function elapsedMs(t0) {
+    return ((Number(process.hrtime.bigint() - t0) / 1e6) || 0).toFixed(0) + ' ms';
+}
+
+/**
+ * Prints a titled, indented block to the console.
+ *
+ * @param {string} title Section title.
+ * @param {string[]} lines Lines to print under the title (already colorized if desired).
+ */
+function logBlock(title, lines) {
+    console.log(colors.white(`\n[${title}]`));
+    lines.forEach((l) => console.log('  ' + l));
+}
+
+/**
+ * Creates a tap transform that calls `push(file)` for every file flowing through.
+ *
+ * @param {(file: import('vinyl')) => void} push Callback to observe files.
+ * @returns {NodeJS.ReadWriteStream} Through2 passthrough.
+ */
+function collectFiles(push) {
+    return through.obj(function (file, _, cb) {
+        try {
+            push(file);
+        } catch {
+        }
+        cb(null, file);
+    });
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ 4) Styles: LESS → CSS (+ sourcemaps)                                 ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Compiles the main LESS entrypoint into a minified CSS bundle with sourcemaps.
+ * Writes to the project dist and mirrors into the deployment (if target exists).
+ *
+ * @param {?string=} changedFilePath Optional path that triggered rebuild (for logging).
+ * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
+ */
+function buildStyles(changedFilePath = null) {
+    const started = process.hrtime.bigint();
+    const lessEntryFile = path.join(paths.lessRoot, 'constructor.less');
+
+    const projectOutputs = [];
+    const deployOutputs = [];
+
+    const collectProjectOutputs = collectFiles((file) => {
+        const base = path.resolve(paths.cssDistRoot);
+        projectOutputs.push(path.join(base, path.basename(file.path)));
+    });
+    const collectDeployOutputs = collectFiles((file) => {
+        const rel = path.relative(paths.staticRoot, file.path).replace(/\\/g, '/');
+        deployOutputs.push(path.join(DEPLOYMENT_DIR, rel));
+    });
+
+    return gulp
+        .src(lessEntryFile)
+        .pipe(guard())
+        .pipe(sourcemaps.init())
+        .pipe(less({ compress: true }))
+        .pipe(header(banner))
+        .pipe(rename('viewer.min.css'))
+        .pipe(sourcemaps.write('.', { includeContent: true, sourceRoot: '/viewer/resources/css/less' }))
+
+        .pipe(collectProjectOutputs)
+        .pipe(gulp.dest(paths.cssDistRoot))
+
+        .pipe(collectDeployOutputs)
+        .pipe(safeDest('resources/css/dist'))
+
+        .on('finish', () => {
+            logBlock('styles', [
+                ...(changedFilePath ? [`changed: ${colors.green(changedFilePath)}`] : []),
+                `src: ${colors.green(lessEntryFile)}`,
+                '→ project:',
+                ...projectOutputs.map((p) => '  • ' + colors.blue(p)),
+                ...(deployOutputs.length ? ['→ deploy:', ...deployOutputs.map((p) => '  • ' + colors.blue(p))] : []),
+                colors.green('✓ ') +
+                colors.white(
+                    `${projectOutputs.length} generated · ${deployOutputs.length} copied · 0 errors · `
+                ) +
+                colors.magenta(elapsedMs(started)),
+            ]);
+        });
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ 5) JavaScript bundles                                                ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Bundles viewer/cms/admin/crowdsourcing modules into `viewer.min.js`.
+ *
+ * @param {?string=} changedFilePath Optional path that triggered rebuild (for logging).
+ * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
+ */
+function bundleViewerJS(changedFilePath = null) {
+    const started = process.hrtime.bigint();
+    const outProj = path.resolve(paths.jsDistRoot, 'viewer.min.js');
+    const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/viewer.min.js');
+
+    return gulp
+        .src(
+            [
+                path.join(paths.jsModulesRoot, 'viewer/viewerJS.js'),
+                path.join(paths.jsModulesRoot, 'viewer/viewerJS.helper.js'),
+                path.join(paths.jsModulesRoot, 'viewer/viewerJS.*.js'),
+                path.join(paths.jsModulesRoot, 'viewer/geoMap/viewerJS.geoMap.js'),
+                path.join(paths.jsModulesRoot, 'viewer/geoMap/*.js'),
+                path.join(paths.jsModulesRoot, 'cms/cmsJS.js'),
+                path.join(paths.jsModulesRoot, 'cms/cmsJS.*.js'),
+                path.join(paths.jsModulesRoot, 'admin/adminJS.js'),
+                path.join(paths.jsModulesRoot, 'admin/adminJS.*.js'),
+                path.join(paths.jsModulesRoot, 'crowdsourcing/Crowdsourcing.js'),
+                path.join(paths.jsModulesRoot, 'crowdsourcing/Crowdsourcing.*.js'),
+            ],
+            { allowEmpty: true }
+        )
+        .pipe(guard())
+        .pipe(concat('viewer.min.js'))
+        .pipe(header(banner))
+        .pipe(gulp.dest(paths.jsDistRoot))
+        .pipe(safeDest('resources/javascript/dist'))
+        .on('finish', () => {
+            const deployOutputs = fs.existsSync(outDeploy) ? [outDeploy] : [];
+            logBlock('js_viewer', [
+                ...(changedFilePath ? [`changed: ${colors.green(changedFilePath)}`] : []),
+                `src: ${colors.green(path.join(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}/**/*.js'))}`,
+                '→ project:',
+                '  • ' + colors.blue(outProj),
+                ...(deployOutputs.length ? ['→ deploy:', ...deployOutputs.map((p) => '  • ' + colors.blue(p))] : []),
+                colors.green('✓ ') +
+                colors.white(`1 generated · ${deployOutputs.length} copied · 0 errors · `) +
+                colors.magenta(elapsedMs(started)),
+            ]);
+        });
+}
+
+/**
+ * Bundles statistics module into `statistics.min.js`.
+ *
+ * @param {?string=} changedFilePath Optional path that triggered rebuild (for logging).
+ * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
+ */
+function bundleStatisticsJS(changedFilePath = null) {
+    const started = process.hrtime.bigint();
+    const outProj = path.resolve(paths.jsDistRoot, 'statistics.min.js');
+    const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/statistics.min.js');
+
+    return gulp
+        .src(path.join(paths.jsModulesRoot, 'statistics/statistics.js'), { allowEmpty: true })
+        .pipe(guard())
+        .pipe(concat('statistics.min.js'))
+        .pipe(header(banner))
+        .pipe(gulp.dest(paths.jsDistRoot))
+        .pipe(safeDest('resources/javascript/dist'))
+        .on('finish', () => {
+            const deployOutputs = fs.existsSync(outDeploy) ? [outDeploy] : [];
+            logBlock('js_statistics', [
+                ...(changedFilePath ? [`changed: ${colors.green(changedFilePath)}`] : []),
+                `src: ${colors.green(path.join(paths.jsModulesRoot, 'statistics/statistics.js'))}`,
+                '→ project:',
+                '  • ' + colors.blue(outProj),
+                ...(deployOutputs.length ? ['→ deploy:', ...deployOutputs.map((p) => '  • ' + colors.blue(p))] : []),
+                colors.green('✓ ') +
+                colors.white(`1 generated · ${deployOutputs.length} copied · 0 errors · `) +
+                colors.magenta(elapsedMs(started)),
+            ]);
+        });
+}
+
+/**
+ * Bundles browser support module into `browsersupport.min.js`.
+ *
+ * @param {?string=} changedFilePath Optional path that triggered rebuild (for logging).
+ * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
+ */
+function bundleBrowserSupportJS(changedFilePath = null) {
+    const started = process.hrtime.bigint();
+    const outProj = path.resolve(paths.jsDistRoot, 'browsersupport.min.js');
+    const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/browsersupport.min.js');
+
+    return gulp
+        .src(path.join(paths.jsModulesRoot, 'browsersupport/browsersupport.js'), { allowEmpty: true })
+        .pipe(guard())
+        .pipe(concat('browsersupport.min.js'))
+        .pipe(header(banner))
+        .pipe(gulp.dest(paths.jsDistRoot))
+        .pipe(safeDest('resources/javascript/dist'))
+        .on('finish', () => {
+            const deployOutputs = fs.existsSync(outDeploy) ? [outDeploy] : [];
+            logBlock('js_browser', [
+                ...(changedFilePath ? [`changed: ${colors.green(changedFilePath)}`] : []),
+                `src: ${colors.green(path.join(paths.jsModulesRoot, 'browsersupport/browsersupport.js'))}`,
+                '→ project:',
+                '  • ' + colors.blue(outProj),
+                ...(deployOutputs.length ? ['→ deploy:', ...deployOutputs.map((p) => '  • ' + colors.blue(p))] : []),
+                colors.green('✓ ') +
+                colors.white(`1 generated · ${deployOutputs.length} copied · 0 errors · `) +
+                colors.magenta(elapsedMs(started)),
+            ]);
+        });
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ 6) Riot tags                                                         ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Compiles Riot `.tag` files into `riot-tags.js` and mirrors to deployment.
+ *
+ * @param {?string=} changedFilePath Optional path that triggered rebuild (for logging).
+ * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
+ */
+function compileRiotTags(changedFilePath = null) {
+    const started = process.hrtime.bigint();
+    const outProj = path.resolve(paths.jsDistRoot, 'riot-tags.js');
+    const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/riot-tags.js');
+
+    return gulp
+        .src(path.join(paths.jsDevRoot, 'tags/**/*.tag'), { allowEmpty: true })
+        .pipe(guard())
+        .pipe(riot({ compact: true }))
+        .pipe(concat('riot-tags.js'))
+        .pipe(gulp.dest(paths.jsDistRoot))
+        .pipe(safeDest('resources/javascript/dist'))
+        .on('finish', () => {
+            const deployOutputs = fs.existsSync(outDeploy) ? [outDeploy] : [];
+            logBlock('riotTags', [
+                ...(changedFilePath ? [`changed: ${colors.green(changedFilePath)}`] : []),
+                `src: ${colors.green(path.join(paths.jsDevRoot, 'tags/**/*.tag'))}`,
+                '→ project:',
+                '  • ' + colors.blue(outProj),
+                ...(deployOutputs.length ? ['→ deploy:', ...deployOutputs.map((p) => '  • ' + colors.blue(p))] : []),
+                colors.green('✓ ') +
+                colors.white(`1 generated · ${deployOutputs.length} copied · 0 errors · `) +
+                colors.magenta(elapsedMs(started)),
+            ]);
+        });
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ 7) Copy third-party dependencies                                     ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Copies declared third-party JS/CSS assets defined in `depsPathsJS/CSS`.
+ * Supports optional flattening and special rename for Masonry bundles.
+ *
+ * @returns {Promise<void>|NodeJS.ReadWriteStream} Merged stream or resolved promise.
+ */
+function copyDependencies() {
+    const started = process.hrtime.bigint();
+    const streams = [];
+    let copied = 0;
+
+    const norm = (p) => (p ? p.replace(/\\/g, '/') : '');
+
+    // JS
+    depsPathsJS.forEach((def) => {
+        let s = gulp.src(def.src, { cwd: def.cwd, allowEmpty: true }).pipe(guard());
+        if (def.flatten) s = s.pipe(rename({ dirname: '' }));
+
+        const destNorm = norm(def.dest);
+        if (destNorm && /(^|\/)masonry\/?$/.test(destNorm)) {
+            s = s.pipe(
+                rename((p) => {
+                    if (p.basename === 'masonry.pkgd.min' && p.extname === '.js') p.basename = 'masonry.min';
+                })
+            );
+        }
+
+        streams.push(
+            s
+                .pipe(
+                    collectFiles(() => {
+                        copied++;
+                    })
+                )
+                .pipe(gulp.dest(def.dest))
+        );
+    });
+
+    // CSS
+    depsPathsCSS.forEach((def) => {
+        let s = gulp.src(def.src, { cwd: def.cwd, allowEmpty: true }).pipe(guard());
+        if (def.flatten) s = s.pipe(rename({ dirname: '' }));
+        streams.push(
+            s
+                .pipe(
+                    collectFiles(() => {
+                        copied++;
+                    })
+                )
+                .pipe(gulp.dest(def.dest))
+        );
+    });
+
+    if (streams.length === 0) return Promise.resolve();
+
+    return merge(streams).on('finish', () => {
+        logBlock('copy-deps', [
+            colors.green('✓ ') +
+            colors.white(`${copied} files copied · 0 errors · `) +
+            colors.magenta(elapsedMs(started)),
+        ]);
+    });
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ 8) Full project → deployment mirror (one-shot)                       ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Mirrors the entire `staticRoot` tree into the deployment directory (one-shot).
+ * Intended for initial syncs; subsequent changes are handled by the watcher.
+ *
+ * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
+ */
+function fullSync() {
+    const started = process.hrtime.bigint();
+    let copied = 0;
+
+    return gulp
+        .src(path.join(paths.staticRoot, '**/*'), { dot: true, allowEmpty: true })
+        .pipe(guard())
+        .pipe(
+            collectFiles(() => {
+                copied++;
+            })
+        )
+        .pipe(gulp.dest(DEPLOYMENT_DIR))
+        .on('finish', () => {
+            logBlock('sync-all', [
+                `src: ${colors.green(path.resolve(paths.staticRoot)) + '/**/*'}`,
+                `dst: ${colors.blue(DEPLOYMENT_DIR)}`,
+                colors.green('✓ ') +
+                colors.white(`${copied} copied · 0 errors · `) +
+                colors.magenta(elapsedMs(started)),
+            ]);
+        });
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ 9) Java (Maven) helpers                                              ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Resolves the Maven executable for a given project folder.
+ * Prefers project-local wrapper (`mvnw`/`mvnw.cmd`) and falls back to system `mvn`.
+ *
+ * @param {string} cwd Project folder.
+ * @returns {string} Executable path or command.
+ */
+function getMavenCmd(cwd) {
+    const isWin = process.platform === 'win32';
+    const wrapper = path.join(cwd, isWin ? 'mvnw.cmd' : 'mvnw');
+    return fs.existsSync(wrapper) ? wrapper : (isWin ? 'mvn.cmd' : 'mvn');
+}
+
+/**
+ * Formats milliseconds into a compact human string.
+ *
+ * @param {number} ms Milliseconds.
+ * @returns {string} e.g. "850 ms", "3.5 s", "2m 05s", "1h 03m".
+ */
+function fmt(ms) {
+    if (ms < 1000) return `${Math.round(ms)} ms`;
+    const s = ms / 1000;
+    if (s < 60) return `${s.toFixed(s < 10 ? 2 : 1)} s`;
+    const m = Math.floor(s / 60);
+    const rs = Math.round(s - m * 60);
+    if (m < 60) return `${m}m ${String(rs).padStart(2, '0')}s`;
+    const h = Math.floor(m / 60);
+    const mm = m % 60;
+    return `${h}h ${String(mm).padStart(2, '0')}m`;
+}
+
+/**
+ * Runs Maven in `cwd` with the given goals (e.g., `['install']`) and resolves
+ * with the elapsed time in milliseconds. Maven's own output streams to the console.
+ *
+ * @param {string} cwd Working directory for Maven.
+ * @param {string[]=} goals Maven goals (default: []).
+ * @returns {Promise<number>} Elapsed time in milliseconds.
+ */
+function runMaven(cwd, goals = []) {
+    return new Promise((resolve, reject) => {
+        if (!cwd || !fs.existsSync(cwd)) return reject(new Error(`Directory does not exist: ${cwd}`));
+        const cmd = getMavenCmd(cwd);
+        const t0 = process.hrtime.bigint();
+        const child = spawn(cmd, goals, { cwd, stdio: 'inherit' });
+        child.on('close', (code) => {
+            const ms = Number(process.hrtime.bigint() - t0) / 1e6;
+            if (code === 0) resolve(ms);
+            else reject(new Error(`maven exited with code ${code}`));
+        });
+    });
+}
+
+/**
+ * Builds core (`install`), then packages theme (`package`) and prints a compact summary.
+ *
+ * @returns {Promise<void>} Resolves when both Maven invocations complete.
+ */
+async function java() {
+    const tAll = process.hrtime.bigint();
+    const coreMs = await runMaven(CORE_DIR, ['install']);
+    const themeMs = await runMaven(THEME_DIR, ['package']);
+    const totalMs = Number(process.hrtime.bigint() - tAll) / 1e6;
+    log(
+        colors.bold(
+            `[java] core [install] ${colors.cyan(fmt(coreMs))} · theme [package] ${colors.cyan(
+                fmt(themeMs)
+            )} · total ${colors.magenta(fmt(totalMs))}`
+        )
+    );
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ 10) Watch mode                                                       ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Starts watchers for JS bundles, styles, Riot tags, and static assets.
+ * Changes are rebuilt and mirrored into the deployment folder where applicable.
+ */
+function watchMode() {
+    // JS bundles
+    gulp
+        .watch(path.join(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}/**/*.js'))
+        .on('change', (p) => bundleViewerJS(p));
+    gulp.watch(path.join(paths.jsModulesRoot, 'statistics/**/*.js')).on('change', (p) =>
+        bundleStatisticsJS(p)
+    );
+    gulp.watch(path.join(paths.jsModulesRoot, 'browsersupport/**/*.js')).on('change', (p) =>
+        bundleBrowserSupportJS(p)
+    );
+
+    // Styles & tags
+    gulp.watch(path.join(paths.lessRoot, '**/*.less')).on('change', (p) => buildStyles(p));
+    gulp.watch(path.join(paths.jsDevRoot, 'tags/**/*.tag')).on('change', (p) => compileRiotTags(p));
+
+    // Static assets (no dist CSS/JS)
+    const staticGlobs = [
+        path.join(paths.staticRoot, '*.xhtml'),
+        path.join(paths.staticRoot, '*.xml'),
+        path.join(paths.staticRoot, '*.xls'),
+        path.join(paths.staticRoot, 'resources/**/*.xhtml'),
+        path.join(paths.staticRoot, 'resources/**/*.html'),
+        path.join(paths.staticRoot, 'resources/**/*.jpg'),
+        path.join(paths.staticRoot, 'resources/**/*.jpeg'),
+        path.join(paths.staticRoot, 'resources/**/*.png'),
+        path.join(paths.staticRoot, 'resources/**/*.svg'),
+        path.join(paths.staticRoot, 'resources/**/*.gif'),
+        path.join(paths.staticRoot, 'resources/**/*.ico'),
+    ];
+
+    const staticWatcher = gulp.watch(staticGlobs, { ignoreInitial: true });
+
+    function mirrorStatic(filePath) {
+        const rel = path.relative(paths.staticRoot, filePath).replace(/\\/g, '/');
+        const dst = path.join(DEPLOYMENT_DIR, rel);
+        return gulp
+            .src(filePath, { base: paths.staticRoot })
+            .pipe(guard())
+            .pipe(gulp.dest(DEPLOYMENT_DIR))
+            .on('finish', () => {
+                logBlock('static', [
+                    `changed: ${colors.green(filePath)}`,
+                    `dst: ${colors.blue(dst)}`,
+                    colors.green('✓ copied'),
+                ]);
+            });
+    }
+
+    staticWatcher.on('add', mirrorStatic);
+    staticWatcher.on('change', mirrorStatic);
+    staticWatcher.on('unlink', async (filePath) => {
+        const rel = path.relative(paths.staticRoot, filePath).replace(/\\/g, '/');
+        const targetPath = path.join(DEPLOYMENT_DIR, rel);
+        try {
+            const { default: del } = await import('del');
+            await del(targetPath, { force: true });
+            logBlock('static', [
+                `deleted: ${colors.green(filePath)}`,
+                `dst: ${colors.blue(targetPath)}`,
+                colors.yellow('• removed'),
+            ]);
+        } catch (err) {
+            console.warn('[WARN] Could not delete file from deploy dir:', err.message);
+        }
+    });
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ 11) Debug helper                                                     ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Prints resolved directories and environment override hints.
+ *
+ * @param {Function} cb Gulp callback.
+ */
+function printTargets(cb) {
+    const home = os.homedir();
+    const exists = (p) => p && fs.existsSync(p);
+    const pretty = (p) => (p ? p.replace(home, '~') : '(none)');
+    const mark = (p) => (exists(p) ? colors.green('✓') : colors.red('✗'));
+    const row = (label, p) => `${colors.white(label.padEnd(14))} ${mark(p)}  ${colors.blue(pretty(p))}`;
+
+    logBlock('targets', [
+        `platform: ${colors.cyan(process.platform)}  node: ${colors.cyan(process.version)}`,
+        row('DEPLOYMENT_DIR', DEPLOYMENT_DIR),
+        row('CORE_DIR', CORE_DIR),
+        row('THEME_DIR', THEME_DIR),
+        colors.gray('hint: GV_CORE_DIR / GV_THEME_DIR override repo detection'),
+        colors.gray('      GV_VIEWER_CFG / GV_GULP_CFG override config paths'),
+    ]);
+    cb();
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ 12) Task composition & exports                                       ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+const buildJS = gulp.series(bundleViewerJS, bundleStatisticsJS, bundleBrowserSupportJS);
+const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags));
+
+exports.build = buildAll;                           // npm run build
+exports.dev = watchMode;                            // npm run dev
+exports.devsync = gulp.series(fullSync, watchMode); // npm run devsync
+exports['copy-deps'] = copyDependencies;           // npm run copy-deps
+exports['sync-all'] = fullSync;                    // npm run sync-all
+exports.target = printTargets;                      // npm run target
+exports.java = java;                                // npm run java
