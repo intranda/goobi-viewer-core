@@ -593,6 +593,9 @@ public class ThumbnailHandler {
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(StructElement doc, String pi, int width, int height) {
+        if (doc == null) {
+            return null;
+        }
 
         ImageFileFormat format = ImageFileFormat.JPG;
         String mimetype = doc.getMetadataValue(SolrConstants.MIMETYPE);

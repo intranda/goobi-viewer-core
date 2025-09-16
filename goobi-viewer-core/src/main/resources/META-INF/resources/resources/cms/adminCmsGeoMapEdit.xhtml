@@ -65,30 +65,7 @@
 						<div class="admin__language-tabs">
 							<viewerComponent:localeSelector object="#{geoMapBean}" render="metadataPanel" />
 						</div>
-						 
-						
-<!-- 							<ul class="nav nav-tabs" role="tablist"> -->
-<!-- 								<ui:repeat value="#{navigationHelper.supportedLanguages}" -->
-<!-- 									var="language" varStatus="status"> -->
-									
-									
-									
-									
-<!-- 									<li role="presentation" -->
-<!-- 										class="#{language == geoMapBean.selectedLanguage ? 'active' : ''}"> -->
-<!-- 										                                    <a href="#nameLanguage-#{status.index}" aria-controls="nameLanguage-#{status.index}" role="tab" data-toggle="tab">#{language}</a> -->
-<!-- 										<h:commandLink -->
-<!-- 											action="#{geoMapBean.setSelectedLanguage(language)}" -->
-<!-- 											value="#{language}" styleClass="-bluelink"> -->
-<!-- 											<f:passThroughAttribute name="role" value="tab" /> -->
-<!-- 											<f:ajax render="metadataPanel"></f:ajax> -->
-<!-- 										</h:commandLink> -->
-<!-- 									</li> -->
-<!-- 								</ui:repeat> -->
-<!-- 							</ul> -->
-							
-							
-							
+													
 							<div class="admin__default-block">
 								<ui:param name="language" value="de"></ui:param>
 								<!--                         	<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status"> -->
@@ -147,10 +124,6 @@
 							</div>
 						</h:panelGroup>
 							<h2>#{msg.cms__geomaps__map__content}</h2>
-<!-- 							<span class="ajax_loader"> <img -->
-<!-- 								src="#{request.contextPath}/resources/images/infinity_loader.gif" -->
-<!-- 								class="img-responsive" alt="Waiting..." /> -->
-<!-- 							</span> -->
 
 						<h:panelGroup id="featureSetsPanel">
 							<div class="admin__default-block">
@@ -278,12 +251,6 @@
 															styleClass="form-control"
 															value="#{featureSet.markerTitleField}" required="false">
 															<f:selectItems var="option" value="#{configurationBean.geomapFeatureTitleOptions}"></f:selectItems>
-<!-- 															<f:selectItem itemValue="#{null}" -->
-<!-- 																itemLabel="#{msg.cms__geomaps__popup_content__option__none}"></f:selectItem> -->
-<!-- 															<f:selectItem itemValue="NORM_NAME" -->
-<!-- 																itemLabel="#{msg.cms__geomaps__popup_content__option__place}"></f:selectItem> -->
-<!-- 															<f:selectItem itemValue="MD_VALUE" -->
-<!-- 																itemLabel="#{msg.cms__geomaps__popup_content__option__metadata}"></f:selectItem> -->
 															<f:ajax execute="mapPanel" render="mapPanel" />
 														</h:selectOneMenu>
 													</div>
@@ -308,36 +275,50 @@
 												<div class="input_form__option_marker"></div>
 												<div class="col-9 admin__form-input cms-module__option-control">
 													
-<!-- 													<div class="form-group form-row"> -->
-<!-- 														<div class="col-9 admin__form-input cms-module__option-control"> -->
-<!-- 															<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope"></o:importConstants> -->
-<!-- 															<h:selectOneRadio value = "#{featureSet.searchScope}">  -->
-<!-- 																<f:selectItems value="#{SolrSearchScope.values()}" var="scope"  -->
-<!-- 			            											itemValue="#{scope}" itemLabel="#{msg[scope.label]}" /> -->
-<!-- 															</h:selectOneRadio>  -->
-<!-- 														</div> -->
-<!-- 													</div> -->
-													
 													<div class="d-flex admin__geomap-radio-group-wrapper">
-													
-														<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope" />
-														<ui:repeat value="#{SolrSearchScope.values()}" var="scope">
-															<div class="admin__geomap-radio-group">
-															    <h:selectOneRadio group="featuresetSearchScopeRadioGroup" immediate="true" value="#{featureSet.searchScope}">
-															    	<f:selectItem itemValue="#{scope}" itemLabel="#{msg[scope.label]}" />  
-															    	<f:ajax render="featuresetSearchScopeRadioGroup" />
-															    </h:selectOneRadio>
-														    </div>
-														</ui:repeat>
-														
 													</div>
 													
 													
 													
-<!-- 													<viewerComponent:toggleSwitch name="toggleAggregation_#{status.index}" value="#{featureSet.aggregateResults}" render="mapPanel"/> -->
-													<div id="titleHelp"
+													
+													<!-- NEW STRUCTURES -->
+											<div class="radio-button-tree">
+
+
+											<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope" />
+											
+
+											    <h:commandScript name="changeSearchScope"
+											                     action="#{featureSetBean.updateSearchScope}"
+											                     render="@form">
+											        <f:param name="newScope" value="" />
+											    </h:commandScript>
+
+
+													<ul class="custom-radio-group">
+													    <ui:repeat id="items" value="#{SolrSearchScope.values()}" var="scope" varStatus="status">
+													        <li class="#{status.first ? 'radio-button-tree__connected-top' : ''} 
+											                        #{!status.first and !status.last ? 'radio-button-tree__connected-middle' : ''}
+											                        #{status.last ? 'radio-button-tree__connected-bottom' : ''}">
+													            <h:selectOneRadio group="searchScopeGroup#{featureSet.id}" value="#{featureSet.searchScope}">
+													                <f:selectItem itemValue="#{scope}" itemLabel="#{msg[scope.label]}"/>
+													            </h:selectOneRadio>
+													        </li>
+													    </ui:repeat>
+													</ul>
+
+
+										    </div>
+
+													
+													
+													
+													
+													
+													
+												<div id="titleHelp"
 													class="admin__form-help-text">#{msg.cms__geomaps__filter_type__help}</div>
-												</div>
+											</div>
 												<div class="col-1 admin__form-help-icon">
 													<button type="button" class="btn btn--clean"
 														data-toggle="helptext" for="titleHelp"
@@ -355,13 +336,12 @@
 												</div>
 												<div class="input_form__option_marker"></div>
 												<div class="col-9 admin__form-input cms-module__option-control">
-															<h:selectOneMenu id="itemFilterSelect"
+														<h:selectOneMenu id="itemFilterSelect"
 															styleClass="form-control" 
 															value="#{featureSet.itemFilterName}" required="false">
 															<f:selectItem itemValue="" itemLabel=""/>
 															<f:selectItems var="option" value="#{configurationBean.geomapFilters}"></f:selectItems>
 														</h:selectOneMenu>
-<!-- 													<viewerComponent:toggleSwitch name="toggleAggregation_#{status.index}" value="#{featureSet.aggregateResults}" render="mapPanel"/> -->
 													<div id="titleHelp"
 													class="admin__form-help-text">#{msg.cms__geomaps__item_filters__help}</div>
 												</div>

@@ -10,7 +10,6 @@
 
 	<composite:interface>
 		<composite:attribute name="contentItem" required="true"/>
-			
 	</composite:interface>
 
 	<composite:implementation>
@@ -18,9 +17,7 @@
 		<div class="admin__content-component-input-group">
 
 			<!-- LABEL -->
-			<ui:fragment rendered="#{not empty cc.attrs.contentItem.content.archiveId}">
-				<div class="admin__content-component-input-label">#{msg.label__select_archive_resource}*:</div>
-			</ui:fragment>
+			<div class="admin__content-component-input-label">#{msg.label__select_archive_resource}*:</div>
 			           
             <!-- AREA FOR AJAX REFRESH -->
             <h:panelGroup layout="block" id="ArchiveGroup" styleClass="admin__content-component-input-field">
@@ -58,9 +55,7 @@
 		<div class="admin__content-component-input-group">
 
 			<!-- LABEL -->
-			<ui:fragment rendered="#{not empty cc.attrs.contentItem.content.archiveId}">
-				<div class="admin__content-component-input-label">#{msg.label__open_in_overlay}:</div>
-			</ui:fragment>
+			<div class="admin__content-component-input-label">#{msg.label__open_in_overlay}:</div>
 			    
 			<!-- AREA FOR AJAX REFRESH -->
 			<h:panelGroup id="openInPopupGroup" layout="block"

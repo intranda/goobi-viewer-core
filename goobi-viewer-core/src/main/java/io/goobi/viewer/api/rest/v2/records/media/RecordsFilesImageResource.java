@@ -53,6 +53,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBind
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
@@ -194,7 +195,7 @@ public class RecordsFilesImageResource extends ImageResource {
     @Override
     public void createResourceURI(HttpServletRequest request, String directory, String filename) throws IllegalRequestException {
         try {
-            AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getIIIFContentApiManager();
+            AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getCMSMediaImageApiManager(Version.v2);
             this.resourceURI = super.createResourceURI(URI.create(urls.getApiUrl()), directory, filename);
             String toReplace = URLEncoder.encode("{pi}", "UTF-8");
             this.resourceURI = URI.create(this.resourceURI.toString().replace(toReplace, directory));

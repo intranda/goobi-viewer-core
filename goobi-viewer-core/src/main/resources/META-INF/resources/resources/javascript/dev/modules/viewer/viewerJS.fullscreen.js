@@ -145,7 +145,7 @@ var viewerJS = ( function( viewer ) {
 
             		// show back and forward on small devices
                 	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
-                		$( '.image-controls__action.back, .image-controls__action.forward' ).show();
+                		$( '.image-controls__action.prev, .image-controls__action.next' ).show();
                 	}
 
             		// save sidebar status
@@ -174,7 +174,7 @@ var viewerJS = ( function( viewer ) {
             	
             	// show back and forward on small devices
             	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
-            		$( '.image-controls__action.back, .image-controls__action.forward' ).hide();
+            		$( '.image-controls__action.prev, .image-controls__action.next' ).hide();
             	}
             	
               // Remove display:none => make slide in animation possible (see below)
@@ -688,8 +688,8 @@ var viewerJS = ( function( viewer ) {
                 if (doubleKeypress && $('.image-controls__action.start a').length) {
                     $('.image-controls__action.start a').get(0).click();
                 }
-                else if ($('.image-controls__action.back a').length) {
-                    $('.image-controls__action.back a').get(0).click();
+                else if ($('.image-controls__action.prev a').length) {
+                    $('.image-controls__action.prev a').get(0).click();
                 }
                 break;
             case 39:
@@ -698,8 +698,8 @@ var viewerJS = ( function( viewer ) {
                     $('.image-controls__action.end a').get(0).click();
                 }
                 // advance one image at a time, if right arrow key is pressed once
-                else if ($('.image-controls__action.forward a').length) {
-                    $('.image-controls__action.forward a').get(0).click();
+                else if ($('.image-controls__action.next a').length) {
+                    $('.image-controls__action.next a').get(0).click();
                 }
                 break;
             case 27:

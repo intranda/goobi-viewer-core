@@ -8,12 +8,14 @@
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
 	<!-- Changed render @all to archivesForm to avoid reloads of surrounding layout elements + performance advantage  -->
-	<c:set var="render" value="#{render != null ? render : 'archivesForm'}" scope="request"></c:set>
-	<c:set var="renderOnExpand" value="#{renderOnExpand != null ? renderOnExpand : 'archivesForm'}" scope="request"></c:set>
+	<c:set var="formId" value="#{formId != null ? formId : 'archivesForm'}" scope="request" />
+	<c:set var="render" value="#{render != null ? render : formId}" scope="request"></c:set>
+	<c:set var="renderOnExpand" value="#{renderOnExpand != null ? renderOnExpand : formId}}" scope="request"></c:set>
 
 	<c:set var="archiveTree" value="#{archiveTree != null ? archiveTree : archiveBean.archiveTree}" scope="request" />
 	
 	<c:set var="selectEntryAction" value="#{selectEntryAction != null ? selectEntryAction : 'select'}" scope="request" />
+
 
 	<!-- A list of  EadEntry object which should be displayed in the tree.
 	Note: all entries in the list are displayed. The list must be filtered for visible elements beforehand-->
@@ -24,13 +26,13 @@
     <!-- var is not really needed, but a call to update the types from the config is. -->
     <c:set var="nodeTypes"
         value="#{archiveBean.getUpdatedNodeTypes()}"
-        scope="request" />
+        scope="request" /> 
 
 	<!-- The indentation of each hierarchical level in pixel -->
 	<c:set var="indent" value="#{indent != null ? indent : configurationBean.tocIndentation}" scope="view" />
 
 	<div class="archives-tree__inner">
-		<h:form id="archivesForm" prependId="false">
+		<h:form id="#{formId}">
 
 			<!-- ARCHIVE TREE VIEW -->
 			<h:panelGroup>
@@ -39,8 +41,7 @@
 				<h:panelGroup>
 
 					<!-- Call to trigger a noop ajax call to update the url of the page (to set the query "selected" to the correct record) -->
-					<h:commandScript id="url-updater" name="updateUrl">
-					</h:commandScript>
+					<h:commandScript name="updateUrl"></h:commandScript>
 
 					<h:outputLabel value="#{msg.hitsZero}" rendered="#{empty visibleTree}"></h:outputLabel>
 

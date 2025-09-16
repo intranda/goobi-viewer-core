@@ -33,11 +33,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import jakarta.faces.model.SelectItem;
-import jakarta.faces.model.SelectItemGroup;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import jakarta.faces.model.SelectItem;
+import jakarta.faces.model.SelectItemGroup;
 
 /**
  * Tools to create SelectItem collections to use in jsf components
@@ -68,6 +68,31 @@ public final class SelectItemBuilder {
                         Arrays::asList, //values are lists of <T>
                         (l1, l2) -> new ArrayList<>(CollectionUtils.union(l1, l2)))); //combine lists by building union
         return new TreeMap<>(unsortedMap);
+    }
+
+    /**
+     * Sort the given list of items into buckets for each values returned by the sortValueSupplier
+     * 
+     * @param <T>
+     * @param items List of items that should be sorted
+     * @param sortValueSupplier Function mapping an item to the string according to which it should be sorted
+     * @param keyGenerator Function that creates labels for the return values of the sortValueSupplier. These labels are used as the actual keys of
+     *            the map
+     * @return Map with starting letters of sort values as keys
+     */
+    public static <T> SortedMap<String, List<T>> getAsSortedMap(List<T> items, Function<T, List<String>> sortValueSupplier,
+            Function<String, String> keyGenerator) {
+
+        SortedMap<String, List<T>> map = new TreeMap<>();
+        for (T item : items) {
+            List<String> sortValues = sortValueSupplier.apply(item);
+            for (String sortValue : sortValues) {
+                String key = keyGenerator.apply(sortValue);
+                List<T> bucketItems = map.computeIfAbsent(key, k -> new ArrayList<>());
+                bucketItems.add(item);
+            }
+        }
+        return map;
     }
 
     /**

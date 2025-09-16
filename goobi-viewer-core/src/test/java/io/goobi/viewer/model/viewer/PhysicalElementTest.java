@@ -148,7 +148,7 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     void getImageFilepath_shouldReturnImageIfBaseMimeTypeNotFound() throws Exception {
         Assertions.assertEquals("001.tif", new PhysicalElementBuilder().setMimeType("image/tiff").setFilePath("001.tif").build().getImageFilepath());
     }
-    
+
     /**
      * @see PhysicalElement#getImageFilepath()
      * @verifies return tiff if available
@@ -158,7 +158,7 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("001.tif",
                 new PhysicalElementBuilder().setMimeType("audio/mpeg").setFilePath("001.mp3").build().setFilePathTiff("001.tif").getImageFilepath());
     }
-    
+
     /**
      * @see PhysicalElement#getImageFilepath()
      * @verifies return jpeg if available
@@ -168,4 +168,25 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("001.jpg",
                 new PhysicalElementBuilder().setMimeType("video/mpeg").setFilePath("001.mp4").build().setFilePathTiff("001.jpg").getImageFilepath());
     }
+
+    /**
+     * @see PhysicalElement#getImageFilepath()
+     * @verifies return true if access allowed for this page
+     */
+    @Test
+    void isFulltextAccessPermission_shouldReturnTrueIfAccessAllowedForThisPage() throws Exception {
+        PhysicalElement pe = new PhysicalElementBuilder().setPi("PPN517154005").setFilePath("00000001.tif").build();
+        Assertions.assertTrue(pe.isAccessPermissionFulltext());
+    }
+
+    /**
+     * @see PhysicalElement#getImageFilepath()
+     * @verifies return false if access denied for this page
+     */
+    @Test
+    void isFulltextAccessPermission_shouldReturnFalseIfAccessDeniedForThisPage() throws Exception {
+        PhysicalElement pe = new PhysicalElementBuilder().setPi("1164781693_1792000902").setFilePath("EPN_77071899X_0002.tif").build();
+        Assertions.assertFalse(pe.isAccessPermissionFulltext());
+    }
+
 }

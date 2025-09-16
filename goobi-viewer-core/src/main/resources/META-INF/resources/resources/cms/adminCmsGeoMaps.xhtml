@@ -14,7 +14,7 @@
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsGeoMaps')}" />
         </f:metadata>
     </ui:define>
-
+ 
     <!-- CONTENT -->
     <ui:define name="content">
         <ui:fragment id="cmsGeoMaps" rendered="#{userBean.user.isHasCmsPrivilege('CMS_GEOMAPS') and navigationHelper.solrIndexOnline}">
@@ -51,7 +51,7 @@
                                             <div class="entity_list__item__header__tags">
                                                 <button id="oEmbedLink#{map.id}"
 													type="button"
-                                                   class="btn btn-clear badge badge-dark"
+                                                   class="btn btn-clear admin__badge admin__badge-dark"
                                                    data-copy-value="#{map.OEmbedLink}"
                                                    data-copy-done-msg="#{msg.copyUrlDone}"
                                                    title="#{msg.copyUrl}">

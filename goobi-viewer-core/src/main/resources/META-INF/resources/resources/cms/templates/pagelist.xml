@@ -6,7 +6,7 @@
 	</jsfComponent>
 	<label>cms_component__pagelist_label</label>
 	<description>cms_component__pagelist_desc</description>
-	<icon>cms/components/frontend/component/icon/pagelist.png</icon>
+	<type>cms_pages</type>
 	<content>
 		<item id="pagelist">
 			<label>cms_component__pagelist_label</label>

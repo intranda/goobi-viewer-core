@@ -1,35 +1,36 @@
 /***************************************************************
- * viewer Stylesheet v3.4.0
+ * Goobi viewer constructor
  *
  * Write {LESS}, do more!
  *
- * This file generates the basic style declarations for the
- * Goobi viewer (viewer.css)
+ * This files lists all .less files to generate the
+ * Goobi viewer core CSS (viewer.min.css)
  **************************************************************/
+
 /* CORE VARIABLES AND MIXINS */
 @import "misc/variables.less";
 @import "misc/mixins.less";
 @import "misc/print.less";
 @import "misc/fonts.less";
-@import "misc/resets.less";
-@import "misc/helper.less";
+@import "misc/resets.less"; 
+@import "misc/helper.less"; 
 @import "misc/IE.less";
 @import "misc/browserHackTemplates.less";
 @import "misc/popover.less";
 @import "misc/accessibility.less";
-
+ 
 /* BASIC COMPONENTS */
 @import "components/forms/basics.less";
 @import "components/forms/form-controls.less";
 @import "components/buttons.less";
 @import "components/icons.less";
 @import "components/modals.less";
-
 /* LAYOUT */
 @import "layout/layout.less";
 @import "layout/general.less";
+@import "layout/gridSystem.less"; 
 
-/* VIEWER COMPONENTS */
+/* VIEWER FRONTEND COMPONENTS */
 @import "components/alphabeticPaginator.less";
 @import "components/bookmarks.less";
 @import "components/breadcrumbs.less";
@@ -71,7 +72,6 @@
 @import "components/contentUploadModal.less";
 @import "components/thumbnailPaginator.less";
 @import "components/sidebarScrollPreview.less";
-
 
 /* WIDGETS */
 @import "widgets/widgets.less";
@@ -176,10 +176,19 @@
 @import "views/fullscreen/fsFormatLinks.less";
 
 /* ADMIN BACKEND */
+@import "admin/layout/basics.less";
+@import "admin/layout/layout.less";
+@import "admin/layout/elements.less";
+@import "admin/layout/misc.less";
 @import "admin/admin.less";
-@import "admin/contentComponents/contentComponents.less";
 
+/* ADMIN COMPONENTS STYLES */
+@import "admin/components/blocks.less";
+@import "admin/components/breadcrumbs.less";
+@import "admin/components/forms.less";
+@import "admin/components/clickableElements.less";
 
+/* ADMIN VIEWS STYLES */
 @import "admin/views/adminDashboard.less";
 @import "admin/views/adminClients.less";
 @import "admin/views/adminConfigEditor.less";
@@ -203,10 +212,13 @@
 @import "admin/views/adminWidgetNew.less";
 @import "admin/views/adminWidgetOverview.less";
 
-
+/* WIDGETS BACKEND EXTRA STYLES */
 @import "admin/widgets/widgets.less";
 @import "admin/widgets/widgetAdmin.less";
 @import "admin/widgets/widgetCms.less";
+
+/* CMS COMPONENTS BACKEND EXTRA STYLES */
+@import "admin/contentComponents/contentComponents.less";
 
 /* CMS COMPONENTS */
 @import "cms/components/collectionTiled.less";
@@ -289,7 +301,6 @@
 @import "cms/contentComponents/trackingOptOut.less";
 @import "cms/contentComponents/document.less";
 
-
 /* CMS VIEWS */
 @import "cms/views/adminCmsCategories.less";
 @import "cms/views/adminCmsMedia.less";
@@ -315,3 +326,7 @@
 /* Archives */
 @import "archives/archives.less";
 @import "archives/archivesTree.less";
+
+/*********************
+END OF FILE
+**********************/

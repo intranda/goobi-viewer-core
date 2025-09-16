@@ -21,7 +21,6 @@
 		    li {}
 	    }
 	    &__action {
-	    	margin: 0 0.7rem 0 0;
 			border: 0;
 		    /* ELEMENT */
 	    	&:hover,
@@ -63,7 +62,7 @@
 		    &.page-browse {
 		        a, span {}
 		    }
-		    &.back {
+		    &.prev {
 		    	a, 
 				span, 
 				button {}
@@ -83,7 +82,7 @@
 		        	&:after {}
 		        }
 		    }
-		    &.forward {
+		    &.next {
 		    	a, 
 				span, 
 				button {}
@@ -171,7 +170,7 @@
 @media screen and (max-width: 1030px) {
 	.fullscreen {
 		.image-controls__action.page-browse {
-			display: none;
+			// display: none;
 		}		
 	}
 }
@@ -217,8 +216,8 @@
 		.image-controls__action.select {
 			width: 105px;
 		}
-		.image-controls__action.back,
-		.image-controls__action.forward {
+		.image-controls__action.prev,
+		.image-controls__action.next {
 			position: fixed;
 			top: 50%;
 			width: 50px;
@@ -235,10 +234,10 @@
 		    	background-size: 24px;
 		    }
 		}
-		.image-controls__action.back {
+		.image-controls__action.prev {
 			left: 0;
 		}
-		.image-controls__action.forward {
+		.image-controls__action.next {
 			right: 0;
 		}
 	}

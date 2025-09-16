@@ -302,7 +302,7 @@
                                                             <h:panelGroup layout="block" class="overflow-hidden" id="selected_subthemes">
                                                                 <ui:repeat var="selectable" value="#{adminLicenseBean.currentLicense.selectableSubthemes}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
-                                                                        <div class="badge badge-dark">
+                                                                        <div class="admin__badge admin__badge-dark">
                                                                             #{msg[selectable.value]}
                                                                         </div>
                                                                     </ui:fragment>
@@ -369,7 +369,7 @@
                                                             <h:panelGroup layout="block" class="overflow-hidden" id="selected_categories">
                                                                 <ui:repeat var="selectable" value="#{adminLicenseBean.currentLicense.selectableCategories}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
-                                                                        <div class="badge badge-violet">
+                                                                        <div class="admin__badge admin__badge-violet">
                                                                             #{msg[selectable.value.name]}
                                                                         </div>
                                                                     </ui:fragment>
@@ -434,7 +434,7 @@
                                                         <h:panelGroup layout="block" styleClass="overflow-hidden" id="selected_templates">
                                                             <ui:repeat var="selectable" value="#{adminLicenseBean.currentLicense.selectableTemplates}">
                                                                 <ui:fragment rendered="#{selectable.selected}">
-                                                                    <div class="badge badge-primary">
+                                                                    <div class="admin__badge admin__badge-primary">
                                                                         #{msg[selectable.value.name]}
                                                                     </div>
                                                                 </ui:fragment>
@@ -584,18 +584,16 @@
                                                         <!-- Privileges inherited from the selected license type -->
                                                         <ui:repeat var="priv"
                                                             value="#{adminLicenseBean.currentLicense.licenseType.getSortedPrivileges(adminLicenseBean.currentLicense.licenseType.privileges)}">
-                                                            <div class="badge badge-secondary">
+                                                            <span class="btn btn--link admin__badge admin__badge-secondary admin__license-action" >
                                                                 #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
-                                                            </div>
+                                                            </span>
                                                         </ui:repeat>
                                                         <ui:repeat var="priv" value="#{adminLicenseBean.currentLicense.getSortedPrivileges(adminLicenseBean.currentLicense.privilegesCopy)}">
                                                             <button 
-                                                                class="admin__license-action btn btn--link"
+                                                                class="btn btn--link admin__badge admin__badge-dark admin__license-action" 
                                                                 jsf:action="#{adminLicenseBean.currentLicense.removePrivilege(priv)}" title="#{msg.remove}">
-                                                                <div class="badge badge-success">
-                                                                    #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
+                                                                    <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
                                                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                                                </div>
                                                             </button>
                                                         </ui:repeat>
                                                     </div>
@@ -612,12 +610,10 @@
 		                                        <div class="col-9 badge-hover">
 	                                                <ui:repeat var="priv" value="#{adminLicenseBean.currentLicense.availablePrivileges}">
 	                                                    <button 
-	                                                        class="admin__license-action btn btn--link" 
+                                                    class="btn btn--link admin__badge admin__badge-dark admin__license-action" 
 	                                                        jsf:action="#{adminLicenseBean.currentLicense.addPrivilege(priv)}" title="#{msg.add}">
-	                                                        <div class="badge badge-dark">
 	                                                            #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
 	                                                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
-	                                                        </div>
 	                                                    </button>
 	                                                </ui:repeat>
 		                                        </div>
@@ -666,7 +662,7 @@
                                 </ui:fragment>
                             </h:panelGroup>
                             <div
-								class="row no-gutters justify-content-end admin__final-actions">
+								class="admin__final-actions">
                                 <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
                                 <h:panelGroup id="saveButtonGroup">
                                     <button 

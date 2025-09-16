@@ -68,7 +68,6 @@ import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -816,18 +815,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * @return the fulltextAccessPermission
      * @throws ViewerConfigurationException
+     * @should return true if access allowed for this page
+     * @should return false if access denied for this page
      */
     public Boolean isFulltextAccessPermission() {
         if (fulltextAccessPermission == null) {
             fulltextAccessPermission = false;
             try {
-                fulltextAccessPermission =
-                        AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                                BeanUtils.getRequest()).isGranted();
+                fulltextAccessPermission = AccessConditionUtils
+                        .checkAccessPermissionByIdentifierAndPageOrder(this, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest())
+                        .isGranted();
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(String.format("Cannot check fulltext access for pi %s and pageNo %d: %s", pi, order, e.toString()));
-            } catch (RecordNotFoundException e) {
-                logger.error("Record not found in index: {}", pi);
             }
         }
 

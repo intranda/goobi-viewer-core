@@ -184,13 +184,11 @@
                                         <div class="col-9 badge-hover pb-3">
                                             <c:forEach var="priv" items="#{adminLicenseBean.currentLicenseType.getSortedPrivileges(adminLicenseBean.currentLicenseType.privilegesCopy)}">
                                                 <button 
-                                                    class="admin__license-action btn btn--link" 
+                                                    class="btn btn--link admin__badge admin__badge-active admin__license-action" 
                                                     jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
-                                                    <div class="badge badge-success">
-                                                        #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
+                                                        <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
                                                         <!-- remove button -->
                                                         <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                                    </div>
                                                 </button>
                                             </c:forEach>
                                         </div>
@@ -207,13 +205,11 @@
                                         <div class="col-9 badge-hover">
                                             <c:forEach var="priv" items="#{adminLicenseBean.currentLicenseType.availablePrivileges}">
                                                 <button 
-                                                    class="admin__license-action btn btn--link"
+                                                    class="btn btn--link admin__badge admin__badge-dark admin__license-action" 
                                                     jsf:action="#{adminLicenseBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
-                                                    <div class="badge badge-dark">
                                                         #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
                                                         <!-- add button -->
                                                         <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                                    </div>
                                                 </button>
                                             </c:forEach>
                                         </div>
@@ -339,7 +335,7 @@
                                 </div>
                             </div>
 
-                            <div class="row no-gutters justify-content-end admin__final-actions">
+                            <div class="admin__final-actions">
                                 <h:commandLink action="pretty:adminLicenses" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
                                 <button
                                     jsf:action="#{adminLicenseBean.saveCurrentLicenseTypeAction}" 

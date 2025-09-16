@@ -4,6 +4,7 @@
 	<description>cms_component__previewtext__desc</description>
 	<icon>cms/components/frontend/component/icon/htmltext.png</icon>
 	<scope>preview</scope>
+	<type>preview</type>
 	<content>
 		<item id="text">
 			<label>cms_component__htmltext_label</label>
