@@ -36,7 +36,7 @@ const banner = `/*!
  */\n`;
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
-   ║ 2) Resolve deployment/Core/Theme directories                         ║
+   ║ Resolve deployment/Core/Theme directories                            ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 /**
@@ -178,7 +178,7 @@ function safeDest(subPath) {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
-   ║ 3) Error guard (optional plumber) & small utilities                  ║
+   ║ Error guard (optional plumber) & small utilities                     ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 /**
@@ -244,7 +244,7 @@ function collectFiles(push) {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
-   ║ 4) Styles: LESS → CSS (+ sourcemaps)                                 ║
+   ║ Styles: LESS → CSS (+ sourcemaps)                                    ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 /**
@@ -302,7 +302,7 @@ function buildStyles(changedFilePath = null) {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
-   ║ 5) JavaScript bundles                                                ║
+   ║ JavaScript bundles                                                   ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 /**
@@ -420,7 +420,7 @@ function bundleBrowserSupportJS(changedFilePath = null) {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
-   ║ 6) Riot tags                                                         ║
+   ║ Riot tags                                                            ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 /**
@@ -457,7 +457,7 @@ function compileRiotTags(changedFilePath = null) {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
-   ║ 7) Copy third-party dependencies                                     ║
+   ║ Copy third-party dependencies                                        ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 /**
@@ -525,7 +525,7 @@ function copyDependencies() {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
-   ║ 8) Full project → deployment mirror (one-shot)                       ║
+   ║ Full project → deployment mirror (one-shot)                          ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 /**
@@ -559,7 +559,7 @@ function fullSync() {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
-   ║ 9) Java (Maven) helpers                                              ║
+   ║ Java (Maven) helpers                                                 ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 /**
@@ -635,7 +635,7 @@ async function java() {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
-   ║ 10) Watch mode                                                       ║
+   ║ Watch mode                                                           ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 /**
@@ -711,7 +711,7 @@ function watchMode() {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
-   ║ 11) Debug helper                                                     ║
+   ║ Debug helper                                                         ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 /**
@@ -738,7 +738,7 @@ function printTargets(cb) {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
-   ║ 12) Task composition & exports                                       ║
+   ║ Task composition & exports                                           ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 const buildJS = gulp.series(bundleViewerJS, bundleStatisticsJS, bundleBrowserSupportJS);
@@ -747,7 +747,7 @@ const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags
 exports.build = buildAll;                           // npm run build
 exports.dev = watchMode;                            // npm run dev
 exports.devsync = gulp.series(fullSync, watchMode); // npm run devsync
-exports['copy-deps'] = copyDependencies;           // npm run copy-deps
-exports['sync-all'] = fullSync;                    // npm run sync-all
+exports['copy-deps'] = copyDependencies;            // npm run copyDeps
+exports['sync-all'] = fullSync;                     // npm run sync
 exports.target = printTargets;                      // npm run target
 exports.java = java;                                // npm run java
