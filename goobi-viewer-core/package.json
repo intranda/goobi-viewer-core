@@ -16,15 +16,7 @@
     "copyDeps": "gulp copy-deps",
     "sync": "gulp sync-all",
     "target": "gulp target",
-    "java-core": "gulp java-core",
-    "java-theme": "gulp java-theme",
-    "java": "gulp java",
-    "grunt-watch": "grunt watch",
-    "grunt-dev": "grunt dev",
-    "grunt-devsync": "grunt devsync",
-    "grunt-default": "grunt default",
-    "grunt-copyDeps": "grunt copyDeps",
-    "test:gulp:java": "bash ./gulp-test.sh"
+    "java": "gulp java"
 
   },
   "engines": {
@@ -43,15 +35,6 @@
     "gulp-sourcemaps": "^3.0.0",
     "merge-stream": "^2.0.0",
     "pixl-xml": "^1.0.13",
-    "through2": "^4.0.2",
-    "grunt": "~1.5.2",
-    "grunt-concurrent": "~3.0.0",
-    "grunt-contrib-concat": "~1.0.1",
-    "grunt-contrib-copy": "~1.0.0",
-    "grunt-contrib-less": "~3.0.0",
-    "grunt-contrib-watch": "~1.1.0",
-    "grunt-riot": "~0.1.8",
-    "grunt-sync": "~0.8.2",
     "less-plugin-autoprefix": "~2.0.0"
   },
   "dependencies": {
@@ -87,7 +70,6 @@
     "sweetalert2": "~11.23.0",
     "swiper": "~11.2.0",
     "three": "~0.132.2",
-    "tinymce": "~5.10.0",
-    "grunt-copy-deps": "^1.4.0"
+    "tinymce": "~5.10.0"
   }
 }
