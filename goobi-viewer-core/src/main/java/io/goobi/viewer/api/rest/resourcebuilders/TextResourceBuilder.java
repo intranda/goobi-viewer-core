@@ -115,6 +115,7 @@ public class TextResourceBuilder {
     /**
      * 
      * @param pi
+     * @param request {@link HttpServletRequest}
      * @return {@link StreamingOutput}
      * @throws IOException
      * @throws PresentationException
