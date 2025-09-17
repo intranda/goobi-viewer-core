@@ -7,16 +7,16 @@
 		<div class="widget-chronology-slider__item chronology-slider-start">
 			<input ref="inputStart" data-input='number'
 				class="widget-chronology-slider__item-input -no-outline -active-border"
-				value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip"
-				data-placement="top" aria-label="{msg.enterYear}"></input>
+				value="{startYear}" title="{msg.enterYearStart}" data-toggle="tooltip"
+				data-placement="top" aria-label="{msg.enterYearStart}"></input>
 		</div>
 		<div class="widget-chronology-slider__item chronology-slider-end">
 			<input ref="inputEnd" data-input='number'
 				class="widget-chronology-slider__item-input -no-outline -active-border"
-				value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip"
-				data-placement="top" aria-label="{msg.enterYear}"></input>
+				value="{endYear}" title="{msg.enterYearEnd}" data-toggle="tooltip"
+				data-placement="top" aria-label="{msg.enterYearEnd}"></input>
 		</div>
-	
+	 
 		<!-- RANGE SLIDER -->
 		<div class="widget-chronology-slider__item chronology-slider">
 			<div class="widget-chronology-slider__slider" ref="slider"></div>
