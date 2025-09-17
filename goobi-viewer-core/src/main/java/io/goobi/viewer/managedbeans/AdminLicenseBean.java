@@ -671,7 +671,7 @@ public class AdminLicenseBean implements Serializable {
      * @return Navigation outcome
      * @throws DAOException
      */
-    public String activateAction(AccessTicket ticket) throws DAOException {
+    public String activateTicketAction(AccessTicket ticket) throws DAOException {
         if (ticket == null) {
             throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
         }
