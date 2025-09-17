@@ -202,9 +202,12 @@
 							<viewerComponent:sortingArrow filterType="email"
 								colHeading="#{msg.admin__download_tickets__title}" />
 						</div>
+						
+                        <div class="admin__grid-table-sorting-wrapper">
+                            #{msg.type}</div>
 
-						<div class="admin__grid-table-sorting-wrapper">
-							#{msg.message}</div>
+                        <div class="admin__grid-table-sorting-wrapper">
+                            #{msg.message}</div>
 
 						<div class="admin__grid-table-sorting-wrapper">
 							<viewerComponent:sortingArrow filterType="dateRegistered"
@@ -272,6 +275,11 @@
 									</div>
 
 								</div>
+								
+                                <!-- TICKET TYPE -->
+                                <div class="admin__grid-table-data" role="gridcell">
+                                    #{ticket.type}
+                                </div>
 
 								<!-- TICKET MESSAGE -->
 								<div class="admin__grid-table-data" role="gridcell">
