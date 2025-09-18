@@ -18,7 +18,7 @@
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h1 class="modal-title">#{msg.download_ticket__access}</h1>
+						<h1 class="modal-title">#{msg.access_tickets__unlock}</h1>
 						<button type="button" class="fancy-close" data-dismiss="modal"
 							aria-label="Close">
 							<span aria-hidden="true">x</span>
@@ -29,7 +29,7 @@
 						
 						<!-- DESCRIPTION FOR REQUESTING A TICKET -->
 						<p data-mode="ticketMode">
-							<h:outputText value="#{msg.download_ticket__modal_desc_request}" />
+							<h:outputText value="#{msg.access_tickets__modal_desc_request}" />
 						</p>
 
 						
@@ -42,14 +42,14 @@
 							
 								<!-- DESCRIPTION FOR ENTERING THE PASSWORD -->
 								<p data-mode="passwordMode">
-									<h:outputText value="#{msg.download_ticket__modal_desc_pw}" />
+									<h:outputText value="#{msg.access_tickets__modal_desc_pw}" />
 								</p>
 
 								<!-- PASSWORD (visible when ticket request mode OFF) -->
 								<div class="form-group form-row">
 									<label id="access-ticket-modal__labelAccessTicketPassword" for="access-ticket-modal__title"
 										class="col-lg-3 control-label">
-										<span class="access-ticket-modal__label-span">#{msg.download_tickets__ticket}:</span>
+										<span class="access-ticket-modal__label-span">#{msg.access_tickets__ticket}:</span>
 									</label>
 									
 									<div class="col-12 col-lg-9">
@@ -69,7 +69,7 @@
 								<!-- SWITCH TO TICKET REQUEST MODE (visible when ticket request mode OFF)-->
 	                            <div class="form-row access-ticket-modal__action" data-target="switchToTicketMode">
 	                                <div class="col-sm-12 d-flex justify-content-end">
-	                                    <button type="button" class="btn btn--clean">#{msg.download_ticket__need_ticket}</button>
+	                                    <button type="button" class="btn btn--clean">#{msg.access_tickets__need_ticket}</button>
 	                                </div>
 	                            </div>
 	                            <!-- SUBMIT PASSWORD (visible when ticket request mode OFF) -->
@@ -133,7 +133,7 @@
                                 <div class="form-group form-row">
                                     <label id="access-ticket-modal__labelAccessTicketRequestMessage" for="access-ticket-modal__requestMessage"
                                         class="col-12 control-label">
-                                        <span class="access-ticket-modal__label-span">#{msg.download_ticket__request_message}:</span>
+                                        <span class="access-ticket-modal__label-span">#{msg.access_tickets__request_message}:</span>
                                     </label>
                                     
                                     <div class="col-12">
