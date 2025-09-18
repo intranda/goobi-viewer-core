@@ -21,6 +21,10 @@ const autoprefixer = require('autoprefixer');
 const reporter = require('postcss-reporter');
 const {depsPathsJS, depsPathsCSS} = require('./gulp/depsPaths');
 
+const isWin = process.platform === 'win32';
+const toPosix = (p) => (p ? p.replace(/\\/g, '/') : p);
+const joinPosix = (...segs) => toPosix(path.join(...segs));
+
 const paths = {
     jsDevRoot: 'src/main/resources/META-INF/resources/resources/javascript/dev/',
     jsModulesRoot: 'src/main/resources/META-INF/resources/resources/javascript/dev/modules/',
@@ -72,14 +76,14 @@ function resolveDirs() {
         process.env.GV_GULP_CFG || path.join(home, '.config', 'gulp_userconfig.json');
     const viewerCfgPath =
         process.env.GV_VIEWER_CFG ||
-        (process.platform.toLowerCase().startsWith('win')
-            ? 'c:/opt/digiverso/viewer/config/config_viewer.xml'
-            : '/opt/digiverso/viewer/config/config_viewer.xml');
+        (isWin
+            ? path.join('C:', 'opt', 'digiverso', 'viewer', 'config', 'config_viewer.xml')
+            : path.join('/', 'opt', 'digiverso', 'viewer', 'config', 'config_viewer.xml'));
 
     // Read gulp user config (JSON)
     let cfg;
     try {
-        cfg = JSON.parse(fs.readFileSync(gulpCfgPath, 'utf-8'));
+        cfg = JSON.parse(fs.readFileSync(path.resolve(gulpCfgPath), 'utf-8'));
     } catch (e) {
         throw new Error(`Cannot parse ${gulpCfgPath}: ${e.message}`);
     }
@@ -87,63 +91,50 @@ function resolveDirs() {
     // Read viewer XML config
     let viewerConfig;
     try {
-        viewerConfig = XML.parse(fs.readFileSync(viewerCfgPath, 'utf-8'));
+        viewerConfig = XML.parse(fs.readFileSync(path.resolve(viewerCfgPath), 'utf-8'));
     } catch (e) {
         throw new Error(`Cannot parse ${viewerCfgPath}: ${e.message}`);
     }
 
     const theme = viewerConfig?.viewer?.theme || {};
     const special = theme.specialName && String(theme.specialName);
-    const deployed = String(theme.deployedTargetFolder).toLowerCase() === 'true';
     const mainTheme = String(theme.mainTheme || 'reference');
 
     // Deployment target
     let deployDir;
+
     if (special && special.length) {
         deployDir = path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`);
-    } else if (deployed) {
-        const candidate = path.join(
-            home,
-            'git',
-            'goobi-viewer',
-            'goobi-viewer-theme-reference',
-            'goobi-viewer-theme-reference',
-            'target',
-            'viewer'
-        );
-        deployDir = fs.existsSync(candidate)
-            ? candidate
-            : path.join(cfg.tomcat_dir, `goobi-viewer-theme-${mainTheme}`);
     } else {
-        deployDir = path.join(cfg.tomcat_dir, `goobi-viewer-theme-${mainTheme}`);
+        const candidates = [
+            path.join(cfg.tomcat_dir, `goobi-viewer-theme-${mainTheme}`),
+
+            path.join(
+                home,
+                'git',
+                'goobi-viewer',
+                `goobi-viewer-theme-${mainTheme}`,
+                `goobi-viewer-theme-${mainTheme}`,
+                'target',
+                'viewer'
+            ),
+        ];
+
+        deployDir = candidates.find((c) => fs.existsSync(c)) || candidates[0];
     }
 
     // Repo roots
-    const coreDir =
-        process.env.GV_CORE_DIR ||
-        path.join(home, 'git', 'goobi-viewer', 'goobi-viewer-core', 'goobi-viewer-core');
+    const coreDir = process.env.GV_CORE_DIR || __dirname;
 
     let themeDir = process.env.GV_THEME_DIR || null;
     if (!themeDir) {
-        if (deployed) {
-            themeDir = path.resolve(deployDir, '..', '..');
-        } else if (special && special.length) {
-            themeDir = path.join(
-                home,
-                'git',
-                'goobi-viewer',
-                `goobi-viewer-theme-${special}`,
-                `goobi-viewer-theme-${special}`
-            );
-        } else {
-            themeDir = path.join(
-                home,
-                'git',
-                'goobi-viewer',
-                'goobi-viewer-theme-reference',
-                'goobi-viewer-theme-reference'
-            );
-        }
+        themeDir = path.join(
+            home,
+            'git',
+            'goobi-viewer',
+            `goobi-viewer-theme-${mainTheme}`,
+            `goobi-viewer-theme-${mainTheme}`
+        );
     }
 
     return {DEPLOYMENT_DIR: deployDir, CORE_DIR: coreDir, THEME_DIR: themeDir};
@@ -178,7 +169,7 @@ const {DEPLOYMENT_DIR, CORE_DIR, THEME_DIR} = (() => {
 })();
 
 const homeDir = os.homedir();
-const prettyPath = (p) => (p ? String(p).replace(homeDir, '~') : '');
+const prettyPath = (p) => (p ? toPosix(String(p).replace(homeDir, '~')) : '');
 
 /**
  * Returns a safe destination stream into a deployment subfolder.
@@ -333,7 +324,7 @@ function buildStyles(changedFilePath = null) {
         projectOutputs.push(path.join(base, path.basename(file.path)));
     });
     const collectDeployOutputs = collectFiles((file) => {
-        const rel = path.relative(paths.staticRoot, file.path).replace(/\\/g, '/');
+        const rel = toPosix(path.relative(paths.staticRoot, file.path));
         deployOutputs.push(path.join(DEPLOYMENT_DIR, rel));
     });
 
@@ -346,13 +337,16 @@ function buildStyles(changedFilePath = null) {
             postcss([
                 ...(ENABLE_AUTOPREFIX ? [autoprefixer()] : []),
                 ...(SHOW_AP_WARNINGS
-                    ? [reporter({ clearReportedMessages: true, throwError: false })]
+                    ? [reporter({clearReportedMessages: true, throwError: false})]
                     : []),
             ])
         )
         .pipe(header(banner))
         .pipe(rename('viewer.min.css'))
-        .pipe(sourcemaps.write('.', {includeContent: true, sourceRoot: '/viewer/resources/css/less'}))
+        .pipe(sourcemaps.write('.', {
+            includeContent: true,
+            sourceRoot: toPosix(path.relative(paths.cssDistRoot, paths.lessRoot)) || '.'
+        }))
 
         .pipe(collectProjectOutputs)
         .pipe(gulp.dest(paths.cssDistRoot))
@@ -390,17 +384,17 @@ function bundleViewerJS(changedFilePath = null) {
     return gulp
         .src(
             [
-                path.join(paths.jsModulesRoot, 'viewer/viewerJS.js'),
-                path.join(paths.jsModulesRoot, 'viewer/viewerJS.helper.js'),
-                path.join(paths.jsModulesRoot, 'viewer/viewerJS.*.js'),
-                path.join(paths.jsModulesRoot, 'viewer/geoMap/viewerJS.geoMap.js'),
-                path.join(paths.jsModulesRoot, 'viewer/geoMap/*.js'),
-                path.join(paths.jsModulesRoot, 'cms/cmsJS.js'),
-                path.join(paths.jsModulesRoot, 'cms/cmsJS.*.js'),
-                path.join(paths.jsModulesRoot, 'admin/adminJS.js'),
-                path.join(paths.jsModulesRoot, 'admin/adminJS.*.js'),
-                path.join(paths.jsModulesRoot, 'crowdsourcing/Crowdsourcing.js'),
-                path.join(paths.jsModulesRoot, 'crowdsourcing/Crowdsourcing.*.js'),
+                joinPosix(paths.jsModulesRoot, 'viewer', 'viewerJS.js'),
+                joinPosix(paths.jsModulesRoot, 'viewer', 'viewerJS.helper.js'),
+                joinPosix(paths.jsModulesRoot, 'viewer', 'viewerJS.*.js'),
+                joinPosix(paths.jsModulesRoot, 'viewer', 'geoMap', 'viewerJS.geoMap.js'),
+                joinPosix(paths.jsModulesRoot, 'viewer', 'geoMap', '*.js'),
+                joinPosix(paths.jsModulesRoot, 'cms', 'cmsJS.js'),
+                joinPosix(paths.jsModulesRoot, 'cms', 'cmsJS.*.js'),
+                joinPosix(paths.jsModulesRoot, 'admin', 'adminJS.js'),
+                joinPosix(paths.jsModulesRoot, 'admin', 'adminJS.*.js'),
+                joinPosix(paths.jsModulesRoot, 'crowdsourcing', 'Crowdsourcing.js'),
+                joinPosix(paths.jsModulesRoot, 'crowdsourcing', 'Crowdsourcing.*.js'),
             ],
             {allowEmpty: true}
         )
@@ -415,7 +409,7 @@ function bundleViewerJS(changedFilePath = null) {
                 name: 'js_viewer',
                 started,
                 changed: changedFilePath,
-                src: path.join(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}/**/*.js'),
+                src: joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'),
                 projOut: [outProj],
                 deployOut: deployOutputs,
             });
@@ -434,7 +428,7 @@ function bundleStatisticsJS(changedFilePath = null) {
     const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/statistics.min.js');
 
     return gulp
-        .src(path.join(paths.jsModulesRoot, 'statistics/statistics.js'), {allowEmpty: true})
+        .src(joinPosix(paths.jsModulesRoot, 'statistics', 'statistics.js'), {allowEmpty: true})
         .pipe(guard())
         .pipe(concat('statistics.min.js'))
         .pipe(header(banner))
@@ -446,7 +440,7 @@ function bundleStatisticsJS(changedFilePath = null) {
                 name: 'js_statistics',
                 started,
                 changed: changedFilePath,
-                src: path.join(paths.jsModulesRoot, 'statistics/statistics.js'),
+                src: joinPosix(paths.jsModulesRoot, 'statistics', 'statistics.js'),
                 projOut: [outProj],
                 deployOut: deployOutputs,
             });
@@ -465,7 +459,7 @@ function bundleBrowserSupportJS(changedFilePath = null) {
     const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/browsersupport.min.js');
 
     return gulp
-        .src(path.join(paths.jsModulesRoot, 'browsersupport/browsersupport.js'), {allowEmpty: true})
+        .src(joinPosix(paths.jsModulesRoot, 'browsersupport', 'browsersupport.js'), {allowEmpty: true})
         .pipe(guard())
         .pipe(concat('browsersupport.min.js'))
         .pipe(header(banner))
@@ -477,7 +471,7 @@ function bundleBrowserSupportJS(changedFilePath = null) {
                 name: 'js_browser',
                 started,
                 changed: changedFilePath,
-                src: path.join(paths.jsModulesRoot, 'browsersupport/browsersupport.js'),
+                src: joinPosix(paths.jsModulesRoot, 'browsersupport', 'browsersupport.js'),
                 projOut: [outProj],
                 deployOut: deployOutputs,
             });
@@ -500,7 +494,7 @@ function compileRiotTags(changedFilePath = null) {
     const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/riot-tags.js');
 
     return gulp
-        .src(path.join(paths.jsDevRoot, 'tags/**/*.tag'), {allowEmpty: true})
+        .src(joinPosix(paths.jsDevRoot, 'tags', '**', '*.tag'), {allowEmpty: true})
         .pipe(guard())
         .pipe(riot({compact: true}))
         .pipe(concat('riot-tags.js'))
@@ -512,7 +506,7 @@ function compileRiotTags(changedFilePath = null) {
                 name: 'riotTags',
                 started,
                 changed: changedFilePath,
-                src: path.join(paths.jsDevRoot, 'tags/**/*.tag'),
+                src: joinPosix(paths.jsDevRoot, 'tags', '**', '*.tag'),
                 projOut: [outProj],
                 deployOut: deployOutputs,
             });
@@ -534,18 +528,18 @@ function copyDependencies() {
     const streams = [];
     let copied = 0;
 
-    const norm = (p) => (p ? p.replace(/\\/g, '/') : '');
-
     // JS
     depsPathsJS.forEach((def) => {
         let s = gulp.src(def.src, {cwd: def.cwd, allowEmpty: true}).pipe(guard());
         if (def.flatten) s = s.pipe(rename({dirname: ''}));
 
-        const destNorm = norm(def.dest);
+        const destNorm = toPosix(def.dest);
         if (destNorm && /(^|\/)masonry\/?$/.test(destNorm)) {
             s = s.pipe(
                 rename((p) => {
-                    if (p.basename === 'masonry.pkgd.min' && p.extname === '.js') p.basename = 'masonry.min';
+                    if (p.basename === 'masonry.pkgd.min' && p.extname === '.js') {
+                        p.basename = 'masonry.min';
+                    }
                 })
             );
         }
@@ -603,7 +597,7 @@ function fullSync() {
     let copied = 0;
 
     return gulp
-        .src(path.join(paths.staticRoot, '**/*'), {dot: true, allowEmpty: true})
+        .src(joinPosix(paths.staticRoot, '**', '*'), { dot: true, allowEmpty: true })
         .pipe(guard())
         .pipe(
             collectFiles(() => {
@@ -615,7 +609,7 @@ function fullSync() {
             logTask({
                 name: 'sync-all',
                 started,
-                src: path.resolve(paths.staticRoot) + '/**/*',
+                src: toPosix(path.resolve(paths.staticRoot)) + '/**/*',
                 genCount: 0,
                 copyCount: copied,
                 extra: [`dst: ${colors.blue(prettyPath(DEPLOYMENT_DIR))}`],
@@ -710,39 +704,39 @@ async function java() {
 function watchMode() {
     // JS bundles
     gulp
-        .watch(path.join(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}/**/*.js'))
+        .watch(joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'))
         .on('change', (p) => bundleViewerJS(p));
-    gulp.watch(path.join(paths.jsModulesRoot, 'statistics/**/*.js')).on('change', (p) =>
+    gulp.watch(joinPosix(paths.jsModulesRoot, 'statistics', '**', '*.js')).on('change', (p) =>
         bundleStatisticsJS(p)
     );
-    gulp.watch(path.join(paths.jsModulesRoot, 'browsersupport/**/*.js')).on('change', (p) =>
+    gulp.watch(joinPosix(paths.jsModulesRoot, 'browsersupport', '**', '*.js')).on('change', (p) =>
         bundleBrowserSupportJS(p)
     );
 
     // Styles & tags
-    gulp.watch(path.join(paths.lessRoot, '**/*.less')).on('change', (p) => buildStyles(p));
-    gulp.watch(path.join(paths.jsDevRoot, 'tags/**/*.tag')).on('change', (p) => compileRiotTags(p));
+    gulp.watch(joinPosix(paths.lessRoot, '**', '*.less')).on('change', (p) => buildStyles(p));
+    gulp.watch(joinPosix(paths.jsDevRoot, 'tags', '**', '*.tag')).on('change', (p) => compileRiotTags(p));
 
     // Static assets (no dist CSS/JS)
     const staticGlobs = [
-        path.join(paths.staticRoot, '*.xhtml'),
-        path.join(paths.staticRoot, '*.xml'),
-        path.join(paths.staticRoot, '*.xls'),
-        path.join(paths.staticRoot, 'resources/**/*.xhtml'),
-        path.join(paths.staticRoot, 'resources/**/*.html'),
-        path.join(paths.staticRoot, 'resources/**/*.jpg'),
-        path.join(paths.staticRoot, 'resources/**/*.jpeg'),
-        path.join(paths.staticRoot, 'resources/**/*.png'),
-        path.join(paths.staticRoot, 'resources/**/*.svg'),
-        path.join(paths.staticRoot, 'resources/**/*.gif'),
-        path.join(paths.staticRoot, 'resources/**/*.ico'),
+        joinPosix(paths.staticRoot, '*.xhtml'),
+        joinPosix(paths.staticRoot, '*.xml'),
+        joinPosix(paths.staticRoot, '*.xls'),
+        joinPosix(paths.staticRoot, 'resources', '**', '*.xhtml'),
+        joinPosix(paths.staticRoot, 'resources', '**', '*.html'),
+        joinPosix(paths.staticRoot, 'resources', '**', '*.jpg'),
+        joinPosix(paths.staticRoot, 'resources', '**', '*.jpeg'),
+        joinPosix(paths.staticRoot, 'resources', '**', '*.png'),
+        joinPosix(paths.staticRoot, 'resources', '**', '*.svg'),
+        joinPosix(paths.staticRoot, 'resources', '**', '*.gif'),
+        joinPosix(paths.staticRoot, 'resources', '**', '*.ico'),
     ];
 
     const staticWatcher = gulp.watch(staticGlobs, {ignoreInitial: true});
 
     function mirrorStatic(filePath) {
         const started = process.hrtime.bigint();
-        const rel = path.relative(paths.staticRoot, filePath).replace(/\\/g, '/');
+        const rel = toPosix(path.relative(paths.staticRoot, filePath));
         const dst = path.join(DEPLOYMENT_DIR, rel);
         return gulp
             .src(filePath, {base: paths.staticRoot})
@@ -765,7 +759,7 @@ function watchMode() {
     staticWatcher.on('add', mirrorStatic);
     staticWatcher.on('change', mirrorStatic);
     staticWatcher.on('unlink', async (filePath) => {
-        const rel = path.relative(paths.staticRoot, filePath).replace(/\\/g, '/');
+        const rel = toPosix(path.relative(paths.staticRoot, filePath));
         const targetPath = path.join(DEPLOYMENT_DIR, rel);
         try {
             const {default: del} = await import('del');
@@ -793,7 +787,7 @@ function watchMode() {
 function printTargets(cb) {
     const home = os.homedir();
     const exists = (p) => p && fs.existsSync(p);
-    const pretty = (p) => (p ? p.replace(home, '~') : '(none)');
+    const pretty = (p) => (p ? toPosix(p.replace(home, '~')) : '(none)');
     const mark = (p) => (exists(p) ? colors.green('✓') : colors.red('✗'));
     const row = (label, p) => `${colors.white(label.padEnd(14))} ${mark(p)}  ${colors.blue(pretty(p))}`;
 
