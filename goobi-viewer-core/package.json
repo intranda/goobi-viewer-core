@@ -10,13 +10,13 @@
   "license": "GPL-2.0-or-later",
   "private": true,
   "scripts": {
-    "dev": "NODE_NO_WARNINGS=1 gulp --silent dev",
-    "devsync": "gulp --silent devsync",
-    "build": "gulp --silent build",
-    "copyDeps": "gulp copy-deps",
-    "sync": "gulp sync-all",
-    "target": "gulp target",
-    "java": "gulp java"
+    "dev": "GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp dev",
+    "devsync": "GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp devsync",
+    "build": "GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp build",
+    "copyDeps": "GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp copy-deps",
+    "sync": "GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp sync-all",
+    "target": "GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp target",
+    "java": "GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp java"
   },
   "engines": {
     "node": ">=18"

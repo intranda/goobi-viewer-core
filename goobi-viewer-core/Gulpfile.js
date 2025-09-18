@@ -295,8 +295,10 @@ function logTask({
                      errors = 0,
                      extra = [],
                  }) {
+    const changedPath = (typeof changed === 'string') ? changed : undefined;
+
     const lines = [];
-    if (changed) lines.push(`changed: ${colors.green(prettyPath(changed))}`);
+    if (changedPath) lines.push(`changed: ${colors.green(prettyPath(changedPath))}`);
     if (src) lines.push(`src: ${colors.green(src)}`);
     if (projOut.length) lines.push('→ project:', ...projOut.map((p) => '  • ' + colors.blue(prettyPath(p))));
     if (deployOut.length) lines.push('→ deploy:', ...deployOut.map((p) => '  • ' + colors.blue(prettyPath(p))));
