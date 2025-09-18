@@ -17,7 +17,6 @@
     "sync": "gulp sync-all",
     "target": "gulp target",
     "java": "gulp java"
-
   },
   "engines": {
     "node": ">=18"
@@ -35,7 +34,12 @@
     "gulp-sourcemaps": "^3.0.0",
     "merge-stream": "^2.0.0",
     "pixl-xml": "^1.0.13",
-    "less-plugin-autoprefix": "~2.0.0"
+    "gulp-postcss": "^9.0.1",
+    "postcss": "^8.4.47",
+    "autoprefixer": "^10.4.20",
+    "postcss-reporter": "^7.1.0",
+    "through2": "^4.0.2",
+    "gulp-plumber": "^1.2.1"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "~5.0.1",
@@ -71,5 +75,11 @@
     "swiper": "~11.2.0",
     "three": "~0.132.2",
     "tinymce": "~5.10.0"
-  }
+  },
+  "browserslist": [
+    ">0.5%",
+    "last 2 versions",
+    "Firefox ESR",
+    "not dead"
+  ]
 }
