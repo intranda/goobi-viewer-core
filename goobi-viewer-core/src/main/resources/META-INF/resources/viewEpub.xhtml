@@ -30,6 +30,9 @@
 
 
 	<ui:define name="content">
+	
+	    <!-- No access ticket required or already unlocked -->
+        <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
 		<div class="view-epub">
 			<!-- CONTROLS WRAPPER -->
 			<div class="view-epub__controls-wrapper">
@@ -53,6 +56,15 @@
 			<!-- RENDERED VIEW IN THIS CONTAINER -->
 			<div class="view-epub__container" id="epubContainer"></div>
 		</div>
+		</ui:fragment>
+		
+            <!-- Access ticket required -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
+                #{msg.access_tickets__record_access_ticket_required}<br />
+                <button class="btn btn--full" data-toggle="modal"
+                    data-target="#accessTicketModal">#{msg.action__born_digital__unlock}</button>
+                <viewerComponent:modalAccessTicket />  
+            </ui:fragment>
 
 		<script>
 			// console.log("load epub");

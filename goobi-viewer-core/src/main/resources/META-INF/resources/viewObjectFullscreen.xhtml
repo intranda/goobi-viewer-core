@@ -34,13 +34,25 @@
             </div>
 
             <!-- VIEW -->
-            <div class="fullscreen">
-                <!-- LAYOUT -->
-                <ui:include src="/resources/includes/fullscreen/fs_layout.xhtml" />
+            
+            <!-- No access ticket required or already unlocked -->
+            <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
+                <div class="fullscreen">
+                    <!-- LAYOUT -->
+                    <ui:include src="/resources/includes/fullscreen/fs_layout.xhtml" />
                 
-			<viewerComponent:modalFeedbackForm id="feedbackModal" />
+			 <viewerComponent:modalFeedbackForm id="feedbackModal" />
 
-            </div>
+                </div>
+            </ui:fragment>
+            
+            <!-- Access ticket required -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
+                #{msg.access_tickets__record_access_ticket_required}<br />
+                <button class="btn btn--full" data-toggle="modal"
+                    data-target="#accessTicketModal">#{msg.action__born_digital__unlock}</button>
+                <viewerComponent:modalAccessTicket />  
+            </ui:fragment>
 
             <script>
                 // mount riot tags

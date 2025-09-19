@@ -32,6 +32,9 @@
         </h:panelGroup>
 
         <!-- VIEW THUMBS -->
+           
+        <!-- No access ticket required or already unlocked -->
+        <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
         <div id="viewThumbs" class="view-thumbs">
             <!-- TITLE -->
 	    	<div id="title" class="title">
@@ -97,6 +100,15 @@
                 itemActive="#{activeDocumentBean.viewManager.currentThumbnailPage}"
                 urlPrefix="#{navigationHelper.thumbsUrl}/#{activeDocumentBean.persistentIdentifier}/" />
         </div>
+        </ui:fragment>
+        
+            <!-- Access ticket required -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
+                #{msg.access_tickets__record_access_ticket_required}<br />
+                <button class="btn btn--full" data-toggle="modal"
+                    data-target="#accessTicketModal">#{msg.action__born_digital__unlock}</button>
+                <viewerComponent:modalAccessTicket />  
+            </ui:fragment>
 
         <!-- HIDDEN USER EMAIL -->
         <h:panelGroup rendered="#{userBean.loggedIn}">
