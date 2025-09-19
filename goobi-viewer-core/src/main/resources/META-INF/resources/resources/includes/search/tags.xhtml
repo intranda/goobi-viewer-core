@@ -12,22 +12,22 @@
 
     <!-- TAGS -->
     <h:panelGroup rendered="#{tagCloudBean.tagsTitles.size() > 0}">
-        <h2 >#{msg.title}</h2>
+        <h2 class="tag-cloud__heading">#{msg.title}</h2>
         <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsTitles}" ariaLabel="#{msg.title}" />
     </h:panelGroup>
 
     <h:panelGroup rendered="#{tagCloudBean.tagsPersons.size() > 0}">
-        <h2 >#{msg.persons}</h2>
+        <h2 class="tag-cloud__heading">#{msg.persons}</h2>
         <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsPersons}" ariaLabel="#{msg.persons}" />
     </h:panelGroup>
 
     <h:panelGroup rendered="#{tagCloudBean.tagsPlaces.size() > 0}">
-        <h2 >#{msg.places}</h2>
+        <h2 class="tag-cloud__heading">#{msg.places}</h2>
         <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsPlaces}" ariaLabel="#{msg.places}" />
     </h:panelGroup>
 
     <h:panelGroup rendered="#{tagCloudBean.tagsYears.size() > 0}">
-        <h2 >#{msg.years}</h2>
+        <h2 class="tag-cloud__heading">#{msg.years}</h2>
         <viewerComponent:tagCloud tagMethod="#{tagCloudBean.tagsYears}" ariaLabel="#{msg.years}"/>
     </h:panelGroup>
 </ui:composition>

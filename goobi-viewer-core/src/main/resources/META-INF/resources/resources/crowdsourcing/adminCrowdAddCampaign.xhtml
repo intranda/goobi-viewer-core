@@ -338,7 +338,7 @@
 																				<label for="adminCrowdAddCampaignQueryMetadata">#{msg.metadata}:</label>
 																			</div>
 		
-																			<div class="col-9 admin__form-input badge-hover">
+																			<div class="col-9 admin__form-input">
 																				<h:panelGroup id="metadataFields" layout="block">
 																					<ui:repeat id="metadataFieldLoop" var="field"
 																						value="#{question.selectedMetadataFields}">
@@ -449,7 +449,7 @@
 										</c:if>
 										
 									<!-- FINAL ACTIONS CANCEL + SAVE -->
-									<div class="row no-gutters justify-content-end admin__final-actions mb-0">
+									<div class="admin__final-actions mb-0">
 	                                    <h:commandLink id="cancelAddCampaignButton" type="submit" styleClass="btn admin__cancel-button" value="#{msg.cancel}"
 	                                        action="pretty:adminCrowdCampaigns" immediate="true" />
 	                                    <h:commandButton id="saveAddCampaignButton" styleClass="btn btn--success" value="#{msg.button__save}"

@@ -1,0 +1,73 @@
+/* ==============================================================
+	Admin misc styles/layout
+   ==============================================================*/
+.admin {
+	// CHECK THIS AGAIN
+	.-light {
+		color: #a9a9a9;
+		cursor: default;
+		padding: 0;
+	}
+
+	// Styling for action buttons
+	button.admin__table-action-link {
+		background: transparent;
+		border: 0;
+	}
+
+	.-bluelink {
+		color: @blue;
+		&:hover {
+			text-decoration: underline;
+		}
+		&:hover,
+		&:active,
+		&:focus,
+		&:active:focus {
+			color: @blue;
+		}
+	}
+	.-redlink {
+		color: @red;
+		&:hover {
+			color: @red;
+			text-decoration: underline;
+		}
+		&:active {
+			color: @red;
+		}
+		&:focus {}
+		&.-noLeftPad {
+			padding-left: 0;
+		}
+	}
+	.-textlink {
+		color: initial;
+		text-decoration: none;
+		cursor: pointer;
+		&:hover {
+			color: initial;
+			text-decoration: none;
+			cursor: pointer;
+		}
+		&:active {
+			color: initial;
+			text-decoration: none;
+			cursor: pointer;
+		}
+		&:focus {}
+	}
+}
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

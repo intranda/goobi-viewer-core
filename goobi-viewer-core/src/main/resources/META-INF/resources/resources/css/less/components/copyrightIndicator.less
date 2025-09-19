@@ -135,7 +135,11 @@
 	}
 	&__hidden-information {
 		display: none;
-	}
+		// links should not break lines in the texts of the widget
+		a {
+			display: inline;
+		}
+	} 
 	&__hidden-information-element {
 		&:first-child {
 			margin-bottom: 20px;

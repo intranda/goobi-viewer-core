@@ -551,8 +551,8 @@ public class CmsPageEditBean implements Serializable {
                 .sorted((c1, c2) -> Strings.CS.compare(ViewerResourceBundle.getTranslation(c1.getLabel(), locale),
                         ViewerResourceBundle.getTranslation(c2.getLabel(), locale)))
                 .collect(Collectors.toList());
-        Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsAlphabeticallySortedMap(components,
-                component -> ViewerResourceBundle.getTranslation(component.getLabel(), locale));
+        Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsSortedMap(components,
+                component -> component.getTypes(), label -> ViewerResourceBundle.getTranslation("label__cms_component_type__" + label, locale));
         return SelectItemBuilder.getAsGroupedSelectItems(sortedMap, CMSComponent::getTemplateFilename,
                 c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale),
                 c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale),
@@ -573,7 +573,6 @@ public class CmsPageEditBean implements Serializable {
                 .map(md -> md.replaceAll("_LANG_.*", ""))
                 .distinct()
                 .collect(Collectors.toList());
-
     }
 
     /**

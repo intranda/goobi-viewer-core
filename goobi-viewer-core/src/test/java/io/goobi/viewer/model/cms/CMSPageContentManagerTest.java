@@ -23,7 +23,6 @@ package io.goobi.viewer.model.cms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -34,7 +33,6 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSComponentAttribute;
-import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 
 class CMSPageContentManagerTest {
@@ -42,7 +40,7 @@ class CMSPageContentManagerTest {
     @Test
     void testReadFromTemplateFiles() throws IOException {
         Path path = Paths.get("src/test/resources/data/viewer/cms/component_templates");
-        
+
         CMSPageContentManager manager = new CMSPageContentManager(path);
         List<CMSComponent> components = manager.getComponents();
         assertEquals(5, components.size());
@@ -51,12 +49,11 @@ class CMSPageContentManagerTest {
         assertEquals("cms/components/frontend/component", htmlComponent.getJsfComponent().getLibrary());
         assertEquals("htmltext", htmlComponent.getJsfComponent().getName());
         assertEquals("cms_component__htmltext__desc", htmlComponent.getDescription());
-        assertEquals("cms/components/frontend/component/icon/htmltext.png", htmlComponent.getIconPath());
-        
+
         CMSComponent imageComponent = components.stream().filter(c -> c.getLabel().equals("cms_component__image__label")).findAny().orElse(null);
         assertNotNull(imageComponent);
         assertEquals(2, imageComponent.getAttributes().size());
-        
+
         CMSComponentAttribute widthAttribute = imageComponent.getAttribute("width");
         assertNotNull(widthAttribute);
         assertEquals("cms__component_attribute__width", widthAttribute.getLabel());

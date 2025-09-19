@@ -94,8 +94,7 @@
                                                 <a href="#{navigationHelper.applicationUrl}admin/cms/recordnotes/edit/#{note.id}/"
                                                 class="admin__table-action-link"
                                                 aria-label="#{msg.edit}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}">#{msg.edit}</a>
-                                                <!--
-                                                PREVIEW -->
+                                                <!-- PREVIEW -->
                                                 <ui:fragment rendered="#{note.isSingleRecordNote()}">
                                                 	<a
                                                     class="admin__table-action-link" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(note)}"

@@ -331,6 +331,10 @@ public final class BeanUtils {
             }
         } catch (NullPointerException e) {
             logger.error("Error when getting bean by name '{}'", name, e);
+        } catch (IllegalArgumentException e) {
+            logger.error("Bean of name '{}' is not of type '{}", name, clazz);
+        } catch (IllegalStateException e) {
+            logger.error("Trying to find bean in context at illegal state. Probably before initialization or outside of jsf context: {}", e);
         }
 
         return null;

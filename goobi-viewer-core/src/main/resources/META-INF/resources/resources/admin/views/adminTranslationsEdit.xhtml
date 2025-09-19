@@ -99,7 +99,7 @@
 
 
 
-		                            <div class="row no-gutters justify-content-end admin__final-actions">
+		                            <div class="admin__final-actions">
 
 		                                <ui:fragment rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                             <!-- CANCEL BUTTON -->
@@ -148,7 +148,10 @@
 
                             <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                 <div class="admin__default-block">
-                                    <h2 class="admin__sidebar-progress-header">#{msg.label__crowdsourcing_campaign_progress} <span class="admin__sidebar-progress-count">(#{adminBean.currentTranslationGroup.fullyTranslatedEntryCount} #{msg.of} #{adminBean.currentTranslationGroup.entryCount})</span></h2>
+                                	<div class="admin__sidebar-progress-wrapper">
+                                    	<span class="admin__sidebar-progress-header">#{msg.label__crowdsourcing_campaign_progress} </span>
+                                    	<span class="admin__sidebar-progress-count">(#{adminBean.currentTranslationGroup.fullyTranslatedEntryCount} #{msg.of} #{adminBean.currentTranslationGroup.entryCount})</span>
+                               		</div>
                                		<div class="admin__sidebar-progressbar">
 										<div class="admin__sidebar-progressbar-complete" style="flex: 0 0 #{adminBean.currentTranslationGroup.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
 										<div class="admin__sidebar-progressbar-partially" style="flex: 0 0 #{adminBean.currentTranslationGroup.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>

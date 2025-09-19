@@ -50,7 +50,7 @@
 								<h:form id="editUser" styleClass="form-horizontal form-group" role="form" prependId="false">
 									<facelet:userData user="#{adminBean.currentUser.copy}"
 										confirmEmailChange="false" />
-									<div class="row no-gutters justify-content-end admin__final-actions">
+									<div class="admin__final-actions">
 										<h:commandLink id="cancelNewUserCreationButton"
 											styleClass="btn admin__cancel-button" value="#{msg.cancel}"
 											action="#{adminBean.resetUserAction(adminBean.currentUser, 'pretty:adminUsers')}"

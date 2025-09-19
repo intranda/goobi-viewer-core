@@ -40,6 +40,8 @@ var viewerJS = (function(viewer) {
 	}
 
 	viewer.paginator = {
+		
+		
 
 		/**
 		 * Initializes keyboard bindings for paginator
@@ -118,22 +120,46 @@ var viewerJS = (function(viewer) {
 			        }
 			    }
 			    switch (keyCode) {
-			        case _backwardKey:
-			            if (doubleKeypress && viewer.paginator.config.first) {
-			                viewer.paginator.config.first();
-			            } 
-			            else if (viewer.paginator.config.previous) {
-			                viewer.paginator.config.previous();
-			            }
-			            break;
-			        case _forwardKey:
-			            if (doubleKeypress && viewer.paginator.config.last) {
-			                viewer.paginator.config.last();
-			            } 
-			            else if (viewer.paginator.config.next) {
-			                viewer.paginator.config.next();
-			            }
-			            break;
+					case _backwardKey:
+					    if (doubleKeypress && viewer.paginator.config.first) {
+					        viewer.paginator.config.first();
+					    } 
+					    else if (doubleKeypress) {
+					        const fallbackFirst = document.querySelector('[data-target="paginatorFirstPage"]');
+					        if (fallbackFirst) {
+					            fallbackFirst.click();
+					        }
+					    }
+					    else if (viewer.paginator.config.previous) {
+					        viewer.paginator.config.previous();
+					    } 
+					    else {
+					        const fallbackPrevious = document.querySelector('[data-target="paginatorPrevPage"]');
+					        if (fallbackPrevious) {
+					            fallbackPrevious.click();
+					        }
+					    }
+					    break;
+					case _forwardKey:
+					    if (doubleKeypress && viewer.paginator.config.last) {
+					        viewer.paginator.config.last();
+					    } 
+					    else if (doubleKeypress) {
+					        const fallbackLast = document.querySelector('[data-target="paginatorLastPage"]');
+					        if (fallbackLast) {
+					            fallbackLast.click();
+					        }
+					    }
+					    else if (viewer.paginator.config.next) {
+					        viewer.paginator.config.next();
+					    } 
+					    else {
+					        const fallbackNext = document.querySelector('[data-target="paginatorNextPage"]');
+					        if (fallbackNext) {
+					            fallbackNext.click();
+					        }
+					    }
+					    break;
 			    }
 			    
 			}, viewer.paginator.config.maxDoubleClickDelay);

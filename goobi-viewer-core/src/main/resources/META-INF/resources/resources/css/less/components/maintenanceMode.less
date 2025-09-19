@@ -6,37 +6,47 @@
 /* MAINTENANCE BANNER */
 .maintenance-banner {
 	position: relative;
-	z-index: 2400; 
+	z-index: 2400;
 	display: none;
+
 	&__outer {
+		min-height: 45px;
 		padding: 10px 0;
 		width: 100%;
 		background: #fed44c;
 		position: relative;
 	}
+
 	&__wrapper {
 		display: flex;
-		gap: 40px; 
+		gap: 40px;
 		align-items: center;
 		color: black;
 		padding-right: 40px;
 	}
+
 	&__icon {
 		color: black;
 		font-size: 40px;
 		align-self: center;
 	}
+
 	&__text {
-		p, a {
+
+		p,
+		a {
 			color: black;
 			font-size: 16px;
 			line-height: 1.4;
+
 			&:last-child {
 				margin-bottom: 0;
 			}
 		}
+
 		a {
 			text-decoration: underline;
+
 			&:hover,
 			&:focus,
 			&:active {
@@ -44,6 +54,7 @@
 			}
 		}
 	}
+
 	&__close-button {
 		display: flex;
 		position: absolute;
@@ -54,6 +65,7 @@
 		padding: 0;
 		border: none;
 		color: black;
+
 		&:hover,
 		&:focus,
 		&:active {
@@ -71,6 +83,23 @@
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
 	.maintenance-banner {
+		&__close-button {
+			top: 16px;
+			right: 8px;
+
+			&:before {
+				width: 20px;
+				height: 2px;
+				margin: -1px auto auto -10px;
+			}
+
+			&:after {
+				width: 2px;
+				height: 20px;
+				margin: -10px auto auto -1px;
+			}
+		}
+
 		&__icon {
 			display: none;
 		}

@@ -2561,6 +2561,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isTocListSiblingRecords()
+     * @verifies return correctValue
+     */
+    @Test
+    void getAncestorIdentifierFieldFilterQuery_shouldReturnCorrectValue() {
+        assertEquals("-DOCSTRCT:year", DataManager.getInstance().getConfiguration().getAncestorIdentifierFieldFilterQuery(SolrConstants.PI_PARENT));
+    }
+
+    /**
      * @see Configuration#getTocAnchorGroupElementsPerPage()
      * @verifies return correct value
      */

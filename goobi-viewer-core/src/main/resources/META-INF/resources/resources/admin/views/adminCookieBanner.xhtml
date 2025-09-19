@@ -41,7 +41,7 @@
 								escape="false" />
 						</div>
 						<div class="form-horizontal form-group">
-							<div class="row no-gutters mb-3 align-items-center">
+							<div class="d-flex mb-3 align-items-center">
 								<div class="control-label mr-3 admin__form-label">#{msg.admin__legal__cookie_banner_active}:</div>
 								<div class="admin__form-input">
 									<viewerComponent:toggleSwitch name="activateCookieBanner" toggleTarget="#cookieBannerEditWrapper"
@@ -96,7 +96,7 @@
 
 								<!-- SAVE TERMS OF USE TEXT -->
 								<div
-									class="row no-gutters justify-content-end admin__final-actions">
+									class="admin__final-actions">
 									<h:commandButton class="btn btn--success" value="#{msg.save}"
 										action="#{cookieBannerBean.save()}">
 									</h:commandButton>
