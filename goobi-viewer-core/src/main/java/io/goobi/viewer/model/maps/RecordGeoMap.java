@@ -207,7 +207,7 @@ public class RecordGeoMap {
             featureSet.setMarkerMetadataList(config.getMarkerMetadataList());
             featureSet.setItemMetadataList(config.getItemMetadataList());
             featureSet.setSolrQuery(String.format("+PI_TOPSTRUCT:%s", docStruct.getPi()));
-            featureSet.setSearchScope(SolrSearchScope.RECORDS);
+            featureSet.setSearchScope(SolrSearchScope.DOCSTRUCTS);
             featureSet.setItemFilterName(config.getFilter());
             geoMap.addFeatureSet(featureSet);
         }
