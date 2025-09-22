@@ -39,8 +39,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.RandomComparator;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
@@ -48,6 +50,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -253,6 +256,13 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
                 .stream()
                 .filter(CMSPage::isPublished)
                 .filter(child -> getCategories().isEmpty() || !CollectionUtils.intersection(getCategories(), child.getCategories()).isEmpty())
+                .filter(page  -> {
+                    try {
+                        return AccessConditionUtils.checkAccessPermissionForCmsPage(BeanUtils.getRequest(), page).isGranted();
+                    } catch (DAOException | IndexUnreachableException | PresentationException e) {
+                        return false;
+                    }
+                })
                 .map(CMSPage::new)
                 .peek(child -> child.initialiseCMSComponents(templateManager))
                 .peek(child -> totalPages.incrementAndGet());
