@@ -28,9 +28,24 @@
         flex-wrap: wrap;
         flex: 0 0 100%;
     }
+	&__list-item-inner {
+		display: grid;
+		grid-template-columns: 400px 1fr;
+		gap: 30px;
+		width: 100%;
+	}
+	&__list-item-right {
+		display: flex;
+		flex-direction: column;
+	}
     &__list-image {
-    	max-height: 150px;
     	overflow: hidden;
+		img {
+			object-fit: cover;
+			  object-position: center;
+			  max-width: 100%;
+			  max-height: 500px;
+		}
     }
     &__list-preview {}
     &__preview-date {
@@ -40,6 +55,9 @@
         margin-bottom: 15px;
     }
     &__preview-continue {}
+	&__more-link {
+		margin-top: auto;
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -49,7 +67,14 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.tpl-news-overview {
+	   
+		&__list-item-inner {
+			grid-template-columns: 1fr;
+		}
+}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
