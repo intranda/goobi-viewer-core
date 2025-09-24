@@ -734,10 +734,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
      * @return the associatedTheme; null if no associated theme exists
      */
     public String getAssociatedTheme() {
-        return Optional.ofNullable(cmsPage)
-                .map(CMSPage::getSubThemeDiscriminatorValue)
-                .map(value -> StringUtils.isBlank(value) ? null : value)
-                .orElse(this.associatedTheme);
+        return this.associatedTheme;
     }
 
     /**
