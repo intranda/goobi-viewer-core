@@ -191,6 +191,12 @@ public class RecordGeoMap {
 
             String mdListType = DataManager.getInstance().getConfiguration().getMetadataListForGeomapMarkerConfig(config.getMarkerMetadataList());
             List<Metadata> mdList = DataManager.getInstance().getConfiguration().getMetadataTemplates(mdListType).get(docStruct.getDocStructType());
+            if (mdList == null) {
+                mdList = DataManager.getInstance().getConfiguration().getMetadataTemplates(mdListType).get("_DEFAULT");
+            }
+            if (mdList == null) {
+                mdList = DataManager.getInstance().getConfiguration().getMetadataTemplates(mdListType).values().iterator().next();
+            }
             IMetadataValue label = new MetadataBuilder(docStruct).build(mdList, "");
             features.forEach(f -> f.setTitle(label));
             featureSet.setFeatures(features.stream().map(GeoMapFeature::getJsonObject).map(JSONObject::toString).toList());

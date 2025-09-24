@@ -118,12 +118,12 @@ public class FeatureGenerator {
         Collection<GeoMapFeature> features = new ArrayList<>();
         for (ComplexMetadata group : metadataGroups.getAllGroups()) {
             MetadataContainer relation = metadataGroups.getRelatedRecord(group);
-            //            if (relation != null) {
-            //                MetadataContainer groupMd = new MetadataContainer(group.getMetadata());
-            //                List<String> coordinates = getCoordinates(relation, coordinateFields);
-            //                Collection<GeoMapFeature> f = getFeatures(groupMd, relation, coordinates);
-            //                features.addAll(f);
-            //            }
+            if (relation != null) {
+                MetadataContainer groupMd = new MetadataContainer(group.getMetadata());
+                List<String> coordinates = getCoordinates(group, coordinateFields);
+                Collection<GeoMapFeature> f = getFeatures(groupMd, relation, coordinates);
+                features.addAll(f);
+            }
         }
 
         return features;
