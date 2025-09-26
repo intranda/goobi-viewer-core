@@ -214,11 +214,13 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
                 return response.status == 200;
             })
             .then(exists => {
-                if(exists) {
-	                let overwrite = confirm(this.opts.msg.overwriteFileConfirm.replace("{0}",  this.files[i].name));
-	                if(!overwrite) {
-	                    throw this.opts.msg.overwriteFileRefused.replace("{0}",  this.files[i].name);
-	                }
+                if (exists) {
+                    const fileName = this.files[i].name;
+                    const message = this.opts.msg.overwriteFileConfirm.replace("{0}", fileName);
+                    return viewerJS.notifications.confirm(message)
+                        .catch(() => {
+                            throw this.opts.msg.overwriteFileRefused.replace("{0}", fileName);
+                        });
                 }
             })
             .then(overwrite => {
@@ -278,7 +280,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
 
         }.bind(this)
 });
-
 
 riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}" initialview="{this.opts.geomap.initialView}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource><datasetresource if="{isDatasetResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></datasetResource>', '', '', function(opts) {
 

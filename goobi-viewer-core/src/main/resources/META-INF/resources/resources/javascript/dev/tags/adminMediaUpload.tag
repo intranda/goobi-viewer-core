@@ -249,11 +249,13 @@
                 return response.status == 200;
             })
             .then(exists => {
-                if(exists) {                    
-	                let overwrite = confirm(this.opts.msg.overwriteFileConfirm.replace("{0}",  this.files[i].name));
-	                if(!overwrite) {
-	                    throw this.opts.msg.overwriteFileRefused.replace("{0}",  this.files[i].name);
-	                }
+                if (exists) {
+                    const fileName = this.files[i].name;
+                    const message = this.opts.msg.overwriteFileConfirm.replace("{0}", fileName);
+                    return viewerJS.notifications.confirm(message)
+                        .catch(() => {
+                            throw this.opts.msg.overwriteFileRefused.replace("{0}", fileName);
+                        });
                 }
             })
             .then(overwrite => {
@@ -314,4 +316,3 @@
         }
     </script> 
 </adminMediaUpload>
-
