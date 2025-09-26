@@ -136,8 +136,13 @@
 										<div class="text-right">
 											<h:commandButton class="btn btn--danger"
 												value="#{msg.admin__terms_of_use__reset__button}"
-												onclick="if ( !confirm( &quot;#{msg.admin__terms_of_use__reset__confirm}&quot; ) ) { return false };"
 												action="#{termsOfUseEditBean.resetUserAcceptance()}">
+												<f:passThroughAttribute
+													name="data-require-confirmation"
+													value="true" />
+												<f:passThroughAttribute
+													name="data-confirmation-text"
+													value="#{msg.admin__terms_of_use__reset__confirm}" />
 												<f:ajax render="@form :messages"></f:ajax>
 											</h:commandButton>
 										</div>
@@ -151,4 +156,3 @@
 		</f:view>
 	</ui:define>
 </ui:composition>
-
