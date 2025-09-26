@@ -136,7 +136,8 @@ public class RecordGeoMap {
     private static void createRelatedDocumentFeatureSet(GeoMap geoMap, StructElement mainStruct,
             FeatureSetConfiguration config) {
 
-        SolrFeatureSet featureSet = new SolrFeatureSet(false);
+        SolrFeatureSet featureSet = new SolrFeatureSet();
+        featureSet.setUseHeatmap(false);
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
         featureSet.setSolrQuery(String.format("+(%s) +PI_TOPSTRUCT:%s", config.getQuery(), mainStruct.getPi()));
         featureSet.setMarkerMetadataList(config.getMarkerMetadataList());
@@ -165,7 +166,8 @@ public class RecordGeoMap {
     }
 
     private static void createMetadataFeatureSet(GeoMap geoMap, StructElement mainStruct, FeatureSetConfiguration config) {
-        SolrFeatureSet featureSet = new SolrFeatureSet(false);
+        SolrFeatureSet featureSet = new SolrFeatureSet();
+        featureSet.setUseHeatmap(false);
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
         featureSet.setSolrQuery(String.format("+(%s) +PI_TOPSTRUCT:%s", config.getQuery(), mainStruct.getPi()));
         featureSet.setMarkerMetadataList(config.getMarkerMetadataList());
@@ -207,7 +209,8 @@ public class RecordGeoMap {
 
     private static void createAllDocStructFeatureSet(GeoMap geoMap, StructElement docStruct, FeatureSetConfiguration config) {
         if (matchesQuery(MetadataContainer.createMetadataEntity(docStruct), config.getQuery())) {
-            SolrFeatureSet featureSet = new SolrFeatureSet(false);
+            SolrFeatureSet featureSet = new SolrFeatureSet();
+            featureSet.setUseHeatmap(false);
             featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
             featureSet.setMarker(config.getMarker());
             featureSet.setMarkerMetadataList(config.getMarkerMetadataList());

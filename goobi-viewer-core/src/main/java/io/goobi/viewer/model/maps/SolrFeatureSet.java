@@ -97,22 +97,19 @@ public class SolrFeatureSet extends FeatureSet {
     @Column(name = "metadata_list_item")
     private String itemMetadataList = "";
 
-    @Transient
-    protected String featuresAsString = null;
+    @Column(name = "marker_generation")
+    @Enumerated(EnumType.STRING)
+    private MarkerGenerationType markerGeneration =
+            DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps() ? MarkerGenerationType.HEATMAP : MarkerGenerationType.FEATURELIST;
 
     @Transient
-    private final boolean useHeatmap;
+    protected String featuresAsString = null;
 
     @Transient
     private GeomapItemFilter itemFilter;
 
     public SolrFeatureSet() {
-        this(DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps());
-    }
-
-    public SolrFeatureSet(boolean useHeatmap) {
         super();
-        this.useHeatmap = useHeatmap;
     }
 
     public SolrFeatureSet(SolrFeatureSet blueprint) {
@@ -122,8 +119,8 @@ public class SolrFeatureSet extends FeatureSet {
         this.markerMetadataList = blueprint.markerMetadataList;
         this.itemMetadataList = blueprint.itemMetadataList;
         this.searchScope = blueprint.searchScope;
-        this.useHeatmap = blueprint.useHeatmap;
         this.itemFilterName = blueprint.itemFilterName;
+        this.markerGeneration = blueprint.markerGeneration;
     }
 
     @Override
@@ -158,7 +155,7 @@ public class SolrFeatureSet extends FeatureSet {
     }
 
     protected String createFeaturesAsString(boolean escapeJson) throws PresentationException, IndexUnreachableException {
-        if (this.useHeatmap) {
+        if (this.isUseHeatmap()) {
             //No features required since they will be loaded dynamically with the heatmap
             return "[]";
         }
@@ -391,6 +388,22 @@ public class SolrFeatureSet extends FeatureSet {
         } else {
             return new GeomapItemFilter("", "", false, Collections.emptyList());
         }
+    }
+
+    public MarkerGenerationType getMarkerGeneration() {
+        return markerGeneration;
+    }
+
+    public void setMarkerGeneration(MarkerGenerationType markerGeneration) {
+        this.markerGeneration = markerGeneration;
+    }
+
+    public boolean isUseHeatmap() {
+        return this.markerGeneration == MarkerGenerationType.HEATMAP;
+    }
+
+    public void setUseHeatmap(boolean use) {
+        this.markerGeneration = use ? MarkerGenerationType.HEATMAP : MarkerGenerationType.FEATURELIST;
     }
 
 }
