@@ -46,17 +46,17 @@
 			            language: "#{navigationHelper.localeString}",
 			            iconPath: "#{request.contextPath}/resources/images/map",
 			            layers: [
-			            <ui:repeat value="#{cc.attrs.geoMap.featureSets}" var="featureSet">
+			            <ui:repeat value="#{cc.attrs.geoMap.featureSets}" var="featureSet" varStatus="status">
 				            {
-				            	features: #{featureSet.featuresAsString},
+				            	features: #{featureSet.useHeatmap ? "[]" : featureSet.featuresAsString},
 				                allowMovingFeatures: false,
 				           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
 				           		popoverOnHover: #{cc.attrs.popoverOnHover},
 				           		clusterMarkers: #{cc.attrs.clusterMarkers},
 				           		markerIcon: (icon => icon)(#{featureSet.markerAsJSON}),
 				           		label: #{featureSet.name.getAsJson()},
-				           		identifier: #{featureSet.id},
-				           		controls: {
+				           		identifier: ( id => id )( #{featureSet.id} ) || #{status.index}, 
+				           		controls: { 
 				           			zoom: {
 				           				in: "#geomap_#{cc.attrs.mapId}_zoomIn",
 				           				out: "#geoMap_#{cc.attrs.mapId}_ZoomOut",
@@ -72,12 +72,13 @@
 				           		},
 				           		<ui:fragment rendered="#{featureSet.queryResultSet}">
 					            heatmap: {
-					            	enabled: #{featureSet.queryResultSet and configurationBean.useHeatmapForCMSMaps()},
+					            	enabled: #{featureSet.queryResultSet and featureSet.useHeatmap},
 					            	heatmapUrl: "#{geoMapBean.heatmapUrl}",
 					            	featureUrl: "#{geoMapBean.featureUrl}",
 					        	    filterQuery: "#{featureSet.solrQueryEncoded}",
 					        	    labelField: "#{featureSet.markerTitleField}",
-					            }, 
+					        	    searchScope: "#{featureSet.searchScope}"
+					        	}, 
 					            </ui:fragment>
 					            style : {
 					            	stroke: true,

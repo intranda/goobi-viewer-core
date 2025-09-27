@@ -343,7 +343,7 @@
 
               <!-- FORM ACTIONS -->
               <div class="admin__final-actions">
-                <h:link styleClass="btn admin__cancel-button" value="#{msg.cancel}"></h:link>
+                <h:commandButton styleClass="btn admin__cancel-button" value="#{msg.cancel}" immediate="true" action="pretty:adminThemes"></h:commandButton>
                 <h:commandButton styleClass="btn btn--success" value="#{msg.save}" action="#{adminThemeEditBean.saveTheme}" />
               </div>
 
