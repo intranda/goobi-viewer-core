@@ -125,7 +125,12 @@ var cmsJS = ( function( cms ) {
             			_bulkActionEdit();
             			break;
                     case 'delete':
-                        viewerJS.notifications.confirm( _defaults.msg.bulkDeleteConfirm )
+                        viewerJS.notifications.confirm(
+                            '',
+                            undefined,
+                            undefined,
+                            _defaults.msg.bulkDeleteConfirm
+                        )
                         .then( () => {
                             $( '#deleteSelectedItemsButton' ).click();
                         } )

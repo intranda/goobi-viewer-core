@@ -217,7 +217,16 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
                 if (exists) {
                     const fileName = this.files[i].name;
                     const message = this.opts.msg.overwriteFileConfirm.replace("{0}", fileName);
-                    return viewerJS.notifications.confirm(message)
+                    return viewerJS.notifications.confirm(
+                        '',
+                        this.opts.msg.button__overwrite,
+                        undefined,
+                        message,
+                        {
+                            icon: 'warning',
+                            confirmButtonClass: 'btn btn--full',
+                        }
+                    )
                         .catch(() => {
                             throw this.opts.msg.overwriteFileRefused.replace("{0}", fileName);
                         });

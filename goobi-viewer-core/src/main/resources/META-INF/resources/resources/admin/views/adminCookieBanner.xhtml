@@ -119,7 +119,13 @@
 													<f:passThroughAttribute
 														name="data-confirmation-text"
 														value="#{msg.admin__legal__reset_cookie_banner_consent__confirm}" />
-													<f:ajax render="@form :messages"></f:ajax>
+                                                    <f:passThroughAttribute name="data-confirm-button-text"
+                                                                            value="#{msg.reset}"/>
+                                                    <f:passThroughAttribute name="data-confirm-button"
+                                                                            value="btn btn--full"/>
+                                                    <f:passThroughAttribute name="data-icon"
+                                                                            value="warn"/>
+                                                    <f:ajax execute="@this" render="@form :messages"/>
 												</h:commandButton>
 											</div>
 										</div>
