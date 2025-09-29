@@ -86,7 +86,7 @@
 
 		<!-- other libraries -->
 		<activemq.version>6.1.7</activemq.version>
-		<angus-mail.version>2.0.4</angus-mail.version>
+		<angus-mail.version>2.0.5</angus-mail.version>
 		<citationstyles.version>25.4</citationstyles.version>
 		<citeproc-java.version>3.3.0</citeproc-java.version>
 		<commons-collections4.version>4.5.0</commons-collections4.version>
