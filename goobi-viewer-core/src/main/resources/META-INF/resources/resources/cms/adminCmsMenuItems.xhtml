@@ -28,15 +28,19 @@
 					<viewerComponent:adminBreadcrumbs />
 
 					<div class="admin__content-inner-content">
-						<!-- SAVE MENU -->
-						<div
-							class="admin__final-actions">
-							<h:inputHidden id="itemOrderInput" name="itemOrderInput"
-								value="#{cmsNavigationBean.menuItemList}" />
-							<h:commandButton value="#{msg.save}"
-								action="#{cmsNavigationBean.saveMenuItems}"
-								styleClass="btn btn--success" />
-						</div>
+                        <!-- SAVE MENU -->
+                        <div class="admin__content-component-overlay-wrapper">
+                            <div data-target="saveChangedPage"
+                                 class="admin__content-component-overlay-bar admin__final-actions">
+
+                                <h:inputHidden id="itemOrderInput"
+                                               value="#{cmsNavigationBean.menuItemList}" />
+
+                                <h:commandButton value="#{msg.save}"
+                                                 action="#{cmsNavigationBean.saveMenuItems}"
+                                                 styleClass="btn btn--success" />
+                            </div>
+                        </div>
 
 						<!-- SELECT THEME -->
 						<ui:fragment

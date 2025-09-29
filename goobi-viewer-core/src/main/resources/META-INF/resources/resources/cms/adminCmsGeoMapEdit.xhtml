@@ -198,6 +198,41 @@
 												</div>
 											
 											</div>
+											
+											<div class="form-group form-row">
+											
+												<!-- LABEL -->
+												<div class="col-2 control-label admin__form-label">
+													<label for="mapMarker">#{msg.cms__geomaps__heatmap__label}:</label>
+												</div>
+												
+												<div class="col-9 admin__form-input cms-module__option-control">
+													<div class="admin__radio-switch">
+											            <input type="radio" jsf:id="useHeatmap_no" pt:name="#{useHeatmap.clientId}"
+											                value="#{false}" pt:checked="#{featureSet.useHeatmap ? null : 'false'}"/>
+														<h:outputLabel for="useHeatmap_no" value="#{msg.no}" />
+											         	<input type="radio" jsf:id="useHeatmap_yes" pt:name="#{useHeatmap.clientId}"
+											         	    value="#{true}" pt:checked="#{featureSet.useHeatmap ? 'false' : null}"/>
+											         	<h:outputLabel for="useHeatmap_yes" value="#{msg.yes}" />
+														<h:inputHidden id="useHeatmap_input" binding="#{useHeatmap}" value="#{featureSet.useHeatmap}"
+									        				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
+											             <span class="toggle-outside"><span class="toggle-inside"></span></span>
+											         </div>
+										         	<!-- HELP TEXT -->
+													<div id="heatmapHelp" class="admin__form-help-text">#{msg.cms__geomaps__heatmap__help}</div>
+												</div>
+												
+												<!-- HELP BUTTON -->
+												<div class="col-1 admin__form-help-icon">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" 
+														aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
+												</div>
+											
+											</div>
+											
 
 										<!-- SOLR QUERY -->
 										<ui:fragment rendered="#{featureSet.queryResultSet}">
