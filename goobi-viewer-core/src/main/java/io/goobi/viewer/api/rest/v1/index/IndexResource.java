@@ -336,8 +336,8 @@ public class IndexResource {
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
             @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
             @Parameter(description = "The SOLR field to be used as label for each feature") @QueryParam("labelField") String labelField,
-            @Parameter(
-                    description = "The scope of documents to search in. One of 'RECORDS', 'DOCSTRUCTS' and 'METADATA'") @QueryParam("scope") String searchScope)
+            @Parameter(description = "The scope of documents to search in. "
+                    + "One of 'RECORDS', 'DOCSTRUCTS' and 'METADATA'") @QueryParam("scope") String searchScope)
             throws IndexUnreachableException, PresentationException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
