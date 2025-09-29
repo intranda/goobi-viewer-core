@@ -121,7 +121,7 @@
 		<jwks-rsa.version>0.23.0</jwks-rsa.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<jaxb-api.version>4.0.2</jaxb-api.version>
-		<jaxb-runtime.version>4.0.5</jaxb-runtime.version>
+		<jaxb-runtime.version>4.0.6</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<jersey.version>3.1.11</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
