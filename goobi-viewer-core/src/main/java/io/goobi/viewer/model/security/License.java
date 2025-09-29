@@ -28,8 +28,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -184,6 +186,9 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     @Transient
     private String type;
+    
+    @Transient
+    private String type2;
 
     @Transient
     private Set<String> privilegesCopy = new HashSet<>();
@@ -197,6 +202,9 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     @Transient
     private transient List<Selectable<CMSPageTemplate>> selectableTemplates = null;
 
+    @Transient
+    private boolean multiLicenseeMode = false;
+
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
      * license's start and and dates.
@@ -207,6 +215,12 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     public boolean isValid() {
         LocalDateTime now = LocalDateTime.now();
         return (start == null || start.isBefore(now)) && (end == null || end.isAfter(now));
+    }
+
+    public boolean isMultipleLicenseesSelected() {
+        return Stream.of(user, userGroup, ipRange, client)
+                .filter(Objects::nonNull)
+                .count() >= 2;
     }
 
     /**
@@ -936,6 +950,13 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     public void setType(String type) {
         this.type = type;
     }
+    
+    /**
+     * @param type2 the type2 to set
+     */
+    public void setType2(String type2) {
+        this.type2 = type2;
+    }
 
     /**
      * @return the privilegesCopy
@@ -993,5 +1014,17 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         return (this.getType() == null
                 || (this.getUser() == null && this.getUserGroup() == null && this.getIpRange() == null && this.getClient() == null)
                 || this.getLicenseType() == null) ? "disabled" : null;
+    }
+
+    /**
+     * @return the multiLicenseeMode
+     */
+    public boolean isMultiLicenseeMode() {
+        return multiLicenseeMode;
+    }
+
+    public void toggleMultiLicenseeMode() {
+        logger.trace("toggleMultiLicenseeMode");
+        multiLicenseeMode = !multiLicenseeMode;
     }
 }
