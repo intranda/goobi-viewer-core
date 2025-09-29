@@ -815,6 +815,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * @return the fulltextAccessPermission
      * @throws ViewerConfigurationException
+     * @should return true if access allowed for this page
+     * @should return false if access denied for this page
      */
     public Boolean isFulltextAccessPermission() {
         if (fulltextAccessPermission == null) {

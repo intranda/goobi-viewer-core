@@ -1760,7 +1760,7 @@ public class CmsBean implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<CMSNavigationItem> getNavigationMenuItems() {
-        logger.trace("getNavigationMenuItems");
+        // logger.trace("getNavigationMenuItems");
         if (navigationMenuItems == null) {
             try {
                 String mainTheme = DataManager.getInstance().getConfiguration().getTheme();

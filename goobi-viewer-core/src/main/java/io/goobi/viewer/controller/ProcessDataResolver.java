@@ -46,6 +46,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.Dataset;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -491,7 +492,7 @@ public class ProcessDataResolver {
         }
         TextResourceBuilder builder = new TextResourceBuilder();
         try {
-            return builder.getTeiDocument(pi, language);
+            return builder.getTeiDocument(pi, language, BeanUtils.getRequest());
         } catch (PresentationException | IndexUnreachableException | ContentLibException e) {
             logger.error(e.toString());
             return null;

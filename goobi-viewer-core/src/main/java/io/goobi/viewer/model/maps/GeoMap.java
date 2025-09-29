@@ -395,6 +395,7 @@ public class GeoMap implements Serializable {
         Map<Long, String> map = getFeatureSets().stream()
                 .filter(f -> f instanceof SolrFeatureSet)
                 .map(f -> (SolrFeatureSet) f)
+                .filter(f -> f.getId() != null)
                 .collect(Collectors.toMap(SolrFeatureSet::getId, f -> f.getItemFilter().getAsJson()));
         return new JSONObject(map).toString();
 

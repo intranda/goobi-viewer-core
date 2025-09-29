@@ -785,7 +785,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public boolean isHasTeiForLanguage(String language) {
         if (StringUtils.isNotEmpty(language)) {
             String key = SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase();
-            logger.trace("isHasTeiForLanguage: {}", key);
+            // logger.trace("isHasTeiForLanguage: {}", key);
             return getMetadataFields().containsKey(key);
         }
 
