@@ -117,10 +117,10 @@
 		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
 		<jakarta.websocket.version>2.2.0</jakarta.websocket.version>
 		<jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
+		<jakarta.xml.bind-api.version>4.0.4</jakarta.xml.bind-api.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
 		<jwks-rsa.version>0.23.0</jwks-rsa.version>
 		<jaxen.version>2.0.0</jaxen.version>
-		<jaxb-api.version>4.0.2</jaxb-api.version>
 		<jaxb-runtime.version>4.0.6</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<jersey.version>3.1.11</jersey.version>
@@ -433,7 +433,7 @@
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
-			<version>${jaxb-api.version}</version>
+			<version>${jakarta.xml.bind-api.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.auth0</groupId>
