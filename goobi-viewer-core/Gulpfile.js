@@ -161,12 +161,19 @@ function assertDirExists(label, dir) {
     }
 }
 
-/* Resolve once on load (we never auto-create deployment root) */
+/* Resolve once on load, assert lazily for tasks that require deployment */
 const {DEPLOYMENT_DIR, CORE_DIR, THEME_DIR} = (() => {
     const dirs = resolveDirs();
-    assertDirExists('DEPLOYMENT_DIR', dirs.DEPLOYMENT_DIR);
     return dirs;
 })();
+
+let deploymentDirChecked = false;
+function requireDeploymentDir() {
+    if (!deploymentDirChecked) {
+        assertDirExists('DEPLOYMENT_DIR', DEPLOYMENT_DIR);
+        deploymentDirChecked = true;
+    }
+}
 
 const homeDir = os.homedir();
 const prettyPath = (p) => (p ? toPosix(String(p).replace(homeDir, '~')) : '');
@@ -313,6 +320,7 @@ function logTask({
  * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
  */
 function buildStyles(changedFilePath = null) {
+    requireDeploymentDir();
     const started = process.hrtime.bigint();
     const lessEntryFile = path.join(paths.lessRoot, 'constructor.less');
 
@@ -377,6 +385,7 @@ function buildStyles(changedFilePath = null) {
  * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
  */
 function bundleViewerJS(changedFilePath = null) {
+    requireDeploymentDir();
     const started = process.hrtime.bigint();
     const outProj = path.resolve(paths.jsDistRoot, 'viewer.min.js');
     const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/viewer.min.js');
@@ -423,6 +432,7 @@ function bundleViewerJS(changedFilePath = null) {
  * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
  */
 function bundleStatisticsJS(changedFilePath = null) {
+    requireDeploymentDir();
     const started = process.hrtime.bigint();
     const outProj = path.resolve(paths.jsDistRoot, 'statistics.min.js');
     const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/statistics.min.js');
@@ -454,6 +464,7 @@ function bundleStatisticsJS(changedFilePath = null) {
  * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
  */
 function bundleBrowserSupportJS(changedFilePath = null) {
+    requireDeploymentDir();
     const started = process.hrtime.bigint();
     const outProj = path.resolve(paths.jsDistRoot, 'browsersupport.min.js');
     const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/browsersupport.min.js');
@@ -489,6 +500,7 @@ function bundleBrowserSupportJS(changedFilePath = null) {
  * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
  */
 function compileRiotTags(changedFilePath = null) {
+    requireDeploymentDir();
     const started = process.hrtime.bigint();
     const outProj = path.resolve(paths.jsDistRoot, 'riot-tags.js');
     const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/riot-tags.js');
@@ -530,7 +542,17 @@ function copyDependencies() {
 
     // JS
     depsPathsJS.forEach((def) => {
-        let s = gulp.src(def.src, {cwd: def.cwd, allowEmpty: true}).pipe(guard());
+        const srcOpts = {cwd: def.cwd, allowEmpty: true};
+        const resolvedCwd = def.cwd ? path.resolve(def.cwd) : null;
+        if (def.base) {
+            srcOpts.base = path.isAbsolute(def.base)
+                ? def.base
+                : (resolvedCwd ? path.resolve(resolvedCwd, def.base) : path.resolve(def.base));
+        } else if (resolvedCwd) {
+            srcOpts.base = resolvedCwd;
+        }
+
+        let s = gulp.src(def.src, srcOpts).pipe(guard());
         if (def.flatten) s = s.pipe(rename({dirname: ''}));
 
         const destNorm = toPosix(def.dest);
@@ -557,7 +579,17 @@ function copyDependencies() {
 
     // CSS
     depsPathsCSS.forEach((def) => {
-        let s = gulp.src(def.src, {cwd: def.cwd, allowEmpty: true}).pipe(guard());
+        const srcOpts = {cwd: def.cwd, allowEmpty: true};
+        const resolvedCwd = def.cwd ? path.resolve(def.cwd) : null;
+        if (def.base) {
+            srcOpts.base = path.isAbsolute(def.base)
+                ? def.base
+                : (resolvedCwd ? path.resolve(resolvedCwd, def.base) : path.resolve(def.base));
+        } else if (resolvedCwd) {
+            srcOpts.base = resolvedCwd;
+        }
+
+        let s = gulp.src(def.src, srcOpts).pipe(guard());
         if (def.flatten) s = s.pipe(rename({dirname: ''}));
         streams.push(
             s
@@ -593,6 +625,7 @@ function copyDependencies() {
  * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
  */
 function fullSync() {
+    requireDeploymentDir();
     const started = process.hrtime.bigint();
     let copied = 0;
 
@@ -680,6 +713,8 @@ function runMaven(cwd, goals = []) {
  * @returns {Promise<void>} Resolves when both Maven invocations complete.
  */
 async function java() {
+    assertDirExists('CORE_DIR', CORE_DIR);
+    assertDirExists('THEME_DIR', THEME_DIR);
     const tAll = process.hrtime.bigint();
     const coreMs = await runMaven(CORE_DIR, ['install']);
     const themeMs = await runMaven(THEME_DIR, ['package']);
@@ -702,6 +737,7 @@ async function java() {
  * Changes are rebuilt and mirrored into the deployment folder where applicable.
  */
 function watchMode() {
+    requireDeploymentDir();
     // JS bundles
     gulp
         .watch(joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'))
