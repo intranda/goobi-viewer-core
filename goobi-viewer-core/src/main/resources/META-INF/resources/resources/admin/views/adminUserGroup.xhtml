@@ -133,10 +133,11 @@
                                     <ui:repeat var="membership" value="#{adminBean.currentUserGroup.memberships.stream().filter(role -> role.user != adminBean.currentUserGroup.owner).toList()}">
                                         <!-- DELETE MEMBER -->
                                         <button
-                                            jsf:onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_removeMemberConfirmationText, membership.user.displayName, membership.userGroup.name)}&quot; ) ) { return false };"
                                             jsf:action="#{adminBean.deleteUserRoleAction(membership)}"
                                             title="#{msg.delete}"
-                                            class="btn btn--link form-row admin__group-member-delete admin__group-member-entry">
+                                            class="btn btn--link form-row admin__group-member-delete admin__group-member-entry"
+                                            data-require-confirmation="true"
+                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.userGroup_removeMemberConfirmationText, membership.user.displayName, membership.userGroup.name)}">
                                                 <div class="col-11">
                                                     <span class="admin__group-member-name">
                                                         #{membership.user.backendDisplayName}

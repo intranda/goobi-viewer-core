@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>pagestiled</name>
+	</jsfComponent>
+	<label>cms_component__pagestiled_label</label>
+	<description>cms_component__pagestiled_desc</description>
+	<type>cms_pages</type>
+	<content>
+		<item id="pagelist">
+			<label>cms_component__pagelist_label</label>
+			<description>cms_content__pagelist_desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>pagelist</name>
+			</jsfComponent>
+		</item>
+	</content>
+	<attribute name="random" display="false" boolean="true">
+		<value>false</value>
+	</attribute>
+</component>
