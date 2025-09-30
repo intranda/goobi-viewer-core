@@ -73,7 +73,7 @@
     "simplebar": "~6.3.0",
     "swagger-ui-dist": "~5.29.0",
     "sweetalert2": "~11.23.0",
-    "swiper": "~11.2.0",
+    "swiper": "~12.0.0",
     "three": "~0.132.2",
     "tinymce": "~5.10.0"
   },
