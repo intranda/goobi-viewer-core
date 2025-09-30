@@ -124,22 +124,26 @@ var cmsJS = ( function( cms ) {
             		case 'edit':
             			_bulkActionEdit();
             			break;
-            		case 'delete':
-            			var bulkDelete = confirm( _defaults.msg.bulkDeleteConfirm );
-            			
-            			if ( bulkDelete ) {
-            				$('#deleteSelectedItemsButton').click();
-            			}
-            			else {
-            				$( '#selectAllMediaItems' ).prop( 'checked', false );
-            				$( 'input[name*="selectMediaItem"]' ).each( function() {
-                    			$( this ).prop( 'checked', false );
-                    		} );
-            				$( this ).val( 'bulk' );
-            			}
-            			break;
-            	}
-            } );
+                    case 'delete':
+                        viewerJS.notifications.confirm(
+                            '',
+                            undefined,
+                            undefined,
+                            _defaults.msg.bulkDeleteConfirm
+                        )
+                        .then( () => {
+                            $( '#deleteSelectedItemsButton' ).click();
+                        } )
+                        .catch( () => {
+                            $( '#selectAllMediaItems' ).prop( 'checked', false );
+                            $( 'input[name*="selectMediaItem"]' ).each( function() {
+                                $( this ).prop( 'checked', false );
+                            } );
+                            $( '#bulkActionSelect' ).val( 'bulk' );
+                        } );
+                        break;
+                            }
+                        } );
 			
 			// switch file view
 			_adminCmsMediaGrid = sessionStorage.getItem( 'adminCmsMediaGrid' );
