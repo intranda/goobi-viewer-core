@@ -186,7 +186,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     @Transient
     private String type;
-    
+
     @Transient
     private String type2;
 
@@ -204,6 +204,18 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     @Transient
     private boolean multiLicenseeMode = false;
+
+    @Transient
+    private User user2;
+
+    @Transient
+    private UserGroup userGroup2;
+
+    @Transient
+    private IpRange ipRange2;
+
+    @Transient
+    private ClientApplication client2;
 
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
@@ -943,6 +955,13 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         }
         return type;
     }
+    
+    /**
+     * @return the type2
+     */
+    public String getType2() {
+        return type2;
+    } 
 
     /**
      * @param type the type to set
@@ -950,7 +969,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     public void setType(String type) {
         this.type = type;
     }
-    
+
     /**
      * @param type2 the type2 to set
      */
@@ -1026,5 +1045,71 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     public void toggleMultiLicenseeMode() {
         logger.trace("toggleMultiLicenseeMode");
         multiLicenseeMode = !multiLicenseeMode;
+    }
+
+    /**
+     * @return the user2
+     */
+    public User getUser2() {
+        return user2;
+    }
+
+    /**
+     * @param user2 the user2 to set
+     */
+    public void setUser2(User user2) {
+        this.user2 = user2;
+    }
+
+    /**
+     * @return the userGroup2
+     */
+    public UserGroup getUserGroup2() {
+        return userGroup2;
+    }
+
+    /**
+     * @param userGroup2 the userGroup2 to set
+     */
+    public void setUserGroup2(UserGroup userGroup2) {
+        this.userGroup2 = userGroup2;
+    }
+
+    /**
+     * @return the ipRange2
+     */
+    public IpRange getIpRange2() {
+        return ipRange2;
+    }
+
+    /**
+     * @param ipRange2 the ipRange2 to set
+     */
+    public void setIpRange2(IpRange ipRange2) {
+        this.ipRange2 = ipRange2;
+    }
+
+    /**
+     * @return the client2
+     */
+    public ClientApplication getClient2() {
+        return client2;
+    }
+
+    /**
+     * @param client2 the client2 to set
+     */
+    public void setClient2(ClientApplication client2) {
+        this.client2 = client2;
+    }
+    
+    /**
+     * @param clientId2 the clientId2 to set
+     * @throws DAOException
+     */
+    public void setClientId2(Long clientId2) throws DAOException {
+        if (clientId2 != null) {
+            this.client = DataManager.getInstance().getDao().getClientApplication(clientId2);
+        }
     }
 }

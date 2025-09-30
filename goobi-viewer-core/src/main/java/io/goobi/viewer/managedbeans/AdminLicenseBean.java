@@ -447,6 +447,8 @@ public class AdminLicenseBean implements Serializable {
             Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
             return "";
         }
+        
+        // TDO Validate combinations
 
         // Sync changes made to the privileges
         if (!currentLicense.getPrivileges().equals(currentLicense.getPrivilegesCopy())) {

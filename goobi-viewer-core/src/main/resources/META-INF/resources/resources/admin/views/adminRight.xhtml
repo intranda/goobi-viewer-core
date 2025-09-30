@@ -53,12 +53,18 @@
                                             <f:selectItem itemLabel="#{msg.admin__groups}" itemValue="group" />
                                             <f:selectItem itemLabel="#{msg.admin__ip_ranges}" itemValue="iprange" />
                                             <f:selectItem itemLabel="#{msg.admin__clients}" itemValue="client" />
-                                            <f:ajax render="licenseeGroup infoGroup licenseTypeGroup saveButtonGroup" />
+                                            <f:ajax render="licenseeGroup licenseeGroup2 licenseeTypeGroup2 infoGroup licenseTypeGroup saveButtonGroup" />
                                             <!-- Reset all set licensee values so that the lower menus are reset as well -->
                                             <f:ajax listener="#{adminLicenseBean.currentLicense.setUser(null)}" />
                                             <f:ajax listener="#{adminLicenseBean.currentLicense.setUserGroup(null)}" />
                                             <f:ajax listener="#{adminLicenseBean.currentLicense.setIpRange(null)}" />
                                             <f:ajax listener="#{adminLicenseBean.currentLicense.setClient(null)}" />
+                                            <!-- Reset all set secondary licensee values so that the lower menus are reset as well -->
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setType2(null)}" />
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setSecondUser(null)}" />
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setSecondUserGroup(null)}" />
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setSecondIpRange(null)}" />
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setSecondClient(null)}" />
                                         </h:selectOneMenu>
                                     </div>
                                 </div>
@@ -126,7 +132,7 @@
                                 
                                 <!-- LICENSEE SELECTION 2 -->
                                 <ui:fragment rendered="#{adminLicenseBean.currentLicense.multiLicenseeMode}">
-                                <div class="form-group form-row">
+                                <div id="licenseeTypeGroup2" class="form-group form-row">
                                     <div class="col-sm-4">
                                         <label for="currentLicense.type2" class="control-label">#{msg.admin__license_licensee_type_select_label}:</label>
                                     </div>
@@ -140,16 +146,20 @@
                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_type_select_label}" />
 
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
-                                            <f:selectItem itemLabel="#{msg.admin__users}" itemValue="user" />
-                                            <f:selectItem itemLabel="#{msg.admin__groups}" itemValue="group" />
-                                            <f:selectItem itemLabel="#{msg.admin__ip_ranges}" itemValue="iprange" />
-                                            <f:selectItem itemLabel="#{msg.admin__clients}" itemValue="client" />
+                                            <f:selectItem itemLabel="#{msg.admin__users}" itemValue="user"
+                                                itemDisabled="#{adminLicenseBean.currentLicense.type == 'user'}" />
+                                            <f:selectItem itemLabel="#{msg.admin__groups}" itemValue="group"
+                                                itemDisabled="#{adminLicenseBean.currentLicense.type == 'group'}" />
+                                            <f:selectItem itemLabel="#{msg.admin__ip_ranges}" itemValue="iprange"
+                                                itemDisabled="#{adminLicenseBean.currentLicense.type == 'iprange'}" />
+                                            <f:selectItem itemLabel="#{msg.admin__clients}" itemValue="client"
+                                                itemDisabled="#{adminLicenseBean.currentLicense.type == 'client'}" />
                                             <f:ajax render="licenseeGroup infoGroup licenseTypeGroup saveButtonGroup" />
                                             <!-- Reset all set licensee values so that the lower menus are reset as well -->
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setUser(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setUserGroup(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setIpRange(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setClient(null)}" />
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setSecondUser(null)}" />
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setSecondUserGroup(null)}" />
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setSecondIpRange(null)}" />
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setSecondClient(null)}" />
                                         </h:selectOneMenu>
                                     </div>
                                 </div>
@@ -160,8 +170,8 @@
                                      </div>
                                      <div class="col-sm-8">
                                          <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.type == 'user' or adminLicenseBean.currentLicense.user != null}"
-                                             value="#{adminLicenseBean.currentLicense.user}"
+                                             rendered="#{adminLicenseBean.currentLicense.type2 == 'user' or adminLicenseBean.currentLicense.user2 != null}"
+                                             value="#{adminLicenseBean.currentLicense.user2}"
                                              styleClass="form-control"
                                              immediate="true"
                                              converter="userConverter"
@@ -172,8 +182,8 @@
                                              <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.type == 'group' or adminLicenseBean.currentLicense.userGroup != null}"
-                                             value="#{adminLicenseBean.currentLicense.userGroup}"
+                                             rendered="#{adminLicenseBean.currentLicense.type2 == 'group' or adminLicenseBean.currentLicense.secondUserGroup != null}"
+                                             value="#{adminLicenseBean.currentLicense.userGroup2}"
                                              styleClass="form-control"
                                              immediate="true"
                                              converter="userGroupConverter"
@@ -184,8 +194,8 @@
                                              <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.type == 'iprange' or adminLicenseBean.currentLicense.ipRange != null}"
-                                             value="#{adminLicenseBean.currentLicense.ipRange}"
+                                             rendered="#{adminLicenseBean.currentLicense.type2 == 'iprange' or adminLicenseBean.currentLicense.ipRange2 != null}"
+                                             value="#{adminLicenseBean.currentLicense.ipRange2}"
                                              styleClass="form-control"
                                              immediate="true"
                                              converter="ipRangeConverter"
@@ -196,8 +206,8 @@
                                              <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.type == 'client' or adminLicenseBean.currentLicense.client != null}"
-                                             value="#{adminLicenseBean.currentLicense.clientId}"
+                                             rendered="#{adminLicenseBean.currentLicense.type2 == 'client' or adminLicenseBean.currentLicense.client2 != null}"
+                                             value="#{adminLicenseBean.currentLicense.clientId2}"
                                              styleClass="form-control"
                                              immediate="true"
                                              disabled="#{adminLicenseBean.currentLicense.id != null}">
