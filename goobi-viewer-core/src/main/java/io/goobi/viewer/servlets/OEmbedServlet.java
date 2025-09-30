@@ -182,7 +182,7 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
                 oembedResponse = new PhotoOEmbedResponse(rec);
             }
             ObjectMapper mapper = new ObjectMapper();
-            mapper.setSerializationInclusion(Include.NON_NULL);
+            mapper.setDefaultPropertyInclusion(Include.NON_NULL);
             String ret = mapper.writeValueAsString(oembedResponse);
             response.getWriter().write(ret);
         } catch (SocketException e) {
