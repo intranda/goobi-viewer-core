@@ -31,15 +31,19 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STREAM;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,9 +54,11 @@ import org.apache.solr.client.solrj.io.stream.TupleStream;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.omnifaces.el.functions.Arrays;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -62,14 +68,21 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
 import io.goobi.viewer.api.rest.model.index.SolrFieldInfo;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.JsonTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.maps.GeoMapFeature;
+import io.goobi.viewer.model.maps.GeoMapFeatureItem;
+import io.goobi.viewer.model.maps.SolrSearchScope;
+import io.goobi.viewer.model.maps.features.AbstractFeatureDataProvider;
+import io.goobi.viewer.model.maps.features.FeatureGenerator;
+import io.goobi.viewer.model.maps.features.IFeatureDataProvider;
+import io.goobi.viewer.model.maps.features.LabelCreator;
+import io.goobi.viewer.model.maps.features.MetadataDocument;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -105,6 +118,9 @@ import jakarta.ws.rs.core.StreamingOutput;
 public class IndexResource {
 
     private static final Logger logger = LogManager.getLogger(IndexResource.class);
+
+    //limits of hits per clickable marker. This does not affect the number of total hits found by the heatmap
+    private static final int MAX_RECORD_HITS = 50_000;
 
     @Context
     private HttpServletRequest servletRequest;
@@ -300,9 +316,10 @@ public class IndexResource {
 
             }
         }
+        String queryEscaped = StringTools.unescapeCriticalUrlChracters(finalQuery);
         String heatmap = DataManager.getInstance()
                 .getSearchIndex()
-                .getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);
+                .getHeatMap(solrField, wktRegion, queryEscaped, facetQuery, gridLevel);
         return heatmap;
 
     }
@@ -318,37 +335,103 @@ public class IndexResource {
                             + " the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
             @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
-            @Parameter(description = "The SOLR field to be used as label for each feature") @QueryParam("labelField") String labelField)
+            @Parameter(description = "The SOLR field to be used as label for each feature") @QueryParam("labelField") String labelField,
+            @Parameter(description = "The scope of documents to search in. "
+                    + "One of 'RECORDS', 'DOCSTRUCTS' and 'METADATA'") @QueryParam("scope") String searchScope)
             throws IndexUnreachableException, PresentationException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
-        String finalQuery = filterQuery;
+        String finalQuery = StringTools.unescapeCriticalUrlChracters(filterQuery);
         List<String> facetQueries = new ArrayList<>();
 
         if (StringUtils.isNotBlank(facetQuery)) {
             facetQueries.add(facetQuery);
         }
 
+        String coordQuery = "*:*";
         if (!finalQuery.startsWith("{!join")) {
             finalQuery =
                     new StringBuilder()
-                            .append(filterQuery)
+                            .append(finalQuery)
                             .append(" +({wktField}:{wktCoords}) ".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion))
                             .append(SearchHelper.getAllSuffixes(servletRequest, true, true))
                             .toString();
         } else {
-            String coordQuery = "{wktField}:{wktCoords}".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion);
+            coordQuery = "{wktField}:{wktCoords}".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion);
             facetQueries.add(coordQuery);
         }
 
-        List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
-        String objects =
-                new GeoCoordinateConverter(servletRequest).getFeaturesFromSolrQuery(finalQuery, facetQueries, coordinateFields, labelField, false)
-                        .stream()
-                        .map(GeoMapFeature::getJsonObject)
-                        .map(Object::toString)
-                        .collect(Collectors.joining(","));
+        Collection<GeoMapFeature> features =
+                createFeatures(StringUtils.isBlank(finalQuery) ? "*:*" : finalQuery, coordQuery, labelField, searchScope);
+
+        String objects = features
+                .stream()
+                .map(GeoMapFeature::getJsonObject)
+                .map(Object::toString)
+                .collect(Collectors.joining(","));
         return "[" + objects + "]";
+    }
+
+    protected synchronized Collection<GeoMapFeature> createFeatures(String query, String coordinateQuery, String labelConfig, String searchScope)
+            throws PresentationException, IndexUnreachableException {
+
+        String finalQuery = "+(%s) +(%s)".formatted(query, coordinateQuery);
+
+        LabelCreator markerLabels =
+                new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getMarkerMetadataList(labelConfig)));
+        LabelCreator itemLabels =
+                new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getItemMetadataList(labelConfig)));
+        List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
+
+        SolrSearchScope scope = SolrSearchScope.DOCSTRUCTS;
+        if (StringUtils.isNotBlank(searchScope) && Arrays.contains(SolrSearchScope.values(), searchScope.toUpperCase())) {
+            scope = SolrSearchScope.valueOf(searchScope.toUpperCase());
+        }
+
+        List<MetadataDocument> hits;
+        try {
+            IFeatureDataProvider queryGenerator =
+                    AbstractFeatureDataProvider.getDataProvider(scope,
+                            ListUtils.union(coordinateFields, ListUtils.union(markerLabels.getFieldsToQuery(), itemLabels.getFieldsToQuery())));
+            hits = queryGenerator.getResults(finalQuery, MAX_RECORD_HITS);
+        } catch (SolrException e) {
+            throw new IndexUnreachableException("SOLR communication failed:" + e.toString());
+        }
+        FeatureGenerator featureGenerator = new FeatureGenerator(coordinateFields, Collections.emptyList(), markerLabels, itemLabels);
+
+        Collection<GeoMapFeature> featuresFromSolr = new ArrayList<>();
+        for (MetadataDocument hit : hits) {
+            Collection<GeoMapFeature> features = featureGenerator.getFeatures(hit, scope);
+            featuresFromSolr.addAll(features);
+        }
+
+        Collection<GeoMapFeature> combinedFeatures = combineFeatures(featuresFromSolr);
+
+        return combinedFeatures;
+    }
+
+    private Collection<GeoMapFeature> combineFeatures(Collection<GeoMapFeature> singleFeatures) {
+        Map<GeoMapFeature, List<GeoMapFeature>> featureMap = singleFeatures.stream().collect(Collectors.groupingBy(Function.identity()));
+        Collection<GeoMapFeature> features = new ArrayList<>();
+        for (Entry<GeoMapFeature, List<GeoMapFeature>> entry : featureMap.entrySet()) {
+            GeoMapFeature feature = entry.getKey();
+            Collection<GeoMapFeatureItem> items = entry.getValue().stream().flatMap(f -> f.getItems().stream()).toList();
+            feature.setItems(items);
+            feature.setCount(items.size());
+            if (feature.getItems().size() == 1) {
+                feature.getItems().stream().findAny().map(item -> item.getLink()).ifPresent(link -> feature.setLink(link));
+            }
+            features.add(feature);
+        }
+        return features;
+    }
+
+    public String getMarkerMetadataList(String config) {
+        return DataManager.getInstance().getConfiguration().getMetadataListForGeomapMarkerConfig(config);
+    }
+
+    public String getItemMetadataList(String config) {
+        return DataManager.getInstance().getConfiguration().getMetadataListForGeomapItemConfig(config);
     }
 
     private static Optional<JSONArray> getFacetResults(QueryResponse response) {

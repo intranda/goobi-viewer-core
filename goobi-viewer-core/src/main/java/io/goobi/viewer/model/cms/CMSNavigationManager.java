@@ -28,7 +28,6 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -196,7 +195,7 @@ public class CMSNavigationManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public final List<CMSNavigationItem> loadVisibleItems() throws DAOException {
-        List<CMSNavigationItem> daoList = loadItemsFromDatabase().stream().collect(Collectors.toList());
+        List<CMSNavigationItem> daoList = loadItemsFromDatabase().stream().toList();
         daoList = cloneItemHierarchy(daoList);
         setVisibleItems(daoList);
         logger.trace("visible items: {}", visibleItems.size());
@@ -229,16 +228,13 @@ public class CMSNavigationManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSNavigationItem> loadItemsFromDatabase() throws DAOException {
-        String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
-        // logger.trace("main theme: {}", mainTheme); //NOSONAR Debug
         // logger.trace("associated theme: {}", getAssociatedTheme()); //NOSONAR Debug
         return DataManager.getInstance()
                 .getDao()
                 .getAllTopCMSNavigationItems()
                 .stream()
-                .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(getAssociatedTheme()))
-                        || getAssociatedTheme().equalsIgnoreCase(item.getAssociatedTheme()))
-                .collect(Collectors.toList());
+                .filter(item -> getAssociatedTheme().equalsIgnoreCase(item.getAssociatedTheme()))
+                .toList();
     }
 
     /**

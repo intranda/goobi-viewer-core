@@ -68,6 +68,7 @@ import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
@@ -75,10 +76,13 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.UncheckedPresentationException;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
@@ -98,9 +102,9 @@ public class TextResourceBuilder {
         //
     }
 
-    public String getFulltext(String pi)
+    public String getFulltext(String pi, HttpServletRequest request)
             throws IOException, PresentationException, IndexUnreachableException {
-        Map<Path, String> map = this.getFulltextMap(pi);
+        Map<Path, String> map = this.getFulltextMap(pi, request);
         StringBuilder sb = new StringBuilder();
         for (String pageText : map.values()) {
             sb.append(pageText).append("\n\n");
@@ -111,13 +115,14 @@ public class TextResourceBuilder {
     /**
      * 
      * @param pi
+     * @param request {@link HttpServletRequest}
      * @return {@link StreamingOutput}
      * @throws IOException
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws ContentLibException
      */
-    public StreamingOutput getFulltextAsZip(String pi)
+    public StreamingOutput getFulltextAsZip(String pi, HttpServletRequest request)
             throws IOException, PresentationException, IndexUnreachableException, ContentLibException {
         logger.trace("getFulltextAsZip: {}", pi);
         String filename = pi + "_plaintext.zip";
@@ -128,7 +133,7 @@ public class TextResourceBuilder {
         // Fallback if no plaintext files found
         File tempFolder = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_fulltext_" + System.currentTimeMillis());
         tempFolder.mkdir();
-        Map<Path, String> map = this.getFulltextMap(pi);
+        Map<Path, String> map = this.getFulltextMap(pi, request);
         List<Path> tempFiles = new ArrayList<>();
         for (Entry<Path, String> entry : map.entrySet()) {
             String text = entry.getValue();
@@ -153,20 +158,24 @@ public class TextResourceBuilder {
 
     }
 
-    public StreamingOutput getAltoAsZip(String pi)
+    public StreamingOutput getAltoAsZip(String pi, HttpServletRequest request)
             throws IOException, PresentationException, IndexUnreachableException, ContentLibException {
-        String filename = pi + "_alto.zip";
+        String zipFileName = pi + "_alto.zip";
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder();
-        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null);
-        return writeZipFile(files, filename);
+        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null, request);
+        
+        List<Path> filteredFiles = new ArrayList<>();
+        
+
+        return writeZipFile(files, zipFileName);
     }
 
-    public String getAltoDocument(String pi)
+    public String getAltoDocument(String pi, HttpServletRequest request)
             throws IOException, PresentationException, IndexUnreachableException {
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder();
-        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null);
+        List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null, request);
 
         StringBuilder sb = new StringBuilder();
         for (Path path : files) {
@@ -255,13 +264,14 @@ public class TextResourceBuilder {
      * 
      * @param pi
      * @param langCode
+     * @param request {@link HttpServletRequest}
      * @return TEI document as {@link String}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws IOException
      * @throws ContentLibException
      */
-    public String getTeiDocument(String pi, String langCode)
+    public String getTeiDocument(String pi, String langCode, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
 
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
@@ -279,13 +289,13 @@ public class TextResourceBuilder {
                 logger.error(e.getMessage(), e);
             }
         } else {
-            // All full-text pages as TEI
+            // All full-text pages as TEI (permission check for each page required)
             SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
             if (solrDoc == null) {
                 throw new ContentNotFoundException(EXCEPTION_NO_DOCUMENT_FOUND + pi);
             }
 
-            Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
+            Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi, request);
             if (fulltexts.isEmpty()) {
                 throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
             }
@@ -317,13 +327,14 @@ public class TextResourceBuilder {
      * 
      * @param pi
      * @param langCode
+     * @param request {@link HttpServletRequest}
      * @return {@link StreamingOutput}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws IOException
      * @throws ContentLibException
      */
-    public StreamingOutput getTeiAsZip(String pi, String langCode)
+    public StreamingOutput getTeiAsZip(String pi, String langCode, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
 
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
@@ -343,7 +354,7 @@ public class TextResourceBuilder {
             throw new ContentNotFoundException(EXCEPTION_NO_DOCUMENT_FOUND + pi);
         }
 
-        Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
+        Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi, request);
         if (fulltexts.isEmpty()) {
             throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
@@ -466,16 +477,18 @@ public class TextResourceBuilder {
      * converted ALTO.
      *
      * @param pi a {@link java.lang.String} object.
+     * @param request {@link HttpServletRequest}
      * @return a {@link java.util.Map} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should prioritize plaintext files over alto
      */
-    public Map<java.nio.file.Path, String> getFulltextMap(String pi) throws IOException, PresentationException, IndexUnreachableException {
+    public Map<java.nio.file.Path, String> getFulltextMap(String pi, HttpServletRequest request)
+            throws IOException, PresentationException, IndexUnreachableException {
         Map<java.nio.file.Path, String> ret = new TreeMap<>();
         List<java.nio.file.Path> fulltextFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder(),
-                DataManager.getInstance().getConfiguration().getFulltextFolder(), "(i?).*\\.txt");
+                DataManager.getInstance().getConfiguration().getFulltextFolder(), "(i?).*\\.txt", request);
 
         Map<java.nio.file.Path, String> fileMapFromPlaintext = null;
         if (!fulltextFiles.isEmpty()) {
@@ -492,7 +505,7 @@ public class TextResourceBuilder {
 
         Map<java.nio.file.Path, String> fileMapFromAlto = null;
         List<java.nio.file.Path> altoFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getAltoFolder(),
-                DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)");
+                DataManager.getInstance().getConfiguration().getAltoFolder(), "(i?).*\\.(alto|xml)", request);
         if (!altoFiles.isEmpty()) {
             logger.debug("Converting ALTO files from {}", altoFiles.get(0).getParent().toAbsolutePath());
             fileMapFromAlto = altoFiles.stream()
@@ -544,13 +557,13 @@ public class TextResourceBuilder {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    private static List<java.nio.file.Path> getFiles(String pi, String foldername, String altFoldername, String filter)
+    private static List<java.nio.file.Path> getFiles(String pi, String foldername, String altFoldername, String filter, HttpServletRequest request)
             throws IOException, PresentationException, IndexUnreachableException {
 
         java.nio.file.Path folder1 = DataFileTools.getDataFilePath(pi, foldername, null, null);
         java.nio.file.Path folder2 = DataFileTools.getDataFilePath(pi, altFoldername, null, null);
 
-        return getFiles(folder1, folder2, filter);
+        return getFiles(folder1, folder2, filter, request);
     }
 
     /**
@@ -561,17 +574,32 @@ public class TextResourceBuilder {
      * @param folder a {@link java.nio.file.Path} object.
      * @param altFolder a {@link java.nio.file.Path} object.
      * @param filter a {@link java.lang.String} object.
+     * @param request {@link HttpServletRequest}
      * @return a {@link java.util.List} object.
      * @throws java.io.IOException if any.
      */
-    private static List<java.nio.file.Path> getFiles(java.nio.file.Path folder, java.nio.file.Path altFolder, String filter) throws IOException {
+    private static List<java.nio.file.Path> getFiles(java.nio.file.Path folder, java.nio.file.Path altFolder, String filter,
+            HttpServletRequest request) throws IOException {
 
         List<java.nio.file.Path> files = new ArrayList<>();
 
         if (folder != null && Files.isDirectory(folder)) {
             try (Stream<java.nio.file.Path> paths = Files.list(folder)
                     .filter(p -> p.getFileName().toString().toLowerCase().matches(StringUtils.isBlank(filter) ? ".*" : filter))
+                    .filter(p -> {
+                        try {
+                            return AccessConditionUtils
+                                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null,
+                                            p.getParent().getFileName().toString(), p.getFileName().toString(),
+                                            IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request))
+                                    .isGranted();
+                        } catch (IndexUnreachableException | DAOException e) {
+                            logger.error(e.getMessage());
+                            return false;
+                        }
+                    })
                     .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))) {
+
                 files = paths.toList();
             }
         }
@@ -579,6 +607,18 @@ public class TextResourceBuilder {
         if (altFolder != null && Files.isDirectory(altFolder)) {
             try (Stream<java.nio.file.Path> paths = Files.list(altFolder)
                     .filter(p -> p.getFileName().toString().toLowerCase().matches(StringUtils.isBlank(filter) ? ".*" : filter))
+                    .filter(p -> {
+                        try {
+                            return AccessConditionUtils
+                                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null,
+                                            p.getParent().getFileName().toString(), p.getFileName().toString(),
+                                            IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request))
+                                    .isGranted();
+                        } catch (IndexUnreachableException | DAOException e) {
+                            logger.error(e.getMessage());
+                            return false;
+                        }
+                    })
                     .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))) {
                 List<java.nio.file.Path> altFiles = paths.toList();
 

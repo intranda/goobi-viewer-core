@@ -350,7 +350,7 @@ public class RecordResource {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
         TextResourceBuilder b = new TextResourceBuilder();
-        return b.getFulltext(pi);
+        return b.getFulltext(pi, servletRequest);
     }
 
     @GET
@@ -367,7 +367,7 @@ public class RecordResource {
             servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
         }
 
-        return builder.getFulltextAsZip(pi);
+        return builder.getFulltextAsZip(pi, servletRequest);
     }
 
     @GET
@@ -379,7 +379,7 @@ public class RecordResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        return builder.getAltoDocument(pi);
+        return builder.getAltoDocument(pi, servletRequest);
     }
 
     @GET
@@ -394,7 +394,7 @@ public class RecordResource {
             servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
         }
 
-        return builder.getAltoAsZip(pi);
+        return builder.getAltoAsZip(pi, servletRequest);
     }
 
     @GET
@@ -428,7 +428,7 @@ public class RecordResource {
         }
 
         return builder.getTeiDocument(pi,
-                language == null ? servletRequest.getLocale().getLanguage() : StringTools.stripPatternBreakingChars(language));
+                language == null ? servletRequest.getLocale().getLanguage() : StringTools.stripPatternBreakingChars(language), servletRequest);
     }
 
     @GET
@@ -442,7 +442,7 @@ public class RecordResource {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
-        return builder.getTeiDocument(pi, servletRequest.getLocale().getLanguage());
+        return builder.getTeiDocument(pi, servletRequest.getLocale().getLanguage(), servletRequest);
     }
 
     @GET
@@ -460,7 +460,8 @@ public class RecordResource {
             servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
         }
 
-        return builder.getTeiAsZip(pi, language == null ? servletRequest.getLocale().getLanguage() : StringTools.stripPatternBreakingChars(language));
+        return builder.getTeiAsZip(pi, language == null ? servletRequest.getLocale().getLanguage() : StringTools.stripPatternBreakingChars(language),
+                servletRequest);
     }
 
     /**

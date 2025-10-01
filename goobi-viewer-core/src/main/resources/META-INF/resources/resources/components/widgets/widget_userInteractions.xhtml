@@ -121,8 +121,13 @@
                                 <ui:fragment rendered="#{activeDocumentBean.clearCacheMode != null and activeDocumentBean.clearCacheMode != ''}">
                                     <div class="widget-user-interactions__clear-cache-action">
                                         <h:commandLink styleClass="btn btn--default" role="button"
-                                            onclick="if ( !confirm( &quot;#{msg['cache_clear__confirmation_text_'.concat(activeDocumentBean.clearCacheMode)]}&quot; ) ) { return false };"
                                             action="#{activeDocumentBean.clearCacheAction}">
+                                            <f:passThroughAttribute
+                                                name="data-require-confirmation"
+                                                value="true" />
+                                            <f:passThroughAttribute
+                                                name="data-confirmation-text"
+                                                value="#{msg['cache_clear__confirmation_text_'.concat(activeDocumentBean.clearCacheMode)]}" />
                                             #{msg.cache_clear__button}
                                         </h:commandLink>
                                     </div>
@@ -169,8 +174,13 @@
                                 <ui:fragment rendered="#{activeDocumentBean.deleteRecordKeepTrace != null}">
                                     <div class="widget-user-interactions__delete-record-action has-urn">
                                         <h:commandLink styleClass="btn btn--danger" role="button"
-                                            onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };"
                                             action="#{activeDocumentBean.deleteRecordAction(activeDocumentBean.deleteRecordKeepTrace)}">
+                                            <f:passThroughAttribute
+                                                name="data-require-confirmation"
+                                                value="true" />
+                                            <f:passThroughAttribute
+                                                name="data-confirmation-text"
+                                                value="#{msg.deleteRecord_confirmationText}" />
                                             #{msg.button__delete}
                                         </h:commandLink>
                                     </div>
