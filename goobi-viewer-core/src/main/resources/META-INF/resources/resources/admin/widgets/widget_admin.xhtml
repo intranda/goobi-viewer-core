@@ -1,5 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
@@ -19,22 +20,27 @@
                         <li class="#{navigationHelper.currentPage == 'adminUsers' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminUser' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUsers')}/">
-                                <i class="fa fa-user" aria-hidden="true"></i>
-                                <span>#{msg.admin__users}</span>
+                                <util:icon-text icon="user"
+                                                text="#{msg.admin__users}"
+                                                styleClass="icon-text--nav"/>
                             </h:outputLink>
                         </li>
                         <li class="#{navigationHelper.currentPage == 'adminUserGroups' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminUserGroup' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminUserGroups')}/">
-                                <i class="fa fa-users" aria-hidden="true"></i>
-                                <span>#{msg.admin__groups}</span>
+                                <util:icon-text
+                                    icon="users"
+                                    text="#{msg.admin__groups}"
+                                    styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>
                         <li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminIpRange' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRanges')}/">
-                                <i class="fa fa-bolt" aria-hidden="true"></i>
-                                <span>#{msg.admin__ip_ranges}</span>
+                                <util:icon-text
+                                    icon="bolt"
+                                    text="#{msg.admin__ip_ranges}"
+                                    styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>
 						<li class="admin-widget__clients-link #{navigationHelper.currentPage == 'adminClients' ? 'active' : ''}">
@@ -42,8 +48,10 @@
 								value="#{adminClientsBean.notConfiguredClients}"
 								var="notConfiguredClients"></c:set> <h:outputLink
 								value="#{navigationHelper.getPageUrl('adminClients')}/">
-								<i class="fa fa-desktop" aria-hidden="true"></i>
-								<span>#{msg.admin__clients__title}</span>
+								<util:icon-text
+									icon="device-desktop"
+									text="#{msg.admin__clients__title}"
+									styleClass="icon-text--nav" />
 								<ui:fragment rendered="#{not empty notConfiguredClients}">
 									<span class="admin-widget__counter" data-toggle="tooltip" title="#{msg.admin__clients__tooltip_not_configured}">#{notConfiguredClients.size()}</span>
 								</ui:fragment>
@@ -52,8 +60,10 @@
 						<li class="admin-widget__licences-link #{navigationHelper.currentPage == 'adminLicenseType' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminLicenseTypes')}/">
-                                <i class="fa fa-key" aria-hidden="true"></i>
-                                <span>#{msg.admin__licenses}</span>
+                                <util:icon-text
+                                    icon="key"
+                                    text="#{msg.admin__licenses}"
+                                    styleClass="icon-text--nav" />
                                 <ui:fragment rendered="#{fn:length(adminLicenseBean.notConfiguredAccessConditions) gt 0}">
                             	   <span data-toggle="tooltip" title="#{msg.admin__licenses__tooltip_not_configured}" class="admin-widget__counter">#{fn:length(adminLicenseBean.notConfiguredAccessConditions)}</span>
                             	</ui:fragment>
@@ -64,8 +74,10 @@
                         <li class="#{navigationHelper.currentPage == 'adminRights' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminRight' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminRights')}/">
-                                <i class="fa fa-lock" aria-hidden="true"></i>
-                                <span>#{msg.admin__rights}</span>
+                                <util:icon-text
+                                    icon="lock"
+                                    text="#{msg.admin__rights}"
+                                    styleClass="icon-text--nav" />
                                 <ui:fragment rendered="#{adminLicenseBean.downloadTicketRequests.size() gt 0 and adminLicenseBean.downloadTicketRequests.size() le 99}">
 									<span data-toggle="tooltip" title="#{msg.admin__rights__download_tickets_tooltip}" class="admin-widget__counter">#{adminLicenseBean.downloadTicketRequests.size()}</span>
 								</ui:fragment>
@@ -80,60 +92,78 @@
                                      navigationHelper.currentPage == 'adminUserComments' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminUserCommentGroupAll' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminUserCommentGroups')}/">
-                                <i class="fa fa-comments" aria-hidden="true"></i>
-                                <span>#{msg.admin__comments}</span>
+                                <util:icon-text
+                                    icon="message-circle-user"
+                                    text="#{msg.admin__comments}"
+                                    styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>
                     <ui:fragment rendered="#{userBean.admin}">
                         <li class="#{navigationHelper.currentPage == 'adminCreateRecord' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminCreateRecord')}/">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                <span>#{msg.admin__create_record__link}</span>
+                                <util:icon-text
+                                    icon="plus"
+                                    text="#{msg.admin__create_record__link}"
+                                    styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>
                         <ui:fragment rendered="#{adminBean.hasAccessPermissingForTranslationFiles}">
                             <li class="admin-widget__translations-link #{navigationHelper.currentPage == 'adminTranslations' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminTranslations')}/">
-                                    <i class="fa fa-exchange" aria-hidden="true"></i>
-                                    <span>#{msg.admin__translations__link}</span>
+                                    <util:icon-text
+                                        icon="arrows-exchange"
+                                        text="#{msg.admin__translations__link}"
+                                        styleClass="icon-text--nav" />
                                     <ui:fragment rendered="#{adminBean.configuredTranslationGroupsCount gt 0}">
                                 	    <span data-toggle="tooltip" title="#{msg.admin__translations__tooltip_count}" class="admin-widget__counter">#{adminBean.configuredTranslationGroupsCount}</span>
 								    </ui:fragment>
                                     <ui:fragment rendered="#{!adminBean.hasAccessPermissingForTranslationFiles}">
-                                        <span data-toggle="tooltip" title="#{msg.admin__translations__tooltip_no_access}" class="admin-widget__counter -redMark"><i class="fa fa-exclamation" aria-hidden="true"></i></span>
+                                        <span data-toggle="tooltip" title="#{msg.admin__translations__tooltip_no_access}" class="admin-widget__counter -redMark">
+                                            <util:icon icon="exclamation-mark" />
+                                        </span>
 								    </ui:fragment>
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
                         <li class="#{navigationHelper.currentPage == 'adminThemes' ? 'active' : ''}">
                              <h:outputLink value="#{request.contextPath}/admin/themes/">
-                                <i class="fa fa-paint-brush" aria-hidden="true"></i>
-                                <span>#{msg.admin__themes__title}</span>
+                                <util:icon-text
+                                    icon="brush"
+                                    text="#{msg.admin__themes__title}"
+                                    styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>
                         <ui:fragment rendered="#{configurationBean.configEditorEnabled}">
                             <li class="#{navigationHelper.currentPage == 'adminConfigEditor' ? 'active' : ''}">
                                 <h:outputLink value="#{request.contextPath}/admin/config/">
-                                    <i class="fa fa-code" aria-hidden="true"></i>
-                                    <span>#{msg.admin__config_editor__title}</span>
+                                    <util:icon-text
+                                        icon="code"
+                                        text="#{msg.admin__config_editor__title}"
+                                        styleClass="icon-text--nav" />
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
                         
                         <li  class="#{navigationHelper.currentPage == 'adminMessageQueue' ? 'active' : ''}">
                             <h:outputLink id="widgetAdminTasksLink" value="#{navigationHelper.getPageUrl('adminMessageQueue')}/">
-                                <i class="fa fa-spinner" aria-hidden="true"></i>
-                                <span>#{msg.admin__tasks__title}</span>
+                                <util:icon-text
+                                    icon="loader"
+                                    text="#{msg.admin__tasks__title}"
+                                    styleClass="icon-text--nav" />
                                     <ui:fragment rendered="#{messageQueueBean.paused or quartzBean.paused}">
-                                        <span data-toggle="tooltip" title="#{msg.admin__tasks__tooltip_queue_not_running}" class="admin-widget__counter"><i class="fa fa-exclamation" aria-hidden="true"></i></span>
+                                        <span data-toggle="tooltip" title="#{msg.admin__tasks__tooltip_queue_not_running}" class="admin-widget__counter">
+                                            <util:icon icon="exclamation-mark" />
+                                        </span>
 								    </ui:fragment>
                             </h:outputLink>
                         </li>
                         
                         <li  class="#{navigationHelper.currentPage == 'adminMaintenanceMode' ? 'active' : ''}">
                             <h:outputLink value="#{request.contextPath}/admin/maintenance/">
-                                <i class="fa fa-coffee" aria-hidden="true"></i>
-                                <span>#{msg.admin__maintenance_mode__title}</span>
+                                <util:icon-text
+                                    icon="mug"
+                                    text="#{msg.admin__maintenance_mode__title}"
+                                    styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>   
                     </ui:fragment>

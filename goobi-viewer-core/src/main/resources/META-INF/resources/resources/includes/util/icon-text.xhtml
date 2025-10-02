@@ -1,0 +1,16 @@
+<ui:component
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:util="http://goobi.io/util"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <c:set var="wrapperClass" value="icon-text#{styleClass != null ? ' ' : ''}#{styleClass}" />
+
+    <span class="#{wrapperClass}">
+        <util:icon
+            icon="#{icon}"
+            filled="#{filled}"
+            styleClass="#{iconClass}" />
+        <span class="#{textClass}">#{text}</span>
+    </span>
+</ui:component>
