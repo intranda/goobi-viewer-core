@@ -2,6 +2,44 @@
    Icons
    style declarations for icons used in viewer
    ==============================================================*/
+.icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    vertical-align: middle;
+
+    svg {
+        width: 18px;
+        height: 18px;
+        color: currentColor;
+        fill: currentColor;
+    }
+}
+
+.icon-text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    vertical-align: middle;
+    gap: 8px;
+
+    .icon-wrapper {
+        svg {
+            width: 18px;
+            height: 18px;
+            transform: none;
+        }
+    }
+}
+
+.icon-text--nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+}
+
 .icon-totop {
     display: none;
     position: fixed;
