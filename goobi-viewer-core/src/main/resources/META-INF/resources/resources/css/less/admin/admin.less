@@ -3344,10 +3344,6 @@ html[lang="es"] .admin__radio-switch {
 			display: none;
 		}
 
-		&__topbar-frontend {
-			display: none;
-		}
-
 		&__topbar-backend-view-frontend-link-text {
 			display: none;
 		}
@@ -3373,6 +3369,17 @@ html[lang="es"] .admin__radio-switch {
 		&__topbar-backend-dropdown {
 			right: 0;
 			left: unset;
+		}
+
+		&__topbar-backend .-dropdown>ul,
+		&__topbar-backend .-dropdown>form>ul,
+		&__topbar-frontend .-dropdown>ul,
+		&__topbar-frontend .-dropdown>form>ul {
+			right: auto;
+			left: 0;
+			top: 100%;
+			margin: 0;
+			min-width: 20rem;
 		}
 
 		&__boxed-entry {
