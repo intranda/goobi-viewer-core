@@ -1119,10 +1119,6 @@
 				<configuration>
 					<doclint>none</doclint>
 					<failOnWarnings>true</failOnWarnings>
-					<!-- Specifies the tags to be fixed automatically when running the mvn javadox:fix command, see:
-						 https://maven.apache.org/plugins/maven-javadoc-plugin/fix-mojo.html#fixTags
-					-->
-					<fixTags>link,throws,return,param</fixTags>
 					<tags>
 						<tag>
 							<!-- Disables custom @should tag in Javadoc see:
@@ -1239,7 +1235,6 @@
 				<configuration>
 					<doclint>none</doclint>
 					<failOnWarnings>true</failOnWarnings>
-					<fixTags>link,throws,return,param</fixTags>
 					<tags>
 						<tag>
 							<name>should</name>
