@@ -531,9 +531,22 @@ const depsPathsCSS = [
   },
 ]
 
+const tablerIconSources = [
+  {
+    variant: 'outline',
+    src: `${nodeModules}@tabler/icons/icons/outline/**/*.svg`,
+    base: `${nodeModules}@tabler/icons/icons/outline/`
+  },
+  {
+    variant: 'filled',
+    src: `${nodeModules}@tabler/icons/icons/filled/**/*.svg`,
+    base: `${nodeModules}@tabler/icons/icons/filled/`
+  }
+];
+
 
 module.exports = {
   depsPathsJS,
-  depsPathsCSS
+  depsPathsCSS,
+  tablerIconSources
 }
-
