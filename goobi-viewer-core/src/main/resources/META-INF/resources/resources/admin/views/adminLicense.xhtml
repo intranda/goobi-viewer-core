@@ -25,6 +25,7 @@
                             <h1 class="admin__title">
                                 <h:outputText value="#{msg.admin__license_new}"  rendered="#{adminLicenseBean.currentLicenseType.id == null}" />
                                 <h:outputText value="#{msg.admin__license_edit}" rendered="#{adminLicenseBean.currentLicenseType.id != null}" />
+                                test123
                             </h1>
                         </div>
                         
@@ -58,7 +59,7 @@
                             <!-- FUNCTIONS -->
                             <h2>#{msg.admin__license_functions}</h2>
                             <div class="admin__default-block pb-0">
-                            	<div class="#{adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="exclusive">
+                            	<div class="#{adminLicenseBean.currentLicenseType.accessTicketRequired or adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="exclusive">
 	                                <div class="form-group form-row mb-3">
 	                                    <div class="col-2 control-label admin__form-label">
 	                                        <span>#{msg.openAccess}:</span>
@@ -74,7 +75,7 @@
 								</div>
 
                                 <!-- MOVING WALL -->
-                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="keepFunctions">
+                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.accessTicketRequired or adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="keepFunctions">
 	                                <div class="form-group form-row">
 	                                    <div class="col-2 control-label admin__form-label">
 	                                        <span>#{msg.movingWall}:</span>
@@ -97,7 +98,7 @@
                                 </div>
                                 
                                 <!-- ACCESS TICKET -->
-                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="keepFunctions">
+                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="keepFunctions">
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
                                             <span>#{msg.admin__license_ticket_required_label}:</span>
@@ -121,7 +122,7 @@
                                 
                                 <!-- REDIRECT TO PAGE -->
                                 <h:panelGroup layout="block" id="urlInputGroup">
-                                <div class="#{adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}" data-watched-element="exclusiveAndInput">
+                                <div class="#{adminLicenseBean.currentLicenseType.accessTicketRequired or adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}" data-watched-element="exclusiveAndInput">
 	                                <div class="form-group form-row admin__license-functions mb-0">
 	                                    <div class="col-2 control-label admin__form-label">
 	                                        <span>#{msg.admin__license_functions_redirect}:</span>
