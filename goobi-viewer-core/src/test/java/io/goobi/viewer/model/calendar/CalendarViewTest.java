@@ -37,7 +37,7 @@ class CalendarViewTest extends AbstractSolrEnabledTest {
     @Test
     void isDisplay_shouldReturnTrueIfNumerOfItemsSuffient() throws Exception {
         CalendarView cv = new CalendarView("168714434_1805", "168714434", null, null);
-        Assertions.assertFalse(cv.isDisplay());
+        Assertions.assertTrue(cv.isDisplay());
     }
 
     /**
