@@ -2507,10 +2507,8 @@ public class ViewManager implements Serializable {
     /**
      * 
      * @return true if a download ticket requirement is present and not yet satisfied; false otherwise
-     * @throws IndexUnreachableException
-     * @throws DAOException
      */
-    public boolean isRecordAccessTicketRequired() throws IndexUnreachableException, DAOException {
+    public boolean isRecordAccessTicketRequired() {
         logger.trace("isRecordAccessTicketRequired: {}", recordAccessTicketRequired); //NOSONAR Debug
 
         // If license requires a download ticket, check agent session for loaded ticket

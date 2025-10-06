@@ -36,6 +36,7 @@ import org.jboss.weld.serialization.spi.helpers.SerializableContextualInstance;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.BookmarkBean;
@@ -754,5 +755,15 @@ public final class BeanUtils {
         getBeanFromSession(session, "cmsBean", CmsBean.class)
                 .ifPresentOrElse(CmsBean::resetNavigationMenuItems,
                         () -> logger.trace("Cannot reset navigation menu items. Not instantiated yet?"));
+        // Unload current record to reset permissions
+        getBeanFromSession(session, "activeDocumentBean", ActiveDocumentBean.class)
+                .ifPresentOrElse(t -> {
+                    try {
+                        t.reset();
+                    } catch (IndexUnreachableException e) {
+                        logger.error(e.getMessage());
+                    }
+                },
+                        () -> logger.trace("Cannot reset loaded record. Not instantiated yet?"));
     }
 }
