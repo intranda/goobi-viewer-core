@@ -319,6 +319,8 @@ public final class BeanUtils {
      * @param name a {@link java.lang.String} object.
      * @param clazz a {@link java.lang.Class} object.
      * @return a {@link java.lang.Object} object.
+     * @should throw IllegalArgumentException if named bean of different class
+     * @should throw IllegalStateException if named bean of different class
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Object getBeanByName(String name, Class clazz) {
@@ -329,12 +331,8 @@ public final class BeanUtils {
                 CreationalContext ctx = bm.createCreationalContext(bean);
                 return bm.getReference(bean, clazz, ctx);
             }
-        } catch (NullPointerException e) {
+        } catch (IllegalArgumentException | IllegalStateException | NullPointerException e) {
             logger.error("Error when getting bean by name '{}'", name, e);
-        } catch (IllegalArgumentException e) {
-            logger.error("Bean of name '{}' is not of type '{}", name, clazz);
-        } catch (IllegalStateException e) {
-            logger.error("Trying to find bean in context at illegal state. Probably before initialization or outside of jsf context: {}", e);
         }
 
         return null;
