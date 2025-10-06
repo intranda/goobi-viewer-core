@@ -1,154 +1,170 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminUserTerms')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminUserTerms')}"/>
         </f:metadata>
     </ui:define>
 
-	<ui:define name="content">
-		<f:view contentType="text/html" encoding="utf-8">
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">
 
-			<h:panelGroup layout="block" id="adminUserTerms"
-				rendered="#{userBean.admin}">
-				<!-- TITLE -->
-				<div class="admin__title-bar">
-					<h1 class="admin__title">#{msg.admin__terms_of_use__title}</h1>
-				</div>
-				
-				<viewerComponent:adminBreadcrumbs />
+            <h:panelGroup layout="block" id="adminUserTerms"
+                          rendered="#{userBean.admin}">
+                <!-- TITLE -->
+                <div class="admin__title-bar">
+                    <h1 class="admin__title">#{msg.admin__terms_of_use__title}</h1>
+                </div>
 
-				<div class="admin__content-inner-content">
-					<div class="admin__info-text">
-						<h:outputText value="#{msg.admin__terms_of_use__description}"
-							escape="false" />
-					</div>
+                <viewerComponent:adminBreadcrumbs/>
 
-				<h:form id="activateTermsOfUse" styleClass="form-horizontal form-group" prependId="false">
-						<div class="row no-gutters mb-3 align-items-center">
-							<div class="control-label mr-3 admin__form-label">#{msg.admin__terms_of_use__is_active}:</div>
-							<div class="admin__form-input">
-								<viewerComponent:toggleSwitch
-									name="activateUserTerms"
-									value="#{termsOfUseEditBean.activated}"
-									toggleTarget=".admin__user-terms-box-editable"
-								/>
-							</div>
-						</div>
-				</h:form>
+                <div class="admin__content-inner-content">
+                    <div class="admin__info-text">
+                        <h:outputText value="#{msg.admin__terms_of_use__description}"
+                                      escape="false"/>
+                    </div>
 
-					
-				<div class="admin__user-terms-box-editable">
-					<h:form id="editUserTerms" styleClass="form-horizontal form-group" prependId="false">
+                    <h:form id="activateTermsOfUse" styleClass="form-horizontal form-group" prependId="false">
+                        <div class="d-flex mb-3 align-items-center">
+                            <div class="control-label mr-3 admin__form-label">#{msg.admin__terms_of_use__is_active}:
+                            </div>
+                            <div class="admin__form-input">
+                                <viewerComponent:toggleSwitch
+                                        name="activateUserTerms"
+                                        value="#{termsOfUseEditBean.activated}"
+                                        toggleTarget=".admin__user-terms-box-editable"
+                                />
+                            </div>
+                        </div>
+                    </h:form>
 
-							<h2>#{msg.admin__terms_of_use__manage_text}</h2>
 
-							<!-- TERMS OF USE LANGUAGE TABS -->
-							<div class="admin__language-tabs">
-								<viewerComponent:localeSelector object="#{termsOfUseEditBean}"/>
-							</div>
+                    <div class="admin__user-terms-box-editable">
+                        <h:form id="editUserTerms" styleClass="form-horizontal form-group" prependId="false">
 
-							<div class="admin__default-block">
-								<div class="tab-content">
-									<!-- LOCALIZE TABS -->
-									<h:panelGroup rendered="#{termsOfUseEditBean.selectedLocale != null}">
-										<div class="form-group form-row">
-											<div class="col-2 control-label admin__form-label">
-												<label for="userTermsTitle">#{msg.title}:
-													<ui:fragment rendered="#{termsOfUseEditBean.isDefaultLocaleSelected()}">
-														<span class="admin__label-required-field">(#{msg.form__required_field})</span>
-													</ui:fragment>
-												</label>
-											</div>
+                            <h2>#{msg.admin__terms_of_use__manage_text}</h2>
 
-											<div class="col-10 admin__form-input cms-module__option-control">
-												
-							                    <h:message for="userTermsTitle" errorClass="-validation-message -danger"></h:message>
-                                                 <div class="-validation-mark">
-                                                     <i class="fa fa-check" aria-hidden="true"></i>
-                                                     <i class="fa fa-exclamation" aria-hidden="true"></i>
-                                                 </div>
-												<h:inputText id="userTermsTitle" styleClass="form-control -validation-input"
-												required="#{termsOfUseEditBean.isDefaultLocaleSelected()}"
-												requiredMessage="#{msg.info__input_required}"
-													value="#{termsOfUseEditBean.title}" >
-												</h:inputText>
-												<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
-											</div>
-										</div>
+                            <!-- TERMS OF USE LANGUAGE TABS -->
+                            <div class="admin__language-tabs">
+                                <viewerComponent:localeSelector object="#{termsOfUseEditBean}"/>
+                            </div>
 
-										<!-- EDIT TERMS OF USE TEXT -->
-										<div class="form-group form-row">
-											
-											<div class="col-2 control-label admin__form-label">
-												<label for="userTermsText">#{msg.text}:
-													<ui:fragment rendered="#{termsOfUseEditBean.isDefaultLocaleSelected()}">
-														<span class="admin__label-required-field">(#{msg.form__required_field})</span>
-													</ui:fragment>
-												</label>
-											</div>
-											
-											<div class="col-10 admin__form-input input_form__option_control">
-								                 <h:message for="userTermsText" errorClass="-validation-message -danger"/>
-                                                 <div class="-validation-mark">
-								                        <i class="fa fa-check" aria-hidden="true"></i>
-								                        <i class="fa fa-exclamation" aria-hidden="true"></i>
-								                    </div>
-												<h:inputTextarea id="userTermsText"
-													styleClass="form-control tinyMCE -validation-input"
-													required="#{termsOfUseEditBean.isDefaultLocaleSelected()}"
-												    requiredMessage="#{msg.info__input_required}"
-													value="#{termsOfUseEditBean.description}" />
-												<!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
-											</div>
-										</div>
-									</h:panelGroup>
-								</div>
-							</div>
+                            <div class="admin__default-block">
+                                <div class="tab-content">
+                                    <!-- LOCALIZE TABS -->
+                                    <h:panelGroup rendered="#{termsOfUseEditBean.selectedLocale != null}">
+                                        <div class="form-group form-row">
+                                            <div class="col-2 control-label admin__form-label">
+                                                <label for="userTermsTitle">#{msg.title}:
+                                                    <ui:fragment
+                                                            rendered="#{termsOfUseEditBean.isDefaultLocaleSelected()}">
+                                                        <span class="admin__label-required-field">(#{msg.form__required_field})</span>
+                                                    </ui:fragment>
+                                                </label>
+                                            </div>
 
-							<!-- SAVE TERMS OF USE TEXT -->
-							<div
-								class="admin__final-actions">
-								<h:commandButton class="btn btn--success" value="#{msg.save}"
-									action="#{termsOfUseEditBean.save()}">
-									<f:ajax render="@form :messages" execute="@form"></f:ajax>
-								</h:commandButton>
-							</div>
+                                            <div class="col-10 admin__form-input cms-module__option-control">
 
-							<!-- DEACTIVATE TERMS OF USE + RESET STATUS ACCEPTED FOR USERS -->
-							<h2>#{msg.admin__terms_of_use__reset__consent}</h2>
-							<div class="admin__default-block -danger">
+                                                <h:message for="userTermsTitle"
+                                                           errorClass="-validation-message -danger"></h:message>
+                                                <div class="-validation-mark">
+                                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                                    <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                </div>
+                                                <h:inputText id="userTermsTitle"
+                                                             styleClass="form-control -validation-input"
+                                                             required="#{termsOfUseEditBean.isDefaultLocaleSelected()}"
+                                                             requiredMessage="#{msg.info__input_required}"
+                                                             value="#{termsOfUseEditBean.title}">
+                                                </h:inputText>
+                                                <!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
+                                            </div>
+                                        </div>
 
-								<div class="row">
-									<div class="col-12">
-										<p>#{msg.admin__terms_of_use__reset__description}</p>
-										<div class="text-right">
-											<h:commandButton class="btn btn--danger"
-												value="#{msg.admin__terms_of_use__reset__button}"
-												onclick="if ( !confirm( &quot;#{msg.admin__terms_of_use__reset__confirm}&quot; ) ) { return false };"
-												action="#{termsOfUseEditBean.resetUserAcceptance()}">
-												<f:ajax render="@form :messages"></f:ajax>
-											</h:commandButton>
-										</div>
-									</div>
-								</div>
-							</div>
-						</h:form>
-					</div>
-				</div>
-			</h:panelGroup>
-		</f:view>
-	</ui:define>
+                                        <!-- EDIT TERMS OF USE TEXT -->
+                                        <div class="form-group form-row">
+
+                                            <div class="col-2 control-label admin__form-label">
+                                                <label for="userTermsText">#{msg.text}:
+                                                    <ui:fragment
+                                                            rendered="#{termsOfUseEditBean.isDefaultLocaleSelected()}">
+                                                        <span class="admin__label-required-field">(#{msg.form__required_field})</span>
+                                                    </ui:fragment>
+                                                </label>
+                                            </div>
+
+                                            <div class="col-10 admin__form-input input_form__option_control">
+                                                <h:message for="userTermsText"
+                                                           errorClass="-validation-message -danger"/>
+                                                <div class="-validation-mark">
+                                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                                    <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                </div>
+                                                <h:inputTextarea id="userTermsText"
+                                                                 styleClass="form-control tinyMCE -validation-input"
+                                                                 required="#{termsOfUseEditBean.isDefaultLocaleSelected()}"
+                                                                 requiredMessage="#{msg.info__input_required}"
+                                                                 value="#{termsOfUseEditBean.description}"/>
+                                                <!-- <span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>  -->
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+
+                            <!-- SAVE TERMS OF USE TEXT -->
+                            <div class="admin__final-actions">
+                                <h:commandButton class="btn btn--success"
+                                                 value="#{msg.save}"
+                                                 action="#{termsOfUseEditBean.save()}">
+                                    <f:ajax execute="@form" render="@form :messages"/>
+                                </h:commandButton>
+                            </div>
+
+                            <!-- DEACTIVATE TERMS OF USE + RESET STATUS ACCEPTED FOR USERS -->
+                            <h2>#{msg.admin__terms_of_use__reset__consent}</h2>
+                            <div class="admin__default-block -danger">
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p>#{msg.admin__terms_of_use__reset__description}</p>
+                                        <div class="text-right">
+                                            <h:commandButton class="btn btn--danger"
+                                                             value="#{msg.admin__terms_of_use__reset__button}"
+                                                             action="#{termsOfUseEditBean.resetUserAcceptance()}"
+                                                             immediate="true">
+                                                <f:passThroughAttribute
+                                                        name="data-require-confirmation"
+                                                        value="true"/>
+                                                <f:passThroughAttribute name="data-confirmation-text"
+                                                                        value="#{msg.admin__terms_of_use__reset__confirm}"/>
+                                                <f:passThroughAttribute name="data-confirm-button-text"
+                                                                        value="#{msg.reset}"/>
+                                                <f:passThroughAttribute name="data-confirm-button"
+                                                                        value="btn btn--full"/>
+                                                <f:passThroughAttribute name="data-icon"
+                                                                        value="warn"/>
+                                                <f:ajax execute="@this" render="@form :messages"/>
+                                            </h:commandButton>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </f:view>
+    </ui:define>
 </ui:composition>
-

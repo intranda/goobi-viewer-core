@@ -6,6 +6,7 @@
 	</jsfComponent>
 	<label>cms_component__highlighthistory__label</label>
 	<description>cms_component__highlighthistory__desc</description>
+	<type>highlights</type>
 	<content>
 		<item id="title">
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>

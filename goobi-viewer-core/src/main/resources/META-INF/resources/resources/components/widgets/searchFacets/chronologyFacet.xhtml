@@ -61,6 +61,8 @@
                     </h:form>
                 </div>
 	            <script>
+	            
+	            // chronologySlider.tag and chronologyGraph.tag for widget chronology
 
 	            (() => {
 				let values = #{searchBean.facets.getValueRangeAsJsonMap(field)};
@@ -72,7 +74,8 @@
 			        riot.mount("#chronoSlider_#{status.count}", "chronology"+graphType, {
 			        	datamap: valueMap,
 			        	msg: {
-			        		enterYear: "#{msg.enterYear}",
+			        		enterYearStart: "#{msg.widgetChronology__year_start}",
+			        		enterYearEnd: "#{msg.widgetChronology__year_end}",
 			        		ok: "#{msg.ok}",
 			        		hits: "#{msg.hits}",
 			        		description: '#{msg[configurationBean.getFacetFieldDescriptionKey(field)]}',

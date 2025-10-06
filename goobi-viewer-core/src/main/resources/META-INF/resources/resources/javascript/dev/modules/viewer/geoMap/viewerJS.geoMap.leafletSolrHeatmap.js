@@ -111,6 +111,9 @@ if (typeof L !== 'undefined') {
 		    if(this.options.facetQuery) {
 		    	query += '&facetQuery=' + this.options.facetQuery;
 		    }
+			if(this.options.searchScope) {
+				query += '&scope=' + this.options.searchScope;
+			}
 		    return query;
 	      },
 	      _searchHitsSolrQuery: function(bounds) {
@@ -123,6 +126,9 @@ if (typeof L !== 'undefined') {
 	       	  if(this.options.facetQuery) {
 	    	  	query += '&facetQuery=' + this.options.facetQuery;
 	           }
+			   if(this.options.searchScope) {
+				query += '&scope=' + this.options.searchScope;
+			}
 	    	  return query;
 		  },
 		  _getBoundsForQuery(bounds) {
@@ -159,6 +165,9 @@ if (typeof L !== 'undefined') {
 		    if(this.options.facetQuery) {
 		    	query += '&facetQuery=' + this.options.facetQuery;
 		    }
+			if(this.options.searchScope) {
+				query += '&scope=' + this.options.searchScope;
+			}
 		    return query;
 	      },
 		  _getBoundsForQuery(bounds) {

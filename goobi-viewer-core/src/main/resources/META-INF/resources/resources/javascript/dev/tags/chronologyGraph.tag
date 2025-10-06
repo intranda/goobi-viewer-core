@@ -6,9 +6,11 @@
 			<canvas class="chronology-slider__draw" ref="draw"></canvas>
 		</div>
 		<div class="chronology-slider__input-wrapper">
-			<input onchange="{setStartYear}" data-input='number' aria-label="Start" class="form-control chronology-slider__input-start" ref="input_start" value="{startYear}"></input>
+			<input onchange="{setStartYear}" data-input='number' data-toggle="tooltip"
+				data-placement="top" aria-label="{msg.enterYearStart}" title="{msg.enterYearStart}" class="form-control chronology-slider__input-start" ref="input_start" value="{startYear}"></input>
 			<div class="chronology-slider__between-year-symbol">-</div>
-			<input onchange="{setEndYear}" data-input='number' aria-label="End" class="form-control chronology-slider__input-end" ref="input_end" value="{endYear}"></input>
+			<input onchange="{setEndYear}" data-input='number' data-toggle="tooltip"
+				data-placement="top" aria-label="{msg.enterYearEnd}" title="{msg.enterYearEnd}" class="form-control chronology-slider__input-end" ref="input_end" value="{endYear}"></input>
 			<button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button>
 		</div>
 	</div>

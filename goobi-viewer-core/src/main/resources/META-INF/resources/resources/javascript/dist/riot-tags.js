@@ -214,11 +214,22 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
                 return response.status == 200;
             })
             .then(exists => {
-                if(exists) {
-	                let overwrite = confirm(this.opts.msg.overwriteFileConfirm.replace("{0}",  this.files[i].name));
-	                if(!overwrite) {
-	                    throw this.opts.msg.overwriteFileRefused.replace("{0}",  this.files[i].name);
-	                }
+                if (exists) {
+                    const fileName = this.files[i].name;
+                    const message = this.opts.msg.overwriteFileConfirm.replace("{0}", fileName);
+                    return viewerJS.notifications.confirm(
+                        '',
+                        this.opts.msg.button__overwrite,
+                        undefined,
+                        message,
+                        {
+                            icon: 'warning',
+                            confirmButtonClass: 'btn btn--full',
+                        }
+                    )
+                        .catch(() => {
+                            throw this.opts.msg.overwriteFileRefused.replace("{0}", fileName);
+                        });
                 }
             })
             .then(overwrite => {
@@ -278,7 +289,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
 
         }.bind(this)
 });
-
 
 riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}" initialview="{this.opts.geomap.initialView}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource><datasetresource if="{isDatasetResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></datasetResource>', '', '', function(opts) {
 
@@ -831,7 +841,7 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" aria-label="Start" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" aria-label="End" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
+riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYearStart}" title="{msg.enterYearStart}" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYearEnd}" title="{msg.enterYearEnd}" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
 
 
 		this.yearList = [1];
@@ -1119,7 +1129,7 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 	  })
 
 });
-riot.tag2('chronologyslider', '<p class="widget__description-text widget-chronology-slider__description-text" ref="descriptionText"></p><div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
+riot.tag2('chronologyslider', '<p class="widget__description-text widget-chronology-slider__description-text" ref="descriptionText"></p><div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYearStart}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYearStart}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYearEnd}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYearEnd}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
 
 this.msg={}
 this.on("mount", () => {

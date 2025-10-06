@@ -42,6 +42,7 @@
 		transition: background 0.2s ease;
 		border: 1px solid @middlegray;
 		position: relative;
+		border-radius: 7px;
 
 		&:hover {
 			box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
@@ -412,6 +413,7 @@
 		background: #fff;
 		border: 1px solid #ccc;
 		margin-bottom: 2rem;
+		border-radius: 7px;
 
 		&.-columns-3-2-1 {
 
@@ -437,6 +439,8 @@
 		position: sticky;
 		top: 35px;
 		background: white;
+		border-top-right-radius: 7px;
+		border-top-left-radius: 7px;
 	}
 
 	&__grid-table-sorting-wrapper {
@@ -533,6 +537,7 @@
 		padding: 0 2rem 0rem 2rem;
 		border: 1px solid @middlegray;
 		margin-bottom: 2rem;
+		border-radius: 7px;
 
 		&.-slim {
 			border: none;
@@ -555,7 +560,8 @@
 		margin-right: -2rem;
 		padding-right: 2rem;
 		z-index: 950;
-
+		border-top-right-radius: 7px;
+		border-top-left-radius: 7px;
 	}
 
 	// PREVIEW BOX (ADD WIDGET)
@@ -1347,8 +1353,6 @@
 		width: 100%;
 		list-style: none;
 		padding-left: 0;
-		border-left: 1px solid @middlegray;
-		border-right: 1px solid @middlegray;
 	}
 
 	&__cms-collections-progress-bar {
@@ -1469,7 +1473,7 @@
 		display: flex;
 		justify-content: center;
 	}
-
+ 
 	&__profile-image {
 		max-width: 75%;
 		margin-top: 1rem;
@@ -1486,6 +1490,10 @@
 		margin-bottom: 3rem;
 		border: 1px solid #ccc;
 		padding: 2rem;
+	}
+	.user-settings__profile-image-box,
+	.user-settings__form-wrapper {
+		border-radius: 7px;
 	}
 
 	// ADMIN CROWD ANNOTATION STYLES
@@ -1801,6 +1809,16 @@
 			color: @white;
 		}
 	}
+	
+	.tab-pane {
+		border-radius: 7px;
+	}
+	.nav-tabs + .tab-content .tab-pane {
+		border-top-left-radius: 0px;
+	}
+	.-noTopRightRoundedBorder {
+		border-top-right-radius: 0px;
+	}
 
 	// LANGUAGE TABS
 	&__language-tabs {
@@ -1810,6 +1828,9 @@
 		.nav-tabs {
 			background: transparent;
 			border-bottom: none;
+		}
+		& + .admin__default-block { 
+			border-top-left-radius: 0;
 		}
 	}
 
@@ -1828,7 +1849,8 @@
 			text-align: center;
 			padding: 1rem 0;
 			color: #666;
-
+			border-top-right-radius: 7px;
+			border-top-left-radius: 7px;
 			&:hover {
 				border: 1px solid #ccc;
 				border-bottom: none;
@@ -2687,15 +2709,24 @@
 }
 
 .radio-button-tree {
+	.custom-radio-group {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		label {
+			margin: 0;
+			margin-left: 5px; 
+		}
+	}
 	&__wrapper {}
 
 	&__connected-top,
 	&__connected-middle,
 	&__connected-bottom {
 		padding-left: 35px;
-		padding-top: 10px;
+		padding-top: 12px; 
 		background-position: 0px top;
-		padding-bottom: 10px;
+		padding-bottom: 6px;
 		background-repeat: no-repeat;
 	}
 

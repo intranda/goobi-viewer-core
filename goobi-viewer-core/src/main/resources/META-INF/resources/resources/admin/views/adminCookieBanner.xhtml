@@ -41,7 +41,7 @@
 								escape="false" />
 						</div>
 						<div class="form-horizontal form-group">
-							<div class="row no-gutters mb-3 align-items-center">
+							<div class="d-flex mb-3 align-items-center">
 								<div class="control-label mr-3 admin__form-label">#{msg.admin__legal__cookie_banner_active}:</div>
 								<div class="admin__form-input">
 									<viewerComponent:toggleSwitch name="activateCookieBanner" toggleTarget="#cookieBannerEditWrapper"
@@ -112,9 +112,20 @@
 											<div class="text-right">
 												<h:commandButton class="btn btn--danger"
 													value="#{msg.admin__legal__reset_cookie_banner_consent__action}"
-													onclick="if ( !confirm( &quot;#{msg.admin__legal__reset_cookie_banner_consent__confirm}&quot; ) ) { return false };"
 													action="#{cookieBannerBean.resetUserConsent()}">
-													<f:ajax render="@form :messages"></f:ajax>
+													<f:passThroughAttribute
+														name="data-require-confirmation"
+														value="true" />
+													<f:passThroughAttribute
+														name="data-confirmation-text"
+														value="#{msg.admin__legal__reset_cookie_banner_consent__confirm}" />
+                                                    <f:passThroughAttribute name="data-confirm-button-text"
+                                                                            value="#{msg.reset}"/>
+                                                    <f:passThroughAttribute name="data-confirm-button"
+                                                                            value="btn btn--full"/>
+                                                    <f:passThroughAttribute name="data-icon"
+                                                                            value="warn"/>
+                                                    <f:ajax execute="@this" render="@form :messages"/>
 												</h:commandButton>
 											</div>
 										</div>
@@ -128,4 +139,3 @@
 		</f:view>
 	</ui:define>
 </ui:composition>
-

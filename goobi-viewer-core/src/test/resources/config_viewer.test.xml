@@ -983,7 +983,7 @@
 			contain hierarchical parent document identifiers (such as PI_PARENT containing 
 			anchor identifiers. -->
 		<ancestorIdentifierFields listSiblingRecords="true">
-			<field>PI_PARENT</field>
+			<field filterQuery="-DOCSTRCT:year">PI_PARENT</field>
 		</ancestorIdentifierFields>
 
 		<!-- display as interactive tree view -->

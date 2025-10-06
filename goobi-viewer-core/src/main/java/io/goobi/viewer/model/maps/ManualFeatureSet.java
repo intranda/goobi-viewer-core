@@ -128,4 +128,9 @@ public class ManualFeatureSet extends FeatureSet {
         return "MANUAL";
     }
 
+    @Override
+    public boolean isUseHeatmap() {
+        return false;
+    }
+
 }

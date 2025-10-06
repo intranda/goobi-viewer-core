@@ -6,8 +6,7 @@
 	</jsfComponent>
 	<label>cms_component__collection_tiled__label</label>
 	<description>cms_component__collection_tiled__desc</description>
-	<icon>cms/components/frontend/component/icon/collection.png</icon>
-	<content>
+	<type>collection</type>	<content>
 		<item id="collection">
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</className>
 			<jsfComponent>

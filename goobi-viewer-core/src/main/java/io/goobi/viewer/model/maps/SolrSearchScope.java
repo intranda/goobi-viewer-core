@@ -54,7 +54,7 @@ public enum SolrSearchScope {
     }
 
     public boolean isSearchInMetadata() {
-        return this == ALL || this == METADATA || this == RELATIONSHIPS;
+        return this == ALL || this == METADATA;
     }
 
     public boolean isSearchInRelationships() {
