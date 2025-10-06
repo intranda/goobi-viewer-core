@@ -29,6 +29,16 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 
 class CalendarViewTest extends AbstractSolrEnabledTest {
+    
+    /**
+     * @see CalendarView#isDisplay()
+     * @verifies return true if number of items sufficient
+     */
+    @Test
+    void isDisplay_shouldReturnTrueIfNumerOfItemsSuffient() throws Exception {
+        CalendarView cv = new CalendarView("168714434_1805", "168714434", null, null);
+        Assertions.assertFalse(cv.isDisplay());
+    }
 
     /**
      * @see CalendarView#getVolumeYears()
@@ -40,4 +50,5 @@ class CalendarViewTest extends AbstractSolrEnabledTest {
         List<String> years = cv.getVolumeYears();
         Assertions.assertEquals(9, years.size());
     }
+
 }
