@@ -22,6 +22,16 @@ const jsLibsDir = 'src/main/resources/META-INF/resources/resources/javascript/li
 const cssLibsDir = 'src/main/resources/META-INF/resources/resources/css/libs/'
 
 const depsPathsJS = [
+    
+  { // TABLER-ICONS
+    expand: true,
+    cwd: nodeModules,
+    flatten: true,
+    src: [
+      '@tabler/icons/LICENSE'
+    ],
+    dest: `${jsLibsDir}tabler-icons/`
+  },
 
   { // Bootstrap
     expand: true,
