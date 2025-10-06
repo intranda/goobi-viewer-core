@@ -930,8 +930,8 @@
 								<!-- JSTL is used within JSF for example c:forEach -->
 								<ignoredUnusedDeclaredDependency>jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api</ignoredUnusedDeclaredDependency>
 
-                                <!-- jakarta.transaction is needed for EclipseLink 4.0.6 and later -->
-                                <ignoredUnusedDeclaredDependency>jakarta.transaction:jakarta.transaction-api</ignoredUnusedDeclaredDependency>>
+								<!-- jakarta.transaction is needed for EclipseLink 4.0.6 and later -->
+								<ignoredUnusedDeclaredDependency>jakarta.transaction:jakarta.transaction-api</ignoredUnusedDeclaredDependency>>
 
 								<!-- Jaxen ist used during runtime from jdom2.XPathExpression -->
 								<ignoredUnusedDeclaredDependency>jaxen:jaxen</ignoredUnusedDeclaredDependency>
@@ -1006,6 +1006,8 @@
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-core</ignoredUnusedDeclaredDependency>
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-expression</ignoredUnusedDeclaredDependency>
 
+								<!-- xml-apis imports org.xml or org.w3c packages that is used for xml handling in several classes -->
+								<ignoredUnusedDeclaredDependency>xml-apis:xml-apis</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 
 							<ignoredNonTestScopedDependencies>
