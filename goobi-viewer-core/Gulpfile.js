@@ -678,12 +678,6 @@ function copyDependencies() {
         );
     });
 
-    createIconStreams(() => {
-        copied++;
-    }).forEach((stream) => {
-        streams.push(stream);
-    });
-
     if (streams.length === 0) return Promise.resolve();
 
     return merge(streams).on('finish', () => {
@@ -942,7 +936,7 @@ const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags
 
 exports.build = buildAll;
 exports.dev = gulp.series(buildIcons, fullSync, watchMode);
-exports['copy-deps'] = copyDependencies;
+exports['copy-deps'] = gulp.series(buildIcons, copyDependencies);
 exports['sync-all'] = fullSync;
 exports.target = printTargets;
 exports.java = java;

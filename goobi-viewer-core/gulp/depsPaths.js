@@ -20,6 +20,7 @@ const nodeModules = 'node_modules/';
 const jsLibsDir = 'src/main/resources/META-INF/resources/resources/javascript/libs/';
 // Goobi viewer keeps CSS libraries here, mostly (some can be found in corresponding JS Lib dirs)
 const cssLibsDir = 'src/main/resources/META-INF/resources/resources/css/libs/'
+const iconDir = 'src/main/resources/META-INF/resources/resources/icons/'
 
 const depsPathsJS = [
     
@@ -30,7 +31,7 @@ const depsPathsJS = [
     src: [
       '@tabler/icons/LICENSE'
     ],
-    dest: `${jsLibsDir}tabler-icons/`
+    dest: `${iconDir}`
   },
 
   { // Bootstrap
