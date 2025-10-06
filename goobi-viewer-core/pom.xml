@@ -99,7 +99,7 @@
 		<cron-expression-descriptor.version>1.2.10</cron-expression-descriptor.version>
 		<dbunit.version>3.0.0</dbunit.version>
 		<eclipselink.version>4.0.8</eclipselink.version>
-		<h2.version>2.3.232</h2.version>
+		<h2.version>2.4.240</h2.version>
 		<httpclient.version>4.5.14</httpclient.version>
 		<httpcore.version>4.4.16</httpcore.version>
 		<httpmime.version>4.5.14</httpmime.version>
@@ -128,7 +128,7 @@
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20250517</json.version>
 		<jsoup.version>1.21.2</jsoup.version>
-		<junit.version>5.13.4</junit.version>
+		<junit.version>6.0.0</junit.version>
 		<log4j.version>2.25.2</log4j.version>
 		<mariadb-java-client.version>3.5.6</mariadb-java-client.version>
 		<mockito.version>5.20.0</mockito.version>
@@ -1119,10 +1119,6 @@
 				<configuration>
 					<doclint>none</doclint>
 					<failOnWarnings>true</failOnWarnings>
-					<!-- Specifies the tags to be fixed automatically when running the mvn javadox:fix command, see:
-						 https://maven.apache.org/plugins/maven-javadoc-plugin/fix-mojo.html#fixTags
-					-->
-					<fixTags>link,throws,return,param</fixTags>
 					<tags>
 						<tag>
 							<!-- Disables custom @should tag in Javadoc see:
@@ -1239,7 +1235,6 @@
 				<configuration>
 					<doclint>none</doclint>
 					<failOnWarnings>true</failOnWarnings>
-					<fixTags>link,throws,return,param</fixTags>
 					<tags>
 						<tag>
 							<name>should</name>
