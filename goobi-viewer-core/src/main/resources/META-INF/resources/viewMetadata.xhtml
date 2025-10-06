@@ -49,10 +49,15 @@
             
             <!-- Access ticket required -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
-                #{msg.access_tickets__record_access_ticket_required}<br />
-                <button class="btn btn--full" data-toggle="modal"
-                    data-target="#accessTicketModal">#{msg.action__born_digital__unlock}</button>
-                <viewerComponent:modalAccessTicket />  
+            	<div class="access-ticket-info">
+            		<div class="access-ticket-info__inner">
+            			<h1><span class="access-ticket-modal__object-title">#{activeDocumentBean.titleBarLabel}</span></h1>
+		                <p>#{msg.access_tickets__record_access_ticket_required}</p>
+		                <button class="btn btn--full" data-toggle="modal"
+		                    data-target="#accessTicketModal">#{msg.action__born_digital__unlock}</button>
+		                <viewerComponent:modalAccessTicket />
+	                </div>
+                </div>
             </ui:fragment>
 
             <!-- HIDDEN USER E-MAIL -->
@@ -104,8 +109,10 @@
     </ui:define>
 
 	<ui:define name="sidebar">
-    
-        <viewerComponent:record_sidebar id="sidebar"/>
+		<!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
+    	<ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
+        	<viewerComponent:record_sidebar id="sidebar"/>
+        </ui:fragment>
         
     </ui:define>
 

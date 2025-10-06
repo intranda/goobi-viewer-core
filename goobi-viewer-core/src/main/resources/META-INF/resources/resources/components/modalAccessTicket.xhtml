@@ -40,6 +40,8 @@
 							
 							<div class="access-ticket-modal__password-mode" data-mode="passwordMode">
 							
+								<h2><span class="access-ticket-modal__object-title">#{activeDocumentBean.titleBarLabel}</span></h2>
+								
 								<!-- DESCRIPTION FOR ENTERING THE PASSWORD -->
 								<p data-mode="passwordMode">
 									<h:outputText value="#{msg.access_tickets__modal_desc_pw}" />
@@ -260,6 +262,12 @@
 	                            	$('[data-mode="ticketMode"]').hide();
 	                            	$('[data-mode="passwordMode"]').fadeIn();
 	                            });
+	                            
+	                            // OPEN MODAL ON PAGE LOAD
+	                            $(document).ready(function() {
+	                                $('#accessTicketModal').modal('show'); 
+	                            });
+	                            
                             </script>
 
 

@@ -1,5 +1,5 @@
 /* ==============================================================
-   Content User Upload Modal
+   Access Ticket Modal & Object Page Styles
    ==============================================================*/
 
 .access-ticket-modal {
@@ -15,8 +15,31 @@
 	[data-mode='ticketMode'] {
 		display: none;
 	}
+	&__object-title {
+		font-size: 18px;
+		font-weight: 700;
+		color: #222;
+	}
 }
 
+.access-ticket-info {
+	margin-top: 20px;
+	display: flex;
+	justify-content: center;
+	&__inner {
+		padding: 25px;
+		background: #eee;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 10px;
+		color: #222;
+		p {
+			color: #222;
+		}
+	}
+}
+ 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
