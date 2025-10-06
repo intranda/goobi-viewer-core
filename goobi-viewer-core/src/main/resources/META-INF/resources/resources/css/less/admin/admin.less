@@ -3392,6 +3392,21 @@ html[lang="es"] .admin__radio-switch {
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+	.admin {
+		&__topbar-frontend-view-dashboard-link,
+		&__topbar-frontend-add {
+			> span {
+				display: none;
+			}
+			.fa {
+				margin-right: unset;
+			}
+		}
+		&__topbar-frontend-logout {
+			margin-right: unset;
+		}
+		
+	}
 
 	.connected-top,
 	.connected-middle {
