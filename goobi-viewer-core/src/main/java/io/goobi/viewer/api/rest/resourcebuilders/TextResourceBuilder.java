@@ -165,9 +165,6 @@ public class TextResourceBuilder {
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder();
         List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null, request);
         
-        List<Path> filteredFiles = new ArrayList<>();
-        
-
         return writeZipFile(files, zipFileName);
     }
 
