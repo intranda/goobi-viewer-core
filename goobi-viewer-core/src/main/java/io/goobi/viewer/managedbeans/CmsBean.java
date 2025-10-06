@@ -678,12 +678,7 @@ public class CmsBean implements Serializable {
      * @param currentPage
      */
     void setCurrentPageNoInit(CMSPage currentPage) {
-        if (currentPage != null) {
-            this.currentPage = new CMSPage(currentPage);
-            logger.trace("Set current cms page to {}", this.currentPage.getTitle());
-        } else {
-            this.currentPage = null;
-        }
+        this.currentPage = new CMSPage(currentPage);
     }
 
     /**
