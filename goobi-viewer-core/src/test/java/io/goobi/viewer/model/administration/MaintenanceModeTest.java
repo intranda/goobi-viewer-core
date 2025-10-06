@@ -19,36 +19,26 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.calendar;
+package io.goobi.viewer.model.administration;
 
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractDatabaseEnabledTest;
 
-class CalendarViewTest extends AbstractSolrEnabledTest {
-    
-    /**
-     * @see CalendarView#isDisplay()
-     * @verifies return true if number of items sufficient
-     */
-    @Test
-    void isDisplay_shouldReturnTrueIfNumerOfItemsSuffient() throws Exception {
-        CalendarView cv = new CalendarView("168714434_1805", "168714434", null, null);
-        Assertions.assertTrue(cv.isDisplay());
-    }
+class MaintenanceModeTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @see CalendarView#getVolumeYears()
-     * @verifies only return volume years that have YEARMONTHDAY field
+     * @see MaintenanceMode#getTextOrDefault(String)
+     * @verifies return translation correctly
      */
     @Test
-    void getVolumeYears_shouldOnlyReturnVolumeYearsThatHaveYEARMONTHDAYField() throws Exception {
-        CalendarView cv = new CalendarView("168714434_1805", "168714434", null, null);
-        List<String> years = cv.getVolumeYears();
-        Assertions.assertEquals(9, years.size());
+    void getTextOrDefault_shouldReturnTranslationCorrectly() throws Exception {
+        MaintenanceMode mm = new MaintenanceMode();
+        mm.setText("foo", "en");
+        assertEquals("foo", mm.getTextOrDefault("en"));
+        assertEquals("foo", mm.getTextOrDefault("de"));
     }
 
 }

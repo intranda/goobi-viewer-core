@@ -22,11 +22,12 @@
 package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -53,7 +54,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     void getCurrentView_shouldReturnValueCorrectly() {
         NavigationHelper nh = new NavigationHelper();
         nh.getStatusMap().put(NavigationHelper.KEY_CURRENT_VIEW, NavigationHelper.KEY_CURRENT_VIEW + "_value");
-        Assertions.assertEquals(NavigationHelper.KEY_CURRENT_VIEW + "_value", nh.getCurrentView());
+        assertEquals(NavigationHelper.KEY_CURRENT_VIEW + "_value", nh.getCurrentView());
     }
 
     /**
@@ -64,7 +65,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     void getMenuPage_shouldReturnValueCorrectly() {
         NavigationHelper nh = new NavigationHelper();
         nh.getStatusMap().put(NavigationHelper.KEY_MENU_PAGE, NavigationHelper.KEY_MENU_PAGE + "_value");
-        Assertions.assertEquals(NavigationHelper.KEY_MENU_PAGE + "_value", nh.getMenuPage());
+        assertEquals(NavigationHelper.KEY_MENU_PAGE + "_value", nh.getMenuPage());
     }
 
     /**
@@ -75,7 +76,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     void getPreferredView_shouldReturnValueCorrectly() {
         NavigationHelper nh = new NavigationHelper();
         nh.getStatusMap().put(NavigationHelper.KEY_PREFERRED_VIEW, NavigationHelper.KEY_PREFERRED_VIEW + "_value");
-        Assertions.assertEquals(NavigationHelper.KEY_PREFERRED_VIEW + "_value", nh.getPreferredView());
+        assertEquals(NavigationHelper.KEY_PREFERRED_VIEW + "_value", nh.getPreferredView());
     }
 
     /**
@@ -86,7 +87,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     void getSelectedNewsArticle_shouldReturnValueCorrectly() {
         NavigationHelper nh = new NavigationHelper();
         nh.getStatusMap().put(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE, NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value");
-        Assertions.assertEquals(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value", nh.getSelectedNewsArticle());
+        assertEquals(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value", nh.getSelectedNewsArticle());
     }
 
     /**
@@ -97,7 +98,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     void getStatusMapValue_shouldReturnValueCorrectly() {
         NavigationHelper nh = new NavigationHelper();
         nh.getStatusMap().put("new_key", "new_value");
-        Assertions.assertEquals("new_value", nh.getStatusMapValue("new_key"));
+        assertEquals("new_value", nh.getStatusMapValue("new_key"));
     }
 
     /**
@@ -108,7 +109,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     void setCurrentView_shouldSetValueCorrectly() {
         NavigationHelper nh = new NavigationHelper();
         nh.setCurrentView(NavigationHelper.KEY_CURRENT_VIEW + "_value");
-        Assertions.assertEquals(NavigationHelper.KEY_CURRENT_VIEW + "_value", nh.getStatusMap().get(NavigationHelper.KEY_CURRENT_VIEW));
+        assertEquals(NavigationHelper.KEY_CURRENT_VIEW + "_value", nh.getStatusMap().get(NavigationHelper.KEY_CURRENT_VIEW));
     }
 
     /**
@@ -119,7 +120,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     void setMenuPage_shouldSetValueCorrectly() {
         NavigationHelper nh = new NavigationHelper();
         nh.setMenuPage(NavigationHelper.KEY_MENU_PAGE + "_value");
-        Assertions.assertEquals(NavigationHelper.KEY_MENU_PAGE + "_value", nh.getStatusMap().get(NavigationHelper.KEY_MENU_PAGE));
+        assertEquals(NavigationHelper.KEY_MENU_PAGE + "_value", nh.getStatusMap().get(NavigationHelper.KEY_MENU_PAGE));
     }
 
     /**
@@ -130,7 +131,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     void setPreferredView_shouldSetValueCorrectly() {
         NavigationHelper nh = new NavigationHelper();
         nh.setPreferredView(NavigationHelper.KEY_PREFERRED_VIEW + "_value");
-        Assertions.assertEquals(NavigationHelper.KEY_PREFERRED_VIEW + "_value", nh.getStatusMap().get(NavigationHelper.KEY_PREFERRED_VIEW));
+        assertEquals(NavigationHelper.KEY_PREFERRED_VIEW + "_value", nh.getStatusMap().get(NavigationHelper.KEY_PREFERRED_VIEW));
     }
 
     /**
@@ -141,7 +142,7 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     void setSelectedNewsArticle_shouldSetValueCorrectly() {
         NavigationHelper nh = new NavigationHelper();
         nh.setSelectedNewsArticle(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value");
-        Assertions.assertEquals(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value",
+        assertEquals(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE + "_value",
                 nh.getStatusMap().get(NavigationHelper.KEY_SELECTED_NEWS_ARTICLE));
     }
 
@@ -153,18 +154,24 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
     void setStatusMapValue_shouldSetValueCorrectly() {
         NavigationHelper nh = new NavigationHelper();
         nh.setStatusMapValue("new_key", "new_value");
-        Assertions.assertEquals("new_value", nh.getStatusMap().get("new_key"));
+        assertEquals("new_value", nh.getStatusMap().get("new_key"));
     }
 
     /**
+     * @throws DAOException
      * @see NavigationHelper#setSubThemeDiscriminatorValue(String)
      * @verifies set value correctly
      */
     @Test
-    void setSubThemeDiscriminatorValue_shouldSetValueCorrectly() {
+    void setSubThemeDiscriminatorValue_shouldSetValueCorrectly() throws DAOException {
         NavigationHelper nh = new NavigationHelper();
+        CmsBean cmsBean = new CmsBean();
+        CMSPage cmsPage = DataManager.getInstance().getDao().getCMSPage(1);
+        assertNotNull(cmsPage);
+        cmsBean.setCurrentPageNoInit(cmsPage);
+        nh.setCmsBean(cmsBean);
         nh.setSubThemeDiscriminatorValue("dValue");
-        Assertions.assertEquals("dValue", nh.getStatusMapValue(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
+        assertEquals("dValue", nh.getStatusMapValue(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
     }
 
     @Test
