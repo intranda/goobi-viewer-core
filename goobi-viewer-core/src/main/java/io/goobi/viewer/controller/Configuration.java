@@ -477,7 +477,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @param type
-     * @return Map<String, List<Metadata>>
+     * @return Map&lt;String, List&lt;Metadata&gt;&gt;
      * @should return empty map if type null
      */
     public Map<String, List<Metadata>> getMetadataTemplates(String type) {
@@ -493,7 +493,7 @@ public class Configuration extends AbstractConfiguration {
      * @param type
      * @param fallbackToDefaultTemplate
      * @param topstructValueFallbackDefaultValue
-     * @return Map<String, List<Metadata>>
+     * @return Map&lt;String, List&lt;Metadata&gt;&gt;
      */
     public Map<String, List<Metadata>> getMetadataTemplates(String type, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
