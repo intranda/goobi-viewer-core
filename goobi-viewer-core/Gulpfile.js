@@ -948,12 +948,12 @@ exports.target = printTargets;
 exports.java = java;
 exports.icons = buildIcons;
 
-/* ── Task exports ──────────────────────────────────────────────────────────
-   - npm run build      → builds styles, JS bundles, riot tags
-   - npm run dev        → starts watchers (incremental rebuild + mirror)
+/* ── Task exports ────────────────────────────────────────────────────────────────────────────
+   - npm run build      → builds styles, JS bundles, riot tags, icons
+   - npm run dev        → builds icons, full project → deploy mirror once, then starts watchers
    - npm run copyDeps   → copies declared 3rd-party assets
    - npm run icons      → rebuilds Tabler SVG sprite assets
    - npm run sync       → one-shot full project → deploy mirror
    - npm run target     → prints resolved paths / env overrides
    - npm run java       → maven: core [install] + theme [package]
-─────────────────────────────────────────────────────────────────────────── */
+──────────────────────────────────────────────────────────────────────────────────────────────── */
