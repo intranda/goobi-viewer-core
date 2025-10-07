@@ -304,7 +304,7 @@ var viewerJS = (function () {
 		
 		//init empty translator instance
 	    var restApiURL = restURL.replace("/rest", "/api/v1");
-	    viewer.translator = new viewerJS.Translator(restApiURL, currentLang);
+	    viewer.translator = new viewerJS.translator(restApiURL, currentLang);
 		viewer.initialized.next();
 		viewer.initialized.complete();
 		viewer.setCheckedStatus();
