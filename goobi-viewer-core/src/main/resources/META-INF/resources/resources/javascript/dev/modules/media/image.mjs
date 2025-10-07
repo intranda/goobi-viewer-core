@@ -13,7 +13,7 @@ const _config = {
             pageAreas: '[data-image="zoomable"] [data-image-data="pageAreas"]',
             overlays: '[data-image="zoomable"] [data-image-data="overlays"]',
         },
-        controls: {
+        controls: { 
             rotateLeft: '.rotate-left',
             rotateRight: '.rotate-right',
         	reset: '.reset',
@@ -38,7 +38,7 @@ const _config = {
 export default function init() { 
     console.log("init image view", _config);
     const imageElement = document.querySelector(_config.elementSelectors.image);
-    if(imageElement) {
+    if(imageElement) { 
         window.image = {};
         const imageViewConfig = createZoomableImageConfig(imageElement);
         console.log("create image view with config ", imageViewConfig);
@@ -51,13 +51,13 @@ export default function init() {
         document.querySelectorAll(_config.elementSelectors.controls.reset).forEach(button => button.addEventListener("click", e => {
             window.image.rotation.rotateTo(0);
             window.image.zoom.goHome();
-        }));
+        })); 
 
         const footerUrl = document.querySelector(_config.elementSelectors.data.footer).textContent;
         if(window.image.viewer.viewportMargins.bottom > 0 && footerUrl) {
             window.image.footer = new ImageView.Footer(window.image.viewer, window.image.viewer.viewportMargins.bottom);
             window.image.footer.load(footerUrl);
-        }
+        } 
 
         const tileSourcesText = document.querySelector(_config.elementSelectors.data.tileSource).textContent;
         if(tileSourcesText) {
@@ -86,8 +86,8 @@ export default function init() {
 function createZoomableImageConfig(imageElement) {
     return  {
         element: imageElement,
-        fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType).textContent),
-        margins: getMargins(document.querySelector(_config.elementSelectors.data.footer).dataset[_config.datasets.data.footerHeight], document.querySelector(_config.elementSelectors.data.pageType).textContent),
+        fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
+        margins: getMargins(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight], document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
         zoom:  {
             enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== "false"
         },
