@@ -167,6 +167,11 @@
 
 	<dependencies>
 		<!-- intranda libraries -->
+		 <dependency>
+		      <groupId>de.intranda.js.content-view</groupId>
+		      <artifactId>content-view</artifactId>
+		      <version>0.2.2-SNAPSHOT</version>
+		 </dependency>
 		<dependency>
 			<groupId>de.intranda.goobi</groupId>
 			<artifactId>alto</artifactId>
@@ -920,6 +925,7 @@
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-models</ignoredUsedUndeclaredDependency>
 
 								<ignoredUsedUndeclaredDependency>org.glassfish.hk2.external:jakarta.inject</ignoredUsedUndeclaredDependency>
+								
 							</ignoredUsedUndeclaredDependencies>
 
 							<ignoredUnusedDeclaredDependencies>
@@ -1005,6 +1011,9 @@
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-context</ignoredUnusedDeclaredDependency>
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-core</ignoredUnusedDeclaredDependency>
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-expression</ignoredUnusedDeclaredDependency>
+
+									<!-- only used in Javascript -->
+									<ignoredUnusedDeclaredDependency>de.intranda.js.content-view:content-view</ignoredUnusedDeclaredDependency>
 
 							</ignoredUnusedDeclaredDependencies>
 

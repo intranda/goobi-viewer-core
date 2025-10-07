@@ -15,7 +15,32 @@
     <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3 ? '-thumbnailPreviewGallery' : ''}">
 
         <!-- MAP -->
-        <div id="imageMap" class="view-object__image-map" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"></div>
+<!--         <div id="imageMap" class="view-object__image-map" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"></div> -->
+
+		<div jsf:id="mainImage" class="view-object__image-map" rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}"
+			data-image="zoomable" 
+			data-image-view-mode="#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}"
+			data-image-show-navigator="#{configurationBean.showImageNavigator(navigationHelper.currentPage, activeDocumentBean.viewManager.currentPage.mimeType)}"
+			data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"
+			data-allow-zoom="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
+			<div id="mainImageData" class="d-none">
+				<div data-image-data="tileSource">#{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)}</div>
+				<div data-image-data="recordIdentifier">#{activeDocumentBean.viewManager.pi}</div>
+				<div data-image-data="structureIdentifier">#{activeDocumentBean.logid}</div>
+				<div data-image-data="pageType">#{navigationHelper.currentPageType}</div>
+				<div data-image-data="pageNumber">#{navigationHelper.currentPage}</div>
+				<div data-image-data="footer" data-height="#{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)}">#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}</div>
+				<div data-image-data="pageAreas">#{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson}</div>
+				<div data-image-data="overlays" data-styleclass="coords-highlighting" data-show-tooltip="false">#{activeDocumentBean.viewManager.currentSearchResultCoords}</div>
+				<div data-image-data="overlays" data-styleclass="ugcBox" data-show-tooltip="true">#{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}</div>
+				<div data-image-data="overlays" data-styleclass="image-fragment" data-show-tooltip="false">
+					<script type="test/javascript">document.currentScript.parentElement.innerHTML = window.location.hash;</script>
+				</div>
+			</div>
+		</div>
+		<div jsf:id="mainImageForbidden" class="view-object__image-map" rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+			<div class="view-object__access-denied" >#{msg.noImage_accessDenied}</div>
+		</div>
 
 		<!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
 		<ui:fragment rendered="#{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3}">
@@ -64,60 +89,6 @@
     <script type="text/javascript" src="#{request.contextPath}/resources/js/dist/imageView.min.js"></script>
     <script type="text/javascript">
   		//<![CDATA[
-
-  		import("#{request.contextPath}/resources/javascript/dev/modules/viewer/viewerJS.zoomImage.mjs").then(module => {
-  			window.zoomImage = new module.ZoomImage({
-  				access: {
-	  				allowed:  #{activeDocumentBean.viewManager.currentPage.accessPermissionImage},
-	  				accessDeniedMessage: $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' )
-  				},
-  				record: {
-	  				page : "#{navigationHelper.currentPage}",
-	  				recordPi : "#{activeDocumentBean.viewManager.pi}",
-	  				currentLogId : "#{activeDocumentBean.logid}"
-  				},
-  				imageSources : #{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)},
-  				divId: "imageMap", 
-  				viewMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}",
-  				persistence: {  					
-  					zoom: #{configurationBean.rememberImageZoom},
-  	        		rotation: #{configurationBean.rememberImageRotation},
-  	        		id: "#{activeDocumentBean.topDocumentIddoc}" + "_" + "#{navigationHelper.currentPage}",
-  				},
-  				footer: {  					
-  	        		height: () => #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
-  	        		urlTemplate : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}"
-  				},
-	        	navigator: {
-	        		show: #{configurationBean.showImageNavigator(navigationHelper.currentPage, activeDocumentBean.viewManager.currentPage.mimeType)}
-	        	},
-  	        	highlightCoords: [
-  	        		{
-  	        			name: "searchHighlighting",
-  	        			coordinates: #{activeDocumentBean.viewManager.currentSearchResultCoords},
-  	        			displayTooltip: false,
-  	        			pageIndex : #{activeDocumentBean.viewManager.currentPageSourceIndex},
-  	        		},
-  			        {
-  			            name: "ugc",
-  		                coordinates: (function(coords){
-  		                    	return coords ? coords: [];
-  		                	})(#{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}),
-  		                displayTooltip: #{configurationBean.displayAnnotationTextInImage}
-  		            }, {
-  		                name: "annotations",
-  		                coordinates: window.location.hash,
-  		                displayTooltip: false
-  		            }
-  	       		],
-  	        	pageAreaConfig : {
-					areas : #{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson},
-  	                currentLogId : "#{activeDocumentBean.logid}"
-  	            }
-  			})
-  		});
-  			
-  			
   		const changeImageOrder = new rxjs.Subject();	//call next() to set image in canvas, pass image order as parameter
        	const imageOrderChanged = new rxjs.Subject();	//Called when image is changed from within the canvas. subscribe to get notified of changes. image order is passed as parameter
       		    
@@ -133,7 +104,7 @@
             	imageSources[key] = JSON.parse(value);
             }
         });
-        const imageIdToOrderMap = new Map(Object.entries(imageSources).map( ([key, value]) => [sources.iiif.getId(value), Number(key)]));
+        const imageIdToOrderMap = new Map(Object.entries(imageSources).map( ([key, value]) => [viewerJS.iiif.getId(value), Number(key)]));
         const currentImageOrder = #{activeDocumentBean.viewManager.currentImageOrder}
         const recordPi = "#{activeDocumentBean.viewManager.pi}"
         // console.log("images ", imageMap); 
@@ -180,7 +151,7 @@
         	image: {
         		mimeType: "#{activeDocumentBean.viewManager.currentPage.displayMimeType}",
 	       		tileSource : Object.values(imageSources),
-	       		currentImageId : sources.iiif.getId(imageSources[currentImageOrder]),
+	       		currentImageId : viewerJS.iiif.getId(imageSources[currentImageOrder]),
         		baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
         		highlightCoords: [
         			{
@@ -274,7 +245,9 @@
         }
        	// desktop object view
        	if ( access && configViewer) {
-           	var viewImage = new ImageView.Image( configViewer )
+           	var viewImage = {
+           			load: () => new Promise((res,rej) => {})
+           	}
            	
            	viewImage.load().then( function( image ) {
            		initializeSequence();
@@ -306,7 +279,7 @@
        		$( "#imageContainerMobileOverlay" ).show();
        	}
        	       	
-		if(viewImage) {	
+		if(false) {	
 			
 			if(viewImage.config.global.navigator.show) {				
 	       	 	viewImage.observables.viewerOpen.subscribe(() => {
