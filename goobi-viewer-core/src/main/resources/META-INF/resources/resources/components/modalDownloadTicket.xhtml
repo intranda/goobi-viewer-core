@@ -28,6 +28,7 @@
 					<div class="modal-body">
 						
 						<!-- DESCRIPTION FOR REQUESTING A TICKET -->
+						<h2 data-mode="ticketMode"><span class="download-ticket-modal__object-title">#{activeDocumentBean.titleBarLabel}</span></h2>
 						<p data-mode="ticketMode">
 							<h:outputText value="#{msg.download_ticket__modal_desc_request}" />
 						</p>
@@ -37,8 +38,10 @@
 
 							<!-- ENTER PASSWORD MODE -->
 							<h:form id="download-ticket-modal__downloadTicketFormPassword" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
-							
+							 
 							<div class="download-ticket-modal__password-mode" data-mode="passwordMode">
+							
+								<h2><span class="download-ticket-modal__object-title">#{activeDocumentBean.titleBarLabel}</span></h2>
 							
 								<!-- DESCRIPTION FOR ENTERING THE PASSWORD -->
 								<p data-mode="passwordMode">

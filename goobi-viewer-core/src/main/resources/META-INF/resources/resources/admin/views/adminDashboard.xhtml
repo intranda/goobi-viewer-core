@@ -160,16 +160,17 @@
     											<ui:fragment rendered="#{status.index lt limitTickets}">
 								                    <a href="#{navigationHelper.applicationUrl}admin/rights/"
 								                        class="row -textlink admin__license-unconfigured-entry mb-2">
-								                            <div class="col-12 admin__download-tickets-dashboard-row">
-                                                                <div class="admin__download-tickets-dashboard-row-key">#{msg.type}:</div>
-                                                                <div class="admin__download-tickets-dashboard-row-value">#{ticket.type}</div>
-																<div class="admin__download-tickets-dashboard-row-key">#{msg.email}:</div>
-																<div class="admin__download-tickets-dashboard-row-value">#{ticket.email}</div>
-																<div class="admin__download-tickets-dashboard-row-key">#{msg.title}:</div>
-																<div class="admin__download-tickets-dashboard-row-value">#{ticket.title.length() gt 50 ? ticket.title.substring(0,50).concat('...') : ticket.title}</div>
+								                            <div class="col-12 admin__tickets-dashboard-row">
+																<div class="admin__tickets-dashboard-row-key">#{msg.title}:</div>
+																<div class="admin__tickets-dashboard-row-value">#{ticket.title.length() gt 50 ? ticket.title.substring(0,50).concat('...') : ticket.title}</div>
+                                                                <div class="admin__tickets-dashboard-row-key">#{msg.type}:</div>
+                                                                <div class="admin__tickets-dashboard-row-value">#{msg[ticket.type]}</div>
+																<div class="admin__tickets-dashboard-row-key">#{msg.email}:</div>
+																<div class="admin__tickets-dashboard-row-value">#{ticket.email}</div>
+																
 																<ui:fragment rendered="#{ticket.requestMessage != null}">
-																	<div class="admin__download-tickets-dashboard-row-key">#{msg.message}:</div>
-																	<div class="admin__download-tickets-dashboard-row-value">
+																	<div class="admin__tickets-dashboard-row-key">#{msg.message}:</div>
+																	<div class="admin__tickets-dashboard-row-value">
 																	     <h:outputText value="#{ticket.requestMessage.length() gt 100 ? ticket.requestMessage.substring(0,100).concat('...') : ticket.requestMessage}"
 																	         escape="true" />
 																	</div>

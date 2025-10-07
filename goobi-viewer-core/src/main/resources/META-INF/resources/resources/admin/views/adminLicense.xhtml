@@ -190,7 +190,7 @@
                                                 items="#{adminLicenseBean.currentLicenseType.getSortedPrivileges(adminLicenseBean.currentLicenseType.privilegesCopy)}">
                                                 <c:choose>
                                                     <c:when test="#{adminLicenseBean.currentLicenseType.accessTicketRequired and priv == 'LIST'}">
-                                                        <button class="btn btn--link admin__badge admin__badge-secondary admin__license-action" 
+                                                        <button disabled="true" class="btn btn--link admin__badge admin__badge-secondary admin__license-action" 
                                                         jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}"
                                                         title="#{msg.remove}">
                                                             <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
