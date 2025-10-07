@@ -379,37 +379,8 @@ function buildStyles(changedFilePath = null) {
 /* ╔══════════════════════════════════════════════════════════════════════╗
    ║ JavaScript bundles                                                   ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
-
-
-function rollupJSModules(changedFilePath = null) {
-    const outProj = path.resolve(paths.jsDistRoot, 'viewer.mjs');
-    const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/viewer.mjs');
-    
-    return gulp.src(joinPosix(paths.jsModulesRoot, '**', '*.mjs'), {allowEmpty: true})
-        .pipe(rollup({
-            input: paths.jsModulesRoot + 'viewer.mjs',
-            output: {
-                format: "iife"
-            }
-        }))
-        .pipe(gulp.dest(paths.jsDistRoot))
-        //.pipe(safeDest('resources/javascript/dist'))
-        .on('finish', () => {
-            const deployOutputs = fs.existsSync(outDeploy) ? [outDeploy] : [];
-            console.log("finished mjs");
-            // logTask({
-            //     name: 'js_viewer',
-            //     started,
-            //     changed: changedFilePath,
-            //     src: joinPosix(paths.jsModulesRoot, 'main.js'),
-            //     projOut: [outProj],
-            //     deployOut: deployOutputs,
-            // });
-        });
-    }
-
 /**
- * Bundles viewer/cms/admin/crowdsourcing modules into `viewer.min.js`.
+ * Bundles both iife and es6 modules in javascript/dev/modules into viewer.min.js
  *
  * @param {?string=} changedFilePath Optional path that triggered rebuild (for logging).
  * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
@@ -782,10 +753,7 @@ function watchMode() {
     requireDeploymentDir();
     // JS bundles
     gulp
-        .watch([
-            joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'),
-            joinPosix(paths.jsModulesRoot, '{viewer,media,cms,admin,crowdsourcing}', '**', '*.mjs'),
-        ])
+        .watch(joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'))
         .on('change', (p) => bundleViewerJS(p));
 
     gulp.watch(joinPosix(paths.jsModulesRoot, 'statistics', '**', '*.js')).on('change', (p) =>
@@ -794,12 +762,6 @@ function watchMode() {
     gulp.watch(joinPosix(paths.jsModulesRoot, 'browsersupport', '**', '*.js')).on('change', (p) =>
         bundleBrowserSupportJS(p)
     );
-
-    //  gulp
-    //     .watch([
-    //         joinPosix(paths.jsModulesRoot, '{viewer,media,cms,admin,crowdsourcing}', '**', '*.mjs')
-    //     ])
-    //     .on('change', (p) => rollupJSModules(p));
 
     // Styles & tags
     gulp.watch(joinPosix(paths.lessRoot, '**', '*.less')).on('change', (p) => buildStyles(p));
