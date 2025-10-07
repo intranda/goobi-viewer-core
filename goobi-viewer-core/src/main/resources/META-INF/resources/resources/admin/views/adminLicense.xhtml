@@ -107,10 +107,12 @@
                                                 <h:selectOneRadio group="ticketRequiredToggle" value="#{adminLicenseBean.currentLicenseType.accessTicketRequired}"
                                                     immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
                                                     <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                    <f:ajax render="functionsGroup" />
                                                 </h:selectOneRadio>
                                                 <h:selectOneRadio group="ticketRequiredToggle" value="#{adminLicenseBean.currentLicenseType.accessTicketRequired}"
                                                     immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
                                                     <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                    <f:ajax render="functionsGroup" />
                                                 </h:selectOneRadio>
                                                 <span class="toggle-outside"><span class="toggle-inside"></span></span>
                                             </div>
@@ -174,7 +176,9 @@
                                 
                                 </h:panelGroup>
 
-                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.redirect or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}" data-target-visibility="keepVisible">
+                                <h:panelGroup id="functionsGroup">
+                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.redirect or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}"
+                                    data-target-visibility="keepVisible">
                                     <hr />
                                     <div class="form-group form-row pb-3">
                                         <div class="col-2">#{msg.admin__license_functions}:</div>
@@ -182,14 +186,26 @@
                                         <div class="col-1"></div>
                                         <div class="col-2"></div>
                                         <div class="col-9 badge-hover pb-3">
-                                            <c:forEach var="priv" items="#{adminLicenseBean.currentLicenseType.getSortedPrivileges(adminLicenseBean.currentLicenseType.privilegesCopy)}">
-                                                <button 
-                                                    class="btn btn--link admin__badge admin__badge-active admin__license-action" 
-                                                    jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
-                                                        <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
-                                                        <!-- remove button -->
-                                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                                </button>
+                                            <c:forEach var="priv"
+                                                items="#{adminLicenseBean.currentLicenseType.getSortedPrivileges(adminLicenseBean.currentLicenseType.privilegesCopy)}">
+                                                <c:choose>
+                                                    <c:when test="#{adminLicenseBean.currentLicenseType.accessTicketRequired and priv == 'LIST'}">
+                                                        <button class="btn btn--link admin__badge admin__badge-secondary admin__license-action" 
+                                                        jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}"
+                                                        title="#{msg.remove}">
+                                                            <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
+                                                        </button>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <button class="btn btn--link admin__badge admin__badge-active admin__license-action" 
+                                                            jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}"
+                                                            title="#{msg.remove}">
+                                                            <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
+                                                            <!-- remove button -->
+                                                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                        </button>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </c:forEach>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
@@ -310,6 +326,8 @@
 	                                </div>
 	                                </ui:fragment>
                                 </div>
+                                </h:panelGroup>
+                                
                             </div>
 
                             <!-- OVERRIDING LICENSES -->
