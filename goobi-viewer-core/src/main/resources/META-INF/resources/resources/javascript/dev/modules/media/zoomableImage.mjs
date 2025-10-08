@@ -88,6 +88,9 @@ export default class ZoomableImage {
                     }
                 }
             });
+
+            const pageAreaGroup = createPageAreaGroup();
+
         }
     }
  
@@ -132,6 +135,10 @@ export default class ZoomableImage {
         return this.tileSourceIdToOrder[id];
     }
   
+}
+
+function createPageAreaGroup() {
+    const hash = window.location.hash;
 }
 
 function createTileSource() {

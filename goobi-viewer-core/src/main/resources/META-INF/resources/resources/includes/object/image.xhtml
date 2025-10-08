@@ -33,9 +33,6 @@
 				<div data-image-data="pageAreas">#{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson}</div>
 				<div data-image-data="overlays" data-styleclass="coords-highlighting" data-show-tooltip="false">#{activeDocumentBean.viewManager.currentSearchResultCoords}</div>
 				<div data-image-data="overlays" data-styleclass="ugcBox" data-show-tooltip="true">#{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}</div>
-				<div data-image-data="overlays" data-styleclass="image-fragment" data-show-tooltip="false">
-				</div> 
-				<script type="test/javascript">document.currentScript.previousSibling.innerHTML = window.location.hash;</script>
 			</div>
 		</div>
 		<div jsf:id="mainImageForbidden" class="view-object__image-map" rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
@@ -63,11 +60,13 @@
 			<ul>
 				<li>
 					<a data-copy-done-msg="#{msg.copyUrlDone}"
+						data-fragment-link="page"
 						data-copy-share-image="image-region-page"
 						title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_page}</a>
 				</li> 
 				<li>
 					<a data-copy-share-image="image-region-image"
+						data-fragment-link="iiif"
 						data-copy-done-msg="#{msg.copyUrlDone}"
 						title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_image}</a>
 				</li>
@@ -235,7 +234,6 @@
        			imageElement.innerHTML = viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false );
        		}
 	    }
-		console.log("hey ", zoomableImageLoaded);
    		zoomableImageLoaded.subscribe(image => {
 			console.log("IMAGE loaded");
    			initializeSequence(image);
@@ -243,8 +241,8 @@
        	    $(".openseadragon-canvas").get(0).focus = () => {
         	       //prevent focus on os-div to avoid scrolling down on click
         	 } 
-       		let shareImageFragment = new viewerJS.ShareImageFragment(image);
-       		shareImageFragment.initImageFragmentLinks();
+       		window.shareImageFragment = new window.ShareImageFragment(image);
+       		window.shareImageFragment.initImageFragmentLinks();
 		});
 
 

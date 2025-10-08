@@ -1,4 +1,7 @@
 import ZoomableImage from "./media/zoomableImage.mjs";
+import ShareImageFragment from "./media/shareImageFragment.mjs";
+
+window.ShareImageFragment = ShareImageFragment;
 
 window.zoomableImageLoaded = new rxjs.Subject();
 
