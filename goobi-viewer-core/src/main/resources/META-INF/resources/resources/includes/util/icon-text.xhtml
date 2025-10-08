@@ -5,12 +5,26 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core">
 
     <c:set var="wrapperClass" value="icon-text#{styleClass != null ? ' ' : ''}#{styleClass}" />
+    <c:set var="_textPosition" value="#{empty textPosition ? 'right' : textPosition}" />
 
     <span class="#{wrapperClass}">
-        <util:icon
-            icon="#{icon}"
-            filled="#{filled}"
-            styleClass="#{iconClass}" />
-        <span class="#{textClass}">#{text}</span>
+        <c:choose>
+            <c:when test="#{_textPosition eq 'left'}">
+                <span class="#{textClass}">#{text}</span>
+                <util:icon
+                    icon="#{icon}"
+                    filled="#{filled}"
+                    styleClass="#{iconClass}"
+                    svgClass="#{iconSvgClass}"/>
+            </c:when>
+            <c:otherwise>
+                <util:icon
+                    icon="#{icon}"
+                    filled="#{filled}"
+                    styleClass="#{iconClass}"
+                    svgClass="#{iconSvgClass}"/>
+                <span class="#{textClass}">#{text}</span>
+            </c:otherwise>
+        </c:choose>
     </span>
 </ui:component>

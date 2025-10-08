@@ -7,9 +7,21 @@
     <ui:param name="contextPath" value="#{facesContext.externalContext.requestContextPath}" />
     <ui:param name="iconPath" value="#{contextPath}/resources/icons/#{variant}/#{icon}.svg#icon" />
 
-    <span class="icon-wrapper#{styleClass != null ? ' ' : ''}#{styleClass}" aria-hidden="true">
-        <svg>
-            <use href="#{iconPath}" />
-        </svg>
-    </span>
+    <c:choose>
+        <c:when test="#{empty ariaLabel}">
+            <span class="icon-wrapper#{styleClass != null ? ' ' : ''}#{styleClass}" aria-hidden="true">
+                <svg class="#{svgClass}" focusable="false">
+                    <use href="#{iconPath}" />
+                </svg>
+            </span>
+        </c:when>
+        <c:otherwise>
+            <span class="icon-wrapper#{styleClass != null ? ' ' : ''}#{styleClass}" role="img" aria-label="#{ariaLabel}">
+                <svg class="#{svgClass}">
+                    <title>#{ariaLabel}</title>
+                    <use href="#{iconPath}" />
+                </svg>
+            </span>
+        </c:otherwise>
+    </c:choose>
 </ui:component>
