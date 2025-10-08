@@ -476,7 +476,12 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public Map<String, List<Metadata>> getMetadataTemplates(String type) {
-        return getMetadataTemplates(type, true, true);
+        try {
+            return getMetadataTemplates(type, true, true);
+
+        } catch (IllegalArgumentException e) {
+            return Collections.emptyMap();
+        }
     }
 
     public Map<String, List<Metadata>> getMetadataTemplates(String type, boolean fallbackToDefaultTemplate,
@@ -5022,7 +5027,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isTocListSiblingRecords() {
         return getLocalBoolean("toc.ancestorIdentifierFields[@listSiblingRecords]", false);
     }
-    
+
     /**
      * <p>
      * getAncestorIdentifierFieldFilterQuery(String).

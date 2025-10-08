@@ -136,7 +136,8 @@ public class RecordGeoMap {
     private static void createRelatedDocumentFeatureSet(GeoMap geoMap, StructElement mainStruct,
             FeatureSetConfiguration config) {
 
-        SolrFeatureSet featureSet = new SolrFeatureSet(false);
+        SolrFeatureSet featureSet = new SolrFeatureSet();
+        featureSet.setUseHeatmap(false);
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
         featureSet.setSolrQuery(String.format("+(%s) +PI_TOPSTRUCT:%s", config.getQuery(), mainStruct.getPi()));
         featureSet.setMarkerMetadataList(config.getMarkerMetadataList());
@@ -165,7 +166,8 @@ public class RecordGeoMap {
     }
 
     private static void createMetadataFeatureSet(GeoMap geoMap, StructElement mainStruct, FeatureSetConfiguration config) {
-        SolrFeatureSet featureSet = new SolrFeatureSet(false);
+        SolrFeatureSet featureSet = new SolrFeatureSet();
+        featureSet.setUseHeatmap(false);
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
         featureSet.setSolrQuery(String.format("+(%s) +PI_TOPSTRUCT:%s", config.getQuery(), mainStruct.getPi()));
         featureSet.setMarkerMetadataList(config.getMarkerMetadataList());
@@ -191,6 +193,12 @@ public class RecordGeoMap {
 
             String mdListType = DataManager.getInstance().getConfiguration().getMetadataListForGeomapMarkerConfig(config.getMarkerMetadataList());
             List<Metadata> mdList = DataManager.getInstance().getConfiguration().getMetadataTemplates(mdListType).get(docStruct.getDocStructType());
+            if (mdList == null) {
+                mdList = DataManager.getInstance().getConfiguration().getMetadataTemplates(mdListType).get("_DEFAULT");
+            }
+            if (mdList == null) {
+                mdList = DataManager.getInstance().getConfiguration().getMetadataTemplates(mdListType).values().iterator().next();
+            }
             IMetadataValue label = new MetadataBuilder(docStruct).build(mdList, "");
             features.forEach(f -> f.setTitle(label));
             featureSet.setFeatures(features.stream().map(GeoMapFeature::getJsonObject).map(JSONObject::toString).toList());
@@ -201,13 +209,14 @@ public class RecordGeoMap {
 
     private static void createAllDocStructFeatureSet(GeoMap geoMap, StructElement docStruct, FeatureSetConfiguration config) {
         if (matchesQuery(MetadataContainer.createMetadataEntity(docStruct), config.getQuery())) {
-            SolrFeatureSet featureSet = new SolrFeatureSet(false);
+            SolrFeatureSet featureSet = new SolrFeatureSet();
+            featureSet.setUseHeatmap(false);
             featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
             featureSet.setMarker(config.getMarker());
             featureSet.setMarkerMetadataList(config.getMarkerMetadataList());
             featureSet.setItemMetadataList(config.getItemMetadataList());
             featureSet.setSolrQuery(String.format("+PI_TOPSTRUCT:%s", docStruct.getPi()));
-            featureSet.setSearchScope(SolrSearchScope.RECORDS);
+            featureSet.setSearchScope(SolrSearchScope.DOCSTRUCTS);
             featureSet.setItemFilterName(config.getFilter());
             geoMap.addFeatureSet(featureSet);
         }

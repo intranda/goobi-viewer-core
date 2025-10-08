@@ -94,8 +94,9 @@
 	                                            <ui:fragment rendered="#{userBean.user == comment.creator or commentBean.isMayDeleteCommentsForRecord(comment.targetPI)}">
 		                                            <button
 		                                                class="admin__table-action-link -redlink #{!comment.targetPiRecordIndexed ? '-noLeftPad' : ''}"
-		                                                jsf:onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
-		                                                jsf:action="#{adminCommentBean.deleteCommentAction(comment)}">#{msg.delete}
+		                                                jsf:action="#{adminCommentBean.deleteCommentAction(comment)}"
+		                                                data-require-confirmation="true"
+		                                                data-confirmation-text="#{msg.commentDeleteConfirmationText}">#{msg.delete}
 		                                            </button>
 	                                            </ui:fragment>
 	                                        </div>

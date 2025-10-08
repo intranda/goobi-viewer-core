@@ -68,23 +68,19 @@ public class SearchResultFeatureSet extends SolrFeatureSet {
     }
 
     public String getFeaturesAsString(SearchBean searchBean) throws PresentationException {
-        if (this.featuresAsString == null) {
-            try {
-                this.featuresAsString = createFeaturesAsStringFromSearch(false, searchBean);
-            } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
-                throw new PresentationException("Error loading features", e);
-            }
+        try {
+            this.featuresAsString = createFeaturesAsStringFromSearch(false, searchBean);
+        } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
+            throw new PresentationException("Error loading features", e);
         }
         return this.featuresAsString;
     }
 
     public String getFeaturesAsJsonString(SearchBean searchBean) throws PresentationException {
-        if (this.featuresAsString == null) {
-            try {
-                this.featuresAsString = createFeaturesAsStringFromSearch(true, searchBean);
-            } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
-                throw new PresentationException("Error loading features", e);
-            }
+        try {
+            this.featuresAsString = createFeaturesAsStringFromSearch(true, searchBean);
+        } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
+            throw new PresentationException("Error loading features", e);
         }
         return this.featuresAsString;
     }

@@ -179,6 +179,10 @@ public final class MetadataTools {
             identifier = structElement.getMetadataValue(SolrConstants.URN);
             result.append("\r\n<meta name=\"DC.identifier\" content=\"").append(identifier).append("\" scheme=\"DCTERMS.URI\" />");
         }
+        if (structElement.getMetadataValue("MD_PI_DOI_URL") != null) {
+            identifier = structElement.getMetadataValue("MD_PI_DOI_URL");
+            result.append("\r\n<meta name=\"DC.identifier\" content=\"").append(identifier).append("\" scheme=\"DCTERMS.URI\" />");
+        }
         // DCTERMS.abstract
         if (structElement.getMetadataValue(FIELD_MD_INFORMATION) != null) {
             String value = structElement.getMetadataValue(FIELD_MD_INFORMATION);
@@ -303,6 +307,12 @@ public final class MetadataTools {
             String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue(FIELD_MD_INFORMATION));
             result.append("\r\n<meta name=\"description\" content=\"").append(value).append(XML_TAG_CLOSE);
         }
+        // citation_doi
+        if (structElement.getMetadataValue("MD_PI_DOI_URL") != null) {
+            String value = structElement.getMetadataValue("MD_PI_DOI_URL");
+            result.append("\r\n<meta name=\"citation_doi\" content=\"").append(value).append("\" />");
+        }
+
 
         return result.toString();
     }

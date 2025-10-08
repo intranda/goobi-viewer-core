@@ -3344,10 +3344,6 @@ html[lang="es"] .admin__radio-switch {
 			display: none;
 		}
 
-		&__topbar-frontend {
-			display: none;
-		}
-
 		&__topbar-backend-view-frontend-link-text {
 			display: none;
 		}
@@ -3375,6 +3371,17 @@ html[lang="es"] .admin__radio-switch {
 			left: unset;
 		}
 
+		&__topbar-backend .-dropdown>ul,
+		&__topbar-backend .-dropdown>form>ul,
+		&__topbar-frontend .-dropdown>ul,
+		&__topbar-frontend .-dropdown>form>ul {
+			right: auto;
+			left: 0;
+			top: 100%;
+			margin: 0;
+			min-width: 20rem;
+		}
+
 		&__boxed-entry {
 			&.-w25 {
 				grid-column: span 12;
@@ -3385,6 +3392,21 @@ html[lang="es"] .admin__radio-switch {
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+	.admin {
+		&__topbar-frontend-view-dashboard-link,
+		&__topbar-frontend-add {
+			> span {
+				display: none;
+			}
+			.fa {
+				margin-right: unset;
+			}
+		}
+		&__topbar-frontend-logout {
+			margin-right: unset;
+		}
+		
+	}
 
 	.connected-top,
 	.connected-middle {
