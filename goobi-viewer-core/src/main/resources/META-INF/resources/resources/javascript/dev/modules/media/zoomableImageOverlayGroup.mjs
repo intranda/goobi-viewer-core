@@ -1,6 +1,6 @@
 import ZoomableImage from "./zoomableImage.mjs";
 
-const _debug = true;
+const _debug = false;
 
 const _config = {
     styleclass: "imageview-overlay",
@@ -17,20 +17,20 @@ export default class ZoomableImageOverlayGroup {
     constructor(image, overlaySources, config) {
 
         this.config = jQuery.extend(true, {}, _config, config);
-        console.log("initialize overlays", overlaySources, this.config);
+        if(_debug)console.log("initialize overlays", overlaySources, this.config);
 
         this.overlayGroup = new ImageView.OverlayGroup(image.viewer, {
             className: this.config.styleclass,
             tooltipClassName:  this.config.styleclass + " tooltip",
             highlightClassName:  this.config.styleclass + " highlight"
-        });
+        }); 
 
         this.overlays = createOverlays(overlaySources, image.getCurrentTileSourceId());
 
     }
 
     show() {
-        console.log("show in viewer ", this.overlays);
+        if(_debug)console.log("show in viewer ", this.overlays);
         this.overlayGroup.addToViewer(this.overlays);
     }
 

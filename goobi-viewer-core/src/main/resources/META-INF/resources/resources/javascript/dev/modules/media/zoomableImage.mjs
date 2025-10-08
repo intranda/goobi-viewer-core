@@ -1,6 +1,4 @@
 import ZoomableImageOverlayGroup from "./zoomableImageOverlayGroup.mjs";
-import SequenceMode from "./sequenceMode.mjs";
-
 
 const _debug = true;
 
@@ -9,7 +7,7 @@ const _config = {
         image: '[data-image="zoomable"]',
         data: {
             tileSource: '[data-image="zoomable"] [data-image-data="tileSource"]',
-            record: '[data-image="zoomable"] [data-image-data="structureIdentifier"]',
+            record: '[data-image="zoomable"] [data-image-data="recordIdentifier"]',
             structure: '[data-image="zoomable"] [data-image-data="structureIdentifier"]',
             pageType: '[data-image="zoomable"] [data-image-data="pageType"]',
             page: '[data-image="zoomable"] [data-image-data="pageNumber"]',
@@ -20,7 +18,7 @@ const _config = {
         controls: { 
             rotateLeft: '.rotate-left',
             rotateRight: '.rotate-right',
-        	reset: '.reset',
+        	reset: '.reset', 
             zoomSlider: '.zoom-slider'
         }
     },
@@ -94,12 +92,11 @@ export default class ZoomableImage {
     }
  
     load() {
-        this.viewer.load( Object.values(this.tileSources), this.getCurrentTileSourceIndex() )
+        return this.viewer.load( Object.values(this.tileSources), this.getCurrentTileSourceIndex() )
         .then(image => {
-            console.log("image loaded")
             this.sequence?.initialize(this.getCurrentTileSourceId());
-            console.log("init sequence to ", this.getCurrentTileSourceId());
             this.overlayGroups.forEach(group => group.show());
+            return this;
         });
     }
 

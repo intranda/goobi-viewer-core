@@ -16,20 +16,18 @@
         constructor(image, overlaySources, config) {
 
             this.config = jQuery.extend(true, {}, _config$1, config);
-            console.log("initialize overlays", overlaySources, this.config);
 
             this.overlayGroup = new ImageView.OverlayGroup(image.viewer, {
                 className: this.config.styleclass,
                 tooltipClassName:  this.config.styleclass + " tooltip",
                 highlightClassName:  this.config.styleclass + " highlight"
-            });
+            }); 
 
             this.overlays = createOverlays(overlaySources, image.getCurrentTileSourceId());
 
         }
 
         show() {
-            console.log("show in viewer ", this.overlays);
             this.overlayGroup.addToViewer(this.overlays);
         }
 
@@ -58,7 +56,7 @@
             image: '[data-image="zoomable"]',
             data: {
                 tileSource: '[data-image="zoomable"] [data-image-data="tileSource"]',
-                record: '[data-image="zoomable"] [data-image-data="structureIdentifier"]',
+                record: '[data-image="zoomable"] [data-image-data="recordIdentifier"]',
                 structure: '[data-image="zoomable"] [data-image-data="structureIdentifier"]',
                 pageType: '[data-image="zoomable"] [data-image-data="pageType"]',
                 page: '[data-image="zoomable"] [data-image-data="pageNumber"]',
@@ -69,7 +67,7 @@
             controls: { 
                 rotateLeft: '.rotate-left',
                 rotateRight: '.rotate-right',
-            	reset: '.reset',
+            	reset: '.reset', 
                 zoomSlider: '.zoom-slider'
             }
         },
@@ -143,12 +141,11 @@
         }
      
         load() {
-            this.viewer.load( Object.values(this.tileSources), this.getCurrentTileSourceIndex() )
+            return this.viewer.load( Object.values(this.tileSources), this.getCurrentTileSourceIndex() )
             .then(image => {
-                console.log("image loaded");
                 this.sequence?.initialize(this.getCurrentTileSourceId());
-                console.log("init sequence to ", this.getCurrentTileSourceId());
                 this.overlayGroups.forEach(group => group.show());
+                return this;
             });
         }
 
@@ -271,9 +268,17 @@
         }
     }
 
+    window.zoomableImageLoaded = new rxjs.Subject();
+
     document.addEventListener('DOMContentLoaded', () => {
         window.image = new ZoomableImage();
-        window.image.load();
+        window.image.load()
+        .then(image => {
+            window.zoomableImageLoaded.next(image);
+        })
+        .catch(e => {
+            window.zoomableImageLoaded.error(e);
+        });
     });
 
 })();

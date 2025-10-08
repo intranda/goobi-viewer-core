@@ -191,6 +191,7 @@ const prettyPath = (p) => (p ? toPosix(String(p).replace(homeDir, '~')) : '');
  */
 function safeDest(subPath) {
     const full = path.join(DEPLOYMENT_DIR, subPath);
+    fs.mkdirSync(full, { recursive: true });
     if (!fs.existsSync(full)) {
         log(colors.yellow(`[deploy] target does not exist, skipping: ${prettyPath(full)}`));
         return through.obj((f, _e, cb) => cb(null, f));
