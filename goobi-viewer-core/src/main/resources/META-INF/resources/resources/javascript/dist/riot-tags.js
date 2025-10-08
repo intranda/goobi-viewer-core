@@ -1981,7 +1981,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 			filters: {
 		        brightness : {
 				    label: "Brightness",
-				    type: ImageView.Tools.Filter.Brightness,
+				    type: ImageView.ImageFilters.Brightness,
 				    min: -255,
 				    max: 255,
 				    step: 1,
@@ -1992,7 +1992,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        contrast : {
 				    label: "Contrast",
-				    type: ImageView.Tools.Filter.Contrast,
+				    type: ImageView.ImageFilters.Contrast,
 				    min: 0,
 				    max: 2,
 				    step: 0.05,
@@ -2003,7 +2003,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        saturate : {
 				    label: "Color Saturation",
-				    type: ImageView.Tools.Filter.ColorSaturation,
+				    type: ImageView.ImageFilters.ColorSaturation,
 				    min: 0,
 				    max: 5,
 				    step: 0.1,
@@ -2014,7 +2014,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 				hue : {
 				    label: "Color rotation",
-				    type: ImageView.Tools.Filter.ColorRotate,
+				    type: ImageView.ImageFilters.ColorRotate,
 				    min: -180,
 				    max: 180,
 				    step: 1,
@@ -2025,7 +2025,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 				threshold : {
 				    label: "Bitonal",
-				    type: ImageView.Tools.Filter.Threshold,
+				    type: ImageView.ImageFilters.Threshold,
 				    min: 0,
 				    max: 255,
 				    step: 1,
@@ -2037,7 +2037,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        grayscale : {
 				    label: "Grayscale",
-				    type: ImageView.Tools.Filter.Grayscale,
+				    type: ImageView.ImageFilters.Grayscale,
 				    slider: false,
 				    checkbox: true,
 				    visible: true,
@@ -2045,14 +2045,14 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 				invert : {
 				    label: "Invert",
-				    type: ImageView.Tools.Filter.Invert,
+				    type: ImageView.ImageFilters.Invert,
 				    slider: false,
 				    checkbox: true,
 				    visible: true
 				},
 		        blur : {
 				    label: "Blur",
-				    type: ImageView.Tools.Filter.Blur,
+				    type: ImageView.ImageFilters.Blur,
 				    min: 1,
 				    max: 10,
 				    step: 1,
@@ -2063,7 +2063,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        sharpen : {
 				    label: "Sharpen",
-				    type: ImageView.Tools.Filter.Sharpen,
+				    type: ImageView.ImageFilters.Sharpen,
 				    base: 1,
 				    slider: false,
 				    checkbox: true,

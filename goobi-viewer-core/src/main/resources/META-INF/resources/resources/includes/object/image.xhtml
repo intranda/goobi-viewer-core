@@ -243,6 +243,20 @@
         	 } 
        		window.shareImageFragment = new window.ShareImageFragment(image);
        		window.shareImageFragment.initImageFragmentLinks();
+
+   	 	    let originClean = image.viewer.isOriginClean();
+   	 	    if(originClean) {
+   	 	        $(".image-controls__option.image-filter button").prop('disabled', false);
+   	 	    	$(".image-controls__option.image-filter button i").tooltip("disable");
+   	 	        $(".image-controls__option.image-filter button")
+   	 	        .attr('title', "#{msg.label__image_filter_toolkit}")
+   	 	        .tooltip('_fixTitle');
+   	 	        
+				riot.mount("imageFilters", {
+				    image: image.viewer,
+				    config: imageFilterConfig
+			    });
+    	 	 }
 		});
 
 
@@ -268,22 +282,7 @@
 	       	 	});
 			}
 		    
-		    //init image filter tools
-       	 	viewImage.observables.viewportUpdate.pipe(RxOp.first()).subscribe( () => {
-       	 	    let originClean = viewImage.isOriginClean();
-       	 	    if(originClean) {
-       	 	        $(".image-controls__option.image-filter button").prop('disabled', false);
-       	 	    	$(".image-controls__option.image-filter button i").tooltip("disable");
-       	 	        $(".image-controls__option.image-filter button")
-       	 	        .attr('title', "#{msg.label__image_filter_toolkit}")
-       	 	        .tooltip('_fixTitle');
-       	 	        
-					riot.mount("imageFilters", {
-					    image: viewImage,
-					    config: imageFilterConfig
-				    });
-       	 	    }
-       	 	});
+
 		}
 
 
