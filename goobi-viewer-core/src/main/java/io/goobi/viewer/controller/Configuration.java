@@ -5027,6 +5027,7 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param field
      * @return Configured filter query for the given field; empty string is none found
+     * @should return empty string if field config not found
      * @should return correctValue
      */
     public String getAncestorIdentifierFieldFilterQuery(String field) {
