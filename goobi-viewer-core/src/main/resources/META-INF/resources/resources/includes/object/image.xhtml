@@ -28,14 +28,14 @@
 				<div data-image-data="recordIdentifier">#{activeDocumentBean.viewManager.pi}</div>
 				<div data-image-data="structureIdentifier">#{activeDocumentBean.logid}</div>
 				<div data-image-data="pageType">#{navigationHelper.currentPageType}</div>
-				<div data-image-data="pageNumber">#{navigationHelper.currentPage}</div>
+				<div data-image-data="pageNumber">#{activeDocumentBean.viewManager.currentImageOrder}</div>
 				<div data-image-data="footer" data-height="#{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)}">#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}</div>
 				<div data-image-data="pageAreas">#{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson}</div>
 				<div data-image-data="overlays" data-styleclass="coords-highlighting" data-show-tooltip="false">#{activeDocumentBean.viewManager.currentSearchResultCoords}</div>
 				<div data-image-data="overlays" data-styleclass="ugcBox" data-show-tooltip="true">#{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}</div>
 				<div data-image-data="overlays" data-styleclass="image-fragment" data-show-tooltip="false">
-					<script type="test/javascript">document.currentScript.parentElement.innerHTML = window.location.hash;</script>
-				</div>
+				</div> 
+				<script type="test/javascript">document.currentScript.previousSibling.innerHTML = window.location.hash;</script>
 			</div>
 		</div>
 		<div jsf:id="mainImageForbidden" class="view-object__image-map" rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">

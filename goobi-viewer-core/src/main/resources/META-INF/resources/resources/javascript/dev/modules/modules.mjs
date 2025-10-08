@@ -1,5 +1,6 @@
-import initZoomableImage from "./media/image.mjs";
+import ZoomableImage from "./media/zoomableImage.mjs";
 
 document.addEventListener('DOMContentLoaded', () => {
-    initZoomableImage();
+    window.image = new ZoomableImage();
+    window.image.load();
 }); 
