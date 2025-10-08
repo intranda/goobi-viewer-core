@@ -479,6 +479,7 @@ public class Configuration extends AbstractConfiguration {
      * @param type
      * @return Map&lt;String, List&lt;Metadata&gt;&gt;
      * @should return empty map if type null
+     * @should return correct config
      */
     public Map<String, List<Metadata>> getMetadataTemplates(String type) {
         try {

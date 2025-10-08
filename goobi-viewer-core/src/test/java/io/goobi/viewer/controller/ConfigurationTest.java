@@ -721,9 +721,22 @@ class ConfigurationTest extends AbstractTest {
     void getMetadataTemplates_shouldReturnEmptyListIfListTypeNotFound() {
         Map<String, List<Metadata>> result = DataManager.getInstance()
                 .getConfiguration()
-                .getMetadataTemplates("sometype");
+                .getMetadataTemplates(null);
         assertNotNull(result);
         assertTrue(result.isEmpty());
+    }
+    
+    /**
+     * @see Configuration#getMetadataTemplates(String)
+     * @verifies return empty map if type null
+     */
+    @Test
+    void getMetadataTemplates_shouldReturnCorrectConfig() {
+        Map<String, List<Metadata>> result = DataManager.getInstance()
+                .getConfiguration()
+                .getMetadataTemplates("searchHit");
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
     }
 
     /**
