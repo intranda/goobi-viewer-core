@@ -73,17 +73,22 @@
                 title="#{msg.admin__view_frontend}"
                 aria-label="#{msg.admin__view_frontend}"
             >
-                <i class="fa fa-home" aria-hidden="true"></i>
-                <span class="admin__topbar-backend-view-frontend-link-text"
-                    >#{adminThemesBean.getThemeLabel(configurationBean.name)}</span
-                >
+                <util:icon-text
+                    icon="home"
+                    text="#{adminThemesBean.getThemeLabel(configurationBean.name)}"
+                    textClass="admin__topbar-backend-view-frontend-link-text"
+                />
             </a>
 
             <!-- ADD SOMETHING NEW -->
             <ui:fragment rendered="#{userBean.user.superuser}">
                 <div class="admin__topbar-backend-add -dropdown">
-                    <i class="fa fa-plus" aria-hidden="true"></i
-                    ><span class="admin__topbar-backend-add-text">#{msg.admin__new}</span>
+                    <util:icon-text
+                        icon="library-plus"
+                        text="#{msg.admin__new}"
+                        iconClass="icon--spin"
+                        textClass="admin__topbar-backend-add-text"
+                    />
                     <ul class="admin__topbar-backend-dropdown">
                         <li>
                             <a
@@ -134,7 +139,10 @@
                             rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}"
                         >
                             <div class="admin__topbar-frontend-hotfolder-files-action">
-                                <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
+                                <util:icon
+                                    icon="loader-2"
+                                    svgClass="icon icon-rotate icon-rotate--smooth icon-xl"
+                                />
                                 <span class="admin__topbar-hotfolder-files-action-count"
                                     >#{adminBean.hotfolderFileCount}</span
                                 >
@@ -158,8 +166,11 @@
                 <!-- CHANGE LANGUAGE -->
                 <ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">
                     <div class="admin__topbar-backend-language -dropdown">
-                        <i class="fa fa-globe" aria-hidden="true"></i
-                        ><span class="admin__topbar-backend-language-text">#{msg.MD_LANGUAGE}</span>
+                        <util:icon-text
+                            icon="world"
+                            text="#{msg.MD_LANGUAGE}"
+                            textClass="admin__topbar-backend-language-text"
+                        />
                         <h:form id="changeLocalForm1" prependId="false">
                             <ul class="admin__topbar-backend-dropdown">
                                 <ui:repeat
@@ -209,8 +220,13 @@
                             styleClass="admin__topbar-backend-logout-link"
                             action="#{userBean.logout}"
                         >
-                            <span>#{msg.logout}</span>
-                            <i class="fa fa-power-off" aria-hidden="true"></i>
+                            <util:icon-text
+                                icon="power"
+                                text="#{msg.logout}"
+								textPosition="left"
+								styleClass="icon-stroke icon-stroke-w1"
+								iconSvgClass="icon icon-xl"
+                            />
                         </h:commandLink>
                     </h:form>
                 </div>
