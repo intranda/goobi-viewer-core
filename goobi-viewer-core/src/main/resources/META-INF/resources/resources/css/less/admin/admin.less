@@ -414,9 +414,8 @@
 		border: 1px solid #ccc;
 		margin-bottom: 2rem;
 		border-radius: 7px;
-
+ 
 		&.-columns-3-2-1 {
-
 			.admin__grid-table-data-row,
 			.admin__grid-table-title-row {
 				display: grid;
@@ -425,11 +424,17 @@
 		}
 
 		&.-columns-2-2-1-1 {
-
 			.admin__grid-table-data-row,
 			.admin__grid-table-title-row {
 				display: grid;
 				grid-template-columns: 2fr 2fr 1fr 1fr;
+			}
+		}
+		&.-columns-2-1-1-1-1 {
+			.admin__grid-table-data-row,
+			.admin__grid-table-title-row {
+				display: grid;
+				grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
 			}
 		}
 

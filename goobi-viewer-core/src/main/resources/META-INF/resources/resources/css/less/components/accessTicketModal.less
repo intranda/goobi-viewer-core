@@ -1,8 +1,8 @@
 /* ==============================================================
-   Download Ticket Modal Styles
+   Access Ticket Modal & Object Page Styles
    ==============================================================*/
 
-.download-ticket-modal {
+.access-ticket-modal {
 	&__actions {
 		display: flex;
 		justify-content: flex-end;
@@ -22,6 +22,28 @@
 	}
 }
 
+.access-ticket-info {
+	margin-top: 20px;
+	display: flex;
+	justify-content: center;
+	&__inner {
+		padding: 25px;
+		background: #fff;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 10px;
+		color: #222;
+		p {
+			color: #222;
+		}
+	}
+	&__object-title {
+		font-size: 18px;
+		font-weight: 700;
+	}
+}
+ 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
@@ -33,7 +55,7 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.download-ticket-modal {
+	.access-ticket-modal {
 		&__actions {
 			flex-direction: column;
 			align-items: flex-end;

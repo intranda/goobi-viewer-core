@@ -92,11 +92,11 @@ import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
-import io.goobi.viewer.model.security.DownloadTicket;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.tickets.AccessTicket;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -1622,11 +1622,11 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public DownloadTicket getDownloadTicket(Long id) throws DAOException {
+    public AccessTicket getTicket(Long id) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            return em.find(DownloadTicket.class, id);
+            return em.find(AccessTicket.class, id);
         } catch (EntityNotFoundException e) {
             return null;
         } finally {
@@ -1636,13 +1636,13 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public DownloadTicket getDownloadTicketByPasswordHash(String passwordHash) throws DAOException {
+    public AccessTicket getTicketByPasswordHash(String passwordHash) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<DownloadTicket> cq = cb.createQuery(DownloadTicket.class);
-            Root<DownloadTicket> root = cq.from(DownloadTicket.class);
+            CriteriaQuery<AccessTicket> cq = cb.createQuery(AccessTicket.class);
+            Root<AccessTicket> root = cq.from(AccessTicket.class);
             cq.select(root).where(cb.equal(root.get("passwordHash"), passwordHash));
             return em.createQuery(cq).getSingleResult();
         } catch (NoResultException e) {
@@ -1652,17 +1652,13 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @should return correct count
-     */
+    /** {@inheritDoc} */
     @Override
-    public long getActiveDownloadTicketCount(Map<String, String> filters) throws DAOException {
+    public long getActiveTicketCount(Map<String, String> filters) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM DownloadTicket a");
+            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM AccessTicket a");
             Map<String, String> params = new HashMap<>();
             String filterQuery = createFilterQuery(null, filters, params);
             if (StringUtils.isEmpty(filterQuery)) {
@@ -1680,19 +1676,15 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @should filter rows correctly
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<DownloadTicket> getActiveDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+    public List<AccessTicket> getActiveTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            StringBuilder sbQuery = new StringBuilder("SELECT a FROM DownloadTicket a");
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM AccessTicket a");
             Map<String, String> params = new HashMap<>();
             String filterQuery = createFilterQuery(null, filters, params);
             if (StringUtils.isEmpty(filterQuery)) {
@@ -1724,19 +1716,15 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @should return tickets that have never been activated
-     */
+    /** {@inheritDoc} */
     @Override
-    public List<DownloadTicket> getDownloadTicketRequests() throws DAOException {
+    public List<AccessTicket> getTicketRequests() throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<DownloadTicket> cq = cb.createQuery(DownloadTicket.class);
-            Root<DownloadTicket> root = cq.from(DownloadTicket.class);
+            CriteriaQuery<AccessTicket> cq = cb.createQuery(AccessTicket.class);
+            Root<AccessTicket> root = cq.from(AccessTicket.class);
             cq.select(root).where(cb.and(root.get("passwordHash").isNull(), root.get("expirationDate").isNull()));
             return em.createQuery(cq).getResultList();
         } finally {
@@ -1746,31 +1734,12 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addDownloadTicket(DownloadTicket downloadTicket) throws DAOException {
+    public boolean addTicket(AccessTicket ticket) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.persist(downloadTicket);
-            commitTransaction(em);
-        } catch (PersistenceException e) {
-            logger.error(e.getMessage());
-            handleException(em);
-            return false;
-        } finally {
-            close(em);
-        }
-        return true;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean updateDownloadTicket(DownloadTicket downloadTicket) throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            startTransaction(em);
-            em.merge(downloadTicket);
+            em.persist(ticket);
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
@@ -1784,12 +1753,31 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean deleteDownloadTicket(DownloadTicket downloadTicket) throws DAOException {
+    public boolean updateTicket(AccessTicket ticket) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            DownloadTicket o = em.getReference(DownloadTicket.class, downloadTicket.getId());
+            em.merge(ticket);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error(e.getMessage());
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteTicket(AccessTicket ticket) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            AccessTicket o = em.getReference(AccessTicket.class, ticket.getId());
             em.remove(o);
             commitTransaction(em);
             return true;
