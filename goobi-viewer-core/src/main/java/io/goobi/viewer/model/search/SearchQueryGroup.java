@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
@@ -87,6 +88,11 @@ public class SearchQueryGroup implements Serializable {
             SearchQueryItem firstItem = new SearchQueryItem(template);
             firstItem.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
             firstItem.setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
+            String defaultOperator = DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateFirstLineDefaultOperator(template);
+            if (StringUtils.isNotEmpty(defaultOperator)) {
+                firstItem.setOperator(SearchItemOperator.valueOf(defaultOperator));
+                logger.trace("Set configured first line operator: {}", defaultOperator);
+            }
             queryItems.add(firstItem);
         }
         if (fieldConfigs != null) {
@@ -100,6 +106,15 @@ public class SearchQueryGroup implements Serializable {
                     // displaySelectItems should be set correctly after calling item.setField()
                     if (StringUtils.isNotEmpty(fieldConfig.getPreselectValue())) {
                         item.setPreselectValue(fieldConfig.getPreselectValue());
+                    }
+                    // Set default operator, if configured
+                    String defaultOperator =
+                            DataManager.getInstance()
+                                    .getConfiguration()
+                                    .getAdvancedSearchFieldDefaultOperator(fieldConfig.getField(), template, false);
+                    if (StringUtils.isNotEmpty(defaultOperator)) {
+                        item.setOperator(SearchItemOperator.valueOf(defaultOperator));
+                        logger.trace("Set configured operator for field {}: {}", fieldConfig.getField(), defaultOperator);
                     }
                     queryItems.add(item);
                 }

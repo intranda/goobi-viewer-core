@@ -2205,6 +2205,37 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @param field
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return Configured value; null if none found
+     * @should return correct value
+     */
+    public String getAdvancedSearchFieldDefaultOperator(String field, String template, boolean fallbackToDefaultTemplate) {
+        return getAdvancedSearchFieldGetAttributeValue(field, "defaultOperator", template, fallbackToDefaultTemplate);
+    }
+    
+    /**
+     * 
+     * @param template
+     * @return Configured value; null if none found
+     * @should return correct value
+     */
+    public String getAdvancedSearchTemplateFirstLineDefaultOperator(String template) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null) {
+            return null;
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, false);
+        if (usingTemplate == null) {
+            return null;
+        }
+
+        return usingTemplate.getString("[@firstLineDefaultOperator]");
+    }
+
+    /**
+     * 
+     * @param field
      * @param attribute
      * @param template
      * @param fallbackToDefaultTemplate

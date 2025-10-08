@@ -1772,6 +1772,24 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getAdvancedSearchFieldDefaultOperator(String,String,boolean)
+     * @verifies return correct value
+     */
+    @Test
+    void getAdvancedSearchFieldDefaultOperator_shouldReturnCorrectValue() {
+        assertEquals("OR", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDefaultOperator("MD_NAME", "person", false));
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchTemplateFirstLineDefaultOperator(String)
+     * @verifies return correct value
+     */
+    @Test
+    void getAdvancedSearchTemplateFirstLineDefaultOperator_shouldReturnCorrectValue() {
+        assertEquals("OR", DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateFirstLineDefaultOperator("_DEFAULT"));
+    }
+
+    /**
      * @see Configuration#getSidebarTocCollapseLengthThreshold()
      * @verifies return correct value
      */

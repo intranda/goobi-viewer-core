@@ -454,7 +454,7 @@
 			<defaultItemNumber>3</defaultItemNumber>
 			<!-- advancedSearchFields: index fields to be used in advanced search -->
 			<searchFields>
-                <template name="_DEFAULT">
+                <template name="_DEFAULT" firstLineDefaultOperator="OR">
 				    <field hierarchical="true" visible="true">DC</field>
 				    <field untokenizeForPhraseSearch="true" visible="true">MD_TITLE</field>
 				    <field>MD_CREATOR</field>
@@ -469,7 +469,7 @@
                     <field displaySelectItemsThreshold="20" selectType="badges" preselectValue="monograph">DOCSTRCT</field>
                 </template>
                 <template name="person" query="DOCSTRCT:person">
-                    <field untokenizeForPhraseSearch="true" visible="true" allowMultipleItems="true">MD_NAME</field>
+                    <field untokenizeForPhraseSearch="true" visible="true" allowMultipleItems="true" defaultOperator="OR">MD_NAME</field>
                     <field>MD_BIRTHPLACE</field>
                 </template>
 			</searchFields>
