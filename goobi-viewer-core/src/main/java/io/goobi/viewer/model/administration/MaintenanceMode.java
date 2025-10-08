@@ -118,6 +118,7 @@ public class MaintenanceMode implements IPolyglott {
     /**
      * @param language
      * @return Text value in the given language
+     * @should return translation correctly
      */
     public String getTextOrDefault(String language) {
         return Translation.getTranslation(translations, language, "text", true);

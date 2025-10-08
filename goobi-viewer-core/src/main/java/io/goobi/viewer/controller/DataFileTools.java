@@ -511,11 +511,11 @@ public final class DataFileTools {
      * @param language a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
-     * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should load tei document correctly
      */
-    public static String loadTei(String pi, String language) throws FileNotFoundException, IOException {
+    public static String loadTei(String pi, String language) throws IOException {
         logger.trace("loadTei: {}/{}", pi, language);
         if (pi == null) {
             return null;

@@ -984,6 +984,7 @@
 			anchor identifiers. -->
 		<ancestorIdentifierFields listSiblingRecords="true">
 			<field filterQuery="-DOCSTRCT:year">PI_PARENT</field>
+            <field>MD_OTHERANCESTOR</field>
 		</ancestorIdentifierFields>
 
 		<!-- display as interactive tree view -->

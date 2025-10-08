@@ -1575,7 +1575,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                             fileName,
                             IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, NetTools.getIpAddress(request));
             // logger.trace("Born digital access for page {} is granted: {}", order, access.isGranted()); //NOSONAR Debug
-            bornDigitalDownloadTicketRequired = access.isTicketRequired();
+            bornDigitalDownloadTicketRequired = access.isDownloadTicketRequired();
             // logger.trace("Ticket required for page {}: {}", order, access.isTicketRequired()); //NOSONAR Debug
             return access.isGranted();
         }

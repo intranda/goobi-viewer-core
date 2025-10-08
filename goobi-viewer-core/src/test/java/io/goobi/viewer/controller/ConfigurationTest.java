@@ -715,6 +715,32 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getMetadataTemplates(String)
+     * @verifies return empty map if type null
+     */
+    @Test
+    void getMetadataTemplates_shouldReturnEmptyListIfListTypeNotFound() {
+        Map<String, List<Metadata>> result = DataManager.getInstance()
+                .getConfiguration()
+                .getMetadataTemplates(null);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see Configuration#getMetadataTemplates(String)
+     * @verifies return empty map if type null
+     */
+    @Test
+    void getMetadataTemplates_shouldReturnCorrectConfig() {
+        Map<String, List<Metadata>> result = DataManager.getInstance()
+                .getConfiguration()
+                .getMetadataTemplates("searchHit");
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+    }
+
+    /**
      * @see Configuration#getSearchHitMetadataForTemplate(String)
      * @verifies return correct template configuration
      */
@@ -2565,8 +2591,9 @@ class ConfigurationTest extends AbstractTest {
     void getAncestorIdentifierFields_shouldReturnAllConfiguredValues() {
         List<String> list = DataManager.getInstance().getConfiguration().getAncestorIdentifierFields();
         assertNotNull(list);
-        assertEquals(1, list.size());
+        assertEquals(2, list.size());
         assertEquals(SolrConstants.PI_PARENT, list.get(0));
+        assertEquals("MD_OTHERANCESTOR", list.get(1));
     }
 
     /**
@@ -2576,6 +2603,16 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isTocListSiblingRecords_shouldReturnCorrectValue() {
         assertTrue(DataManager.getInstance().getConfiguration().isTocListSiblingRecords());
+    }
+
+    /**
+     * @see Configuration#isTocListSiblingRecords()
+     * @verifies return empty string if field config not found
+     */
+    @Test
+    void getAncestorIdentifierFieldFilterQuery_shouldReturnEmptyStringIfFieldConfigNotFound() {
+        assertEquals("", DataManager.getInstance().getConfiguration().getAncestorIdentifierFieldFilterQuery("MD_NOSUCHFIELD")); // field not defined
+        assertEquals("", DataManager.getInstance().getConfiguration().getAncestorIdentifierFieldFilterQuery("MD_OTHERANCESTOR")); // field defined but not query
     }
 
     /**

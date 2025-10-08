@@ -14,42 +14,53 @@
 
 		<!-- NOT (YET) ACCEPTED DOWNLOAD REQUESTS -->
 		<ui:fragment
-			rendered="#{not empty adminLicenseBean.downloadTicketRequests}">
+			rendered="#{not empty adminLicenseBean.ticketRequests}">
 
 			<!-- PENDING TICKETS HEADING -->
-			<h2 class="admin__download-tickets-heading">#{msg.admin__download_tickets__pending_requests}</h2>
+			<h2 class="admin__tickets-heading">#{msg.admin__access_tickets__pending_requests}</h2>
 
-			<div class="admin__download-tickets-pending-tickets-wrapper">
+			<div class="admin__tickets-pending-tickets-wrapper">
 
 				<ui:repeat var="ticket"
-					value="#{adminLicenseBean.downloadTicketRequests}"
+					value="#{adminLicenseBean.ticketRequests}"
 					varStatus="status">
 
 					<div
-						class="admin__boxed-entry -warning admin__download-tickets-pending-ticket-single">
+						class="admin__boxed-entry -warning admin__tickets-pending-ticket-single">
 
 						<!-- PENDING TICKET REQUESTED BY EMAIL SENDER -->
-						<div class="admin__download-tickets-pending-ticket-title-wrapper">
-							<h2 class="admin__download-tickets-pending-ticket-title">#{msg.admin__dashboard_download_ticket_request_by}
+						<div class="admin__tickets-pending-ticket-title-wrapper">
+							<h2 class="admin__tickets-pending-ticket-title">#{msg.admin__dashboard_access_ticket_request_by}
 								#{ticket.email}</h2>
 						</div>
-
+						
 						<!-- PENDING TICKET RECORD TITLE -->
 						<div
-							class="admin__download-tickets-pending-ticket-key-value-wrapper">
-							<div class="admin__download-tickets-pending-ticket-key">
+							class="admin__tickets-pending-ticket-key-value-wrapper">
+							<div class="admin__tickets-pending-ticket-key">
 								#{msg.title}:</div>
-							<div class="admin__download-tickets-pending-ticket-value">
+							<div class="admin__tickets-pending-ticket-value">
 								<a href="#{navigationHelper.metadataUrl}/#{ticket.pi}/1/">#{ticket.title}</a>
 							</div>
 						</div>
+						
+                        <!-- PENDING TICKET TYPE -->
+                        <div
+                            class="admin__tickets-pending-ticket-key-value-wrapper">
+                            <div class="admin__tickets-pending-ticket-key">
+                                #{msg.type}:</div>
+                            <div class="admin__tickets-pending-ticket-value">
+                                #{msg[ticket.type]} 
+                            </div>
+                        </div>
+
 
 						<!-- PENDING TICKET EMAIL -->
 						<div
-							class="admin__download-tickets-pending-ticket-key-value-wrapper #{ticket.requestMessage == null ? 'mb-4' : ''}">
-							<div class="admin__download-tickets-pending-ticket-key">
+							class="admin__tickets-pending-ticket-key-value-wrapper #{ticket.requestMessage == null ? 'mb-4' : ''}">
+							<div class="admin__tickets-pending-ticket-key">
 								#{msg.email}:</div>
-							<div class="admin__download-tickets-pending-ticket-value">
+							<div class="admin__tickets-pending-ticket-value">
 								<a href="mailto:#{ticket.email}">#{ticket.email}</a>
 							</div>
 						</div>
@@ -57,20 +68,20 @@
 						<!-- PENDING TICKET MSG -->
 						<ui:fragment rendered="#{ticket.requestMessage != null}">
 						<div
-							class="admin__download-tickets-pending-ticket-key-value-wrapper mb-4">
-							<div class="admin__download-tickets-pending-ticket-key">
+							class="admin__tickets-pending-ticket-key-value-wrapper mb-4">
+							<div class="admin__tickets-pending-ticket-key">
 								#{msg.message}:</div>
 							<div
-								class="admin__download-tickets-pending-ticket-value admin__download-tickets-pending-ticket-value-message-wrapper">
+								class="admin__tickets-pending-ticket-value admin__tickets-pending-ticket-value-message-wrapper">
 								<div
-									class="admin__download-tickets-pending-ticket-value-message">
+									class="admin__tickets-pending-ticket-value-message">
 									#{ticket.requestMessage}</div>
 								<div
-									class="admin__download-tickets-pending-ticket-value-invis-message"
+									class="admin__tickets-pending-ticket-value-invis-message"
 									aria-hidden="true">#{ticket.requestMessage} extra spacer
 								</div>
 								<span
-									class="admin__download-tickets-pending-ticket-unfold-button"><i
+									class="admin__tickets-pending-ticket-unfold-button"><i
 									class="fa fa-caret-right"></i></span>
 							</div>
 						</div>
@@ -100,24 +111,24 @@
 
 										
             							function checkTextLength() {
-            								$('.admin__download-tickets-pending-ticket-value-message-wrapper').each(function() {
+            								$('.admin__tickets-pending-ticket-value-message-wrapper').each(function() {
 	            								
-	    	            						if ( $(this).find('.admin__download-tickets-pending-ticket-value-invis-message').height() > 85 &amp;&amp; !$(this).find('.admin__download-tickets-pending-ticket-value-message').hasClass("-unfolded") )  {
-	    	            							 // console.log('Height: ' + $(this).find('.admin__download-tickets-pending-ticket-value-invis-message').height());
+	    	            						if ( $(this).find('.admin__tickets-pending-ticket-value-invis-message').height() > 85 &amp;&amp; !$(this).find('.admin__tickets-pending-ticket-value-message').hasClass("-unfolded") )  {
+	    	            							 // console.log('Height: ' + $(this).find('.admin__tickets-pending-ticket-value-invis-message').height());
 	    	            							 
-	    	            							$(this).find('.admin__download-tickets-pending-ticket-unfold-button').fadeIn('fast');
-	    	            							$(this).find('.admin__download-tickets-pending-ticket-value-message').addClass('-unfoldable');
+	    	            							$(this).find('.admin__tickets-pending-ticket-unfold-button').fadeIn('fast');
+	    	            							$(this).find('.admin__tickets-pending-ticket-value-message').addClass('-unfoldable');
 	    	            							
 	    		            						$(this).on('click', function() {
-	    		            							$(this).find('.admin__download-tickets-pending-ticket-value-message').addClass('-unfolded');
-	    		            							$(this).find('.admin__download-tickets-pending-ticket-unfold-button').hide();
-	    		            							$(this).find('.admin__download-tickets-pending-ticket-value-invis-message').addClass('-unfolded');
+	    		            							$(this).find('.admin__tickets-pending-ticket-value-message').addClass('-unfolded');
+	    		            							$(this).find('.admin__tickets-pending-ticket-unfold-button').hide();
+	    		            							$(this).find('.admin__tickets-pending-ticket-value-invis-message').addClass('-unfolded');
 	    		            						});
 	    	            						
 	    	            						
 	    	            						} else {
-	    	            							$(this).find('.admin__download-tickets-pending-ticket-unfold-button').fadeOut('fast');
-	    	            							$(this).find('.admin__download-tickets-pending-ticket-value-message').removeClass('-unfoldable');
+	    	            							$(this).find('.admin__tickets-pending-ticket-unfold-button').fadeOut('fast');
+	    	            							$(this).find('.admin__tickets-pending-ticket-value-message').removeClass('-unfoldable');
 	    	            						}
 	            								
 	            							});
@@ -131,23 +142,23 @@
             							});
             			</script>
 
-						<div class="admin__download-tickets-pending-ticket-actions">
+						<div class="admin__tickets-pending-ticket-actions">
+							<button class="btn btn--danger" 
+								data-target="ticketRejectionButton"
+								data-require-confirmation="true"
+								data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_reject_confirm, ticket.email, ticket.pi)}"
+								jsf:action="#{adminLicenseBean.rejectTicketAction(ticket)}"
+								aria-label="#{msg.activate}: #{ticket.id}">
+								#{msg.action__reject}</button>
 							<button class="btn btn--success"
 								data-target="ticketActivationButton"
 								data-require-confirmation="false"
 								data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm, ticket.email, ticket.pi)}"
-								jsf:action="#{adminLicenseBean.activateDownloadTicketAction(ticket)}"
+								jsf:action="#{adminLicenseBean.activateTicketAction(ticket)}"
 								aria-label="#{msg.action__activate}: #{ticket.id}">
 								#{msg.action__accept}</button>
-							<button class="btn btn--danger"
-								data-target="ticketRejectionButton"
-								data-require-confirmation="true"
-								data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_reject_confirm, ticket.email, ticket.pi)}"
-								jsf:action="#{adminLicenseBean.rejectDownloadTicketAction(ticket)}"
-								aria-label="#{msg.activate}: #{ticket.id}">
-								#{msg.action__reject}</button>
 						</div>
-
+ 
 					</div>
 
 				</ui:repeat>
@@ -162,27 +173,27 @@
 
 		<!-- ACTIVE DOWNLOAD TICKETS TABLE -->
 		<ui:fragment
-			rendered="#{adminLicenseBean.lazyModelDownloadTickets.sizeOfDataList > 0 or not empty adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email_title_requestMessage').value}">
-			<div class="admin__download-tickets-active-tickets-table-wrapper">
+			rendered="#{adminLicenseBean.lazyModelTickets.sizeOfDataList > 0 or not empty adminLicenseBean.lazyModelTickets.getFilter('pi_email_title_requestMessage').value}">
+			<div class="admin__tickets-active-tickets-table-wrapper">
 
-				<h2 class="admin__download-tickets-heading">
+				<h2 class="admin__tickets-heading">
 					#{msg.admin__download_tickets__active_download_tickets}</h2>
 
 				<div class="admin__table-tools">
 					<!-- PAGINATOR -->
 					<div class="admin__table-paginator">
 						<viewerComponent:dataTablePaginator
-							tableValues="#{adminLicenseBean.lazyModelDownloadTickets}" />
+							tableValues="#{adminLicenseBean.lazyModelTickets}" />
 					</div>
 					<!-- FILTER -->
 					<div class="admin__table-filter">
 						<viewerComponent:dataTableColumnFilter
 							key="admin__download_tickets__search"
-							filter="#{adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email_title_requestMessage')}" />
+							filter="#{adminLicenseBean.lazyModelTickets.getFilter('pi_email_title_requestMessage')}" />
 					</div>
 				</div>
-
-				<div id="activeTicketsTable" class="admin__grid-table -columns-2-2-1-1"
+ 
+				<div id="activeTicketsTable" class="admin__grid-table -columns-2-1-1-1-1"
 					role="grid"
 					aria-label="#{msg.aria_label__table__actions}">
 
@@ -192,9 +203,12 @@
 							<viewerComponent:sortingArrow filterType="email"
 								colHeading="#{msg.admin__download_tickets__title}" />
 						</div>
+						
+                        <div class="admin__grid-table-sorting-wrapper">
+                            #{msg.type}</div>
 
-						<div class="admin__grid-table-sorting-wrapper">
-							#{msg.message}</div>
+                        <div class="admin__grid-table-sorting-wrapper">
+                            #{msg.message}</div>
 
 						<div class="admin__grid-table-sorting-wrapper">
 							<viewerComponent:sortingArrow filterType="dateRegistered"
@@ -211,7 +225,7 @@
 					<div class="admin__grid-table-data-row-area">
 
 						<ui:repeat var="ticket"
-							value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
+							value="#{adminLicenseBean.lazyModelTickets.paginatorList}">
 
 							<div class="admin__grid-table-data-row" role="row">
 								<div class="admin__grid-table-data" role="gridcell">
@@ -232,22 +246,29 @@
 												data-toggle="tooltip"
 												data-placement="top"
 												data-trigger="hover"
+												data-icon="question" 
+												data-confirm-button-text="#{msg.admin__download_tickets_extend}"
+												data-cancel-button-text="#{msg.cancel}"
+												data-confirm-button-class="btn btn--full" 
 												data-require-confirmation="true"
 												data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.label, ticket.defaultValidityAsString)}"
-												jsf:action="#{adminLicenseBean.extendDownloadTicketAction(ticket)}"
+												jsf:action="#{adminLicenseBean.extendTicketAction(ticket)}"
 												aria-label="#{msg.extend}: #{ticket.id}">
 												#{msg.admin__download_tickets_extend}</button>
-										</ui:fragment>
-										<!-- RENEW -->
+										</ui:fragment> 
+										<!-- RENEW --> 
 										<ui:fragment rendered="#{ticket.active}">
 											<button class="admin__table-action-link -bluelink"
 												title="#{msg.admin__download_tickets_renew_tooltip}"
 												data-toggle="tooltip"
 												data-placement="top"
 												data-trigger="hover"
+												data-icon="question"
+												data-confirm-button-text="#{msg.admin__download_tickets_renew}"
+												data-confirm-button-class="btn btn--full"
 												data-require-confirmation="true"
 												data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_renew_confirm, ticket.email, ticket.label, ticket.defaultValidityAsString)}"
-												jsf:action="#{adminLicenseBean.renewDownloadTicketAction(ticket)}"
+												jsf:action="#{adminLicenseBean.renewTicketAction(ticket)}"
 												aria-label="#{msg.extend}: #{ticket.id}">
 												#{msg.admin__download_tickets_renew}</button>
 										</ui:fragment>
@@ -255,26 +276,31 @@
 										<button class="admin__table-action-link -redlink"
 											data-require-confirmation="true"
 											data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_delete_confirm, ticket.email, ticket.label)}"
-											jsf:action="#{adminLicenseBean.deleteDownloadTicketAction(ticket)}"
+											jsf:action="#{adminLicenseBean.deleteTicketAction(ticket)}"
 											aria-label="#{msg.delete}: #{ticket.id}">
 											#{msg.delete}</button>
 
 									</div>
 
 								</div>
+								
+                                <!-- TICKET TYPE -->
+                                <div class="admin__grid-table-data" role="gridcell">
+                                    #{ticket.type}
+                                </div>
 
 								<!-- TICKET MESSAGE -->
 								<div class="admin__grid-table-data" role="gridcell">
 									<div
-										class="admin__download-tickets-pending-ticket-value-message-wrapper">
+										class="admin__tickets-pending-ticket-value-message-wrapper">
 										<div
-											class="admin__download-tickets-pending-ticket-value-message">
+											class="admin__tickets-pending-ticket-value-message">
 											#{ticket.requestMessage}</div>
 										<div
-											class="admin__download-tickets-pending-ticket-value-invis-message"
+											class="admin__tickets-pending-ticket-value-invis-message"
 											aria-hidden="true">#{ticket.requestMessage}</div>
 										<span
-											class="admin__download-tickets-pending-ticket-unfold-button"><i
+											class="admin__tickets-pending-ticket-unfold-button"><i
 											class="fa fa-caret-right"></i></span>
 									</div>
 								</div>
