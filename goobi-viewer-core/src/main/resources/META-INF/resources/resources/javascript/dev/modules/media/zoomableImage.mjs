@@ -1,4 +1,6 @@
 import ZoomableImageOverlayGroup from "./zoomableImageOverlayGroup.mjs";
+import SequenceMode from "./sequenceMode.mjs";
+
 
 const _debug = true;
 
@@ -63,7 +65,13 @@ export default class ZoomableImage {
             this.logId = document.querySelector(_config.elementSelectors.data.structure).textContent;
             this.currentPageNo = document.querySelector(_config.elementSelectors.data.page).textContent;
             this.pageType = document.querySelector(_config.elementSelectors.data.pageType).textContent;
+            this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
 
+            if(this.viewMode == "sequence") {
+                console.log("initialize sequence mode");
+                this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
+            }
+            
             
             this.overlayGroups = [];
             document.querySelectorAll(_config.elementSelectors.data.overlays).forEach( element => {
@@ -84,12 +92,19 @@ export default class ZoomableImage {
             });
         }
     }
-
+ 
     load() {
-        this.viewer.load( Object.values(this.tileSources) )
+        this.viewer.load( Object.values(this.tileSources), this.getCurrentTileSourceIndex() )
         .then(image => {
+            console.log("image loaded")
+            this.sequence?.initialize(this.getCurrentTileSourceId());
+            console.log("init sequence to ", this.getCurrentTileSourceId());
             this.overlayGroups.forEach(group => group.show());
         });
+    }
+
+    getCurrentTileSourceIndex() {
+        return this.viewer.getImageIndexById(this.getCurrentTileSourceId());
     }
 
     getCurrentTileSourceOrder() {
