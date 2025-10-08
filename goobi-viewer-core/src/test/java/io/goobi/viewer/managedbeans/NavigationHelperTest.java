@@ -23,7 +23,6 @@ package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 import java.util.Locale;
@@ -172,6 +171,17 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         nh.setCmsBean(cmsBean);
         nh.setSubThemeDiscriminatorValue("dValue");
         assertEquals("dValue", nh.getStatusMapValue(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
+    }
+
+    /**
+     * @see NavigationHelper#getRecordUrl(String,String,int)
+     * @verifies construct url correctly
+     */
+    @Test
+    void getRecordUrl_shouldConstructUrlCorrectly() {
+        NavigationHelper nh = new NavigationHelper();
+        String url = nh.getRecordUrl(PI_KLEIUNIV, "monograph", 1, false, true);
+        assertEquals("/object/" + PI_KLEIUNIV + "/", url);
     }
 
     @Test
