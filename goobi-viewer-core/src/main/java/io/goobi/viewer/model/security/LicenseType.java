@@ -469,6 +469,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     /**
      * @param accessTicketRequired the accessTicketRequired to set
+     * @should add or remove list privilege
      */
     public void setAccessTicketRequired(boolean accessTicketRequired) {
         this.accessTicketRequired = accessTicketRequired;
