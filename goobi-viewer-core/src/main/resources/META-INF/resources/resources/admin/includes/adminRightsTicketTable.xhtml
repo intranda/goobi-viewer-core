@@ -150,15 +150,11 @@
 								jsf:action="#{adminLicenseBean.rejectTicketAction(ticket)}"
 								aria-label="#{msg.activate}: #{ticket.id}">
 								#{msg.action__reject}</button>
-							<button class="btn btn--success"
-								data-target="ticketActivationButton"
-								data-require-confirmation="false"
-								data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm, ticket.email, ticket.pi)}"
-								jsf:action="#{adminLicenseBean.activateTicketAction(ticket)}"
-								aria-label="#{msg.action__activate}: #{ticket.id}">
+				
+			aria-label="#{msg.action__activate}: #{ticket.id}">
 								#{msg.action__accept}</button>
 						</div>
-
+ 
 					</div>
 
 				</ui:repeat>
