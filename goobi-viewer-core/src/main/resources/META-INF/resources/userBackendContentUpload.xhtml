@@ -1,6 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
+    xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -118,24 +118,30 @@
                                                 role="cell"
                                             >
                                                 <ui:fragment rendered="#{job.status eq 'WAITING'}">
-                                                    <i
-                                                        class="fa fa-hourglass-start"
-                                                        aria-label="#{msg.waiting}"
-                                                    ></i>
+                                                    <util:icon
+                                                        icon="hourglass-high"
+                                                        ariaLabel="#{msg.waiting}"
+														svgClass="icon icon-xxl"
+                                                    />
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{job.status eq 'READY'}">
-                                                    <i
-                                                        class="fa fa-check"
-                                                        aria-label="#{msg.ready}"
-                                                    ></i>
+                                                    <util:icon
+                                                        icon="check"
+                                                        ariaLabel="#{msg.ready}"
+														svgClass="icon icon-xxl"
+                                                    />
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{job.status eq 'ERROR'}">
-                                                    <i
-                                                        class="fa fa-times"
-                                                        aria-label="#{msg.error}"
+                                                    <span
                                                         title="#{job.message}"
                                                         data-placement="bottom"
-                                                    ></i>
+                                                    >
+                                                        <util:icon
+                                                            icon="x"
+                                                            ariaLabel="#{msg.error}"
+															svgClass="icon icon-xxl"
+                                                        />
+                                                    </span>
                                                 </ui:fragment>
                                             </div>
                                         </div>
@@ -171,10 +177,7 @@
                                                     class="user-content-upload__table-entry-label"
                                                     role="cell"
                                                 >
-                                                    <i
-                                                        class="fa fa-external-link-square"
-                                                        aria-hidden="true"
-                                                    ></i>
+                                                    <util:icon icon="external-link" svgClass="icon icon-lg" />
                                                     <h:outputText value=" #{job.title}" />
                                                 </div>
 
@@ -186,28 +189,34 @@
                                                     <ui:fragment
                                                         rendered="#{job.status eq 'WAITING'}"
                                                     >
-                                                        <i
-                                                            class="fa fa-hourglass-start"
-                                                            aria-label="#{msg.waiting}"
-                                                        ></i>
+                                                        <util:icon
+                                                            icon="hourglass-high"
+                                                            ariaLabel="#{msg.waiting}"
+															svgClass="icon icon-xxl"
+                                                        />
                                                     </ui:fragment>
                                                     <ui:fragment
                                                         rendered="#{job.status eq 'READY'}"
                                                     >
-                                                        <i
-                                                            class="fa fa-check"
-                                                            aria-label="#{msg.ready}"
-                                                        ></i>
+                                                        <util:icon
+                                                            icon="check"
+                                                            ariaLabel="#{msg.ready}"
+															svgClass="icon icon-xxl"
+                                                        />
                                                     </ui:fragment>
                                                     <ui:fragment
                                                         rendered="#{job.status eq 'ERROR'}"
                                                     >
-                                                        <i
-                                                            class="fa fa-times"
-                                                            aria-label="#{msg.error}"
+                                                        <span
                                                             title="#{job.message}"
                                                             data-placement="bottom"
-                                                        ></i>
+                                                        >
+                                                            <util:icon
+                                                                icon="x"
+                                                                ariaLabel="#{msg.error}"
+																svgClass="icon icon-xxl"
+                                                            />
+                                                        </span>
                                                     </ui:fragment>
                                                 </div>
                                             </div>
