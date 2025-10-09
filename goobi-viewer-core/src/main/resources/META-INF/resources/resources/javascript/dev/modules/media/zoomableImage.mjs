@@ -1,4 +1,5 @@
 import ZoomableImageOverlayGroup from "./zoomableImageOverlayGroup.mjs";
+import PageAreas from "./pageAreas.mjs";
 
 const _debug = true;
 
@@ -91,6 +92,8 @@ export default class ZoomableImage {
                 }
             });
 
+            _drawPageAreas(this);
+
             const pageAreaGroup = createPageAreaGroup();
 
         }
@@ -137,6 +140,23 @@ export default class ZoomableImage {
         return this.tileSourceIdToOrder[id];
     }
   
+}
+
+function _drawPageAreas(image) {
+    const pageAreaElement = document.querySelector(_config.elementSelectors.data.pageAreas);
+    const text = pageAreaElement.textContent;
+    if(text && text.length) {
+        try {
+            const areas = JSON.parse(text);
+            const pageAreas = new PageAreas({
+                currentLodIg: image.logId,
+                areas: areas
+            }, image); 
+            return pageAreas;
+        } catch(e) {
+            console.error("Error reading page areas ", text, e);
+        }
+    }
 }
 
 function createPageAreaGroup() {

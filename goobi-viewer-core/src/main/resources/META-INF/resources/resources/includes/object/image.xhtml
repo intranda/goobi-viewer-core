@@ -226,6 +226,49 @@
              }
 	    }
 	    
+		function enableGeoMapHighlighting(image) {
+  				let mapFeatureMap = new Map();
+  				image.overlays?.getOverlays().forEach(imageArea => {
+  					let id = imageArea.id;
+  					let mapMarker = viewerJS.GeoMap.maps.get('widget_geoMap_').layers.flatMap(l => l.markers)
+  					.find(marker => marker.feature?.properties?.documentId == id);
+  					//highlight image overlay on hover over map marker with same annotation id
+  					if(mapMarker) {
+  						mapMarker.on("mouseover", e => imageArea.element.focus(true));
+  						mapMarker.on("mouseout", e => imageArea.element.focus(false));
+  						mapFeatureMap.set(imageArea, mapMarker);
+  					}
+  				});
+  				//highlight map marker when hovering over image overlay with same annotation id
+  				image.overlays?.onFocus((overlay, focus) => {
+  					let marker = mapFeatureMap.get(overlay);
+  					if(focus) {
+  						marker?.feature?.layer?.highlightMarker(marker);					
+  					} else {
+  						marker?.feature?.layer?.highlightMarker();
+  					}
+  				})
+  			}
+  			
+  			// Focus UGC
+  			function highlightUGC(image) {		    
+  				var hash = window.location.hash;
+  				if(hash && hash.startsWith("#ugc=")) {
+  				    let ugcId = hash.substring(5);
+  				    if($('#viewObject').length) {			        
+  				    	$("html, body").scrollTop($('#viewObject').offset().top - 40);
+  				    }
+  				    if(image && image.overlays) {
+  				        let widgetTitle = $("#widgetAnnotations").find(".widget__title.collapsible");
+  				        if(widgetTitle.length > 0 && !widgetTitle.hasClass("in")) {			            
+  				            widgetTitle.toggleClass('in').next().slideToggle('fast');
+  				        }
+  				        $("#words-" + ugcId).addClass("ugc-highlight");
+  				        image.overlays.focusBox("ugc", ugcId);
+  				    }
+  				}
+  			}
+	    
    		const imageElement = document.getElementById("mainImage");
 	    function onError(error) {
 	    	console.error( "viewObject.xhtml - viewImage.init: Error opening image", error );
@@ -255,6 +298,10 @@
 				    config: imageFilterConfig
 			    });
     	 	 }
+   	 	   
+   			highlightUGC(image);
+   			enableGeoMapHighlighting(image);
+   			
 		});
 
 
@@ -283,54 +330,6 @@
 
 		}
 
-
-		
-		function enableGeoMapHighlighting() {
-			let mapFeatureMap = new Map();
-			viewImage.overlays?.getOverlays().forEach(imageArea => {
-				let id = imageArea.id;
-				let mapMarker = viewerJS.GeoMap.maps.get('widget_geoMap_').layers.flatMap(l => l.markers)
-				.find(marker => marker.feature?.properties?.documentId == id);
-				//highlight image overlay on hover over map marker with same annotation id
-				if(mapMarker) {
-					mapMarker.on("mouseover", e => imageArea.element.focus(true));
-					mapMarker.on("mouseout", e => imageArea.element.focus(false));
-					mapFeatureMap.set(imageArea, mapMarker);
-				}
-			});
-			//highlight map marker when hovering over image overlay with same annotation id
-			viewImage.overlays?.onFocus((overlay, focus) => {
-				let marker = mapFeatureMap.get(overlay);
-				if(focus) {
-					marker?.feature?.layer?.highlightMarker(marker);					
-				} else {
-					marker?.feature?.layer?.highlightMarker();
-				}
-			})
-		}
-		
-		// Focus UGC
-		function highlightUGC() {		    
-			var hash = window.location.hash;
-			if(hash && hash.startsWith("#ugc=")) {
-			    let ugcId = hash.substring(5);
-			    if($('#viewObject').length) {			        
-			    	$("html, body").scrollTop($('#viewObject').offset().top - 40);
-			    }
-			    if(viewImage && viewImage.overlays) {
-			        let widgetTitle = $("#widgetAnnotations").find(".widget__title.collapsible");
-			        if(widgetTitle.length > 0 && !widgetTitle.hasClass("in")) {			            
-			            widgetTitle.toggleClass('in').next().slideToggle('fast');
-			        }
-			        $("#words-" + ugcId).addClass("ugc-highlight");
-			        viewImage.overlays.focusBox("ugc", ugcId);
-			    }
-			}
-		}
-		
-        
-
-        
 		       	
       	//]]>
   		

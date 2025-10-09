@@ -237,14 +237,15 @@
 		border-color: #3365a9;
 	}
 
-	&-label {
+	&-label { 
+		position:absolute;
 		display: none;
 		min-width: 100px;
-		z-index: 3;
 		pointer-events: none;
-
+		z-index: 9999;
+		white-space: nowrap;
+		
 		&-text {
-			display: none;
 			background: rgba(51, 101, 169, 1);
 			color: white;
 			width: 100%;
@@ -259,6 +260,23 @@
 				display: inline-block;
 			}
 		}
+		
+		/* Little arrow */
+		&.test::after {
+			content: '';
+			position: absolute;
+			bottom: -12px;
+			left: 50%;
+			transform: translateX(-50%);
+			border-width: 6px;
+			border-style: solid;
+			border-color: #333 transparent transparent transparent;
+		}
+		
+		&.show {
+			opacity: 1;
+		}
+		
 	}
 }
 
