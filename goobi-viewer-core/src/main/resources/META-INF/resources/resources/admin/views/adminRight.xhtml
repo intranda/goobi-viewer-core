@@ -34,7 +34,7 @@
                         <div id="adminLicenseWrapper" class="admin__content-inner-content">
                             <!-- FIRST BLOCK (CONDITIONS) -->
                             <h2>#{msg.condition}</h2>
-                            <div id="licenseesGroup" class="admin__default-block">
+                            <h:panelGroup id="licenseesGroup" layout="block" class="admin__default-block">
                                 <div class="form-group form-row">
                                     <div class="col-sm-4">
                                         <label for="currentLicense.type" class="control-label">#{msg.admin__license_licensee_type_select_label}:</label>
@@ -129,13 +129,13 @@
                                 <ui:fragment rendered="#{!adminLicenseBean.currentLicense.multiLicenseeMode}">
                                     <h:commandLink action="#{adminLicenseBean.currentLicense.toggleMultiLicenseeMode}" immediate="true">
                                         #{msg.add}
-                                        <f:ajax render="licenseeTypeGroup2 licenseeGroup2" />
+                                        <f:ajax render="licenseesGroup" />
                                     </h:commandLink>
                                 </ui:fragment>
                                 
                                 <!-- LICENSEE SELECTION 2 -->
-                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.multiLicenseeMode}">
-                                <div id="licenseeTypeGroup2" class="form-group form-row">
+                                <h:panelGroup id="licenseeSelectionGroup2" rendered="#{adminLicenseBean.currentLicense.multiLicenseeMode}">
+                                <div class="form-group form-row">
                                     <div class="col-sm-4">
                                         <label for="currentLicense.type2" class="control-label">#{msg.admin__license_licensee_type_select_label}:</label>
                                     </div>
@@ -225,11 +225,11 @@
                                 
                                     <h:commandLink action="#{adminLicenseBean.currentLicense.toggleMultiLicenseeMode}" immediate="true">
                                         #{msg.remove}
-                                        <f:ajax render="licenseeTypeGroup2 licenseeGroup2" />
+                                        <f:ajax render="licenseesGroup" />
                                     </h:commandLink>
-                                </ui:fragment>
+                                </h:panelGroup>
                                 
-                            </div>
+                            </h:panelGroup>
 
                             <!-- LICENSE TYPE SELECTION -->
                             <h2>#{msg.function}</h2>
