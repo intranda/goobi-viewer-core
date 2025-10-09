@@ -19,24 +19,26 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.model.tasks;
+package io.goobi.viewer.model.administration;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
-import io.goobi.viewer.controller.DataManager;
 
-class TaskManagerTest extends AbstractDatabaseEnabledTest {
+class MaintenanceModeTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @see TaskManager#deleteExpiredDownloadTickets()
-     * @verifies delete all expired tickets
+     * @see MaintenanceMode#getTextOrDefault(String)
+     * @verifies return translation correctly
      */
     @Test
-    void deleteExpiredDownloadTickets_shouldDeleteAllExpiredTickets() throws Exception {
-        Assertions.assertNotNull(DataManager.getInstance().getDao().getTicket(1L));
-        Assertions.assertEquals(1, TaskManager.deleteExpiredDownloadTickets());
-        Assertions.assertNull(DataManager.getInstance().getDao().getTicket(1L));
+    void getTextOrDefault_shouldReturnTranslationCorrectly() throws Exception {
+        MaintenanceMode mm = new MaintenanceMode();
+        mm.setText("foo", "en");
+        assertEquals("foo", mm.getTextOrDefault("en"));
+        assertEquals("foo", mm.getTextOrDefault("de"));
     }
+
 }

@@ -59,7 +59,7 @@ var viewerJS = ( function( viewer ) {
                 this.listsUpdated.subscribe( (list) => {
                     this.updateAddedStatus();
                 })
-                this.translator = new viewerJS.Translator(this.config.rest, this.config.language);
+                this.translator = new viewerJS.translator(this.config.rest, this.config.language);
                 this.translator.init(_messageKeys)
                 .then(() => this.updateLists())
                 .then(() => {                    

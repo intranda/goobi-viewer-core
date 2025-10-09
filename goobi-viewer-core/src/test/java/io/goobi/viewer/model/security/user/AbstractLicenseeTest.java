@@ -50,13 +50,24 @@ class AbstractLicenseeTest {
 
     /**
      * @see AbstractLicensee#getAccessPermissionFromMap(Map)
-     * @verifies preserve ticketRequired
+     * @verifies preserve accessTicketRequired
      */
     @Test
-    void getAccessPermissionFromMap_shouldPreserveTicketRequired() throws Exception {
+    void getAccessPermissionFromMap_shouldPreserveAccessTicketRequired() throws Exception {
         Assertions.assertTrue(
-                AbstractLicensee.getAccessPermissionFromMap(Collections.singletonMap("", AccessPermission.granted().setTicketRequired(true)))
-                        .isTicketRequired());
+                AbstractLicensee.getAccessPermissionFromMap(Collections.singletonMap("", AccessPermission.granted().setAccessTicketRequired(true)))
+                        .isAccessTicketRequired());
+    }
+
+    /**
+     * @see AbstractLicensee#getAccessPermissionFromMap(Map)
+     * @verifies preserve downloadTicketRequired
+     */
+    @Test
+    void getAccessPermissionFromMap_shouldPreserveDownloadTicketRequired() throws Exception {
+        Assertions.assertTrue(
+                AbstractLicensee.getAccessPermissionFromMap(Collections.singletonMap("", AccessPermission.granted().setDownloadTicketRequired(true)))
+                        .isDownloadTicketRequired());
     }
 
     /**

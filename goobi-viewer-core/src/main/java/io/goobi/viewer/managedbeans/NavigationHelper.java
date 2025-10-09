@@ -80,7 +80,6 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 import io.goobi.viewer.model.viewer.CollectionLabeledLink;
 import io.goobi.viewer.model.viewer.LabeledLink;
 import io.goobi.viewer.model.viewer.PageType;
-import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -1287,10 +1286,13 @@ public class NavigationHelper implements Serializable {
      * @param pi
      * @param docStructType
      * @param order
+     * @param anchorOrGroup
+     * @param hasImages
      * @return Record URL
+     * @should construct url correctly
      */
-    public String getRecordUrl(String pi, String docStructType, int order) {
-        PageType pageType = PageType.determinePageType(docStructType, null, true, false, false);
+    public String getRecordUrl(String pi, String docStructType, int order, boolean anchorOrGroup, boolean hasImages) {
+        PageType pageType = PageType.determinePageType(docStructType, null, anchorOrGroup, hasImages, false);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + '/'
                 + DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, order, null, pageType, true);
     }

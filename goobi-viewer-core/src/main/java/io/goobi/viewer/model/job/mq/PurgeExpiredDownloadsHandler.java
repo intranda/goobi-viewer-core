@@ -22,6 +22,8 @@
 
 package io.goobi.viewer.model.job.mq;
 
+import java.util.Collections;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,7 +34,7 @@ import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.security.DownloadTicket;
+import io.goobi.viewer.model.security.tickets.AccessTicket;
 
 public class PurgeExpiredDownloadsHandler implements MessageHandler<MessageStatus> {
 
@@ -42,10 +44,11 @@ public class PurgeExpiredDownloadsHandler implements MessageHandler<MessageStatu
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
         int count = 0;
         try {
-            for (DownloadTicket ticket : DataManager.getInstance()
+            for (AccessTicket ticket : DataManager.getInstance()
                     .getDao()
-                    .getActiveDownloadTickets(0, Integer.MAX_VALUE, null, false, null)) {
-                if (ticket.isExpired() && DataManager.getInstance().getDao().deleteDownloadTicket(ticket)) {
+                    .getActiveTickets(0, Integer.MAX_VALUE, null, false,
+                            Collections.singletonMap("type", AccessTicket.AccessTicketType.DOWNLOAD.name()))) {
+                if (ticket.isExpired() && DataManager.getInstance().getDao().deleteTicket(ticket)) {
                     count++;
                 }
             }

@@ -57,7 +57,8 @@ public abstract class AbstractLicensee implements ILicensee {
                 // LicenseType grants privilege
                 if (license.getLicenseType().getPrivileges().contains(privilegeName)) {
                     return AccessPermission.granted()
-                            .setTicketRequired(license.isTicketRequired())
+                            .setAccessTicketRequired(license.getLicenseType().isAccessTicketRequired())
+                            .setDownloadTicketRequired(license.isTicketRequired())
                             .setRedirect(license.getLicenseType().isRedirect())
                             .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                 }
@@ -65,7 +66,8 @@ public abstract class AbstractLicensee implements ILicensee {
                 if (license.getPrivileges().contains(privilegeName)) {
                     if (StringUtils.isEmpty(license.getConditions())) {
                         return AccessPermission.granted()
-                                .setTicketRequired(license.isTicketRequired())
+                                .setAccessTicketRequired(license.getLicenseType().isAccessTicketRequired())
+                                .setDownloadTicketRequired(license.isTicketRequired())
                                 .setRedirect(license.getLicenseType().isRedirect())
                                 .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                     } else if (StringUtils.isNotEmpty(pi)) {
@@ -76,7 +78,8 @@ public abstract class AbstractLicensee implements ILicensee {
                                 .getFirstDoc(query, Collections.singletonList(SolrConstants.IDDOC)) != null) {
                             logger.trace("Permission found (query: {})", query);
                             return AccessPermission.granted()
-                                    .setTicketRequired(license.isTicketRequired())
+                                    .setAccessTicketRequired(license.getLicenseType().isAccessTicketRequired())
+                                    .setDownloadTicketRequired(license.isTicketRequired())
                                     .setRedirect(license.getLicenseType().isRedirect())
                                     .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                         }
@@ -94,21 +97,26 @@ public abstract class AbstractLicensee implements ILicensee {
      * @return {@link AccessPermission}
      * @should return denied if permissionMap empty
      * @should return denied if all permissions in map denied
-     * @should preserve ticketRequired
+     * @should preserve accessTicketRequired
+     * @should preserve downloadTicketRequired
      * @should preserve redirect metadata
      */
     public static AccessPermission getAccessPermissionFromMap(Map<String, AccessPermission> permissionMap) {
         // It should be sufficient if the user can satisfy one required license
         boolean granted = false;
-        boolean ticketRequired = false;
+        boolean accessTicketRequired = false;
+        boolean downloadTicketRequired = false;
         boolean redirect = false;
         String redirectUrl = null;
         for (Entry<String, AccessPermission> entry : permissionMap.entrySet()) {
             if (entry.getValue().isGranted()) {
                 granted = true;
             }
-            if (entry.getValue().isTicketRequired()) {
-                ticketRequired = true;
+            if (entry.getValue().isAccessTicketRequired()) {
+                accessTicketRequired = true;
+            }
+            if (entry.getValue().isDownloadTicketRequired()) {
+                downloadTicketRequired = true;
             }
             if (entry.getValue().isRedirect()) {
                 redirect = true;
@@ -118,7 +126,11 @@ public abstract class AbstractLicensee implements ILicensee {
             }
         }
         if (granted) {
-            return AccessPermission.granted().setTicketRequired(ticketRequired).setRedirect(redirect).setRedirectUrl(redirectUrl);
+            return AccessPermission.granted()
+                    .setAccessTicketRequired(accessTicketRequired)
+                    .setDownloadTicketRequired(downloadTicketRequired)
+                    .setRedirect(redirect)
+                    .setRedirectUrl(redirectUrl);
         }
 
         return AccessPermission.denied();

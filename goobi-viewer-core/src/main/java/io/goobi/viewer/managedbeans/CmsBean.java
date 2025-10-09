@@ -673,6 +673,15 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * For unit tests.
+     * 
+     * @param currentPage
+     */
+    void setCurrentPageNoInit(CMSPage currentPage) {
+        this.currentPage = new CMSPage(currentPage);
+    }
+
+    /**
      * <p>
      * getCurrentPageId.
      * </p>

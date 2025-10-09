@@ -36,6 +36,7 @@ import org.jboss.weld.serialization.spi.helpers.SerializableContextualInstance;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.BookmarkBean;
@@ -319,6 +320,8 @@ public final class BeanUtils {
      * @param name a {@link java.lang.String} object.
      * @param clazz a {@link java.lang.Class} object.
      * @return a {@link java.lang.Object} object.
+     * @should throw IllegalArgumentException if named bean of different class
+     * @should throw IllegalStateException if named bean of different class
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Object getBeanByName(String name, Class clazz) {
@@ -329,12 +332,8 @@ public final class BeanUtils {
                 CreationalContext ctx = bm.createCreationalContext(bean);
                 return bm.getReference(bean, clazz, ctx);
             }
-        } catch (NullPointerException e) {
+        } catch (IllegalArgumentException | IllegalStateException | NullPointerException e) {
             logger.error("Error when getting bean by name '{}'", name, e);
-        } catch (IllegalArgumentException e) {
-            logger.error("Bean of name '{}' is not of type '{}", name, clazz);
-        } catch (IllegalStateException e) {
-            logger.error("Trying to find bean in context at illegal state. Probably before initialization or outside of jsf context: {}", e);
         }
 
         return null;
@@ -756,5 +755,15 @@ public final class BeanUtils {
         getBeanFromSession(session, "cmsBean", CmsBean.class)
                 .ifPresentOrElse(CmsBean::resetNavigationMenuItems,
                         () -> logger.trace("Cannot reset navigation menu items. Not instantiated yet?"));
+        // Unload current record to reset permissions
+        getBeanFromSession(session, "activeDocumentBean", ActiveDocumentBean.class)
+                .ifPresentOrElse(t -> {
+                    try {
+                        t.reset();
+                    } catch (IndexUnreachableException e) {
+                        logger.error(e.getMessage());
+                    }
+                },
+                        () -> logger.trace("Cannot reset loaded record. Not instantiated yet?"));
     }
 }

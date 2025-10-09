@@ -19,52 +19,59 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.security;
+package io.goobi.viewer.model.security.tickets;
 
-import java.io.Serializable;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Random;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.controller.BCrypt;
+import io.goobi.viewer.controller.StringTools;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.controller.BCrypt;
-import io.goobi.viewer.controller.StringTools;
-
 /**
  * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
  * known as core license types.
  */
 @Entity
-@Table(name = "download_tickets")
-public class DownloadTicket implements Serializable {
+@Table(name = "access_tickets")
+public class AccessTicket {
 
-    private static final long serialVersionUID = -4208299894404324724L;
+    public enum AccessTicketType {
+        DOWNLOAD,
+        RECORD;
+    }
 
     /** Logger for this class. */
-    private static final Logger logger = LogManager.getLogger(DownloadTicket.class);
+    private static final Logger logger = LogManager.getLogger(AccessTicket.class);
 
     /** Default validity for a ticket in days. */
     public static final int VALIDITY_DAYS = 30;
     /** Static salt for password hashes. */
     public static final String SALT = "$2a$10$H580saN37o2P03A5myUCm.";
     /** Random object for password generation. */
-    private static final Random RANDOM = new SecureRandom();
+    protected static final Random RANDOM = new SecureRandom();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "download_ticket_id")
+    @Column(name = "ticket_id")
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ticket_type", nullable = false)
+    private AccessTicketType type;
 
     @Column(name = "date_created", nullable = false)
     private LocalDateTime dateCreated;
@@ -91,12 +98,9 @@ public class DownloadTicket implements Serializable {
     private String requestMessage;
 
     @Transient
-    private transient BCrypt bcrypt = new BCrypt();
+    protected transient BCrypt bcrypt = new BCrypt();
 
-    /**
-     * Zero argument constructor.
-     */
-    public DownloadTicket() {
+    public AccessTicket() {
         dateCreated = LocalDateTime.now();
     }
 
@@ -191,7 +195,7 @@ public class DownloadTicket implements Serializable {
      * @return title if present; otherwise pi
      */
     public String getLabel() {
-        return StringUtils.isNotEmpty(title) ? title : pi;
+        return title;
     }
 
     /**
@@ -214,6 +218,20 @@ public class DownloadTicket implements Serializable {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return the type
+     */
+    public AccessTicketType getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(AccessTicketType type) {
+        this.type = type;
     }
 
     /**
@@ -245,34 +263,6 @@ public class DownloadTicket implements Serializable {
     }
 
     /**
-     * @return the pi
-     */
-    public String getPi() {
-        return pi;
-    }
-
-    /**
-     * @param pi the pi to set
-     */
-    public void setPi(String pi) {
-        this.pi = pi;
-    }
-
-    /**
-     * @return the email
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * @param email the email to set
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    /**
      * @return the password
      */
     public String getPassword() {
@@ -298,6 +288,34 @@ public class DownloadTicket implements Serializable {
      */
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return the pi
+     */
+    public String getPi() {
+        return pi;
+    }
+
+    /**
+     * @param pi the pi to set
+     */
+    public void setPi(String pi) {
+        this.pi = pi;
     }
 
     /**

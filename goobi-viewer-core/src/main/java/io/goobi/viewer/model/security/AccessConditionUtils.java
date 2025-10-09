@@ -935,6 +935,7 @@ public final class AccessConditionUtils {
 
         // If all relevant license types allow the requested privilege by default, allow access
         boolean licenseTypeAllowsPriv = true;
+        boolean accessTicketRequired = false;
         boolean redirect = false;
         String redirectUrl = null;
         // Check whether *all* relevant license types allow the requested privilege by default. As soon as one doesn't, set to false.
@@ -944,6 +945,9 @@ public final class AccessConditionUtils {
                 redirect = true;
                 redirectUrl = licenseType.getRedirectUrl();
             }
+            if (licenseType.isAccessTicketRequired()) {
+                accessTicketRequired = true;
+            }
             if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()
                     && !licenseType.isRestrictionsExpired(query)) {
                 logger.trace("LicenseType '{}' doesn't allow the action '{}' by default.", licenseType.getName(), privilegeName); //NOSONAR Debug
@@ -952,10 +956,10 @@ public final class AccessConditionUtils {
         }
         if (licenseTypeAllowsPriv) {
             // logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName); //NOSONAR Debug
-            return AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl);
+            return AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl).setAccessTicketRequired(accessTicketRequired);
         } else if (isFreeOpenAccess(useAccessConditions, relevantLicenseTypes)) {
             logger.trace("Privilege '{}' is OpenAccess", privilegeName);
-            return AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl);
+            return AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl).setAccessTicketRequired(accessTicketRequired);
         } else {
             // Check IP range
             if (StringUtils.isNotEmpty(remoteAddress)) {
@@ -971,7 +975,7 @@ public final class AccessConditionUtils {
                                 ipRange.canSatisfyAllAccessConditions(useAccessConditions, relevantLicenseTypes, privilegeName, null);
                         if (access.isGranted()) {
                             logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
-                            return access;
+                            return access.setAccessTicketRequired(accessTicketRequired);
                         }
                     }
                 }
@@ -980,7 +984,7 @@ public final class AccessConditionUtils {
             // If not within an allowed IP range, check the current user's satisfied access conditions
             if (user != null) {
                 AccessPermission access =
-                        user.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
+                        user.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null).setAccessTicketRequired(accessTicketRequired);
                 if (access.isGranted()) {
                     return access;
                 }
@@ -990,7 +994,9 @@ public final class AccessConditionUtils {
             if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
                 //check if specific client matches access conditions
                 if (client.isPresent()) {
-                    AccessPermission access = client.get().canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
+                    AccessPermission access = client.get()
+                            .canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null)
+                            .setAccessTicketRequired(accessTicketRequired);
                     if (access.isGranted()) {
                         return access;
                     }
@@ -999,7 +1005,8 @@ public final class AccessConditionUtils {
                 ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClientsFromDatabase();
                 if (allClients != null) {
                     AccessPermission access =
-                            allClients.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
+                            allClients.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null)
+                                    .setAccessTicketRequired(accessTicketRequired);
                     if (access.isGranted()) {
                         return access;
                     }

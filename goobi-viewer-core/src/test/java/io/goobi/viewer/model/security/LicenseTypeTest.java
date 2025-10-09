@@ -37,13 +37,27 @@ import io.goobi.viewer.AbstractTest;
  *
  */
 class LicenseTypeTest extends AbstractTest {
+    
+    /**
+     * @see LicenseType#setAccessTicketRequired(boolean)
+     * @verifies add or remove list privilege
+     */
+    @Test
+    void setAccessTicketRequired_shouldAddOrRemoveListPriviege() {
+        LicenseType type = new LicenseType();
+        Assertions.assertFalse(type.hasPrivilegeCopy(IPrivilegeHolder.PRIV_LIST));
+        type.setAccessTicketRequired(true);
+        Assertions.assertTrue(type.hasPrivilegeCopy(IPrivilegeHolder.PRIV_LIST));
+        type.setAccessTicketRequired(false);
+        Assertions.assertFalse(type.hasPrivilegeCopy(IPrivilegeHolder.PRIV_LIST));
+    }
 
     /**
      * @see LicenseType#getAvailablePrivileges(Set)
      * @verifies only return priv view ugc if ugc type
      */
     @Test
-    void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfUgcType() throws Exception {
+    void getAvailablePrivileges_shouldOnlyReturnPrivViewUgcIfUgcType() {
         LicenseType type = new LicenseType();
         type.setUgcType(true);
         List<String> result = type.getAvailablePrivileges(Collections.emptySet());
@@ -52,7 +66,7 @@ class LicenseTypeTest extends AbstractTest {
     }
 
     @Test
-    void getAvailablePrivilegesHandleNonEmptyArgument() throws Exception {
+    void getAvailablePrivilegesHandleNonEmptyArgument() {
         LicenseType type = new LicenseType();
         type.setUgcType(true);
         Set<String> privileges = new HashSet<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_UGC));

@@ -19,14 +19,14 @@
  * Module to manage the data table features.
  * 
  * @version 3.2.0
- * @module viewerJS.Translator
+ * @module viewerJS.translator
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {
     'use strict';
     
 
-    viewer.Translator = function(restApiUrl, defaultLanguage) {
+    viewer.translator = function(restApiUrl, defaultLanguage) {
         this.keys = [];
         this.restApiUrl = restApiUrl;
         this.language = defaultLanguage
@@ -41,11 +41,11 @@ var viewerJS = ( function( viewer ) {
      * @defaultLanguage the language to be used as default
      * 
      */
-    viewer.Translator.prototype.init = function(keys) {
+    viewer.translator.prototype.init = function(keys) {
         return this.addTranslations(keys);
     }
     
-    viewer.Translator.prototype.addTranslations = function(keys) {
+    viewer.translator.prototype.addTranslations = function(keys) {
         if(keys == undefined) {
             return Promise.reject("No keys given to translate");
         }
@@ -82,7 +82,7 @@ var viewerJS = ( function( viewer ) {
      * if no translation was found, the key itself is returned
      * Requires the method Crowdsourcing.initTranslations() to be called first 
      */
-    viewer.Translator.prototype.translate = function(key, language) {
+    viewer.translator.prototype.translate = function(key, language) {
         if(!language) {
             language = this.language;
         }

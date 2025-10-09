@@ -37,6 +37,8 @@ import io.goobi.viewer.controller.RestApiManager;
  * JUnit test classes that extend this class will have test-specific logging and config configurations.
  */
 public abstract class AbstractTest {
+    
+    protected static final String PI_KLEIUNIV = "PPN517154005";
 
     public static final String TEST_CONFIG_PATH = new File("src/test/resources/config_viewer.test.xml").getAbsolutePath();
     public static final String TEST_LOG_CONFIG_PATH = new File("src/test/resources/log4j2.test.xml").getAbsolutePath();

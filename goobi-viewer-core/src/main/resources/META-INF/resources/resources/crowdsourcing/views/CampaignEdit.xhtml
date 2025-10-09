@@ -40,7 +40,7 @@
 	        }
 	        Crowdsourcing.user = user;
 	        Crowdsourcing.setFrameColors(["#e74c3c","#2980b9","#2ecc71","#f1c40f","#e67e22", "#a569bd", "#7fb3d5", "#229954"]);
-	        Crowdsourcing.translator = new viewerJS.Translator("#{configurationBean.restApiUrl}".replace("/rest", "/api/v1"), "#{navigationHelper.locale}");
+	        Crowdsourcing.translator = new viewerJS.translator("#{configurationBean.restApiUrl}".replace("/rest", "/api/v1"), "#{navigationHelper.locale}");
 	    	Crowdsourcing.translator.init(messageKeys)
 	    	.then(() => riot.mount("campaignItem", {
 	    	    	restapiurl:"#{request.contextPath}/api/v1/",

@@ -474,15 +474,28 @@ public class Configuration extends AbstractConfiguration {
         return new ArrayList<>(); // must be a mutable list!
     }
 
+    /**
+     * 
+     * @param type
+     * @return Map&lt;String, List&lt;Metadata&gt;&gt;
+     * @should return empty map if type null
+     * @should return correct config
+     */
     public Map<String, List<Metadata>> getMetadataTemplates(String type) {
         try {
             return getMetadataTemplates(type, true, true);
-
         } catch (IllegalArgumentException e) {
             return Collections.emptyMap();
         }
     }
 
+    /**
+     * 
+     * @param type
+     * @param fallbackToDefaultTemplate
+     * @param topstructValueFallbackDefaultValue
+     * @return Map&lt;String, List&lt;Metadata&gt;&gt;
+     */
     public Map<String, List<Metadata>> getMetadataTemplates(String type, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
         if (type == null) {
@@ -5014,6 +5027,7 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param field
      * @return Configured filter query for the given field; empty string is none found
+     * @should return empty string if field config not found
      * @should return correctValue
      */
     public String getAncestorIdentifierFieldFilterQuery(String field) {

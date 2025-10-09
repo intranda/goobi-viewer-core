@@ -14,7 +14,7 @@
     <composite:implementation>
 
 		<!-- Modal -->
-		<div class="modal fade download-ticket-modal show" id="downloadTicketModal" tabindex="-1" role="dialog" aria-label="" aria-hidden="true">
+		<div class="modal fade access-ticket-modal show" id="accessTicketModal" tabindex="-1" role="dialog" aria-label="" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -28,55 +28,55 @@
 					<div class="modal-body">
 						
 						<!-- DESCRIPTION FOR REQUESTING A TICKET -->
-						<h2 data-mode="ticketMode"><span class="download-ticket-modal__object-title">#{activeDocumentBean.titleBarLabel}</span></h2>
+						<h2 data-mode="ticketMode"><span class="access-ticket-modal__object-title">#{activeDocumentBean.titleBarLabel}</span></h2>
 						<p data-mode="ticketMode">
-							<h:outputText value="#{msg.download_ticket__modal_desc_request}" />
+							<h:outputText value="#{msg.access_tickets__modal_desc_request}" />
 						</p>
 
 						
-							<div class="download-ticket-modal__downloadTicket">
+							<div class="access-ticket-modal__accessTicket">
 
 							<!-- ENTER PASSWORD MODE -->
-							<h:form id="download-ticket-modal__downloadTicketFormPassword" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
-							 
-							<div class="download-ticket-modal__password-mode" data-mode="passwordMode">
+							<h:form id="access-ticket-modal__accessTicketFormPassword" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
 							
-								<h2><span class="download-ticket-modal__object-title">#{activeDocumentBean.titleBarLabel}</span></h2>
+							<div class="access-ticket-modal__password-mode" data-mode="passwordMode">
 							
+								<h2><span class="access-ticket-modal__object-title">#{activeDocumentBean.titleBarLabel}</span></h2>
+								
 								<!-- DESCRIPTION FOR ENTERING THE PASSWORD -->
 								<p data-mode="passwordMode">
-									<h:outputText value="#{msg.download_ticket__modal_desc_pw}" />
+									<h:outputText value="#{msg.access_tickets__modal_desc_pw}" />
 								</p>
 
 								<!-- PASSWORD (visible when ticket request mode OFF) -->
 								<div class="form-group form-row">
-									<label id="download-ticket-modal__labelDownloadTicketPassword" for="download-ticket-modal__title"
+									<label id="access-ticket-modal__labelAccessTicketPassword" for="access-ticket-modal__title"
 										class="col-lg-3 control-label">
-										<span class="download-ticket-modal__label-span">#{msg.access_tickets__ticket}:</span>
+										<span class="access-ticket-modal__label-span">#{msg.access_tickets__ticket}:</span>
 									</label>
 									
 									<div class="col-12 col-lg-9">
-										<h:inputSecret id="download-ticket-modal__downloadTicketPassword" styleClass="form-control"
+										<h:inputSecret id="access-ticket-modal__accessTicketPassword" styleClass="form-control"
 											value="#{accessTicketBean.ticketPassword}"
 											requiredMessage="#{msg.required}"
-											aria-labelledby="labelDownloadTicketPassword" pt:data-require-input-text="passwordRequired" pt:autocomplete="new-password">
+											aria-labelledby="labelAccessTicketPassword" pt:data-require-input-text="passwordRequired" pt:autocomplete="new-password">
 											<f:passThroughAttribute name="aria-labelledby"
-												value="download-ticket-modal__downloadTicketPassword" />
+												value="access-ticket-modal__accessTicketPassword" />
 										</h:inputSecret>
 									</div>
 								</div>
 							
 
 
-							<div class="download-ticket-modal__actions">
+							<div class="access-ticket-modal__actions">
 								<!-- SWITCH TO TICKET REQUEST MODE (visible when ticket request mode OFF)-->
-	                            <div class="form-row download-ticket-modal__action" data-target="switchToTicketMode">
+	                            <div class="form-row access-ticket-modal__action" data-target="switchToTicketMode">
 	                                <div class="col-sm-12 d-flex justify-content-end">
 	                                    <button type="button" class="btn btn--clean">#{msg.access_tickets__need_ticket}</button>
 	                                </div>
 	                            </div>
 	                            <!-- SUBMIT PASSWORD (visible when ticket request mode OFF) -->
-								<div class="form-row download-ticket-modal__action">
+								<div class="form-row access-ticket-modal__action">
 									<div class="col-sm-12 d-flex justify-content-end">
 										<h:commandButton styleClass="btn btn--full"
 											value="#{msg.submit}"
@@ -93,22 +93,23 @@
 							</h:form>
 							
 							<!-- REQUEST TICKET MODE -->
-							<h:form id="download-ticket-modal__downloadTicketFormRequest" pt:data-target="requestTicketForm" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
+							<h:form id="access-ticket-modal__accessTicketFormRequest" pt:data-target="requestTicketForm"
+							    styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
 
-							<div class="download-ticket-modal__ticket-mode" data-mode="ticketMode">
+							<div class="access-ticket-modal__ticket-mode" data-mode="ticketMode">
 
                                 <!-- E-MAIL (visible when ticket request mode ON) -->
                                 <h:panelGroup layout="block"
                                     styleClass="form-group form-row" id="emailGroup">
-                                    <label id="download-ticket-modal__labelEmail" for="download-ticket-modal__downloadTicketEmail"
+                                    <label id="access-ticket-modal__labelEmail" for="access-ticket-modal__accessTicketEmail"
                                         class="col-lg-12 control-label">
-                                        <span class="download-ticket-modal__label-span">#{msg.email}:</span>
+                                        <span class="access-ticket-modal__label-span">#{msg.email}:</span>
                                         <!-- REQUIRED MSG NOT NEEDED? FILLED AUTOMATICALLY -->
-<!--                                         <span class="download-ticket-modal__label-required-field">(#{msg.form__required_field})</span> -->
+<!--                                         <span class="access-ticket-modal__label-required-field">(#{msg.form__required_field})</span> -->
                                     </label>
                                     <div class="col-12">
                                         <div class="cms-module__option-message">
-                                            <h:messages for="downloadTicketEmail"
+                                            <h:messages for="accessTicketEmail"
                                                 styleClass="m-0 p-0 pb-1 list-unstyled"
                                                 infoClass="cms-module__option-message-status success"
                                                 warnClass="cms-module__option-message-status warning"
@@ -118,31 +119,32 @@
                                                     class="fa fa-exclamation" aria-hidden="true"></i>
                                             </div>
                                         </div>
-                                        <h:inputText id="download-ticket-modal__email" label="downloadTicketEmail"
-                                            required="true" value="#{accessTicketBean.ticketEmail}" styleClass="form-control"
-                                            pt:data-require-input-text="ticketRequired" pt:data-target="mailValidatorCheck">
+                                        <h:inputText id="access-ticket-modal__email" label="ticketEmail"
+                                            required="true"
+                                            value="#{accessTicketBean.ticketEmail}" styleClass="form-control"
+                                                pt:data-require-input-text="ticketRequired" pt:data-target="mailValidatorCheck">
                                             <f:passThroughAttribute name="aria-labelledby"
-                                                value="download-ticket-modal__labelDownloadTicket" />
+                                                value="access-ticket-modal__labelTicket" />
                                             <f:passThroughAttribute name="type"
                                                 value="email" />
-                                            <f:validator validatorId="emailValidator" for="downloadTicketEmail" />
+                                            <f:validator validatorId="emailValidator" for="accessTicketEmail" />
                                         </h:inputText>
                                     </div>
                                 </h:panelGroup>
                                 
                                 <!-- REQUEST MESSAGE (visible when ticket request mode ON) -->
                                 <div class="form-group form-row">
-                                    <label id="download-ticket-modal__labelDownloadTicketRequestMessage" for="download-ticket-modal__requestMessage"
+                                    <label id="access-ticket-modal__labelAccessTicketRequestMessage" for="access-ticket-modal__requestMessage"
                                         class="col-12 control-label">
-                                        <span class="download-ticket-modal__label-span">#{msg.access_tickets__request_message}:</span>
+                                        <span class="access-ticket-modal__label-span">#{msg.access_tickets__request_message}:</span>
                                     </label>
                                     
                                     <div class="col-12">
-                                        <h:inputTextarea id="download-ticket-modal__requestMessage"
+                                        <h:inputTextarea id="access-ticket-modal__requestMessage"
                                             styleClass="form-control" value="#{accessTicketBean.ticketRequestMessage}"
-                                            aria-labelledby="labelDownloadTicketRequestMessage">
+                                            aria-labelledby="labelTicketRequestMessage">
                                             <f:passThroughAttribute name="aria-labelledby"
-                                                value="download-ticket-modal__labelUploadJobDescription" />
+                                                value="access-ticket-modal__labelUploadJobDescription" />
                                         </h:inputTextarea>
                                     </div>
                                 </div>
@@ -150,19 +152,19 @@
 								<!-- SECURITY QUESTION -->
 								<ui:fragment rendered="#{captchaBean.resetSecurityQuestion() and captchaBean.securityQuestion != null}">
 									<div class="form-group form-row">
-										<label id="download-ticket-modal__ticketSecurityQuestion" for="download-ticket-modal__ticketSecurityQuestion"
+										<label id="access-ticket-modal__ticketSecurityQuestion" for="access-ticket-modal__ticketSecurityQuestion"
 											class="col-12 control-label">#{msg.user__security_question}:</label>
 										<div class="col-12 composite-control pt-0">
 											<span class="control-label d-block pb-1">#{msg[captchaBean.securityQuestion.questionKey]}:</span>
-											<h:messages for="downloadTicketSecurityQuestion"
+											<h:messages for="accessTicketSecurityQuestion"
 												styleClass="m-0 p-0 pb-1 list-unstyled"
 												infoClass="cms-module__option-message-status success"
 												warnClass="cms-module__option-message-status warning"
 												errorClass="cms-module__option-message-status danger" />
-											<h:inputText id="downloadTicketSecurityQuestion"
+											<h:inputText id="accessTicketSecurityQuestion"
 												styleClass="form-control" autocomplete="off"
 												pt:data-require-input-text="ticketRequired"
-												pt:aria-labelledby="download-ticket-modal__ticketSecurityQuestion"
+												pt:aria-labelledby="access-ticket-modal__ticketSecurityQuestion"
 												pt:autocomplete="new-password"
 												value="#{captchaBean.securityAnswer}" required="true"
 												requiredMessage="#{msg.user__security_question_required_msg}">
@@ -171,7 +173,7 @@
 									</div>
 								</ui:fragment>
                                 
-								<div class="download-ticket-modal__required-checkbox-wrapper">
+								<div class="access-ticket-modal__required-checkbox-wrapper">
 								  
 								  	<div class="form-row">
 									  	<p class="col-12 feedback-modal__accept-terms-text"><h:outputText escape="false" value="#{msg.feedbackAcceptingTerms}" /></p>
@@ -183,12 +185,12 @@
                                        
                                        
                                         <div class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch">
-                                            <h:selectOneRadio group="requiredDownloadTicketTerms" value="false"
+                                            <h:selectOneRadio group="requiredAccessTicketTerms" value="false"
                                                 immediate="true" checked="false"
                                                 pt:data-require-input-checkbox="uncheckedChecker">
                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                             </h:selectOneRadio>
-                                            <h:selectOneRadio id="requiredDownloadTicketCheckbox2" group="requiredDownloadTicketTerms" value="true"
+                                            <h:selectOneRadio id="requiredAccessTicketCheckbox2" group="requiredAccessTicketTerms" value="true"
                                                 immediate="true" checked="true"
                                                 pt:data-require-input-checkbox="ticketRequired">
                                                 <f:selectItem itemValue="#{feedbackModalAcceptedTerms}" itemLabel="#{msg.yes}" />
@@ -199,22 +201,21 @@
 
 								</div>
 
-								<div class="download-ticket-modal__actions small-button-loader__wrapper">
+								<div class="access-ticket-modal__actions small-button-loader__wrapper">
 									
 									<!-- SWITCH TO PASSWORD ENTER MODE (visible when ticket request mode ON)-->
-		                            <div class="form-row download-ticket-modal__action" data-target="switchToPasswordMode">
+		                            <div class="form-row access-ticket-modal__action" data-target="switchToPasswordMode">
 		                                <div class="col-sm-12 d-flex justify-content-end">
 		                                    <button type="button" class="btn btn--clean">#{msg.previous}</button>
 		                                </div>
 		                            </div>
 									
 									<!-- SUBMIT REQUEST (visible when ticket request mode ON) -->
-		                            <div class="form-row download-ticket-modal__action">
+		                            <div class="form-row access-ticket-modal__action">
 		                                <div class="col-sm-12 d-flex justify-content-end">
 		                                    <h:commandButton styleClass="btn btn--full"
-		                                        value="#{msg.submit}"
-		                                        action="#{accessTicketBean.requestNewDownloadTicketAction}" pt:data-require-input="ticketRequired"
-		                                        pt:data-target="buttonLoaderClickEvent">
+		                                        value="#{msg.submit}" action="#{accessTicketBean.requestNewRecordAccessTicketAction}"
+		                                        pt:data-require-input="ticketRequired" pt:data-target="buttonLoaderClickEvent">
 		                                    </h:commandButton>
 		                                </div>
 		                            </div>
@@ -262,6 +263,12 @@
 	                            	$('[data-mode="ticketMode"]').hide();
 	                            	$('[data-mode="passwordMode"]').fadeIn();
 	                            });
+	                            
+	                            // OPEN MODAL ON PAGE LOAD
+	                            $(document).ready(function() {
+	                                $('#accessTicketModal').modal('show'); 
+	                            });
+	                            
                             </script>
 
 

@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -37,7 +38,7 @@ class DataFileToolsTest extends AbstractTest {
      * @verifies construct METS file path correctly
      */
     @Test
-    void getSourceFilePath_shouldConstructMETSFilePathCorrectly() throws Exception {
+    void getSourceFilePath_shouldConstructMETSFilePathCorrectly() {
         Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_mets/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_METS));
         Assertions.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN123.xml",
@@ -49,7 +50,7 @@ class DataFileToolsTest extends AbstractTest {
      * @verifies return all requested data folders
      */
     @Test
-    void getDataFolders_shouldReturnAllRequestedDataFolders() throws Exception {
+    void getDataFolders_shouldReturnAllRequestedDataFolders() {
         Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_mets/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_METS_MARC));
         Assertions.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN123.xml",
@@ -61,19 +62,19 @@ class DataFileToolsTest extends AbstractTest {
      * @verifies construct LIDO file path correctly
      */
     @Test
-    void getSourceFilePath_shouldConstructLIDOFilePathCorrectly() throws Exception {
+    void getSourceFilePath_shouldConstructLIDOFilePathCorrectly() {
         Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_lido/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_LIDO));
         Assertions.assertEquals("src/test/resources/data/viewer/indexed_lido/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants.SOURCEDOCFORMAT_LIDO));
     }
-    
+
     /**
      * @see DataFileTools#getSourceFilePath(String,String,String)
      * @verifies construct EAD file path correctly
      */
     @Test
-    void getSourceFilePath_shouldConstructEADFilePathCorrectly() throws Exception {
+    void getSourceFilePath_shouldConstructEADFilePathCorrectly() {
         Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_ead/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_EAD));
         Assertions.assertEquals("src/test/resources/data/viewer/indexed_ead/PPN123.xml",
@@ -85,7 +86,7 @@ class DataFileToolsTest extends AbstractTest {
      * @verifies construct DenkXweb file path correctly
      */
     @Test
-    void getSourceFilePath_shouldConstructDenkXwebFilePathCorrectly() throws Exception {
+    void getSourceFilePath_shouldConstructDenkXwebFilePathCorrectly() {
         Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_denkxweb/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_DENKXWEB));
         Assertions.assertEquals("src/test/resources/data/viewer/indexed_denkxweb/PPN123.xml",
@@ -97,7 +98,7 @@ class DataFileToolsTest extends AbstractTest {
      * @verifies throw IllegalArgumentException if fileName is null
      */
     @Test
-    void getSourceFilePath_shouldThrowIllegalArgumentExceptionIfFileNameIsNull() throws Exception {
+    void getSourceFilePath_shouldThrowIllegalArgumentExceptionIfFileNameIsNull() {
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> DataFileTools.getSourceFilePath(null, null, SolrConstants.SOURCEDOCFORMAT_METS));
     }
@@ -107,7 +108,7 @@ class DataFileToolsTest extends AbstractTest {
      * @verifies throw IllegalArgumentException if format is unknown
      */
     @Test
-    void getSourceFilePath_shouldThrowIllegalArgumentExceptionIfFormatIsUnknown() throws Exception {
+    void getSourceFilePath_shouldThrowIllegalArgumentExceptionIfFormatIsUnknown() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> DataFileTools.getSourceFilePath("1.xml", null, "bla"));
     }
 
@@ -116,7 +117,7 @@ class DataFileToolsTest extends AbstractTest {
      * @verifies return correct folder if no data repository used
      */
     @Test
-    void getDataFolder_shouldReturnCorrectFolderIfNoDataRepositoryUsed() throws Exception {
+    void getDataFolder_shouldReturnCorrectFolderIfNoDataRepositoryUsed() {
         Path folder = DataFileTools.getDataFolder("PPN123", "media", null);
         Assertions.assertEquals(Paths.get("src/test/resources/data/viewer/media/PPN123"), folder);
     }
@@ -126,7 +127,7 @@ class DataFileToolsTest extends AbstractTest {
      * @verifies return correct folder if data repository used
      */
     @Test
-    void getDataFolder_shouldReturnCorrectFolderIfDataRepositoryUsed() throws Exception {
+    void getDataFolder_shouldReturnCorrectFolderIfDataRepositoryUsed() {
         {
             // Just the folder name
             Path folder = DataFileTools.getDataFolder("PPN123", "media", "1");
@@ -144,7 +145,7 @@ class DataFileToolsTest extends AbstractTest {
      * @verifies return correct path for empty data repository
      */
     @Test
-    void getDataRepositoryPath_shouldReturnCorrectPathForEmptyDataRepository() throws Exception {
+    void getDataRepositoryPath_shouldReturnCorrectPathForEmptyDataRepository() {
         Assertions.assertEquals(DataManager.getInstance().getConfiguration().getViewerHome(), DataFileTools.getDataRepositoryPath(null));
     }
 
@@ -153,7 +154,7 @@ class DataFileToolsTest extends AbstractTest {
      * @verifies return correct path for data repository name
      */
     @Test
-    void getDataRepositoryPath_shouldReturnCorrectPathForDataRepositoryName() throws Exception {
+    void getDataRepositoryPath_shouldReturnCorrectPathForDataRepositoryName() {
         Assertions.assertEquals(DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + "1/",
                 DataFileTools.getDataRepositoryPath("1"));
     }
@@ -163,7 +164,7 @@ class DataFileToolsTest extends AbstractTest {
      * @verifies return correct path for absolute data repository path
      */
     @Test
-    void getDataRepositoryPath_shouldReturnCorrectPathForAbsoluteDataRepositoryPath() throws Exception {
+    void getDataRepositoryPath_shouldReturnCorrectPathForAbsoluteDataRepositoryPath() {
         Assertions.assertEquals("/opt/digiverso/viewer/1/", DataFileTools.getDataRepositoryPath("/opt/digiverso/viewer/1"));
     }
 
@@ -172,9 +173,21 @@ class DataFileToolsTest extends AbstractTest {
      * @verifies remove everything but the file name from given path
      */
     @Test
-    void sanitizeFileName_shouldRemoveEverythingButTheFileNameFromGivenPath() throws Exception {
+    void sanitizeFileName_shouldRemoveEverythingButTheFileNameFromGivenPath() {
         Assertions.assertEquals("foo.bar", DataFileTools.sanitizeFileName("/opt/digiverso/foo.bar"));
         Assertions.assertEquals("foo.bar", DataFileTools.sanitizeFileName("../../foo.bar"));
         Assertions.assertEquals("foo.bar", DataFileTools.sanitizeFileName("/foo.bar"));
+    }
+
+    /**
+     * @throws IOException
+     * @see DataFileTools#loadTei(String,String)
+     * @verifies load tei document correctly
+     */
+    @Test
+    void loadTei_shouldLoadTeiDocumentCorrectly() throws IOException {
+        String tei = DataFileTools.loadTei("DE_2013_Riedel_PolitikUndCo_241__248", "eng");
+        Assertions.assertNotNull(tei);
+        Assertions.assertTrue(tei.contains("<TEI xmlns="));
     }
 }

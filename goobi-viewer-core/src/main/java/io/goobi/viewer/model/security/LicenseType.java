@@ -108,6 +108,8 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private boolean redirect = false;
     @Column(name = "redirect_url")
     private String redirectUrl;
+    @Column(name = "access_ticket_required")
+    private boolean accessTicketRequired = false;
 
     /** Privileges that everyone else has (users without this license, users that are not logged in). */
     @ElementCollection(fetch = FetchType.EAGER)
@@ -441,15 +443,6 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      * @param redirect the redirect to set
      */
     public void setRedirect(boolean redirect) {
-        // Automatically remove any privileges except listing, if redirect mode is on
-        //        if (redirect) {
-        //            privilegesCopy.clear();
-        //            privilegesCopy.add(PRIV_LIST);
-        //        } else if (this.redirect) {
-        //            //only remove LIST if redirect is changed from true to false. 
-        //            //Otherwise LIST is removed each time the form is submitted
-        //            privilegesCopy.remove(PRIV_LIST);
-        //        }
         this.redirect = redirect;
     }
 
@@ -465,6 +458,28 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      */
     public void setRedirectUrl(String redirectUrl) {
         this.redirectUrl = redirectUrl;
+    }
+
+    /**
+     * @return the accessTicketRequired
+     */
+    public boolean isAccessTicketRequired() {
+        return accessTicketRequired;
+    }
+
+    /**
+     * @param accessTicketRequired the accessTicketRequired to set
+     * @should add or remove list privilege
+     */
+    public void setAccessTicketRequired(boolean accessTicketRequired) {
+        this.accessTicketRequired = accessTicketRequired;
+        if (accessTicketRequired) {
+            if (!hasPrivilegeCopy(IPrivilegeHolder.PRIV_LIST)) {
+                addPrivilege(IPrivilegeHolder.PRIV_LIST);
+            }
+        } else {
+            removePrivilege(IPrivilegeHolder.PRIV_LIST);
+        }
     }
 
     /**

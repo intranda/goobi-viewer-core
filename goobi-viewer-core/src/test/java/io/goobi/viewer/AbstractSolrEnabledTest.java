@@ -35,7 +35,6 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  */
 public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
-    protected static final String PI_KLEIUNIV = "PPN517154005";
     protected static String iddocKleiuniv = null;
 
     private SolrClient client;

@@ -81,6 +81,9 @@
 												<ui:fragment rendered="#{licenseType.movingWall}">
 	                                            	<p class="col-12">#{msg.admin__license_moving_wall_activated_info}</p>
 	                                        	</ui:fragment>
+                                                <ui:fragment rendered="#{licenseType.accessTicketRequired}">
+                                                    <p class="col-12">#{msg.admin__access_ticket_activated_info}</p>
+                                                </ui:fragment>
                                                 <ui:fragment rendered="#{licenseType.pdfDownloadQuota and (licenseType.hasPrivilege('DOWNLOAD_PDF') or licenseType.hasPrivilege('DOWNLOAD_PAGE_PDF')) and adminLicenseBean.getPdfQuotaRecordCountForLicenseType(licenseType.name) > 0}">
                                                     <p class="col-12">#{msg.admin__license_pdf_download_quota_notice}</p>
                                                 </ui:fragment>

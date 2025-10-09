@@ -31,7 +31,8 @@ public class AccessPermission implements Serializable {
     private static final long serialVersionUID = 7835995693629510107L;
 
     private boolean granted = false;
-    private boolean ticketRequired = false;
+    private boolean accessTicketRequired = false;
+    private boolean downloadTicketRequired = false;
     private boolean redirect = false;
     private String redirectUrl;
 
@@ -66,18 +67,34 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-     * @return the ticketRequired
+     * @return the accessTicketRequired
      */
-    public boolean isTicketRequired() {
-        return ticketRequired;
+    public boolean isAccessTicketRequired() {
+        return accessTicketRequired;
     }
 
     /**
-     * @param ticketRequired the ticketRequired to set
+     * @param accessTicketRequired the accessTicketRequired to set
+     * @return this;
+     */
+    public AccessPermission setAccessTicketRequired(boolean accessTicketRequired) {
+        this.accessTicketRequired = accessTicketRequired;
+        return this;
+    }
+
+    /**
+     * @return the downloadTicketRequired
+     */
+    public boolean isDownloadTicketRequired() {
+        return downloadTicketRequired;
+    }
+
+    /**
+     * @param downloadTicketRequired the downloadTicketRequired to set
      * @return this
      */
-    public AccessPermission setTicketRequired(boolean ticketRequired) {
-        this.ticketRequired = ticketRequired;
+    public AccessPermission setDownloadTicketRequired(boolean downloadTicketRequired) {
+        this.downloadTicketRequired = downloadTicketRequired;
         return this;
     }
 
@@ -115,6 +132,7 @@ public class AccessPermission implements Serializable {
 
     @Override
     public String toString() {
-        return "Granted: " + granted + ", ticket required: " + ticketRequired + ", redirect: " + redirect + ", redirectUrl: " + redirectUrl;
+        return "Granted: " + granted + ", access ticket required: " + accessTicketRequired + ", download ticket required: " + downloadTicketRequired
+                + ", redirect: " + redirect + ", redirectUrl: " + redirectUrl;
     }
 }

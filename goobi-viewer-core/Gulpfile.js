@@ -403,6 +403,7 @@ function bundleViewerJS(changedFilePath = null) {
                 joinPosix(paths.jsModulesRoot, 'admin', 'adminJS.js'),
                 joinPosix(paths.jsModulesRoot, 'admin', 'adminJS.*.js'),
                 joinPosix(paths.jsModulesRoot, 'crowdsourcing', 'Crowdsourcing.js'),
+                joinPosix(paths.jsModulesRoot, 'crowdsourcing', 'Crowdsourcing.Annotation.js'),
                 joinPosix(paths.jsModulesRoot, 'crowdsourcing', 'Crowdsourcing.*.js'),
             ],
             {allowEmpty: true}

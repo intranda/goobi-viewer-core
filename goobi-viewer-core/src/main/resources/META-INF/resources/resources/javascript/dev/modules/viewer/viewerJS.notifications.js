@@ -40,7 +40,7 @@ var viewerJS = ( function( viewer ) {
 
                     const {
                         icon = 'error',
-                        confirmButtonClass = 'btn btn--danger',
+                        confirmButtonClass = 'btn btn--danger', 
                         cancelButtonClass = 'btn btn--default'
                     } = opts;
 
@@ -219,8 +219,8 @@ var viewerJS = ( function( viewer ) {
                         const alertIconName = ds.icon || 'error';
                         const alertIcon = (alertIconName === 'warn') ? 'warning' : alertIconName;
 
-                        const confirmButtonClass = ds.confirmButton;
-                        const cancelButtonClass = ds.cancelButton;
+                        const confirmButtonClass = ds.confirmButtonClass;
+                        const cancelButtonClass = ds.cancelButtonClass;
                         const confirmButtonText = ds.confirmButtonText;
                         const cancelButtonText = ds.cancelButtonText;
                         const confirmationText = ds.confirmationText;

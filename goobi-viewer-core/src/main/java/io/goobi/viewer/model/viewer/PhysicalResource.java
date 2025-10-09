@@ -112,7 +112,7 @@ public class PhysicalResource {
             AccessPermission access =
                     AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, getFileName(),
                             IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, NetTools.getIpAddress(request));
-            downloadTicketRequired = access.isTicketRequired();
+            downloadTicketRequired = access.isDownloadTicketRequired();
             return access.isGranted();
         }
         logger.trace("FacesContext not found");
