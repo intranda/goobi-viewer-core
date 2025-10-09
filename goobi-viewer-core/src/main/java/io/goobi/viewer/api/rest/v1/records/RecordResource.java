@@ -642,8 +642,7 @@ public class RecordResource {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template not found: " + template).build();
         }
 
-        String query =
-                "+(" + SolrConstants.PI + ":\"" + pi + "\")" + (StringUtils.isNotEmpty(config.getQuery()) ? ("+(" + config.getQuery() + ")") : "");
+        String query = "+" + SolrConstants.PI + ":\"" + pi + "\"";
         logger.trace(query);
         SolrDocumentList docs =
                 DataManager.getInstance()
