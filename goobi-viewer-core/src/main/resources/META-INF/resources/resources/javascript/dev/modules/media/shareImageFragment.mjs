@@ -146,7 +146,6 @@ export default class ShareImageFragment {
 
     initAreaFromFragmentHash() {
         const fragment = viewerJS.helper.getFragmentHash();
-        console.log("initAreaFromFragmentHash", fragment);
         if(fragment && this.fragmentSelect) {
             const area = this.getAreaFromString(fragment);
             if(area) {

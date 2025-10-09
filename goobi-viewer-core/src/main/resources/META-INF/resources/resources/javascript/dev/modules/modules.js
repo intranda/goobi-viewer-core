@@ -92,14 +92,21 @@
             console.log("init image view", _config);
             const imageElement = document.querySelector(_config.elementSelectors.image);
             if(imageElement) { 
+
+                this.pi = document.querySelector(_config.elementSelectors.data.record).textContent;
+                this.logId = document.querySelector(_config.elementSelectors.data.structure).textContent;
+                this.currentPageNo = document.querySelector(_config.elementSelectors.data.page).textContent;
+                this.pageType = document.querySelector(_config.elementSelectors.data.pageType).textContent;
+                this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
                 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 console.log("create image view with config ", imageViewConfig);
                 this.viewer = new ImageView.Image(imageViewConfig);
                 this.zoom = new ImageView.Controls.Zoom(this.viewer);
                 this.rotation = new ImageView.Controls.Rotation(this.viewer);
+                this.persistence = new ImageView.ViewPersistence(this.zoom, this.pageType + "." + this.pi);
                 initControls(this.zoom, this.rotation);
-
+     
                 this.footer = createFooter(this.viewer);
 
                 this.tileSources = createTileSource();
@@ -108,11 +115,6 @@
                     Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
                 );
 
-                this.pi = document.querySelector(_config.elementSelectors.data.record).textContent;
-                this.logId = document.querySelector(_config.elementSelectors.data.structure).textContent;
-                this.currentPageNo = document.querySelector(_config.elementSelectors.data.page).textContent;
-                this.pageType = document.querySelector(_config.elementSelectors.data.pageType).textContent;
-                this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
 
                 if(this.viewMode == "sequence") {
                     console.log("initialize sequence mode");
@@ -207,8 +209,8 @@
         if(viewer.viewportMargins.bottom > 0 && footerUrl) {
             const footer = new ImageView.Footer(viewer, viewer.viewportMargins.bottom);
             footer.load(footerUrl);
+            return footer;
         } 
-        return footer;
     }
 
     function initControls(zoom, rotation) {
@@ -256,7 +258,7 @@
 
     function getFittingMode(pageType) {
         switch((pageType || "").toLowerCase()) {
-            case "viewfulltext":
+            case "viewfullscreen":
                 return "fixed";
             default:
                 return "toWidth";
@@ -417,7 +419,6 @@
 
         initAreaFromFragmentHash() {
             const fragment = viewerJS.helper.getFragmentHash();
-            console.log("initAreaFromFragmentHash", fragment);
             if(fragment && this.fragmentSelect) {
                 const area = this.getAreaFromString(fragment);
                 if(area) {

@@ -84,7 +84,6 @@
 	</popover>
 
 	<!-- OPEN SEADRAGON -->
-    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
     <script type="text/javascript" src="#{request.contextPath}/resources/js/dist/imageView.min.js"></script>
     <script type="text/javascript">
   		//<![CDATA[
@@ -235,7 +234,6 @@
        		}
 	    }
    		zoomableImageLoaded.subscribe(image => {
-			console.log("IMAGE loaded");
    			initializeSequence(image);
    			
        	    $(".openseadragon-canvas").get(0).focus = () => {

@@ -440,61 +440,18 @@
 
 	<script type="text/javascript">
        $(function () {
-               $('[data-toggle="popover"]').popover()
-             })
+       		$('[data-toggle="popover"]').popover()
+       })
 
         //init imageFilters
-		if(viewImage) {
-       	 	viewImage.observables.viewportUpdate.pipe(RxOp.first()).subscribe( () => {
-       	 	    let originClean = viewImage.isOriginClean();
+		zoomableImageLoaded.subscribe(image => {
+       	 	    let originClean = image.viewer.isOriginClean();
        	 	    if(originClean) {
        	 	    	$(".fullscreen__view-sidebar-accordeon-panel.fs-imagefilters .fullscreen__view-sidebar-accordeon-panel-error").hide();
        	 	        $("imageFilters").css("display", "block");
        	 	    }
-       	 	});
 
-			riot.mount("imageFilters", {
-			    image: viewImage,
-			    config: {
-			        filters : {
-			            brightness: {
-			                label: "#{msg.label__image_filter_brightness}"
-			            },
-			            contrast: {
-			                label: "#{msg.label__image_filter_contrast}"
-			            },
-			            saturate: {
-			                label: "#{msg.label__image_filter_saturate}"
-			            },
-			            grayscale: {
-			                label: "#{msg.label__image_filter_grayscale}"
-			            },
-			            threshold: {
-			                label: "#{msg.label__image_filter_bitonal}"
-			            },
-			            blur: {
-			                label: "#{msg.label__image_filter_blur}",
-			                visible: false
-			            },
-			            sharpen: {
-			                label: "#{msg.label__image_filter_sharpen}"
-			            },
-			            invert: {
-			                label: "#{msg.label__image_filter_invert}"
-			            },
-			            hue: {
-			                label: "#{msg.label__image_filter_rotate}"
-			            }
-			        },
-			        messages: {
-			            clearAll: "#{msg.action__reset_all_image_filters}"
-			        }
-			    }
-			})
-
-		} else {
-		    console.error("viewImage is not defined");
-		}
+   	 	});
     </script>
 
 </ui:composition>
