@@ -34,7 +34,8 @@
                         <div id="adminLicenseWrapper" class="admin__content-inner-content">
                             <!-- FIRST BLOCK (CONDITIONS) -->
                             <h2>#{msg.condition}</h2>
-                            <h:panelGroup id="licenseesGroup" layout="block" class="admin__default-block">
+                            <div id="licenseesGroup" class="admin__default-block">
+                            <h:panelGroup id="licenseesGroupInner" layout="block">
                                 <div class="form-group form-row">
                                     <div class="col-sm-4">
                                         <label for="currentLicense.type" class="control-label">#{msg.admin__license_licensee_type_select_label}:</label>
@@ -129,7 +130,7 @@
                                 <ui:fragment rendered="#{!adminLicenseBean.currentLicense.multiLicenseeMode}">
                                     <h:commandLink action="#{adminLicenseBean.currentLicense.toggleMultiLicenseeMode}" immediate="true">
                                         #{msg.add}
-                                        <f:ajax render="licenseesGroup" />
+                                        <f:ajax render="licenseesGroupInner" />
                                     </h:commandLink>
                                 </ui:fragment>
                                 
@@ -225,11 +226,12 @@
                                 
                                     <h:commandLink action="#{adminLicenseBean.currentLicense.toggleMultiLicenseeMode}" immediate="true">
                                         #{msg.remove}
-                                        <f:ajax render="licenseesGroup" />
+                                        <f:ajax render="licenseesGroupInner" />
                                     </h:commandLink>
                                 </h:panelGroup>
                                 
                             </h:panelGroup>
+                            </div>
 
                             <!-- LICENSE TYPE SELECTION -->
                             <h2>#{msg.function}</h2>
