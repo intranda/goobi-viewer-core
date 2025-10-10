@@ -145,7 +145,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     @JoinColumn(name = "client_id")
     private ClientApplication client;
 
-    @Column(name = "primary_type", nullable = false)
+    @Column(name = "primary_type")
     @Enumerated(EnumType.STRING)
     private AccessType primaryType;
 
