@@ -55,6 +55,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -74,6 +76,13 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "licenses")
 public class License extends AbstractPrivilegeHolder implements Serializable {
+
+    public enum AccessType {
+        USER,
+        USER_GROUP,
+        IP_RANGE,
+        CLIENT;
+    }
 
     private static final long serialVersionUID = 1363557138283960150L;
 
@@ -135,6 +144,10 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     @ManyToOne
     @JoinColumn(name = "client_id")
     private ClientApplication client;
+
+    @Column(name = "primary_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AccessType primaryType;
 
     @Column(name = "date_start")
     private LocalDateTime start;
@@ -955,13 +968,13 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         }
         return type;
     }
-    
+
     /**
      * @return the type2
      */
     public String getType2() {
         return type2;
-    } 
+    }
 
     /**
      * @param type the type to set
@@ -1021,6 +1034,20 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         if (clientId != null) {
             this.client = DataManager.getInstance().getDao().getClientApplication(clientId);
         }
+    }
+
+    /**
+     * @return the primaryType
+     */
+    public AccessType getPrimaryType() {
+        return primaryType;
+    }
+
+    /**
+     * @param primaryType the primaryType to set
+     */
+    public void setPrimaryType(AccessType primaryType) {
+        this.primaryType = primaryType;
     }
 
     /**
@@ -1102,7 +1129,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     public void setClient2(ClientApplication client2) {
         this.client2 = client2;
     }
-    
+
     /**
      * @param clientId2 the clientId2 to set
      * @throws DAOException
@@ -1110,6 +1137,63 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     public void setClientId2(Long clientId2) throws DAOException {
         if (clientId2 != null) {
             this.client = DataManager.getInstance().getDao().getClientApplication(clientId2);
+        }
+    }
+
+    public void applySecondarySelection() {
+        if (primaryType == null) {
+            throw new IllegalStateException("primaryType not set");
+        }
+        
+        switch (primaryType) {
+            case USER:
+                if (user2 != null) {
+                    throw new IllegalStateException("Same type not allowed");
+                }
+                if (userGroup2 != null) {
+                    this.userGroup = userGroup2;
+                } else if (ipRange2 != null) {
+                    this.ipRange = ipRange2;
+                } else if (client2 != null) {
+                    this.client = client2;
+                }
+                break;
+            case USER_GROUP:
+                if (userGroup2 != null) {
+                    throw new IllegalStateException("Same type not allowed");
+                }
+                if (user2 != null) {
+                    this.user = user2;
+                } else if (ipRange2 != null) {
+                    this.ipRange = ipRange2;
+                } else if (client2 != null) {
+                    this.client = client2;
+                }
+                break;
+            case IP_RANGE:
+                if (ipRange2 != null) {
+                    throw new IllegalStateException("Same type not allowed");
+                }
+                if (user2 != null) {
+                    this.user = user2;
+                } else if (userGroup2 != null) {
+                    this.userGroup = userGroup2;
+                } else if (client2 != null) {
+                    this.client = client2;
+                }
+                break;
+            case CLIENT:
+                if (client2 != null) {
+                    throw new IllegalStateException("Same type not allowed");
+                }
+                if (user2 != null) {
+                    this.user = user2;
+                } else if (userGroup2 != null) {
+                    this.userGroup = userGroup2;
+                } else if (ipRange2 != null) {
+                    this.ipRange = ipRange2;
+                }
+                break;
         }
     }
 }
