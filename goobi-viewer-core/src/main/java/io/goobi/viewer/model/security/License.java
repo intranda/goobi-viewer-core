@@ -1144,7 +1144,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         if (primaryType == null) {
             throw new IllegalStateException("primaryType not set");
         }
-        
+
         switch (primaryType) {
             case USER:
                 if (user2 != null) {
@@ -1193,6 +1193,9 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
                 } else if (ipRange2 != null) {
                     this.ipRange = ipRange2;
                 }
+                break;
+            default:
+                logger.warn("Usupported primary type: {}", primaryType);
                 break;
         }
     }
