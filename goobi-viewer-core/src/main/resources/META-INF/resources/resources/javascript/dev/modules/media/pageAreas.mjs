@@ -9,7 +9,7 @@ const _config = {
 	}]
 }
 
-const _debug = true;
+const _debug = false;
 
 export default class PageAreas {
 

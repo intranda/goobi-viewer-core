@@ -132,12 +132,22 @@
 	                           	coordinates:  #{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}
 	                           };
 	                          
-	                           // console.log("crowdsourcing coordinates: ", coordinates);
-	                           if(configViewer.image && coordinates) {
-	                           	if(!configViewer.image.highlightCoords) {
-	                           		configViewer.image.highlightCoords = [];
-	                           	}
-	                           	configViewer.image.highlightCoords.push(coordinates);
+	                           if(image && coordinates) {
+	                        	   image.viewer.onOpened.subscribe( viewer => {
+		                        	   image.overlayGroups.forEach(group => {
+		                        		   const overlayGroup = group.overlayGroup;
+		                        		   group.overlays.forEach(overlay => {
+		                        			   const id = overlay.id;
+		                        			   if(id) {
+		                        				   const annoElement = document.getElementById("words-" + id);
+		                        				   if(annoElement) {
+		                        					   annoElement.addEventListener("mouseenter", e => overlayGroup.setHighlight(id, false));
+		                        					   annoElement.addEventListener("mouseleave", e => overlayGroup.removeHighlight(id, false));        					   
+		                        				   }
+		                        			   }
+		                        		   })
+		                        	   })
+	                        	   })
 	                           }
 
 	  

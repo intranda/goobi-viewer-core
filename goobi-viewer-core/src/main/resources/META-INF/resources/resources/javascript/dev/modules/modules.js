@@ -3,7 +3,9 @@
 
     const _config$1 = {
         styleclass: "imageview-overlay",
-        showTooltip: false
+        showTooltip: false,
+        highlightClassName: "highlight",
+        highlightOnHover: false
     };
 
     class ZoomableImageOverlayGroup {
@@ -20,11 +22,11 @@
             this.overlayGroup = new ImageView.OverlayGroup(image.viewer, {
                 className: this.config.styleclass,
                 tooltipClassName:  this.config.styleclass + " tooltip",
-                highlightClassName:  this.config.styleclass + " highlight"
+                highlightClassName:  this.config.highlightClassName,
+                highlightOnHover: this.config.highlightOnHover
             }); 
 
             this.overlays = createOverlays(overlaySources, image.getCurrentTileSourceId());
-
         }
 
         show() {
@@ -36,6 +38,8 @@
         }
     }
 
+
+
     function createOverlays(coords, target) {
         const overlays = [];
         if(Array.isArray(coords)) {
@@ -43,7 +47,9 @@
                 if(Array.isArray(coord)) {
                     overlays.push({
                         target: target,
-                        coordinates: [coord[0], coord[1], coord[2] - coord[0], coord[3] - coord[1]]
+                        coordinates: [coord[0], coord[1], coord[2] - coord[0], coord[3] - coord[1]],
+                        tooltip: coord.length > 4 ? coord[4]: undefined,
+                        id: coord.length > 5 ? coord[5]: undefined,
                     });
                 }
             });
@@ -54,7 +60,6 @@
     class PageAreas {
 
     	constructor(config, image) {
-    		console.log("init page areas ", config);
     		let styles = viewerJS.helper.getCss("page-area", ['borderTopColor', 'borderTopWidth', 'background-color']);
     		({
     				borderWidth: styles["borderTopWidth"],
@@ -69,7 +74,6 @@
     		});
     		
     		image.viewer.onOpened.subscribe(viewer => {
-    			console.log("page areas on viewer open ", config);
     			image.viewer.openseadragon.addHandler("canvas-press", () => {
     				this.dragging = false;
     			});
@@ -228,7 +232,6 @@
     class ZoomableImage {
 
         constructor() {
-            console.log("init image view", _config);
             const imageElement = document.querySelector(_config.elementSelectors.image);
             if(imageElement) { 
 
@@ -239,7 +242,6 @@
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
                 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
-                console.log("create image view with config ", imageViewConfig);
                 this.viewer = new ImageView.Image(imageViewConfig);
                 this.zoom = new ImageView.Controls.Zoom(this.viewer);
                 this.rotation = new ImageView.Controls.Rotation(this.viewer);
@@ -249,14 +251,12 @@
                 this.footer = createFooter(this.viewer);
 
                 this.tileSources = createTileSource();
-                console.log("use TileSources ", this.tileSources);
                 this.tileSourceIdToOrder = Object.fromEntries(
                     Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
                 );
 
 
                 if(this.viewMode == "sequence") {
-                    console.log("initialize sequence mode");
                     this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
                 }
                 
@@ -270,7 +270,9 @@
         
                             const overlays = new ZoomableImageOverlayGroup(this, coords, {
                                 styleclass: element.dataset[_config.datasets.data.styleclass],
-                                showTooltip: element.dataset[_config.datasets.data.showTooltip]
+                                showTooltip: element.dataset[_config.datasets.data.showTooltip],
+                                highlightClassName: "focus",
+                                highlightOnHover: true
                             });
                             this.overlayGroups.push(overlays);
                         } catch(e) {
@@ -511,7 +513,6 @@
 
             if(this.fragmentSelect) {            
                 this.fragmentSelect.finishedHook.subscribe( area => {
-                    console.log("finished drawing or updated area ", area);
                     var areaString = this.getAreaString(area);
                     var pageUrl = window.location.origin + window.location.pathname +  window.location.search + "#xywh=" + areaString;
                     var imageUrl = this.getRegionUrl(area);

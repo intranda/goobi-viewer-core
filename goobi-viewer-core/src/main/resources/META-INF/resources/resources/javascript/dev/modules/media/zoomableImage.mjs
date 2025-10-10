@@ -1,7 +1,7 @@
 import ZoomableImageOverlayGroup from "./zoomableImageOverlayGroup.mjs";
 import PageAreas from "./pageAreas.mjs";
 
-const _debug = true;
+const _debug = false;
 
 const _config = {
     elementSelectors: {
@@ -41,7 +41,7 @@ const _config = {
 export default class ZoomableImage {
 
     constructor() {
-        console.log("init image view", _config);
+        if(_debug)console.log("init image view", _config);
         const imageElement = document.querySelector(_config.elementSelectors.image);
         if(imageElement) { 
 
@@ -69,7 +69,7 @@ export default class ZoomableImage {
 
 
             if(this.viewMode == "sequence") {
-                console.log("initialize sequence mode");
+                if(_debug)console.log("initialize sequence mode");
                 this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
             }
             
@@ -83,7 +83,9 @@ export default class ZoomableImage {
     
                         const overlays = new ZoomableImageOverlayGroup(this, coords, {
                             styleclass: element.dataset[_config.datasets.data.styleclass],
-                            showTooltip: element.dataset[_config.datasets.data.showTooltip]
+                            showTooltip: element.dataset[_config.datasets.data.showTooltip],
+                            highlightClassName: "focus",
+                            highlightOnHover: true
                         })
                         this.overlayGroups.push(overlays);
                     } catch(e) {

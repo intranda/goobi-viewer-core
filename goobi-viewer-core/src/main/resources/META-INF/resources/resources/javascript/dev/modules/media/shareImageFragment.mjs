@@ -80,7 +80,6 @@ export default class ShareImageFragment {
 
         if(this.fragmentSelect) {            
             this.fragmentSelect.finishedHook.subscribe( area => {
-                console.log("finished drawing or updated area ", area);
                 var areaString = this.getAreaString(area);
                 var pageUrl = window.location.origin + window.location.pathname +  window.location.search + "#xywh=" + areaString;
                 var imageUrl = this.getRegionUrl(area);

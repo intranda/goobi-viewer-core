@@ -184,7 +184,6 @@
 	    }
         
 	    function initializeSequence(image) {
-	    	console.log("initializs sequence", image);
            	if(image.sequence) {
            			           		
            		//ajax updates
@@ -197,7 +196,6 @@
            		)
            		.subscribe(tileSource => {
            			const imageId = viewerJS.iiif.getId(tileSource);
-           			console.log("scroll to image", imageId);
            			const pageOrder = image.getTileSourceOrderFromId(imageId);
            			if(pageOrder != undefined) {	          
            				setCurrentImageOrder({"order": pageOrder});
@@ -208,7 +206,6 @@
 	           	image.sequence.onCurrentImageChange.subscribe (tileSource => {
 	           		const imageId = viewerJS.iiif.getId(tileSource);
 	           		const pageNo = image.getTileSourceOrderFromId(imageId);
-					console.log("change image order to ", pageNo, imageId);
 	           		if(pageNo != undefined) {	           			
 		           		setBrowserLocation(image.pi, pageNo);
 		           		imageOrderChanged.next(pageNo);

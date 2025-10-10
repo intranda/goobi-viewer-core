@@ -4,7 +4,9 @@ const _debug = false;
 
 const _config = {
     styleclass: "imageview-overlay",
-    showTooltip: false
+    showTooltip: false,
+    highlightClassName: "highlight",
+    highlightOnHover: false
 }
 
 export default class ZoomableImageOverlayGroup {
@@ -22,11 +24,11 @@ export default class ZoomableImageOverlayGroup {
         this.overlayGroup = new ImageView.OverlayGroup(image.viewer, {
             className: this.config.styleclass,
             tooltipClassName:  this.config.styleclass + " tooltip",
-            highlightClassName:  this.config.styleclass + " highlight"
+            highlightClassName:  this.config.highlightClassName,
+            highlightOnHover: this.config.highlightOnHover
         }); 
 
         this.overlays = createOverlays(overlaySources, image.getCurrentTileSourceId());
-
     }
 
     show() {
@@ -39,6 +41,8 @@ export default class ZoomableImageOverlayGroup {
     }
 }
 
+
+
 function createOverlays(coords, target) {
     const overlays = [];
     if(Array.isArray(coords)) {
@@ -46,7 +50,9 @@ function createOverlays(coords, target) {
             if(Array.isArray(coord)) {
                 overlays.push({
                     target: target,
-                    coordinates: [coord[0], coord[1], coord[2] - coord[0], coord[3] - coord[1]]
+                    coordinates: [coord[0], coord[1], coord[2] - coord[0], coord[3] - coord[1]],
+                    tooltip: coord.length > 4 ? coord[4]: undefined,
+                    id: coord.length > 5 ? coord[5]: undefined,
                 });
             }
         });
