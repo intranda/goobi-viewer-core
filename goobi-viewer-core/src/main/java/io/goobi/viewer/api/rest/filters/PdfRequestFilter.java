@@ -354,7 +354,8 @@ public class PdfRequestFilter implements ContainerRequestFilter {
         AccessPermission access = AccessPermission.denied();
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, divId, privName, servletRequest);
-            if (access.isGranted() && access.isTicketRequired() && !AccessConditionUtils.isHasDownloadTicket(pi, servletRequest.getSession())) {
+            if (access.isGranted() && access.isDownloadTicketRequired()
+                    && !AccessConditionUtils.isHasDownloadTicket(pi, servletRequest.getSession())) {
                 logger.trace("Agent has no download ticket for PI: {}", pi);
                 access.setGranted(false);
             }

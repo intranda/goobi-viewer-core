@@ -55,7 +55,8 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     void getSolrFieldsToFetch_shouldReturnBothStaticAndConfiguredFields() throws Exception {
         List<?> fields = TocMaker.getSolrFieldsToFetch("_DEFAULT");
         Assertions.assertNotNull(fields);
-        Assertions.assertEquals(33, fields.size()); //The fields configured in getTocLabelConfiguration() are counted twice, once  suffixed with _LANG_...
+        // The fields configured in getTocLabelConfiguration() are counted twice, once  suffixed with _LANG_...
+        Assertions.assertEquals(34, fields.size());
     }
 
     /**

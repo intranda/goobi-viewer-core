@@ -19,7 +19,7 @@
  * Module to manage the data table features.
  * 
  * @version 3.2.0
- * @module viewerJS.Translator
+ * @module viewerJS.translator
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {
