@@ -15,6 +15,7 @@ export default class PageAreas {
 
 	constructor(config, image) {
 		if(_debug)console.log("init page areas ", config);
+		this.areas = config.areas;
 		let styles = viewerJS.helper.getCss("page-area", ['borderTopColor', 'borderTopWidth', 'background-color']);
 		let style = {
 				borderWidth: styles["borderTopWidth"],
@@ -37,16 +38,16 @@ export default class PageAreas {
 				this.dragging = true;
 			})
 			
-			let activeAreas = config.areas.filter(a => a.logId === config.currentLogId);
-			// console.log("active areas: ", activeAreas);
+			let activeAreas = this.areas.filter(a => a.logId === config.currentLogId);
+			if(_debug)console.log("active areas: ", activeAreas);
 			if(activeAreas.length > 0) {
 				this.drawActiveAreas(activeAreas, image);
 				this.initAreaClick(image, activeAreas);
 			} else {
-				let inactiveAreas = config.areas.filter(a => a.logId !== config.currentLogId);
+				let inactiveAreas = this.areas.filter(a => a.logId !== config.currentLogId);
 				let inactiveLogIds = inactiveAreas.map(a => a.logId).filter((v, i, a) => a.indexOf(v) === i); //last filter to make logIds unique
 				inactiveLogIds.forEach(logId => {
-					let logIdAreas = config.areas.filter(a => a.logId === logId);
+					let logIdAreas = this.areas.filter(a => a.logId === logId);
 					logIdAreas.forEach( (area, index) => this.drawArea(area, index, image));				    
 				})
 				this.initAreaClick(image, inactiveAreas);				    
@@ -90,32 +91,37 @@ export default class PageAreas {
 			$(document).scrollTop(parseInt(scrollPosition));
 			window.sessionStorage.removeItem("scrollPosition");
 		})
-		let shadow = new ImageView.ImageFilters.HighlightArea(imageView, 0.5, areasOnCanvas, true);
+		let shadow = new ImageView.ImageFilters.HighlightArea(imageView.viewer, 0.5, areasOnCanvas, true);
 		shadow.start();
 	}
 
 	initAreaClick(imageView, areas) {
 		if(areas.length > 0) {
-			let $area = $(".page-area.active");
 			let url = areas[0].url.replace("/" + areas[0].logId, "");
-			$(imageView.viewer.openseadragon.canvas).css("cursor", "pointer");
-				imageView.viewer.openseadragon.addHandler("canvas-release", (event) => {
-				if(!this.dragging) {		        	            
-					let $target = $(event.target);
-					if($target.filter($area).length == 0) {
-						window.location.href = url;
-					}
+
+			const viewerClickPipe = imageView.viewer.onClick.pipe(rxjs.operators.map(() => url))
+			const areaClicks = [];
+			areas.forEach((area) => {
+				const areaClickPipe = area.overlay?.onClick().pipe(rxjs.operators.map(() => area.url))
+				areaClicks.push(areaClickPipe);
+			});
+
+			rxjs.merge(
+				viewerClickPipe,
+				...areaClicks
+			)
+			.pipe(
+				rxjs.operators.filter(e => !this.dragging),
+				rxjs.operators.debounceTime(10) 
+			)
+			.subscribe(url => {
+				if(_debug)console.log("viewer click ", url, window.location.href);
+				if(url && url.length && url !== window.location.href) {
+					window.sessionStorage.setItem("scrollPosition", $(document).scrollTop());
+					window.location.href = url;
 				}
 			})
-			areas.forEach((area) => {
-				let $area = $(".page-area:not(.active)[id^=pageAreaFrame_"+area.logId+"_]");
-				$area.on("click", () => {
-					if(!this.dragging) {		        	        
-						window.sessionStorage.setItem("scrollPosition", $(document).scrollTop());
-						window.location.href = area.url;
-					}
-				});
-			});
+
 		}
 	}
 
@@ -128,23 +134,20 @@ export default class PageAreas {
 		let overlayConfig = {
 			element: $area.get(0),
 		}
-		let overlay = new ImageView.Overlay(rect, overlayConfig, overlayId);
+		area.overlay = new ImageView.Overlay(rect, overlayConfig, overlayId);
 
-		let tooltip = new ImageView.Tooltip(overlay, area.label, image.viewer, {
+		area.tooltip = new ImageView.Tooltip(area.overlay, area.label, image.viewer, {
 			onHover: true,
 			className: "page-area-label page-area-label-text",
 			element: $label.get(0),
 			placement: "bottom"
 		})
-		console.log("created tooltip ", tooltip); 
-		window.tooltip = tooltip;
-		window.overlay = overlay;
 		document.body.append($label.get(0));
 		//tooltip.show();
-		overlay.draw(image.viewer);
+		area.overlay.draw(image.viewer);
 		$area.hover(
-			() => $(tooltip.element).addClass("hover"),
-			() => $(tooltip.element).removeClass("hover")
+			() => $(area.tooltip.element).addClass("hover"),
+			() => $(area.tooltip.element).removeClass("hover")
 		);
 
 	}

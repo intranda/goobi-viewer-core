@@ -132,7 +132,7 @@
 	                           	coordinates:  #{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}
 	                           };
 	                          
-	                           if(image && coordinates) {
+	                           if( typeof image !== "undefined" ) {
 	                        	   image.viewer.onOpened.subscribe( viewer => {
 		                        	   image.overlayGroups.forEach(group => {
 		                        		   const overlayGroup = group.overlayGroup;

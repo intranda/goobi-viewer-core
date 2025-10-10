@@ -94,9 +94,7 @@ export default class ZoomableImage {
                 }
             });
 
-            _drawPageAreas(this);
-
-            const pageAreaGroup = createPageAreaGroup();
+            this.pageAreaGroup = _drawPageAreas(this);
 
         }
     }
@@ -151,7 +149,7 @@ function _drawPageAreas(image) {
         try {
             const areas = JSON.parse(text);
             const pageAreas = new PageAreas({
-                currentLodIg: image.logId,
+                currentLogId: image.logId,
                 areas: areas
             }, image); 
             return pageAreas;
@@ -159,10 +157,6 @@ function _drawPageAreas(image) {
             console.error("Error reading page areas ", text, e);
         }
     }
-}
-
-function createPageAreaGroup() {
-    const hash = window.location.hash;
 }
 
 function createTileSource() {
@@ -193,7 +187,9 @@ function createFooter(viewer) {
 }
 
 function initControls(zoom, rotation) {
-    zoom.setSlider(_config.elementSelectors.controls.zoomSlider);
+    if(document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
+        zoom.setSlider(_config.elementSelectors.controls.zoomSlider);
+    }
     document.querySelectorAll(_config.elementSelectors.controls.rotateLeft).forEach(button => button.addEventListener("click", e => rotation.rotateLeft()));
     document.querySelectorAll(_config.elementSelectors.controls.rotateRight).forEach(button => button.addEventListener("click", e => rotation.rotateRight()))
     document.querySelectorAll(_config.elementSelectors.controls.reset).forEach(button => button.addEventListener("click", e => {
