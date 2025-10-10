@@ -396,7 +396,7 @@ var viewerJS = ( function( viewer ) {
             }
         }
         else {
-            restCall = iiifPath + "records/" + pi + "/" + type + '/info.json';
+            restCall = 'https://api.allorigins.win/get?url=' + iiifPath + "records/" + pi + "/" + type + '/info.json';
             
             if ( _debug ) {
                 console.log( 'else' );
