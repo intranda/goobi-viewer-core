@@ -357,6 +357,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     @Override
+    @JsonIgnore
     public AccessType getAccessType() {
         return AccessType.CLIENT;
     }

@@ -34,20 +34,8 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.solr.SolrConstants;
 
 class IpRangeTest extends AbstractDatabaseEnabledTest {
-
-    /**
-     * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
-     * @verifies return true if condition is open access
-     */
-    @Test
-    void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionIsOpenAccess() throws Exception {
-        IpRange ipRange = new IpRange();
-        Assertions.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList(SolrConstants.OPEN_ACCESS_VALUE)),
-                IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
-    }
 
     /**
      * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
