@@ -288,12 +288,18 @@
         }
      
         load() {
-            return this.viewer.load( Object.values(this.tileSources), this.getCurrentTileSourceIndex() )
-            .then(image => {
-                this.sequence?.initialize(this.getCurrentTileSourceId());
-                this.overlayGroups.forEach(group => group.show());
-                return this;
-            });
+            if(this.viewer) {
+                return this.viewer.load( Object.values(this.tileSources), this.getCurrentTileSourceIndex() )
+                .then(image => {
+                    this.sequence?.initialize(this.getCurrentTileSourceId());
+                    this.overlayGroups.forEach(group => group.show());
+                    return this;
+                });
+            } else {
+                return new Promise( ( resolve, reject ) => {
+                    reject("no image found");
+                })
+            }
         }
 
         getCurrentTileSourceIndex() {
