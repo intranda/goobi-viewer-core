@@ -27,9 +27,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 
 /**
  * Search query group for the advanced search.
@@ -37,6 +41,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 public class SearchQueryGroup implements Serializable {
 
     private static final long serialVersionUID = 609291421340747521L;
+
+    private static final Logger logger = LogManager.getLogger(SearchQueryGroup.class);
 
     public enum SearchQueryGroupOperator {
         AND,
@@ -49,8 +55,8 @@ public class SearchQueryGroup implements Serializable {
 
     /** List of query items in this group. */
     private final List<SearchQueryItem> queryItems = new ArrayList<>();
-    private final String template;
-    
+    private String template;
+
     private SearchQueryGroupOperator operator = SearchQueryGroupOperator.AND;
 
     /**
@@ -76,11 +82,17 @@ public class SearchQueryGroup implements Serializable {
     public void init(List<AdvancedSearchFieldConfiguration> fieldConfigs, String template) {
         queryItems.clear();
         operator = SearchQueryGroupOperator.AND;
+        this.template = template;
 
         if (template == null || StringConstants.DEFAULT_NAME.equals(template)) {
             SearchQueryItem firstItem = new SearchQueryItem(template);
             firstItem.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
             firstItem.setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
+            String defaultOperator = DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateFirstLineDefaultOperator(template);
+            if (StringUtils.isNotEmpty(defaultOperator)) {
+                firstItem.setOperator(SearchItemOperator.valueOf(defaultOperator));
+                logger.trace("Set configured first line operator: {}", defaultOperator);
+            }
             queryItems.add(firstItem);
         }
         if (fieldConfigs != null) {
@@ -89,6 +101,21 @@ public class SearchQueryGroup implements Serializable {
                     SearchQueryItem item = new SearchQueryItem(template)
                             .setLabel(fieldConfig.getLabel());
                     item.setField(fieldConfig.getField());
+                    item.setDisplayAddNewItemButton(fieldConfig.isAllowMultipleItems());
+                    // Add configured preselectValue to set values for this item
+                    // displaySelectItems should be set correctly after calling item.setField()
+                    if (StringUtils.isNotEmpty(fieldConfig.getPreselectValue())) {
+                        item.setPreselectValue(fieldConfig.getPreselectValue());
+                    }
+                    // Set default operator, if configured
+                    String defaultOperator =
+                            DataManager.getInstance()
+                                    .getConfiguration()
+                                    .getAdvancedSearchFieldDefaultOperator(fieldConfig.getField(), template, false);
+                    if (StringUtils.isNotEmpty(defaultOperator)) {
+                        item.setOperator(SearchItemOperator.valueOf(defaultOperator));
+                        logger.trace("Set configured operator for field {}: {}", fieldConfig.getField(), defaultOperator);
+                    }
                     queryItems.add(item);
                 }
             }
@@ -148,11 +175,30 @@ public class SearchQueryGroup implements Serializable {
      * <p>
      * addNewQueryItem.
      * </p>
-     *
+     * 
+     * @param field Index field for the new item
+     * @param afterIndex Item index after which to place new new item
      * @return true if operation successful; false otherwise
      * @should add item correctly
      */
-    public boolean addNewQueryItem() {
+    public boolean addNewQueryItem(String field, int afterIndex) {
+        logger.trace("addNewQueryItem: {}", afterIndex);
+        if (afterIndex >= 0) {
+            SearchQueryItem newItem = new SearchQueryItem(template);
+            newItem.setField(field);
+            newItem.setOperator(SearchItemOperator.OR);
+            if (newItem.isAllowMultipleItems()) {
+                newItem.setDisplayAddNewItemButton(true).setAdditionalCopy(true);
+                queryItems.get(afterIndex).setDisplayAddNewItemButton(false);
+                if (afterIndex == 0) {
+                    queryItems.get(afterIndex).setOperator(SearchItemOperator.OR);
+                }
+            }
+            queryItems.add(afterIndex + 1, newItem);
+
+            return true;
+        }
+
         return queryItems.add(new SearchQueryItem(template));
     }
 

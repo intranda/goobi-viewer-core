@@ -1431,7 +1431,7 @@ public class ConfigurationBean implements Serializable {
      * @should return all values
      */
     public List<String> getSearchResultGroupNames() {
-        logger.trace("getSearchResultGroupNames");
+        // logger.trace("getSearchResultGroupNames");
         return DataManager.getInstance()
                 .getConfiguration()
                 .getSearchResultGroups()

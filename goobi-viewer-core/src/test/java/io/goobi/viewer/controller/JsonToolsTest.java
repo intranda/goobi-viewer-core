@@ -21,6 +21,11 @@
  */
 package io.goobi.viewer.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.json.JSONObject;
@@ -78,7 +83,7 @@ class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies format string correctly
      */
     @Test
-    void formatVersionString_shouldFormatStringCorrectly() throws Exception {
+    void formatVersionString_shouldFormatStringCorrectly() {
         Assertions.assertEquals("goobi-viewer-core 1337 2020-06-30 abcdefg",
                 JsonTools.formatVersionString(
                         "{\"application\": \"goobi-viewer-core\", \"version\": \"1337\", \"build-date\": \"2020-06-30\", \"git-revision\": \"abcdefg\"}"));
@@ -89,7 +94,7 @@ class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return notAvailableKey if json invalid
      */
     @Test
-    void formatVersionString_shouldReturnNotAvailableKeyIfJsonInvalid() throws Exception {
+    void formatVersionString_shouldReturnNotAvailableKeyIfJsonInvalid() {
         Assertions.assertEquals("admin__dashboard_versions_not_available", JsonTools.formatVersionString("not json"));
     }
 
@@ -98,7 +103,7 @@ class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies format string correctly
      */
     @Test
-    void shortFormatVersionString_shouldFormatStringCorrectly() throws Exception {
+    void shortFormatVersionString_shouldFormatStringCorrectly() {
         Assertions.assertEquals("1337 (abcdefg)",
                 JsonTools.shortFormatVersionString(
                         "{\"application\": \"goobi-viewer-core\", \"version\": \"1337\", \"build-date\": \"2020-06-30\", \"git-revision\": \"abcdefg\"}"));
@@ -109,8 +114,51 @@ class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return notAvailableKey if json invalid
      */
     @Test
-    void shortFormatVersionString_shouldReturnNotAvailableKeyIfJsonInvalid() throws Exception {
+    void shortFormatVersionString_shouldReturnNotAvailableKeyIfJsonInvalid() {
         Assertions.assertEquals("admin__dashboard_versions_not_available", JsonTools.shortFormatVersionString("not json"));
+    }
+
+    /**
+     * @see JsonTools#createJsonObjectFromSolrDoc(SolrDocument,Map)
+     * @verifies create json object correctly
+     */
+    @Test
+    void createJsonObjectFromSolrDoc_shouldCreateJsonObjectCorrectly() {
+        SolrDocument doc = new SolrDocument();
+        doc.addField("MD_FOO", "foo");
+        doc.addField("MD_BAR", "bar");
+
+        List<Map<String, String>> fields = new ArrayList<>();
+        fields.add(new HashMap<>());
+        fields.get(0).put("jsonField", "field1");
+        fields.get(0).put("solrField", "MD_FOO");
+        fields.add(new HashMap<>());
+        fields.get(1).put("jsonField", "field2");
+        fields.get(1).put("solrField", "MD_BAR");
+        fields.add(new HashMap<>());
+        fields.get(2).put("jsonField", "field3");
+        fields.get(2).put("constantValue", "baz");
+
+        JSONObject jsonObj = JsonTools.createJsonObjectFromSolrDoc(doc, fields);
+        Assertions.assertNotNull(jsonObj);
+        Assertions.assertEquals("foo", jsonObj.get("field1"));
+        Assertions.assertEquals("bar", jsonObj.get("field2"));
+        Assertions.assertEquals("baz", jsonObj.get("field3"));
+    }
+
+    /**
+     * @see JsonTools#createJsonObjectFromSolrDoc(SolrDocument,Map)
+     * @verifies throw IllegalArgumentException if args missing
+     */
+    @Test
+    void createJsonObjectFromSolrDoc_shouldThrowIllegalArgumentExceptionIfArgsMissing() {
+        List<Map<String, String>> fields = new ArrayList<>();
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class, () -> JsonTools.createJsonObjectFromSolrDoc(null, fields));
+        Assertions.assertEquals("doc may not be null", e.getMessage());
+
+        SolrDocument doc = new SolrDocument();
+        e = Assertions.assertThrows(IllegalArgumentException.class, () -> JsonTools.createJsonObjectFromSolrDoc(doc, null));
+        Assertions.assertEquals("fields may not be null", e.getMessage());
     }
 
     @Test

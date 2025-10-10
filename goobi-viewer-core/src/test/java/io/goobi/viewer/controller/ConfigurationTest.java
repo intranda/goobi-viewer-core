@@ -49,6 +49,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
+import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
@@ -1680,6 +1681,7 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(result.get(7).isDisabled());
         assertEquals(20, result.get(9).getDisplaySelectItemsThreshold());
         assertEquals(AdvancedSearchFieldConfiguration.SELECT_TYPE_BADGES, result.get(9).getSelectType());
+        assertEquals("monograph", result.get(9).getPreselectValue());
     }
 
     /**
@@ -1714,6 +1716,18 @@ class ConfigurationTest extends AbstractTest {
     void isAdvancedSearchFieldRange_shouldReturnCorrectValue() {
         assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(SolrConstants.DC, null, true));
         assertTrue(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange("MD_YEARPUBLISH", null, true));
+    }
+
+    /**
+     * @see Configuration#isAdvancedSearchFieldAllowMultipleItems(String)
+     * @verifies return correct value
+     */
+    @Test
+    void isAdvancedSearchFieldAllowMultipleItems_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchFieldAllowMultipleItems(SolrConstants.DC, null, false));
+        assertTrue(DataManager.getInstance()
+                .getConfiguration()
+                .isAdvancedSearchFieldAllowMultipleItems("MD_NAME", "person", false));
     }
 
     /**
@@ -1781,6 +1795,24 @@ class ConfigurationTest extends AbstractTest {
                 DataManager.getInstance()
                         .getConfiguration()
                         .getAdvancedSearchFieldReplaceWith("MD_SHELFMARK", StringConstants.DEFAULT_NAME, false));
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchFieldDefaultOperator(String,String,boolean)
+     * @verifies return correct value
+     */
+    @Test
+    void getAdvancedSearchFieldDefaultOperator_shouldReturnCorrectValue() {
+        assertEquals("OR", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDefaultOperator("MD_NAME", "person", false));
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchTemplateFirstLineDefaultOperator(String)
+     * @verifies return correct value
+     */
+    @Test
+    void getAdvancedSearchTemplateFirstLineDefaultOperator_shouldReturnCorrectValue() {
+        assertEquals("OR", DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateFirstLineDefaultOperator("_DEFAULT"));
     }
 
     /**
@@ -2389,10 +2421,15 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getWebApiFields_shouldReturnAllConfiguredElements() {
-        List<Map<String, String>> fields = DataManager.getInstance().getConfiguration().getWebApiFields();
+        JsonMetadataConfiguration config = DataManager.getInstance().getConfiguration().getWebApiFields("test");
+        assertNotNull(config);
+        assertEquals("test", config.getTemplate());
+        assertEquals("DOCSTRCT_TOP:monograph", config.getQuery());
+        List<Map<String, String>> fields = config.getFields();
+        assertNotNull(fields);
         assertEquals(2, fields.size());
         assertEquals("json1", fields.get(0).get("jsonField"));
-        assertEquals("lucene1", fields.get(0).get("luceneField"));
+        assertEquals("lucene1", fields.get(0).get("solrField"));
         assertEquals("true", fields.get(0).get("multivalue"));
         assertEquals(null, fields.get(1).get("multivalue"));
     }
