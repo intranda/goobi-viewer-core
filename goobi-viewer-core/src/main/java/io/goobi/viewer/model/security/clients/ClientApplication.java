@@ -22,21 +22,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Map.Entry;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
@@ -52,10 +40,22 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.AccessPermission;
-import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
+import io.goobi.viewer.model.security.License.AccessType;
+import io.goobi.viewer.model.security.user.AbstractLicensee;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 /**
  * @author florian
@@ -66,7 +66,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Entity
 @Table(name = "client_applications")
-public class ClientApplication implements ILicensee, Serializable {
+public class ClientApplication extends AbstractLicensee implements Serializable {
 
     private static final long serialVersionUID = -6806071337346935488L;
 
@@ -354,6 +354,11 @@ public class ClientApplication implements ILicensee, Serializable {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public AccessType getAccessType() {
+        return AccessType.CLIENT;
     }
 
     /**

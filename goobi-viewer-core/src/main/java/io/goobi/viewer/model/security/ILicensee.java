@@ -25,6 +25,7 @@ import java.util.List;
 
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.security.License.AccessType;
 
 /**
  * <p>
@@ -41,6 +42,12 @@ public interface ILicensee {
      * @return a {@link java.lang.String} object.
      */
     public String getName();
+
+    /**
+     * 
+     * @return AccessType corresponding to the licensee's class
+     */
+    public AccessType getAccessType();
 
     /**
      * <p>

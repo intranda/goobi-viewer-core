@@ -38,6 +38,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.License.AccessType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -296,6 +297,11 @@ public class UserGroup extends AbstractLicensee implements Serializable {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public AccessType getAccessType() {
+        return AccessType.USER_GROUP;
     }
 
     /**

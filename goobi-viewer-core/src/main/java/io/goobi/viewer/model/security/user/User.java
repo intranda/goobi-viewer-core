@@ -68,6 +68,7 @@ import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.License.AccessType;
 import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.solr.SolrConstants;
@@ -1495,6 +1496,11 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
 
         return getDisplayName();
+    }
+
+    @Override
+    public AccessType getAccessType() {
+        return AccessType.USER;
     }
 
     /*

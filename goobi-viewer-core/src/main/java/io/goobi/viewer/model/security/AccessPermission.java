@@ -22,6 +22,18 @@
 package io.goobi.viewer.model.security;
 
 import java.io.Serializable;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.user.AbstractLicensee;
+import io.goobi.viewer.model.security.user.IpRange;
+import io.goobi.viewer.model.security.user.User;
 
 /**
  * Access permission check outcome. Apart from access granted true/false status, additional attributes can be defined here.
@@ -30,11 +42,16 @@ public class AccessPermission implements Serializable {
 
     private static final long serialVersionUID = 7835995693629510107L;
 
+    /** Logger for this class. */
+    private static final Logger logger = LogManager.getLogger(AccessPermission.class);
+
     private boolean granted = false;
     private boolean accessTicketRequired = false;
     private boolean downloadTicketRequired = false;
     private boolean redirect = false;
     private String redirectUrl;
+    /** If a license has more than one licensees attached to it, this variable is used to communicate an additional check requirement. */
+    private AbstractLicensee addionalCheckRequired = null;
 
     /**
      * @return {@link AccessPermission} with denied status
@@ -48,6 +65,50 @@ public class AccessPermission implements Serializable {
      */
     public static AccessPermission granted() {
         return new AccessPermission().setGranted(true);
+    }
+
+    public void checkSecondaryAccessRequirement(Set<String> useAccessConditions, String privilegeName, User sessionUser, IpRange sessionIpRange,
+            ClientApplication client) throws PresentationException, IndexUnreachableException, DAOException {
+        if (addionalCheckRequired == null) {
+            return;
+        }
+
+        logger.trace("Additional condition found: {}", getAddionalCheckRequired().getName());
+        switch (addionalCheckRequired.getAccessType()) {
+            case USER, USER_GROUP:
+                if (sessionUser != null && sessionUser.equals(addionalCheckRequired)
+                        && sessionUser.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null)
+                                .isGranted()) {
+                    setAddionalCheckRequired(null);
+                } else {
+                    logger.debug("User mismatch or user has no permission; access denied");
+                    granted = false;
+                }
+                break;
+            case IP_RANGE:
+                if (sessionIpRange != null && sessionIpRange.equals(addionalCheckRequired)
+                        && sessionIpRange.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null)
+                                .isGranted()) {
+                    setAddionalCheckRequired(null);
+                } else {
+                    logger.debug("IP range  mismatch or range has no permission; access denied");
+                    granted = false;
+                }
+                break;
+            case CLIENT:
+                if (client != null && client.equals(addionalCheckRequired)
+                        && client.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null)
+                                .isGranted()) {
+                    setAddionalCheckRequired(null);
+                } else {
+                    logger.debug("IP range  mismatch or range has no permission; access denied");
+                    granted = false;
+                }
+                break;
+            default:
+                logger.debug("Unsupported secondary requirement: {}; access denied", addionalCheckRequired.getAccessType());
+                break;
+        }
     }
 
     /**
@@ -127,6 +188,22 @@ public class AccessPermission implements Serializable {
      */
     public AccessPermission setRedirectUrl(String redirectUrl) {
         this.redirectUrl = redirectUrl;
+        return this;
+    }
+
+    /**
+     * @return the addionalCheckRequired
+     */
+    public AbstractLicensee getAddionalCheckRequired() {
+        return addionalCheckRequired;
+    }
+
+    /**
+     * @param addionalCheckRequired the addionalCheckRequired to set
+     * @return this
+     */
+    public AccessPermission setAddionalCheckRequired(AbstractLicensee addionalCheckRequired) {
+        this.addionalCheckRequired = addionalCheckRequired;
         return this;
     }
 

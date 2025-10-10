@@ -962,6 +962,7 @@ public final class AccessConditionUtils {
             return AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl).setAccessTicketRequired(accessTicketRequired);
         } else {
             // Check IP range
+            IpRange useIpRange = null;
             if (StringUtils.isNotEmpty(remoteAddress)) {
                 if (NetTools.isIpAddressLocalhost(remoteAddress)
                         && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
@@ -971,10 +972,12 @@ public final class AccessConditionUtils {
                 // Check whether the requested privilege is allowed to this IP range (for all access conditions)
                 for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
                     if (ipRange.matchIp(remoteAddress)) {
-                        AccessPermission access =
-                                ipRange.canSatisfyAllAccessConditions(useAccessConditions, relevantLicenseTypes, privilegeName, null);
+                        useIpRange = ipRange;
+                        AccessPermission access = ipRange.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
                         if (access.isGranted()) {
                             logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
+                            access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, ipRange,
+                                    client.orElse(null));
                             return access.setAccessTicketRequired(accessTicketRequired);
                         }
                     }
@@ -986,6 +989,7 @@ public final class AccessConditionUtils {
                 AccessPermission access =
                         user.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null).setAccessTicketRequired(accessTicketRequired);
                 if (access.isGranted()) {
+                    access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
                     return access;
                 }
             }
@@ -998,6 +1002,7 @@ public final class AccessConditionUtils {
                             .canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null)
                             .setAccessTicketRequired(accessTicketRequired);
                     if (access.isGranted()) {
+                        access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
                         return access;
                     }
                 }
@@ -1008,6 +1013,7 @@ public final class AccessConditionUtils {
                             allClients.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null)
                                     .setAccessTicketRequired(accessTicketRequired);
                     if (access.isGranted()) {
+                        access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
                         return access;
                     }
                 }
@@ -1019,7 +1025,7 @@ public final class AccessConditionUtils {
 
     /**
      * Check whether the requiredAccessConditions consist only of the {@link io.goobi.viewer.solr.SolrConstants#OPEN_ACCESS_VALUE OPENACCESS}
-     * condition and OPENACCESS is not contained in allLicenseTypes. In this and only this case can we savely assume that everything is permitted. If
+     * condition and OPENACCESS is not contained in allLicenseTypes. In this and only this case can we safely assume that everything is permitted. If
      * OPENACCESS is in the database then it likely contains some access restrictions which need to be checked
      *
      * @param requiredAccessConditions a {@link java.util.Set} object.

@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -69,7 +69,8 @@ public abstract class AbstractLicensee implements ILicensee {
                                 .setAccessTicketRequired(license.getLicenseType().isAccessTicketRequired())
                                 .setDownloadTicketRequired(license.isTicketRequired())
                                 .setRedirect(license.getLicenseType().isRedirect())
-                                .setRedirectUrl(license.getLicenseType().getRedirectUrl());
+                                .setRedirectUrl(license.getLicenseType().getRedirectUrl())
+                                .setAddionalCheckRequired(license.getSecondaryAccessRequirement(this));
                     } else if (StringUtils.isNotEmpty(pi)) {
                         // If PI and Solr condition subquery are present, check via Solr
                         String query = SolrConstants.PI + ":" + pi + " AND (" + license.getConditions() + ")";
@@ -81,7 +82,8 @@ public abstract class AbstractLicensee implements ILicensee {
                                     .setAccessTicketRequired(license.getLicenseType().isAccessTicketRequired())
                                     .setDownloadTicketRequired(license.isTicketRequired())
                                     .setRedirect(license.getLicenseType().isRedirect())
-                                    .setRedirectUrl(license.getLicenseType().getRedirectUrl());
+                                    .setRedirectUrl(license.getLicenseType().getRedirectUrl())
+                                    .setAddionalCheckRequired(license.getSecondaryAccessRequirement(this));
                         }
                     }
                 }

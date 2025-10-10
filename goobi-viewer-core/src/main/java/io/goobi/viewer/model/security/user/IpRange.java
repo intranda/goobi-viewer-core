@@ -52,6 +52,7 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.License.AccessType;
 
 /**
  * <p>
@@ -161,7 +162,6 @@ public class IpRange extends AbstractLicensee implements Serializable {
      * </p>
      *
      * @param requiredAccessConditions a {@link java.util.Set} object.
-     * @param relevantLicenseTypes a list of relevant license types. If null, the DAO may be queried to check for any restrictions in OpenAccess
      * @param privilegeName a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
      * @return a boolean.
@@ -173,9 +173,9 @@ public class IpRange extends AbstractLicensee implements Serializable {
      * @should return false if ip range has no license
      * @should return true if condition list empty
      */
-    public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, List<LicenseType> relevantLicenseTypes,
-            String privilegeName, String pi) throws PresentationException, IndexUnreachableException, DAOException {
-        if (requiredAccessConditions.isEmpty() || AccessConditionUtils.isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
+    public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, String privilegeName, String pi)
+            throws PresentationException, IndexUnreachableException, DAOException {
+        if (requiredAccessConditions.isEmpty()) {
             return AccessPermission.granted();
         }
 
@@ -296,6 +296,11 @@ public class IpRange extends AbstractLicensee implements Serializable {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public AccessType getAccessType() {
+        return AccessType.IP_RANGE;
     }
 
     /** {@inheritDoc} */

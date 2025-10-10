@@ -47,6 +47,7 @@ import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.user.AbstractLicensee;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -215,6 +216,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     @Transient
     private transient List<Selectable<CMSPageTemplate>> selectableTemplates = null;
 
+    /** Multi-licensee edit mode. */
     @Transient
     private boolean multiLicenseeMode = false;
 
@@ -1140,6 +1142,55 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         }
     }
 
+    /**
+     * 
+     * @return true if at least two of user/userGroup/ipRange/client are non-null; false otherwise
+     */
+    public boolean isHasMultipleLicensees() {
+        return Stream.of(user, userGroup, ipRange, client)
+                .filter(Objects::nonNull)
+                .count() >= 2;
+    }
+
+    /**
+     * 
+     * @param primaryLicensee User/UserGroup/IpRange/ClientApplication via which this license has been checked. This can theoretically be different
+     *            from primaryType, depending on the check order.
+     * @return The other non-null member of user/userGroup/ipRange/client
+     * @should return correct object
+     */
+    public AbstractLicensee getSecondaryAccessRequirement(AbstractLicensee primaryLicensee) {
+        if (primaryLicensee == null) {
+            throw new IllegalArgumentException("primaryLicensee may not be null");
+        }
+
+        // Determine the AccessType of the provided licensee
+        AccessType givenType = switch (primaryLicensee) {
+            case User u -> AccessType.USER;
+            case UserGroup g -> AccessType.USER_GROUP;
+            case IpRange r -> AccessType.IP_RANGE;
+            case ClientApplication c -> AccessType.CLIENT;
+            default -> throw new IllegalArgumentException(
+                    "Unsupported licensee type: " + primaryLicensee.getClass().getName());
+        };
+
+        // Now find the other non-null member whose type differs from the primary
+        if (user != null && givenType != AccessType.USER) {
+            return user;
+        } else if (userGroup != null && givenType != AccessType.USER_GROUP) {
+            return userGroup;
+        } else if (ipRange != null && givenType != AccessType.IP_RANGE) {
+            return ipRange;
+        } else if (client != null && givenType != AccessType.CLIENT) {
+            return client;
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets the selected secondary licensee to the appropriate member.
+     */
     public void applySecondarySelection() {
         if (primaryType == null) {
             throw new IllegalStateException("primaryType not set");
