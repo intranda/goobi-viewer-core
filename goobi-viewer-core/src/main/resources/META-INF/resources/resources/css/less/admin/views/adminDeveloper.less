@@ -187,14 +187,19 @@
 			  padding-bottom: 2px;
 		}
 	}
-	&__developer-copy-to-clipboard {
-		position: absolute;
-		right: 14px;
-		top: 14px;
-		color: #222;
-		cursor: pointer;
-		font-size: 24px;
-	}
+&__developer-copy-to-clipboard {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #222;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+}
 	&__developer_download_archive__loader {
 		display: none;
 	}
