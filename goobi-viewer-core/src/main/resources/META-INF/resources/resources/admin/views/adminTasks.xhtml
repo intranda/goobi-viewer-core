@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -66,11 +68,11 @@
 									<div class="admin__tasks-icon">
 										<div data-target="playPauseMsgQueueToggle"
 											class="admin__tasks-button-pause #{messageQueueBean.paused ? '-hidden' : '-active'}">
-											<i class="fa fa-pause"></i>
+											<util:icon icon="player-pause" />
 										</div>
 										<div data-target="playPauseMsgQueueToggle"
 											class="admin__tasks-button-play #{messageQueueBean.paused ? '-active' : '-hidden'}">
-											<i class="fa fa-play"></i>
+											<util:icon icon="player-play" />
 										</div>
 									</div>
 								</div>
@@ -90,7 +92,7 @@
                                     <div class="admin__tasks-icon">
                                         <div
                                             class="admin__tasks-button-trash #{messageQueueBean.paused ? '-hidden' : '-active'}">
-                                            <i class="fa fa-times"></i>
+                                            <util:icon icon="x" />
                                         </div>
                                     </div>
                                     <f:ajax execute="@form" render="@form" />
@@ -105,7 +107,7 @@
 								<span class="admin__tasks-button-restart-queue"></span>
 								<span class="admin__tasks-icon">
 									<span class="admin__tasks-button-restart">
-										<i class="fa fa-refresh"></i>
+										<util:icon icon="refresh" />
 									</span>
 								</span>
 
@@ -185,7 +187,7 @@
 												<button
 													jsf:action="#{messageQueueBean.deleteMessage(msgqueueticket)}"
 													class="btn admin__tasks-task-details-delete-button">
-													<i class="fa fa-times" />
+													<util:icon icon="x" />
 												</button>
 											</div>
 
@@ -265,11 +267,11 @@
 									<div class="admin__tasks-icon">
 										<div data-target="playPauseQuartzToggle"
 											class="admin__tasks-button-pause #{quartzBean.paused ? '-hidden' : '-active'}">
-											<i class="fa fa-stop" aria-hidden="true"></i>
+											<util:icon icon="player-stop" />
 										</div>
 										<div data-target="playPauseQuartzToggle"
 											class="admin__tasks-button-play #{quartzBean.paused ? '-active' : '-hidden'}">
-											<i class="fa fa-play"></i>
+											<util:icon icon="player-play" />
 										</div>
 									</div>
 								</div>	
@@ -298,14 +300,14 @@
 							type="button"
 							jsf:action="#{quartzBean.pauseAllJobs}" class="btn">
 							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
-							<i class="fa fa-pause"></i>
+							<util:icon icon="player-pause" />
 						</button>
 
 						<button data-target="resumeQuartzButton"
 							type="button"
 							jsf:action="#{quartzBean.resumeAllJobs}" class="btn">
 							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
-							<i class="fa fa-play"></i>
+							<util:icon icon="player-play" />
 						</button>
 
 							<!-- show all active message types -->
@@ -333,14 +335,14 @@
 												<div class="admin__tasks-quartz-table-entry-buttons-wrapper #{entry.paused == true ? '-paused' : ''}">
 												
 													<button jsf:action="#{quartzBean.pauseJob}" class="btn btn--clean admin__tasks-quartz-table-pause-button">
-														<i class="fa fa-pause" />
+														<util:icon icon="player-pause" />
 														<f:ajax execute="@form" render="quartzRowID pauseAllGroup quartzNotProcessed" />
 														<f:setPropertyActionListener
 															target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
 													</button>
 		
 													<button jsf:action="#{quartzBean.resumeJob}" class="btn btn--clean admin__tasks-quartz-table-play-button">
-														<i class="fa fa-play" />
+														<util:icon icon="player-play" />
 														<f:ajax execute="@form" render="quartzRowID pauseAllGroup quartzNotProcessed" />
 														<f:setPropertyActionListener
 															target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
