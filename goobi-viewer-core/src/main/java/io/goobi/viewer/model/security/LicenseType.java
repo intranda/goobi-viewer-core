@@ -473,15 +473,18 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      */
     public void setAccessTicketRequired(boolean accessTicketRequired) {
         logger.trace("setAccessTicketRequired: {}", accessTicketRequired);
-        if (accessTicketRequired != this.accessTicketRequired) {
-            if (accessTicketRequired) {
-                if (!hasPrivilegeCopy(IPrivilegeHolder.PRIV_LIST)) {
-                    addPrivilege(IPrivilegeHolder.PRIV_LIST);
-                }
-            } else {
-                removePrivilege(IPrivilegeHolder.PRIV_LIST);
-            }
+        if (accessTicketRequired == this.accessTicketRequired) {
+            return;
         }
+
+        if (accessTicketRequired) {
+            if (!hasPrivilegeCopy(IPrivilegeHolder.PRIV_LIST)) {
+                addPrivilege(IPrivilegeHolder.PRIV_LIST);
+            }
+        } else {
+            removePrivilege(IPrivilegeHolder.PRIV_LIST);
+        }
+
         this.accessTicketRequired = accessTicketRequired;
     }
 
