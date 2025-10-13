@@ -472,14 +472,17 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      * @should add or remove list privilege
      */
     public void setAccessTicketRequired(boolean accessTicketRequired) {
-        this.accessTicketRequired = accessTicketRequired;
-        if (accessTicketRequired) {
-            if (!hasPrivilegeCopy(IPrivilegeHolder.PRIV_LIST)) {
-                addPrivilege(IPrivilegeHolder.PRIV_LIST);
+        logger.trace("setAccessTicketRequired: {}", accessTicketRequired);
+        if (accessTicketRequired != this.accessTicketRequired) {
+            if (accessTicketRequired) {
+                if (!hasPrivilegeCopy(IPrivilegeHolder.PRIV_LIST)) {
+                    addPrivilege(IPrivilegeHolder.PRIV_LIST);
+                }
+            } else {
+                removePrivilege(IPrivilegeHolder.PRIV_LIST);
             }
-        } else {
-            removePrivilege(IPrivilegeHolder.PRIV_LIST);
         }
+        this.accessTicketRequired = accessTicketRequired;
     }
 
     /**
