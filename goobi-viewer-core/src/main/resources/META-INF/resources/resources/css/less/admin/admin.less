@@ -2831,17 +2831,42 @@ input[type="radio"]:checked+label {
 		// margin-left: 10px;
 	}
 
-	.admin__form-input {
-		padding-left: 20px;
+.admin__form-input {
+    padding-left: 20px;
 
 		input {
 			min-width: 400px;
 		}
-	}
+}
 
-	.input_form__option-message-mark {
-		top: -8px !important;
-	}
+.input_form__option-message-mark {
+    position: absolute;
+    top: -8px !important;
+    right: -8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    .mark-icon { display: none; }
+    &.success  { background-color: @validSuccess; }
+    &.warning  { background-color: @validWarning; }
+    &.danger   { background-color: @validDanger; }
+    &.success .mark-icon--check,
+    &.warning .mark-icon--check { display: inline-block; }
+    &.danger  .mark-icon--exclamation { display: inline-block; }
+
+    &.-md {
+        width: 20px; height: 20px; line-height: 20px;
+        .icon { width: 16px; height: 16px; stroke-width: 2.2; }
+    }
+    &.-lg {
+        width: 24px; height: 24px; line-height: 24px;
+        .icon { width: 18px; height: 18px; stroke-width: 2.4; }
+    }
+}
 }
 
 // BACKEND STYLES FOR DEVS
