@@ -1,4 +1,5 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:util="http://goobi.io/util"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 
@@ -36,9 +37,11 @@
     				<p class="backend-styles__description">Indicator color CSS classes: <b>-danger</b> (red) <b>-warning</b> (yellow) </p>
 
 					<div class="backend-styles__code">
-						<div class="backend-styles__copy"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
+						<div class="backend-styles__copy">
+                            <util:icon icon="clipboard-copy" svgClass="icon icon-xxxl" />
+                        </div>
 						<div class="backend-styles__expander">
-							<i class="fa fa-caret-down" aria-hidden="true"></i>
+							<util:icon icon="caret-down" styleClass="icon-rot-on-open" svgClass="icon icon-xxxl" />
 						</div>
 <pre>
 &lt;!-- COMMENT --&gt;
@@ -158,9 +161,11 @@
     				<p class="backend-styles__description">Change width of boxes with CSS classes: <b>-w33</b> (33%) <b>-w50</b> (50%) </p>
 
 					<div class="backend-styles__code">
-						<div class="backend-styles__copy"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
+						<div class="backend-styles__copy">
+                            <util:icon icon="clipboard-copy" svgClass="icon icon-xxxl" />
+                        </div>
 						<div class="backend-styles__expander">
-							<i class="fa fa-caret-down" aria-hidden="true"></i>
+							<util:icon icon="caret-down" styleClass="icon-rot-on-open" svgClass="icon icon-xxxl" />	
 						</div>
 	
 <pre>
@@ -229,7 +234,7 @@
                                     </div>
                                     <div class="col-1 admin__form-help-icon">
                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            <util:icon icon="help" />
                                         </button>
                                     </div>
                                 </div>
@@ -242,7 +247,7 @@
                                     </div>
                                     <div class="col-1 admin__form-help-icon">
                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            <util:icon icon="help" />
                                         </button>
                                     </div>
                                 </div>
@@ -252,9 +257,9 @@
     				<p class="backend-styles__description">Default structure for forms</p>
 
 					<div class="backend-styles__code">
-						<div class="backend-styles__copy"><i class="fa fa-clipboard" aria-hidden="true"></i></div>
+						<div class="backend-styles__copy"><util:icon icon="clipboard-copy" svgClass="icon icon-xxxl" /></div>
 						<div class="backend-styles__expander">
-							<i class="fa fa-caret-down" aria-hidden="true"></i>
+							<util:icon icon="caret-down" styleClass="icon-rot-on-open" svgClass="icon icon-xxxl" />	
 
 						</div>
 <!-- ESCAPED XHTML CODE -->						
@@ -271,7 +276,7 @@
 		&lt;/div&gt;
 		&lt;div class=&quot;col-1 admin__form-help-icon&quot;&gt;
 			&lt;button type=&quot;button&quot; class=&quot;btn btn--clean&quot; data-toggle=&quot;helptext&quot; aria-label=&quot;inline help icon&quot;&gt;
-				&lt;i class=&quot;fa fa-question-circle&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+				&lt;util:icon icon=&quot;help&quot; /&gt;
 			&lt;/button&gt;
 		&lt;/div&gt;
 	&lt;/div&gt;
@@ -285,7 +290,7 @@
 		&lt;/div&gt;
 		&lt;div class=&quot;col-1 admin__form-help-icon&quot;&gt;
 			&lt;button type=&quot;button&quot; class=&quot;btn btn--clean&quot; data-toggle=&quot;helptext&quot; aria-label=&quot;inline help icon&quot;&gt;
-				&lt;i class=&quot;fa fa-question-circle&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+				&lt;util:icon icon=&quot;help&quot; /&gt;
 			&lt;/button&gt;
 		&lt;/div&gt;
 	&lt;/div&gt;
@@ -308,7 +313,7 @@
 		</div>
 		<div class="col-1 admin__form-help-icon">
 			<button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-				<i class="fa fa-question-circle" aria-hidden="true"></i>
+				<util:icon icon="help" />
 			</button>
 		</div>
 	</div>
@@ -322,7 +327,7 @@
 		</div>
 		<div class="col-1 admin__form-help-icon">
 			<button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-				<i class="fa fa-question-circle" aria-hidden="true"></i>
+				<util:icon icon="help" />
 			</button>
 		</div>
 	</div>
