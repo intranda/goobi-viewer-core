@@ -1,4 +1,5 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:util="http://goobi.io/util"
 				xmlns:c="http://java.sun.com/jsp/jstl/core"
 				xmlns:h="http://xmlns.jcp.org/jsf/html"
 				xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -271,14 +272,14 @@
 																	style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
 															</div>
 			                                            </ui:fragment>
-			                                            <ui:fragment rendered="#{group.loadError}">
+			                                            <ui:fragment rendered="#{!group.loadError}">
 			                                            	<div class="row admin__translations-not-translated-entry"
 			                                                    aria-label="#{msg.edit}: #{msg[group.name]}">
 			                                                    <div class="col-8 pl-5">
 			                                                       #{msg[group.name]}: #{msg.errIndexUnreachableTitle}
 			                                                    </div>
 			                                                    <div class="col-4 d-flex justify-content-end align-items-center">
-			                                                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                                                    <util:icon icon="alert-triangle" />
 			                                                    </div>
 			                                                </div>
 				                                        	<div class="admin__dashboard-translations-progress">
