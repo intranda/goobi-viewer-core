@@ -31,40 +31,60 @@
 		margin-bottom: 2rem;
 	}
 	/* OPTIONS */
-	&__options-container {
-		width: 100%;
-		display: flex;
-		justify-content: flex-end;
-		flex-wrap: wrap;
-		margin-bottom: 15px;
-	}
-	&__options-container-heading {
-		margin-right: auto;
-		margin-bottom: 15px;
-	}
-	&__options {
-		display: flex;
-		align-items: center;
-		font-size: @fontMedium;
-		a,
-		button {
-			display: inline-block;
-			padding: 3px;
-			font-size: @fontNormal;
-			color: @black;
-			&:hover,
-			&:focus,
-			&:active,
-			&.active {
-				color: @blue;
+		&__options-container {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			column-gap: 6px;
+			row-gap: 5px;
+			flex-wrap: wrap;
+			margin-bottom: 14px;
+		}
+		&__options-container-heading {
+			margin: 0;
+			flex: 0 0 auto;
+		}
+		&__options {
+			display: flex;
+			align-items: center;
+			flex-wrap: wrap;
+			column-gap: 6px;
+			row-gap: 4px;
+			margin-left: auto;
+			font-size: @fontMedium;
+			color: inherit;
+			--search-divider-color: rgba(128, 128, 128, 0.5);
+
+			> * {
+				position: relative;
+				display: inline-flex;
+				align-items: center;
+				gap: 4px;
+				min-height: 22px;
+				color: inherit;
+			}
+
+			> * + * {
+				padding-left: 8px;
+				border-left: 1px solid var(--search-divider-color);
+			}
+
+			a,
+			button {
+				padding: 0;
+				color: inherit;
+			}
+
+			form {
+				display: inline-flex;
+				align-items: center;
+				gap: 4px;
 			}
 		}
-		form {
-			display: inline-block;
-		}
-	}
 	&__help {
-		padding-left: 5px;
+		display: inline-flex;
+		align-items: center;
 	}
 	&__geomap {
 		height: 200px;
@@ -78,62 +98,146 @@
 	&__rss,
 	&__save-search,
 	&__excel-export,
-	&__views {
+	&__ris-export,
+	&__toggle-thumbs,
+	&__views,
+	&__help {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
 	}
 	&__hitcount {
-		padding-right: 5px;
+		white-space: nowrap;
 	}
 	&__rss {
-		padding-left: 5px;
-		border-left: 1px solid @middlegray;
+		a {
+			display: inline-flex;
+			align-items: center;
+		}
 	}
 	&__save-search {
-		padding-left: 4px;
-	}
-	&__excel-export {
-		a {
-		}
-		.excel-export-loader {
-			padding-right: 5px;
-			display: none;
-			padding-left: 5px;
-			img {
-				width: 14px;
-				margin-top: -4px;
-			}
+		> span {
+			display: inline-flex;
+			align-items: center;
 		}
 	}
+	&__excel-export,
 	&__ris-export {
-		padding-right: 5px;
+		.excel-export-loader,
 		.ris-export-loader {
 			display: none;
-			padding-left: 5px;
+			font-size: @fontSmall;
+			color: @middlegray;
+			gap: 3px;
+			align-items: center;
 			img {
 				width: 14px;
-				margin-top: -4px;
+				height: 14px;
+				margin: 0;
 			}
 		}
-	} 
+	}
 	&__toggle-thumbs {
-		padding: 0 5px;
-		border-left: 1px solid @middlegray;
-		.-active {
-			color: @blue;
-		}
+		position: relative;
 	}
 	&__views {
-		padding-left: 5px;
-		border-left: 1px solid @middlegray;
-		padding-right: 5px;
-		border-right: 1px solid @middlegray;
-		button {
-		}
-		[data-view="search-list-default"] {
-		}
-		[data-view="search-list-grid"] {
-		}
-		[data-view="search-list-list"] {
-		}
+		gap: 8px;
+	}
+
+	/* ICON BUTTON STRIP */
+	&__views .btn.btn--icon,
+	&__toggle-thumbs .btn.btn--icon,
+	&__excel-export .btn.btn--icon,
+	&__ris-export .btn.btn--icon,
+	&__rss .btn.btn--icon,
+	&__save-search .btn.btn--icon,
+	&__help .btn.btn--icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 20px !important;
+		height: 20px !important;
+		border-radius: 6px;
+		line-height: 1;
+		color: inherit;
+		background-color: transparent;
+		transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+	}
+
+	&__views .btn.btn--icon .icon-wrapper,
+	&__toggle-thumbs .btn.btn--icon .icon-wrapper,
+	&__excel-export .btn.btn--icon .icon-wrapper,
+	&__ris-export .btn.btn--icon .icon-wrapper,
+	&__rss .btn.btn--icon .icon-wrapper,
+	&__save-search .btn.btn--icon .icon-wrapper,
+	&__help .btn.btn--icon .icon-wrapper {
+		line-height: 0;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	&__views .btn.btn--icon .icon-wrapper svg,
+	&__toggle-thumbs .btn.btn--icon .icon-wrapper svg,
+	&__excel-export .btn.btn--icon .icon-wrapper svg,
+	&__ris-export .btn.btn--icon .icon-wrapper svg,
+	&__rss .btn.btn--icon .icon-wrapper svg,
+	&__save-search .btn.btn--icon .icon-wrapper svg,
+	&__help .btn.btn--icon .icon-wrapper svg {
+		display: block;
+		width: 14px !important;
+		height: 14px !important;
+	}
+
+	&__toggle-thumbs [data-action="toggle-thumbs"] .icon-wrapper svg,
+	&__save-search .btn.btn--icon .icon-wrapper svg {
+		width: 14px !important;
+		height: 14px !important;
+	}
+
+	&__views .btn.btn--icon:hover,
+	&__views .btn.btn--icon:focus,
+	&__toggle-thumbs .btn.btn--icon:hover,
+	&__toggle-thumbs .btn.btn--icon:focus,
+	&__excel-export .btn.btn--icon:hover,
+	&__excel-export .btn.btn--icon:focus,
+	&__ris-export .btn.btn--icon:hover,
+	&__ris-export .btn.btn--icon:focus,
+	&__rss .btn.btn--icon:hover,
+	&__rss .btn.btn--icon:focus,
+	&__save-search .btn.btn--icon:hover,
+	&__save-search .btn.btn--icon:focus,
+	&__help .btn.btn--icon:hover,
+	&__help .btn.btn--icon:focus {
+		background-color: fade(@black, 12%);
+		box-shadow: 0 2px 6px fade(@black, 12%), inset 0 0 0 1px fade(@black, 10%);
+		transform: translateY(-1px);
+	}
+
+	&__views .btn.btn--icon.active,
+	&__toggle-thumbs .btn.btn--icon.-active,
+	&__help .btn.btn--icon.is-modal-trigger-open,
+	&__save-search .btn.btn--icon.is-modal-trigger-open {
+		background-color: fade(#4ca8ff, 18%);
+		color: #015999;
+		box-shadow: 0 0 0 1px fade(#015999, 32%), 0 4px 12px fade(#015999, 22%);
+		transform: translateY(-1px);
+	}
+
+	&__views .btn.btn--icon:focus-visible,
+	&__toggle-thumbs .btn.btn--icon:focus-visible,
+	&__excel-export .btn.btn--icon:focus-visible,
+	&__ris-export .btn.btn--icon:focus-visible,
+	&__rss .btn.btn--icon:focus-visible,
+	&__save-search .btn.btn--icon:focus-visible,
+	&__help .btn.btn--icon:focus-visible {
+		outline: 2px solid #015999;
+		outline-offset: 2px;
+	}
+
+	&__help span[data-toggle="tooltip"],
+	&__save-search span[data-toggle="tooltip"] {
+		display: inline-flex;
+		align-items: center;
 	}
 	/* CURRENT SEARCH */
 	&__label {
@@ -639,7 +743,6 @@
 	}
 	
 }
-
 
 /* STACKED MULTIVOLUME THUMBNAIL */
 .stacked-thumbnail-before,
