@@ -122,6 +122,22 @@
 		}
 	}
 
+    .widget-usage__page-download-pdf,
+    .widget-downloads__page-download-pdf,
+    .widget-downloads__work-download-pdf {
+        line-height: 1;
+        .icon-text { gap: 3px !important; }
+        .icon-wrapper { line-height: 0; display: inline-flex; }
+        .icon-wrapper > svg { display: block; width: 22.5px !important; height: 22.5px !important;}
+    }
+
+    .widget-usage__page-download-pdf.badge,
+    .widget-downloads__page-download-pdf.badge,
+    .widget-downloads__work-download-pdf.badge {
+        padding-top: .1rem;
+        padding-bottom: .1rem;
+    }
+
 	&__badge-container-heading {
 		margin-bottom: 0px;
 		flex: 0 0 100%;
