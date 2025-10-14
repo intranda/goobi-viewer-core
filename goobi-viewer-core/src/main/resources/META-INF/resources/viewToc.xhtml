@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
@@ -192,7 +194,7 @@
 												type="button"
 												class="btn btn--link"
 												jsf:action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
-												<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+												<util:icon icon="square-minus" />
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
 												<f:passThroughAttribute name="data-placement" value="top" />
 												<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
@@ -204,7 +206,7 @@
 												type="button"
 												class="btn btn--link"
 												jsf:action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
-												<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+												<util:icon icon="square-plus-2" />
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
 												<f:passThroughAttribute name="data-placement" value="top" />
 												<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
@@ -228,7 +230,7 @@
 																		type="button"
 																		class="btn btn--link"
 																		jsf:action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{!tocElement.expanded}">
-																		<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+																		<util:icon icon="square-plus-2" />
 																		<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
 																		<f:ajax render="@form" />
 																	</button>
@@ -236,7 +238,7 @@
 																		type="button"
 																		class="btn btn--link"
 																		jsf:action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.expanded}">
-																		<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+																		<util:icon icon="square-minus" />
 																		<f:passThroughAttribute name="aria-label" value="#{msg.all}" />
 																		<f:ajax render="@form" />
 																	</button>
@@ -273,7 +275,7 @@
 																		<h:panelGroup rendered="#{!configurationBean.generatePdfInMessageQueue}">
 																			<li>
 																				<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}">
-																					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+																					<util:icon icon="file-type-pdf" />
 																				</a>
 																			</li>
 																		</h:panelGroup>
@@ -287,7 +289,7 @@
 																					data-id="#{tocElement.logId}"
 																					data-pi="#{tocElement.topStructPi}"
 																					title="#{msg.label__pdf_download}">
-																					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+																					<util:icon icon="file-type-pdf" />
 																				</a>
 																			</li>
 																		</h:panelGroup>
@@ -340,7 +342,7 @@
 																	<h:panelGroup rendered="#{!configurationBean.generatePdfInMessageQueue}">
 																		<li>
 																			<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}">
-																				<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+																				<util:icon icon="file-type-pdf" />
 																			</a>
 																		</li>
 																	</h:panelGroup>
@@ -354,7 +356,7 @@
 																				data-id="#{tocElement.logId}"
 																				data-pi="#{tocElement.topStructPi}"
 																				title="#{msg.label__pdf_download}">
-																				<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+																				<util:icon icon="file-type-pdf" />
 																			</a>
 																		</li>
 																	</h:panelGroup>
