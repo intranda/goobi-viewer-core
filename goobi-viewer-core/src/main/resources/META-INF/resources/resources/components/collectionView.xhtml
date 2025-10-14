@@ -1,5 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
@@ -79,7 +80,7 @@
 										<h:panelGroup rendered="#{configurationBean.displaySearchRssLinks}">
 											<div class="collection__rss">
 												<a href="#{browseDcElement.rssUrl}" title="#{msg[browseDcElement.label]}: #{msg.rssSubscribe}" target="_blank">
-													<i class="fa fa-rss" aria-hidden="true"></i>
+													<util:icon icon="rss"/>
 												</a>
 											</div>
 										</h:panelGroup>

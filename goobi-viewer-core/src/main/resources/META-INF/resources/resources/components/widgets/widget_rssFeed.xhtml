@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -30,16 +32,19 @@
 					<h2 class="widget__title widget-rss__title">
 						#{cc.attrs.title}
 					</h2>
-					<a 
-						class="widget-rss__rss-link"
-						href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}&amp;sortField=#{cc.attrs.widget.sortField}&amp;sortDescending=#{cc.attrs.widget.descendingSorting}"
-						title="#{msg.rssSubscribe}" 
-						aria-label="#{msg.rssSubscribe}"
-						target="_blank" 
-						data-toggle="tooltip"
-					> 
-						<i class="fa fa-rss" aria-hidden="true"></i>
-					</a>
+					<div class="widget__topbar-icons-container">
+						<a 
+							class="widget-rss__rss-link"
+							href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}&amp;sortField=#{cc.attrs.widget.sortField}&amp;sortDescending=#{cc.attrs.widget.descendingSorting}"
+							title="#{msg.rssSubscribe}" 
+							aria-label="#{msg.rssSubscribe}"
+							target="_blank" 
+							data-toggle="tooltip">
+						    <util:icon
+								icon="rss"
+								styleClass="icon-badge icon-badge--16 icon-badge--rss icon-badge--square" />
+						</a>
+					</div>
 				</div>
 				
 				<div class="widget__body widget-rss__body">

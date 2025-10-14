@@ -60,7 +60,9 @@
 													<div>
 													<!-- ADD RSS WIDGET TITLE -->
 													<ui:fragment rendered="#{type == 'WIDGET_RSSFEED'}">
-														<h2><i class="fa fa-rss" aria-hidden="true"></i> #{msg[type.label]}</h2>
+														<h2>
+															<util:icon-text icon="rss" text="#{msg[type.label]}"/>
+														</h2>
 														
 													</ui:fragment>
 													<!-- ADD FACETING WIDGET TITLE -->
@@ -308,7 +310,9 @@
 													<div>
 													<!-- ADD RSS WIDGET TITLE -->
 													<ui:fragment rendered="#{widget.type == 'WIDGET_RSSFEED'}">
-														<h2><i class="fa fa-rss" aria-hidden="true"></i> #{msg[widget.type.label]}</h2>
+														<h2>
+															<util:icon-text icon="rss" text="#{msg[widget.type.label]}"/>
+														</h2>
 														
 													</ui:fragment>
 													<!-- ADD FACETING WIDGET TITLE -->
