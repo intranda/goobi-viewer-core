@@ -121,10 +121,10 @@
                                 <button onclick="viewerJS.searchList.openChildHits(this, 'search_subhits_ajaxloader_#{status.index}')" type="button" class="btn btn--clean" 
                                 data-toggle="hit-content" data-toggle-id="childHits_#{status.index}" data-load-hits-script="loadChildHits_#{status.index}" data-childhits="#{hit.hitCount}">
                                     <ui:fragment rendered="#{hit.hitsPopulated == 0}">
-	                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
+	                                    <util:icon icon="caret-right" svgClass="icon" />
                                     </ui:fragment>
                                     <ui:fragment rendered="#{hit.hitsPopulated > 0}">
-	                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
+	                                    <util:icon icon="caret-down" svgClass="icon" />
                                     </ui:fragment>
                                     <h:outputFormat rendered="#{hit.cmsPageHitCount > 0}" value="#{msg.searchChildCmsPageHitCount}">
                                         <f:param value="#{hit.cmsPageHitCount}" />
@@ -237,7 +237,7 @@
                     </ui:repeat>
                     <!-- EXPAND LINK -->
                     <ui:fragment rendered="#{groupPreviewMode and searchBean.activeContext eq '-' and resultGroup.displayExpandUrl}">
-                        <a class="search-list__expand-group-link" href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{resultGroup.name}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetString}/">#{msg.search__all_records}: #{msg[resultGroup.name]} <i class="fa fa-caret-right" aria-hidden="true"></i></a>
+                        <a class="search-list__expand-group-link" href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{resultGroup.name}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetString}/">#{msg.search__all_records}: #{msg[resultGroup.name]} <util:icon icon="caret-right" /></a>
                     </ui:fragment> 
                 </ui:fragment>
             </ui:repeat> 

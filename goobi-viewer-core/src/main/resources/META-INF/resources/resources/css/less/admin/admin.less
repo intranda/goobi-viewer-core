@@ -619,12 +619,6 @@
 			.admin__table-sorting-arrow-hidden {
 				opacity: 1;
 			}
-
-			.admin__table-sorting-arrow-up,
-			.admin__table-sorting-arrow-down {
-				transform: rotate(180deg);
-				transform-origin: 50% 58%;
-			}
 		}
 	}
 
@@ -642,6 +636,13 @@
 	&__table-sorting-arrow-down {
 		color: @black;
 		margin-left: 0.6rem;
+	}
+
+	&__table-sorting-arrow-hidden svg,
+	&__table-sorting-arrow-up svg,
+	&__table-sorting-arrow-down svg {
+		transform-origin: 50% 50%;
+		transition: transform 0.2s ease;
 	}
 
 	&__table-sorting-heading {}

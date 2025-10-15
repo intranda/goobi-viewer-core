@@ -90,15 +90,18 @@ svg.icon.icon-flip-vertical { transform: scaleY(-1); transform-origin: 50% 50%; 
 .icon-badge--20 svg { width: 16px; height: 16px; stroke-width: 2.2; }
 
 
-/* Global: rotate icon when open (apply to wrapper via styleClass) */
-.icon-rot-on-open svg { transition: transform .15s ease; }
-[aria-expanded="true"] .icon-rot-on-open svg,
-[aria-pressed="true"] .icon-rot-on-open svg,
-details[open] .icon-rot-on-open svg,
-.collapse.show .icon-rot-on-open svg,
-[data-toggle="available-items"].in .icon-rot-on-open svg,
-[data-toggle="edit-visible-item"].in .icon-rot-on-open svg,
-.is-open .icon-rot-on-open svg { transform: rotate(180deg); }
+ /* Global: rotate icon when open (apply to wrapper via styleClass) */
+  .icon-rot-on-open svg { transition: transform .15s ease; }
+  [aria-expanded="true"] .icon-rot-on-open svg,
+  [aria-pressed="true"] .icon-rot-on-open svg,
+  details[open] .icon-rot-on-open svg,
+  .collapse.show .icon-rot-on-open svg,
+  [data-toggle="available-items"].in .icon-rot-on-open svg,
+  [data-toggle="edit-visible-item"].in .icon-rot-on-open svg,
+  .is-open .icon-rot-on-open svg,
+  .-opened .icon-rot-on-open svg,
+  .-active .icon-rot-on-open svg,
+  .icon-rot-on-open.-active svg { transform: rotate(180deg); }
 
 
 .icon-totop {
