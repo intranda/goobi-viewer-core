@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -51,7 +53,7 @@
 									<li id="words-#{content.id}">
 										<dl class="dl-horizontal">
 											<dt>
-												<i class="fa fa-user" aria-hidden="true"></i>
+												<util:icon icon="user" />
 											</dt>
 											<dd>#{content.title}</dd>
 										</dl>
