@@ -1,5 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -37,11 +38,11 @@
 	                                          aria-label="#{msg.placeholder__filter_search_results}"
 	                                          data-input="searchFacetFilter" />
 	                                        <button
-	                                          type="button"
-	                                          class="btn btn--clean widget-search-facets__filter-button"
-	                                          data-toggle="searchFacetFilter"
-	                                          aria-label="#{msg.placeholder__filter_search_results}">
-	                                        	<i class="fa fa-search" aria-hidden="true"></i>
+	                                            type="button"
+	                                            class="btn btn--clean widget-search-facets__filter-button"
+	                                            data-toggle="searchFacetFilter"
+	                                            aria-label="#{msg.placeholder__filter_search_results}">
+	                                        	<util:icon icon="search" />
 	                                        </button>
 	                                    </div>
 	                                </ui:fragment>
