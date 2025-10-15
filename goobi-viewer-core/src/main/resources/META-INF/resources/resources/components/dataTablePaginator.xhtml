@@ -1,5 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -24,7 +25,7 @@
                     class="btn #{cc.attrs.tableValues.firstPage ? 'data-table-paginator__button btn--inactive' : 'data-table-paginator__button'}"
                     jsf:disabled="#{cc.attrs.tableValues.firstPage}"
                     jsf:action="#{cc.attrs.tableValues.cmdMoveFirst}">
-                    <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+                    <util:icon icon="chevrons-left" styleClass="data-table-paginator__icon" svgClass="icon data-table-paginator__icon-svg" />
                     <f:passThroughAttribute name="aria-label" value="first page" />
                   </button>
                 </li>
@@ -33,7 +34,7 @@
                     class="btn #{cc.attrs.tableValues.firstPage ? 'data-table-paginator__button btn--inactive' : 'data-table-paginator__button'}"
                     jsf:action="#{cc.attrs.tableValues.cmdMovePrevious}"
                     jsf:disabled="#{cc.attrs.tableValues.firstPage}">
-                    <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    <util:icon icon="chevron-left" styleClass="data-table-paginator__icon" svgClass="icon data-table-paginator__icon-svg" />
                     <f:passThroughAttribute name="aria-label" value="#{msg.previousHits}" />
                   </button>
                 </li>
@@ -57,7 +58,7 @@
                       class="btn #{cc.attrs.tableValues.lastPage ? 'data-table-paginator__button btn-inactive' : 'data-table-paginator__button'}"
                       jsf:action="#{cc.attrs.tableValues.cmdMoveNext}"
                       jsf:disabled="#{cc.attrs.tableValues.lastPage}">
-                      <i class="fa fa-angle-right" aria-hidden="true"></i>
+                      <util:icon icon="chevron-right" styleClass="data-table-paginator__icon" svgClass="icon data-table-paginator__icon-svg" />
                       <f:passThroughAttribute name="aria-label" value="#{msg.nextHit}" />
                     </button>
                 </li>
@@ -66,7 +67,7 @@
                       class="btn #{cc.attrs.tableValues.lastPage ? 'data-table-paginator__button btn--inactive' : 'data-table-paginator__button'}"
                       jsf:action="#{cc.attrs.tableValues.cmdMoveLast}"
                       jsf:disabled="#{cc.attrs.tableValues.lastPage}">
-                      <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                      <util:icon icon="chevrons-right" styleClass="data-table-paginator__icon" svgClass="icon data-table-paginator__icon-svg" />
                       <f:passThroughAttribute name="aria-label" value="last page" />
                     </button>
                 </li>

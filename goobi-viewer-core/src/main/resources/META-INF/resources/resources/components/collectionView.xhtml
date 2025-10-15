@@ -63,11 +63,11 @@
 													jsf:styleClass="btn btn-link"
 													title="#{msg[browseDcElement.label]}">
 													<h:panelGroup rendered="#{not browseDcElement.showDescription}">
-														<i class="fa fa-angle-down" aria-hidden="true"></i>
+														<util:icon icon="chevron-down" aria-hidden="true" />
 													</h:panelGroup>
 
 													<h:panelGroup rendered="#{browseDcElement.showDescription}">
-														<i class="fa fa-angle-up" aria-hidden="true"></i>
+														<util:icon icon="chevron-up" aria-hidden="true" />
 													</h:panelGroup>
 
 													<f:setPropertyActionListener target="#{browseDcElement.showDescription}" value="#{not browseDcElement.showDescription}" />
