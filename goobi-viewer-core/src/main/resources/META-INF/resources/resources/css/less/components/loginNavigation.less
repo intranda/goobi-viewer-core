@@ -66,46 +66,50 @@
 				}
 			}
 			&__user-dropdown-item {
-				display: flex;
-				align-items: center;
 				font-size: @fontMedium;
 				&:hover {
 					background-color: @loginNavBGHover;
-					a, button, .fa {
-					color: @loginNavFGHover;
-					}
-		    	}
-			}
-			&__user-dropdown-item-icon {
-				min-width: 30px;
-				padding-left: 1.5rem;
-				text-align: center;
-				.fa {
-					color: @loginNavFG;
-          			font-size: @fontMedium;
 				}
 			}
-			&__user-dropdown-item-string {
-				-webkit-box-flex: 1;
-			    -ms-flex-positive: 1;
-			    flex-grow: 1;
-				a {
-					display: block;
-					color: @loginNavFG;
-					padding: 0.7rem 1.2rem;
-				  	white-space: nowrap;
-					&:hover,
-					&:active,
-					&:focus {
-						text-decoration: none;
-					}
-				}
+			&__user-dropdown-item-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 1rem;
+				width: 100%;
+				padding: 0.7rem 1.2rem 0.7rem 1.5rem;
+				line-height: 1;
+				text-decoration: none;
 			}
-
+			button.login-navigation__user-dropdown-item-link,
 			&__bookmarks-trigger {
+				background: none;
+				border: 0;
+				font: inherit;
+				cursor: pointer;
+				text-align: left;
+			}
+			&__user-dropdown-item-icon-text {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.8rem;
+			}
+			&__user-dropdown-item-text {
 				white-space: nowrap;
-        		color: @loginNavFG;
-      }
+				color: @loginNavFG;
+				transition: color 0.2s ease;
+			}
+			&__user-dropdown-item-caret {
+				margin-left: auto;
+				color: @loginNavFG;
+			}
+			&__user-dropdown-item-link:hover .login-navigation__user-dropdown-item-text,
+			&__user-dropdown-item-link:focus .login-navigation__user-dropdown-item-text,
+			&__user-dropdown-item-link:active .login-navigation__user-dropdown-item-text,
+			&__user-dropdown-item-link:hover .login-navigation__user-dropdown-item-caret,
+			&__user-dropdown-item-link:focus .login-navigation__user-dropdown-item-caret,
+			&__user-dropdown-item-link:active .login-navigation__user-dropdown-item-caret {
+				color: @loginNavFGHover;
+			}
 			/* USER DROPDOWN ACTION */
 			&__user-dropdown-action {
 				padding-top: 10px;
@@ -120,7 +124,7 @@
 			/* BOOKMARK DROPDOWN */
 			&__bookmarks-list-wrapper {
 				.-opened {
-					.fa-caret-down {
+					.login-navigation__user-dropdown-item-caret {
 						transform: rotate(180deg);
 					}
 				}
@@ -186,14 +190,11 @@
 			&__bookmarks-trigger {
 				.mx-no-style-button;
 				width: 100%;
-				display: flex;
-				justify-content: space-between;
-				padding: 0.7rem 1.2rem;
-				.fa-caret-down {
-					align-self: center;
-					margin-left: 0.8rem;
-					transition: all 0.2s ease;	
-				}
+				transition: color 0.2s ease;
+			}
+			&__bookmarks-trigger .login-navigation__user-dropdown-item-caret {
+				margin-left: auto;
+				transition: transform 0.2s ease;
 			}
 			&__mini-avatar {
 				border-radius: 20px;

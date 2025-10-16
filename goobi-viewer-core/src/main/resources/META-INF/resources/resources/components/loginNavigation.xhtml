@@ -57,73 +57,83 @@
                                     
                                     <!-- DASHBOARD -->
                                     <li class="login-navigation__user-dropdown-item">
-                                    	<div class="login-navigation__user-dropdown-item-icon">
-                                             <i class="fa fa-tachometer" aria-hidden="true"></i>
-                                         </div>
-                                         
-                                         <div class="login-navigation__user-dropdown-item-string">
-                                              <a href="#{navigationHelper.applicationUrl}user/">#{msg.admin__user_profile}</a>
-                                          </div>
+                                        <a href="#{navigationHelper.applicationUrl}user/" class="login-navigation__user-dropdown-item-link">
+                                            <util:icon-text
+                                                icon="dashboard"
+                                                text="#{msg.admin__user_profile}"
+                                                styleClass="login-navigation__user-dropdown-item-icon-text"
+                                                iconClass="login-navigation__user-dropdown-item-icon-wrapper"
+                                                iconSvgClass="icon"
+                                                textClass="login-navigation__user-dropdown-item-text" />
+                                        </a>
                                     </li>
                                     
                                     <!-- BOOKMARKS -->
                                     <ui:fragment rendered="#{configurationBean.bookmarksEnabled and userDataBean.getNumBookmarkLists(userBean.user) > 0}">
                                         <li class="login-navigation__bookmarks-list-wrapper">
                                             <div class="login-navigation__user-dropdown-item login-navigation__bookmarks-list">
-                                                <div class="login-navigation__user-dropdown-item-icon">
-                                                    <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
-                                                </div>
-                                                
-                                                <div class="login-navigation__user-dropdown-item-string">
-                                                    <button class="login-navigation__bookmarks-trigger">#{msg.bookmarks}
-                                                        <util:icon icon="caret-down" styleClass="icon-rot-on-open" svgClass="icon" />
-                                                    </button>
-                                                </div>
+                                                <button type="button"
+                                                    class="login-navigation__bookmarks-trigger login-navigation__user-dropdown-item-link">
+                                                    <util:icon-text
+                                                        icon="bookmark"
+                                                        text="#{msg.bookmarks}"
+                                                        styleClass="login-navigation__user-dropdown-item-icon-text"
+                                                        iconClass="login-navigation__user-dropdown-item-icon-wrapper"
+                                                        iconSvgClass="icon"
+                                                        textClass="login-navigation__user-dropdown-item-text" />
+                                                    <util:icon
+                                                        icon="caret-down"
+                                                        styleClass="icon-rot-on-open login-navigation__user-dropdown-item-caret"
+                                                        svgClass="icon" />
+                                                </button>
                                             </div>
                                         </li>
                                     </ui:fragment>
                                     
                                     <!-- SAVED SEARCHES -->
                                     <ui:fragment rendered="#{searchBean.searchSavingEnabled and userDataBean.getNumSearches(userBean.user) > 0}">
-                                        <li>
-                                            <div class="login-navigation__user-dropdown-item">
-                                                <div class="login-navigation__user-dropdown-item-icon">
-                                                    <util:icon icon="search" />
-                                                </div>
-                                                <div class="login-navigation__user-dropdown-item-string">
-                                                    <a href="#{navigationHelper.applicationUrl}user/searches/">#{msg.user_mySearches}</a>
-                                                </div>
-                                            </div>
+                                        <li class="login-navigation__user-dropdown-item">
+                                            <a href="#{navigationHelper.applicationUrl}user/searches/" class="login-navigation__user-dropdown-item-link">
+                                                <util:icon-text
+                                                    icon="search"
+                                                    text="#{msg.user_mySearches}"
+                                                    styleClass="login-navigation__user-dropdown-item-icon-text"
+                                                    iconClass="login-navigation__user-dropdown-item-icon-wrapper"
+                                                    iconSvgClass="icon"
+                                                    textClass="login-navigation__user-dropdown-item-text" />
+                                            </a>
                                         </li>
                                     </ui:fragment>
                                     
                                     <!-- COMMENTS -->
                                     <ui:fragment rendered="#{userDataBean.commentCount != 0}">
-									    <li>
-										    <div class="login-navigation__user-dropdown-item">
-											    <div class="login-navigation__user-dropdown-item-icon">
-												    <i class="fa fa-comment " aria-hidden="true"></i>
-											    </div>
-											    <div class="login-navigation__user-dropdown-item-string">
-												    <a href="#{navigationHelper.applicationUrl}user/comments/">#{msg.userComments}</a>
-											    </div>
-										    </div>
-									    </li>
-									</ui:fragment>
+                                        <li class="login-navigation__user-dropdown-item">
+                                            <a href="#{navigationHelper.applicationUrl}user/comments/" class="login-navigation__user-dropdown-item-link">
+                                                <util:icon-text
+                                                    icon="message-circle"
+                                                    text="#{msg.userComments}"
+                                                    styleClass="login-navigation__user-dropdown-item-icon-text"
+                                                    iconClass="login-navigation__user-dropdown-item-icon-wrapper"
+                                                    iconSvgClass="icon"
+                                                    textClass="login-navigation__user-dropdown-item-text" />
+                                            </a>
+                                        </li>
+                                    </ui:fragment>
                                     
                                     <!-- ANNOTATIONS -->
                                     <ui:fragment rendered="#{userDataBean.annotationCount != 0}">
-									    <li>
-										    <div class="login-navigation__user-dropdown-item">
-											    <div class="login-navigation__user-dropdown-item-icon">
-												    <i class="fa fa-sticky-note " aria-hidden="true"></i>
-											    </div>
-											    <div class="login-navigation__user-dropdown-item-string">
-												    <a href="#{navigationHelper.applicationUrl}user/annotations/">#{msg.annotations}</a>
-											    </div>
-										    </div>
-									    </li>
-									</ui:fragment>
+                                        <li class="login-navigation__user-dropdown-item">
+                                            <a href="#{navigationHelper.applicationUrl}user/annotations/" class="login-navigation__user-dropdown-item-link">
+                                                <util:icon-text
+                                                    icon="note"
+                                                    text="#{msg.annotations}"
+                                                    styleClass="login-navigation__user-dropdown-item-icon-text"
+                                                    iconClass="login-navigation__user-dropdown-item-icon-wrapper"
+                                                    iconSvgClass="icon"
+                                                    textClass="login-navigation__user-dropdown-item-text" />
+                                            </a>
+                                        </li>
+                                    </ui:fragment>
 									
 									<!-- TODO: INSERT COMMENTS -->
                                     
@@ -136,55 +146,58 @@
                                     
                                     <!-- CONTENT UPLOAD -->
                                     <ui:fragment rendered="#{configurationBean.contentUploadEnabled}">
-                                        <li>
-                                            <div class="login-navigation__user-dropdown-item">
-                                                <div class="login-navigation__user-dropdown-item-icon">
-                                                    <i class="fa fa-upload" aria-hidden="true"></i>
-                                                </div>
-                                                <div class="login-navigation__user-dropdown-item-string">
-                                                    <a href="#{navigationHelper.applicationUrl}user/upload/">#{msg.user__upload_content}</a>
-                                                </div>
-                                            </div>
+                                        <li class="login-navigation__user-dropdown-item">
+                                            <a href="#{navigationHelper.applicationUrl}user/upload/" class="login-navigation__user-dropdown-item-link">
+                                                <util:icon-text
+                                                    icon="upload"
+                                                    text="#{msg.user__upload_content}"
+                                                    styleClass="login-navigation__user-dropdown-item-icon-text"
+                                                    iconClass="login-navigation__user-dropdown-item-icon-wrapper"
+                                                    iconSvgClass="icon"
+                                                    textClass="login-navigation__user-dropdown-item-text" />
+                                            </a>
                                         </li>
                                     </ui:fragment>
                                     
                                     <!-- USERDATA/PROFILE SETTINGS -->
-                                    <li>
-                                        <div class="login-navigation__user-dropdown-item">
-                                            <div class="login-navigation__user-dropdown-item-icon">
-                                                <i class="fa fa-wrench" aria-hidden="true"></i>
-                                            </div>
-                                            <div class="login-navigation__user-dropdown-item-string">
-                                                <a href="#{navigationHelper.applicationUrl}user/settings/">#{msg.accountSettings}</a>
-                                            </div>
-                                        </div>
+                                    <li class="login-navigation__user-dropdown-item">
+                                        <a href="#{navigationHelper.applicationUrl}user/settings/" class="login-navigation__user-dropdown-item-link">
+                                            <util:icon-text
+                                                icon="tool"
+                                                text="#{msg.accountSettings}"
+                                                styleClass="login-navigation__user-dropdown-item-icon-text"
+                                                iconClass="login-navigation__user-dropdown-item-icon-wrapper"
+                                                iconSvgClass="icon"
+                                                textClass="login-navigation__user-dropdown-item-text" />
+                                        </a>
                                     </li>
                                     
                                     <!-- ADMINISTRATION -->
                                     <ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
-                                        <li>
-                                            <div class="login-navigation__user-dropdown-item">
-                                                <div class="login-navigation__user-dropdown-item-icon">
-                                                    <i class="fa fa-cogs" aria-hidden="true"></i>
-                                                </div>
-                                                <div class="login-navigation__user-dropdown-item-string">
-                                                	<a href="#{navigationHelper.applicationUrl}admin/">#{msg.admin}</a>
-                                                </div>
-                                            </div>
+                                        <li class="login-navigation__user-dropdown-item">
+                                            <a href="#{navigationHelper.applicationUrl}admin/" class="login-navigation__user-dropdown-item-link">
+                                                <util:icon-text
+                                                    icon="settings-cog"
+                                                    text="#{msg.admin}"
+                                                    styleClass="login-navigation__user-dropdown-item-icon-text"
+                                                    iconClass="login-navigation__user-dropdown-item-icon-wrapper"
+                                                    iconSvgClass="icon"
+                                                    textClass="login-navigation__user-dropdown-item-text" />
+                                            </a>
                                         </li>
                                     </ui:fragment>
                                 
                                 <!-- LOGOUT -->
-                                    <li>
-                                        <div class="login-navigation__user-dropdown-item">
-                                            <div class="login-navigation__user-dropdown-item-icon">
-                                                <i class="fa fa-power-off" aria-hidden="true"></i>
-                                            </div>
-                                            <div class="login-navigation__user-dropdown-item-string">
-                                                <h:commandLink value="#{msg.logout}" action="#{userBean.logout}">
-                                    			</h:commandLink>
-                                            </div>
-                                        </div>
+                                    <li class="login-navigation__user-dropdown-item">
+                                        <h:commandLink action="#{userBean.logout}" styleClass="login-navigation__user-dropdown-item-link">
+                                            <util:icon-text
+                                                icon="power"
+                                                text="#{msg.logout}"
+                                                styleClass="login-navigation__user-dropdown-item-icon-text"
+                                                iconClass="login-navigation__user-dropdown-item-icon-wrapper"
+                                                iconSvgClass="icon"
+                                                textClass="login-navigation__user-dropdown-item-text" />
+                                        </h:commandLink>
                                     </li>
                             	</ul>
                             </h:form>

@@ -138,18 +138,14 @@
                         <ui:fragment
                             rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}"
                         >
-                            <div class="admin__topbar-frontend-hotfolder-files-action">
-                                <util:icon
-                                    icon="loader-2"
-                                    svgClass="icon icon-rotate icon-rotate--smooth icon-xl"
-                                />
-                                <span class="admin__topbar-hotfolder-files-action-count"
-                                    >#{adminBean.hotfolderFileCount}</span
-                                >
-                                <span class="admin__topbar-hotfolder-files-action-text"
-                                    >#{msg.admin__files_in_hotfolder}...</span
-                                >
-                            </div>
+                        <div class="admin__topbar-frontend-hotfolder-files-action">
+                            <util:icon-text
+                                icon="loader-2"
+                                text="#{adminBean.hotfolderFileCount} #{msg.admin__files_in_hotfolder}..."
+                                iconSvgClass="icon icon-rotate icon-rotate--smooth icon-xl"
+                                styleClass="admin__topbar-hotfolder-files-action-icon-text"
+                                textClass="admin__topbar-hotfolder-files-action-text" />
+                        </div>
                         </ui:fragment>
                     </h:panelGroup>
                     <o:socket
