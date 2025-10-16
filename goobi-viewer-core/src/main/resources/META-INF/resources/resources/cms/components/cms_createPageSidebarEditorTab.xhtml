@@ -37,25 +37,25 @@
 											<div class="sidebar-editor__move-wrapper">
 
 												<button class="btn btn--clean sidebar-editor__move-up -deactivated" type="button" rendered="#{status.first}" jsf:action="false">
-													<i class="fa fa-chevron-up" aria-hidden="true"></i>
+													<util:icon icon="chevron-up" svgClass="icon icon-xxl"/>
 												</button>
 
 												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_up}"
 													class="btn btn--clean sidebar-editor__move-up" rendered="#{!status.first}"
 													jsf:action="#{cc.attrs.page.moveUpSidebarElement(element)}">
-													<i class="fa fa-chevron-up" aria-hidden="true"></i>
+													<util:icon icon="chevron-up" svgClass="icon icon-xxl"/>
 													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
 												</button>
 
 												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_down}" 
 													class="btn btn--clean sidebar-editor__move-down" rendered="#{!status.last}"
 													jsf:action="#{cc.attrs.page.moveDownSidebarElement(element)}">
-													<i class="fa fa-chevron-down " aria-hidden="true"></i>
+													<util:icon icon="chevron-down" svgClass="icon icon-xxl"/>
 													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
 												</button>
 												
 												<button class="btn btn--clean sidebar-editor__move-down -deactivated" type="button" rendered="#{status.last}"  jsf:action="false">
-													<i class="fa fa-chevron-down" aria-hidden="true"></i>
+													<util:icon icon="chevron-down" svgClass="icon icon-xxl"/>
 												</button>
 
 											</div>
