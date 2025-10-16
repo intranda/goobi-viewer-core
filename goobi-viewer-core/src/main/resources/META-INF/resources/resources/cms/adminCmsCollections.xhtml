@@ -73,11 +73,11 @@
 																	<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__show_details}" />
 																	<h:panelGroup
 																		rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
-																		<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+																		<util:icon icon="square-rounded-plus" svgClass="icon icon-md"  />
 																	</h:panelGroup>
 																	<h:panelGroup
 																		rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
-																		<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+																		<util:icon icon="square-rounded-minus" svgClass="icon icon-md" />
 																	</h:panelGroup>
 																	<f:ajax render="collectionTreeGroup" />
 																</button>
