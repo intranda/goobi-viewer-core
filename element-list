@@ -123,6 +123,7 @@ io.goobi.viewer.model.security.authentication
 io.goobi.viewer.model.security.authentication.model
 io.goobi.viewer.model.security.clients
 io.goobi.viewer.model.security.recordlock
+io.goobi.viewer.model.security.tickets
 io.goobi.viewer.model.security.user
 io.goobi.viewer.model.security.user.icon
 io.goobi.viewer.model.sitemap
