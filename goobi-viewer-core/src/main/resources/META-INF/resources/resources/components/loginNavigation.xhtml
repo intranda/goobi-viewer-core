@@ -6,12 +6,10 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-    
     <!-- INTERFACE OPTIONS -->
     <composite:interface>
         <composite:attribute name="customName" required="false" default="false" />
     </composite:interface>
-
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displayUserNavigation || userBean.loggedIn }">
@@ -25,7 +23,6 @@
                         </button>
                     </li>
                 </ui:fragment>
-                
                 <!-- USER LOGGED IN -->
                 <ui:fragment rendered="#{userBean.loggedIn}">
                     <li data-login="true">
@@ -42,19 +39,16 @@
                                 </span>
                             </button>
                         </ui:fragment>
-                        
                         <!-- TOGGLE USER DROPDOWN WITH CUSTOM NAME -->
                         <ui:fragment rendered="#{cc.attrs.customName}">
                             <button type="button" class="btn btn--clean" data-toggle="user-dropdown">
                                 #{msg.login__custom_name}
                             </button>
                         </ui:fragment>
-                        
                         <!-- USER DROPDOWN -->
                         <div class="login-navigation__user-dropdown">
                             <h:form id="userDropdownForm" prependId="false">
                                 <ul class="login-navigation__list">
-                                    
                                     <!-- DASHBOARD -->
                                     <li class="login-navigation__user-dropdown-item">
                                         <a href="#{navigationHelper.applicationUrl}user/" class="login-navigation__user-dropdown-item-link">
@@ -62,12 +56,10 @@
                                                 icon="dashboard"
                                                 text="#{msg.admin__user_profile}"
                                                 styleClass="login-navigation__user-dropdown-item-icon-text"
-                                                iconClass="login-navigation__user-dropdown-item-icon-wrapper"
                                                 iconSvgClass="icon"
                                                 textClass="login-navigation__user-dropdown-item-text" />
                                         </a>
                                     </li>
-                                    
                                     <!-- BOOKMARKS -->
                                     <ui:fragment rendered="#{configurationBean.bookmarksEnabled and userDataBean.getNumBookmarkLists(userBean.user) > 0}">
                                         <li class="login-navigation__bookmarks-list-wrapper">
@@ -78,7 +70,6 @@
                                                         icon="bookmark"
                                                         text="#{msg.bookmarks}"
                                                         styleClass="login-navigation__user-dropdown-item-icon-text"
-                                                        iconClass="login-navigation__user-dropdown-item-icon-wrapper"
                                                         iconSvgClass="icon"
                                                         textClass="login-navigation__user-dropdown-item-text" />
                                                     <util:icon
@@ -89,7 +80,6 @@
                                             </div>
                                         </li>
                                     </ui:fragment>
-                                    
                                     <!-- SAVED SEARCHES -->
                                     <ui:fragment rendered="#{searchBean.searchSavingEnabled and userDataBean.getNumSearches(userBean.user) > 0}">
                                         <li class="login-navigation__user-dropdown-item">
@@ -98,13 +88,11 @@
                                                     icon="search"
                                                     text="#{msg.user_mySearches}"
                                                     styleClass="login-navigation__user-dropdown-item-icon-text"
-                                                    iconClass="login-navigation__user-dropdown-item-icon-wrapper"
                                                     iconSvgClass="icon"
                                                     textClass="login-navigation__user-dropdown-item-text" />
                                             </a>
                                         </li>
                                     </ui:fragment>
-                                    
                                     <!-- COMMENTS -->
                                     <ui:fragment rendered="#{userDataBean.commentCount != 0}">
                                         <li class="login-navigation__user-dropdown-item">
@@ -113,13 +101,11 @@
                                                     icon="message-circle"
                                                     text="#{msg.userComments}"
                                                     styleClass="login-navigation__user-dropdown-item-icon-text"
-                                                    iconClass="login-navigation__user-dropdown-item-icon-wrapper"
                                                     iconSvgClass="icon"
                                                     textClass="login-navigation__user-dropdown-item-text" />
                                             </a>
                                         </li>
                                     </ui:fragment>
-                                    
                                     <!-- ANNOTATIONS -->
                                     <ui:fragment rendered="#{userDataBean.annotationCount != 0}">
                                         <li class="login-navigation__user-dropdown-item">
@@ -128,22 +114,18 @@
                                                     icon="note"
                                                     text="#{msg.annotations}"
                                                     styleClass="login-navigation__user-dropdown-item-icon-text"
-                                                    iconClass="login-navigation__user-dropdown-item-icon-wrapper"
                                                     iconSvgClass="icon"
                                                     textClass="login-navigation__user-dropdown-item-text" />
                                             </a>
                                         </li>
                                     </ui:fragment>
-									
 									<!-- TODO: INSERT COMMENTS -->
-                                    
                                     <!-- MODULE CONTRIBUTIONS -->
                                     <c:forEach var="module" items="#{configurationBean.modules}">
                                         <c:forEach var="contribution" items="#{module.loginNavigationContributions}">
                                             <ui:include src="/#{contribution}" />
                                         </c:forEach>
                                     </c:forEach>
-                                    
                                     <!-- CONTENT UPLOAD -->
                                     <ui:fragment rendered="#{configurationBean.contentUploadEnabled}">
                                         <li class="login-navigation__user-dropdown-item">
@@ -152,13 +134,11 @@
                                                     icon="upload"
                                                     text="#{msg.user__upload_content}"
                                                     styleClass="login-navigation__user-dropdown-item-icon-text"
-                                                    iconClass="login-navigation__user-dropdown-item-icon-wrapper"
                                                     iconSvgClass="icon"
                                                     textClass="login-navigation__user-dropdown-item-text" />
                                             </a>
                                         </li>
                                     </ui:fragment>
-                                    
                                     <!-- USERDATA/PROFILE SETTINGS -->
                                     <li class="login-navigation__user-dropdown-item">
                                         <a href="#{navigationHelper.applicationUrl}user/settings/" class="login-navigation__user-dropdown-item-link">
@@ -166,12 +146,10 @@
                                                 icon="tool"
                                                 text="#{msg.accountSettings}"
                                                 styleClass="login-navigation__user-dropdown-item-icon-text"
-                                                iconClass="login-navigation__user-dropdown-item-icon-wrapper"
                                                 iconSvgClass="icon"
                                                 textClass="login-navigation__user-dropdown-item-text" />
                                         </a>
                                     </li>
-                                    
                                     <!-- ADMINISTRATION -->
                                     <ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
                                         <li class="login-navigation__user-dropdown-item">
@@ -180,13 +158,11 @@
                                                     icon="settings-cog"
                                                     text="#{msg.admin}"
                                                     styleClass="login-navigation__user-dropdown-item-icon-text"
-                                                    iconClass="login-navigation__user-dropdown-item-icon-wrapper"
                                                     iconSvgClass="icon"
                                                     textClass="login-navigation__user-dropdown-item-text" />
                                             </a>
                                         </li>
                                     </ui:fragment>
-                                
                                 <!-- LOGOUT -->
                                     <li class="login-navigation__user-dropdown-item">
                                         <h:commandLink action="#{userBean.logout}" styleClass="login-navigation__user-dropdown-item-link">
@@ -194,7 +170,6 @@
                                                 icon="power"
                                                 text="#{msg.logout}"
                                                 styleClass="login-navigation__user-dropdown-item-icon-text"
-                                                iconClass="login-navigation__user-dropdown-item-icon-wrapper"
                                                 iconSvgClass="icon"
                                                 textClass="login-navigation__user-dropdown-item-text" />
                                         </h:commandLink>
@@ -204,8 +179,6 @@
                         </div>
                     </li>
                 </ui:fragment>
-                
-
             </ul>
         </ui:fragment>
     </composite:implementation>
