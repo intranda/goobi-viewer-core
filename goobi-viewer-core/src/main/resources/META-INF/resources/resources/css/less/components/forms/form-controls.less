@@ -22,6 +22,12 @@
     .fa-check-square-o {
     	display: none;
     }	
+    .custom-control__icon-state {
+        display: inline-block;
+        &--checked {
+            display: none;
+        }
+    }
 }
 
 /* MODIFICATIONS */
@@ -53,6 +59,16 @@
 		}
 		&.disabled ~ .custom-control__icon .fa-square-o, 
 		&.disabled ~ .custom-control__icon .fa-check-square-o {
+			cursor: not-allowed;
+			opacity: 0.5;
+		}
+		&:checked ~ .custom-control__icon .custom-control__icon-state--unchecked {
+			display: none;
+		}
+		&:checked ~ .custom-control__icon .custom-control__icon-state--checked {
+			display: inline-block;
+		}
+		&.disabled ~ .custom-control__icon .custom-control__icon-state {
 			cursor: not-allowed;
 			opacity: 0.5;
 		}
@@ -90,6 +106,12 @@
 			display: none;
 		}
 		&:checked ~ .custom-control__icon .fa-check-circle-o {
+			display: inline-block;
+		}
+		&:checked ~ .custom-control__icon .custom-control__icon-state--unchecked {
+			display: none;
+		}
+		&:checked ~ .custom-control__icon .custom-control__icon-state--checked {
 			display: inline-block;
 		}
 	}

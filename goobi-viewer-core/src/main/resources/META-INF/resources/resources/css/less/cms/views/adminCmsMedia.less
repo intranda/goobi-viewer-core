@@ -168,18 +168,21 @@
 	&__switch {
 		[data-switch="list"],
 		[data-switch="grid"] {
+			color: @black;
+			.icon-wrapper,
+			.icon-wrapper svg {
+				color: inherit;
+				stroke: currentColor;
+				transition: color 0.2s ease, stroke 0.2s ease;
+			}
 			&.active,
 			&:hover,
 			&:active,
-			&:focus {
+			&:focus,
+			&.btn:active,
+			&.btn:focus,
+			&.btn:active:focus {
 				color: @blue;
-			}
-			&.btn {
-				&:active, 
-				&:focus, 
-				&:active:focus {
-					color: @blue;
-				}
 			}
 		}
 		[data-switch="list"] {
