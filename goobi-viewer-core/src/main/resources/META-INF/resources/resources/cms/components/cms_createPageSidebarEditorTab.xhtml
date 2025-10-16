@@ -7,6 +7,7 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:util="http://goobi.io/util"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
 	<composite:interface>
@@ -59,14 +60,13 @@
 
 											</div>
 											
-											<div class="sidebar-editor__icon">
-	                                        	<ui:fragment rendered="#{not empty element.contentType.iconClass}">
-	                                        		<i class="#{element.contentType.iconClass}" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                      	</div>  	
-
-											<!-- ITEM LABEL -->
-											<span class="sidebar-editor__widget-item-label">#{element.title.textOrDefault}</span>
+											<util:icon-text
+												icon="#{element.contentType.iconName}"
+												text="#{element.title.textOrDefault}"
+												styleClass="sidebar-editor__widget-item-title"
+												iconClass="sidebar-editor__widget-item-title-icon"
+												iconSvgClass="icon icon-lg"
+												textClass="sidebar-editor__widget-item-label" />
 											
 											<h:outputText rendered="#{!element.description.isEmpty()}" class="sidebar-editor__widget-item-description" value="#{'('.concat(element.description.textOrDefault).concat(')')}"/>
 
@@ -107,12 +107,14 @@
 											  	<f:ajax event="change"></f:ajax>
 											  </input>
 
-	                                        	<ui:fragment rendered="#{not empty widget.contentType.iconClass}">
-	                                        		<i class="#{widget.contentType.iconClass} sidebar-editor__choose-widget-item-icon" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-
 											  	<label class="sidebar-editor__choose-widget-item-label" for="scales#{status.index}">
-											  		<span class="sidebar-editor__choose-widget-item-title">#{widget.title.textOrDefault}</span>
+													<util:icon-text
+														icon="#{widget.contentType.iconName}"
+														text="#{widget.title.textOrDefault}"
+														styleClass="sidebar-editor__choose-widget-item-content"
+														iconClass="sidebar-editor__choose-widget-item-icon"
+														iconSvgClass="icon icon-lg"
+														textClass="sidebar-editor__choose-widget-item-title" />
 													<h:outputText rendered="#{!widget.description.isEmpty()}" class="sidebar-editor__choose-widget-item-desc" value="#{'('.concat(widget.description).concat(')')}"/>
 												</label>
  

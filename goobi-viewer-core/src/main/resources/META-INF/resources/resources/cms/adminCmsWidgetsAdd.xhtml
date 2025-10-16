@@ -58,32 +58,14 @@
 											<div class="admin__boxed-entry -w25">
 												<div class="d-flex flex-column h-100">
 													<div>
-													<!-- ADD RSS WIDGET TITLE -->
-													<ui:fragment rendered="#{type == 'WIDGET_RSSFEED'}">
-														<h2>
-															<util:icon-text icon="rss" iconSvgClass="icon icon-xxl" text="#{msg[type.label]}"/>
+														<h2 class="cms-widgets-add__type-title">
+															<util:icon-text
+																icon="#{type.iconName}"
+																text="#{msg[type.label]}"
+																iconSvgClass="icon icon-xxl"
+																styleClass="cms-widgets-add__type-title-icon-text"
+																textClass="cms-widgets-add__type-title-text" />
 														</h2>
-														
-													</ui:fragment>
-													<!-- ADD FACETING WIDGET TITLE -->
-													<ui:fragment rendered="#{type == 'WIDGET_FIELDFACETS'}">
-														<h2>
-															<util:icon-text icon="list" iconSvgClass="icon icon-xxl" text="#{msg[type.label]}"/>
-														</h2>
-													</ui:fragment>
-													<!-- ADD PAGES WIDGET TITLE -->
-													<ui:fragment rendered="#{type == 'WIDGET_CMSPAGES'}">
-														<h2>
-															<util:icon-text icon="copy" iconSvgClass="icon icon-xxl" text="#{msg[type.label]}"/>
-														</h2>
-													</ui:fragment>
-													<!-- ADD HTML WIDGET TITLE -->
-													<ui:fragment rendered="#{type == 'WIDGET_HTML'}">
-														<h2>
-															<util:icon-text icon="code" iconSvgClass="icon icon-xxl" text="#{msg[type.label]}"/>
-														</h2>
-													</ui:fragment>
-													
 													</div>
 													<div>
 														<p>#{msg[type.description]}</p>
@@ -312,40 +294,22 @@
 									</ui:fragment>
 									
 									<div class="admin__default-block">
-												<div class="d-flex flex-column h-100">
-													<div>
-													<!-- ADD RSS WIDGET TITLE -->
-													<ui:fragment rendered="#{widget.type == 'WIDGET_RSSFEED'}">
-														<h2>
-															<util:icon-text icon="rss" iconSvgClass="icon icon-xxl" text="#{msg[widget.type.label]}"/>
-														</h2>
-														
-													</ui:fragment>
-													<!-- ADD FACETING WIDGET TITLE -->
-													<ui:fragment rendered="#{widget.type == 'WIDGET_FIELDFACETS'}">
-														<h2>
-															<util:icon-text icon="list" iconSvgClass="icon icon-xxl" text="#{msg[widget.type.label]}"/>
-														</h2>
-													</ui:fragment>
-													<!-- ADD PAGES WIDGET TITLE -->
-													<ui:fragment rendered="#{widget.type == 'WIDGET_CMSPAGES'}">
-														<h2>
-															<util:icon-text icon="copy" iconSvgClass="icon icon-xxl" text="#{msg[widget.type.label]}"/>
-														</h2>
-													</ui:fragment>
-													<!-- ADD HTML WIDGET TITLE -->
-													<ui:fragment rendered="#{widget.type == 'WIDGET_HTML'}">
-														<h2>
-															<util:icon-text icon="code" iconSvgClass="icon icon-xxl" text="#{msg[widget.type.label]}"/>
-														</h2>
-													</ui:fragment>
-													
-													</div>
-													<div class="cms-widgets-add__widget-description">
-														<p>#{msg[widget.type.description]}</p>
-													</div>
-												</div>
+										<div class="d-flex flex-column h-100">
+											<div>
+													<h2 class="cms-widgets-add__type-title">
+														<util:icon-text
+															icon="#{widget.type.iconName}"
+															text="#{msg[widget.type.label]}"
+															iconSvgClass="icon icon-xl"
+															styleClass="cms-widgets-add__type-title-icon-text"
+															textClass="cms-widgets-add__type-title-text" />
+													</h2>
 											</div>
+											<div class="cms-widgets-add__widget-description">
+												<p>#{msg[widget.type.description]}</p>
+											</div>
+										</div>
+									</div>
 									
 									<div class="admin__default-block">
 										<h2>#{msg.title__did_you_know}</h2>
@@ -383,5 +347,3 @@
 	</ui:define>
 
 </ui:composition>
-
-
