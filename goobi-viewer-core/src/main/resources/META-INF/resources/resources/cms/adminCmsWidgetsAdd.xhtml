@@ -61,21 +61,27 @@
 													<!-- ADD RSS WIDGET TITLE -->
 													<ui:fragment rendered="#{type == 'WIDGET_RSSFEED'}">
 														<h2>
-															<util:icon-text icon="rss" text="#{msg[type.label]}"/>
+															<util:icon-text icon="rss" iconSvgClass="icon icon-xxl" text="#{msg[type.label]}"/>
 														</h2>
 														
 													</ui:fragment>
 													<!-- ADD FACETING WIDGET TITLE -->
 													<ui:fragment rendered="#{type == 'WIDGET_FIELDFACETS'}">
-														<h2><i class="fa fa-list-ul" aria-hidden="true"></i> #{msg[type.label]}</h2>
+														<h2>
+															<util:icon-text icon="list" iconSvgClass="icon icon-xxl" text="#{msg[type.label]}"/>
+														</h2>
 													</ui:fragment>
 													<!-- ADD PAGES WIDGET TITLE -->
 													<ui:fragment rendered="#{type == 'WIDGET_CMSPAGES'}">
-														<h2><i class="fa fa-clone" aria-hidden="true"></i> #{msg[type.label]}</h2>
+														<h2>
+															<util:icon-text icon="copy" iconSvgClass="icon icon-xxl" text="#{msg[type.label]}"/>
+														</h2>
 													</ui:fragment>
 													<!-- ADD HTML WIDGET TITLE -->
 													<ui:fragment rendered="#{type == 'WIDGET_HTML'}">
-														<h2><i class="fa fa-code" aria-hidden="true"></i> #{msg[type.label]}</h2>
+														<h2>
+															<util:icon-text icon="code" iconSvgClass="icon icon-xxl" text="#{msg[type.label]}"/>
+														</h2>
 													</ui:fragment>
 													
 													</div>
@@ -296,7 +302,7 @@
 									<ui:fragment rendered="#{widget.id != null}">
 										<div class="admin__default-block">
 											<button class="btn d-none" jsf:action="#{customWidgetEditBean.refresh}">
-												<i class="fa fa-refresh"></i>
+												<util:icon icon="refresh" svgClass="icon icon-xl" />
 												<f:ajax execute="@form" render="previewGroup"></f:ajax>
 											</button>
 											<h2>#{msg.title__preview}</h2>
@@ -311,21 +317,27 @@
 													<!-- ADD RSS WIDGET TITLE -->
 													<ui:fragment rendered="#{widget.type == 'WIDGET_RSSFEED'}">
 														<h2>
-															<util:icon-text icon="rss" text="#{msg[widget.type.label]}"/>
+															<util:icon-text icon="rss" iconSvgClass="icon icon-xxl" text="#{msg[widget.type.label]}"/>
 														</h2>
 														
 													</ui:fragment>
 													<!-- ADD FACETING WIDGET TITLE -->
 													<ui:fragment rendered="#{widget.type == 'WIDGET_FIELDFACETS'}">
-														<h2><i class="fa fa-list-ul" aria-hidden="true"></i> #{msg[widget.type.label]}</h2>
+														<h2>
+															<util:icon-text icon="list" iconSvgClass="icon icon-xxl" text="#{msg[widget.type.label]}"/>
+														</h2>
 													</ui:fragment>
 													<!-- ADD PAGES WIDGET TITLE -->
 													<ui:fragment rendered="#{widget.type == 'WIDGET_CMSPAGES'}">
-														<h2><i class="fa fa-clone" aria-hidden="true"></i> #{msg[widget.type.label]}</h2>
+														<h2>
+															<util:icon-text icon="copy" iconSvgClass="icon icon-xxl" text="#{msg[widget.type.label]}"/>
+														</h2>
 													</ui:fragment>
 													<!-- ADD HTML WIDGET TITLE -->
 													<ui:fragment rendered="#{widget.type == 'WIDGET_HTML'}">
-														<h2><i class="fa fa-code" aria-hidden="true"></i> #{msg[widget.type.label]}</h2>
+														<h2>
+															<util:icon-text icon="code" iconSvgClass="icon icon-xxl" text="#{msg[widget.type.label]}"/>
+														</h2>
 													</ui:fragment>
 													
 													</div>
