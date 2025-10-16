@@ -195,6 +195,8 @@ public class ViewManager implements Serializable {
     private String pi;
     private Boolean accessPermissionPdf = null;
     private Boolean allowUserComments = null;
+    /** True if an access ticket is required before anything in this record may be viewed.. Value is set during the access permission check. */
+    private boolean recordAccessTicketRequired = false;
     private List<StructElementStub> docHierarchy = null;
     private String mimeType = null;
     private Boolean filesOnly = null;
@@ -2500,6 +2502,31 @@ public class ViewManager implements Serializable {
      */
     public void setAllowUserComments(Boolean allowUserComments) {
         this.allowUserComments = allowUserComments;
+    }
+
+    /**
+     * 
+     * @return true if a download ticket requirement is present and not yet satisfied; false otherwise
+     */
+    public boolean isRecordAccessTicketRequired() {
+        logger.trace("isRecordAccessTicketRequired: {}", recordAccessTicketRequired); //NOSONAR Debug
+
+        // If license requires a download ticket, check agent session for loaded ticket
+        if (Boolean.TRUE.equals(recordAccessTicketRequired) && FacesContext.getCurrentInstance() != null
+                && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            boolean hasTicket = AccessConditionUtils.isHasDownloadTicket(pi, BeanUtils.getSession());
+            logger.trace("User has ticket: {}", hasTicket); //NOSONAR Debug
+            return !hasTicket;
+        }
+
+        return recordAccessTicketRequired;
+    }
+
+    /**
+     * @param recordAccessTicketRequired the recordAccessTicketRequired to set
+     */
+    public void setRecordAccessTicketRequired(Boolean recordAccessTicketRequired) {
+        this.recordAccessTicketRequired = recordAccessTicketRequired;
     }
 
     /**

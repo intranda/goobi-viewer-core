@@ -8,23 +8,39 @@
     "url": "https://github.com/intranda/goobi-viewer-core"
   },
   "license": "GPL-2.0-or-later",
+  "private": true,
   "scripts": {
-    "grunt-watch": "grunt watch",
-    "grunt-dev": "grunt dev",
-    "grunt-devsync": "grunt devsync",
-    "grunt-default": "grunt default",
-    "grunt-copyDeps": "grunt copyDeps"
+    "dev": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp dev",
+    "devsync": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp devsync",
+    "build": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp build",
+    "copyDeps": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp copy-deps",
+    "sync": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp sync-all",
+    "target": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp target",
+    "java": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp java"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "devDependencies": {
-    "grunt": "~1.5.2",
-    "grunt-concurrent": "~3.0.0",
-    "grunt-contrib-concat": "~1.0.1",
-    "grunt-contrib-copy": "~1.0.0",
-    "grunt-contrib-less": "~3.0.0",
-    "grunt-contrib-watch": "~1.1.0",
-    "grunt-riot": "~0.1.8",
-    "grunt-sync": "~0.8.2",
-    "less-plugin-autoprefix": "~2.0.0"
+    "ansi-colors": "^4.1.3",
+    "autoprefixer": "^10.4.20",
+    "cross-env": "^10.0.0",
+    "del": "^8.0.0",
+    "fancy-log": "^2.0.0",
+    "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-header": "^2.0.9",
+    "gulp-less": "^5.0.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-postcss": "^9.0.1",
+    "gulp-rename": "^2.1.0",
+    "gulp-riot": "^1.1.5",
+    "gulp-sourcemaps": "^3.0.0",
+    "merge-stream": "^2.0.0",
+    "pixl-xml": "^1.0.13",
+    "postcss": "^8.4.47",
+    "postcss-reporter": "^7.1.0",
+    "through2": "^4.0.2"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "~5.0.1",
@@ -37,7 +53,6 @@
     "codemirror": "^5.0.0",
     "epubjs": "~0.3.93",
     "font-awesome": "~4.7.0",
-    "grunt-copy-deps": "^1.4.0",
     "hc-sticky": "~2.2.7",
     "jqplot": "~1.0.9",
     "jquery": "~3.7.1",
@@ -53,14 +68,19 @@
     "mirador": "~3.4.0",
     "openseadragon": "~2.2.1",
     "pdfjs-dist": "~2.10.377",
-    "pixl-xml": "~1.0.13",
     "riot": "~3.12.0",
     "simple-lightbox": "~2.1.0",
     "simplebar": "~6.3.0",
     "swagger-ui-dist": "~5.29.0",
-    "sweetalert2": "~11.23.0",
-    "swiper": "~11.2.0",
+    "sweetalert2": "~11.26.0",
+    "swiper": "~12.0.0",
     "three": "~0.132.2",
     "tinymce": "~5.10.0"
-  }
+  },
+  "browserslist": [
+    ">0.5%",
+    "last 2 versions",
+    "Firefox ESR",
+    "not dead"
+  ]
 }

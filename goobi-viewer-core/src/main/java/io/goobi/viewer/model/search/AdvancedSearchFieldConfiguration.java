@@ -29,6 +29,7 @@ public class AdvancedSearchFieldConfiguration {
     public static final int DEFAULT_THRESHOLD = 10;
 
     public static final String SELECT_TYPE_BADGES = "badges";
+    public static final String SELECT_TYPE_CHECKBOXES = "checkboxes";
     public static final String SELECT_TYPE_DROPDOWN = "dropdown";
 
     private final String field;
@@ -38,10 +39,12 @@ public class AdvancedSearchFieldConfiguration {
     private boolean untokenizeForPhraseSearch;
     private boolean disabled;
     private boolean visible = false;
+    private boolean allowMultipleItems = false;
     private int displaySelectItemsThreshold = DEFAULT_THRESHOLD;
     private String selectType = SELECT_TYPE_DROPDOWN;
     private String replaceRegex;
     private String replaceWith;
+    private String preselectValue;
 
     /**
      *
@@ -150,6 +153,22 @@ public class AdvancedSearchFieldConfiguration {
     }
 
     /**
+     * @return the allowMultipleItems
+     */
+    public boolean isAllowMultipleItems() {
+        return allowMultipleItems;
+    }
+
+    /**
+     * @param allowMultipleItems the allowMultipleItems to set
+     * @return this
+     */
+    public AdvancedSearchFieldConfiguration setAllowMultipleItems(boolean allowMultipleItems) {
+        this.allowMultipleItems = allowMultipleItems;
+        return this;
+    }
+
+    /**
      * @param visible the visible to set
      * @return this
      */
@@ -219,6 +238,22 @@ public class AdvancedSearchFieldConfiguration {
      */
     public AdvancedSearchFieldConfiguration setReplaceWith(String replaceWith) {
         this.replaceWith = replaceWith;
+        return this;
+    }
+
+    /**
+     * @return the preselectValue
+     */
+    public String getPreselectValue() {
+        return preselectValue;
+    }
+
+    /**
+     * @param preselectValue the preselectValue to set
+     * @return this
+     */
+    public AdvancedSearchFieldConfiguration setPreselectValue(String preselectValue) {
+        this.preselectValue = preselectValue;
         return this;
     }
 }

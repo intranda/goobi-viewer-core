@@ -144,4 +144,7 @@ public abstract class FeatureSet implements Serializable {
 
     public abstract String getType();
 
+    public abstract boolean isUseHeatmap();
+    
+    public abstract void setUseHeatmap(boolean useHeatmap);
 }

@@ -82,6 +82,12 @@ public class SearchQueryItem implements Serializable {
     private volatile boolean displaySelectItems = false;
     /** If >0, proximity search will be applied to phrase searches. */
     private int proximitySearchDistance = 0;
+    /** Optional pre-selected value. */
+    private String preselectValue;
+    /** Last copy in the list of items with the same field. */
+    private boolean displayAddNewItemButton = false;
+    /** Indicates whether this is a duplicate of an item for the same index field. */
+    private boolean additionalCopy = false;
 
     /**
      * Zero-argument constructor.
@@ -146,8 +152,7 @@ public class SearchQueryItem implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<StringPair> getSelectItems(String language)
-            throws PresentationException, IndexUnreachableException, DAOException {
+    public List<StringPair> getSelectItems(String language) throws PresentationException, IndexUnreachableException, DAOException {
         if (searchBean == null) {
             searchBean = BeanUtils.getSearchBean();
         }
@@ -156,6 +161,19 @@ public class SearchQueryItem implements Serializable {
             if (ret == null) {
                 ret = new ArrayList<>();
                 logger.warn("No values found for field: {}", field);
+            }
+
+            // Preselect configured value if it exists in the values list (only on first iteration)
+            if (StringUtils.isNotEmpty(preselectValue)) {
+                logger.trace("preselectValue found: {}", preselectValue);
+                for (StringPair sp : ret) {
+                    if (preselectValue.equalsIgnoreCase(sp.getOne())) {
+                        logger.trace("preselectValue set: {}", preselectValue);
+                        values.add(preselectValue);
+                        preselectValue = null; // Remove after using
+                        break;
+                    }
+                }
             }
 
             return ret;
@@ -237,6 +255,13 @@ public class SearchQueryItem implements Serializable {
      */
     public boolean isUntokenizeForPhraseSearch() {
         return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(field, template, true);
+    }
+
+    /**
+     * @return a boolean
+     */
+    public boolean isAllowMultipleItems() {
+        return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldAllowMultipleItems(field, template, false);
     }
 
     /**
@@ -339,6 +364,7 @@ public class SearchQueryItem implements Serializable {
      * @param operator the operator to set
      */
     public void setOperator(SearchItemOperator operator) {
+        // logger.trace("setOperator: {}", operator);StringTools
         this.operator = operator;
     }
 
@@ -791,14 +817,59 @@ public class SearchQueryItem implements Serializable {
         return sbItem.toString().replace("\\~", "~");
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return field + " " + operator + " " + getValue();
-    }
-
     public int getProximitySearchDistance() {
         return proximitySearchDistance;
     }
 
+    /**
+     * @return the preselectValue
+     */
+    public String getPreselectValue() {
+        return preselectValue;
+    }
+
+    /**
+     * @param preselectValue the preselectValue to set
+     */
+    public void setPreselectValue(String preselectValue) {
+        this.preselectValue = preselectValue;
+    }
+
+    /**
+     * @return the displayAddNewItemButton
+     */
+    public boolean isDisplayAddNewItemButton() {
+        return displayAddNewItemButton;
+    }
+
+    /**
+     * @param displayAddNewItemButton the displayAddNewItemButton to set
+     * @return this
+     */
+    public SearchQueryItem setDisplayAddNewItemButton(boolean displayAddNewItemButton) {
+        this.displayAddNewItemButton = displayAddNewItemButton;
+        return this;
+    }
+
+    /**
+     * @return the additionalCopy
+     */
+    public boolean isAdditionalCopy() {
+        return additionalCopy;
+    }
+
+    /**
+     * @param additionalCopy the additionalCopy to set
+     * @return this
+     */
+    public SearchQueryItem setAdditionalCopy(boolean additionalCopy) {
+        this.additionalCopy = additionalCopy;
+        return this;
+    }
+
+//    /** {@inheritDoc} */
+//    @Override
+//    public String toString() {
+//        return field + " " + operator + " " + getValue();
+//    }
 }

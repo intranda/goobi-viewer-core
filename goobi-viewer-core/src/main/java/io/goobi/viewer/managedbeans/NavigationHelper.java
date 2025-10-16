@@ -1099,7 +1099,7 @@ public class NavigationHelper implements Serializable {
             }
             // Reset access permissions in session (user might not have the same permissions for a different subtheme)
             logger.trace("{} access premissions removed from user session.", AccessConditionUtils.clearSessionPermissions(BeanUtils.getSession()));
-            
+
             // Reset navigation menu
             if (cmsBean != null && cmsBean.getCurrentPage() != null) {
                 cmsBean.resetNavigationMenuItems();
@@ -1279,6 +1279,22 @@ public class NavigationHelper implements Serializable {
      */
     public String getFulltextActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewFulltext.getName();
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param docStructType
+     * @param order
+     * @param anchorOrGroup
+     * @param hasImages
+     * @return Record URL
+     * @should construct url correctly
+     */
+    public String getRecordUrl(String pi, String docStructType, int order, boolean anchorOrGroup, boolean hasImages) {
+        PageType pageType = PageType.determinePageType(docStructType, null, anchorOrGroup, hasImages, false);
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + '/'
+                + DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, order, null, pageType, true);
     }
 
     /**

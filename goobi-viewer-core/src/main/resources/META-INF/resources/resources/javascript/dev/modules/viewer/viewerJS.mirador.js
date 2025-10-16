@@ -78,7 +78,7 @@ var viewerJS = ( function( viewer ) {
             
             var manifests = _getManifestsFromUrlQuery(this.config);
             
-            var translator = new viewerJS.Translator(this.config.restEndpoint, "#{navigationHelper.localeString}");
+            var translator = new viewerJS.translator(this.config.restEndpoint, "#{navigationHelper.localeString}");
             
             let miradorConfigPromise = null;
             if (manifests.length > 0) {

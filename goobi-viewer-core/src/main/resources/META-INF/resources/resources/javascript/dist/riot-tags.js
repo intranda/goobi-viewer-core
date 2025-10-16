@@ -214,11 +214,22 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
                 return response.status == 200;
             })
             .then(exists => {
-                if(exists) {
-	                let overwrite = confirm(this.opts.msg.overwriteFileConfirm.replace("{0}",  this.files[i].name));
-	                if(!overwrite) {
-	                    throw this.opts.msg.overwriteFileRefused.replace("{0}",  this.files[i].name);
-	                }
+                if (exists) {
+                    const fileName = this.files[i].name;
+                    const message = this.opts.msg.overwriteFileConfirm.replace("{0}", fileName);
+                    return viewerJS.notifications.confirm(
+                        '',
+                        this.opts.msg.button__overwrite,
+                        undefined,
+                        message,
+                        {
+                            icon: 'warning',
+                            confirmButtonClass: 'btn btn--full',
+                        }
+                    )
+                        .catch(() => {
+                            throw this.opts.msg.overwriteFileRefused.replace("{0}", fileName);
+                        });
                 }
             })
             .then(overwrite => {
@@ -279,161 +290,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         }.bind(this)
 });
 
-
-riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}" initialview="{this.opts.geomap.initialView}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource><datasetresource if="{isDatasetResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></datasetResource>', '', '', function(opts) {
-
-this.on("mount", () => {
-    if(this.opts.contentid) {
-        let content = document.getElementById(this.opts.contentid).innerText;
-        try {
-	        this.annotationBody = JSON.parse(content);
-	        this.type = this.annotationBody.type;
-	        if(!this.type) {
-	            this.type = this.anotationBody["@type"];
-	        }
-	        this.format = this.annotationBody.format;
-    	} catch(e) {
-    	    this.annotationBody = {value: content};
-    	    this.type = "TextualResource";
-    	    this.format = "text/plain";
-   		}
-        this.update();
-    }
-})
-
-this.isPlaintext = function() {
-    if(this.type == "TextualBody" || this.type == "TextualResource") {
-        return !this.format || this.format == "text/plain";
-    }
-    return false;
-}.bind(this)
-
-this.isHtml = function() {
-    if(this.type == "TextualBody" || this.type == "TextualResource") {
-        return this.format == "text/html";
-    }
-    return false;
-}.bind(this)
-
-this.isGeoJson = function() {
-    return this.type == "Feature";
-}.bind(this)
-
-this.isAuthorityResource = function() {
-    return this.type == "AuthorityResource";
-}.bind(this)
-
-this.isDatasetResource = function() {
-    return this.type == "Dataset";
-}.bind(this)
-
-});
-
-
-riot.tag2('authorityresource', '<div class="annotation__body__authority"><div if="{normdataList.length == 0}">{authorityId}</div><dl class="annotation__body__authority__normdata_list" each="{normdata in normdataList}"><dt class="normdata_list__label">{normdata.property}: </dt><dd class="normdata_list__value">{normdata.value}</dd></dl></div>', '', '', function(opts) {
-    this.normdataList = [];
-
-	this.on("mount", () => {
-		this.authorityId = this.opts.resource.id;
-	    this.url = this.opts.resturl + "authority/resolver?id=" + this.unicodeEscapeUri(this.authorityId) + "&template=ANNOTATION&lang=" + this.opts.currentlang
-		this.update();
-	    fetch(this.url)
-	    .then(response => {
-	        if(!response.ok) {
-	            throw "Error: " + response.status;
-	        } else {
-	            return response;
-	        }
-	    })
-	    .then(response => response.json())
-	    .then(response => {
-	        this.normdataList = this.parseResponse(response);
-	    })
-	    .catch(error => {
-	        console.error("failed to load ", this.url, ": " + error);
-	    })
-	    .then(() => this.update());
-	})
-
-	this.unicodeEscapeUri = function(uri) {
-    	return uri.replace(/\//g, 'U002F').replace('/\\/g','U005C').replace('/?/g','U003F').replace('/%/g','U0025');
-	}.bind(this)
-
-	this.parseResponse = function(jsonResponse) {
-	    let normdataList = [];
-	    $.each( jsonResponse, (i, object ) => {
-            $.each( object, ( property, value ) => {
-                let stringValue = value.map(v => v.text).join("; ");
-                normdataList.push({property: property, value:stringValue});
-            });
-	    });
-	    return normdataList;
-	}.bind(this)
-
-});
-riot.tag2('datasetresource', '<div class="annotation__body__dataset"><dl class="annotation__body__dataset__data_list" each="{field in dataFields}"><dt class="data_list__label">{getName(field)}: </dt><dd class="data_list__value">{getValue(field)}</dd></dl></div>', '', '', function(opts) {
-    this.dataSet = {};
-    this.dataFields = [];
-
-	this.on("mount", () => {
-		this.dataSet = this.opts.resource.data;
-		this.dataFields = Object.keys(this.dataSet);
-		if(viewerJS.translator) {
-		    viewerJS.translator.addTranslations(this.dataFields)
-			.then(() => this.update());
-		} else {
-			viewerJS.initialized.subscribe(() => {
-		        viewerJS.translator.addTranslations(this.dataFields)
-				.then(() => this.update());
-			});
-		}
-	})
-
-	this.getValue = function(field) {
-	    let value = this.dataSet[field];
-	    if(!value) {
-	        return "";
-	    } else if(Array.isArray(value)) {
-	        return value.join("; ")
-	    } else {
-	        return value;
-	    }
-	}.bind(this)
-
-	this.getName = function(field) {
-	    return viewerJS.translator.translate(field);
-	}.bind(this)
-
-});
-
-riot.tag2('geomapresource', '<div id="geomap_{opts.annotationid}" class="annotation__body__geomap geomap"></div>', '', '', function(opts) {
-
-this.on("mount", () => {
-	this.feature = this.opts.resource;
-	this.config = {
-	        popover: undefined,
-	        mapId: "geomap_" + this.opts.annotationid,
-	        fixed: true,
-	        clusterMarkers: false,
-	        initialView : this.opts.initialview,
-	    };
-    this.geoMap = new viewerJS.GeoMap(this.config);
-    let view = this.feature.view;
-    let features = [this.feature];
-    this.geoMap.init(view, features);
-
-});
-
-});
-riot.tag2('htmltextresource', '<div ref="container" class="annotation__body__htmltext"></div>', '', '', function(opts) {
-
-	this.on("mount", () => {
-	    this.refs.container.innerHTML = this.opts.resource.value;
-	})
-
-});
-riot.tag2('plaintextresource', '<div class="annotation__body__plaintext">{this.opts.resource.value}</div>', '', '', function(opts) {
-});
 riot.tag2('bookmarklist', '<ul class="{mainClass} list"><li each="{bookmarkList in getBookmarkLists()}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-9 no-padding"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="col-2 no-padding icon-list"><a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{msg(\'bookmarkList_session_mail_sendList\')}"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}"><i class="fa fa-search" aria-hidden="true"></i></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg(\'viewMiradorComparison\')}"><i class="fa fa-th" aria-hidden="true"></i></a></div><div class="col-1 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul>', '', '', function(opts) {
 
 
@@ -1367,7 +1223,7 @@ this.on("mount", () => {
     this.fetchCollections()
     .then( () => {
         let keys = this.collectionSets.map(set => set[0]);
-        this.translator = new viewerJS.Translator(this.opts.restapi.replace("/rest", "/api/v1"), this.opts.language);
+        this.translator = new viewerJS.translator(this.opts.restapi.replace("/rest", "/api/v1"), this.opts.language);
         return this.translator.init(keys);
     })
     .then( () => {
@@ -1450,6 +1306,2176 @@ this.addToMap = function(map, key, value) {
     list.push(value);
 }.bind(this)
 
+});
+
+riot.tag2('external-resource-download', '<div class="download-external-resource__list"><div class="download-external-resource__item" each="{url in urls}"><div class="download-external-resource__error_wrapper {isError(url) ? \'-active\' : \'\'}"><i class="fa fa-exclamation-triangle"></i><label class="download-external-resource__error">{getErrorMessage(url)}</label></div><div class="download-external-resource__inner-wrapper {isFinished(url) ? \'\' : \'-active\'}"><span class="download-external-resource__label">{url}</span><div class="download-external-resource__button-wrapper"><button class="download-external-resource__order download-external-resource__button btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? \'\' : \'-active\'}" onclick="{startDownloadTask}">{msg.downloadButton}</button></div><div class="download-external-resource__waiting_animation {isWaiting(url) ? \'-active\' : \'\'}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div class="download-external-resource__loading_animation {isDownloading(url) ? \'-active\' : \'\'}"><progress riot-value="{getDownloadProgress(url)}" max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress></div></div><div class="download-external-resource__results {isFinished(url) ? \'-active\' : \'\'}"><virtual each="{object in getFiles(url)}"><div class="born-digital__items-wrapper"><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filename}</span></div><div class="born-digital__item"><span>{object.path}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filedescription}</span></div><div class="born-digital__item"><span>{object.description}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filesize}</span></div><div class="born-digital__item"><span>{object.size}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__fileformat}</span></div><div class="born-digital__item"><span>{msg[object.mimeType]}</span></div><div class="born-digital__item-download-last"><a class="born-digital__item__download btn btn--full" href="{object.url}" target="_blank">{msg.action__born_digital__download}</a></div></div></virtual></div></div></div>', '', '', function(opts) {
+      this.urls = [];
+      this.downloads = new Map();
+      this.updateListeners = new Map();
+      this.updateDelay = 1000;
+      this.ws = null;
+      this.contextPath = "";
+      this.preloader = "/resources/images/ajax_preloader.gif";
+      this.msg = {
+    		  action__external_files__order_download: "action__external_files__order_download",
+    		  action__external_files__cancel_download: "action__external_files__cancel_download",
+    		  action__external_files__download_in_queue: "action__external_files__download_in_queue",
+    		  label__born_digital__filename: "label__born_digital__filename",
+    		  label__born_digital__filedescription: "label__born_digital__filedescription",
+    		  label__born_digital__filesize: "label__born_digital__filesize",
+    		  label__born_digital__fileformat: "label__born_digital__fileformat",
+    		  action__born_digital__download: "label__born_digital__fileformat",
+    		  label__born_digital__downloading: "label__born_digital__downloading",
+      }
+
+      this.on("mount", () => {
+    	  console.log("mounting external resource download", this, this.opts);
+      	this.urls = this.opts.urls;
+      	this.pi = this.opts.pi;
+      	this.msg = this.opts.msg;
+      	this.contextPath = this.opts.contextPath ? this.opts.contextPath : this.contextPath;
+      	this.preloader = this.contextPath + this.preloader;
+      	this.msg = $.extend(true, {}, this.msg, this.opts.msg ? this.opts.msg : {});
+      	this.ws = this.initWebSocket();
+      	this.ws.onOpen.subscribe(() => {
+      		rxjs.from(this.urls).pipe(
+      			rxjs.operators.flatMap(url => this.sendMessage(this.createSocketMessage(this.pi, url, "status")))
+      		).subscribe(() => {});
+      	})
+      	console.log("mount download external resources for urls ", this.urls);
+      	this.update();
+      });
+
+      this.on("unmount", () => {
+    	  if (this.ws && this.ws.isOpen()) {
+              this.ws.close();
+          }
+    	  this.updateListeners.forEach(value => value.cancel());
+      });
+
+      this.initWebSocket = function() {
+
+        const socket = new viewerJS.WebSocket(window.location.host, this.contextPath, viewerJS.WebSocket.PATH_DOWNLOAD_TASK);
+        console.log("created web socket ", socket.socket.url);
+        socket.onMessage.subscribe( (event) => {
+          this.handleUpdateMessage(event);
+          this.update();
+        });
+        return socket;
+      }.bind(this)
+
+      this.sendMessage = function(message) {
+
+    	  if(typeof message != "string") {
+    		message = JSON.stringify(message);
+    	  }
+    	  this.ws.sendMessage(message);
+    	  return new Promise((resolve, reject) => {
+    		 rxjs.merge(this.ws.onMessage, this.ws.onError).pipe(rxjs.operators.first()).subscribe(e => resolve(e));
+    	  });
+      }.bind(this)
+
+      this.startDownloadTask = function(e) {
+
+    	const urlToDownload = e.item.url;
+    	if(urlToDownload) {
+    		if(this.updateListeners.has(urlToDownload)) {
+    			this.updateListeners.get(urlToDownload).cancel();
+    		}
+	      	this.sendMessage({pi: this.pi, url: urlToDownload, action: 'startdownload'})
+	        const listener = viewerJS.helper.repeatPromise(() => this.sendMessage(this.createSocketMessage(this.pi, urlToDownload, "update")), this.updateDelay);
+	        this.updateListeners.set(urlToDownload, listener);
+	        listener.then(() => {});
+    	} else {
+    		console.error("No url found to download");
+    	}
+      }.bind(this)
+
+      this.handleUpdateMessage = function(event) {
+    	  let data = this.parseSocketMessage(event.data);
+          if(data == null) {
+        	  this.handleError("Not a valid message object: " + event.data);
+          } else if(data.pi == this.pi && data.url && data.status) {
+
+        	  switch(data.status) {
+        	  case "waiting":
+        	  case "processing":
+	        	  this.downloads.set(data.url, data);
+	        	  if(!this.updateListeners.has(data.url)) {
+
+	        		const listener = viewerJS.helper.repeatPromise(() => this.sendMessage(this.createSocketMessage(this.pi, data.url, "update")), this.updateDelay);
+			        this.updateListeners.set(data.url, listener);
+			        listener.then(() => {});
+
+	        	  }
+        		  break;
+        	  case "complete":
+        		  if(data.files && data.files.length > 0) {
+        			  data = $.extend(true, {}, this.downloads.get(data.url), data);
+    	        	  console.log("download completed", data);
+    	        	  this.downloads.set(data.url, data);
+    	        	  this.cancelListener(data.url);
+        		  } else {
+    	        	  this.downloads.set(data.url, data);
+    		          this.sendMessage(this.createSocketMessage(this.pi, data.url, 'listfiles'));
+        		  }
+        		  break;
+        	  case "error":
+        		  console.log("error in ", data);
+        		  this.downloads.set(data.url, data);
+        		  this.cancelListener(data.url);
+          		  break;
+        	  case "canceled":
+        		  if(this.downloads.has(data.url)) {
+	        		  this.downloads.delete(data.url);
+        		  }
+        		  this.cancelListener(data.url);
+        		  break;
+        	  case "dormant":
+        	  }
+
+          } else {
+        	  this.handleError("Wrong or insufficient data in message object: " + event.data);
+        	  this.updateListeners.forEach(value => value.cancel());
+        	  this.updateListeners = new Map();
+          }
+      }.bind(this)
+
+      this.cancelListener = function(url) {
+    	  if(this.updateListeners.has(url)) {
+      	  	this.updateListeners.get(url).cancel();
+	  		this.updateListeners.delete(url);
+      	  }
+      }.bind(this)
+
+      this.handleError = function(message) {
+    	  alert(message);
+      }.bind(this)
+
+      this.isRequested = function(url) {
+    	  return this.downloads.has(url) && this.downloads.get(url).status !== 'dormant';
+      }.bind(this)
+
+      this.isDownloading = function(url) {
+    	return this.downloads.get(url)?.status == 'processing';
+      }.bind(this)
+
+      this.isWaiting = function(url) {
+    	  return this.downloads.get(url)?.status == 'waiting';
+      }.bind(this)
+
+      this.isFinished = function(url) {
+    	  return this.downloads.get(url)?.status == 'complete';
+      }.bind(this)
+
+      this.getDownloadProgress = function(url) {
+   	  	if(this.getDownloadSize(url) <= 0 || isNaN(this.getDownloadSize(url))) {
+   	  		return undefined;
+   	  	}
+    	return this.downloads.get(url)?.progress;
+      }.bind(this)
+
+      this.getDownloadProgressLabel = function(url) {
+    	  let fraction = this.getDownloadProgress(url)/this.getDownloadSize(url);
+    	  if(isNaN(fraction) || fraction < 0) {
+    		  console.log("title: ", this.msg.label__born_digital__downloading)
+    		  return this.msg.label__born_digital__downloading;
+    	  } else {
+    		  return this.msg.label__born_digital__downloading + ": " + (fraction * 100) + "%";
+    	  }
+      }.bind(this)
+
+      this.getDownloadSize = function(url) {
+    	  return this.downloads.get(url)?.resourceSize;
+      }.bind(this)
+
+      this.getFiles = function(url) {
+    	  console.log("get files ", url, this.downloads.get(url));
+    	  return this.downloads.get(url)?.files;
+      }.bind(this)
+
+      this.isError = function(url) {
+    	  return this.downloads.get(url)?.status == "error";
+      }.bind(this)
+
+      this.getErrorMessage = function(url) {
+    	  return this.downloads.get(url)?.errorMessage;
+      }.bind(this)
+
+      this.cancelDownload = function(e) {
+    	  const url = e.item.url;
+    	  if(url && this.downloads.has(url)) {
+	    	  this.sendMessage(this.createSocketMessage(this.pi, url, 'canceldownload'));
+	    	  this.downloads.delete(url);
+	    	  if(this.updateListeners.has(url)) {
+	  			this.updateListeners.get(url).cancel();
+	  			this.updateListeners.delete(url);
+	  		  }
+
+    	  }
+    	  this.update();
+      }.bind(this)
+
+      this.parseSocketMessage = function(jsonString) {
+    	  try {
+    	        const json = JSON.parse(jsonString);
+    	        if(!viewerJS.jsonValidator.validate(json)) {
+    	        	throw new Error("The json object does not conform to the json signature " + json.jsonSignature);
+    	        } else {
+    	        	return json;
+    	        }
+    	    } catch (error) {
+    	        console.error('Error parsing socket message string as JSON:', jsonString, error.message);
+    	        return null;
+    	    }
+      }.bind(this)
+
+      this.createSocketMessage = function(pi, url, action) {
+    	  if(this.downloads.has(url)) {
+    		  let oldMessage = this.downloads.get(url);
+    		  let newMessage = $.extend(true, {}, oldMessage, {pi: pi, url: url, action: action});
+
+    		  return newMessage;
+    	  } else {
+
+    		  return {
+    		  	  pi: pi,
+	    		  url: url,
+	    		  action: action,
+	    		  messageQueueId: undefined,
+	    		  progress: 0,
+	    		  resourceSize: 1,
+	    		  status: undefined,
+	    		  files: []
+	    	  }
+    	  }
+      }.bind(this)
+
+});
+
+riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
+    	this.preloader = false;
+
+    	this.on('mount', function() {
+    		this.createObserver();
+
+    		this.refs.image.onload = function() {
+        		this.refs.image.classList.add( 'in' );
+				this.opts.observable.trigger( 'imageLoaded', this.opts.thumbnail );
+        		this.preloader = false;
+        		this.update();
+    		}.bind(this);
+    	}.bind(this));
+
+    	this.createObserver = function() {
+    		var observer;
+    		var options = {
+    			root: document.querySelector(this.opts.root),
+    		    rootMargin: "1000px 0px 1000px 0px",
+    		    threshold: 0.8
+    		};
+
+    		observer = new IntersectionObserver(this.loadImages, options);
+    		observer.observe(this.refs.image);
+    	}.bind(this)
+
+    	this.loadImages = function(entries, observer) {
+    		entries.forEach( entry => {
+    			if (entry.isIntersecting) {
+    				this.preloader = true;
+    				this.refs.image.src = this.opts.imgsrc;
+    				this.update();
+    			}
+    		} );
+    	}.bind(this)
+});
+riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumbnailWrapper"><div each="{thumbnail in thumbnails}" class="fullscreen__view-image-thumb"><figure class="fullscreen__view-image-thumb-image"><a href="{getViewerPageUrl(thumbnail)[\'@id\']}"><fsthumbnailimage thumbnail="{thumbnail}" observable="{observable}" root=".fullscreen__view-image-thumbs-wrapper" imgsrc="{thumbnail.thumbnail[\'@id\']}"></fsThumbnailImage></a><figcaption><div class="fullscreen__view-image-thumb-image-order {thumbnail.loaded ? \'in\' : \'\'}">{thumbnail.label}</div></figcaption></figure></div></div>', '', '', function(opts) {
+        function rmObservable() {
+    		riot.observable( this );
+    	}
+
+    	this.observable = new rmObservable();
+        this.thumbnails = [];
+    	this.wrapper = document.getElementsByClassName( 'fullscreen__view-image-thumbs-wrapper' );
+    	this.controls = document.getElementsByClassName( 'image-controls' );
+    	this.image = document.getElementById( 'imageContainer' );
+    	this.sidebarScrollPreview = document.getElementById( 'sidebarScrollPreview' );
+    	this.object = document.getElementById( 'objectContainer' );
+    	this.viewportWidth;
+    	this.sidebarWidth;
+    	this.thumbsWidth;
+
+    	this.on( 'mount', function() {
+        	$( '[data-show="thumbs"]' ).on( 'click', function(e) {
+        		e.currentTarget.classList.toggle('in');
+
+        		if ( e.currentTarget.classList.contains( 'in' ) ) {
+            		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.hideThumbs ).tooltip( '_fixTitle' ).tooltip( 'show' );
+        		}
+        		else {
+            		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.showThumbs ).tooltip( '_fixTitle' ).tooltip( 'show' );
+        		}
+
+        		for (let control of this.controls) {
+        		    control.classList.toggle( 'faded' );
+        		};
+
+            	this.viewportWidth = document.getElementById( 'fullscreen' ).offsetWidth;
+            	this.sidebarWidth = document.getElementById( 'fullscreenViewSidebar' ).offsetWidth;
+            	if ( sessionStorage.getItem( 'fsSidebarStatus' ) === 'false' ) {
+                	this.thumbsWidth = this.viewportWidth;
+            	}
+            	else {
+                	this.thumbsWidth = this.viewportWidth - this.sidebarWidth;
+            	}
+
+            	let visibility = $( this.image ).css('visibility');
+            	if(visibility == 'hidden') {
+            		$( this.image ).css('visibility','visible');
+            		$( this.sidebarScrollPreview ).show();
+
+            	} else {
+            		$( this.image ).css('visibility','hidden');
+            		$( this.sidebarScrollPreview ).hide();
+            	}
+
+            	let objVisibility = $( this.object ).css('visibility');
+            	if(objVisibility == 'hidden') {
+            		$( this.object ).css('visibility','visible');
+            	} else {
+            		$( this.object ).css('visibility','hidden');
+            	}
+
+        		$( this.wrapper ).outerWidth( this.thumbsWidth ).fadeToggle( 'fast' );
+
+            	if ( this.thumbnails.length == 0 ) {
+
+            		$.ajax( {
+                        url: opts.thumbnailUrl,
+                        type: "GET",
+                        datatype: "JSON"
+                    } ).then( function( data ) {
+                    	this.thumbnails = data.canvases;
+                    	this.update();
+                    }.bind( this ) );
+    			}
+        	}.bind(this));
+    	}.bind( this ) );
+
+    	this.observable.on( 'imageLoaded', function( thumbnail ) {
+    		thumbnail.loaded = true;
+    		this.update();
+    	}.bind( this ) );
+
+    	this.getViewerPageUrl = function(thumbnail) {
+    	    if(thumbnail.rendering) {
+    	        if(Array.isArray(thumbnail.rendering)) {
+    	            return thumbnail.rendering.find(render => "text/html" == render.format)
+    	        } else {
+    	            return thumbnail.rendering;
+    	        }
+    	    }
+    	}.bind(this)
+});
+riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
+
+this.on("mount", function() {
+
+	this.geoMap = this.initMap();
+	this.drawLayer = this.initDrawLayer(this.geoMap);
+    if(this.opts.area) {
+    	this.initArea(this.drawLayer, this.opts.area);
+    }
+	if(!this.opts.inactive) {
+	    this.initGeocoder(this.geoMap);
+	    this.drawnItems = this.initMapDraw(this.geoMap, this.drawLayer);
+	}
+ 	this.hitsLayer = this.initHitsLayer(this.geoMap);
+	if(this.opts.toggleFeatures) {
+		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
+	}
+
+});
+
+this.initMap = function() {
+
+    let geoMap = new viewerJS.GeoMap({
+        element : this.refs.map,
+        language: viewerJS.translator.language,
+        fixed: this.opts.inactive ? true : false,
+        layer: this.opts.hitsLayer
+    })
+    let initialView = {
+        zoom: 5,
+        center: [11.073397, 49.451993]
+    };
+    geoMap.init(initialView, this.opts.features);
+    return geoMap;
+}.bind(this)
+
+this.initDrawLayer = function(map) {
+    let drawLayer = new viewerJS.GeoMap.featureGroup(map, {
+   	    style : this.opts.areaLayer.style
+    });
+	return drawLayer;
+}.bind(this)
+
+this.initGeocoder = function(map) {
+	let geocoderConfig = {};
+	if(this.opts.search_placeholder) {
+		geocoderConfig.placeholder = this.opts.search_placeholder
+	}
+	if(this.opts.search_enabled) {
+   		map.initGeocoder(this.refs.geocoder, geocoderConfig);
+	}
+}.bind(this)
+
+this.initToggleLayer = function(geoMap, layer, button) {
+	let ToggleFeaturesControl = L.Control.extend({
+	    options: {
+	        position: "topleft"
+	    },
+	    onAdd: function(map) {
+	        L.DomEvent.on(button, "dblclick" , (e) => {
+	            L.DomEvent.stopPropagation(e);
+	            e.stopPropagation();
+	            return false;
+	        });
+	        L.DomEvent.on(button, "click" , (e) => {
+	            layer.setVisible(!layer.isVisible());
+	            L.DomEvent.stopPropagation(e);
+	            e.stopPropagation();
+	            return false;
+	        });
+	        return button;
+	    }.bind(this),
+	    onRemove: function(map) {
+
+	    }
+	})
+	let control = new ToggleFeaturesControl();
+	geoMap.map.addControl(control);
+}.bind(this)
+
+this.initArea = function(layer, shape) {
+	if(viewerJS.isString(shape)) {
+        try {
+        	shape = JSON.parse(shape);
+        } catch(e) {
+            console.error("Unable to draw geomap area ", this.opts.area, ": cannot parse json");
+        }
+    }
+
+    let feature = undefined;
+    switch(shape.type) {
+        case "polygon":
+            feature = layer.drawPolygon(shape.vertices, true);
+            break;
+        case "circle":
+            feature = layer.drawCircle(shape.center, shape.radius, true);
+            break;
+        case "rectangle":
+            feature = layer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
+            break;
+    }
+    this.onLayerDrawn({layer: feature});
+}.bind(this)
+
+this.initMapDraw = function(geomap, drawLayer) {
+
+    let drawnItems = new L.FeatureGroup();
+
+    geomap.map.addLayer(drawnItems);
+    let drawControl = new L.Control.Draw({
+        edit: {
+            featureGroup: drawnItems,
+            edit: false,
+            remove: false
+        },
+        draw: {
+            polyline: false,
+            marker: false,
+            circlemarker: false
+        }
+    });
+    drawControl.setDrawingOptions({
+        rectangle: {
+        	shapeOptions: drawLayer.config.style
+        },
+        circle: {
+        	shapeOptions: drawLayer.config.style
+        },
+        polygon: {
+        	shapeOptions: drawLayer.config.style
+        }
+    });
+
+    geomap.map.addControl(drawControl);
+
+    let edited = new rxjs.Subject();
+    edited.pipe(rxjs.operators.debounceTime(300)).subscribe(e => this.onLayerEdited(e));
+    geomap.map.on(L.Draw.Event.EDITMOVE, e => edited.next(e));
+    geomap.map.on(L.Draw.Event.EDITRESIZE, e => edited.next(e));
+    geomap.map.on(L.Draw.Event.EDITVERTEX, e => edited.next(e));
+
+    let deleted = new rxjs.Subject();
+    deleted.subscribe(e => this.onLayerDeleted(e));
+    geomap.map.on(L.Draw.Event.DELETED, e => deleted.next(e));
+    geomap.map.on(L.Draw.Event.DRAWSTART, e => deleted.next(e));
+
+    geomap.map.on(L.Draw.Event.CREATED, (e) => this.onLayerDrawn(e));
+
+    if(this.opts.reset_button) {
+        $(this.opts.reset_button).on("click",  e => deleted.next(e));
+    }
+    return drawnItems;
+}.bind(this)
+
+this.onLayerDeleted = function(e) {
+    if(this.searchLayer) {
+        if(this.drawnItems) {
+        	this.drawnItems.removeLayer(this.searchLayer);
+        }
+        this.searchLayer = undefined;
+    }
+    this.notifyFeatureSet(undefined);
+}.bind(this)
+
+this.onLayerEdited = function(e) {
+
+    if(e.layer) {
+    	this.searchLayer = e.layer;
+    } else if(e.poly) {
+        this.searchLayer = e.poly;
+    } else {
+        logger.warn("Called layer edited event with no given layer ", e);
+        return;
+    }
+	this.setSearchArea(this.searchLayer);
+}.bind(this)
+
+this.onLayerDrawn = function(e) {
+    if(e.layer) {
+	    this.searchLayer = e.layer;
+		if(this.drawnItems) {
+	    	this.drawnItems.addLayer(e.layer);
+		}
+		this.searchLayer.editing.enable();
+		this.setSearchArea(this.searchLayer);
+    }
+}.bind(this)
+
+this.setSearchArea = function(layer) {
+
+    let type = this.getType(layer);
+    switch(type) {
+        case "polygon":
+        case "rectangle":
+            let origLayer = L.polygon(layer.getLatLngs());
+            let wrappedCenter = this.geoMap.map.wrapLatLng(layer.getCenter());
+            let distance = layer.getCenter().lng - wrappedCenter.lng;
+
+	        let vertices = [...layer.getLatLngs()[0]].map(p => L.latLng(p.lat, p.lng-distance)).map(p => this.geoMap.normalizePoint(p));
+
+	        if(vertices[0] != vertices[vertices.length-1]) {
+	        	vertices.push(vertices[0]);
+	        }
+
+	        this.notifyFeatureSet({
+	           type : type,
+	           vertices: vertices.map(p => [p.lat, p.lng])
+	        })
+	        break;
+        case "circle":
+            let bounds = this.geoMap.map.wrapLatLngBounds(layer.getBounds());
+            let center = this.geoMap.map.wrapLatLng(layer.getLatLng());
+            let circumgon = this.createCircumgon(bounds.getCenter(), bounds.getSouthWest(), bounds.getSouthWest(), 16);
+            let diameterM = bounds.getSouthWest().distanceTo(bounds.getNorthWest());
+            this.notifyFeatureSet({
+                type : "circle",
+                vertices: circumgon.map(p => this.geoMap.normalizePoint(p)).map(p => [p.lat, p.lng]),
+                center: center,
+            	radius: layer.getRadius()
+            })
+            break;
+    }
+}.bind(this)
+
+this.createCircumgon = function(center, sw, ne, numVertices) {
+
+    let lSW = this.geoMap.map.latLngToLayerPoint(sw);
+    let lNE = this.geoMap.map.latLngToLayerPoint(ne);
+    let lCenter = this.geoMap.map.latLngToLayerPoint(center);
+
+    let radius = Math.abs(lCenter.x - lSW.x);
+
+    let points = [];
+    for(let i = 0; i < numVertices; i++) {
+        let x = lCenter.x + radius *  Math.cos(2*Math.PI*i/numVertices);
+        let y = lCenter.y + radius *  Math.sin(2*Math.PI*i/numVertices);
+        points.push([x,y]);
+    }
+    points.push(points[0]);
+    let geoPoints = points.map(p => this.geoMap.map.layerPointToLatLng(p));
+    return geoPoints;
+}.bind(this)
+
+this.notifyFeatureSet = function(feature) {
+
+    if(this.opts.onFeatureSelect) {
+        this.opts.onFeatureSelect(feature);
+    }
+
+}.bind(this)
+
+this.buildSearchString = function(vertices) {
+    let string = "WKT_COORDS:\"IsWithin(POLYGON((";
+    string += vertices.map(v => v[1] + " " + v[0]).join(", ");
+    string += "))) distErrPct=0\"";
+    return string;
+}.bind(this)
+
+this.getType = function(layer) {
+    if(layer.getRadius) {
+        return "circle";
+    } else if(layer.setBounds) {
+        return "rectangle";
+    } else if(layer.getLatLngs) {
+        return "polygon"
+    } else {
+        throw "Unknown layer type: " + layer;
+    }
+}.bind(this)
+
+this.initHitsLayer = function(map) {
+    this.opts.hitsLayer.language = viewerJS.translator.language;
+	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer);
+	map.layers.push(hitsLayer);
+	hitsLayer.init(this.opts.features, false);
+	return hitsLayer;
+}.bind(this)
+
+this.initHeatmap = function(hitsLayer) {
+	let heatmapQuery = this.opts.hitsLayer.heatmap.mainQuery;
+	let heatmapFacetQuery = this.opts.hitsLayer.heatmap.facetQuery;
+	let heatmap = L.solrHeatmap(this.opts.hitsLayer.heatmap.heatmapUrl, this.opts.hitsLayer.heatmap.featureUrl, hitsLayer, {
+		field: "WKT_COORDS",
+		type: "clusters",
+		filterQuery: heatmapQuery,
+		facetQuery: heatmapFacetQuery,
+		labelField: this.opts.hitsLayer.heatmap.labelField,
+		queryAdapter: "goobiViewer"
+	});
+	heatmap.addTo(this.geoMap.map);
+	return heatmap;
+}.bind(this)
+
+});
+riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="imagefilters__filter" each="{filter in filters}"><span class="imagefilters__label {filter.config.slider ? \'\' : \'imagefilters__label-long\'}">{filter.config.label}</span><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__checkbox" if="{filter.config.checkbox}" type="checkbox" onchange="{apply}" checked="{filter.isActive() ? \'checked\' : \'\'}" aria-label="{filter.config.label}"><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" oninput="{apply}" riot-value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal" aria-label="{filter.config.label}: {filter.getValue()}"></div></div><div class="imagefilters__options"><button type="button" class="btn btn--full" onclick="{resetAll}">{this.config.messages.clearAll}</button></div>', '', '', function(opts) {
+
+		if(!this.opts.image) {
+		    throw "ImageView object must be defined for imageFilters";
+		}
+
+		var defaultConfig = {
+			filters: {
+		        brightness : {
+				    label: "Brightness",
+				    type: ImageView.Tools.Filter.Brightness,
+				    min: -255,
+				    max: 255,
+				    step: 1,
+				    base: 0,
+				    slider: true,
+				    checkbox: false,
+				    visible: true,
+				},
+		        contrast : {
+				    label: "Contrast",
+				    type: ImageView.Tools.Filter.Contrast,
+				    min: 0,
+				    max: 2,
+				    step: 0.05,
+				    base: 1,
+				    slider: true,
+				    checkbox: false,
+				    visible: true
+				},
+		        saturate : {
+				    label: "Color Saturation",
+				    type: ImageView.Tools.Filter.ColorSaturation,
+				    min: 0,
+				    max: 5,
+				    step: 0.1,
+				    base: 1,
+				    slider: true,
+				    checkbox: false,
+				    visible: true
+				},
+				hue : {
+				    label: "Color rotation",
+				    type: ImageView.Tools.Filter.ColorRotate,
+				    min: -180,
+				    max: 180,
+				    step: 1,
+				    base: 0,
+				    slider: true,
+				    checkbox: false,
+				    visible: true
+				},
+				threshold : {
+				    label: "Bitonal",
+				    type: ImageView.Tools.Filter.Threshold,
+				    min: 0,
+				    max: 255,
+				    step: 1,
+				    base: 128,
+				    slider: true,
+				    checkbox: true,
+				    visible: true,
+				    preclude: ["grayscale", "sharpen"]
+				},
+		        grayscale : {
+				    label: "Grayscale",
+				    type: ImageView.Tools.Filter.Grayscale,
+				    slider: false,
+				    checkbox: true,
+				    visible: true,
+				    preclude: ["threshold"]
+				},
+				invert : {
+				    label: "Invert",
+				    type: ImageView.Tools.Filter.Invert,
+				    slider: false,
+				    checkbox: true,
+				    visible: true
+				},
+		        blur : {
+				    label: "Blur",
+				    type: ImageView.Tools.Filter.Blur,
+				    min: 1,
+				    max: 10,
+				    step: 1,
+				    base: 1,
+				    slider: true,
+				    checkbox: false,
+				    visible: true
+				},
+		        sharpen : {
+				    label: "Sharpen",
+				    type: ImageView.Tools.Filter.Sharpen,
+				    base: 1,
+				    slider: false,
+				    checkbox: true,
+				    visible: true
+				},
+			},
+			messages : {
+			    clearAll: "Clear all",
+			    apply: "Apply"
+			}
+		}
+		this.config = $.extend(true, {}, defaultConfig, this.opts.config);
+
+		this.on("mount", function() {
+		    this.filters = this.initFilters(this.config, this.opts.image);
+			this.update();
+		});
+
+		this.initFilters = function(filterConfig, image) {
+		    let filters = [];
+		    for(var key in filterConfig.filters) {
+		        let conf = filterConfig.filters[key];
+		        if(conf.visible) {
+		            let filter = new conf.type(image, conf.base);
+		            filter.config = conf;
+		            filter.name = key;
+		            filters.push(filter);
+		        }
+		    }
+		    return filters;
+		}.bind(this)
+
+		this.apply = function(event) {
+		    let filter = event.item.filter;
+		    let value = event.target.value;
+		    if(filter) {
+			    if(!filter.isActive()) {
+			        filter.start();
+			        this.disable(filter.config.preclude);
+			    } else if(isNaN(value) ) {
+			        filter.close();
+			        this.enable(filter.config.preclude);
+			    }
+			    if(!isNaN(value) ) {
+			    	filter.setValue(parseFloat(value));
+			    	event.target.title = value;
+			    }
+		    }
+
+		}.bind(this)
+
+		this.disable = function(filterNames) {
+		    if(filterNames) {
+			    this.filters
+			    .filter( filter => filterNames.includes(filter.name) )
+			    .forEach( filter => {
+			        filter.disabled = true;
+			    })
+			    this.update();
+		    }
+		}.bind(this)
+
+		this.enable = function(filterNames) {
+		    if(filterNames) {
+			    this.filters
+			    .filter( filter => filterNames.includes(filter.name) )
+			    .forEach( filter => {
+			   		filter.disabled = false;
+			    })
+			    this.update();
+		    }
+		}.bind(this)
+
+		this.resetAll = function() {
+		   this.filters.forEach( filter => {
+		       filter.close();
+		       filter.disabled = false;
+		       if(filter.config.slider) {
+		       	filter.setValue(filter.config.base);
+		       }
+		   })
+		   this.update();
+		}.bind(this)
+
+});
+riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'end\' : \'start\'} {isFirstPage() ? \'inactive\' : \'\'}"><a if="{!isFirstPage() && !isSequenceMode()}" data-target="paginatorFirstPage" href="{getPageUrl(opts.firstPageNumber)}" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></a><button if="{!isFirstPage() && isSequenceMode()}" data-target="paginatorFirstPage" onclick="{gotoFirstPage}" type="button" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></button><span if="{isFirstPage()}"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual></span></li><li each="{step in opts.navigationSteps.slice().reverse()}" class="image-controls__action page-browse prev {getPageNumberMinus(step) < opts.firstPageNumber ? \'inactive\' : \'\'}"><virtual if="{opts.numPages > step}"><a if="{getPageNumberMinus(step) >= opts.firstPageNumber && !isSequenceMode()}" data-target="paginatorPrevPage" href="{getPageUrl(getPageNumberMinus(step))}" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span></a><button if="{getPageNumberMinus(step) >= opts.firstPageNumber && isSequenceMode()}" data-target="paginatorPrevPage" onclick="{navigateBack}" type="button" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step} {msg.stepBack}</span></button><span if="{getPageNumberMinus(step) < opts.firstPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual></span></virtual></li><li if="{opts.showDropdown}" class="image-controls__action select"><div class="custom-control custom-control--select"><select ref="dropdown" id="pageDropdown" aria-label="{msg.aria_label__select_page}" onchange="{changeDropdownValue}"><option each="{item in opts.pageList}" riot-value="{item.value}" title="{item.description ? item.description : item.label}">{item.label}</option></select></div></li><li each="{step in opts.navigationSteps}" class="image-controls__action page-browse next {getPageNumberPlus(step) > opts.lastPageNumber ? \'inactive\' : \'\'}"><virtual if="{opts.numPages > step}"><a if="{getPageNumberPlus(step) <= opts.lastPageNumber && !isSequenceMode()}" data-target="paginatorNextPage" href="{getPageUrl(getPageNumberPlus(step))}" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></a><button if="{getPageNumberPlus(step) <= opts.lastPageNumber && isSequenceMode()}" data-target="paginatorNextPage" onclick="{navigateForward}" type="button" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></button><span if="{getPageNumberPlus(step) > opts.lastPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual></span></virtual></li><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'start\' : \'end\'} {isLastPage() ? \'inactive\' : \'\'}"><a if="{!isLastPage() && !isSequenceMode()}" data-target="paginatorLastPage" href="{getPageUrl(opts.lastPageNumber)}" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></a><button if="{!isLastPage() && isSequenceMode()}" data-target="paginatorLastPage" onclick="{gotoLastPage}" type="button" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></button><span if="{isLastPage()}"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual></span></li></virtual>', '', '', function(opts) {
+
+        this.currentPageNumbers = [0];
+        this.msg = {};
+
+        this.on("mount", () => {
+
+            this.currentPageNumbers = this.parsePageNumbers(this.opts.currentPageNumber);
+            this.msg = this.opts.msg;
+            if(this.opts.update) {
+                this.opts.update.subscribe(pageNumber => {
+                    this.currentPageNumbers = this.isDoublePageMode() ? [pageNumber, pageNumber+1] : [pageNumber];
+                    this.update();
+                });
+            }
+            this.update();
+        });
+
+        this.on("update", () => {
+
+            $("[data-toggle='tooltip']").tooltip('hide');
+            if(this.refs.dropdown) {
+                this.refs.dropdown.value = this.isDoublePageMode() ? (this.currentPageNumbers[0] + "-" + this.currentPageNumbers[0]) : this.currentPageNumbers[0];
+
+            }
+        });
+
+        this.parsePageNumbers = function(pageNoString) {
+        	return pageNoString.match(/\d+/g).map(s => Number(s));
+        }.bind(this)
+
+        this.getPageNumberMinus = function(step) {
+        	if(this.isDoublePageMode()) {
+        		return this.currentPageNumbers[0] - 2 * step;
+        	} else {
+        		return this.currentPageNumbers[0] - step;
+        	}
+        }.bind(this)
+
+        this.getPageNumberPlus = function(step) {
+        	if(this.isDoublePageMode()) {
+        		return this.currentPageNumbers[0] + 2 * step;
+        	} else {
+        		return this.currentPageNumbers[0] + step;
+        	}
+        }.bind(this)
+
+        this.getPageUrl = function(pageNo) {
+        	if(this.isDoublePageMode()) {
+        		return this.opts.pageUrlTemplate(pageNo + "-" + (pageNo+1));
+        	} else {
+            	return this.opts.pageUrlTemplate(pageNo);
+        	}
+        }.bind(this)
+
+        this.gotoFirstPage = function() {
+            this.gotoPage(this.opts.firstPageNumber);
+        }.bind(this)
+
+        this.gotoLastPage = function() {
+            this.gotoPage(this.opts.lastPageNumber);
+        }.bind(this)
+
+        this.navigateBack = function(e) {
+            const step = e.item.step;
+            if(this.isDoublePageMode()) {
+            	this.gotoPage(this.currentPageNumbers[0] - 2 * step);
+            } else {
+            	this.gotoPage(this.currentPageNumbers[0] - step);
+            }
+        }.bind(this)
+
+        this.navigateForward = function(e) {
+            const step = e.item.step;
+            if(this.isDoublePageMode()) {
+            	this.gotoPage(this.currentPageNumbers[0] + 2 * step);
+            } else {
+            	this.gotoPage(this.currentPageNumbers[0] + step);
+            }
+        }.bind(this)
+
+        this.gotoPage = function(pageNumber) {
+        	if(this.isDoublePageMode()) {
+        		this.currentPageNumbers = [pageNumber, pageNumber+1];
+        	} else {
+				this.currentPageNumbers = [pageNumber];
+        	}
+            if(this.opts.onUpdate) {
+                this.opts.onUpdate(pageNumber);
+            }
+        }.bind(this)
+
+        this.changeDropdownValue = function(e) {
+            let pageNo = e.target.value;
+            if(this.isSequenceMode()) {
+                this.gotoPage(pageNo);
+            } else {
+                window.location.assign(this.getPageUrl(pageNo));
+            }
+        }.bind(this)
+
+        this.isSequenceMode = function() {
+            return this.opts.navigationMode.toLowerCase() == 'sequence'
+        }.bind(this)
+
+        this.isDoublePageMode = function() {
+            return this.opts.navigationMode.toLowerCase() == 'double'
+        }.bind(this)
+
+        this.isSinglePageMode = function() {
+            return this.opts.navigationMode.toLowerCase() == 'single'
+        }.bind(this)
+
+        this.isFirstPage = function() {
+            return this.currentPageNumber == this.opts.firstPageNumber;
+        }.bind(this)
+
+        this.isLastPage = function() {
+            return this.currentPageNumber == this.opts.lastPageNumber;
+        }.bind(this)
+
+});
+
+riot.tag2('metadataeditor', '<div if="{this.metadataList}"><h2>Pin content</h2><div class="admin__language-tabs"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="admin__language-tab {language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul></div><div class="cms__geomap__featureset_panel "><div class="active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="admin__geomap-edit-delete-wrapper"><a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean -redlink" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
+
+ 	this.on("mount", () => {
+ 	    this.currentLanguage = this.opts.currentLanguage;
+ 	    this.updateMetadataList(this.opts.metadata);
+ 	    this.focusInput();
+ 	    if(this.opts.provider) {
+ 	        this.opts.provider.subscribe( (metadata) => {
+ 	            this.updateMetadataList(metadata)
+ 	            this.update();
+ 	            this.focusInput();
+ 	        });
+ 	    }
+ 	})
+
+ 	this.focusInput = function() {
+ 	    if(Array.isArray(this.refs.input)) {
+ 	        this.refs.input[0].focus();
+ 	    } else if(this.refs.input) {
+ 	        this.refs.input.focus();
+ 	    }
+ 	}.bind(this)
+
+ 	this.updateMetadataList = function(metadataList) {
+ 	   this.metadataList = metadataList;
+ 	}.bind(this)
+
+ 	this.updateMetadata = function(event) {
+ 	    let metadata = event.item.metadata;
+ 	    if(!metadata.value) {
+ 	        metadata.value = {};
+ 	    }
+ 	    let value = event.target.value;
+ 	    if(value) {
+	 	    metadata.value[this.currentLanguage] = [event.target.value];
+ 	    } else {
+ 	       metadata.value[this.currentLanguage] = undefined;
+ 	    }
+ 	    if(this.opts.updateListener) {
+ 	       this.opts.updateListener.next(metadata);
+ 	    }
+ 	}.bind(this)
+
+ 	this.getValue = function(metadata) {
+ 	    if(metadata.value && metadata.value[this.currentLanguage]) {
+	 	    let value = metadata.value[this.currentLanguage][0];
+	 	    return value;
+ 	    } else {
+ 	        return "";
+ 	    }
+ 	}.bind(this)
+
+ 	this.setCurrentLanguage = function(event) {
+ 	    this.currentLanguage = event.item.language;
+ 	    this.update();
+ 	}.bind(this)
+
+ 	this.notifyDelete = function() {
+ 	    this.opts.deleteListener.next();
+ 	}.bind(this)
+
+ 	this.isEditable = function(metadata) {
+ 	    return metadata.editable === undefined || metadata.editable === true;
+ 	}.bind(this)
+
+ 	this.mayDelete = function() {
+ 	    editable = this.metadataList.find( md => this.isEditable(md));
+ 	    return editable !== undefined;
+ 	}.bind(this)
+
+});
+
+
+
+riot.tag2('modal', '<div class="modal fade {modalClass}" id="{modalId}" tabindex="-1" ref="modal" role="dialog" aria-labelledby="{modalTitle}" aria-hidden="true"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-header"><h1 class="modal-title">{modalTitle}</h1><button class="fancy-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button></div><div class="modal-body"><yield from="body"></yield></div><div class="modal-right"><yield from="right"></yield></div><div class="modal-footer"><yield from="footer"></yield></div></div></div><div class="alt-backdrop"></div></div>', '', '', function(opts) {
+
+    this.modalClass = this.opts.styleclass ? this.opts.styleclass : "";
+    this.modalId = this.opts.modalid;
+    this.modalTitle = this.opts.title;
+
+	this.on("mount", () => {
+
+	    if(this.opts.onClose) {
+	        $(this.refs.modal).on('hide.bs.modal', () => this.opts.onClose());
+	    }
+	});
+
+});
+riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index in pages}" page="{page}" pageno="{index+1}"></pdfPage></div>', '', '', function(opts) {
+
+		this.pages = [];
+
+		var loadingTask = pdfjsLib.getDocument( this.opts.data );
+	    loadingTask.promise.then( ( pdf ) => {
+	        var pageLoadingTasks = [];
+	        for(var pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
+   		        var page = pdf.getPage(pageNo);
+   		        pageLoadingTasks.push(page);
+   		    }
+   		    return Promise.allSettled(pageLoadingTasks);
+	    })
+	    .then( (results) => {
+			results.forEach(result => {
+			    if (result.status === "fulfilled") {
+                	var page = result.value;
+                	this.pages.push(page);
+                } else {
+                    console.log("Error loading page: ", result);
+                }
+			});
+			this.update();
+        })
+	    .then( () => {
+			$(".pdf-container").show();
+			console.log("loader", this.opts.loaderSelector);
+            $(this.opts.loaderSelector).hide();
+		} );
+
+});
+riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="pdf-canvas" id="pdf-canvas_{opts.pageno}"></canvas><div class="text-layer" id="pdf-text_{opts.pageno}"></div><div class="annotation-layer" id="pdf-annotations_{opts.pageno}"></div></div>', '', '', function(opts) {
+	this.on('mount', function () {
+
+           this.container = document.getElementById( "page_" + this.opts.pageno );
+           this.canvas = document.getElementById( "pdf-canvas_" + this.opts.pageno );
+           this.textLayer = document.getElementById( "pdf-text_" + this.opts.pageno );
+           this.annotationLayer = document.getElementById( "pdf-annotations_" + this.opts.pageno );
+
+		var containerWidth = $(this.container).width();
+		var pageWidth = this.opts.page._pageInfo.view[2];
+           var scale = containerWidth/pageWidth;
+		this.viewport = this.opts.page.getViewport( scale );
+
+           if(this.container) {
+               this.loadPage();
+           }
+	});
+
+    this.loadPage = function() {
+        var canvasOffset = $( this.canvas ).offset();
+        var context = this.canvas.getContext( "2d" );
+        this.canvas.height = this.viewport.height;
+        this.canvas.width = this.viewport.width;
+
+        this.opts.page.render( {
+            canvasContext: context,
+            viewport: this.viewport
+        } ).then( function() {
+            return this.opts.page.getTextContent();
+        }.bind( this ) ).then( function( textContent ) {
+
+            $( this.textLayer ).css( {
+                height: this.viewport.height + 'px',
+                width: this.viewport.width + 'px',
+            } );
+
+            pdfjsLib.renderTextLayer( {
+                textContent: textContent,
+                container: this.textLayer,
+                viewport: this.viewport,
+                textDivs: []
+            } );
+
+            return this.opts.page.getAnnotations();
+        }.bind( this ) ).then( function( annotationData ) {
+
+            $( this.annotationLayer ).css( {
+                width: this.viewport.width + 'px',
+            } );
+
+            pdfjsLib.AnnotationLayer.render( {
+                viewport: this.viewport.clone( {
+                    dontFlip: true
+                } ),
+                div: this.annotationLayer,
+                annotations: annotationData,
+                page: this.opts.page,
+                linkService: {
+                    getDestinationHash: function( dest ) {
+                        return '#';
+                    },
+                    getAnchorUrl: function( hash ) {
+                        return '#';
+                    },
+                    isPageVisible: function() {
+                        return true;
+                    },
+                    externalLinkTarget: pdfjsLib.LinkTarget.BLANK,
+                }
+            } );
+
+        }.bind( this ) )
+    }.bind(this)
+
+});
+	
+	
+riot.tag2('popup', '<yield></yield>', '', '', function(opts) {
+
+this.on( 'mount', function() {
+	this.addCloseHandler();
+	$(this.root).offset(this.opts.offset);
+    $("body").append($(this.root));
+    $(this.root).css("position", "absolute");
+    $(this.root).show();
+});
+
+this.addCloseHandler = function() {
+    $(this.root).on("click", function(event){
+        event.stopPropagation();
+    });
+
+    $('body').one("click", function(event) {
+        this.unmount(true);
+        $(this.root).off();
+        if(this.opts.myparent) {
+             $(this.root).hide();
+            $(this.opts.myparent).append($(this.root));
+            $(this.root).offset({left:0, top:0});
+        } else {
+            this.root.remove();
+        }
+    }.bind(this));
+
+}.bind(this)
+
+});
+
+
+riot.tag2('rawhtml', '', '', '', function(opts) {
+  this.on("mount", () => {
+	    this.root.innerHTML = opts.content;
+	  })
+  this.on("updated", () => {
+    this.root.innerHTML = opts.content;
+  })
+});
+riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? \'numeric-paginator -rtl\' : \'numeric-paginator -ltr\'} {opts.classSuffix}"><nav aria-label="{opts.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}"><ul><li if="{this.currentItem > this.opts.firstItem}" class="numeric-paginator__navigate navigate_prev"><a if="{isRenderLinks()}" href="{getItemUrl(currentItem-1)}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i></a><button if="{isRenderButtons()}" onclick="{navigateToPrevItem}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i></button></li><li each="{item in getFirstItems()}" class="numeric-paginator__navigate"><a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button></li><li class="numeric-paginator__dots" if="{isShowDotsAfterFirstItems()}"><span>...</span></li><li each="{item in getCenterItems()}" class="numeric-paginator__navigate {item == currentItem ? \'-active\' : \'\'}"><a if="{isRenderLinks() && item != currentItem}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons() && item != currentItem}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button><span if="{item == currentItem}">{item}</span></li><li class="numeric-paginator__dots" if="{isShowDotsBeforeLastItems()}"><span>...</span></li><li each="{item in getLastItems()}" class="numeric-paginator__navigate"><a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button></li><li if="{this.currentItem < this.opts.lastItem}" class="numeric-paginator__navigate navigate_next"><a if="{isRenderLinks()}" href="{getItemUrl(currentItem+1)}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i></a><button if="{isRenderButtons()}" onclick="{navigateToNextItem}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i></button></li></ul></nav></div>', '', '', function(opts) {
+
+        this.currentItem = 0;
+        this.msg = {};
+        this.range = 2;
+
+        this.on("mount", () => {
+            this.msg = opts.msg;
+            this.currentItem = opts.itemActive;
+            if(this.opts.range) {
+                this.range = this.opts.range;
+            }
+            if(this.opts.update) {
+                this.opts.update.subscribe(itemNumber => {
+                    this.currentItem = itemNumber;
+                    this.update();
+                });
+            }
+            this.update();
+        });
+
+        this.on("update", () => {
+
+            $("[data-toggle='tooltip']").tooltip('hide');
+            if(this.refs.dropdown) {
+                this.refs.dropdown.value = this.currentItem;
+            }
+        });
+
+        this.getItemUrl = function(itemNumber) {
+            return this.opts.urlTemplate(itemNumber);
+        }.bind(this)
+
+        this.gotoFirstItem = function() {
+            this.gotoItem(this.opts.firstItem);
+        }.bind(this)
+
+        this.gotoLastItem = function() {
+            this.gotoItem(this.opts.lastItem);
+        }.bind(this)
+
+        this.navigateToItem = function(e) {
+            const item = e.item.item;
+            this.gotoItem(item);
+        }.bind(this)
+
+        this.navigateToPrevItem = function() {
+            this.gotoItem(this.currentItem-1);
+        }.bind(this)
+
+        this.navigateToNextItem = function() {
+            this.gotoItem(this.currentItem+1);
+        }.bind(this)
+
+        this.gotoItem = function(itemNumber) {
+            this.currentItem = itemNumber;
+            if(this.opts.onUpdate) {
+                this.opts.onUpdate(itemNumber);
+            }
+        }.bind(this)
+
+        this.isShowDotsAfterFirstItems = function() {
+            return this.currentItem - this.range > this.opts.firstItem + this.range + 1
+        }.bind(this)
+
+        this.isShowDotsBeforeLastItems = function() {
+            return this.currentItem + this.range < this.opts.lastItem - this.range - 1
+        }.bind(this)
+
+        this.getFirstItems = function() {
+            let result = [];
+            let firstCenterItem = this.getCenterItems()[0];
+            let lastItem = Math.min(this.opts.firstItem + this.range + 1, firstCenterItem);
+            for (let i = this.opts.firstItem; i < lastItem; i++) {
+                result.push(i);
+            }
+
+            return result;
+        }.bind(this)
+
+        this.getLastItems = function() {
+            let result = [];
+            let centerItems = this.getCenterItems();
+            let lastCenterItem = centerItems[centerItems.length-1];
+            let firstItem = Math.max(this.opts.lastItem - this.range - 1, lastCenterItem);
+                for (let i = firstItem + 1; i <= this.opts.lastItem; i++) {
+                    result.push(i);
+                }
+            return result;
+        }.bind(this)
+
+        this.getCenterItems = function() {
+            let result = [];
+            for (let i = this.currentItem - this.range; i <= this.currentItem + this.range; i++) {
+                if(i >= this.opts.firstItem && i <= this.opts.lastItem) {
+                    result.push(i);
+                }
+            }
+            return result;
+        }.bind(this)
+
+        this.isRenderLinks = function() {
+            return this.opts.navigationMode != "buttons";
+        }.bind(this)
+
+        this.isRenderButtons = function() {
+            return this.opts.navigationMode == "buttons";
+        }.bind(this)
+
+        this.isFirstItem = function() {
+            return this.currentItem == this.opts.firstItem;
+        }.bind(this)
+
+        this.isLastItem = function() {
+            return this.currentItem == this.opts.lastItem;
+        }.bind(this)
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}"></a><figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}" class="remember-scroll-position" data-linkid="{opts.pis}" onclick="{storeScrollPosition}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h3>{getTitleOrLabel(manifest)}</h3><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
+
+    	$.fn.isInViewport = function() {
+        	var elementTop = $( this ).offset().top;
+        	var elementBottom = elementTop + $( this ).outerHeight();
+        	var elementHeight = $( this ).outerHeight();
+        	var viewportTop = $( window ).scrollTop();
+        	var viewportBottom = viewportTop + $( window ).height();
+
+        	return elementBottom > (viewportTop + elementHeight) && elementTop < (viewportBottom - elementHeight);
+    	};
+
+    	this.pis = this.opts.pis.split(/[\s,;]+/);
+    	this.pis = this.pis.filter( function( pi ) {
+    		return pi != undefined && pi.length > 0;
+    	} );
+        this.metadataList = this.opts.metadata.split(/[,;]+/);
+        this.manifest = undefined;
+        this.manifests = new Map();
+        this.active = false;
+        this.visible = false;
+        this.mouseover = false;
+
+        this.on( 'mount', function() {
+        	this.loadManifest( this.pis[0] );
+        }.bind( this ));
+
+        this.mouseenter = function() {
+        	this.mouseover = true;
+        }.bind(this)
+
+        this.mouseleave = function() {
+        	this.mouseover = false;
+        }.bind(this)
+
+        this.checkPosition = function() {
+        	var slideshow = $( '#' + this.opts.id + ' figure' );
+
+        	if ( !this.visible && this.pis.length > 1 && slideshow.isInViewport() ) {
+        		this.visible = true;
+            	this.moveSlides( this.pis, true );
+        	}
+        	else if ( this.visible && !slideshow.isInViewport() ) {
+        		this.visible = false;
+        		this.moveSlides( this.pis, false );
+        	}
+        }.bind(this)
+
+        this.moveSlides = function( pis, move ) {
+        	var index = 1;
+
+        	if ( move ) {
+        		clearInterval( this.interval );
+
+        		this.interval = setInterval( function() {
+                	if ( index === pis.length ) {
+                		index = 0;
+                	}
+                	if ( !this.mouseover ) {
+            			this.loadManifest( pis[ index ] );
+                    	index++;
+                	}
+                }.bind( this ), 3000 );
+        	}
+        	else {
+        		clearInterval( this.interval );
+        	}
+        }.bind(this)
+
+        this.setPi = function( event ) {
+        	let pi = event.item.imagepi;
+
+        	if ( pi != this.pi ) {
+        		this.pi = pi;
+
+        		return this.loadManifest( pi );
+        	}
+        }.bind(this)
+
+        this.setImageActive = function() {
+        	this.active = true;
+        	this.update();
+        }.bind(this)
+
+        this.loadManifest = function( pi ) {
+        	let url = this.opts.manifest_base_url.replace( "{pi}", pi );
+        	let json = this.manifests.get( url );
+        	this.pi = pi;
+        	this.active = false;
+        	this.update();
+
+        	if ( !json ) {
+        		$.getJSON( url, function( manifest ) {
+        			if ( manifest ) {
+
+        				this.manifest = manifest;
+        				this.manifests.set( url, manifest );
+        				this.update();
+            			this.checkPosition();
+
+        				$( window ).on( 'resize scroll', function() {
+            				this.checkPosition();
+        				}.bind( this ) );
+        			}
+        		}.bind( this ))
+        		.then(function(data) {
+        		})
+        		.catch(function(error) {
+        			console.error("error loading ", url, ": ", error);
+        		});
+        	}
+        	else {
+
+            	setTimeout( function() {
+            		this.manifest = json;
+            		this.update();
+            	}.bind( this ), 300 );
+        	}
+        }.bind(this)
+        this.getThumbnail = function( manifest, width, height ) {
+        	if( !manifest.thumbnail.service || ( !width && !height ) ) {
+        		return manifest.thumbnail['@id'];
+        	}
+        	else {
+        		let sizePrefix = width && height ? "!" : "";
+
+        		return manifest.thumbnail.service['@id'] + "/full/" + sizePrefix + width + "," + height + "/0/default.jpg";
+        	}
+        }.bind(this)
+
+        this.getLink = function( manifest ) {
+        	rendering = manifest.rendering;
+
+        	if ( Array.isArray( rendering ) ) {
+        		rendering = rendering.find( ( rend ) => rend.format == "text/html" );
+        	}
+        	if ( rendering ) {
+        		return rendering['@id'];
+        	}
+        	else {
+        		return '';
+        	}
+        }.bind(this)
+
+        this.getTitleOrLabel = function( manifest ) {
+        	var title = this.getMetadataValue( manifest, 'Title' );
+
+        	if(title) {
+        		return title;
+        	} else {
+        		return getLabel( manifest );
+        	}
+        }.bind(this)
+
+        this.getLabel = function( manifest ) {
+        	return this.getValue(manifest.label, this.opts.locale);
+        }.bind(this)
+
+        this.getMetadataValue = function( manifest, metadataLabel ) {
+        	if ( manifest && metadataLabel ) {
+        		let metadata = manifest.metadata.find( ( md ) => {
+        			let label = md.label;
+        			if ( Array.isArray( label ) ) {
+        				label = label.find( (l) => l['@value'].trim() == metadataLabel.trim());
+        				if ( label ) {
+        					label = label['@value']
+        				}
+        			}
+        			return label && label.trim() == metadataLabel.trim();
+        		});
+
+        		if ( metadata ) {
+        			let value = this.getValue( metadata.value, this.opts.locale );
+
+        			return value;
+        		}
+        	}
+        }.bind(this)
+
+        this.getValue = function ( element, locale ) {
+            if ( element ) {
+            	if ( typeof element === 'string' ) {
+            		return element;
+            	}
+        		else if ( Array.isArray( element ) ) {
+            		var fallback;
+
+            		for ( var index in element  ) {
+            			var item = element[index];
+
+            			if ( typeof item === 'string' ) {
+            				return item;
+            			}
+            			else {
+            				var value = item['@value'];
+            				var language = item['@language'];
+
+            				if ( locale == language ) {
+            					return value;
+            				}
+            				else if ( !fallback || language == 'en' ) {
+            					fallback = value;
+            				}
+            			}
+            		}
+
+            		return fallback;
+            	}
+            	else {
+            		return element['@value'];
+            	}
+            }
+        }.bind(this)
+
+        this.storeScrollPosition = function(event) {
+            $target = $(event.target).closest("a");
+            viewerJS.handleScrollPositionClick($target);
+        }.bind(this)
+});
+riot.tag2('subcollection', '<ul if="{collection.members && collection.members.length > 0}" class="list card-body__list"><li each="{child in getChildren(collection)}"><div class="card-body__links"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></div><subcollection if="{child.members && child.members.length > 0}" collection="{child}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"></subcollection></li></ul>', '', '', function(opts) {
+		this.collection = this.opts.collection;
+
+		this.getId = function(element) {
+		    if(!element) {
+		        return undefined;
+		    } else if (Array.isArray(element) && element.length > 0) {
+		        return viewerJS.iiif.getId(element[0]);
+		    } else {
+		        return viewerJS.iiif.getId(element);
+		    }
+		}.bind(this)
+
+		this.getValue = function(element) {
+		    return viewerJS.iiif.getValue(element, this.opts.language, this.opts.defaultlanguage);
+		}.bind(this)
+
+		this.getChildren = function(collection) {
+		    if(collection.members) {
+		    	return collection.members.filter( child => viewerJS.iiif.isCollection(child));
+		    } else {
+		        return [];
+		    }
+		}.bind(this)
+});
+
+
+
+riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'} {getPageStatus(index)}" each="{canvas, index in thumbnails}"><a class="thumbnails-image-link" href="{getLink(canvas)}" onclick="{handleClickOnImage}"><img class="thumbnails-image" alt="{getObjectTitle() + \': \' + getValue(canvas.label)}" riot-src="{getImage(canvas)}" loading="lazy"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
+
+this.thumbnails = [];
+this._debug = false;
+
+this.on("mount", () => {
+	if(this._debug)console.log("mount ", this.opts);
+	this.type = opts.type ? opts.type : "items";
+	this.language = opts.language ? opts.language : "en";
+	this.imageSize = opts.imagesize;
+	if(this.opts.index === undefined) {
+		this.opts.index = 0;
+	}
+
+	let source = opts.source;
+	if(viewerJS.isString(source)) {
+		fetch(source)
+		.then(response => response.json())
+		.then(json => this.loadThumbnails(json, this.type))
+		.catch(e => {
+			console.error("Error reading manifest from ", source);
+		})
+	} else {
+		this.loadThumbnails(source, this.type);
+	}
+});
+
+this.on("updated", () => {
+	if(this._debug)console.log("updated", this.opts);
+	let activeThumb = this.refs.thumb[this.opts.index];
+	if(activeThumb) {
+		activeThumb.scrollIntoView({block: "end", behavior: "smooth"});
+	}
+	if(this.opts.onload) {
+	    this.opts.onload();
+	}
+});
+
+this.loadThumbnails = function(source, type) {
+    if(this._debug)console.log("Loading thumbnails from ", source);
+	if(source) {
+		switch(type) {
+			case "structures":
+				if(this._debug)console.log("structures", source.structures);
+				rxjs.from(source.structures)
+				.pipe(
+						rxjs.operators.map(range => this.getFirstCanvas(range, true)),
+						rxjs.operators.filter(canvas => canvas != undefined),
+						rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
+						)
+				.subscribe(item => this.addThumbnail(item));
+				break;
+			case "sequence":
+				this.createThumbnails(source.sequences[0].canvases);
+				break;
+			case "items":
+			case "default":
+				this.createThumbnails(source.items)
+		}
+	} else {
+		throw "source manifest not defined";
+	}
+
+}.bind(this)
+
+this.addThumbnail = function(item) {
+    if(this._debug)console.log("add thumbnail from ", item);
+
+	this.thumbnails.push(item);
+	this.update();
+}.bind(this)
+
+this.createThumbnails = function(items) {
+    if(this._debug)console.log("creating thumbnails from ", items);
+
+	this.thumbnails = items;
+	this.update();
+}.bind(this)
+
+this.getFirstCanvas = function(range, overwriteLabel) {
+
+	let canvas = undefined;
+	if(range.start) {
+		canvas = range.start;
+	} else if(range.items) {
+		canvas = range.items.find( item => item.type == "Canvas");
+	}
+	if(canvas && overwriteLabel) {
+		if(this.opts.label) {
+			let md = range.metadata.find(md => viewerJS.iiif.getValue(md.label, "none") == this.opts.label);
+			if(md) {
+				canvas.label = this.getValue(md.value);
+			} else {
+				canvas.label = range.label;
+			}
+		} else {
+			canvas.label = range.label;
+		}
+
+	}
+	return canvas;
+}.bind(this)
+
+this.loadCanvas = function(source) {
+	return fetch(viewerJS.iiif.getId(source))
+	.then(response => response.json())
+	.then(canvas => {
+
+		if(source.label) {
+			canvas.label = source.label;
+		}
+		return canvas;
+	})
+}.bind(this)
+
+this.getValue = function(value) {
+	return viewerJS.iiif.getValue(value, this.language, this.language == "en" ? "de" : "en");
+}.bind(this)
+
+this.getObjectTitle = function() {
+	try {
+	return document.querySelector('.archives__object-title').innerHTML;
+	}
+	catch (e) {
+
+		return '';
+	}
+}.bind(this)
+
+this.getImage = function(canvas) {
+
+	if(canvas.items) {
+		return canvas.items
+		.filter(page => page.items != undefined)
+		.flatMap(page => page.items)
+		.filter(anno => anno.body != undefined)
+		.map(anno => anno.body)
+		.map(res => this.getImageUrl(res, this.imageSize))
+		.find(url => url != undefined)
+	} else if(canvas.images && canvas.images.length > 0) {
+		return this.getImageUrl(canvas.images[0].resource, this.imageSize);
+	} else {
+		return undefined;
+	}
+}.bind(this)
+
+this.getImageUrl = function(resource, size) {
+
+	if(size && resource.service && (!Array.isArray(resource.service) || resource.service.length > 0)) {
+		let url = viewerJS.iiif.getId(viewerJS.iiif.getId(resource.id) ? resource.service[0] : resource.service);
+		return url + "/full/" + size + "/0/default." + this.getExtension(resource.format);
+	} else {
+		return viewerJS.iiif.getId(resource);
+	}
+}.bind(this)
+
+this.getExtension = function(format) {
+	if(format && format == "image/png") {
+		return "png";
+	} else {
+		return "jpg";
+	}
+}.bind(this)
+
+this.getLink = function(canvas) {
+	if(this.opts.link) {
+		return this.opts.link(canvas);
+	} else {
+		return this.getHomepage(canvas);
+	}
+}.bind(this)
+
+this.getHomepage = function(canvas) {
+	if(canvas.homepage && canvas.homepage.length > 0) {
+		return canvas.homepage[0].id;
+	} else {
+		return undefined;
+	}
+}.bind(this)
+
+this.handleClickOnImage = function(event) {
+	if(this.opts.actionlistener) {
+		this.opts.actionlistener.next({
+			action: "clickImage",
+			value: event.item.index
+		})
+	}
+
+	event.preventUpdate = true;
+}.bind(this)
+
+this.getPageStatus = function(index) {
+	if(this.opts.statusmap) {
+		return this.opts.statusmap.get(index);
+	}
+}.bind(this)
+
+});
+riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematrix__loader" ref="loader"><img if="{loading}" riot-src="{opts.contextPath}resources/images/infinity_loader.svg" class="img-fluid" alt="Timematrix Loader"></span></div><div class="timematrix__selection"><div id="locateTimematrix"><div class="timematrix__bar"><div class="timematrix__period"><span>{translate(⁗timematrix__timePeriod⁗)}:</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_start\')}" class="timematrix__selectionRangeInput" ref="inputStartYear" riot-value="{this.startYear}" maxlength="4"> &#xA0;<span>-</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_end\')}" class="timematrix__selectionRangeInput" ref="inputEndYear" riot-value="{this.endYear}" maxlength="4"></div><div class="timematrix__hitsForm"><div class="timematrix__hitsInput"><span>{translate(⁗timematrix__maxResults⁗)}: &#xA0;</span><input onchange="{updateHitsPerPage}" type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" riot-value="{this.maxHits}" placeholder="" maxlength="5" aria-label="{translate(\'aria_label__timeline_hits\')}"></div></div></div><div id="slider-range" ref="sliderRange"></div><button type="submit" ref="setTimematrix" class="btn btn--full setTimematrix">{translate(⁗timematrix__calculate⁗)}</button></div></div><div class="timematrix__objects"><label if="{!loading && manifests.length == 0}">{translate(⁗hitsZero⁗)}</label><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img ref="image" riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onload="$(this).parents(\'.timematrix__img\').css(\'background\', \'transparent\')"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
+		this.manifests = [];
+		this.loading = true;
+
+		this.on( 'updated', function() {
+		    if(this.refs.image) {
+		        if(Array.isArray(this.refs.image)) {
+				    this.refs.image.forEach(ele => {
+				        if(!ele.src) {
+				        	viewerJS.thumbnailLoader.load(ele);
+				        }
+				    })
+		        } else {
+		            viewerJS.thumbnailLoader.load(this.refs.image)
+		        }
+		    }
+		});
+
+	    this.on( 'mount', function() {
+
+	        let restoredValues = this.restoreValues();
+	        if(restoredValues) {
+	            this.startYear = restoredValues.startYear;
+		        this.endYear = restoredValues.endYear;
+		        this.maxHits = restoredValues.maxHits;
+	        } else {
+		        this.startYear = this.opts.minYear;
+		        this.endYear = this.opts.maxYear;
+		        this.maxHits = this.opts.maxHits;
+	        }
+
+	        this.updateTimeMatrix = new rxjs.Subject();
+
+	        this.updateTimeMatrix.pipe(
+	                rxjs.operators.map( e => this.getIIIFApiUrl()),
+	                rxjs.operators.switchMap( url => {
+
+	                    this.loading = true;
+	                    this.update();
+	                    return fetch(url);
+	                }),
+	                rxjs.operators.switchMap( result => {
+
+	                    return result.json();
+	                }),
+	                ).subscribe(json => {
+	                    this.manifests = json.orderedItems ? json.orderedItems : [];
+
+	                    this.loading = false;
+	                    this.update();
+	                })
+
+	        this.initSlider( this.opts.slider, this.startYear, this.endYear, this.opts.minYear, this.opts.maxYear );
+	        this.updateTimeMatrix.next();
+	    } );
+
+	    this.getViewerUrl = function(manifest) {
+	        let viewer  = manifest.rendering;
+	        if(Array.isArray(viewer)) {
+	            viewer = viewer.find(r => r.format == "text/html");
+	        }
+	        if(viewer) {
+	            return viewer["@id"];
+	        } else {
+	            return "";
+	        }
+	    }.bind(this)
+
+	    this.getImageUrl = function(manifest) {
+	        if(manifest.thumbnail) {
+	            let url = manifest.thumbnail["@id"];
+	            return url;
+	        }
+	    }.bind(this)
+
+	    this.hasTitle = function(manifest) {
+	        return manifest.label != undefined;
+	    }.bind(this)
+
+	    this.getDisplayTitle = function(manifest) {
+	        return viewerJS.iiif.getValue(manifest.label, this.opts.language, "en");
+	    }.bind(this)
+
+	    this.getIIIFApiUrl = function() {
+	        var apiTarget = this.opts.contextPath;
+	        apiTarget += "api/v1/records/list";
+	        apiTarget += "?start=" + this.startYear;
+	        apiTarget += "&end=" + this.endYear;
+	        apiTarget += "&rows=" + this.maxHits;
+	        apiTarget += "&sort=RANDOM";
+	        if ( this.opts.subtheme ) {
+	            apiTarget += ( "&subtheme=" + this.opts.subtheme );
+	        }
+	        return apiTarget;
+	    }.bind(this)
+
+	    this.getApiUrl = function() {
+
+	        var apiTarget = this.opts.contextPath;
+	        apiTarget += 'rest/records/timematrix/range/';
+	        apiTarget += $( this.opts.startInput ).val();
+	        apiTarget += "/";
+	        apiTarget += $( this.opts.endInput ).val();
+	        apiTarget += '/';
+	        apiTarget += $( this.maxHits ).val();
+	        apiTarget += '/';
+
+	        if ( this.opts.subtheme ) {
+	            apiTarget += ( "?subtheme=" + this.opts.subtheme );
+	        }
+
+	        return apiTarget;
+	    }.bind(this)
+
+	    this.initSlider = function( sliderSelector, startYear, endYear, minYear, maxYear ) {
+	        let $slider = $( this.refs.sliderRange );
+
+	        let rtl = $slider.closest('[dir="rtl"]').length > 0;
+
+	        $slider.slider( {
+	            range: true,
+	            isRTL: rtl,
+	            min: minYear,
+	            max: maxYear,
+	            values: [ startYear, endYear ],
+	            slide: function( event, ui ) {
+	                $( this.refs.inputStartYear ).val( ui.values[ 0 ] ).change();
+	                this.startYear = parseInt( ui.values[ 0 ] );
+	                $( this.refs.inputEndYear ).val( ui.values[ 1 ] ).change();
+	                this.endYear = parseInt( ui.values[ 1 ] );
+	            }.bind( this ),
+	            stop: (event, ui) => {
+	                this.updateTimeMatrix.next();
+                    this.storeValues();
+	            }
+	        } );
+
+	        $slider.find( ".ui-slider-handle" ).on( 'mousedown', function() {
+	            $( '.ui-slider-handle' ).removeClass( 'top' );
+	            $( this ).addClass( 'top' );
+	        } );
+	    }.bind(this)
+
+	    this.translate = function(key) {
+	        return this.opts.msg[key];
+	    }.bind(this)
+	    this.updateHitsPerPage = function(event) {
+	        this.maxHits = event.target.value;
+	        this.storeValues();
+	        this.updateTimeMatrix.next();
+	    }.bind(this)
+
+	    this.restoreValues = function() {
+	        let string = sessionStorage.getItem("viewer_timematrix");
+	        if(string) {
+	            let json = JSON.parse(string);
+	            return json;
+	        } else {
+	            return undefined;
+	        }
+	    }.bind(this)
+
+	    this.storeValues = function() {
+	        let json = {startYear: this.startYear, endYear: this.endYear, maxHits: this.maxHits}
+	        let string = JSON.stringify(json);
+	        sessionStorage.setItem("viewer_timematrix", string);
+	    }.bind(this)
+
+});
+
+
+
+riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showStandardNav}" ref="navigation" class="slider-navigation-wrapper slider-navigation-wrapper-{this.styleName} slider-navigation-wrapper-{this.sliderInstance}"><div ref="navigationLeft" class="swiper-button-prev"></div><div ref="navigationRight" class="swiper-button-next"></div></div><div if="{this.showStandardPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div></div>', '', '', function(opts) {
+
+
+	this.showStandardPaginator = true;
+	this.showStandardNav = true;
+
+    this.on( 'mount', function() {
+    	this.sliderInstance = this.opts.sliderinstanceid;
+
+		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
+
+		this.amendStyle(this.style);
+		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
+
+		this.timeout = this.style.timeout ? this.style.timeout : 100000;
+		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
+		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
+
+		firstSlideMessage = this.opts.firstslidemessage;
+
+    	let pSource;
+    	if(this.opts.sourceelement) {
+    		let sourceElement = document.getElementById(this.opts.sourceelement);
+    		if(sourceElement) {
+    			pSource = Promise.resolve(JSON.parse(sourceElement.textContent));
+
+    		} else {
+    			logger.error("sourceElement was included but no matching dom element found");
+    			return;
+    		}
+    	} else if(this.opts.slides) {
+    		let sourceArray = this.opts.slides.replaceAll("_qm_", "?").split("$")
+    		pSource = Promise.resolve(sourceArray);
+    	}  else {
+    		pSource = fetch(this.opts.source)
+        	.then(result => result.json());
+    	}
+    	rxjs.from(pSource)
+    	.pipe(
+    		rxjs.operators.flatMap(source => source),
+    		rxjs.operators.flatMap(uri => fetch(uri), undefined, 5),
+    		rxjs.operators.filter(result => result.status == 200),
+    		rxjs.operators.takeUntil(rxjs.timer(this.timeout)),
+    		rxjs.operators.flatMap(result => result.json()),
+    		rxjs.operators.map(element => this.createSlide(element)),
+    		rxjs.operators.filter(element => element != undefined),
+    		rxjs.operators.take(this.maxSlides),
+    		rxjs.operators.reduce((res, item) => res.concat(item), []),
+    		rxjs.operators.map(array => array.sort( (s1,s2) => s1.order-s2.order ))
+    	)
+    	.subscribe(slides => this.setSlides(slides))
+    });
+
+    this.on( 'updated', function() {
+
+    	if(this.slides && this.slides.length > 0) {
+    		if(this.slider) {
+    			this.slider.destroy();
+
+    		}
+			this.initSlideTags(this.slides);
+    		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
+    		window.viewerJS.slider.sliders.push(this.swiper);
+
+    	}
+
+    	if (this.style.onUpdate) {
+    		this.style.onUpdate();
+    	}
+
+    });
+
+    this.setSlides = function(slides) {
+
+    	this.slides = slides;
+    	this.update();
+    }.bind(this)
+
+    let imagealtmsgkey = this.opts.imagealtmsgkey;
+
+    this.initSlideTags = function(slides) {
+    	slides.forEach( (slide, index) => {
+    		let tagElement = this.refs["slide_" + index];
+
+    		riot.mount(tagElement, "slide_" + this.getLayout(),  {
+    			stylename: this.styleName,
+   				link: this.getLink(slide),
+   				link_target: this.linkTarget,
+   				image: this.getImage(slide),
+   				label: this.translate(slide.label),
+   				description: this.translate(slide.description),
+   				alttext: this.translate(slide.altText),
+   				altimagemsgkey: this.translate(imagealtmsgkey),
+    		});
+    	});
+    }.bind(this)
+
+	this.getElements = function(source) {
+		if(viewerJS.iiif.isCollection(source)) {
+			return source.members.filter(member => viewerJS.iiif.isCollection(member));
+		} else {
+			console.error("Cannot get slides from ", source);
+		}
+	}.bind(this)
+
+    this.createSlide = function(element) {
+
+    	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
+    		let slide = {
+    				label : element.label,
+    				description : element.description,
+    				image : element.thumbnail,
+    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element)),
+    				order : element.order
+    		}
+    		return slide;
+    	} else {
+    		return element;
+    	}
+    }.bind(this)
+
+    this.translate = function(text) {
+    	let translation =  viewerJS.iiif.getValue(text, this.opts.language, this.opts.defaultlanguage);
+    	if(!translation) {
+    			translation = viewerJS.getMetadataValue(text, this.opts.language, this.opts.defaultlanguage);
+    	}
+    	return translation;
+    }.bind(this)
+
+    this.getImage = function(slide) {
+    	let image = slide.image;
+    	if(image == undefined) {
+    		return undefined;
+    	} else if(viewerJS.isString(image)) {
+    		return image;
+    	} else if(image.service && (this.style.imageWidth || this.style.imageHeight)) {
+    		let url = viewerJS.iiif.getId(image.service) + "/full/" + this.getIIIFSize(this.style.imageWidth, this.style.imageHeight) + "/0/default.jpg"
+    		return url;
+    	} else if(image["@id"]) {
+    		return image["@id"]
+    	} else {
+    		return image.id;
+    	}
+    }.bind(this)
+
+    this.getIIIFSize = function(width, height) {
+    	if(width && height) {
+    		return "!" + width + "," + height;
+    	} else if(width) {
+    		return width + ",";
+    	} else if(height) {
+    		return "," + height;
+    	} else {
+    		return "max";
+    	}
+    }.bind(this)
+
+    this.getLink = function(slide) {
+    	if(this.linkTarget == 'none') {
+    		return "";
+    	} else {
+    		return slide.link;
+    	}
+    }.bind(this)
+
+    this.amendStyle = function(styleConfig) {
+    	let swiperConfig = styleConfig.swiperConfig;
+    	if(swiperConfig.pagination && !swiperConfig.pagination.el)  {
+
+    		if (this.opts.paginator != 'none') {
+    			swiperConfig.pagination.el = this.opts.paginator;
+
+        		this.showStandardPaginator = false;
+    		} else {
+        		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
+        		this.showStandardPaginator = true;
+
+    		}
+
+    	} else {
+    		this.showStandardPaginator = false;
+
+    	}
+
+	  	swiperConfig.a11y = {
+	  		prevSlideMessage: this.opts.prevslideMessage,
+			nextSlideMessage: this.opts.nextslideMessage,
+	  		lastSlideMessage: this.opts.firstslidemessage,
+			firstSlideMessage: this.opts.lastslidemessage,
+			paginationBulletMessage: this.opts.paginationbulletmessage + ' \{\{index\}\}',
+		}
+
+    	if(swiperConfig.navigation && swiperConfig.navigation.prevEl == '.swiper-button-prev' && swiperConfig.navigation.nextEl == '.swiper-button-next')  {
+
+        		this.showStandardNav = true;
+    	} else {
+    		this.showStandardNav = false;
+
+    	}
+
+	}.bind(this)
+
+    this.getLayout = function() {
+    	let layout = this.style.layout ? this.style.layout : 'default';
+
+    	return layout;
+    }.bind(this)
+
+});
+riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"><p class="swiper-description slider-{this.opts.stylename}__description" ref="description"></p></a>', '', '', function(opts) {
+		this.on("mount", () => {
+			if(this.refs.description) {
+				   this.refs.description.innerHTML = this.opts.description;
+			}
+		});
+});
+
+riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
+});
+riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
 });
 riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area -small"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div if="{!this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><span class="crowdsourcing-annotations__gnd-text">https://d-nb.info/gnd/</span><input class="crowdsourcing-annotations__gnd-id form-control" onchange="{setIdFromEvent}" riot-value="{question.authorityData.baseUri && getIdAsNumber(anno)}"></input></div><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><input class="form-control pl-1" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" riot-value="{question.authorityData.baseUri}{getIdAsNumber(anno)}"></input><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__jump-to-gnd"><a target="_blank" href="{question.authorityData.baseUri}{getIdAsNumber(anno)}">{Crowdsourcing.translate(⁗cms_menu_create_item_new_tab⁗)}</a></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
 
@@ -2813,375 +4839,159 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 });
 
 
+riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}" initialview="{this.opts.geomap.initialView}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource><datasetresource if="{isDatasetResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></datasetResource>', '', '', function(opts) {
 
-riot.tag2('external-resource-download', '<div class="download-external-resource__list"><div class="download-external-resource__item" each="{url in urls}"><div class="download-external-resource__error_wrapper {isError(url) ? \'-active\' : \'\'}"><i class="fa fa-exclamation-triangle"></i><label class="download-external-resource__error">{getErrorMessage(url)}</label></div><div class="download-external-resource__inner-wrapper {isFinished(url) ? \'\' : \'-active\'}"><span class="download-external-resource__label">{url}</span><div class="download-external-resource__button-wrapper"><button class="download-external-resource__order download-external-resource__button btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? \'\' : \'-active\'}" onclick="{startDownloadTask}">{msg.downloadButton}</button></div><div class="download-external-resource__waiting_animation {isWaiting(url) ? \'-active\' : \'\'}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div class="download-external-resource__loading_animation {isDownloading(url) ? \'-active\' : \'\'}"><progress riot-value="{getDownloadProgress(url)}" max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress></div></div><div class="download-external-resource__results {isFinished(url) ? \'-active\' : \'\'}"><virtual each="{object in getFiles(url)}"><div class="born-digital__items-wrapper"><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filename}</span></div><div class="born-digital__item"><span>{object.path}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filedescription}</span></div><div class="born-digital__item"><span>{object.description}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filesize}</span></div><div class="born-digital__item"><span>{object.size}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__fileformat}</span></div><div class="born-digital__item"><span>{msg[object.mimeType]}</span></div><div class="born-digital__item-download-last"><a class="born-digital__item__download btn btn--full" href="{object.url}" target="_blank">{msg.action__born_digital__download}</a></div></div></virtual></div></div></div>', '', '', function(opts) {
-      this.urls = [];
-      this.downloads = new Map();
-      this.updateListeners = new Map();
-      this.updateDelay = 1000;
-      this.ws = null;
-      this.contextPath = "";
-      this.preloader = "/resources/images/ajax_preloader.gif";
-      this.msg = {
-    		  action__external_files__order_download: "action__external_files__order_download",
-    		  action__external_files__cancel_download: "action__external_files__cancel_download",
-    		  action__external_files__download_in_queue: "action__external_files__download_in_queue",
-    		  label__born_digital__filename: "label__born_digital__filename",
-    		  label__born_digital__filedescription: "label__born_digital__filedescription",
-    		  label__born_digital__filesize: "label__born_digital__filesize",
-    		  label__born_digital__fileformat: "label__born_digital__fileformat",
-    		  action__born_digital__download: "label__born_digital__fileformat",
-    		  label__born_digital__downloading: "label__born_digital__downloading",
-      }
+this.on("mount", () => {
+    if(this.opts.contentid) {
+        let content = document.getElementById(this.opts.contentid).innerText;
+        try {
+	        this.annotationBody = JSON.parse(content);
+	        this.type = this.annotationBody.type;
+	        if(!this.type) {
+	            this.type = this.anotationBody["@type"];
+	        }
+	        this.format = this.annotationBody.format;
+    	} catch(e) {
+    	    this.annotationBody = {value: content};
+    	    this.type = "TextualResource";
+    	    this.format = "text/plain";
+   		}
+        this.update();
+    }
+})
 
-      this.on("mount", () => {
-    	  console.log("mounting external resource download", this, this.opts);
-      	this.urls = this.opts.urls;
-      	this.pi = this.opts.pi;
-      	this.msg = this.opts.msg;
-      	this.contextPath = this.opts.contextPath ? this.opts.contextPath : this.contextPath;
-      	this.preloader = this.contextPath + this.preloader;
-      	this.msg = $.extend(true, {}, this.msg, this.opts.msg ? this.opts.msg : {});
-      	this.ws = this.initWebSocket();
-      	this.ws.onOpen.subscribe(() => {
-      		rxjs.from(this.urls).pipe(
-      			rxjs.operators.flatMap(url => this.sendMessage(this.createSocketMessage(this.pi, url, "status")))
-      		).subscribe(() => {});
-      	})
-      	console.log("mount download external resources for urls ", this.urls);
-      	this.update();
-      });
+this.isPlaintext = function() {
+    if(this.type == "TextualBody" || this.type == "TextualResource") {
+        return !this.format || this.format == "text/plain";
+    }
+    return false;
+}.bind(this)
 
-      this.on("unmount", () => {
-    	  if (this.ws && this.ws.isOpen()) {
-              this.ws.close();
-          }
-    	  this.updateListeners.forEach(value => value.cancel());
-      });
+this.isHtml = function() {
+    if(this.type == "TextualBody" || this.type == "TextualResource") {
+        return this.format == "text/html";
+    }
+    return false;
+}.bind(this)
 
-      this.initWebSocket = function() {
+this.isGeoJson = function() {
+    return this.type == "Feature";
+}.bind(this)
 
-        const socket = new viewerJS.WebSocket(window.location.host, this.contextPath, viewerJS.WebSocket.PATH_DOWNLOAD_TASK);
-        console.log("created web socket ", socket.socket.url);
-        socket.onMessage.subscribe( (event) => {
-          this.handleUpdateMessage(event);
-          this.update();
-        });
-        return socket;
-      }.bind(this)
+this.isAuthorityResource = function() {
+    return this.type == "AuthorityResource";
+}.bind(this)
 
-      this.sendMessage = function(message) {
-
-    	  if(typeof message != "string") {
-    		message = JSON.stringify(message);
-    	  }
-    	  this.ws.sendMessage(message);
-    	  return new Promise((resolve, reject) => {
-    		 rxjs.merge(this.ws.onMessage, this.ws.onError).pipe(rxjs.operators.first()).subscribe(e => resolve(e));
-    	  });
-      }.bind(this)
-
-      this.startDownloadTask = function(e) {
-
-    	const urlToDownload = e.item.url;
-    	if(urlToDownload) {
-    		if(this.updateListeners.has(urlToDownload)) {
-    			this.updateListeners.get(urlToDownload).cancel();
-    		}
-	      	this.sendMessage({pi: this.pi, url: urlToDownload, action: 'startdownload'})
-	        const listener = viewerJS.helper.repeatPromise(() => this.sendMessage(this.createSocketMessage(this.pi, urlToDownload, "update")), this.updateDelay);
-	        this.updateListeners.set(urlToDownload, listener);
-	        listener.then(() => {});
-    	} else {
-    		console.error("No url found to download");
-    	}
-      }.bind(this)
-
-      this.handleUpdateMessage = function(event) {
-    	  let data = this.parseSocketMessage(event.data);
-          if(data == null) {
-        	  this.handleError("Not a valid message object: " + event.data);
-          } else if(data.pi == this.pi && data.url && data.status) {
-
-        	  switch(data.status) {
-        	  case "waiting":
-        	  case "processing":
-	        	  this.downloads.set(data.url, data);
-	        	  if(!this.updateListeners.has(data.url)) {
-
-	        		const listener = viewerJS.helper.repeatPromise(() => this.sendMessage(this.createSocketMessage(this.pi, data.url, "update")), this.updateDelay);
-			        this.updateListeners.set(data.url, listener);
-			        listener.then(() => {});
-
-	        	  }
-        		  break;
-        	  case "complete":
-        		  if(data.files && data.files.length > 0) {
-        			  data = $.extend(true, {}, this.downloads.get(data.url), data);
-    	        	  console.log("download completed", data);
-    	        	  this.downloads.set(data.url, data);
-    	        	  this.cancelListener(data.url);
-        		  } else {
-    	        	  this.downloads.set(data.url, data);
-    		          this.sendMessage(this.createSocketMessage(this.pi, data.url, 'listfiles'));
-        		  }
-        		  break;
-        	  case "error":
-        		  console.log("error in ", data);
-        		  this.downloads.set(data.url, data);
-        		  this.cancelListener(data.url);
-          		  break;
-        	  case "canceled":
-        		  if(this.downloads.has(data.url)) {
-	        		  this.downloads.delete(data.url);
-        		  }
-        		  this.cancelListener(data.url);
-        		  break;
-        	  case "dormant":
-        	  }
-
-          } else {
-        	  this.handleError("Wrong or insufficient data in message object: " + event.data);
-        	  this.updateListeners.forEach(value => value.cancel());
-        	  this.updateListeners = new Map();
-          }
-      }.bind(this)
-
-      this.cancelListener = function(url) {
-    	  if(this.updateListeners.has(url)) {
-      	  	this.updateListeners.get(url).cancel();
-	  		this.updateListeners.delete(url);
-      	  }
-      }.bind(this)
-
-      this.handleError = function(message) {
-    	  alert(message);
-      }.bind(this)
-
-      this.isRequested = function(url) {
-    	  return this.downloads.has(url) && this.downloads.get(url).status !== 'dormant';
-      }.bind(this)
-
-      this.isDownloading = function(url) {
-    	return this.downloads.get(url)?.status == 'processing';
-      }.bind(this)
-
-      this.isWaiting = function(url) {
-    	  return this.downloads.get(url)?.status == 'waiting';
-      }.bind(this)
-
-      this.isFinished = function(url) {
-    	  return this.downloads.get(url)?.status == 'complete';
-      }.bind(this)
-
-      this.getDownloadProgress = function(url) {
-   	  	if(this.getDownloadSize(url) <= 0 || isNaN(this.getDownloadSize(url))) {
-   	  		return undefined;
-   	  	}
-    	return this.downloads.get(url)?.progress;
-      }.bind(this)
-
-      this.getDownloadProgressLabel = function(url) {
-    	  let fraction = this.getDownloadProgress(url)/this.getDownloadSize(url);
-    	  if(isNaN(fraction) || fraction < 0) {
-    		  console.log("title: ", this.msg.label__born_digital__downloading)
-    		  return this.msg.label__born_digital__downloading;
-    	  } else {
-    		  return this.msg.label__born_digital__downloading + ": " + (fraction * 100) + "%";
-    	  }
-      }.bind(this)
-
-      this.getDownloadSize = function(url) {
-    	  return this.downloads.get(url)?.resourceSize;
-      }.bind(this)
-
-      this.getFiles = function(url) {
-    	  console.log("get files ", url, this.downloads.get(url));
-    	  return this.downloads.get(url)?.files;
-      }.bind(this)
-
-      this.isError = function(url) {
-    	  return this.downloads.get(url)?.status == "error";
-      }.bind(this)
-
-      this.getErrorMessage = function(url) {
-    	  return this.downloads.get(url)?.errorMessage;
-      }.bind(this)
-
-      this.cancelDownload = function(e) {
-    	  const url = e.item.url;
-    	  if(url && this.downloads.has(url)) {
-	    	  this.sendMessage(this.createSocketMessage(this.pi, url, 'canceldownload'));
-	    	  this.downloads.delete(url);
-	    	  if(this.updateListeners.has(url)) {
-	  			this.updateListeners.get(url).cancel();
-	  			this.updateListeners.delete(url);
-	  		  }
-
-    	  }
-    	  this.update();
-      }.bind(this)
-
-      this.parseSocketMessage = function(jsonString) {
-    	  try {
-    	        const json = JSON.parse(jsonString);
-    	        if(!viewerJS.jsonValidator.validate(json)) {
-    	        	throw new Error("The json object does not conform to the json signature " + json.jsonSignature);
-    	        } else {
-    	        	return json;
-    	        }
-    	    } catch (error) {
-    	        console.error('Error parsing socket message string as JSON:', jsonString, error.message);
-    	        return null;
-    	    }
-      }.bind(this)
-
-      this.createSocketMessage = function(pi, url, action) {
-    	  if(this.downloads.has(url)) {
-    		  let oldMessage = this.downloads.get(url);
-    		  let newMessage = $.extend(true, {}, oldMessage, {pi: pi, url: url, action: action});
-
-    		  return newMessage;
-    	  } else {
-
-    		  return {
-    		  	  pi: pi,
-	    		  url: url,
-	    		  action: action,
-	    		  messageQueueId: undefined,
-	    		  progress: 0,
-	    		  resourceSize: 1,
-	    		  status: undefined,
-	    		  files: []
-	    	  }
-    	  }
-      }.bind(this)
+this.isDatasetResource = function() {
+    return this.type == "Dataset";
+}.bind(this)
 
 });
 
-riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
-    	this.preloader = false;
 
-    	this.on('mount', function() {
-    		this.createObserver();
+riot.tag2('authorityresource', '<div class="annotation__body__authority"><div if="{normdataList.length == 0}">{authorityId}</div><dl class="annotation__body__authority__normdata_list" each="{normdata in normdataList}"><dt class="normdata_list__label">{normdata.property}: </dt><dd class="normdata_list__value">{normdata.value}</dd></dl></div>', '', '', function(opts) {
+    this.normdataList = [];
 
-    		this.refs.image.onload = function() {
-        		this.refs.image.classList.add( 'in' );
-				this.opts.observable.trigger( 'imageLoaded', this.opts.thumbnail );
-        		this.preloader = false;
-        		this.update();
-    		}.bind(this);
-    	}.bind(this));
+	this.on("mount", () => {
+		this.authorityId = this.opts.resource.id;
+	    this.url = this.opts.resturl + "authority/resolver?id=" + this.unicodeEscapeUri(this.authorityId) + "&template=ANNOTATION&lang=" + this.opts.currentlang
+		this.update();
+	    fetch(this.url)
+	    .then(response => {
+	        if(!response.ok) {
+	            throw "Error: " + response.status;
+	        } else {
+	            return response;
+	        }
+	    })
+	    .then(response => response.json())
+	    .then(response => {
+	        this.normdataList = this.parseResponse(response);
+	    })
+	    .catch(error => {
+	        console.error("failed to load ", this.url, ": " + error);
+	    })
+	    .then(() => this.update());
+	})
 
-    	this.createObserver = function() {
-    		var observer;
-    		var options = {
-    			root: document.querySelector(this.opts.root),
-    		    rootMargin: "1000px 0px 1000px 0px",
-    		    threshold: 0.8
-    		};
+	this.unicodeEscapeUri = function(uri) {
+    	return uri.replace(/\//g, 'U002F').replace('/\\/g','U005C').replace('/?/g','U003F').replace('/%/g','U0025');
+	}.bind(this)
 
-    		observer = new IntersectionObserver(this.loadImages, options);
-    		observer.observe(this.refs.image);
-    	}.bind(this)
+	this.parseResponse = function(jsonResponse) {
+	    let normdataList = [];
+	    $.each( jsonResponse, (i, object ) => {
+            $.each( object, ( property, value ) => {
+                let stringValue = value.map(v => v.text).join("; ");
+                normdataList.push({property: property, value:stringValue});
+            });
+	    });
+	    return normdataList;
+	}.bind(this)
 
-    	this.loadImages = function(entries, observer) {
-    		entries.forEach( entry => {
-    			if (entry.isIntersecting) {
-    				this.preloader = true;
-    				this.refs.image.src = this.opts.imgsrc;
-    				this.update();
-    			}
-    		} );
-    	}.bind(this)
 });
-riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumbnailWrapper"><div each="{thumbnail in thumbnails}" class="fullscreen__view-image-thumb"><figure class="fullscreen__view-image-thumb-image"><a href="{getViewerPageUrl(thumbnail)[\'@id\']}"><fsthumbnailimage thumbnail="{thumbnail}" observable="{observable}" root=".fullscreen__view-image-thumbs-wrapper" imgsrc="{thumbnail.thumbnail[\'@id\']}"></fsThumbnailImage></a><figcaption><div class="fullscreen__view-image-thumb-image-order {thumbnail.loaded ? \'in\' : \'\'}">{thumbnail.label}</div></figcaption></figure></div></div>', '', '', function(opts) {
-        function rmObservable() {
-    		riot.observable( this );
-    	}
+riot.tag2('datasetresource', '<div class="annotation__body__dataset"><dl class="annotation__body__dataset__data_list" each="{field in dataFields}"><dt class="data_list__label">{getName(field)}: </dt><dd class="data_list__value">{getValue(field)}</dd></dl></div>', '', '', function(opts) {
+    this.dataSet = {};
+    this.dataFields = [];
 
-    	this.observable = new rmObservable();
-        this.thumbnails = [];
-    	this.wrapper = document.getElementsByClassName( 'fullscreen__view-image-thumbs-wrapper' );
-    	this.controls = document.getElementsByClassName( 'image-controls' );
-    	this.image = document.getElementById( 'imageContainer' );
-    	this.sidebarScrollPreview = document.getElementById( 'sidebarScrollPreview' );
-    	this.object = document.getElementById( 'objectContainer' );
-    	this.viewportWidth;
-    	this.sidebarWidth;
-    	this.thumbsWidth;
+	this.on("mount", () => {
+		this.dataSet = this.opts.resource.data;
+		this.dataFields = Object.keys(this.dataSet);
+		if(viewerJS.translator) {
+		    viewerJS.translator.addTranslations(this.dataFields)
+			.then(() => this.update());
+		} else {
+			viewerJS.initialized.subscribe(() => {
+		        viewerJS.translator.addTranslations(this.dataFields)
+				.then(() => this.update());
+			});
+		}
+	})
 
-    	this.on( 'mount', function() {
-        	$( '[data-show="thumbs"]' ).on( 'click', function(e) {
-        		e.currentTarget.classList.toggle('in');
+	this.getValue = function(field) {
+	    let value = this.dataSet[field];
+	    if(!value) {
+	        return "";
+	    } else if(Array.isArray(value)) {
+	        return value.join("; ")
+	    } else {
+	        return value;
+	    }
+	}.bind(this)
 
-        		if ( e.currentTarget.classList.contains( 'in' ) ) {
-            		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.hideThumbs ).tooltip( '_fixTitle' ).tooltip( 'show' );
-        		}
-        		else {
-            		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.showThumbs ).tooltip( '_fixTitle' ).tooltip( 'show' );
-        		}
+	this.getName = function(field) {
+	    return viewerJS.translator.translate(field);
+	}.bind(this)
 
-        		for (let control of this.controls) {
-        		    control.classList.toggle( 'faded' );
-        		};
+});
 
-            	this.viewportWidth = document.getElementById( 'fullscreen' ).offsetWidth;
-            	this.sidebarWidth = document.getElementById( 'fullscreenViewSidebar' ).offsetWidth;
-            	if ( sessionStorage.getItem( 'fsSidebarStatus' ) === 'false' ) {
-                	this.thumbsWidth = this.viewportWidth;
-            	}
-            	else {
-                	this.thumbsWidth = this.viewportWidth - this.sidebarWidth;
-            	}
+riot.tag2('geomapresource', '<div id="geomap_{opts.annotationid}" class="annotation__body__geomap geomap"></div>', '', '', function(opts) {
 
-            	let visibility = $( this.image ).css('visibility');
-            	if(visibility == 'hidden') {
-            		$( this.image ).css('visibility','visible');
-            		$( this.sidebarScrollPreview ).show();
+this.on("mount", () => {
+	this.feature = this.opts.resource;
+	this.config = {
+	        popover: undefined,
+	        mapId: "geomap_" + this.opts.annotationid,
+	        fixed: true,
+	        clusterMarkers: false,
+	        initialView : this.opts.initialview,
+	    };
+    this.geoMap = new viewerJS.GeoMap(this.config);
+    let view = this.feature.view;
+    let features = [this.feature];
+    this.geoMap.init(view, features);
 
-            	} else {
-            		$( this.image ).css('visibility','hidden');
-            		$( this.sidebarScrollPreview ).hide();
-            	}
+});
 
-            	let objVisibility = $( this.object ).css('visibility');
-            	if(objVisibility == 'hidden') {
-            		$( this.object ).css('visibility','visible');
-            	} else {
-            		$( this.object ).css('visibility','hidden');
-            	}
+});
+riot.tag2('htmltextresource', '<div ref="container" class="annotation__body__htmltext"></div>', '', '', function(opts) {
 
-        		$( this.wrapper ).outerWidth( this.thumbsWidth ).fadeToggle( 'fast' );
+	this.on("mount", () => {
+	    this.refs.container.innerHTML = this.opts.resource.value;
+	})
 
-            	if ( this.thumbnails.length == 0 ) {
-
-            		$.ajax( {
-                        url: opts.thumbnailUrl,
-                        type: "GET",
-                        datatype: "JSON"
-                    } ).then( function( data ) {
-                    	this.thumbnails = data.canvases;
-                    	this.update();
-                    }.bind( this ) );
-    			}
-        	}.bind(this));
-    	}.bind( this ) );
-
-    	this.observable.on( 'imageLoaded', function( thumbnail ) {
-    		thumbnail.loaded = true;
-    		this.update();
-    	}.bind( this ) );
-
-    	this.getViewerPageUrl = function(thumbnail) {
-    	    if(thumbnail.rendering) {
-    	        if(Array.isArray(thumbnail.rendering)) {
-    	            return thumbnail.rendering.find(render => "text/html" == render.format)
-    	        } else {
-    	            return thumbnail.rendering;
-    	        }
-    	    }
-    	}.bind(this)
+});
+riot.tag2('plaintextresource', '<div class="annotation__body__plaintext">{this.opts.resource.value}</div>', '', '', function(opts) {
 });
 riot.tag2('featuresetfilter', '<ul if="{filters.length > 0}"><li each="{filter in filters}" class="{filter.styleClass}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><div each="{option, index in filter.options}"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></div></li></ul>', '', '', function(opts) {
 
@@ -3423,1803 +5233,3 @@ this.show = function() {
 }.bind(this)
 
 });
-riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
-
-this.on("mount", function() {
-
-	this.geoMap = this.initMap();
-	this.drawLayer = this.initDrawLayer(this.geoMap);
-    if(this.opts.area) {
-    	this.initArea(this.drawLayer, this.opts.area);
-    }
-	if(!this.opts.inactive) {
-	    this.initGeocoder(this.geoMap);
-	    this.drawnItems = this.initMapDraw(this.geoMap, this.drawLayer);
-	}
- 	this.hitsLayer = this.initHitsLayer(this.geoMap);
-	if(this.opts.toggleFeatures) {
-		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
-	}
-
-});
-
-this.initMap = function() {
-
-    let geoMap = new viewerJS.GeoMap({
-        element : this.refs.map,
-        language: viewerJS.translator.language,
-        fixed: this.opts.inactive ? true : false,
-        layer: this.opts.hitsLayer
-    })
-    let initialView = {
-        zoom: 5,
-        center: [11.073397, 49.451993]
-    };
-    geoMap.init(initialView, this.opts.features);
-    return geoMap;
-}.bind(this)
-
-this.initDrawLayer = function(map) {
-    let drawLayer = new viewerJS.GeoMap.featureGroup(map, {
-   	    style : this.opts.areaLayer.style
-    });
-	return drawLayer;
-}.bind(this)
-
-this.initGeocoder = function(map) {
-	let geocoderConfig = {};
-	if(this.opts.search_placeholder) {
-		geocoderConfig.placeholder = this.opts.search_placeholder
-	}
-	if(this.opts.search_enabled) {
-   		map.initGeocoder(this.refs.geocoder, geocoderConfig);
-	}
-}.bind(this)
-
-this.initToggleLayer = function(geoMap, layer, button) {
-	let ToggleFeaturesControl = L.Control.extend({
-	    options: {
-	        position: "topleft"
-	    },
-	    onAdd: function(map) {
-	        L.DomEvent.on(button, "dblclick" , (e) => {
-	            L.DomEvent.stopPropagation(e);
-	            e.stopPropagation();
-	            return false;
-	        });
-	        L.DomEvent.on(button, "click" , (e) => {
-	            layer.setVisible(!layer.isVisible());
-	            L.DomEvent.stopPropagation(e);
-	            e.stopPropagation();
-	            return false;
-	        });
-	        return button;
-	    }.bind(this),
-	    onRemove: function(map) {
-
-	    }
-	})
-	let control = new ToggleFeaturesControl();
-	geoMap.map.addControl(control);
-}.bind(this)
-
-this.initArea = function(layer, shape) {
-	if(viewerJS.isString(shape)) {
-        try {
-        	shape = JSON.parse(shape);
-        } catch(e) {
-            console.error("Unable to draw geomap area ", this.opts.area, ": cannot parse json");
-        }
-    }
-
-    let feature = undefined;
-    switch(shape.type) {
-        case "polygon":
-            feature = layer.drawPolygon(shape.vertices, true);
-            break;
-        case "circle":
-            feature = layer.drawCircle(shape.center, shape.radius, true);
-            break;
-        case "rectangle":
-            feature = layer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
-            break;
-    }
-    this.onLayerDrawn({layer: feature});
-}.bind(this)
-
-this.initMapDraw = function(geomap, drawLayer) {
-
-    let drawnItems = new L.FeatureGroup();
-
-    geomap.map.addLayer(drawnItems);
-    let drawControl = new L.Control.Draw({
-        edit: {
-            featureGroup: drawnItems,
-            edit: false,
-            remove: false
-        },
-        draw: {
-            polyline: false,
-            marker: false,
-            circlemarker: false
-        }
-    });
-    drawControl.setDrawingOptions({
-        rectangle: {
-        	shapeOptions: drawLayer.config.style
-        },
-        circle: {
-        	shapeOptions: drawLayer.config.style
-        },
-        polygon: {
-        	shapeOptions: drawLayer.config.style
-        }
-    });
-
-    geomap.map.addControl(drawControl);
-
-    let edited = new rxjs.Subject();
-    edited.pipe(rxjs.operators.debounceTime(300)).subscribe(e => this.onLayerEdited(e));
-    geomap.map.on(L.Draw.Event.EDITMOVE, e => edited.next(e));
-    geomap.map.on(L.Draw.Event.EDITRESIZE, e => edited.next(e));
-    geomap.map.on(L.Draw.Event.EDITVERTEX, e => edited.next(e));
-
-    let deleted = new rxjs.Subject();
-    deleted.subscribe(e => this.onLayerDeleted(e));
-    geomap.map.on(L.Draw.Event.DELETED, e => deleted.next(e));
-    geomap.map.on(L.Draw.Event.DRAWSTART, e => deleted.next(e));
-
-    geomap.map.on(L.Draw.Event.CREATED, (e) => this.onLayerDrawn(e));
-
-    if(this.opts.reset_button) {
-        $(this.opts.reset_button).on("click",  e => deleted.next(e));
-    }
-    return drawnItems;
-}.bind(this)
-
-this.onLayerDeleted = function(e) {
-    if(this.searchLayer) {
-        if(this.drawnItems) {
-        	this.drawnItems.removeLayer(this.searchLayer);
-        }
-        this.searchLayer = undefined;
-    }
-    this.notifyFeatureSet(undefined);
-}.bind(this)
-
-this.onLayerEdited = function(e) {
-
-    if(e.layer) {
-    	this.searchLayer = e.layer;
-    } else if(e.poly) {
-        this.searchLayer = e.poly;
-    } else {
-        logger.warn("Called layer edited event with no given layer ", e);
-        return;
-    }
-	this.setSearchArea(this.searchLayer);
-}.bind(this)
-
-this.onLayerDrawn = function(e) {
-    if(e.layer) {
-	    this.searchLayer = e.layer;
-		if(this.drawnItems) {
-	    	this.drawnItems.addLayer(e.layer);
-		}
-		this.searchLayer.editing.enable();
-		this.setSearchArea(this.searchLayer);
-    }
-}.bind(this)
-
-this.setSearchArea = function(layer) {
-
-    let type = this.getType(layer);
-    switch(type) {
-        case "polygon":
-        case "rectangle":
-            let origLayer = L.polygon(layer.getLatLngs());
-            let wrappedCenter = this.geoMap.map.wrapLatLng(layer.getCenter());
-            let distance = layer.getCenter().lng - wrappedCenter.lng;
-
-	        let vertices = [...layer.getLatLngs()[0]].map(p => L.latLng(p.lat, p.lng-distance)).map(p => this.geoMap.normalizePoint(p));
-
-	        if(vertices[0] != vertices[vertices.length-1]) {
-	        	vertices.push(vertices[0]);
-	        }
-
-	        this.notifyFeatureSet({
-	           type : type,
-	           vertices: vertices.map(p => [p.lat, p.lng])
-	        })
-	        break;
-        case "circle":
-            let bounds = this.geoMap.map.wrapLatLngBounds(layer.getBounds());
-            let center = this.geoMap.map.wrapLatLng(layer.getLatLng());
-            let circumgon = this.createCircumgon(bounds.getCenter(), bounds.getSouthWest(), bounds.getSouthWest(), 16);
-            let diameterM = bounds.getSouthWest().distanceTo(bounds.getNorthWest());
-            this.notifyFeatureSet({
-                type : "circle",
-                vertices: circumgon.map(p => this.geoMap.normalizePoint(p)).map(p => [p.lat, p.lng]),
-                center: center,
-            	radius: layer.getRadius()
-            })
-            break;
-    }
-}.bind(this)
-
-this.createCircumgon = function(center, sw, ne, numVertices) {
-
-    let lSW = this.geoMap.map.latLngToLayerPoint(sw);
-    let lNE = this.geoMap.map.latLngToLayerPoint(ne);
-    let lCenter = this.geoMap.map.latLngToLayerPoint(center);
-
-    let radius = Math.abs(lCenter.x - lSW.x);
-
-    let points = [];
-    for(let i = 0; i < numVertices; i++) {
-        let x = lCenter.x + radius *  Math.cos(2*Math.PI*i/numVertices);
-        let y = lCenter.y + radius *  Math.sin(2*Math.PI*i/numVertices);
-        points.push([x,y]);
-    }
-    points.push(points[0]);
-    let geoPoints = points.map(p => this.geoMap.map.layerPointToLatLng(p));
-    return geoPoints;
-}.bind(this)
-
-this.notifyFeatureSet = function(feature) {
-
-    if(this.opts.onFeatureSelect) {
-        this.opts.onFeatureSelect(feature);
-    }
-
-}.bind(this)
-
-this.buildSearchString = function(vertices) {
-    let string = "WKT_COORDS:\"IsWithin(POLYGON((";
-    string += vertices.map(v => v[1] + " " + v[0]).join(", ");
-    string += "))) distErrPct=0\"";
-    return string;
-}.bind(this)
-
-this.getType = function(layer) {
-    if(layer.getRadius) {
-        return "circle";
-    } else if(layer.setBounds) {
-        return "rectangle";
-    } else if(layer.getLatLngs) {
-        return "polygon"
-    } else {
-        throw "Unknown layer type: " + layer;
-    }
-}.bind(this)
-
-this.initHitsLayer = function(map) {
-    this.opts.hitsLayer.language = viewerJS.translator.language;
-	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer);
-	map.layers.push(hitsLayer);
-	hitsLayer.init(this.opts.features, false);
-	return hitsLayer;
-}.bind(this)
-
-this.initHeatmap = function(hitsLayer) {
-	let heatmapQuery = this.opts.hitsLayer.heatmap.mainQuery;
-	let heatmapFacetQuery = this.opts.hitsLayer.heatmap.facetQuery;
-	let heatmap = L.solrHeatmap(this.opts.hitsLayer.heatmap.heatmapUrl, this.opts.hitsLayer.heatmap.featureUrl, hitsLayer, {
-		field: "WKT_COORDS",
-		type: "clusters",
-		filterQuery: heatmapQuery,
-		facetQuery: heatmapFacetQuery,
-		labelField: this.opts.hitsLayer.heatmap.labelField,
-		queryAdapter: "goobiViewer"
-	});
-	heatmap.addTo(this.geoMap.map);
-	return heatmap;
-}.bind(this)
-
-});
-riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="imagefilters__filter" each="{filter in filters}"><span class="imagefilters__label {filter.config.slider ? \'\' : \'imagefilters__label-long\'}">{filter.config.label}</span><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__checkbox" if="{filter.config.checkbox}" type="checkbox" onchange="{apply}" checked="{filter.isActive() ? \'checked\' : \'\'}" aria-label="{filter.config.label}"><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" oninput="{apply}" riot-value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal" aria-label="{filter.config.label}: {filter.getValue()}"></div></div><div class="imagefilters__options"><button type="button" class="btn btn--full" onclick="{resetAll}">{this.config.messages.clearAll}</button></div>', '', '', function(opts) {
-
-		if(!this.opts.image) {
-		    throw "ImageView object must be defined for imageFilters";
-		}
-
-		var defaultConfig = {
-			filters: {
-		        brightness : {
-				    label: "Brightness",
-				    type: ImageView.Tools.Filter.Brightness,
-				    min: -255,
-				    max: 255,
-				    step: 1,
-				    base: 0,
-				    slider: true,
-				    checkbox: false,
-				    visible: true,
-				},
-		        contrast : {
-				    label: "Contrast",
-				    type: ImageView.Tools.Filter.Contrast,
-				    min: 0,
-				    max: 2,
-				    step: 0.05,
-				    base: 1,
-				    slider: true,
-				    checkbox: false,
-				    visible: true
-				},
-		        saturate : {
-				    label: "Color Saturation",
-				    type: ImageView.Tools.Filter.ColorSaturation,
-				    min: 0,
-				    max: 5,
-				    step: 0.1,
-				    base: 1,
-				    slider: true,
-				    checkbox: false,
-				    visible: true
-				},
-				hue : {
-				    label: "Color rotation",
-				    type: ImageView.Tools.Filter.ColorRotate,
-				    min: -180,
-				    max: 180,
-				    step: 1,
-				    base: 0,
-				    slider: true,
-				    checkbox: false,
-				    visible: true
-				},
-				threshold : {
-				    label: "Bitonal",
-				    type: ImageView.Tools.Filter.Threshold,
-				    min: 0,
-				    max: 255,
-				    step: 1,
-				    base: 128,
-				    slider: true,
-				    checkbox: true,
-				    visible: true,
-				    preclude: ["grayscale", "sharpen"]
-				},
-		        grayscale : {
-				    label: "Grayscale",
-				    type: ImageView.Tools.Filter.Grayscale,
-				    slider: false,
-				    checkbox: true,
-				    visible: true,
-				    preclude: ["threshold"]
-				},
-				invert : {
-				    label: "Invert",
-				    type: ImageView.Tools.Filter.Invert,
-				    slider: false,
-				    checkbox: true,
-				    visible: true
-				},
-		        blur : {
-				    label: "Blur",
-				    type: ImageView.Tools.Filter.Blur,
-				    min: 1,
-				    max: 10,
-				    step: 1,
-				    base: 1,
-				    slider: true,
-				    checkbox: false,
-				    visible: true
-				},
-		        sharpen : {
-				    label: "Sharpen",
-				    type: ImageView.Tools.Filter.Sharpen,
-				    base: 1,
-				    slider: false,
-				    checkbox: true,
-				    visible: true
-				},
-			},
-			messages : {
-			    clearAll: "Clear all",
-			    apply: "Apply"
-			}
-		}
-		this.config = $.extend(true, {}, defaultConfig, this.opts.config);
-
-		this.on("mount", function() {
-		    this.filters = this.initFilters(this.config, this.opts.image);
-			this.update();
-		});
-
-		this.initFilters = function(filterConfig, image) {
-		    let filters = [];
-		    for(var key in filterConfig.filters) {
-		        let conf = filterConfig.filters[key];
-		        if(conf.visible) {
-		            let filter = new conf.type(image, conf.base);
-		            filter.config = conf;
-		            filter.name = key;
-		            filters.push(filter);
-		        }
-		    }
-		    return filters;
-		}.bind(this)
-
-		this.apply = function(event) {
-		    let filter = event.item.filter;
-		    let value = event.target.value;
-		    if(filter) {
-			    if(!filter.isActive()) {
-			        filter.start();
-			        this.disable(filter.config.preclude);
-			    } else if(isNaN(value) ) {
-			        filter.close();
-			        this.enable(filter.config.preclude);
-			    }
-			    if(!isNaN(value) ) {
-			    	filter.setValue(parseFloat(value));
-			    	event.target.title = value;
-			    }
-		    }
-
-		}.bind(this)
-
-		this.disable = function(filterNames) {
-		    if(filterNames) {
-			    this.filters
-			    .filter( filter => filterNames.includes(filter.name) )
-			    .forEach( filter => {
-			        filter.disabled = true;
-			    })
-			    this.update();
-		    }
-		}.bind(this)
-
-		this.enable = function(filterNames) {
-		    if(filterNames) {
-			    this.filters
-			    .filter( filter => filterNames.includes(filter.name) )
-			    .forEach( filter => {
-			   		filter.disabled = false;
-			    })
-			    this.update();
-		    }
-		}.bind(this)
-
-		this.resetAll = function() {
-		   this.filters.forEach( filter => {
-		       filter.close();
-		       filter.disabled = false;
-		       if(filter.config.slider) {
-		       	filter.setValue(filter.config.base);
-		       }
-		   })
-		   this.update();
-		}.bind(this)
-
-});
-riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'end\' : \'start\'} {isFirstPage() ? \'inactive\' : \'\'}"><a if="{!isFirstPage() && !isSequenceMode()}" data-target="paginatorFirstPage" href="{getPageUrl(opts.firstPageNumber)}" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></a><button if="{!isFirstPage() && isSequenceMode()}" data-target="paginatorFirstPage" onclick="{gotoFirstPage}" type="button" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></button><span if="{isFirstPage()}"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual></span></li><li each="{step in opts.navigationSteps.slice().reverse()}" class="image-controls__action page-browse prev {getPageNumberMinus(step) < opts.firstPageNumber ? \'inactive\' : \'\'}"><virtual if="{opts.numPages > step}"><a if="{getPageNumberMinus(step) >= opts.firstPageNumber && !isSequenceMode()}" data-target="paginatorPrevPage" href="{getPageUrl(getPageNumberMinus(step))}" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span></a><button if="{getPageNumberMinus(step) >= opts.firstPageNumber && isSequenceMode()}" data-target="paginatorPrevPage" onclick="{navigateBack}" type="button" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step} {msg.stepBack}</span></button><span if="{getPageNumberMinus(step) < opts.firstPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual></span></virtual></li><li if="{opts.showDropdown}" class="image-controls__action select"><div class="custom-control custom-control--select"><select ref="dropdown" id="pageDropdown" aria-label="{msg.aria_label__select_page}" onchange="{changeDropdownValue}"><option each="{item in opts.pageList}" riot-value="{item.value}" title="{item.description ? item.description : item.label}">{item.label}</option></select></div></li><li each="{step in opts.navigationSteps}" class="image-controls__action page-browse next {getPageNumberPlus(step) > opts.lastPageNumber ? \'inactive\' : \'\'}"><virtual if="{opts.numPages > step}"><a if="{getPageNumberPlus(step) <= opts.lastPageNumber && !isSequenceMode()}" data-target="paginatorNextPage" href="{getPageUrl(getPageNumberPlus(step))}" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></a><button if="{getPageNumberPlus(step) <= opts.lastPageNumber && isSequenceMode()}" data-target="paginatorNextPage" onclick="{navigateForward}" type="button" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></button><span if="{getPageNumberPlus(step) > opts.lastPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual></span></virtual></li><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'start\' : \'end\'} {isLastPage() ? \'inactive\' : \'\'}"><a if="{!isLastPage() && !isSequenceMode()}" data-target="paginatorLastPage" href="{getPageUrl(opts.lastPageNumber)}" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></a><button if="{!isLastPage() && isSequenceMode()}" data-target="paginatorLastPage" onclick="{gotoLastPage}" type="button" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></button><span if="{isLastPage()}"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual></span></li></virtual>', '', '', function(opts) {
-
-        this.currentPageNumbers = [0];
-        this.msg = {};
-
-        this.on("mount", () => {
-
-            this.currentPageNumbers = this.parsePageNumbers(this.opts.currentPageNumber);
-            this.msg = this.opts.msg;
-            if(this.opts.update) {
-                this.opts.update.subscribe(pageNumber => {
-                    this.currentPageNumbers = this.isDoublePageMode() ? [pageNumber, pageNumber+1] : [pageNumber];
-                    this.update();
-                });
-            }
-            this.update();
-        });
-
-        this.on("update", () => {
-
-            $("[data-toggle='tooltip']").tooltip('hide');
-            if(this.refs.dropdown) {
-                this.refs.dropdown.value = this.isDoublePageMode() ? (this.currentPageNumbers[0] + "-" + this.currentPageNumbers[0]) : this.currentPageNumbers[0];
-
-            }
-        });
-
-        this.parsePageNumbers = function(pageNoString) {
-        	return pageNoString.match(/\d+/g).map(s => Number(s));
-        }.bind(this)
-
-        this.getPageNumberMinus = function(step) {
-        	if(this.isDoublePageMode()) {
-        		return this.currentPageNumbers[0] - 2 * step;
-        	} else {
-        		return this.currentPageNumbers[0] - step;
-        	}
-        }.bind(this)
-
-        this.getPageNumberPlus = function(step) {
-        	if(this.isDoublePageMode()) {
-        		return this.currentPageNumbers[0] + 2 * step;
-        	} else {
-        		return this.currentPageNumbers[0] + step;
-        	}
-        }.bind(this)
-
-        this.getPageUrl = function(pageNo) {
-        	if(this.isDoublePageMode()) {
-        		return this.opts.pageUrlTemplate(pageNo + "-" + (pageNo+1));
-        	} else {
-            	return this.opts.pageUrlTemplate(pageNo);
-        	}
-        }.bind(this)
-
-        this.gotoFirstPage = function() {
-            this.gotoPage(this.opts.firstPageNumber);
-        }.bind(this)
-
-        this.gotoLastPage = function() {
-            this.gotoPage(this.opts.lastPageNumber);
-        }.bind(this)
-
-        this.navigateBack = function(e) {
-            const step = e.item.step;
-            if(this.isDoublePageMode()) {
-            	this.gotoPage(this.currentPageNumbers[0] - 2 * step);
-            } else {
-            	this.gotoPage(this.currentPageNumbers[0] - step);
-            }
-        }.bind(this)
-
-        this.navigateForward = function(e) {
-            const step = e.item.step;
-            if(this.isDoublePageMode()) {
-            	this.gotoPage(this.currentPageNumbers[0] + 2 * step);
-            } else {
-            	this.gotoPage(this.currentPageNumbers[0] + step);
-            }
-        }.bind(this)
-
-        this.gotoPage = function(pageNumber) {
-        	if(this.isDoublePageMode()) {
-        		this.currentPageNumbers = [pageNumber, pageNumber+1];
-        	} else {
-				this.currentPageNumbers = [pageNumber];
-        	}
-            if(this.opts.onUpdate) {
-                this.opts.onUpdate(pageNumber);
-            }
-        }.bind(this)
-
-        this.changeDropdownValue = function(e) {
-            let pageNo = e.target.value;
-            if(this.isSequenceMode()) {
-                this.gotoPage(pageNo);
-            } else {
-                window.location.assign(this.getPageUrl(pageNo));
-            }
-        }.bind(this)
-
-        this.isSequenceMode = function() {
-            return this.opts.navigationMode.toLowerCase() == 'sequence'
-        }.bind(this)
-
-        this.isDoublePageMode = function() {
-            return this.opts.navigationMode.toLowerCase() == 'double'
-        }.bind(this)
-
-        this.isSinglePageMode = function() {
-            return this.opts.navigationMode.toLowerCase() == 'single'
-        }.bind(this)
-
-        this.isFirstPage = function() {
-            return this.currentPageNumber == this.opts.firstPageNumber;
-        }.bind(this)
-
-        this.isLastPage = function() {
-            return this.currentPageNumber == this.opts.lastPageNumber;
-        }.bind(this)
-
-});
-
-riot.tag2('metadataeditor', '<div if="{this.metadataList}"><h2>Pin content</h2><div class="admin__language-tabs"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="admin__language-tab {language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul></div><div class="cms__geomap__featureset_panel "><div class="active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="admin__geomap-edit-delete-wrapper"><a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean -redlink" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
-
- 	this.on("mount", () => {
- 	    this.currentLanguage = this.opts.currentLanguage;
- 	    this.updateMetadataList(this.opts.metadata);
- 	    this.focusInput();
- 	    if(this.opts.provider) {
- 	        this.opts.provider.subscribe( (metadata) => {
- 	            this.updateMetadataList(metadata)
- 	            this.update();
- 	            this.focusInput();
- 	        });
- 	    }
- 	})
-
- 	this.focusInput = function() {
- 	    if(Array.isArray(this.refs.input)) {
- 	        this.refs.input[0].focus();
- 	    } else if(this.refs.input) {
- 	        this.refs.input.focus();
- 	    }
- 	}.bind(this)
-
- 	this.updateMetadataList = function(metadataList) {
- 	   this.metadataList = metadataList;
- 	}.bind(this)
-
- 	this.updateMetadata = function(event) {
- 	    let metadata = event.item.metadata;
- 	    if(!metadata.value) {
- 	        metadata.value = {};
- 	    }
- 	    let value = event.target.value;
- 	    if(value) {
-	 	    metadata.value[this.currentLanguage] = [event.target.value];
- 	    } else {
- 	       metadata.value[this.currentLanguage] = undefined;
- 	    }
- 	    if(this.opts.updateListener) {
- 	       this.opts.updateListener.next(metadata);
- 	    }
- 	}.bind(this)
-
- 	this.getValue = function(metadata) {
- 	    if(metadata.value && metadata.value[this.currentLanguage]) {
-	 	    let value = metadata.value[this.currentLanguage][0];
-	 	    return value;
- 	    } else {
- 	        return "";
- 	    }
- 	}.bind(this)
-
- 	this.setCurrentLanguage = function(event) {
- 	    this.currentLanguage = event.item.language;
- 	    this.update();
- 	}.bind(this)
-
- 	this.notifyDelete = function() {
- 	    this.opts.deleteListener.next();
- 	}.bind(this)
-
- 	this.isEditable = function(metadata) {
- 	    return metadata.editable === undefined || metadata.editable === true;
- 	}.bind(this)
-
- 	this.mayDelete = function() {
- 	    editable = this.metadataList.find( md => this.isEditable(md));
- 	    return editable !== undefined;
- 	}.bind(this)
-
-});
-
-
-
-riot.tag2('modal', '<div class="modal fade {modalClass}" id="{modalId}" tabindex="-1" ref="modal" role="dialog" aria-labelledby="{modalTitle}" aria-hidden="true"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-header"><h1 class="modal-title">{modalTitle}</h1><button class="fancy-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button></div><div class="modal-body"><yield from="body"></yield></div><div class="modal-right"><yield from="right"></yield></div><div class="modal-footer"><yield from="footer"></yield></div></div></div><div class="alt-backdrop"></div></div>', '', '', function(opts) {
-
-    this.modalClass = this.opts.styleclass ? this.opts.styleclass : "";
-    this.modalId = this.opts.modalid;
-    this.modalTitle = this.opts.title;
-
-	this.on("mount", () => {
-
-	    if(this.opts.onClose) {
-	        $(this.refs.modal).on('hide.bs.modal', () => this.opts.onClose());
-	    }
-	});
-
-});
-riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index in pages}" page="{page}" pageno="{index+1}"></pdfPage></div>', '', '', function(opts) {
-
-		this.pages = [];
-
-		var loadingTask = pdfjsLib.getDocument( this.opts.data );
-	    loadingTask.promise.then( ( pdf ) => {
-	        var pageLoadingTasks = [];
-	        for(var pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
-   		        var page = pdf.getPage(pageNo);
-   		        pageLoadingTasks.push(page);
-   		    }
-   		    return Promise.allSettled(pageLoadingTasks);
-	    })
-	    .then( (results) => {
-			results.forEach(result => {
-			    if (result.status === "fulfilled") {
-                	var page = result.value;
-                	this.pages.push(page);
-                } else {
-                    console.log("Error loading page: ", result);
-                }
-			});
-			this.update();
-        })
-	    .then( () => {
-			$(".pdf-container").show();
-			console.log("loader", this.opts.loaderSelector);
-            $(this.opts.loaderSelector).hide();
-		} );
-
-});
-riot.tag2('pdfpage', '<div class="page" id="page_{opts.pageno}"><canvas class="pdf-canvas" id="pdf-canvas_{opts.pageno}"></canvas><div class="text-layer" id="pdf-text_{opts.pageno}"></div><div class="annotation-layer" id="pdf-annotations_{opts.pageno}"></div></div>', '', '', function(opts) {
-	this.on('mount', function () {
-
-           this.container = document.getElementById( "page_" + this.opts.pageno );
-           this.canvas = document.getElementById( "pdf-canvas_" + this.opts.pageno );
-           this.textLayer = document.getElementById( "pdf-text_" + this.opts.pageno );
-           this.annotationLayer = document.getElementById( "pdf-annotations_" + this.opts.pageno );
-
-		var containerWidth = $(this.container).width();
-		var pageWidth = this.opts.page._pageInfo.view[2];
-           var scale = containerWidth/pageWidth;
-		this.viewport = this.opts.page.getViewport( scale );
-
-           if(this.container) {
-               this.loadPage();
-           }
-	});
-
-    this.loadPage = function() {
-        var canvasOffset = $( this.canvas ).offset();
-        var context = this.canvas.getContext( "2d" );
-        this.canvas.height = this.viewport.height;
-        this.canvas.width = this.viewport.width;
-
-        this.opts.page.render( {
-            canvasContext: context,
-            viewport: this.viewport
-        } ).then( function() {
-            return this.opts.page.getTextContent();
-        }.bind( this ) ).then( function( textContent ) {
-
-            $( this.textLayer ).css( {
-                height: this.viewport.height + 'px',
-                width: this.viewport.width + 'px',
-            } );
-
-            pdfjsLib.renderTextLayer( {
-                textContent: textContent,
-                container: this.textLayer,
-                viewport: this.viewport,
-                textDivs: []
-            } );
-
-            return this.opts.page.getAnnotations();
-        }.bind( this ) ).then( function( annotationData ) {
-
-            $( this.annotationLayer ).css( {
-                width: this.viewport.width + 'px',
-            } );
-
-            pdfjsLib.AnnotationLayer.render( {
-                viewport: this.viewport.clone( {
-                    dontFlip: true
-                } ),
-                div: this.annotationLayer,
-                annotations: annotationData,
-                page: this.opts.page,
-                linkService: {
-                    getDestinationHash: function( dest ) {
-                        return '#';
-                    },
-                    getAnchorUrl: function( hash ) {
-                        return '#';
-                    },
-                    isPageVisible: function() {
-                        return true;
-                    },
-                    externalLinkTarget: pdfjsLib.LinkTarget.BLANK,
-                }
-            } );
-
-        }.bind( this ) )
-    }.bind(this)
-
-});
-	
-	
-riot.tag2('popup', '<yield></yield>', '', '', function(opts) {
-
-this.on( 'mount', function() {
-	this.addCloseHandler();
-	$(this.root).offset(this.opts.offset);
-    $("body").append($(this.root));
-    $(this.root).css("position", "absolute");
-    $(this.root).show();
-});
-
-this.addCloseHandler = function() {
-    $(this.root).on("click", function(event){
-        event.stopPropagation();
-    });
-
-    $('body').one("click", function(event) {
-        this.unmount(true);
-        $(this.root).off();
-        if(this.opts.myparent) {
-             $(this.root).hide();
-            $(this.opts.myparent).append($(this.root));
-            $(this.root).offset({left:0, top:0});
-        } else {
-            this.root.remove();
-        }
-    }.bind(this));
-
-}.bind(this)
-
-});
-
-
-riot.tag2('rawhtml', '', '', '', function(opts) {
-  this.on("mount", () => {
-	    this.root.innerHTML = opts.content;
-	  })
-  this.on("updated", () => {
-    this.root.innerHTML = opts.content;
-  })
-});
-riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? \'numeric-paginator -rtl\' : \'numeric-paginator -ltr\'} {opts.classSuffix}"><nav aria-label="{opts.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}"><ul><li if="{this.currentItem > this.opts.firstItem}" class="numeric-paginator__navigate navigate_prev"><a if="{isRenderLinks()}" href="{getItemUrl(currentItem-1)}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i></a><button if="{isRenderButtons()}" onclick="{navigateToPrevItem}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i></button></li><li each="{item in getFirstItems()}" class="numeric-paginator__navigate"><a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button></li><li class="numeric-paginator__dots" if="{isShowDotsAfterFirstItems()}"><span>...</span></li><li each="{item in getCenterItems()}" class="numeric-paginator__navigate {item == currentItem ? \'-active\' : \'\'}"><a if="{isRenderLinks() && item != currentItem}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons() && item != currentItem}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button><span if="{item == currentItem}">{item}</span></li><li class="numeric-paginator__dots" if="{isShowDotsBeforeLastItems()}"><span>...</span></li><li each="{item in getLastItems()}" class="numeric-paginator__navigate"><a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button></li><li if="{this.currentItem < this.opts.lastItem}" class="numeric-paginator__navigate navigate_next"><a if="{isRenderLinks()}" href="{getItemUrl(currentItem+1)}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i></a><button if="{isRenderButtons()}" onclick="{navigateToNextItem}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i></button></li></ul></nav></div>', '', '', function(opts) {
-
-        this.currentItem = 0;
-        this.msg = {};
-        this.range = 2;
-
-        this.on("mount", () => {
-            this.msg = opts.msg;
-            this.currentItem = opts.itemActive;
-            if(this.opts.range) {
-                this.range = this.opts.range;
-            }
-            if(this.opts.update) {
-                this.opts.update.subscribe(itemNumber => {
-                    this.currentItem = itemNumber;
-                    this.update();
-                });
-            }
-            this.update();
-        });
-
-        this.on("update", () => {
-
-            $("[data-toggle='tooltip']").tooltip('hide');
-            if(this.refs.dropdown) {
-                this.refs.dropdown.value = this.currentItem;
-            }
-        });
-
-        this.getItemUrl = function(itemNumber) {
-            return this.opts.urlTemplate(itemNumber);
-        }.bind(this)
-
-        this.gotoFirstItem = function() {
-            this.gotoItem(this.opts.firstItem);
-        }.bind(this)
-
-        this.gotoLastItem = function() {
-            this.gotoItem(this.opts.lastItem);
-        }.bind(this)
-
-        this.navigateToItem = function(e) {
-            const item = e.item.item;
-            this.gotoItem(item);
-        }.bind(this)
-
-        this.navigateToPrevItem = function() {
-            this.gotoItem(this.currentItem-1);
-        }.bind(this)
-
-        this.navigateToNextItem = function() {
-            this.gotoItem(this.currentItem+1);
-        }.bind(this)
-
-        this.gotoItem = function(itemNumber) {
-            this.currentItem = itemNumber;
-            if(this.opts.onUpdate) {
-                this.opts.onUpdate(itemNumber);
-            }
-        }.bind(this)
-
-        this.isShowDotsAfterFirstItems = function() {
-            return this.currentItem - this.range > this.opts.firstItem + this.range + 1
-        }.bind(this)
-
-        this.isShowDotsBeforeLastItems = function() {
-            return this.currentItem + this.range < this.opts.lastItem - this.range - 1
-        }.bind(this)
-
-        this.getFirstItems = function() {
-            let result = [];
-            let firstCenterItem = this.getCenterItems()[0];
-            let lastItem = Math.min(this.opts.firstItem + this.range + 1, firstCenterItem);
-            for (let i = this.opts.firstItem; i < lastItem; i++) {
-                result.push(i);
-            }
-
-            return result;
-        }.bind(this)
-
-        this.getLastItems = function() {
-            let result = [];
-            let centerItems = this.getCenterItems();
-            let lastCenterItem = centerItems[centerItems.length-1];
-            let firstItem = Math.max(this.opts.lastItem - this.range - 1, lastCenterItem);
-                for (let i = firstItem + 1; i <= this.opts.lastItem; i++) {
-                    result.push(i);
-                }
-            return result;
-        }.bind(this)
-
-        this.getCenterItems = function() {
-            let result = [];
-            for (let i = this.currentItem - this.range; i <= this.currentItem + this.range; i++) {
-                if(i >= this.opts.firstItem && i <= this.opts.lastItem) {
-                    result.push(i);
-                }
-            }
-            return result;
-        }.bind(this)
-
-        this.isRenderLinks = function() {
-            return this.opts.navigationMode != "buttons";
-        }.bind(this)
-
-        this.isRenderButtons = function() {
-            return this.opts.navigationMode == "buttons";
-        }.bind(this)
-
-        this.isFirstItem = function() {
-            return this.currentItem == this.opts.firstItem;
-        }.bind(this)
-
-        this.isLastItem = function() {
-            return this.currentItem == this.opts.lastItem;
-        }.bind(this)
-});
-riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"><p class="swiper-description slider-{this.opts.stylename}__description" ref="description"></p></a>', '', '', function(opts) {
-		this.on("mount", () => {
-			if(this.refs.description) {
-				   this.refs.description.innerHTML = this.opts.description;
-			}
-		});
-});
-
-riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
-});
-riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
-});
-
-
-riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showStandardNav}" ref="navigation" class="slider-navigation-wrapper slider-navigation-wrapper-{this.styleName} slider-navigation-wrapper-{this.sliderInstance}"><div ref="navigationLeft" class="swiper-button-prev"></div><div ref="navigationRight" class="swiper-button-next"></div></div><div if="{this.showStandardPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div></div>', '', '', function(opts) {
-
-
-	this.showStandardPaginator = true;
-	this.showStandardNav = true;
-
-    this.on( 'mount', function() {
-    	this.sliderInstance = this.opts.sliderinstanceid;
-
-		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
-
-		this.amendStyle(this.style);
-		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
-
-		this.timeout = this.style.timeout ? this.style.timeout : 100000;
-		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
-		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
-
-		firstSlideMessage = this.opts.firstslidemessage;
-
-    	let pSource;
-    	if(this.opts.sourceelement) {
-    		let sourceElement = document.getElementById(this.opts.sourceelement);
-    		if(sourceElement) {
-    			pSource = Promise.resolve(JSON.parse(sourceElement.textContent));
-
-    		} else {
-    			logger.error("sourceElement was included but no matching dom element found");
-    			return;
-    		}
-    	} else if(this.opts.slides) {
-    		let sourceArray = this.opts.slides.replaceAll("_qm_", "?").split("$")
-    		pSource = Promise.resolve(sourceArray);
-    	}  else {
-    		pSource = fetch(this.opts.source)
-        	.then(result => result.json());
-    	}
-    	rxjs.from(pSource)
-    	.pipe(
-    		rxjs.operators.flatMap(source => source),
-    		rxjs.operators.flatMap(uri => fetch(uri), undefined, 5),
-    		rxjs.operators.filter(result => result.status == 200),
-    		rxjs.operators.takeUntil(rxjs.timer(this.timeout)),
-    		rxjs.operators.flatMap(result => result.json()),
-    		rxjs.operators.map(element => this.createSlide(element)),
-    		rxjs.operators.filter(element => element != undefined),
-    		rxjs.operators.take(this.maxSlides),
-    		rxjs.operators.reduce((res, item) => res.concat(item), []),
-    		rxjs.operators.map(array => array.sort( (s1,s2) => s1.order-s2.order ))
-    	)
-    	.subscribe(slides => this.setSlides(slides))
-    });
-
-    this.on( 'updated', function() {
-
-    	if(this.slides && this.slides.length > 0) {
-    		if(this.slider) {
-    			this.slider.destroy();
-
-    		}
-			this.initSlideTags(this.slides);
-    		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
-    		window.viewerJS.slider.sliders.push(this.swiper);
-
-    	}
-
-    	if (this.style.onUpdate) {
-    		this.style.onUpdate();
-    	}
-
-    });
-
-    this.setSlides = function(slides) {
-
-    	this.slides = slides;
-    	this.update();
-    }.bind(this)
-
-    let imagealtmsgkey = this.opts.imagealtmsgkey;
-
-    this.initSlideTags = function(slides) {
-    	slides.forEach( (slide, index) => {
-    		let tagElement = this.refs["slide_" + index];
-
-    		riot.mount(tagElement, "slide_" + this.getLayout(),  {
-    			stylename: this.styleName,
-   				link: this.getLink(slide),
-   				link_target: this.linkTarget,
-   				image: this.getImage(slide),
-   				label: this.translate(slide.label),
-   				description: this.translate(slide.description),
-   				alttext: this.translate(slide.altText),
-   				altimagemsgkey: this.translate(imagealtmsgkey),
-    		});
-    	});
-    }.bind(this)
-
-	this.getElements = function(source) {
-		if(viewerJS.iiif.isCollection(source)) {
-			return source.members.filter(member => viewerJS.iiif.isCollection(member));
-		} else {
-			console.error("Cannot get slides from ", source);
-		}
-	}.bind(this)
-
-    this.createSlide = function(element) {
-
-    	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
-    		let slide = {
-    				label : element.label,
-    				description : element.description,
-    				image : element.thumbnail,
-    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element)),
-    				order : element.order
-    		}
-    		return slide;
-    	} else {
-    		return element;
-    	}
-    }.bind(this)
-
-    this.translate = function(text) {
-    	let translation =  viewerJS.iiif.getValue(text, this.opts.language, this.opts.defaultlanguage);
-    	if(!translation) {
-    			translation = viewerJS.getMetadataValue(text, this.opts.language, this.opts.defaultlanguage);
-    	}
-    	return translation;
-    }.bind(this)
-
-    this.getImage = function(slide) {
-    	let image = slide.image;
-    	if(image == undefined) {
-    		return undefined;
-    	} else if(viewerJS.isString(image)) {
-    		return image;
-    	} else if(image.service && (this.style.imageWidth || this.style.imageHeight)) {
-    		let url = viewerJS.iiif.getId(image.service) + "/full/" + this.getIIIFSize(this.style.imageWidth, this.style.imageHeight) + "/0/default.jpg"
-    		return url;
-    	} else if(image["@id"]) {
-    		return image["@id"]
-    	} else {
-    		return image.id;
-    	}
-    }.bind(this)
-
-    this.getIIIFSize = function(width, height) {
-    	if(width && height) {
-    		return "!" + width + "," + height;
-    	} else if(width) {
-    		return width + ",";
-    	} else if(height) {
-    		return "," + height;
-    	} else {
-    		return "max";
-    	}
-    }.bind(this)
-
-    this.getLink = function(slide) {
-    	if(this.linkTarget == 'none') {
-    		return "";
-    	} else {
-    		return slide.link;
-    	}
-    }.bind(this)
-
-    this.amendStyle = function(styleConfig) {
-    	let swiperConfig = styleConfig.swiperConfig;
-    	if(swiperConfig.pagination && !swiperConfig.pagination.el)  {
-
-    		if (this.opts.paginator != 'none') {
-    			swiperConfig.pagination.el = this.opts.paginator;
-
-        		this.showStandardPaginator = false;
-    		} else {
-        		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
-        		this.showStandardPaginator = true;
-
-    		}
-
-    	} else {
-    		this.showStandardPaginator = false;
-
-    	}
-
-	  	swiperConfig.a11y = {
-	  		prevSlideMessage: this.opts.prevslideMessage,
-			nextSlideMessage: this.opts.nextslideMessage,
-	  		lastSlideMessage: this.opts.firstslidemessage,
-			firstSlideMessage: this.opts.lastslidemessage,
-			paginationBulletMessage: this.opts.paginationbulletmessage + ' \{\{index\}\}',
-		}
-
-    	if(swiperConfig.navigation && swiperConfig.navigation.prevEl == '.swiper-button-prev' && swiperConfig.navigation.nextEl == '.swiper-button-next')  {
-
-        		this.showStandardNav = true;
-    	} else {
-    		this.showStandardNav = false;
-
-    	}
-
-	}.bind(this)
-
-    this.getLayout = function() {
-    	let layout = this.style.layout ? this.style.layout : 'default';
-
-    	return layout;
-    }.bind(this)
-
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}"></a><figure class="slideshow" if="{manifest !== undefined}" onmouseenter="{mouseenter}" onmouseleave="{mouseleave}"><div class="slideshow__image"><a href="{getLink(manifest)}" class="remember-scroll-position" data-linkid="{opts.pis}" onclick="{storeScrollPosition}"><img riot-src="{getThumbnail(manifest)}" class="{\'active\' : active}" alt="{getLabel(manifest)}" onload="{setImageActive}"></a></div><figcaption><h3>{getTitleOrLabel(manifest)}</h3><p><span each="{md in metadataList}"> {getMetadataValue(manifest, md)} <br></span></p><div if="{pis.length > 1}" class="slideshow__dots"><ul><li each="{imagepi in pis}"><button class="btn btn--clean {\'active\' : pi === imagepi}" onclick="{setPi}"></button></li></ul></div></figcaption></figure>', '', '', function(opts) {
-
-    	$.fn.isInViewport = function() {
-        	var elementTop = $( this ).offset().top;
-        	var elementBottom = elementTop + $( this ).outerHeight();
-        	var elementHeight = $( this ).outerHeight();
-        	var viewportTop = $( window ).scrollTop();
-        	var viewportBottom = viewportTop + $( window ).height();
-
-        	return elementBottom > (viewportTop + elementHeight) && elementTop < (viewportBottom - elementHeight);
-    	};
-
-    	this.pis = this.opts.pis.split(/[\s,;]+/);
-    	this.pis = this.pis.filter( function( pi ) {
-    		return pi != undefined && pi.length > 0;
-    	} );
-        this.metadataList = this.opts.metadata.split(/[,;]+/);
-        this.manifest = undefined;
-        this.manifests = new Map();
-        this.active = false;
-        this.visible = false;
-        this.mouseover = false;
-
-        this.on( 'mount', function() {
-        	this.loadManifest( this.pis[0] );
-        }.bind( this ));
-
-        this.mouseenter = function() {
-        	this.mouseover = true;
-        }.bind(this)
-
-        this.mouseleave = function() {
-        	this.mouseover = false;
-        }.bind(this)
-
-        this.checkPosition = function() {
-        	var slideshow = $( '#' + this.opts.id + ' figure' );
-
-        	if ( !this.visible && this.pis.length > 1 && slideshow.isInViewport() ) {
-        		this.visible = true;
-            	this.moveSlides( this.pis, true );
-        	}
-        	else if ( this.visible && !slideshow.isInViewport() ) {
-        		this.visible = false;
-        		this.moveSlides( this.pis, false );
-        	}
-        }.bind(this)
-
-        this.moveSlides = function( pis, move ) {
-        	var index = 1;
-
-        	if ( move ) {
-        		clearInterval( this.interval );
-
-        		this.interval = setInterval( function() {
-                	if ( index === pis.length ) {
-                		index = 0;
-                	}
-                	if ( !this.mouseover ) {
-            			this.loadManifest( pis[ index ] );
-                    	index++;
-                	}
-                }.bind( this ), 3000 );
-        	}
-        	else {
-        		clearInterval( this.interval );
-        	}
-        }.bind(this)
-
-        this.setPi = function( event ) {
-        	let pi = event.item.imagepi;
-
-        	if ( pi != this.pi ) {
-        		this.pi = pi;
-
-        		return this.loadManifest( pi );
-        	}
-        }.bind(this)
-
-        this.setImageActive = function() {
-        	this.active = true;
-        	this.update();
-        }.bind(this)
-
-        this.loadManifest = function( pi ) {
-        	let url = this.opts.manifest_base_url.replace( "{pi}", pi );
-        	let json = this.manifests.get( url );
-        	this.pi = pi;
-        	this.active = false;
-        	this.update();
-
-        	if ( !json ) {
-        		$.getJSON( url, function( manifest ) {
-        			if ( manifest ) {
-
-        				this.manifest = manifest;
-        				this.manifests.set( url, manifest );
-        				this.update();
-            			this.checkPosition();
-
-        				$( window ).on( 'resize scroll', function() {
-            				this.checkPosition();
-        				}.bind( this ) );
-        			}
-        		}.bind( this ))
-        		.then(function(data) {
-        		})
-        		.catch(function(error) {
-        			console.error("error loading ", url, ": ", error);
-        		});
-        	}
-        	else {
-
-            	setTimeout( function() {
-            		this.manifest = json;
-            		this.update();
-            	}.bind( this ), 300 );
-        	}
-        }.bind(this)
-        this.getThumbnail = function( manifest, width, height ) {
-        	if( !manifest.thumbnail.service || ( !width && !height ) ) {
-        		return manifest.thumbnail['@id'];
-        	}
-        	else {
-        		let sizePrefix = width && height ? "!" : "";
-
-        		return manifest.thumbnail.service['@id'] + "/full/" + sizePrefix + width + "," + height + "/0/default.jpg";
-        	}
-        }.bind(this)
-
-        this.getLink = function( manifest ) {
-        	rendering = manifest.rendering;
-
-        	if ( Array.isArray( rendering ) ) {
-        		rendering = rendering.find( ( rend ) => rend.format == "text/html" );
-        	}
-        	if ( rendering ) {
-        		return rendering['@id'];
-        	}
-        	else {
-        		return '';
-        	}
-        }.bind(this)
-
-        this.getTitleOrLabel = function( manifest ) {
-        	var title = this.getMetadataValue( manifest, 'Title' );
-
-        	if(title) {
-        		return title;
-        	} else {
-        		return getLabel( manifest );
-        	}
-        }.bind(this)
-
-        this.getLabel = function( manifest ) {
-        	return this.getValue(manifest.label, this.opts.locale);
-        }.bind(this)
-
-        this.getMetadataValue = function( manifest, metadataLabel ) {
-        	if ( manifest && metadataLabel ) {
-        		let metadata = manifest.metadata.find( ( md ) => {
-        			let label = md.label;
-        			if ( Array.isArray( label ) ) {
-        				label = label.find( (l) => l['@value'].trim() == metadataLabel.trim());
-        				if ( label ) {
-        					label = label['@value']
-        				}
-        			}
-        			return label && label.trim() == metadataLabel.trim();
-        		});
-
-        		if ( metadata ) {
-        			let value = this.getValue( metadata.value, this.opts.locale );
-
-        			return value;
-        		}
-        	}
-        }.bind(this)
-
-        this.getValue = function ( element, locale ) {
-            if ( element ) {
-            	if ( typeof element === 'string' ) {
-            		return element;
-            	}
-        		else if ( Array.isArray( element ) ) {
-            		var fallback;
-
-            		for ( var index in element  ) {
-            			var item = element[index];
-
-            			if ( typeof item === 'string' ) {
-            				return item;
-            			}
-            			else {
-            				var value = item['@value'];
-            				var language = item['@language'];
-
-            				if ( locale == language ) {
-            					return value;
-            				}
-            				else if ( !fallback || language == 'en' ) {
-            					fallback = value;
-            				}
-            			}
-            		}
-
-            		return fallback;
-            	}
-            	else {
-            		return element['@value'];
-            	}
-            }
-        }.bind(this)
-
-        this.storeScrollPosition = function(event) {
-            $target = $(event.target).closest("a");
-            viewerJS.handleScrollPositionClick($target);
-        }.bind(this)
-});
-riot.tag2('subcollection', '<ul if="{collection.members && collection.members.length > 0}" class="list card-body__list"><li each="{child in getChildren(collection)}"><div class="card-body__links"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></div><subcollection if="{child.members && child.members.length > 0}" collection="{child}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"></subcollection></li></ul>', '', '', function(opts) {
-		this.collection = this.opts.collection;
-
-		this.getId = function(element) {
-		    if(!element) {
-		        return undefined;
-		    } else if (Array.isArray(element) && element.length > 0) {
-		        return viewerJS.iiif.getId(element[0]);
-		    } else {
-		        return viewerJS.iiif.getId(element);
-		    }
-		}.bind(this)
-
-		this.getValue = function(element) {
-		    return viewerJS.iiif.getValue(element, this.opts.language, this.opts.defaultlanguage);
-		}.bind(this)
-
-		this.getChildren = function(collection) {
-		    if(collection.members) {
-		    	return collection.members.filter( child => viewerJS.iiif.isCollection(child));
-		    } else {
-		        return [];
-		    }
-		}.bind(this)
-});
-
-
-
-riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'} {getPageStatus(index)}" each="{canvas, index in thumbnails}"><a class="thumbnails-image-link" href="{getLink(canvas)}" onclick="{handleClickOnImage}"><img class="thumbnails-image" alt="{getObjectTitle() + \': \' + getValue(canvas.label)}" riot-src="{getImage(canvas)}" loading="lazy"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
-
-this.thumbnails = [];
-this._debug = false;
-
-this.on("mount", () => {
-	if(this._debug)console.log("mount ", this.opts);
-	this.type = opts.type ? opts.type : "items";
-	this.language = opts.language ? opts.language : "en";
-	this.imageSize = opts.imagesize;
-	if(this.opts.index === undefined) {
-		this.opts.index = 0;
-	}
-
-	let source = opts.source;
-	if(viewerJS.isString(source)) {
-		fetch(source)
-		.then(response => response.json())
-		.then(json => this.loadThumbnails(json, this.type))
-		.catch(e => {
-			console.error("Error reading manifest from ", source);
-		})
-	} else {
-		this.loadThumbnails(source, this.type);
-	}
-});
-
-this.on("updated", () => {
-	if(this._debug)console.log("updated", this.opts);
-	let activeThumb = this.refs.thumb[this.opts.index];
-	if(activeThumb) {
-		activeThumb.scrollIntoView({block: "end", behavior: "smooth"});
-	}
-	if(this.opts.onload) {
-	    this.opts.onload();
-	}
-});
-
-this.loadThumbnails = function(source, type) {
-    if(this._debug)console.log("Loading thumbnails from ", source);
-	if(source) {
-		switch(type) {
-			case "structures":
-				if(this._debug)console.log("structures", source.structures);
-				rxjs.from(source.structures)
-				.pipe(
-						rxjs.operators.map(range => this.getFirstCanvas(range, true)),
-						rxjs.operators.filter(canvas => canvas != undefined),
-						rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
-						)
-				.subscribe(item => this.addThumbnail(item));
-				break;
-			case "sequence":
-				this.createThumbnails(source.sequences[0].canvases);
-				break;
-			case "items":
-			case "default":
-				this.createThumbnails(source.items)
-		}
-	} else {
-		throw "source manifest not defined";
-	}
-
-}.bind(this)
-
-this.addThumbnail = function(item) {
-    if(this._debug)console.log("add thumbnail from ", item);
-
-	this.thumbnails.push(item);
-	this.update();
-}.bind(this)
-
-this.createThumbnails = function(items) {
-    if(this._debug)console.log("creating thumbnails from ", items);
-
-	this.thumbnails = items;
-	this.update();
-}.bind(this)
-
-this.getFirstCanvas = function(range, overwriteLabel) {
-
-	let canvas = undefined;
-	if(range.start) {
-		canvas = range.start;
-	} else if(range.items) {
-		canvas = range.items.find( item => item.type == "Canvas");
-	}
-	if(canvas && overwriteLabel) {
-		if(this.opts.label) {
-			let md = range.metadata.find(md => viewerJS.iiif.getValue(md.label, "none") == this.opts.label);
-			if(md) {
-				canvas.label = this.getValue(md.value);
-			} else {
-				canvas.label = range.label;
-			}
-		} else {
-			canvas.label = range.label;
-		}
-
-	}
-	return canvas;
-}.bind(this)
-
-this.loadCanvas = function(source) {
-	return fetch(viewerJS.iiif.getId(source))
-	.then(response => response.json())
-	.then(canvas => {
-
-		if(source.label) {
-			canvas.label = source.label;
-		}
-		return canvas;
-	})
-}.bind(this)
-
-this.getValue = function(value) {
-	return viewerJS.iiif.getValue(value, this.language, this.language == "en" ? "de" : "en");
-}.bind(this)
-
-this.getObjectTitle = function() {
-	try {
-	return document.querySelector('.archives__object-title').innerHTML;
-	}
-	catch (e) {
-
-		return '';
-	}
-}.bind(this)
-
-this.getImage = function(canvas) {
-
-	if(canvas.items) {
-		return canvas.items
-		.filter(page => page.items != undefined)
-		.flatMap(page => page.items)
-		.filter(anno => anno.body != undefined)
-		.map(anno => anno.body)
-		.map(res => this.getImageUrl(res, this.imageSize))
-		.find(url => url != undefined)
-	} else if(canvas.images && canvas.images.length > 0) {
-		return this.getImageUrl(canvas.images[0].resource, this.imageSize);
-	} else {
-		return undefined;
-	}
-}.bind(this)
-
-this.getImageUrl = function(resource, size) {
-
-	if(size && resource.service && (!Array.isArray(resource.service) || resource.service.length > 0)) {
-		let url = viewerJS.iiif.getId(viewerJS.iiif.getId(resource.id) ? resource.service[0] : resource.service);
-		return url + "/full/" + size + "/0/default." + this.getExtension(resource.format);
-	} else {
-		return viewerJS.iiif.getId(resource);
-	}
-}.bind(this)
-
-this.getExtension = function(format) {
-	if(format && format == "image/png") {
-		return "png";
-	} else {
-		return "jpg";
-	}
-}.bind(this)
-
-this.getLink = function(canvas) {
-	if(this.opts.link) {
-		return this.opts.link(canvas);
-	} else {
-		return this.getHomepage(canvas);
-	}
-}.bind(this)
-
-this.getHomepage = function(canvas) {
-	if(canvas.homepage && canvas.homepage.length > 0) {
-		return canvas.homepage[0].id;
-	} else {
-		return undefined;
-	}
-}.bind(this)
-
-this.handleClickOnImage = function(event) {
-	if(this.opts.actionlistener) {
-		this.opts.actionlistener.next({
-			action: "clickImage",
-			value: event.item.index
-		})
-	}
-
-	event.preventUpdate = true;
-}.bind(this)
-
-this.getPageStatus = function(index) {
-	if(this.opts.statusmap) {
-		return this.opts.statusmap.get(index);
-	}
-}.bind(this)
-
-});
-riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematrix__loader" ref="loader"><img if="{loading}" riot-src="{opts.contextPath}resources/images/infinity_loader.svg" class="img-fluid" alt="Timematrix Loader"></span></div><div class="timematrix__selection"><div id="locateTimematrix"><div class="timematrix__bar"><div class="timematrix__period"><span>{translate(⁗timematrix__timePeriod⁗)}:</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_start\')}" class="timematrix__selectionRangeInput" ref="inputStartYear" riot-value="{this.startYear}" maxlength="4"> &#xA0;<span>-</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_end\')}" class="timematrix__selectionRangeInput" ref="inputEndYear" riot-value="{this.endYear}" maxlength="4"></div><div class="timematrix__hitsForm"><div class="timematrix__hitsInput"><span>{translate(⁗timematrix__maxResults⁗)}: &#xA0;</span><input onchange="{updateHitsPerPage}" type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" riot-value="{this.maxHits}" placeholder="" maxlength="5" aria-label="{translate(\'aria_label__timeline_hits\')}"></div></div></div><div id="slider-range" ref="sliderRange"></div><button type="submit" ref="setTimematrix" class="btn btn--full setTimematrix">{translate(⁗timematrix__calculate⁗)}</button></div></div><div class="timematrix__objects"><label if="{!loading && manifests.length == 0}">{translate(⁗hitsZero⁗)}</label><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img ref="image" riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onload="$(this).parents(\'.timematrix__img\').css(\'background\', \'transparent\')"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
-		this.manifests = [];
-		this.loading = true;
-
-		this.on( 'updated', function() {
-		    if(this.refs.image) {
-		        if(Array.isArray(this.refs.image)) {
-				    this.refs.image.forEach(ele => {
-				        if(!ele.src) {
-				        	viewerJS.thumbnailLoader.load(ele);
-				        }
-				    })
-		        } else {
-		            viewerJS.thumbnailLoader.load(this.refs.image)
-		        }
-		    }
-		});
-
-	    this.on( 'mount', function() {
-
-	        let restoredValues = this.restoreValues();
-	        if(restoredValues) {
-	            this.startYear = restoredValues.startYear;
-		        this.endYear = restoredValues.endYear;
-		        this.maxHits = restoredValues.maxHits;
-	        } else {
-		        this.startYear = this.opts.minYear;
-		        this.endYear = this.opts.maxYear;
-		        this.maxHits = this.opts.maxHits;
-	        }
-
-	        this.updateTimeMatrix = new rxjs.Subject();
-
-	        this.updateTimeMatrix.pipe(
-	                rxjs.operators.map( e => this.getIIIFApiUrl()),
-	                rxjs.operators.switchMap( url => {
-
-	                    this.loading = true;
-	                    this.update();
-	                    return fetch(url);
-	                }),
-	                rxjs.operators.switchMap( result => {
-
-	                    return result.json();
-	                }),
-	                ).subscribe(json => {
-	                    this.manifests = json.orderedItems ? json.orderedItems : [];
-
-	                    this.loading = false;
-	                    this.update();
-	                })
-
-	        this.initSlider( this.opts.slider, this.startYear, this.endYear, this.opts.minYear, this.opts.maxYear );
-	        this.updateTimeMatrix.next();
-	    } );
-
-	    this.getViewerUrl = function(manifest) {
-	        let viewer  = manifest.rendering;
-	        if(Array.isArray(viewer)) {
-	            viewer = viewer.find(r => r.format == "text/html");
-	        }
-	        if(viewer) {
-	            return viewer["@id"];
-	        } else {
-	            return "";
-	        }
-	    }.bind(this)
-
-	    this.getImageUrl = function(manifest) {
-	        if(manifest.thumbnail) {
-	            let url = manifest.thumbnail["@id"];
-	            return url;
-	        }
-	    }.bind(this)
-
-	    this.hasTitle = function(manifest) {
-	        return manifest.label != undefined;
-	    }.bind(this)
-
-	    this.getDisplayTitle = function(manifest) {
-	        return viewerJS.iiif.getValue(manifest.label, this.opts.language, "en");
-	    }.bind(this)
-
-	    this.getIIIFApiUrl = function() {
-	        var apiTarget = this.opts.contextPath;
-	        apiTarget += "api/v1/records/list";
-	        apiTarget += "?start=" + this.startYear;
-	        apiTarget += "&end=" + this.endYear;
-	        apiTarget += "&rows=" + this.maxHits;
-	        apiTarget += "&sort=RANDOM";
-	        if ( this.opts.subtheme ) {
-	            apiTarget += ( "&subtheme=" + this.opts.subtheme );
-	        }
-	        return apiTarget;
-	    }.bind(this)
-
-	    this.getApiUrl = function() {
-
-	        var apiTarget = this.opts.contextPath;
-	        apiTarget += 'rest/records/timematrix/range/';
-	        apiTarget += $( this.opts.startInput ).val();
-	        apiTarget += "/";
-	        apiTarget += $( this.opts.endInput ).val();
-	        apiTarget += '/';
-	        apiTarget += $( this.maxHits ).val();
-	        apiTarget += '/';
-
-	        if ( this.opts.subtheme ) {
-	            apiTarget += ( "?subtheme=" + this.opts.subtheme );
-	        }
-
-	        return apiTarget;
-	    }.bind(this)
-
-	    this.initSlider = function( sliderSelector, startYear, endYear, minYear, maxYear ) {
-	        let $slider = $( this.refs.sliderRange );
-
-	        let rtl = $slider.closest('[dir="rtl"]').length > 0;
-
-	        $slider.slider( {
-	            range: true,
-	            isRTL: rtl,
-	            min: minYear,
-	            max: maxYear,
-	            values: [ startYear, endYear ],
-	            slide: function( event, ui ) {
-	                $( this.refs.inputStartYear ).val( ui.values[ 0 ] ).change();
-	                this.startYear = parseInt( ui.values[ 0 ] );
-	                $( this.refs.inputEndYear ).val( ui.values[ 1 ] ).change();
-	                this.endYear = parseInt( ui.values[ 1 ] );
-	            }.bind( this ),
-	            stop: (event, ui) => {
-	                this.updateTimeMatrix.next();
-                    this.storeValues();
-	            }
-	        } );
-
-	        $slider.find( ".ui-slider-handle" ).on( 'mousedown', function() {
-	            $( '.ui-slider-handle' ).removeClass( 'top' );
-	            $( this ).addClass( 'top' );
-	        } );
-	    }.bind(this)
-
-	    this.translate = function(key) {
-	        return this.opts.msg[key];
-	    }.bind(this)
-	    this.updateHitsPerPage = function(event) {
-	        this.maxHits = event.target.value;
-	        this.storeValues();
-	        this.updateTimeMatrix.next();
-	    }.bind(this)
-
-	    this.restoreValues = function() {
-	        let string = sessionStorage.getItem("viewer_timematrix");
-	        if(string) {
-	            let json = JSON.parse(string);
-	            return json;
-	        } else {
-	            return undefined;
-	        }
-	    }.bind(this)
-
-	    this.storeValues = function() {
-	        let json = {startYear: this.startYear, endYear: this.endYear, maxHits: this.maxHits}
-	        let string = JSON.stringify(json);
-	        sessionStorage.setItem("viewer_timematrix", string);
-	    }.bind(this)
-
-});
-

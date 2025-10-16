@@ -45,6 +45,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.Dataset;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -510,18 +511,18 @@ public final class DataFileTools {
      * @param language a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
-     * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should load tei document correctly
      */
-    public static String loadTei(String pi, String language) throws FileNotFoundException, IOException {
+    public static String loadTei(String pi, String language) throws IOException {
         logger.trace("loadTei: {}/{}", pi, language);
         if (pi == null) {
             return null;
         }
         TextResourceBuilder builder = new TextResourceBuilder();
         try {
-            return builder.getTeiDocument(pi, language);
+            return builder.getTeiDocument(pi, language, BeanUtils.getRequest());
         } catch (PresentationException | IndexUnreachableException | ContentLibException e) {
             logger.error(e.toString());
             return null;

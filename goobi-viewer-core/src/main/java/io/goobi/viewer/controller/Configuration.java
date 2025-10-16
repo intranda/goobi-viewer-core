@@ -64,6 +64,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
+import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
 import io.goobi.viewer.controller.model.FeatureSetConfiguration;
 import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
@@ -474,10 +475,28 @@ public class Configuration extends AbstractConfiguration {
         return new ArrayList<>(); // must be a mutable list!
     }
 
+    /**
+     * 
+     * @param type
+     * @return Map&lt;String, List&lt;Metadata&gt;&gt;
+     * @should return empty map if type null
+     * @should return correct config
+     */
     public Map<String, List<Metadata>> getMetadataTemplates(String type) {
-        return getMetadataTemplates(type, true, true);
+        try {
+            return getMetadataTemplates(type, true, true);
+        } catch (IllegalArgumentException e) {
+            return Collections.emptyMap();
+        }
     }
 
+    /**
+     * 
+     * @param type
+     * @param fallbackToDefaultTemplate
+     * @param topstructValueFallbackDefaultValue
+     * @return Map&lt;String, List&lt;Metadata&gt;&gt;
+     */
     public Map<String, List<Metadata>> getMetadataTemplates(String type, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
         if (type == null) {
@@ -1918,10 +1937,12 @@ public class Configuration extends AbstractConfiguration {
             boolean range = subElement.getBoolean("[@range]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
             boolean visible = subElement.getBoolean("[@visible]", false);
+            boolean allowMultipleItems = subElement.getBoolean("[@allowMultipleItems]", false);
             int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 50);
             String selectType = subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
             String replaceRegex = subElement.getString("[@replaceRegex]");
             String replaceWith = subElement.getString("[@replaceWith]");
+            String preselectValue = subElement.getString("[@preselectValue]");
 
             ret.add(new AdvancedSearchFieldConfiguration(field)
                     .setLabel(label)
@@ -1930,10 +1951,12 @@ public class Configuration extends AbstractConfiguration {
                     .setUntokenizeForPhraseSearch(untokenizeForPhraseSearch)
                     .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
                     .setVisible(visible)
+                    .setAllowMultipleItems(allowMultipleItems)
                     .setDisplaySelectItemsThreshold(displaySelectItemsThreshold)
                     .setSelectType(selectType)
                     .setReplaceRegex(replaceRegex)
-                    .setReplaceWith(replaceWith));
+                    .setReplaceWith(replaceWith)
+                    .setPreselectValue(preselectValue));
         }
 
         return ret;
@@ -2076,6 +2099,22 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * isAdvancedSearchFieldAllowMultipleItems.
+     * </p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return a boolean.
+     * @should return correct value
+     */
+    public boolean isAdvancedSearchFieldAllowMultipleItems(String field, String template, boolean fallbackToDefaultTemplate) {
+        logger.trace("isAdvancedSearchFieldAllowMultipleItems: {}/{}/{}", field, template, fallbackToDefaultTemplate);
+        return isAdvancedSearchFieldHasAttribute(field, "allowMultipleItems", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * <p>
      * isAdvancedSearchFieldUntokenizeForPhraseSearch.
      * </p>
      *
@@ -2174,6 +2213,37 @@ public class Configuration extends AbstractConfiguration {
      */
     public String getAdvancedSearchFieldReplaceWith(String field, String template, boolean fallbackToDefaultTemplate) {
         return getAdvancedSearchFieldGetAttributeValue(field, "replaceWith", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return Configured value; null if none found
+     * @should return correct value
+     */
+    public String getAdvancedSearchFieldDefaultOperator(String field, String template, boolean fallbackToDefaultTemplate) {
+        return getAdvancedSearchFieldGetAttributeValue(field, "defaultOperator", template, fallbackToDefaultTemplate);
+    }
+    
+    /**
+     * 
+     * @param template
+     * @return Configured value; null if none found
+     * @should return correct value
+     */
+    public String getAdvancedSearchTemplateFirstLineDefaultOperator(String template) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null) {
+            return null;
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, false);
+        if (usingTemplate == null) {
+            return null;
+        }
+
+        return usingTemplate.getString("[@firstLineDefaultOperator]");
     }
 
     /**
@@ -4995,11 +5065,36 @@ public class Configuration extends AbstractConfiguration {
      * isTocListSiblingRecords.
      * </p>
      *
-     * @should return correctValue
      * @return a boolean.
+     * @should return correctValue
      */
     public boolean isTocListSiblingRecords() {
         return getLocalBoolean("toc.ancestorIdentifierFields[@listSiblingRecords]", false);
+    }
+
+    /**
+     * <p>
+     * getAncestorIdentifierFieldFilterQuery(String).
+     * </p>
+     * 
+     * @param field
+     * @return Configured filter query for the given field; empty string is none found
+     * @should return empty string if field config not found
+     * @should return correctValue
+     */
+    public String getAncestorIdentifierFieldFilterQuery(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("toc.ancestorIdentifierFields.field");
+        if (fieldList == null) {
+            return "";
+        }
+
+        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
+            if (subElement.getString(".").equals(field)) {
+                return subElement.getString("[@filterQuery]", "");
+            }
+        }
+
+        return "";
     }
 
     /**
@@ -5048,26 +5143,34 @@ public class Configuration extends AbstractConfiguration {
      * getWebApiFields.
      * </p>
      *
+     * @param template
+     * @return {@link JsonMetadataConfiguration}
      * @should return all configured elements
-     * @return a {@link java.util.List} object.
      */
-    public List<Map<String, String>> getWebApiFields() {
-        List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("webapi.fields.field");
-        if (elements == null) {
-            return new ArrayList<>();
+    public JsonMetadataConfiguration getWebApiFields(String template) {
+        List<HierarchicalConfiguration<ImmutableNode>> templates = getLocalConfigurationsAt("webapi.json.template");
+        if (templates == null) {
+            return null;
         }
 
-        List<Map<String, String>> ret = new ArrayList<>(elements.size());
-        for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
-            Map<String, String> fieldConfig = new HashMap<>();
-            fieldConfig.put("jsonField", sub.getString("[@jsonField]", null));
-            fieldConfig.put("luceneField", sub.getString("[@solrField]", null)); // deprecated
-            fieldConfig.put("solrField", sub.getString("[@solrField]", null));
-            fieldConfig.put("multivalue", sub.getString("[@multivalue]", null));
-            ret.add(fieldConfig);
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templates) {
+            if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
+                String query = subElement.getString("[@query]");
+                List<HierarchicalConfiguration<ImmutableNode>> fieldsNodes = subElement.configurationsAt("field");
+                List<Map<String, String>> fields = new ArrayList<>(fieldsNodes.size());
+                for (HierarchicalConfiguration<ImmutableNode> fieldNode : fieldsNodes) {
+                    Map<String, String> fieldConfig = new HashMap<>();
+                    fieldConfig.put("jsonField", fieldNode.getString("[@jsonField]", null));
+                    fieldConfig.put("solrField", fieldNode.getString("[@solrField]", null));
+                    fieldConfig.put("multivalue", fieldNode.getString("[@multivalue]", null));
+                    fieldConfig.put("constantValue", fieldNode.getString("[@constantValue]", null));
+                    fields.add(fieldConfig);
+                }
+                return new JsonMetadataConfiguration(template, query, fields);
+            }
         }
 
-        return ret;
+        return null;
     }
 
     /**

@@ -76,19 +76,23 @@ public class CalendarView implements Serializable {
     /**
      * Checks whether the conditions for displaying the calendar view have been met.
      *
-     * @return a boolean.
+     * @return true if more than one selectable year is available or more than one item for the currently selected year; false otherwise
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return true if number of items sufficient
      */
     public boolean isDisplay() throws PresentationException, IndexUnreachableException {
-        boolean empty = true;
+        int hits = 0;
         for (CalendarItemMonth item : calendarItems) {
             if (item.getHits() > 0) {
-                empty = false;
-                break;
+                hits += item.getHits();
+                if (hits > 1) {
+                    break;
+                }
             }
         }
-        return !empty || !getVolumeYears().isEmpty();
+
+        return hits > 1 || getVolumeYears().size() > 1;
     }
 
     /**

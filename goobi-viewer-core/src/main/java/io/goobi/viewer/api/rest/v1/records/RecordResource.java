@@ -26,6 +26,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ALTO_ZIP;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CMDI_LANG;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_COMMENTS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_JSON;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
@@ -56,6 +57,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONObject;
 
 import de.intranda.api.annotation.IAnnotationCollection;
@@ -90,6 +92,7 @@ import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -100,6 +103,7 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -118,6 +122,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
@@ -350,7 +355,7 @@ public class RecordResource {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
         TextResourceBuilder b = new TextResourceBuilder();
-        return b.getFulltext(pi);
+        return b.getFulltext(pi, servletRequest);
     }
 
     @GET
@@ -367,7 +372,7 @@ public class RecordResource {
             servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
         }
 
-        return builder.getFulltextAsZip(pi);
+        return builder.getFulltextAsZip(pi, servletRequest);
     }
 
     @GET
@@ -379,7 +384,7 @@ public class RecordResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        return builder.getAltoDocument(pi);
+        return builder.getAltoDocument(pi, servletRequest);
     }
 
     @GET
@@ -394,7 +399,7 @@ public class RecordResource {
             servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
         }
 
-        return builder.getAltoAsZip(pi);
+        return builder.getAltoAsZip(pi, servletRequest);
     }
 
     @GET
@@ -428,7 +433,7 @@ public class RecordResource {
         }
 
         return builder.getTeiDocument(pi,
-                language == null ? servletRequest.getLocale().getLanguage() : StringTools.stripPatternBreakingChars(language));
+                language == null ? servletRequest.getLocale().getLanguage() : StringTools.stripPatternBreakingChars(language), servletRequest);
     }
 
     @GET
@@ -442,7 +447,7 @@ public class RecordResource {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
 
-        return builder.getTeiDocument(pi, servletRequest.getLocale().getLanguage());
+        return builder.getTeiDocument(pi, servletRequest.getLocale().getLanguage(), servletRequest);
     }
 
     @GET
@@ -460,7 +465,8 @@ public class RecordResource {
             servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
         }
 
-        return builder.getTeiAsZip(pi, language == null ? servletRequest.getLocale().getLanguage() : StringTools.stripPatternBreakingChars(language));
+        return builder.getTeiAsZip(pi, language == null ? servletRequest.getLocale().getLanguage() : StringTools.stripPatternBreakingChars(language),
+                servletRequest);
     }
 
     /**
@@ -612,6 +618,44 @@ public class RecordResource {
         }
 
         return ret.toString();
+    }
+
+    /**
+     * @param pi Record identifier
+     * @param template JSON configuration template name
+     * @return {@link Response}
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_JSON)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and filed mapping are configured statically.")
+    public Response getRecordMetadataAsJson(@PathParam("pi") String pi, @PathParam("template") String template)
+            throws IndexUnreachableException, PresentationException {
+        logger.trace("getRecordMetadataAsJson: {}/{}", pi, template);
+        if (StringUtils.isEmpty(pi)) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "pi missing").build();
+        }
+        JsonMetadataConfiguration config = DataManager.getInstance().getConfiguration().getWebApiFields(template);
+        if (config == null) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template not found: " + template).build();
+        }
+
+        String query = "+" + SolrConstants.PI + ":\"" + pi + "\"";
+        logger.trace(query);
+        SolrDocumentList docs =
+                DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(SearchHelper.buildFinalQuery(query, false, servletRequest, null));
+        logger.trace("{} hits.", docs.size());
+        if (docs.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
+        }
+
+        JSONObject jsonObj = JsonTools.createJsonObjectFromSolrDoc(docs.get(0), config.getFields());
+
+        return Response.ok(jsonObj.toString(), MediaType.APPLICATION_JSON).build();
     }
 
     /**

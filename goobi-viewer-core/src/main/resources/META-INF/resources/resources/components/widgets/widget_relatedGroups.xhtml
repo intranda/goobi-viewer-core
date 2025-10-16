@@ -51,7 +51,8 @@
                    	<div class="widget widget-related-groups__anchor">
                    		<div class="widget__topbar widget-related-groups__topbar">
 	                   		<h2 class="widget__title widget-related-groups__title">
-	                       		<a href="#{navigationHelper.tocUrl}/#{activeDocumentBean.viewManager.anchorPi}/1/" target="_blank">
+	                       		<a href="#{navigationHelper.getRecordUrl(activeDocumentBean.viewManager.anchorPi, activeDocumentBean.viewManager.anchorStructElement.docStructType, 1, true, false)}"
+	                       		    target="_blank">
 	                           		#{msg.anchor}
 	                           	</a>
 	                       	</h2>

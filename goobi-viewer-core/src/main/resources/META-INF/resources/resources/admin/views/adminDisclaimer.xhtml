@@ -191,9 +191,20 @@
 											<div class="text-right">
 												<h:commandButton class="btn btn--danger"
 													value="#{msg.admin__legal__reset_cookie_banner_consent__action}"
-													onclick="if ( !confirm( &quot;#{msg.admin__legal__disclaimer_reset_consent__confirm}&quot; ) ) { return false };"
 													action="#{disclaimerEditBean.resetUserConsent()}">
-													<f:ajax render="@form :messages"></f:ajax>
+													<f:passThroughAttribute
+														name="data-require-confirmation"
+														value="true" />
+													<f:passThroughAttribute
+														name="data-confirmation-text"
+														value="#{msg.admin__legal__disclaimer_reset_consent__confirm}" />
+                                                    <f:passThroughAttribute name="data-confirm-button-text"
+                                                                            value="#{msg.reset}"/>
+                                                    <f:passThroughAttribute name="data-confirm-button"
+                                                                            value="btn btn--full"/>
+                                                    <f:passThroughAttribute name="data-icon"
+                                                                            value="warn"/>
+                                                    <f:ajax execute="@this" render="@form :messages"/>
 												</h:commandButton>
 											</div>
 										</div>
@@ -207,4 +218,3 @@
 		</f:view>
 	</ui:define>
 </ui:composition>
-

@@ -57,8 +57,7 @@
                                 <!-- DELETE -->
                                 <h:commandLink rendered="#{bookmarkBean.currentBookmarkList.isMayEdit(userBean.user)}"
                                     title="#{msg.bookmarkList_delete}"
-                                    action="#{bookmarkBean.deleteCurrentBookmarkListAction}"
-                                    onclick="if ( !confirm( &quot;#{msg.bookmarks_confirmDeleteBookmarkList}&quot; ) ) { return false };">
+                                    action="#{bookmarkBean.deleteCurrentBookmarkListAction}">
                                     <i
                                         class="fa fa-trash-o"
                                         aria-hidden="true"></i>
@@ -68,7 +67,13 @@
                                     <f:passThroughAttribute
                                         name="data-placement"
                                         value="top" />
-									<f:passThroughAttribute
+                                    <f:passThroughAttribute
+                                        name="data-require-confirmation"
+                                        value="true" />
+                                    <f:passThroughAttribute
+                                        name="data-confirmation-text"
+                                        value="#{msg.bookmarks_confirmDeleteBookmarkList}" />
+                                    <f:passThroughAttribute
                                         name="aria-label"
                                         value="#{msg.bookmarkList_delete}" />
                                 </h:commandLink>
