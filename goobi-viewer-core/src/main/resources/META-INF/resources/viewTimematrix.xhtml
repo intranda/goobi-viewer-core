@@ -30,11 +30,13 @@
         </f:view>
     </ui:define>
 
-    <ui:define name="sidebar">
-        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
-            <widgetComponent:widget_browsing />
-        </h:panelGroup>
-		<widgetComponent:widget_rssFeed/>
-    </ui:define>
+	<ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
+	    <ui:define name="sidebar">
+	        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+	            <widgetComponent:widget_browsing />
+	        </h:panelGroup>
+			<widgetComponent:widget_rssFeed/>
+	    </ui:define>
+    </ui:fragment>
 
 </ui:composition>

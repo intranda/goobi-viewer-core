@@ -261,16 +261,19 @@
         </f:view>
     </ui:define>
 
-    <ui:define name="sidebar">
-        <widgetComponent:widget_views pageType="nerfacetting" />
 
-        <c:forEach var="module" items="#{configurationBean.modules}">
-            <c:forEach var="contribution" items="#{module.sidebarContributions}">
-                <ui:include src="/#{contribution}" />
-            </c:forEach>
-        </c:forEach>
-
-        <widgetComponent:widget_userInteractions />
-    </ui:define>
+	<ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
+	    <ui:define name="sidebar">
+	        <widgetComponent:widget_views pageType="nerfacetting" />
+	
+	        <c:forEach var="module" items="#{configurationBean.modules}">
+	            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+	                <ui:include src="/#{contribution}" />
+	            </c:forEach>
+	        </c:forEach>
+	
+	        <widgetComponent:widget_userInteractions />
+	    </ui:define>
+    </ui:fragment>
 
 </ui:composition>
