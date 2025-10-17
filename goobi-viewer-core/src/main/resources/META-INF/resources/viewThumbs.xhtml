@@ -162,8 +162,10 @@
         </script>
 	</ui:define>
 
-	<ui:define name="sidebar">
-		<viewerComponent:record_sidebar />
-	</ui:define>
+	<ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
+	    <ui:define name="sidebar">
+	        <viewerComponent:record_sidebar/>
+	    </ui:define>
+	</ui:fragment>
 
 </ui:composition>
