@@ -109,7 +109,7 @@
                                 <!-- Related archive entry --> 
                                 <ui:fragment rendered="#{hit.altUrl != null}">
                                     <a class="search-list__hit-archive-link" href="#{request.contextPath}/#{hit.altUrl}" title="#{hit.altLabel}">
-                                        #{msg.archives__open_in_archive_view} <i class="fa fa-archive"></i>
+                                        <util:icon-text icon="archive" text="#{msg.archives__open_in_archive_view}" textPosition="left" />
                                     </a>
                                 </ui:fragment> 
                             </div>
