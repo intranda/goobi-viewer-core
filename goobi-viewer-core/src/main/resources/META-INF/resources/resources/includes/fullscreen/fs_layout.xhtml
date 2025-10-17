@@ -289,9 +289,10 @@
 									</ul>
 								</div>
 				            </div>
-	                    </div>
-
-					<!-- RECORD NOTES -->
+		                    </div>
+						</c:if>
+					
+						<!-- RECORD NOTES -->
 					<c:set var="recordNotes" value="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}"/>
                     <c:if test="#{not empty recordNotes}">
 	                    <ui:repeat var="note" varStatus="status" value="#{recordNotes}">
@@ -495,4 +496,3 @@
     </script>
 
 </ui:composition>
-
