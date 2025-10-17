@@ -38,10 +38,26 @@
                                             <label for="ipRangeName">#{msg.name}:</label>
                                             <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                         </div>
-                                        <div class="col-9 admin__form-input">
-                                            <h:inputText value="#{adminBean.currentIpRange.name}" id="ipRangeName" required="true" styleClass="form-control" />
-                                            <span class="admin__form-help-text">#{msg.admin__ip_range_name__help}</span>
+                                        
+                                        <div class="col-9 cms-module__option-control admin__form-input">
+                                            <h:panelGroup id="ipRangeNameGroup">
+                                            <div class="cms-module__option-message">
+                                                <h:messages for="nameGroup"
+                                                    infoClass="cms-module__option-message-status success"
+                                                    warnClass="cms-module__option-message-status warning"
+                                                    errorClass="cms-module__option-message-status danger" />
+                                                <div class="cms-module__option-message-mark">
+                                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                                    <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                </div>
+                                            </div>
+                                            <h:inputText value="#{adminBean.currentIpRange.name}" id="ipRangeName" required="true" styleClass="form-control" >
+                                                <f:ajax event="blur" render="ipRangeNameGroup" />
+                                            </h:inputText>
+                                            </h:panelGroup>
+                                            <span class="admin__form-help-text">#{msg.admin__ip_range_subnet_mask__help}</span>
                                         </div>
+                                        
                                         <div class="col-1 admin__form-help-icon">
                                             <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
                                                 <util:icon icon="help" />
@@ -54,6 +70,7 @@
                                             <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                         </div>
                                         <div class="col-9 cms-module__option-control admin__form-input">
+                                            <h:panelGroup id="subnetMaskGroup">
                                             <div class="cms-module__option-message">
                                                 <h:messages for="subnetMask"
                                                     infoClass="cms-module__option-message-status success"
@@ -68,6 +85,7 @@
                                                 <f:validator validatorId="subnetMaskValidator" for="subnetMask" />
                                                 <f:ajax event="blur" render="subnetMaskGroup" />
                                             </h:inputText>
+                                            </h:panelGroup>
                                             <span class="admin__form-help-text">#{msg.admin__ip_range_subnet_mask__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">

@@ -78,10 +78,10 @@
                                     icon="lock"
                                     text="#{msg.admin__rights}"
                                     styleClass="icon-text--nav" />
-                                <ui:fragment rendered="#{adminLicenseBean.downloadTicketRequests.size() gt 0 and adminLicenseBean.downloadTicketRequests.size() le 99}">
-									<span data-toggle="tooltip" title="#{msg.admin__rights__download_tickets_tooltip}" class="admin-widget__counter">#{adminLicenseBean.downloadTicketRequests.size()}</span>
+                                <ui:fragment rendered="#{adminLicenseBean.ticketRequests.size() gt 0 and adminLicenseBean.ticketRequests.size() le 99}">
+									<span data-toggle="tooltip" title="#{msg.admin__rights__download_tickets_tooltip}" class="admin-widget__counter">#{adminLicenseBean.ticketRequests.size()}</span>
 								</ui:fragment>
-                                <ui:fragment rendered="#{adminLicenseBean.downloadTicketRequests.size() gt 99}">
+                                <ui:fragment rendered="#{adminLicenseBean.ticketRequests.size() gt 99}">
 									<span data-toggle="tooltip" title="#{msg.admin__rights__download_tickets_tooltip}" class="admin-widget__counter -small">99+</span>
 								</ui:fragment>
                             </h:outputLink>

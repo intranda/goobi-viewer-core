@@ -59,7 +59,7 @@
                             <!-- FUNCTIONS -->
                             <h2>#{msg.admin__license_functions}</h2>
                             <div class="admin__default-block pb-0">
-                            	<div class="#{adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="exclusive">
+                            	<div class="#{adminLicenseBean.currentLicenseType.accessTicketRequired or adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="exclusive">
 	                                <div class="form-group form-row mb-3">
 	                                    <div class="col-2 control-label admin__form-label">
 	                                        <span>#{msg.openAccess}:</span>
@@ -75,7 +75,7 @@
 								</div>
 
                                 <!-- MOVING WALL -->
-                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="keepFunctions">
+                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.accessTicketRequired or adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="keepFunctions">
 	                                <div class="form-group form-row">
 	                                    <div class="col-2 control-label admin__form-label">
 	                                        <span>#{msg.movingWall}:</span>
@@ -97,9 +97,34 @@
 	                                </div>
                                 </div>
                                 
+                                <!-- ACCESS TICKET -->
+                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="keepFunctions">
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <span>#{msg.admin__license_ticket_required_label}:</span>
+                                        </div>
+                                        <div class="col-9 admin__form-input mb-3">
+                                            <div class="admin__radio-switch ticketRequiredToggle">
+                                                <h:selectOneRadio group="ticketRequiredToggle" value="#{adminLicenseBean.currentLicenseType.accessTicketRequired}"
+                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                    <f:ajax render="functionsGroup" />
+                                                </h:selectOneRadio>
+                                                <h:selectOneRadio group="ticketRequiredToggle" value="#{adminLicenseBean.currentLicenseType.accessTicketRequired}"
+                                                    immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                    <f:ajax render="functionsGroup" />
+                                                </h:selectOneRadio>
+                                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                            </div>
+                                            <span class="admin__form-help-text in">#{msg.admin__license_ticket_required_desc}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <!-- REDIRECT TO PAGE -->
                                 <h:panelGroup layout="block" id="urlInputGroup">
-                                <div class="#{adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}" data-watched-element="exclusiveAndInput">
+                                <div class="#{adminLicenseBean.currentLicenseType.accessTicketRequired or adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}" data-watched-element="exclusiveAndInput">
 	                                <div class="form-group form-row admin__license-functions mb-0">
 	                                    <div class="col-2 control-label admin__form-label">
 	                                        <span>#{msg.admin__license_functions_redirect}:</span>
@@ -152,7 +177,9 @@
                                 
                                 </h:panelGroup>
 
-                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.redirect or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}" data-target-visibility="keepVisible">
+                                <h:panelGroup id="functionsGroup">
+                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.redirect or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}"
+                                    data-target-visibility="keepVisible">
                                     <hr />
                                     <div class="form-group form-row pb-3">
                                         <div class="col-2">#{msg.admin__license_functions}:</div>
@@ -160,14 +187,26 @@
                                         <div class="col-1"></div>
                                         <div class="col-2"></div>
                                         <div class="col-9 badge-hover pb-3">
-                                            <c:forEach var="priv" items="#{adminLicenseBean.currentLicenseType.getSortedPrivileges(adminLicenseBean.currentLicenseType.privilegesCopy)}">
-                                                <button 
-                                                    class="btn btn--link admin__badge admin__badge-active admin__license-action" 
-                                                    jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
-                                                        <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
-                                                        <!-- remove button -->
-                                                        <util:icon icon="trash" />
-                                                </button>
+                                            <c:forEach var="priv"
+                                                items="#{adminLicenseBean.currentLicenseType.getSortedPrivileges(adminLicenseBean.currentLicenseType.privilegesCopy)}">
+                                                <c:choose>
+                                                    <c:when test="#{adminLicenseBean.currentLicenseType.accessTicketRequired and priv == 'LIST'}">
+                                                        <button disabled="true" class="btn btn--link admin__badge admin__badge-secondary admin__license-action" 
+                                                        jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}"
+                                                        title="#{msg.remove}">
+                                                            <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
+                                                        </button>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <button class="btn btn--link admin__badge admin__badge-active admin__license-action" 
+                                                            jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}"
+                                                            title="#{msg.remove}">
+                                                            <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
+                                                            <!-- remove button -->
+                                                            <util:icon icon="trash" />
+                                                        </button>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </c:forEach>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
@@ -288,6 +327,8 @@
 	                                </div>
 	                                </ui:fragment>
                                 </div>
+                                </h:panelGroup>
+                                
                             </div>
 
                             <!-- OVERRIDING LICENSES -->

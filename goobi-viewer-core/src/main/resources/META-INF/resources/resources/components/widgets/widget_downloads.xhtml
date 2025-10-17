@@ -563,9 +563,7 @@
 					</div>
 				</div>
 				<!-- INTEGRATED WIDGET ADDITIONAL FILES -->
-				<ui:fragment
-					rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu and 
-						(displayConditions.matchRecord('{pageType:[viewObject], numPages:1, mimeType: [image, video, audio, model]}') or displayConditions.matchRecord('{pageType:[viewMetadata], numPages:!1, mimeType: ![image, video, audio, model]}')) }">
+				<ui:fragment rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu}">
 					<div id="widgetAdditionalFiles"
 						class="widget-downloads__additional-files-wrapper">
 						<h:form id="widgetAdditionalFilesForm">
