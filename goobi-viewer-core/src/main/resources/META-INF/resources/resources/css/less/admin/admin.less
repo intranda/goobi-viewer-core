@@ -1731,11 +1731,26 @@
 	}
 
 	&__topbar-queue-info-icon {
-
-		// color: @adminBackend-bg;
-		.fa-spinner {
+		color: @adminBackend-menu-text;
+		.icon-wrapper {
+			display: flex;
+			width: 14px;
+			height: 14px;
+			justify-content: center;
+			align-items: center;
+			color: inherit;
+			svg {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+		}
+		&--spinner {
 			color: #ffe34c;
-			font-size: 1.6rem;
+			.icon-wrapper {
+				width: 18px;
+				height: 18px;
+			}
 		}
 	}
 
@@ -1769,7 +1784,19 @@
 
 	&__topbar-queue-warning-icon {
 		color: @adminBackend-menu-text;
-		font-size: 12px;
+		.icon-wrapper {
+			display: flex;
+			width: 14px;
+			height: 14px;
+			justify-content: center;
+			align-items: center;
+			color: inherit;
+			svg {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+		}
 	}
 
 	&__topbar-queue-warning-text {}
