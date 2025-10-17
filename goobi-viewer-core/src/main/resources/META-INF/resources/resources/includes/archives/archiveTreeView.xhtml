@@ -77,7 +77,18 @@
 											data-render="archiveTree"
 											jsf:rendered="#{entry.hasChild}"
 											jsf:action="#{archiveBean.toggleEntryExpansion(entry)}">
-											<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+											<ui:fragment rendered="#{archiveTree.isEntryExpanded(entry)}">
+												<util:icon
+													icon="square-rounded-minus"
+													styleClass="archives-tree__expandable-icon-symbol-wrapper"
+													svgClass="icon archives-tree__expandable-icon-symbol" />
+											</ui:fragment>
+											<ui:fragment rendered="#{!archiveTree.isEntryExpanded(entry)}">
+												<util:icon
+													icon="square-rounded-plus"
+													styleClass="archives-tree__expandable-icon-symbol-wrapper"
+													svgClass="icon archives-tree__expandable-icon-symbol" />
+											</ui:fragment>
 											<f:passThroughAttribute name="aria-label"
 												value="#{msg.allOpen}" />
 											<f:passThroughAttribute name="data-expand-entry"
@@ -126,7 +137,7 @@
 													    <ui:fragment rendered="#{entry.containsImage and !entry.imageAccessAllowed}">
 														    <span class="archives-tree__record-link-icon-wrapper-outer" data-toggle="tooltip" title="#{msg.archives__record_has_image_no_access__tooltip}">
 															    <span class="archives-tree__record-link-icon-wrapper">
-															    	<i class="fa fa-ban archives-tree__record-link-icon-ban" aria-hidden="true"></i>
+															    	<util:icon icon="ban" styleClass="archives-tree__record-link-icon-ban" svgClass="icon archives-tree__record-link-icon-ban-icon" />
 															    	<util:icon icon="photo" />
 															    </span>
 														    </span>
@@ -153,7 +164,7 @@
 													    <ui:fragment rendered="#{entry.containsImage and !entry.imageAccessAllowed}">
 														    <span class="archives-tree__record-link-icon-wrapper-outer" data-toggle="tooltip" title="#{msg.archives__record_has_image_no_access__tooltip}">
 															    <span class="archives-tree__record-link-icon-wrapper">
-															    	<i class="fa fa-ban archives-tree__record-link-icon-ban" aria-hidden="true"></i>
+															    	<util:icon icon="ban" styleClass="archives-tree__record-link-icon-ban" svgClass="icon archives-tree__record-link-icon-ban-icon" />
 															    	<util:icon icon="photo" />
 															    </span>
 														    </span>
@@ -189,7 +200,7 @@
 														    <!-- SMALL ICON IMAGE INDICATOR BEHIND RECORD (NO ACCESS) -->
 														    <span class="archives-tree__record-link-icon-wrapper-outer" data-toggle="tooltip" title="#{msg.archives__record_has_image_no_access__tooltip}">
 															    <span class="archives-tree__record-link-icon-wrapper">
-															    	<i class="fa fa-ban archives-tree__record-link-icon-ban" aria-hidden="true"></i>
+															    	<util:icon icon="ban" styleClass="archives-tree__record-link-icon-ban" svgClass="icon archives-tree__record-link-icon-ban-icon" />
 															    	<util:icon icon="photo" />
 															    </span>
 														    </span>

@@ -174,22 +174,31 @@
 	}
 	&__record-link-icon-wrapper-outer {
 		margin-left: 6px;
+		display: inline-flex;
+		align-items: center;
+		vertical-align: middle;
 	}
 	&__record-link-icon-wrapper {
-
 		position: relative; 
 		display: inline-flex;
 	    justify-content: center;
 	    align-items: center;
-	   //  margin-left: 10px;
-	    // padding-left: 6px; 
+	    width: 1.4rem;
+	    height: 1.4rem;
+	    vertical-align: middle;
 	}
 	&__record-link-icon-ban {
 		position: absolute;
-		  color: red;
-		//  font-weight: 700;
-		  font-size: 2em;
-		  opacity: 0.4;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+		color: fade(@red, 90%);
+		opacity: 0.6;
+		&-icon {
+			transform: scale(2);
+		}
 	}
 	&__expandable-icon-wrapper {
 		display: flex;
@@ -203,17 +212,14 @@
 				color: inherit;
 			}
 		}
-		.fa {
+		.archives-tree__expandable-icon-symbol-wrapper {
 			display: flex;
-			font-size: 1.5rem;
 			margin-top: 3px;
 		}
-		&.-expanded {
-			.fa-plus-square-o {
-				&::before {
-					content: "\f147";
-				}
-			}
+		.archives-tree__expandable-icon-symbol {
+			width: 1.5rem;
+			height: 1.5rem;
+			padding-bottom: 3px;
 		}
 	}
 	&__expandable-icon-button {
