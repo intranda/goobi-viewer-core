@@ -150,7 +150,7 @@
 	                                                <div class="widget-search-facets__list-item-link-inner">
 	                                                    <div class="widget-search-facets__list-item-link-active">#{facet.translatedLabel}</div>
 	                                                    <div class="widget-search-facets__list-item-link-icon">
-	                                                        <i class="fa fa-times" aria-hidden="true"></i>
+															<util:icon icon="x" />
 	                                                    </div>
 	                                                </div>
 	                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -181,7 +181,7 @@
                                         <button class="btn btn--clean"
                                             jsf:action="#{searchBean.facets.expandFacet(field.key)}"
                                             title="#{msg.slideDown}">
-                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+											<util:icon icon="chevron-down" />
                                             <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
                                             <f:ajax render="collectionFacetsPanelGroup_#{status.index}" />
                                         </button>
@@ -191,7 +191,7 @@
                                     <div class="widget-search-facets__collapse">
                                         <button class="btn btn--clean"
                                             jsf:action="#{searchBean.facets.collapseFacet(field.key)}" title="#{msg.slideUp}">
-                                            <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                            <util:icon icon="chevron-up" />
                                             <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
                                                 <f:ajax render="collectionFacetsPanelGroup_#{status.index}" />
                                         </button>
