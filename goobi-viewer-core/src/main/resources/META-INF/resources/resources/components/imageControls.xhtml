@@ -1,5 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -223,7 +224,6 @@
                     <!-- CROWDSOURCING CAMPAIGN -->
                     <ui:fragment>
                         <ui:repeat var="campaign" value="#{crowdsourcingBean.getActiveCampaignsForRecord(activeDocumentBean.viewManager.pi)}">
-<!--                                 <ui:fragment rendered="#{campaign.mayAnnotate(userBean.user, activeDocumentBean.viewManager.pi) and campaign.isUserAllowedAction(userBean.user, 'ANNOTATE')}"> -->
                             	<li class="image-controls__option">
                                  <h:commandLink
                              		target="_blank" action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign, activeDocumentBean.viewManager.pi)}"
@@ -232,11 +232,9 @@
                                  	<f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
                                      <f:passThroughAttribute name="data-original-title" value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" />
                                      <f:passThroughAttribute name="aria-label" value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" />
-
-                                     <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
+                                     <util:icon icon="bulb" svgClass="icon" />
                                  </h:commandLink>
                                 </li>
-<!--                                 </ui:fragment> -->
                         </ui:repeat>
                     </ui:fragment>
 
@@ -246,7 +244,7 @@
                             <li class="image-controls__option fulltext">
                                 <h:outputLink styleClass="btn btn--icon image-controls__fulltext-link" value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/"
                                     title="#{msg.fulltext}" target="_blank">
-                                        <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                                        <util:icon icon="align-box-left-bottom" svgClass="icon" />
                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                     <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
                                     <f:passThroughAttribute name="aria-label" value="#{msg.fulltext}" />
@@ -259,7 +257,7 @@
                             <li class="image-controls__option share-image-region">
                                 <a class="image-controls__share-image-link" role="button" title="#{msg.action__share_image_region}" data-toggle="tooltip" data-placement="top"
                                 data-popover-element="#share-image-area-popup" aria-label="#{msg.action__share_image_region}">
-                                 <i class="fa fa-crop" aria-hidden="true"></i>
+                                 <util:icon icon="screen-share" svgClass="icon" />
                                 </a>
                             </li>
                         </ui:fragment>
@@ -273,10 +271,9 @@
                                    data-container="#imageFiltering"
                                    data-popover-aria-label="#{msg.label__image_filter_toolkit}"
                                    aria-label="#{msg.label__image_filter_toolkit}"
-                                   
-                             	   data-toggle="tooltip"
-                             	title="#{msg.label__image_filter_toolkit__error}">
-                                <i class="fa fa-wrench" aria-hidden="true"></i>
+                                   data-toggle="tooltip"
+                                   title="#{msg.label__image_filter_toolkit__error}">
+                                <util:icon icon="tool" svgClass="icon" />
                                 </button>
                             </li>
                         </ui:fragment>
@@ -292,8 +289,8 @@
                                 role="switch"
                                 aria-label="#{msg.bookmarkList_addToBookmarkList}">
                                 <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}">
-                                    <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true" ></i>
-                                    <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
+                                    <util:icon icon="bookmark" svgClass="icon icons-tabler-outline" styleClass="icon-bookmark-outline" />
+                                    <util:icon icon="bookmark" filled="true" svgClass="icon icons-tabler-filled" styleClass="icon-bookmark-filled" />
                                 </span>
                             </button>
                         </li>

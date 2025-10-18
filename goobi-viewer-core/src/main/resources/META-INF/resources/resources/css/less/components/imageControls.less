@@ -16,7 +16,7 @@
 	&__inner {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 5px;
+		gap: 4px; // slightly more compact
 	}
 	// GRID/GAP SIZING FOR THE IMAGE ACTIONS/CONTROLS + (DOC) OPTIONS
     &__actions,
@@ -30,13 +30,56 @@
 	/* DOCUMENT OPTIONS */
 	&__options {
 		margin-left: auto;
-		gap: 10px;
+		gap: 6px;
 		display: flex;
 		flex-wrap: wrap;
 		ul {}
 	    li {
 	    	align-self: center;
 	    }
+
+		.btn.btn--icon,
+		.image-controls__share-image-link {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 32px;
+			height: 32px;
+			border: 1px solid @gray;
+			border-radius: 4px;
+			line-height: 1;
+			background-color: transparent;
+			transition: background-color .15s ease, box-shadow .15s ease, border-color .15s ease;
+		}
+
+		.btn.btn--icon .icon-wrapper,
+		.image-controls__share-image-link .icon-wrapper {
+			line-height: 0;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 18px;
+			height: 18px;
+		}
+
+		.btn.btn--icon .icon-wrapper svg,
+		.image-controls__share-image-link .icon-wrapper svg {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+
+        .btn.btn--icon:hover,
+        .image-controls__share-image-link:hover,
+        .image-controls__share-image-link:focus {
+            background-color: fade(@black, 8%);
+            border-color: fade(@black, 24%);
+            box-shadow: 0 2px 6px fade(@black, 10%);
+        }
+		.btn.btn--icon:focus-visible,
+		.image-controls__share-image-link:focus-visible {
+			outline-offset: 2px;
+		}
 	}
 	&__option {
 		a, 
@@ -58,26 +101,36 @@
 			text-align: center;
 		}
 		&.fulltext {}
-		&.add-to-bookmark {
-			[data-bookmark-list-type="add"] {
-			    background-image: none;
-			    .fa-bookmark-o {
-			    	display: inline-block;
-			    }
-			    .fa-bookmark {
-			    	display: none;
-			    }
-			    &.added, 
-			    &:hover {
-			    	.fa-bookmark-o {
-			    		display: none;
-			    	}
-			    	.fa-bookmark {
-			    		display: inline-block;
-			    	}
-			    }
-			}
-		}
+        &.add-to-bookmark {
+            [data-bookmark-list-type="add"] {
+                background-image: none;
+                .icon-bookmark-outline {
+                    display: inline-block;
+                }
+                .icon-bookmark-filled {
+                    display: none;
+                    svg {
+                        stroke: none;
+                        outline: none;
+                        border: none;
+                    }
+                }
+                &.added,
+                &:hover {
+                    .icon-bookmark-outline {
+                        display: none;
+                    }
+                    .icon-bookmark-filled {
+                        display: inline-block;
+                        svg {
+                            stroke: none;
+                            outline: none;
+                            border: none;
+                        }
+                    }
+                }
+            }
+        }
 		&.share-image-region {
 			cursor: pointer;
 			a.active {
