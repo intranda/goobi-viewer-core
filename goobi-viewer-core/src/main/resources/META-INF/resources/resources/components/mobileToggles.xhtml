@@ -1,6 +1,6 @@
 <ui:composition 
       xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:util="http://goobi.io/util"
+      xmlns:util="http://goobi.io/util"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -17,7 +17,7 @@
             <h:panelGroup rendered="#{cc.attrs.sidebarPosition == 'left'}">
                 <button type="button" class="btn-toggle sidebar pull-left" data-toggle="offcanvas">
                     <span class="sr-only">Toggle Sidebar</span>
-                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                    <util:icon icon="dots-vertical" />
                 </button>
             </h:panelGroup>
 
@@ -31,18 +31,18 @@
             <h:panelGroup rendered="#{cc.attrs.sidebarPosition == 'right'}">
                 <button type="button" class="btn-toggle sidebar pull-right" data-toggle="offcanvas">
                     <span class="sr-only">Toggle Sidebar</span>
-                    <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                    <util:icon icon="dots-vertical" />
                 </button>
             </h:panelGroup>
             
             <button type="button" class="btn-toggle mobilenav pull-right" data-toggle="mobilenav">
                 <span class="sr-only">Toggle navigation</span>
-                <i class="fa fa-bars" aria-hidden="true"></i>
+                <util:icon icon="menu-2" />
             </button>
             
             <button type="button" class="btn-toggle language pull-right" data-toggle="language">
                 <span class="sr-only">Toggle language</span>
-                <i class="fa fa-globe" aria-hidden="true"></i>
+                <util:icon icon="world" />
             </button>
             
             <h:panelGroup rendered="#{navigationHelper.currentPage != 'search'}">
