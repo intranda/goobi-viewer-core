@@ -10,29 +10,66 @@
 	            <label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label>
 	            <input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}">
 	        </div>
-	        <div class="admin-cms-media__upload-messages">
-	            <div class="admin-cms-media__upload-message uploading">
-	                <i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading}
-	            </div>
-	            <div class="admin-cms-media__upload-message success">
-	                <i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished}
-	            </div>
-	            <div class="admin-cms-media__upload-message error">
-	                <i class="fa fa-exclamation-circle" aria-hidden="true"></i> <span></span>
-	            </div>        
-	        </div>
+        <div class="admin-cms-media__upload-messages">
+            <div class="admin-cms-media__upload-message uploading">
+                <svg class="admin-cms-media__upload-icon admin-cms-media__upload-icon--spinner" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
+                    <use href="{getIconHref('loader-2')}"></use>
+                </svg>
+                {opts.msg.mediaUploading}
+            </div>
+            <div class="admin-cms-media__upload-message success">
+                <svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
+                    <use href="{getIconHref('check')}"></use>
+                </svg>
+                {opts.msg.mediaFinished}
+            </div>
+            <div class="admin-cms-media__upload-message error">
+                <svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
+                    <use href="{getIconHref('alert-circle')}"></use>
+                </svg>
+                <span></span>
+            </div>         
+        </div>
 	    </div>
 	    <div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? 'in' : ''}" ref="filesZone">
-	       	<div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file">
-		       	<img src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"/>
-		       	<div class="delete_overlay" onclick="{deleteFile}">
-		       		<i class="fa fa-trash" aria-hidden="true"></i>
-		       	</div>
+       	<div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file">
+	       	<img src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"/>
+	       	<div class="delete_overlay" onclick="{deleteFile}">
+                <svg class="admin-cms-media__delete-icon" viewBox="0 0 24 24" width="30" height="24" aria-hidden="true">
+                    <use href="{getIconHref('trash')}"></use>
+                </svg>
 	       	</div>
+       	</div>
 	    </div>
 	</div>
     <script>
+        this.iconBasePath = (function() {
+            if (this.opts.postUrl) {
+                try {
+                    var anchor = document.createElement('a');
+                    anchor.href = this.opts.postUrl;
+                    var basePath = anchor.pathname || '/';
+                    var index = basePath.indexOf('/api/');
+                    if (index !== -1) {
+                        basePath = basePath.substring(0, index);
+                    }
+                    if (!basePath.endsWith('/')) {
+                        basePath += '/';
+                    }
+                    return basePath;
+                } catch (e) {
+                    console.warn('Unable to resolve icon base path from postUrl', e);
+                }
+            }
+            return '/';
+        }).call(this);
+
+        this.getIconHref = function(iconName) {
+            return this.iconBasePath + 'resources/icons/outline/' + iconName + '.svg#icon';
+        }.bind(this);
+
         this.files = [];
+
         this.displayFiles = [];
         this.uploadedFiles = []
         if(this.opts.fileTypes) {
