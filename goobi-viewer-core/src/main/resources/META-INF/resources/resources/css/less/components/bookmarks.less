@@ -239,8 +239,8 @@
 			display: flex !important;
 		 	align-items: center;
 		    gap: 4px;
-			.fa {
-				color: green;
+			svg {
+				flex-shrink: 0;
 			}
 			span {
 				display: inline-block;
@@ -251,6 +251,17 @@
 			    background-color: @blue;
 				margin-left: auto;
 			}
+		}
+		.bookmark-popup__check-icon {
+			width: 1em;
+			height: 1em;
+			color: green;
+			stroke: currentColor;
+		}
+		.bookmark-popup__action-icon {
+			width: 1.2em;
+			height: 1.2em;
+			stroke: currentColor;
 		}
 	}
 	&__radio-buttons {
