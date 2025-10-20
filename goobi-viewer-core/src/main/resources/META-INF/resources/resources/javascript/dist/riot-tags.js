@@ -3679,6 +3679,229 @@ this.show = function() {
 }.bind(this)
 
 });
+riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"><p class="swiper-description slider-{this.opts.stylename}__description" ref="description"></p></a>', '', '', function(opts) {
+		this.on("mount", () => {
+			if(this.refs.description) {
+				   this.refs.description.innerHTML = this.opts.description;
+			}
+		});
+});
+
+riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
+});
+riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
+});
+
+
+riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showStandardNav}" ref="navigation" class="slider-navigation-wrapper slider-navigation-wrapper-{this.styleName} slider-navigation-wrapper-{this.sliderInstance}"><div ref="navigationLeft" class="swiper-button-prev"></div><div ref="navigationRight" class="swiper-button-next"></div></div><div if="{this.showStandardPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div></div>', '', '', function(opts) {
+
+
+	this.showStandardPaginator = true;
+	this.showStandardNav = true;
+
+    this.on( 'mount', function() {
+    	this.sliderInstance = this.opts.sliderinstanceid;
+
+		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
+
+		this.amendStyle(this.style);
+		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
+
+		this.timeout = this.style.timeout ? this.style.timeout : 100000;
+		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
+		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
+
+		firstSlideMessage = this.opts.firstslidemessage;
+
+    	let pSource;
+    	if(this.opts.sourceelement) {
+    		let sourceElement = document.getElementById(this.opts.sourceelement);
+    		if(sourceElement) {
+    			pSource = Promise.resolve(JSON.parse(sourceElement.textContent));
+
+    		} else {
+    			logger.error("sourceElement was included but no matching dom element found");
+    			return;
+    		}
+    	} else if(this.opts.slides) {
+    		let sourceArray = this.opts.slides.replaceAll("_qm_", "?").split("$")
+    		pSource = Promise.resolve(sourceArray);
+    	}  else {
+    		pSource = fetch(this.opts.source)
+        	.then(result => result.json());
+    	}
+    	rxjs.from(pSource)
+    	.pipe(
+    		rxjs.operators.flatMap(source => source),
+    		rxjs.operators.flatMap(uri => fetch(uri), undefined, 5),
+    		rxjs.operators.filter(result => result.status == 200),
+    		rxjs.operators.takeUntil(rxjs.timer(this.timeout)),
+    		rxjs.operators.flatMap(result => result.json()),
+    		rxjs.operators.map(element => this.createSlide(element)),
+    		rxjs.operators.filter(element => element != undefined),
+    		rxjs.operators.take(this.maxSlides),
+    		rxjs.operators.reduce((res, item) => res.concat(item), []),
+    		rxjs.operators.map(array => array.sort( (s1,s2) => s1.order-s2.order ))
+    	)
+    	.subscribe(slides => this.setSlides(slides))
+    });
+
+    this.on( 'updated', function() {
+
+    	if(this.slides && this.slides.length > 0) {
+    		if(this.slider) {
+    			this.slider.destroy();
+
+    		}
+			this.initSlideTags(this.slides);
+    		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
+    		window.viewerJS.slider.sliders.push(this.swiper);
+
+    	}
+
+    	if (this.style.onUpdate) {
+    		this.style.onUpdate();
+    	}
+
+    });
+
+    this.setSlides = function(slides) {
+
+    	this.slides = slides;
+    	this.update();
+    }.bind(this)
+
+    let imagealtmsgkey = this.opts.imagealtmsgkey;
+
+    this.initSlideTags = function(slides) {
+    	slides.forEach( (slide, index) => {
+    		let tagElement = this.refs["slide_" + index];
+
+    		riot.mount(tagElement, "slide_" + this.getLayout(),  {
+    			stylename: this.styleName,
+   				link: this.getLink(slide),
+   				link_target: this.linkTarget,
+   				image: this.getImage(slide),
+   				label: this.translate(slide.label),
+   				description: this.translate(slide.description),
+   				alttext: this.translate(slide.altText),
+   				altimagemsgkey: this.translate(imagealtmsgkey),
+    		});
+    	});
+    }.bind(this)
+
+	this.getElements = function(source) {
+		if(viewerJS.iiif.isCollection(source)) {
+			return source.members.filter(member => viewerJS.iiif.isCollection(member));
+		} else {
+			console.error("Cannot get slides from ", source);
+		}
+	}.bind(this)
+
+    this.createSlide = function(element) {
+
+    	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
+    		let slide = {
+    				label : element.label,
+    				description : element.description,
+    				image : element.thumbnail,
+    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element)),
+    				order : element.order
+    		}
+    		return slide;
+    	} else {
+    		return element;
+    	}
+    }.bind(this)
+
+    this.translate = function(text) {
+    	let translation =  viewerJS.iiif.getValue(text, this.opts.language, this.opts.defaultlanguage);
+    	if(!translation) {
+    			translation = viewerJS.getMetadataValue(text, this.opts.language, this.opts.defaultlanguage);
+    	}
+    	return translation;
+    }.bind(this)
+
+    this.getImage = function(slide) {
+    	let image = slide.image;
+    	if(image == undefined) {
+    		return undefined;
+    	} else if(viewerJS.isString(image)) {
+    		return image;
+    	} else if(image.service && (this.style.imageWidth || this.style.imageHeight)) {
+    		let url = viewerJS.iiif.getId(image.service) + "/full/" + this.getIIIFSize(this.style.imageWidth, this.style.imageHeight) + "/0/default.jpg"
+    		return url;
+    	} else if(image["@id"]) {
+    		return image["@id"]
+    	} else {
+    		return image.id;
+    	}
+    }.bind(this)
+
+    this.getIIIFSize = function(width, height) {
+    	if(width && height) {
+    		return "!" + width + "," + height;
+    	} else if(width) {
+    		return width + ",";
+    	} else if(height) {
+    		return "," + height;
+    	} else {
+    		return "max";
+    	}
+    }.bind(this)
+
+    this.getLink = function(slide) {
+    	if(this.linkTarget == 'none') {
+    		return "";
+    	} else {
+    		return slide.link;
+    	}
+    }.bind(this)
+
+    this.amendStyle = function(styleConfig) {
+    	let swiperConfig = styleConfig.swiperConfig;
+    	if(swiperConfig.pagination && !swiperConfig.pagination.el)  {
+
+    		if (this.opts.paginator != 'none') {
+    			swiperConfig.pagination.el = this.opts.paginator;
+
+        		this.showStandardPaginator = false;
+    		} else {
+        		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
+        		this.showStandardPaginator = true;
+
+    		}
+
+    	} else {
+    		this.showStandardPaginator = false;
+
+    	}
+
+	  	swiperConfig.a11y = {
+	  		prevSlideMessage: this.opts.prevslideMessage,
+			nextSlideMessage: this.opts.nextslideMessage,
+	  		lastSlideMessage: this.opts.firstslidemessage,
+			firstSlideMessage: this.opts.lastslidemessage,
+			paginationBulletMessage: this.opts.paginationbulletmessage + ' \{\{index\}\}',
+		}
+
+    	if(swiperConfig.navigation && swiperConfig.navigation.prevEl == '.swiper-button-prev' && swiperConfig.navigation.nextEl == '.swiper-button-next')  {
+
+        		this.showStandardNav = true;
+    	} else {
+    		this.showStandardNav = false;
+
+    	}
+
+	}.bind(this)
+
+    this.getLayout = function() {
+    	let layout = this.style.layout ? this.style.layout : 'default';
+
+    	return layout;
+    }.bind(this)
+
+});
 riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area -small"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div if="{!this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><span class="crowdsourcing-annotations__gnd-text">https://d-nb.info/gnd/</span><input class="crowdsourcing-annotations__gnd-id form-control" onchange="{setIdFromEvent}" riot-value="{question.authorityData.baseUri && getIdAsNumber(anno)}"></input></div><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><input class="form-control pl-1" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" riot-value="{question.authorityData.baseUri}{getIdAsNumber(anno)}"></input><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__jump-to-gnd"><a target="_blank" href="{question.authorityData.baseUri}{getIdAsNumber(anno)}">{Crowdsourcing.translate(⁗cms_menu_create_item_new_tab⁗)}</a></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
 
 	this.question = this.opts.question;
@@ -4146,7 +4369,11 @@ this.formatDate = function(dateString) {
 
 });
 
-riot.tag2('canvaspaginator', '<nav class="numeric-paginator" aria-label="{Crowdsourcing.translate(aria_label__nav_pagination)}"><ul><li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev"><span onclick="{this.loadPrevious}"><i class="fa fa-angle-left" aria-hidden="true"></i></span></li><li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useMiddleButtons()}">...</li><li each="{canvas in this.middleCanvases()}" class="group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useLastButtons()}">...</li><li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next"><span onclick="{this.loadNext}"><i class="fa fa-angle-right" aria-hidden="true"></i></span></li></ul></nav>', '', '', function(opts) {
+riot.tag2('canvaspaginator', '<nav class="numeric-paginator" aria-label="{Crowdsourcing.translate(aria_label__nav_pagination)}"><ul><li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev"><span onclick="{this.loadPrevious}"><svg class="numeric-paginator__navigate-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'chevron-left\')}"></use></svg></span></li><li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useMiddleButtons()}">...</li><li each="{canvas in this.middleCanvases()}" class="group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useLastButtons()}">...</li><li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next"><span onclick="{this.loadNext}"><svg class="numeric-paginator__navigate-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'chevron-right\')}"></use></svg></span></li></ul></nav>', '', '', function(opts) {
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 this.on( "mount", function() {
 
@@ -4250,6 +4477,7 @@ this.toPageNumber = function(e) {
 }.bind(this)
 
 });
+
 riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showAddMarkerInstructions()}" class="crowdsourcing-annotations__single-instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__add_marker_to_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div id="geoMap_{opts.index}" class="geo-map"></div></div><div id="annotation_{index}" each="{anno, index in this.annotations}"></div>', '', '', function(opts) {
 
 
@@ -5044,227 +5272,3 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 
 });
 
-
-riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"><p class="swiper-description slider-{this.opts.stylename}__description" ref="description"></p></a>', '', '', function(opts) {
-		this.on("mount", () => {
-			if(this.refs.description) {
-				   this.refs.description.innerHTML = this.opts.description;
-			}
-		});
-});
-
-riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
-});
-riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
-});
-
-
-riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showStandardNav}" ref="navigation" class="slider-navigation-wrapper slider-navigation-wrapper-{this.styleName} slider-navigation-wrapper-{this.sliderInstance}"><div ref="navigationLeft" class="swiper-button-prev"></div><div ref="navigationRight" class="swiper-button-next"></div></div><div if="{this.showStandardPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div></div>', '', '', function(opts) {
-
-
-	this.showStandardPaginator = true;
-	this.showStandardNav = true;
-
-    this.on( 'mount', function() {
-    	this.sliderInstance = this.opts.sliderinstanceid;
-
-		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
-
-		this.amendStyle(this.style);
-		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
-
-		this.timeout = this.style.timeout ? this.style.timeout : 100000;
-		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
-		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
-
-		firstSlideMessage = this.opts.firstslidemessage;
-
-    	let pSource;
-    	if(this.opts.sourceelement) {
-    		let sourceElement = document.getElementById(this.opts.sourceelement);
-    		if(sourceElement) {
-    			pSource = Promise.resolve(JSON.parse(sourceElement.textContent));
-
-    		} else {
-    			logger.error("sourceElement was included but no matching dom element found");
-    			return;
-    		}
-    	} else if(this.opts.slides) {
-    		let sourceArray = this.opts.slides.replaceAll("_qm_", "?").split("$")
-    		pSource = Promise.resolve(sourceArray);
-    	}  else {
-    		pSource = fetch(this.opts.source)
-        	.then(result => result.json());
-    	}
-    	rxjs.from(pSource)
-    	.pipe(
-    		rxjs.operators.flatMap(source => source),
-    		rxjs.operators.flatMap(uri => fetch(uri), undefined, 5),
-    		rxjs.operators.filter(result => result.status == 200),
-    		rxjs.operators.takeUntil(rxjs.timer(this.timeout)),
-    		rxjs.operators.flatMap(result => result.json()),
-    		rxjs.operators.map(element => this.createSlide(element)),
-    		rxjs.operators.filter(element => element != undefined),
-    		rxjs.operators.take(this.maxSlides),
-    		rxjs.operators.reduce((res, item) => res.concat(item), []),
-    		rxjs.operators.map(array => array.sort( (s1,s2) => s1.order-s2.order ))
-    	)
-    	.subscribe(slides => this.setSlides(slides))
-    });
-
-    this.on( 'updated', function() {
-
-    	if(this.slides && this.slides.length > 0) {
-    		if(this.slider) {
-    			this.slider.destroy();
-
-    		}
-			this.initSlideTags(this.slides);
-    		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
-    		window.viewerJS.slider.sliders.push(this.swiper);
-
-    	}
-
-    	if (this.style.onUpdate) {
-    		this.style.onUpdate();
-    	}
-
-    });
-
-    this.setSlides = function(slides) {
-
-    	this.slides = slides;
-    	this.update();
-    }.bind(this)
-
-    let imagealtmsgkey = this.opts.imagealtmsgkey;
-
-    this.initSlideTags = function(slides) {
-    	slides.forEach( (slide, index) => {
-    		let tagElement = this.refs["slide_" + index];
-
-    		riot.mount(tagElement, "slide_" + this.getLayout(),  {
-    			stylename: this.styleName,
-   				link: this.getLink(slide),
-   				link_target: this.linkTarget,
-   				image: this.getImage(slide),
-   				label: this.translate(slide.label),
-   				description: this.translate(slide.description),
-   				alttext: this.translate(slide.altText),
-   				altimagemsgkey: this.translate(imagealtmsgkey),
-    		});
-    	});
-    }.bind(this)
-
-	this.getElements = function(source) {
-		if(viewerJS.iiif.isCollection(source)) {
-			return source.members.filter(member => viewerJS.iiif.isCollection(member));
-		} else {
-			console.error("Cannot get slides from ", source);
-		}
-	}.bind(this)
-
-    this.createSlide = function(element) {
-
-    	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
-    		let slide = {
-    				label : element.label,
-    				description : element.description,
-    				image : element.thumbnail,
-    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element)),
-    				order : element.order
-    		}
-    		return slide;
-    	} else {
-    		return element;
-    	}
-    }.bind(this)
-
-    this.translate = function(text) {
-    	let translation =  viewerJS.iiif.getValue(text, this.opts.language, this.opts.defaultlanguage);
-    	if(!translation) {
-    			translation = viewerJS.getMetadataValue(text, this.opts.language, this.opts.defaultlanguage);
-    	}
-    	return translation;
-    }.bind(this)
-
-    this.getImage = function(slide) {
-    	let image = slide.image;
-    	if(image == undefined) {
-    		return undefined;
-    	} else if(viewerJS.isString(image)) {
-    		return image;
-    	} else if(image.service && (this.style.imageWidth || this.style.imageHeight)) {
-    		let url = viewerJS.iiif.getId(image.service) + "/full/" + this.getIIIFSize(this.style.imageWidth, this.style.imageHeight) + "/0/default.jpg"
-    		return url;
-    	} else if(image["@id"]) {
-    		return image["@id"]
-    	} else {
-    		return image.id;
-    	}
-    }.bind(this)
-
-    this.getIIIFSize = function(width, height) {
-    	if(width && height) {
-    		return "!" + width + "," + height;
-    	} else if(width) {
-    		return width + ",";
-    	} else if(height) {
-    		return "," + height;
-    	} else {
-    		return "max";
-    	}
-    }.bind(this)
-
-    this.getLink = function(slide) {
-    	if(this.linkTarget == 'none') {
-    		return "";
-    	} else {
-    		return slide.link;
-    	}
-    }.bind(this)
-
-    this.amendStyle = function(styleConfig) {
-    	let swiperConfig = styleConfig.swiperConfig;
-    	if(swiperConfig.pagination && !swiperConfig.pagination.el)  {
-
-    		if (this.opts.paginator != 'none') {
-    			swiperConfig.pagination.el = this.opts.paginator;
-
-        		this.showStandardPaginator = false;
-    		} else {
-        		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
-        		this.showStandardPaginator = true;
-
-    		}
-
-    	} else {
-    		this.showStandardPaginator = false;
-
-    	}
-
-	  	swiperConfig.a11y = {
-	  		prevSlideMessage: this.opts.prevslideMessage,
-			nextSlideMessage: this.opts.nextslideMessage,
-	  		lastSlideMessage: this.opts.firstslidemessage,
-			firstSlideMessage: this.opts.lastslidemessage,
-			paginationBulletMessage: this.opts.paginationbulletmessage + ' \{\{index\}\}',
-		}
-
-    	if(swiperConfig.navigation && swiperConfig.navigation.prevEl == '.swiper-button-prev' && swiperConfig.navigation.nextEl == '.swiper-button-next')  {
-
-        		this.showStandardNav = true;
-    	} else {
-    		this.showStandardNav = false;
-
-    	}
-
-	}.bind(this)
-
-    this.getLayout = function() {
-    	let layout = this.style.layout ? this.style.layout : 'default';
-
-    	return layout;
-    }.bind(this)
-
-});
