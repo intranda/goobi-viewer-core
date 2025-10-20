@@ -127,10 +127,11 @@
 			}
 			&__bookmarks-name a, 
 			&__bookmarks-icon-list .fa, 
+			&__bookmarks-icon-list svg,
 			&__bookmarks-icon-list {
 				color: @loginNavBookmarksFG;
 				a {
-					margin-right: 0.7rem;
+					margin-right: 0;
 					color: @loginNavBookmarksFG;
 				}
 				&:hover {
@@ -142,6 +143,19 @@
 				display: flex;
 				text-decoration: none;
 				align-items: center;
+				gap: 0.7rem;
+			}
+			&__bookmarks-icon-list a {
+				transition: color 0.2s ease;
+			}
+			&__bookmarks-icon-list svg {
+				width: 1.8rem;
+				height: 1.8rem;
+				stroke: currentColor;
+				transition: stroke 0.2s ease, transform 0.2s ease;
+			}
+			&__bookmarks-icon-list a:hover svg {
+				transform: scale(1.08);
 			}
 			&__bookmarks-counter {
 				padding: 0 0.3rem;
