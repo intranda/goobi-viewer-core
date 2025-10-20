@@ -281,13 +281,16 @@
 		</f:view>
     </ui:define>
 
-	<!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
-	<ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-		<ui:define name="sidebar">
+
+	<ui:define name="sidebar">
+		<!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
+		<ui:fragment
+			rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
 			<h:panelGroup layout="block" id="sidebarGroup">
 				<viewerComponent:record_sidebar id="sidebar" />
 			</h:panelGroup>
-		</ui:define>
-	</ui:fragment>
+		</ui:fragment>
+	</ui:define>
+
 
 </ui:composition>
