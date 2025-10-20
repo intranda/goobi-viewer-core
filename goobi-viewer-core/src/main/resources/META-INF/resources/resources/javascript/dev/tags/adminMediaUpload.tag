@@ -43,30 +43,30 @@
 	    </div>
 	</div>
     <script>
-        this.iconBasePath = (function() {
-            if (this.opts.postUrl) {
-                try {
-                    var anchor = document.createElement('a');
-                    anchor.href = this.opts.postUrl;
-                    var basePath = anchor.pathname || '/';
-                    var index = basePath.indexOf('/api/');
-                    if (index !== -1) {
-                        basePath = basePath.substring(0, index);
-                    }
-                    if (!basePath.endsWith('/')) {
-                        basePath += '/';
-                    }
-                    return basePath;
-                } catch (e) {
-                    console.warn('Unable to resolve icon base path from postUrl', e);
-                }
+        const resolveIconBasePath = (postUrl) => {
+            if (!postUrl) {
+                return '/';
             }
-            return '/';
-        }).call(this);
+            try {
+                const anchor = document.createElement('a');
+                anchor.href = postUrl;
+                let basePath = anchor.pathname || '/';
+                const index = basePath.indexOf('/api/');
+                if (index !== -1) {
+                    basePath = basePath.substring(0, index);
+                }
+                if (!basePath.endsWith('/')) {
+                    basePath += '/';
+                }
+                return basePath;
+            } catch (e) {
+                console.warn('Unable to resolve icon base path from postUrl', e);
+                return '/';
+            }
+        };
 
-        this.getIconHref = function(iconName) {
-            return this.iconBasePath + 'resources/icons/outline/' + iconName + '.svg#icon';
-        }.bind(this);
+        this.iconBasePath = resolveIconBasePath(this.opts.postUrl);
+        this.getIconHref = iconName => this.iconBasePath + 'resources/icons/outline/' + iconName + '.svg#icon';
 
         this.files = [];
 
