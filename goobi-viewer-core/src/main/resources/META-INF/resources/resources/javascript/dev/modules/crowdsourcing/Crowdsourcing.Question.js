@@ -130,13 +130,14 @@ var Crowdsourcing = ( function(crowdsourcing) {
      * Initializes the annotations for the current page
      */
     crowdsourcing.Question.prototype.initAnnotations = function() {
+    	console.log("init annotations", this.item.image.openseadragon);
         switch(this.targetSelector) {
             case Crowdsourcing.Question.Selector.RECTANGLE:
                 if(this.areaSelector) {                    
                     this.areaSelector.reset();
                     this.setDrawingPermission();
                     this.annotations
-                    .forEach(anno => this.areaSelector.addOverlay(anno, this.item.image.viewer));
+                    .forEach(anno => this.areaSelector.addOverlay(anno, this.item.image));
                     this.areaSelector.setDrawingStyle(this.areaSelector.getStyle());
                 }
                 break;

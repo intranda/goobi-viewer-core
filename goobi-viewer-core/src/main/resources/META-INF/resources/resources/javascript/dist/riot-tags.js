@@ -1223,8 +1223,8 @@ this.on("mount", () => {
     this.fetchCollections()
     .then( () => {
         let keys = this.collectionSets.map(set => set[0]);
-        this.translator = new viewerJS.translator(this.opts.restapi.replace("/rest", "/api/v1"), this.opts.language);
-        return this.translator.init(keys);
+        this.translator = viewerJS.translator;
+        return this.translator.addTranslations(keys);
     })
     .then( () => {
         this.update();
@@ -4170,16 +4170,16 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
 
     this.rotateRight = function()
     {
-        if ( this.opts.image ) {
-            this.opts.image.controls.rotateRight();
+        if ( this.opts.rotate ) {
+            this.opts.rotate.rotateRight();
         }
     	this.handleAction("rotate", 90)
     }.bind(this)
 
     this.rotateLeft = function()
     {
-        if ( this.opts.image ) {
-            this.opts.image.controls.rotateLeft();
+        if ( this.opts.rotate ) {
+            this.opts.rotate.rotateLeft();
         }
     	this.handleAction("rotate", -90)
     }.bind(this)
@@ -4199,6 +4199,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
     }.bind(this)
 
     this.toggleThumbs = function() {
+    	console.log("toggle thumbs " + this.opts.showthumbs);
     	this.opts.showthumbs = !this.opts.showthumbs;
     	this.handleAction("toggleThumbs", this.opts.showthumbs)
     }.bind(this)
@@ -4248,7 +4249,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" imageindex="{this.opts.item.currentCanvasIndex}" imagecount="{this.opts.item.canvases.length}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" rotate="{this.rotate}" imageindex="{this.opts.item.currentCanvasIndex}" imagecount="{this.opts.item.canvases.length}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
 
 
 	this.on("updated", function() {
@@ -4261,18 +4262,23 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 
 		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{
-			imageViewConfig.image.tileSource = this.getImageInfo(opts.source);
+			const tileSource = this.getImageInfo(opts.source);
 			this.image = new ImageView.Image(imageViewConfig);
-			this.image.load()
-			.then( (image) => {
+			this.zoom = new ImageView.Controls.Zoom(this.image);
+			this.rotate = new ImageView.Controls.Rotation(this.image);
+			this.image.load(tileSource)
+			.then( (event) => {
 				if(this.opts.item) {
 					this.opts.item.image = this.image;
 
-				    var now = rxjs.of(image);
+				    var now = rxjs.of(this.image);
 					this.opts.item.setImageSource = function(source) {
-					    this.image.setTileSource(this.getImageInfo(source));
+						console.log("set image source", source);
+					    this.update();
+					    this.image.load(this.getImageInfo(source))
+					    .then(e => this.zoom.goHome());
 					}.bind(this);
-				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
+				    this.opts.item.notifyImageOpened(this.image.onOpened.pipe(rxjs.operators.map( () => this.image),rxjs.operators.merge(now)));
 				}
 				return image;
 			})
@@ -4360,7 +4366,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	this.handleImageControlAction = function(event) {
-
 		switch(event.action) {
 			case "toggleThumbs":
 				this.showThumbs = event.value;
@@ -4410,16 +4415,8 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	const imageViewConfig = {
-			global : {
-				divId : "image_" + opts.id,
-				fitToContainer: true,
-				adaptContainerWidth: false,
-				adaptContainerHeight: false,
-				footerHeight: 00,
-				zoomSpeed: 1.3,
-				allowPanning : true,
-			},
-			image : {}
+			element: "#image_" + opts.id,
+			fittingMode: "fixed"
 	};
 
 	const drawStyle = {
@@ -4432,7 +4429,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 			lineColor : "#EEC83B"
 	}
 
-	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
+	const pointStyle = ImageView.DataPoint.Point.getPointStyle(20, "#EEC83B");
 
 });
 

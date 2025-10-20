@@ -11,7 +11,8 @@
 			<span class="error_message">{this.error.message}</span>
 		</span>
 		<imageControls if="{this.image}" 
-			image="{this.image}" 
+			image="{this.image}"
+			rotate="{this.rotate}"
 			imageindex="{this.opts.item.currentCanvasIndex}"
 			imagecount="{this.opts.item.canvases.length}"
 			actionlistener="{this.actionListener}" 
@@ -57,18 +58,23 @@
 		//console.log("mount image view ", this.opts.item);
 		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{		    
-			imageViewConfig.image.tileSource = this.getImageInfo(opts.source);
+			const tileSource = this.getImageInfo(opts.source);
 			this.image = new ImageView.Image(imageViewConfig);
-			this.image.load()
-			.then( (image) => {
+			this.zoom = new ImageView.Controls.Zoom(this.image);
+			this.rotate = new ImageView.Controls.Rotation(this.image);
+			this.image.load(tileSource)
+			.then( (event) => {
 				if(this.opts.item) {
 					this.opts.item.image = this.image;
 					//image load notifications
-				    var now = rxjs.of(image);
+				    var now = rxjs.of(this.image);
 					this.opts.item.setImageSource = function(source) {
-					    this.image.setTileSource(this.getImageInfo(source));
+						console.log("set image source", source);
+					    this.update();
+					    this.image.load(this.getImageInfo(source))
+					    .then(e => this.zoom.goHome());
 					}.bind(this);
-				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
+				    this.opts.item.notifyImageOpened(this.image.onOpened.pipe(rxjs.operators.map( () => this.image),rxjs.operators.merge(now)));
 				}
 				return image;
 			})
@@ -159,7 +165,6 @@
 	}
 	
 	handleImageControlAction(event) {
-		//console.log("event", event);
 		switch(event.action) {
 			case "toggleThumbs":
 				this.showThumbs = event.value;
@@ -209,16 +214,8 @@
 	}
 	
 	const imageViewConfig = {
-			global : {
-				divId : "image_" + opts.id,
-				fitToContainer: true,
-				adaptContainerWidth: false,
-				adaptContainerHeight: false,
-				footerHeight: 00,
-				zoomSpeed: 1.3,
-				allowPanning : true,
-			},
-			image : {}
+			element: "#image_" + opts.id,
+			fittingMode: "fixed"
 	};
 	
 	const drawStyle = {
@@ -231,7 +228,7 @@
 			lineColor : "#EEC83B"
 	}
 	
-	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
+	const pointStyle = ImageView.DataPoint.Point.getPointStyle(20, "#EEC83B");
 
 	</script>
 
