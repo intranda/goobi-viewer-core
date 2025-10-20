@@ -11,12 +11,12 @@
 				data-toggle="tooltip" data-placement="top" data-original-title=""
 				title="{msg('action__search_in_bookmarks')}"> 
 				<svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                    <use href="{getIconHref('search')}"></use>
+                    <use riot-href="{getIconHref('search')}"></use>
                 </svg>
 			</a>
 			<a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg('viewMiradorComparison')}"> 
 				<svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                    <use href="{getIconHref('grid-dots')}"></use>
+                    <use riot-href="{getIconHref('grid-dots')}"></use>
                 </svg>
 			</a>
 			<span title="{msg('admin__crowdsourcing_campaign_statistics_numRecords')}" class="{mainClass}-counter">{bookmarkList.numItems}</span>
@@ -32,25 +32,9 @@
 
 <script> 
 
-const ensureTrailingSlash = value => value.endsWith('/') ? value : value + '/';
-
-const resolveIconBasePath = (postUrl, root) => {
-	if (postUrl) {
-		return ensureTrailingSlash(postUrl.split('/api/')[0]);
-	}
-
-	if (root) {
-		return ensureTrailingSlash(root);
-	}
-
-	const { pathname } = window.location;
-	return ensureTrailingSlash(pathname.substring(0, pathname.lastIndexOf('/') + 1) || '/');
-};
-
-this.iconBasePath = resolveIconBasePath(
-	this.opts.postUrl,
-	this.opts.bookmarks?.config?.root
-);
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
 this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 this.pi = this.opts.data.pi;
@@ -157,4 +141,3 @@ msg(key) {
 </script> 
 
 </bookmarkListLoggedIn>
-

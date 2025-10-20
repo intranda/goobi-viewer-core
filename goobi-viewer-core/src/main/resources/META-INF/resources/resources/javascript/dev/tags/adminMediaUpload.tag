@@ -13,19 +13,19 @@
         <div class="admin-cms-media__upload-messages">
             <div class="admin-cms-media__upload-message uploading">
                 <svg class="admin-cms-media__upload-icon admin-cms-media__upload-icon--spinner" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
-                    <use href="{getIconHref('loader-2')}"></use>
+                    <use riot-href="{getIconHref('loader-2')}"></use>
                 </svg>
                 {opts.msg.mediaUploading}
             </div>
             <div class="admin-cms-media__upload-message success">
                 <svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
-                    <use href="{getIconHref('check')}"></use>
+                    <use riot-href="{getIconHref('check')}"></use>
                 </svg>
                 {opts.msg.mediaFinished}
             </div>
             <div class="admin-cms-media__upload-message error">
                 <svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
-                    <use href="{getIconHref('alert-circle')}"></use>
+                    <use riot-href="{getIconHref('alert-circle')}"></use>
                 </svg>
                 <span></span>
             </div>         
@@ -36,37 +36,17 @@
 	       	<img src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"/>
 	       	<div class="delete_overlay" onclick="{deleteFile}">
                 <svg class="admin-cms-media__delete-icon" viewBox="0 0 24 24" width="30" height="24" aria-hidden="true">
-                    <use href="{getIconHref('trash')}"></use>
+                    <use riot-href="{getIconHref('trash')}"></use>
                 </svg>
 	       	</div>
        	</div>
 	    </div>
 	</div>
     <script>
-        const resolveIconBasePath = (postUrl) => {
-            if (!postUrl) {
-                return '/';
-            }
-            try {
-                const anchor = document.createElement('a');
-                anchor.href = postUrl;
-                let basePath = anchor.pathname || '/';
-                const index = basePath.indexOf('/api/');
-                if (index !== -1) {
-                    basePath = basePath.substring(0, index);
-                }
-                if (!basePath.endsWith('/')) {
-                    basePath += '/';
-                }
-                return basePath;
-            } catch (e) {
-                console.warn('Unable to resolve icon base path from postUrl', e);
-                return '/';
-            }
-        };
-
-        this.iconBasePath = resolveIconBasePath(this.opts.postUrl);
-        this.getIconHref = iconName => this.iconBasePath + 'resources/icons/outline/' + iconName + '.svg#icon';
+        const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+        const viewerConfig = window.viewerConfig || {};
+        this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+        this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
         this.files = [];
 

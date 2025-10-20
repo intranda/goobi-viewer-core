@@ -223,6 +223,26 @@
 		</c:if>
 	</c:forEach>
 
+	<script type="text/javascript">
+		(function assignViewerConfigBasePath() {
+			var contextPath = '#{request.contextPath}';
+			if (!contextPath || contextPath.length === 0) {
+				contextPath = '/';
+			}
+			if (contextPath.charAt(contextPath.length - 1) !== '/') {
+				contextPath += '/';
+			}
+
+			window.viewerConfig = window.viewerConfig || {};
+			if (!window.viewerConfig.iconBasePath) {
+				window.viewerConfig.iconBasePath = contextPath;
+			}
+			if (!window.viewerConfig.contextPath) {
+				window.viewerConfig.contextPath = contextPath;
+			}
+		})();
+	</script>
+
 	<!-- SHOW AVAILABLE LIBS AND SCRIPTS IN CONSOLE -->
 	<!-- an easy way to log library names to the console, just pass `showCSS` to the excludeCSS variable in a template file -->
 	<c:if test="#{excludeJS.contains('showJS')}">
@@ -236,4 +256,3 @@
 	</c:if>
 
 </ui:composition>
-
