@@ -261,8 +261,8 @@
         </f:view>
     </ui:define>
 
-
-	<ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
+	<!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
+	<ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
 	    <ui:define name="sidebar">
 	        <widgetComponent:widget_views pageType="nerfacetting" />
 	

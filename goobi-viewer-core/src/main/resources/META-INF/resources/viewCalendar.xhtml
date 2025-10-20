@@ -28,106 +28,122 @@
 
     <ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
-            <div id="viewCalendar">
-                <div class="search-calendar">
-               		<div class="search-calendar__title search-calendar__title-document-page">
-						<h1>
-							<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
-						</h1>
-					</div>
-                    <!-- YEAR SELECTION -->
-                    <h:form id="searchCalendarForm" prependId="false">
-                        <h:panelGroup rendered="#{activeDocumentBean.anchor or activeDocumentBean.group}">
-                            <div class="search-calendar__input">
-                                <div class="form-horizontal">
-                                    <div class="form-group form-row align-items-center">
-                                        <label for="selectyear" class="col-sm-4 mb-1 mb-md-0">#{msg.selectYear}:</label>
-                                        <div class="col-sm-8">
-                                            <div class="custom-control custom-control--select">
-                                                <h:selectOneMenu id="selectyear" styleClass="form-control" value="#{activeDocumentBean.viewManager.calendarView.year}"
-                                                    immediate="true" onchange="submit();">
-                                                    <f:selectItem itemDisabled="false" itemLabel="#{msg.select}" noSelectionOption="true" />
-                                                    <f:selectItems var="year" itemLabel="#{year}" itemValue="#{year}"
-                                                        value="#{activeDocumentBean.viewManager.calendarView.volumeYears}" />
-                                                </h:selectOneMenu>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </h:panelGroup>
-
-                        <!-- SEARCH CALENDAR MONTHS -->
-                        <h:panelGroup rendered="#{fn:length(activeDocumentBean.viewManager.calendarView.calendarItems) gt 0}">
-                            <div class="search-calendar__months">
-                                <div class="row">
-                                    <ui:repeat var="month" value="#{activeDocumentBean.viewManager.calendarView.calendarItems}">
-                                        <div class="col-12 col-sm-6 col-md-4">
-                                            <div class="search-calendar__month">
-                                                <!-- MONTH TITLE -->
-                                                <div class="search-calendar__month-title">
-                                                    <h:outputText value="#{msg[month.name]}" />
-                                                </div>
-
-                                                <!-- MONTH DAYS -->
-                                                <div class="search-calendar__month-days clearfix">
-                                                    <span>#{msg.Monday}</span>
-                                                    <span>#{msg.Tuesday}</span>
-                                                    <span>#{msg.Wednsday}</span>
-                                                    <span>#{msg.Thursday}</span>
-                                                    <span>#{msg.Friday}</span>
-                                                    <span>#{msg.Saturday}</span>
-                                                    <span>#{msg.Sunday}</span>
-                                                </div>
-
-                                                <!-- MONTH WEEKS -->
-
-                                                <ui:repeat var="week" value="#{month.weeksOfMonth}">
-                                                    <div class="search-calendar__month-week clearfix">
-                                                        <ui:repeat var="day" value="#{week.daysOfWeek}">
-                                                            <h:panelGroup rendered="#{day.name != ''}">
-                                                                <div class="search-calendar__month-day">
-                                                                    <h:panelGroup rendered="#{day.hits == 0}">
-                                                                        <span>#{day.name}</span>
-                                                                    </h:panelGroup>
-                                                                    <h:panelGroup rendered="#{day.hits != 0}">
-                                                                        <button type="button" class="btn btn--clean" data-popover-trigger="calendar-po-trigger"
-                                                                            data-query="#{day.query}" data-fields="PI_TOPSTRUCT,LABEL,THUMBPAGENO,LOGID">
-                                                                            #{day.name}</button>
-                                                                    </h:panelGroup>
-                                                                </div>
-                                                            </h:panelGroup>
-                                                            <h:panelGroup rendered="#{day.name == ''}">
-                                                                <div class="search-calendar__month-day-empty"></div>
-                                                            </h:panelGroup>
-                                                        </ui:repeat>
-                                                    </div>
-                                                </ui:repeat>
-                                            </div>
-                                        </div>
-                                    </ui:repeat>
-                                </div>
-                            </div>
-                        </h:panelGroup>
-                    </h:form>
+		
+		    <!-- No access ticket required or already unlocked -->
+	        <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
+	            <div id="viewCalendar" class="view-calendar">
+	                <div class="search-calendar">
+	               		<div class="search-calendar__title search-calendar__title-document-page">
+							<h1>
+								<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
+							</h1>
+						</div>
+	                    <!-- YEAR SELECTION -->
+	                    <h:form id="searchCalendarForm" prependId="false">
+	                        <h:panelGroup rendered="#{activeDocumentBean.anchor or activeDocumentBean.group}">
+	                            <div class="search-calendar__input">
+	                                <div class="form-horizontal">
+	                                    <div class="form-group form-row align-items-center">
+	                                        <label for="selectyear" class="col-sm-4 mb-1 mb-md-0">#{msg.selectYear}:</label>
+	                                        <div class="col-sm-8">
+	                                            <div class="custom-control custom-control--select">
+	                                                <h:selectOneMenu id="selectyear" styleClass="form-control" value="#{activeDocumentBean.viewManager.calendarView.year}"
+	                                                    immediate="true" onchange="submit();">
+	                                                    <f:selectItem itemDisabled="false" itemLabel="#{msg.select}" noSelectionOption="true" />
+	                                                    <f:selectItems var="year" itemLabel="#{year}" itemValue="#{year}"
+	                                                        value="#{activeDocumentBean.viewManager.calendarView.volumeYears}" />
+	                                                </h:selectOneMenu>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </h:panelGroup>
+	
+	                        <!-- SEARCH CALENDAR MONTHS -->
+	                        <h:panelGroup rendered="#{fn:length(activeDocumentBean.viewManager.calendarView.calendarItems) gt 0}">
+	                            <div class="search-calendar__months">
+	                                <div class="row">
+	                                    <ui:repeat var="month" value="#{activeDocumentBean.viewManager.calendarView.calendarItems}">
+	                                        <div class="col-12 col-sm-6 col-md-4">
+	                                            <div class="search-calendar__month">
+	                                                <!-- MONTH TITLE -->
+	                                                <div class="search-calendar__month-title">
+	                                                    <h:outputText value="#{msg[month.name]}" />
+	                                                </div>
+	
+	                                                <!-- MONTH DAYS -->
+	                                                <div class="search-calendar__month-days clearfix">
+	                                                    <span>#{msg.Monday}</span>
+	                                                    <span>#{msg.Tuesday}</span>
+	                                                    <span>#{msg.Wednsday}</span>
+	                                                    <span>#{msg.Thursday}</span>
+	                                                    <span>#{msg.Friday}</span>
+	                                                    <span>#{msg.Saturday}</span>
+	                                                    <span>#{msg.Sunday}</span>
+	                                                </div>
+	
+	                                                <!-- MONTH WEEKS -->
+	
+	                                                <ui:repeat var="week" value="#{month.weeksOfMonth}">
+	                                                    <div class="search-calendar__month-week clearfix">
+	                                                        <ui:repeat var="day" value="#{week.daysOfWeek}">
+	                                                            <h:panelGroup rendered="#{day.name != ''}">
+	                                                                <div class="search-calendar__month-day">
+	                                                                    <h:panelGroup rendered="#{day.hits == 0}">
+	                                                                        <span>#{day.name}</span>
+	                                                                    </h:panelGroup>
+	                                                                    <h:panelGroup rendered="#{day.hits != 0}">
+	                                                                        <button type="button" class="btn btn--clean" data-popover-trigger="calendar-po-trigger"
+	                                                                            data-query="#{day.query}" data-fields="PI_TOPSTRUCT,LABEL,THUMBPAGENO,LOGID">
+	                                                                            #{day.name}</button>
+	                                                                    </h:panelGroup>
+	                                                                </div>
+	                                                            </h:panelGroup>
+	                                                            <h:panelGroup rendered="#{day.name == ''}">
+	                                                                <div class="search-calendar__month-day-empty"></div>
+	                                                            </h:panelGroup>
+	                                                        </ui:repeat>
+	                                                    </div>
+	                                                </ui:repeat>
+	                                            </div>
+	                                        </div>
+	                                    </ui:repeat>
+	                                </div>
+	                            </div>
+	                        </h:panelGroup>
+	                    </h:form>
+	                </div>
+	
+	                <script type="text/javascript">
+							var calendarPopoverConfig = {
+							    appUrl: "#{navigationHelper.applicationUrl}",
+							    indexResourceUrl: "#{navigationHelper.applicationUrl}api/v1/index/query/",
+							    popoverTitle: "#{activeDocumentBean.titleBarLabel}",
+							};
+	
+	                        viewerJS.calendarPopover.init( calendarPopoverConfig );
+	                    </script>
+	            </div>
+            </ui:fragment>
+            
+            <!-- Access ticket required -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
+            	<div class="access-ticket-info">
+                <p>#{msg.access_tickets__record_access_ticket_required}</p>
+                <button class="btn btn--full" data-toggle="modal"
+                    data-target="#accessTicketModal">#{msg.action__born_digital__unlock}</button>
+                <viewerComponent:modalAccessTicket />
                 </div>
-
-                <script type="text/javascript">
-						var calendarPopoverConfig = {
-						    appUrl: "#{navigationHelper.applicationUrl}",
-						    indexResourceUrl: "#{navigationHelper.applicationUrl}api/v1/index/query/",
-						    popoverTitle: "#{activeDocumentBean.titleBarLabel}",
-						};
-
-                        viewerJS.calendarPopover.init( calendarPopoverConfig );
-                    </script>
-            </div>
+            </ui:fragment>
+            
         </f:view>
 	</ui:define>
 
-	<ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
+
+	<ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
 	    <ui:define name="sidebar">
-	        <viewerComponent:record_sidebar/>
+	        <viewerComponent:record_sidebar id="sidebar" />
 	    </ui:define>
     </ui:fragment>
 

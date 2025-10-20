@@ -162,9 +162,10 @@
         </script>
 	</ui:define>
 
-	<ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
+	<!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
+	<ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
 	    <ui:define name="sidebar">
-	        <viewerComponent:record_sidebar/>
+	        <viewerComponent:record_sidebar id="sidebar" />
 	    </ui:define>
 	</ui:fragment>
 
