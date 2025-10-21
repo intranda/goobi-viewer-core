@@ -45,6 +45,8 @@
 	
 
 	<script>
+	
+	this.actionListener = new rxjs.Subject();
 
 	// INIT TOOLTIPS'TIPS
 	this.on("updated", function() {
@@ -58,33 +60,26 @@
 		//console.log("mount image view ", this.opts.item);
 		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{		    
-			const tileSource = this.getImageInfo(opts.source);
 			this.image = new ImageView.Image(imageViewConfig);
 			this.zoom = new ImageView.Controls.Zoom(this.image);
 			this.rotate = new ImageView.Controls.Rotation(this.image);
-			this.image.load(tileSource)
-			.then( (event) => {
-				if(this.opts.item) {
-					this.opts.item.image = this.image;
-					//image load notifications
-				    var now = rxjs.of(this.image);
-					this.opts.item.setImageSource = function(source) {
-						console.log("set image source", source);
-					    this.update();
-					    this.image.load(this.getImageInfo(source))
-					    .then(e => this.zoom.goHome());
-					}.bind(this);
-				    this.opts.item.notifyImageOpened(this.image.onOpened.pipe(rxjs.operators.map( () => this.image),rxjs.operators.merge(now)));
-				}
-				return image;
-			})
+			if(this.opts.item) {
+				this.opts.item.image = this.image;
+		    	this.opts.item.notifyImageOpened(this.image.onOpened.pipe(rxjs.operators.map( () => this.image)));
+				//image load notifications
+				this.opts.item.setImageSource = function(source) {
+					console.log("set image source", source);
+				    this.update();
+				    this.image.load(this.getImageInfo(source))
+				    .then(e => this.zoom.goHome());
+				}.bind(this);
+			}
 		} catch(error) {
 		    console.error("ERROR ", error);
 	    	this.error = error;
 	    	this.update();
 		}
-		
-		this.actionListener = new rxjs.Subject();
+		console.log("subscribe action listener");
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
 		if(this.opts.item.setShowThumbs) {
 		    this.opts.item.setShowThumbs.subscribe(show => {
@@ -92,6 +87,11 @@
 		        this.update();
 		    });
 		}
+		//if no thumbs are showm init first image
+		if(!this.showThumbs) {
+			this.opts.item.loadImage(0);
+		}
+		this.update();
 	})
 
 	// TOOLTIPS FOR PAGE STATUS	
@@ -165,6 +165,7 @@
 	}
 	
 	handleImageControlAction(event) {
+		console.log("image action ", event.action);
 		switch(event.action) {
 			case "toggleThumbs":
 				this.showThumbs = event.value;
