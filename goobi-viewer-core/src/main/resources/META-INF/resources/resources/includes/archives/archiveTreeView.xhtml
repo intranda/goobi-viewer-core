@@ -81,13 +81,13 @@
 												<util:icon
 													icon="square-rounded-minus"
 													styleClass="archives-tree__expandable-icon-symbol-wrapper"
-													svgClass="icon archives-tree__expandable-icon-symbol" />
+													svgClass="icon archives-tree__expandable-icon-symbol icon-xl"  />
 											</ui:fragment>
 											<ui:fragment rendered="#{!archiveTree.isEntryExpanded(entry)}">
 												<util:icon
 													icon="square-rounded-plus"
 													styleClass="archives-tree__expandable-icon-symbol-wrapper"
-													svgClass="icon archives-tree__expandable-icon-symbol" />
+													svgClass="icon archives-tree__expandable-icon-symbol icon-xl" />
 											</ui:fragment>
 											<f:passThroughAttribute name="aria-label"
 												value="#{msg.allOpen}" />
@@ -103,8 +103,11 @@
 									
 									<div class="archives-tree__list-entry-title #{entry.id == archiveTree.selectedEntry.id ? '-archives-selected' : ''} #{entry.searchHit ? '-archives-search-hit':''}">
 										<span class="archives-tree__list-title-icon">
-											<span class="fa-stack">
-												<i class="archives-tree__list-entry-title-icon #{archiveBean.getNodeType(entry.nodeType).iconClass}" data-level="#{entry.nodeType}"></i>
+											<span class="fa-stack archives-tree__list-entry-title-icon-wrapper" data-level="#{entry.nodeType}">
+												<util:icon
+													icon="#{archiveBean.getNodeType(entry.nodeType).icon}"
+													styleClass="archives-tree__list-entry-title-icon"
+													svgClass="icon archives-tree__list-entry-title-icon-svg" />
 											</span>
 										</span>
 
@@ -114,9 +117,9 @@
 										</ui:fragment>
 										
 										
-										<div class="archives-tree__record-link-wrapper">
-										
-											<ui:fragment rendered="#{selectEntryAction == 'open'}">
+				<div class="archives-tree__record-link-wrapper">
+				
+					<ui:fragment rendered="#{selectEntryAction == 'open'}">
 												
 												<ui:fragment rendered="#{not empty entry.associatedRecordPi}">
 													<a class="testet archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"

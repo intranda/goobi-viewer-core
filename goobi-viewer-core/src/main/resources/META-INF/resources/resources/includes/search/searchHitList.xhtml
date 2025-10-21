@@ -120,12 +120,7 @@
                             <div class="search-list__child-hits-button-wrapper">
                                 <button onclick="viewerJS.searchList.openChildHits(this, 'search_subhits_ajaxloader_#{status.index}')" type="button" class="btn btn--clean" 
                                 data-toggle="hit-content" data-toggle-id="childHits_#{status.index}" data-load-hits-script="loadChildHits_#{status.index}" data-childhits="#{hit.hitCount}">
-                                    <ui:fragment rendered="#{hit.hitsPopulated == 0}">
-	                                    <util:icon icon="caret-right" svgClass="icon" />
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{hit.hitsPopulated > 0}">
-	                                    <util:icon icon="caret-down" svgClass="icon" />
-                                    </ui:fragment>
+                                    <util:icon icon="caret-right" svgClass="icon" styleClass="icon-rot-on-open" />
                                     <h:outputFormat rendered="#{hit.cmsPageHitCount > 0}" value="#{msg.searchChildCmsPageHitCount}">
                                         <f:param value="#{hit.cmsPageHitCount}" />
                                     </h:outputFormat>
@@ -193,10 +188,10 @@
                                             </div>
                             				<div class="search-list__struct-child-hits">
                             					<ui:repeat var="grandChildHit" value="#{childHit.children}">                            						
-                            						<dl class="dl-horizontal">
-                            							<dt>
-	                            							<i class="#{grandChildHit.iconClassForType}" title="#{grandChildHit.translatedType}" aria-hidden="true"></i>
-                            							</dt>
+                            							<dl class="dl-horizontal">
+	                            						<dt>
+	                            							<util:icon icon="#{grandChildHit.iconName}" svgClass="icon icon-sm" ariaLabel="#{grandChildHit.translatedType}" />
+	                            						</dt>
                             							<dd>
                             								<a href="#{request.contextPath}/#{grandChildHit.url}"><h:outputFormat escape="false" value="#{grandChildHit.displayText}"/></a>
 		                            						<ui:fragment rendered="#{grandChildHit.includeMetadata()}">

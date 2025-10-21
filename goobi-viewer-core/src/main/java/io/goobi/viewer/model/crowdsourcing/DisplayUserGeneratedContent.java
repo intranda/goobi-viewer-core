@@ -849,24 +849,37 @@ public class DisplayUserGeneratedContent {
         return this.page != null;
     }
 
-    public String getIconClass() {
+    public String getIconName() {
+        if (this.type == null) {
+            return "message";
+        }
         switch (this.type) {
             case ADDRESS:
-                return "fa fa-envelope";
+                return "mail";
             case PERSON:
-                return "fa fa-user";
+                return "user";
             case CORPORATION:
-                return "fa fa-home";
+                return "home";
             case PICTURE:
-                return "fa fa-photo";
+                return "photo";
             case GEOLOCATION:
-                return "fa fa-map-marker";
+                return "map-pin";
             case NORMDATA:
-                return "fa fa fa-list-ul";
+                return "list";
+            case DATASET:
+                return "database";
             case COMMENT:
             default:
-                return "fa fa-comment";
+                return "message";
         }
+    }
+
+    /**
+     * @deprecated use {@link #getIconName()} and Tabler icons instead of Font Awesome.
+     */
+    @Deprecated
+    public String getIconClass() {
+        return getIconName();
     }
 
     public String getPageUrl() {

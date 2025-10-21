@@ -29,8 +29,6 @@ import java.util.List;
 public class SearchChildHit {
 
     private static final String SEARCH_HIT_TYPE_PREFIX = "searchHitType_";
-    private static final String SEARCH_HIT_TYPE_ICON_CLASS = "searchHitIconClass_";
-
     private final HitType type;
     private final String label;
     private final String url;
@@ -51,8 +49,8 @@ public class SearchChildHit {
         return this.label;
     }
 
-    public String getIconClass() {
-        return getIconClassForType(this.type);
+    public String getIconName() {
+        return getIconNameForType(this.type);
     }
 
     public String getTypeLabelKey() {
@@ -70,31 +68,39 @@ public class SearchChildHit {
         return type;
     }
 
-    private static String getIconClassForType(HitType type) {
+    private static String getIconNameForType(HitType type) {
         if (type != null) {
             switch (type) {
                 case PAGE:
-                    return "fa fa-file-text";
+                    return "file-text";
                 case PERSON:
-                    return "fa fa-user";
+                    return "user";
                 case CORPORATION:
-                    return "fa fa-university";
+                    return "building";
                 case ADDRESS:
-                    return "fa fa-envelope";
+                    return "mail";
                 case COMMENT:
-                    return "fa fa-comment-o";
+                    return "message";
                 case CMS:
-                    return "fa fa-file-text-o";
+                    return "file-text";
                 case EVENT:
-                    return "fa fa-calendar";
+                    return "calendar";
                 case ACCESSDENIED:
-                    return "fa fa-lock";
+                    return "lock";
                 default:
-                    return "fa fa-file-text";
+                    return "file-text";
             }
         }
 
-        return "";
+        return "file-text";
+    }
+
+    /**
+     * @deprecated use {@link #getIconName()} instead.
+     */
+    @Deprecated
+    public String getIconClass() {
+        return getIconNameForType(this.type);
     }
 
     private String getDisplayText(BrowseElement browseElement) {
