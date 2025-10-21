@@ -43,15 +43,8 @@ var Crowdsourcing = ( function(crowdsourcing) {
     
     crowdsourcing.AreaSelector.prototype.init = function() {
         this.crowdsourcingItem.onImageOpen( (imageView) => {
-        	console.log("init drawer", imageView, this);
             if(!this.drawer) {
                 this.createDrawer(imageView);
-                
-                // this.crowdsourcingItem.onImageRotated( (degree) => {
-                //     this.rects.forEach(function(overlay) {
-                //         overlay.rect = overlay.rect.rotate(degree);
-                //     })
-                // });
             }
         });
         
@@ -73,7 +66,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
             this.drawer.config.style = this.getStyle();
     		overlay.draw(imageView)
             .then(o => {
-                console.log("created overlay ", overlay);
                 overlay.transformer = this.createTransformer(imageView, overlay);
                 this.rect = overlay;
                 this.rects.push(this.rect);
@@ -100,7 +92,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     }
 
     crowdsourcing.AreaSelector.prototype.createTransformer = function(imageView, overlay) {
-        console.log("create transformer", overlay);
         const config = {
             startCondition: (e) => !e.shiftKey
         }
@@ -137,7 +128,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
             this.lastRectangleId = overlay.id;
             overlay.draw(viewer);
             overlay.transformer = this.createTransformer(viewer, overlay);
-            //console.log("%c add overlay " + annotation.getText(), "background: " + annotation.getColor());
             this.rects.push(overlay);
         }
     } 

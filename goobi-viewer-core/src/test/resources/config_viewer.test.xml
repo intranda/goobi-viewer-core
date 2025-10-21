@@ -454,7 +454,7 @@
 			<defaultItemNumber>3</defaultItemNumber>
 			<!-- advancedSearchFields: index fields to be used in advanced search -->
 			<searchFields>
-                <template name="_DEFAULT">
+                <template name="_DEFAULT" firstLineDefaultOperator="OR">
 				    <field hierarchical="true" visible="true">DC</field>
 				    <field untokenizeForPhraseSearch="true" visible="true">MD_TITLE</field>
 				    <field>MD_CREATOR</field>
@@ -466,10 +466,10 @@
 				    <field>MD_FOO_LANG_EN</field>
 				    <field>MD_FOO_LANG_DE</field>
 				    <field>MD_FOO_LANG_ES</field>
-                    <field displaySelectItemsThreshold="20" selectType="badges">DOCSTRCT</field>
+                    <field displaySelectItemsThreshold="20" selectType="badges" preselectValue="monograph">DOCSTRCT</field>
                 </template>
                 <template name="person" query="DOCSTRCT:person">
-                    <field untokenizeForPhraseSearch="true" visible="true">MD_NAME</field>
+                    <field untokenizeForPhraseSearch="true" visible="true" allowMultipleItems="true" defaultOperator="OR">MD_NAME</field>
                     <field>MD_BIRTHPLACE</field>
                 </template>
 			</searchFields>
@@ -1333,14 +1333,15 @@
 
 	<!-- Web API configuration -->
 	<webapi>
-		<!-- fields: Custom JSON fields. Each <field> element must contain the 
-			attributes 'jsonField' (name of the field for JSON datasets) and 'solrField' 
-			(source index field name). An optional attribute 'multivalue' can be set 
-			to 'true' to return a list with all found values in JSON. -->
-		<fields>
-			<field jsonField="json1" solrField="lucene1" multivalue="true" />
-			<field jsonField="json2" solrField="lucene2" />
-		</fields>
+        <json>
+            <!-- template: Template containing a custom JSON field configuration. Attribute @query contains a Solr filter query. 
+             Each <field> element must contain the  attributes 'jsonField'  (name of the field for JSON datasets) and 'solrField'
+             (source index field name). An optional attribute 'multivalue' can be set to 'true' to return a list with all found values in JSON. -->
+            <template name="test" query="DOCSTRCT_TOP:monograph">
+                <field jsonField="json1" solrField="lucene1" multivalue="true" />
+                <field jsonField="json2" solrField="lucene2" />
+            </template>
+        </json>
 
 		<iiif>
 			<!-- A list of all metadata fields which should be included within the 

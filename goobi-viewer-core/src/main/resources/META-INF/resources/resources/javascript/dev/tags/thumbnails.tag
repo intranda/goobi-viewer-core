@@ -204,7 +204,6 @@ getHomepage(canvas) {
 }
 
 handleClickOnImage(event) {
-	console.log("click on image ", this.opts.actionlistener);
 	if(this.opts.actionlistener) {
 		this.opts.actionlistener.next({
 			action: "clickImage",

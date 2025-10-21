@@ -109,7 +109,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
         assertEquals(SolrConstants.DC, item.getField());
-        assertEquals(SearchItemOperator.AND, item.getOperator());
+        assertEquals(SearchItemOperator.OR, item.getOperator()); // OR is configured for the first line of the default template
         assertEquals("col", item.getValue());
     }
 
@@ -751,8 +751,8 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(19, searchBean.getCurrentSearch().getHitsCount());
 
         searchBean.findCurrentHitIndex("AC03456323", 1, true);
-        assertEquals(0, searchBean.getCurrentHitIndex());  
-        
+        assertEquals(0, searchBean.getCurrentHitIndex());
+
         searchBean.findCurrentHitIndex("PPN9462", 1, true);
         assertEquals(1, searchBean.getCurrentHitIndex());
 
@@ -764,13 +764,13 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         searchBean.findCurrentHitIndex("808996762", 1, true);
         assertEquals(4, searchBean.getCurrentHitIndex());
-        
+
         searchBean.findCurrentHitIndex("AC16139576", 1, true);
         assertEquals(5, searchBean.getCurrentHitIndex());
 
         searchBean.findCurrentHitIndex("02008011811811", 1, true);
         assertEquals(6, searchBean.getCurrentHitIndex());
-        
+
         searchBean.findCurrentHitIndex("ARVIErdm5", 1, true);
         assertEquals(7, searchBean.getCurrentHitIndex());
 
@@ -898,7 +898,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setField(SolrConstants.PI);
         searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setValue(PI_KLEIUNIV);
         searchBean.searchAdvanced(false);
-        assertEquals("(+(PI:(PPN517154005)))", searchBean.getSearchStringInternal());
+        assertEquals("((PI:(PPN517154005)))", searchBean.getSearchStringInternal()); // OR is configured for the first line of the default template
     }
 
     /**

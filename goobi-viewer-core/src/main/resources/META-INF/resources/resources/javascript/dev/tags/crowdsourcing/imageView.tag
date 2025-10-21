@@ -57,7 +57,6 @@
 	this.on("mount", function() {
 		this.showThumbs = this.isShowThumbs();
 		this.initFilters();
-		//console.log("mount image view ", this.opts.item);
 		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{		    
 			this.image = new ImageView.Image(imageViewConfig);
@@ -68,7 +67,6 @@
 		    	this.opts.item.notifyImageOpened(this.image.onOpened.pipe(rxjs.operators.map( () => this.image)));
 				//image load notifications
 				this.opts.item.setImageSource = function(source) {
-					console.log("set image source", source);
 				    this.update();
 				    this.image.load(this.getImageInfo(source))
 				    .then(e => this.zoom.goHome());
@@ -79,7 +77,6 @@
 	    	this.error = error;
 	    	this.update();
 		}
-		console.log("subscribe action listener");
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
 		if(this.opts.item.setShowThumbs) {
 		    this.opts.item.setShowThumbs.subscribe(show => {

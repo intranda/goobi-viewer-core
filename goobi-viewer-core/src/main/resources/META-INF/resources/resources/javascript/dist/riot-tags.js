@@ -3067,7 +3067,6 @@ this.getHomepage = function(canvas) {
 }.bind(this)
 
 this.handleClickOnImage = function(event) {
-	console.log("click on image ", this.opts.actionlistener);
 	if(this.opts.actionlistener) {
 		this.opts.actionlistener.next({
 			action: "clickImage",
@@ -4261,7 +4260,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	this.on("mount", function() {
 		this.showThumbs = this.isShowThumbs();
 		this.initFilters();
-
 		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{
 			this.image = new ImageView.Image(imageViewConfig);
@@ -4272,7 +4270,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 		    	this.opts.item.notifyImageOpened(this.image.onOpened.pipe(rxjs.operators.map( () => this.image)));
 
 				this.opts.item.setImageSource = function(source) {
-					console.log("set image source", source);
 				    this.update();
 				    this.image.load(this.getImageInfo(source))
 				    .then(e => this.zoom.goHome());
@@ -4283,7 +4280,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	    	this.error = error;
 	    	this.update();
 		}
-		console.log("subscribe action listener");
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
 		if(this.opts.item.setShowThumbs) {
 		    this.opts.item.setShowThumbs.subscribe(show => {
