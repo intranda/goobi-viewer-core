@@ -69,8 +69,10 @@
 						</c:when>
 						<c:otherwise>
 							<div class="user-dashboard__last-activities-wrapper -noEntry">
-								<div class="user-dashboard__last-activities-placeholder-wrappper"><i class="fa fa-rocket" aria-hidden="true"></i>
-								<p>#{msg.warning__no_user_activity}</p></div>
+								<div class="user-dashboard__last-activities-placeholder-wrappper">
+									<util:icon-text icon="rocket" styleClass="user-dashboard__last-activities-placeholder" iconSvgClass="icon icon-xxxl" />
+									<p>#{msg.warning__no_user_activity}</p>
+								</div>
 							</div>
 						</c:otherwise>
 					</c:choose>
