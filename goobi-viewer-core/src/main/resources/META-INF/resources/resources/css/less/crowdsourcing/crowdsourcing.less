@@ -105,8 +105,12 @@
 		position: relative;
 		display: flex;
 		[data-toggle="local"] {
-			.fa {
-				padding-right: .5rem;
+			display: inline-flex;
+			align-items: center;
+			gap: .5rem;
+			color: inherit;
+			.icon {
+				padding-top: 20px;
 			}
 		}
 		.change-local {
@@ -1147,4 +1151,3 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}
-
