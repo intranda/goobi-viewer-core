@@ -126,11 +126,6 @@
 	        }
         };
         
-        var pageAreaConfig = {
-                areas : #{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson},
-                currentLogId : "#{activeDocumentBean.logid}"
-        }
-        
         // check for fullscreen and change container height 
         if ( $( '#fullscreen' ).length > 0 ) {
         	const topMargin = () => {
@@ -306,28 +301,7 @@
        	if ( window.matchMedia( '(max-width: 768px)' ).matches && page !== 'fullscreen' ) {
        		$( "#imageContainerMobileOverlay" ).show();
        	}
-       	       	
-		if(false) {	
-			
-			if(viewImage.config.global.navigator.show) {				
-	       	 	viewImage.observables.viewerOpen.subscribe(() => {
-	       	 		let size = viewImage.getImageInfo().map(source => [source.tileSource.width, source.tileSource.height])[0];
-	       	 		let adaptionThresholds = #{activeDocumentBean.viewManager.currentPage.imageHeightRationThresholds};
-	       	 		//console.log("adapt image height ", size, adaptionThresholds);
-	       	 		if(size && size.length > 0 && adaptionThresholds && adaptionThresholds.length > 1) {
-		       	 		let sizeRatio = size[1]/size[0]; // height/width
-		       	 		if(sizeRatio < adaptionThresholds[0] || sizeRatio > adaptionThresholds[1]) {
-			       	 		viewImage.config.global.adaptContainerHeight = false;		       	 			
-		       	 		}
-	       	 		}
-	       	 		viewImage.viewer.navigator.element.style.marginBottom = (configViewer.global.bottomMargin()-5) + "px";
-	       	 	});
-			}
-		    
-
-		}
-
-		       	
+   	
       	//]]>
   		
     </script>
