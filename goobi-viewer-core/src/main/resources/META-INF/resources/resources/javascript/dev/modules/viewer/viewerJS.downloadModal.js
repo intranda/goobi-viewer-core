@@ -263,14 +263,14 @@ var viewerJS = ( function( viewer ) {
             if ( type === 'pdf' ) {
                 modalBody += '<h3 class="modal__title">';
                 modalBody += '<span class="icon-wrapper modal__title-icon" aria-hidden="true">'
-                    + '<svg class="icon icon-xl" focusable="false"><use href="' + _defaults.path + 'resources/icons/outline/file-type-pdf.svg#icon"></use></svg>'
+                    + '<svg class="icon" focusable="false"><use href="' + _defaults.path + 'resources/icons/outline/file-type-pdf.svg#icon"></use></svg>'
                     + '</span>PDF-Download: ';
                 modalBody += '</h3>';
             }
             else {
                 modalBody += '<h3 class="modal__title">';
                 modalBody += '<span class="icon-wrapper modal__title-icon" aria-hidden="true">'
-                    + '<svg class="icon icon-xl" focusable="false"><use href="' + _defaults.path + 'resources/icons/outline/file-text.svg#icon"></use></svg>'
+                    + '<svg class="icon" focusable="false"><use href="' + _defaults.path + 'resources/icons/outline/file-text.svg#icon"></use></svg>'
                     + '</span>ePub-Download: ';
                 modalBody += '</h3>';
             }
