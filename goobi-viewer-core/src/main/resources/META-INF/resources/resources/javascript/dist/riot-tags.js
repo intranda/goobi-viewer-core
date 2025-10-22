@@ -1223,8 +1223,8 @@ this.on("mount", () => {
     this.fetchCollections()
     .then( () => {
         let keys = this.collectionSets.map(set => set[0]);
-        this.translator = new viewerJS.translator(this.opts.restapi.replace("/rest", "/api/v1"), this.opts.language);
-        return this.translator.init(keys);
+        this.translator = viewerJS.translator;
+        return this.translator.addTranslations(keys);
     })
     .then( () => {
         this.update();
@@ -1981,7 +1981,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 			filters: {
 		        brightness : {
 				    label: "Brightness",
-				    type: ImageView.Tools.Filter.Brightness,
+				    type: ImageView.ImageFilters.Brightness,
 				    min: -255,
 				    max: 255,
 				    step: 1,
@@ -1992,7 +1992,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        contrast : {
 				    label: "Contrast",
-				    type: ImageView.Tools.Filter.Contrast,
+				    type: ImageView.ImageFilters.Contrast,
 				    min: 0,
 				    max: 2,
 				    step: 0.05,
@@ -2003,7 +2003,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        saturate : {
 				    label: "Color Saturation",
-				    type: ImageView.Tools.Filter.ColorSaturation,
+				    type: ImageView.ImageFilters.ColorSaturation,
 				    min: 0,
 				    max: 5,
 				    step: 0.1,
@@ -2014,7 +2014,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 				hue : {
 				    label: "Color rotation",
-				    type: ImageView.Tools.Filter.ColorRotate,
+				    type: ImageView.ImageFilters.ColorRotate,
 				    min: -180,
 				    max: 180,
 				    step: 1,
@@ -2025,7 +2025,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 				threshold : {
 				    label: "Bitonal",
-				    type: ImageView.Tools.Filter.Threshold,
+				    type: ImageView.ImageFilters.Threshold,
 				    min: 0,
 				    max: 255,
 				    step: 1,
@@ -2037,7 +2037,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        grayscale : {
 				    label: "Grayscale",
-				    type: ImageView.Tools.Filter.Grayscale,
+				    type: ImageView.ImageFilters.Grayscale,
 				    slider: false,
 				    checkbox: true,
 				    visible: true,
@@ -2045,14 +2045,14 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 				invert : {
 				    label: "Invert",
-				    type: ImageView.Tools.Filter.Invert,
+				    type: ImageView.ImageFilters.Invert,
 				    slider: false,
 				    checkbox: true,
 				    visible: true
 				},
 		        blur : {
 				    label: "Blur",
-				    type: ImageView.Tools.Filter.Blur,
+				    type: ImageView.ImageFilters.Blur,
 				    min: 1,
 				    max: 10,
 				    step: 1,
@@ -2063,7 +2063,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        sharpen : {
 				    label: "Sharpen",
-				    type: ImageView.Tools.Filter.Sharpen,
+				    type: ImageView.ImageFilters.Sharpen,
 				    base: 1,
 				    slider: false,
 				    checkbox: true,
@@ -4170,16 +4170,16 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
 
     this.rotateRight = function()
     {
-        if ( this.opts.image ) {
-            this.opts.image.controls.rotateRight();
+        if ( this.opts.rotate ) {
+            this.opts.rotate.rotateRight();
         }
     	this.handleAction("rotate", 90)
     }.bind(this)
 
     this.rotateLeft = function()
     {
-        if ( this.opts.image ) {
-            this.opts.image.controls.rotateLeft();
+        if ( this.opts.rotate ) {
+            this.opts.rotate.rotateLeft();
         }
     	this.handleAction("rotate", -90)
     }.bind(this)
@@ -4199,6 +4199,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
     }.bind(this)
 
     this.toggleThumbs = function() {
+    	console.log("toggle thumbs " + this.opts.showthumbs);
     	this.opts.showthumbs = !this.opts.showthumbs;
     	this.handleAction("toggleThumbs", this.opts.showthumbs)
     }.bind(this)
@@ -4248,8 +4249,9 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" imageindex="{this.opts.item.currentCanvasIndex}" imagecount="{this.opts.item.canvases.length}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" rotate="{this.rotate}" imageindex="{this.opts.item.currentCanvasIndex}" imagecount="{this.opts.item.canvases.length}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
 
+	this.actionListener = new rxjs.Subject();
 
 	this.on("updated", function() {
 		this.initTooltips();
@@ -4258,31 +4260,26 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	this.on("mount", function() {
 		this.showThumbs = this.isShowThumbs();
 		this.initFilters();
-
 		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{
-			imageViewConfig.image.tileSource = this.getImageInfo(opts.source);
 			this.image = new ImageView.Image(imageViewConfig);
-			this.image.load()
-			.then( (image) => {
-				if(this.opts.item) {
-					this.opts.item.image = this.image;
+			this.zoom = new ImageView.Controls.Zoom(this.image);
+			this.rotate = new ImageView.Controls.Rotation(this.image);
+			if(this.opts.item) {
+				this.opts.item.image = this.image;
+		    	this.opts.item.notifyImageOpened(this.image.onOpened.pipe(rxjs.operators.map( () => this.image)));
 
-				    var now = rxjs.of(image);
-					this.opts.item.setImageSource = function(source) {
-					    this.image.setTileSource(this.getImageInfo(source));
-					}.bind(this);
-				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
-				}
-				return image;
-			})
+				this.opts.item.setImageSource = function(source) {
+				    this.update();
+				    this.image.load(this.getImageInfo(source))
+				    .then(e => this.zoom.goHome());
+				}.bind(this);
+			}
 		} catch(error) {
 		    console.error("ERROR ", error);
 	    	this.error = error;
 	    	this.update();
 		}
-
-		this.actionListener = new rxjs.Subject();
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
 		if(this.opts.item.setShowThumbs) {
 		    this.opts.item.setShowThumbs.subscribe(show => {
@@ -4290,6 +4287,11 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 		        this.update();
 		    });
 		}
+
+		if(!this.showThumbs) {
+			this.opts.item.loadImage(0);
+		}
+		this.update();
 	})
 
 	this.initTooltips = function() {
@@ -4360,7 +4362,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	this.handleImageControlAction = function(event) {
-
+		console.log("image action ", event.action);
 		switch(event.action) {
 			case "toggleThumbs":
 				this.showThumbs = event.value;
@@ -4410,16 +4412,8 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	const imageViewConfig = {
-			global : {
-				divId : "image_" + opts.id,
-				fitToContainer: true,
-				adaptContainerWidth: false,
-				adaptContainerHeight: false,
-				footerHeight: 00,
-				zoomSpeed: 1.3,
-				allowPanning : true,
-			},
-			image : {}
+			element: "#image_" + opts.id,
+			fittingMode: "fixed"
 	};
 
 	const drawStyle = {
@@ -4432,7 +4426,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 			lineColor : "#EEC83B"
 	}
 
-	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
+	const pointStyle = ImageView.DataPoint.Point.getPointStyle(20, "#EEC83B");
 
 });
 

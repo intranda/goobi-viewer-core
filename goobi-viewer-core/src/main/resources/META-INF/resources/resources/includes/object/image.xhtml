@@ -15,7 +15,29 @@
     <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3 ? '-thumbnailPreviewGallery' : ''}">
 
         <!-- MAP -->
-        <div id="imageMap" class="view-object__image-map" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"></div>
+<!--         <div id="imageMap" class="view-object__image-map" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"></div> -->
+
+		<div jsf:id="mainImage" class="view-object__image-map" rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}"
+			data-image="zoomable" 
+			data-image-view-mode="#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}"
+			data-image-show-navigator="#{configurationBean.showImageNavigator(navigationHelper.currentPage, activeDocumentBean.viewManager.currentPage.mimeType)}"
+			data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"
+			data-allow-zoom="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
+			<div id="mainImageData" class="d-none">
+				<div data-image-data="tileSource">#{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)}</div>
+				<div data-image-data="recordIdentifier">#{activeDocumentBean.viewManager.pi}</div>
+				<div data-image-data="structureIdentifier">#{activeDocumentBean.logid}</div>
+				<div data-image-data="pageType">#{navigationHelper.currentPageType}</div>
+				<div data-image-data="pageNumber">#{activeDocumentBean.viewManager.currentImageOrder}</div>
+				<div data-image-data="footer" data-height="#{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)}">#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}</div>
+				<div data-image-data="pageAreas">#{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson}</div>
+				<div data-image-data="overlays" data-styleclass="coords-highlighting" data-show-tooltip="false">#{activeDocumentBean.viewManager.currentSearchResultCoords}</div>
+				<div data-image-data="overlays" data-styleclass="ugcBox" data-show-tooltip="true">#{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}</div>
+			</div>
+		</div>
+		<div jsf:id="mainImageForbidden" class="view-object__image-map" rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+			<div class="view-object__access-denied" >#{msg.noImage_accessDenied}</div>
+		</div>
 
 		<!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
 		<ui:fragment rendered="#{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3}">
@@ -38,11 +60,13 @@
 			<ul>
 				<li>
 					<a data-copy-done-msg="#{msg.copyUrlDone}"
+						data-fragment-link="page"
 						data-copy-share-image="image-region-page"
 						title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_page}</a>
 				</li> 
 				<li>
 					<a data-copy-share-image="image-region-image"
+						data-fragment-link="iiif"
 						data-copy-done-msg="#{msg.copyUrlDone}"
 						title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_image}</a>
 				</li>
@@ -60,98 +84,11 @@
 	</popover>
 
 	<!-- OPEN SEADRAGON -->
-    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
-    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
-    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/imageView.min.js"></script>
+    <script type="text/javascript" src="#{request.contextPath}/resources/js/dist/imageView.min.js"></script>
     <script type="text/javascript">
   		//<![CDATA[
-
-  			
   		const changeImageOrder = new rxjs.Subject();	//call next() to set image in canvas, pass image order as parameter
        	const imageOrderChanged = new rxjs.Subject();	//Called when image is changed from within the canvas. subscribe to get notified of changes. image order is passed as parameter
-      		    
-    	const imageElement = $( "#imageMap" );
-        const access = #{activeDocumentBean.viewManager.currentPage.accessPermissionImage};
-        const accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
-        const page = "#{navigationHelper.currentPage}";
-        const allowZoom = #{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom};
-        const imageSources = #{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)};
-        Object.keys(imageSources).forEach((key) => {
-        	let value = imageSources[key];
-            if(typeof value == "string" && (value.startsWith("{") || value.startsWith("["))) {
-            	imageSources[key] = JSON.parse(value);
-            }
-        });
-        const imageIdToOrderMap = new Map(Object.entries(imageSources).map( ([key, value]) => [sources.iiif.getId(value), Number(key)]));
-        const currentImageOrder = #{activeDocumentBean.viewManager.currentImageOrder}
-        const recordPi = "#{activeDocumentBean.viewManager.pi}"
-        // console.log("images ", imageMap); 
-        var configViewer = { 
-        	global: {
-        		divId: "imageMap", 
-        		viewMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}",
-        		bottomMargin: () => #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
-        		adaptContainerHeight: true,
-        		persistZoom: #{configurationBean.rememberImageZoom},
-        		persistRotation: #{configurationBean.rememberImageRotation},
-        		persistenceId: "#{activeDocumentBean.topDocumentIddoc}" + "_" + "#{navigationHelper.currentPage}",
-        		maxZoomLevel: 5,
-        		zoomSpeed: allowZoom ? 1.25 : 1,
-        		zoomSlider: allowZoom ? '.zoom-slider' : '',
-        		navigator: {
-        			show: #{configurationBean.showImageNavigator(navigationHelper.currentPage, activeDocumentBean.viewManager.currentPage.mimeType)}
-        		},
-        		controls : {
-        		    rotateLeft: '.rotate-left',
-        		    rotateRight: '.rotate-right',
-        		    reset: '.reset',
-        		},
-        		sequence : {
-        			nextImageOffset: 100
-        		},
-        		overlayGroups: [ {
-                    name: "searchHighlighting",
-                    styleClass: "coords-highlighting",
-                    interactive: false
-                }, {
-                    name: "ugc",
-                    styleClass: "ugcBox",
-                    interactive: true,
-                
-                },
-                {
-                    name: "annotations",
-                    styleClass: "image-fragment",
-                    interactive: true
-                
-                }],
-        	},
-        	image: {
-        		mimeType: "#{activeDocumentBean.viewManager.currentPage.displayMimeType}",
-	       		tileSource : Object.values(imageSources),
-	       		currentImageId : sources.iiif.getId(imageSources[currentImageOrder]),
-        		baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
-        		highlightCoords: [
-        			{
-        				name: "searchHighlighting",
-        				coordinates: #{activeDocumentBean.viewManager.currentSearchResultCoords},
-        				displayTooltip: false,
-        				pageIndex : #{activeDocumentBean.viewManager.currentPageSourceIndex},
-        			},
-		            {
-		                name: "ugc",
-		                coordinates: (function(coords){
-		                    	return coords ? coords: [];
-		                	})(#{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}),
-		                displayTooltip: #{configurationBean.displayAnnotationTextInImage}
-		            }, {
-		                name: "annotations",
-		                coordinates: window.location.hash,
-		                displayTooltip: false
-		            }
-        		]
-        	}
-        };
         
         var imageFilterConfig = {
 	        filters : {
@@ -195,9 +132,8 @@
         }
         
         // check for fullscreen and change container height 
-        if ( configViewer && $( '#fullscreen' ).length > 0 ) {
-        	configViewer.global.adaptContainerHeight = false;
-        	configViewer.global.topMargin = () => {
+        if ( $( '#fullscreen' ).length > 0 ) {
+        	const topMargin = () => {
         	    var $header = $('#fullscreenHeader');
         	    if($header.is(":visible")) {
         	        return $header.outerHeight();
@@ -205,7 +141,7 @@
         	        return 0;
         	    }
         	}
-        	configViewer.global.rightMargin = () => {
+        	const rightMargin = () => {
         	    var $sidebar = $('#fullscreenViewSidebar');
 //         	    var $scrollPreview = $('#sidebarScrollPreview');
 //         	    leftMargin = $scrollPreview.width() == undefined ? 0 : $scrollPreview.width();
@@ -221,41 +157,157 @@
         	    // + leftMargin;
         	}
         }
-       	// desktop object view
-       	if ( access && configViewer) {
-           	var viewImage = new ImageView.Image( configViewer )
-           	
-           	viewImage.load().then( function( image ) {
-           		initializeSequence();
-           	    $(".openseadragon-canvas").get(0).focus = () => {
-           	       //prevent focus on os-div to avoid scrolling down on click
-           	    } 
-           		let shareImageFragment = new viewerJS.ShareImageFragment(image);
-           		shareImageFragment.initImageFragmentLinks();
-           	} ).catch( function( error ) {
-           		console.error( "viewObject.xhtml - viewImage.init: Error opening image", error );
-           		if(imageElement.lenth > 0) {           		    
-           			imageElement.get(0).innerHTML = viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false );
-           		}
+        
+	    function setBrowserLocation(pi, pageNo) {
+	    	const url = new URL(window.location.href);
+       		let pathArray = url.pathname.split("/");
+       		let replacedPathPart = false;
+       		for (var i = pathArray.length-1; i >= 0; i--) {
+				if(/^\d+$/.test(pathArray[i]) && pathArray[i] != pi) {
+					//this is presumably the page number
+					pathArray[i] = pageNo;
+					replacedPathPart = true;
+					break;
+				}
+			}
+       		if(!replacedPathPart) {
+       			if(pathArray[pathArray.length-1].length == 0) {
+       				pathArray.pop();
+       			}
+       			pathArray.push(pageNo)
+       		}
+       		url.pathname = pathArray.join("/");
+       		
+       		//update tab url
+       	 	//alternatively use history.addState to add an entry to the browser history, so navigating back leads to the previous page
+       		window.history.replaceState(null, "", url.toString());
+	    }
+        
+	    function initializeSequence(image) {
+           	if(image.sequence) {
+           			           		
+           		//ajax updates
+           		image.sequence.onScroll
+           		.pipe(
+           			rxjs.operators.withLatestFrom(image.sequence.onCurrentImageChange),
+           			rxjs.operators.map(e => e[1]),
+           			rxjs.operators.distinctUntilChanged(),
+           			rxjs.operators.debounceTime(800)		
+           		)
+           		.subscribe(tileSource => {
+           			const imageId = viewerJS.iiif.getId(tileSource);
+           			const pageOrder = image.getTileSourceOrderFromId(imageId);
+           			if(pageOrder != undefined) {	          
+           				setCurrentImageOrder({"order": pageOrder});
+           			}
+           		});
+
+           		//js updates
+	           	image.sequence.onCurrentImageChange.subscribe (tileSource => {
+	           		const imageId = viewerJS.iiif.getId(tileSource);
+	           		const pageNo = image.getTileSourceOrderFromId(imageId);
+	           		if(pageNo != undefined) {	           			
+		           		setBrowserLocation(image.pi, pageNo);
+		           		imageOrderChanged.next(pageNo);
+	           		}
+	           	});
            		
-           		// reload image footer in fullscreen
-           		if ( page === "fullscreen" ) {
-                	$( window ).on( "resize orientationchange", function() {
-                		viewImage.loadFooter();                    		
-                	} );
-                }
-           	} );
-        } 
-       	else {
-       		imageElement.append( accessDeniedMessage );
-       	}
+	           	changeImageOrder.subscribe(pageNo => {	    
+	           		if(pageNo != undefined ) {
+	           			const id = image.getTileSourceIdFromOrder(pageNo);
+	           			if(id != undefined) {		           				
+	            			image.sequence.setCurrentImage(id, true);
+	           			}
+	           		}
+	           	})
+             }
+	    }
+	    
+		function enableGeoMapHighlighting(image) {
+  				let mapFeatureMap = new Map();
+  				image.overlays?.getOverlays().forEach(imageArea => {
+  					let id = imageArea.id;
+  					let mapMarker = viewerJS.GeoMap.maps.get('widget_geoMap_').layers.flatMap(l => l.markers)
+  					.find(marker => marker.feature?.properties?.documentId == id);
+  					//highlight image overlay on hover over map marker with same annotation id
+  					if(mapMarker) {
+  						mapMarker.on("mouseover", e => imageArea.element.focus(true));
+  						mapMarker.on("mouseout", e => imageArea.element.focus(false));
+  						mapFeatureMap.set(imageArea, mapMarker);
+  					}
+  				});
+  				//highlight map marker when hovering over image overlay with same annotation id
+  				image.overlays?.onFocus((overlay, focus) => {
+  					let marker = mapFeatureMap.get(overlay);
+  					if(focus) {
+  						marker?.feature?.layer?.highlightMarker(marker);					
+  					} else {
+  						marker?.feature?.layer?.highlightMarker();
+  					}
+  				})
+  			}
+  			
+  			// Focus UGC
+  			function highlightUGC(image) {		    
+  				var hash = window.location.hash;
+  				if(hash && hash.startsWith("#ugc=")) {
+  				    let ugcId = hash.substring(5);
+  				    if($('#viewObject').length) {			        
+  				    	$("html, body").scrollTop($('#viewObject').offset().top - 40);
+  				    }
+  				    if(image && image.overlays) {
+  				        let widgetTitle = $("#widgetAnnotations").find(".widget__title.collapsible");
+  				        if(widgetTitle.length > 0 && !widgetTitle.hasClass("in")) {			            
+  				            widgetTitle.toggleClass('in').next().slideToggle('fast');
+  				        }
+  				        $("#words-" + ugcId).addClass("ugc-highlight");
+  				        image.overlays.focusBox("ugc", ugcId);
+  				    }
+  				}
+  			}
+	    
+   		const imageElement = document.getElementById("mainImage");
+	    function onError(error) {
+	    	console.error( "viewObject.xhtml - viewImage.init: Error opening image", error );
+       		if(imageElement) {           		    
+       			imageElement.innerHTML = viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false );
+       		}
+	    }
+   		zoomableImageLoaded.subscribe(image => {
+   			initializeSequence(image);
+   			
+       	    $(".openseadragon-canvas").get(0).focus = () => {
+        	       //prevent focus on os-div to avoid scrolling down on click
+        	 } 
+       		window.shareImageFragment = new window.ShareImageFragment(image);
+       		window.shareImageFragment.initImageFragmentLinks();
+
+   	 	    let originClean = image.viewer.isOriginClean();
+   	 	    if(originClean) {
+   	 	        $(".image-controls__option.image-filter button").prop('disabled', false);
+   	 	    	$(".image-controls__option.image-filter button i").tooltip("disable");
+   	 	        $(".image-controls__option.image-filter button")
+   	 	        .attr('title', "#{msg.label__image_filter_toolkit}")
+   	 	        .tooltip('_fixTitle');
+   	 	        
+				riot.mount("imageFilters", {
+				    image: image.viewer,
+				    config: imageFilterConfig
+			    });
+    	 	 }
+   	 	   
+   			highlightUGC(image);
+   			enableGeoMapHighlighting(image);
+   			
+		});
+
 
        	// mobile overlay
        	if ( window.matchMedia( '(max-width: 768px)' ).matches && page !== 'fullscreen' ) {
        		$( "#imageContainerMobileOverlay" ).show();
        	}
        	       	
-		if(viewImage) {	
+		if(false) {	
 			
 			if(viewImage.config.global.navigator.show) {				
 	       	 	viewImage.observables.viewerOpen.subscribe(() => {
@@ -272,244 +324,9 @@
 	       	 	});
 			}
 		    
-		    //init image filter tools
-       	 	viewImage.observables.viewportUpdate.pipe(RxOp.first()).subscribe( () => {
-       	 	    let originClean = viewImage.isOriginClean();
-       	 	    if(originClean) {
-       	 	        $(".image-controls__option.image-filter button").prop('disabled', false);
-       	 	    	$(".image-controls__option.image-filter button i").tooltip("disable");
-       	 	        $(".image-controls__option.image-filter button")
-       	 	        .attr('title', "#{msg.label__image_filter_toolkit}")
-       	 	        .tooltip('_fixTitle');
-       	 	        
-					riot.mount("imageFilters", {
-					    image: viewImage,
-					    config: imageFilterConfig
-				    });
-       	 	    }
-       	 	});
-	
-		    function initializeSequence() {
-	           	if(viewImage.sequence) {
-	           			           		
-	           		//ajax updates
-	           		viewImage.sequence.onScroll
-	           		.pipe(
-	           			rxjs.operators.withLatestFrom(viewImage.sequence.onCurrentImageChange),
-	           			rxjs.operators.map(e => e[1]),
-	           			rxjs.operators.distinctUntilChanged(),
-	           			rxjs.operators.debounceTime(800)		
-	           		)
-	           		.subscribe(imageId => {
-	           			const pageOrder = imageIdToOrderMap.get(imageId);
-	           			if(pageOrder != undefined) {	          
-	           				setCurrentImageOrder({"order": pageOrder});
-	           			}
-	           		});
 
-	           		//js updates
-		           	viewImage.sequence.onCurrentImageChange.subscribe (imageId => {
-		           		const pageNo = imageIdToOrderMap.get(imageId);
-
-		           		if(pageNo != undefined) {	           			
-			           		setBrowserLocation(recordPi, pageNo);
-			           		imageOrderChanged.next(pageNo);
-		           		}
-		           	});
-	           		
-		           	changeImageOrder.subscribe(pageNo => {	    
-		           		if(pageNo != undefined ) {
-		           			const id = sources.iiif.getId(imageSources[Number(pageNo)]);
-		           			if(id != undefined) {		           				
-		            			viewImage.sequence.setCurrentImage(id, true);
-		           			}
-		           		}
-		           	})
-	             }
-		    }
-       	 	
-		    //init page areas
-       	 	function drawPageAreas(config, imageView) {
-				let styles = viewerJS.helper.getCss("page-area", ['borderTopColor', 'borderTopWidth', 'background-color']);
-				let style = {
-				        borderWidth: styles["borderTopWidth"],
-				        borderColor: styles["borderTopColor"],
-				        fillColor: styles["background-color"]
-				}
-				let activeStyles = viewerJS.helper.getCss("page-area focus", ['borderTopColor', 'borderTopWidth', 'background-color']);
-				let activeStyle = {
-				        borderWidth: parseInt(activeStyles["borderTopWidth"]),
-				        borderColor: activeStyles["borderTopColor"],
-				        fillColor: activeStyles["background-color"]
-				}
-				
-        	    imageView.viewer.addHandler("canvas-press", () => {
-        	        imageView.dragging = false;
-        	    })
-        	    imageView.viewer.addHandler("canvas-drag", () => {
-        	        imageView.dragging = true;
-        	    })
-				
-				let activeAreas = config.areas.filter(a => a.logId === config.currentLogId);
-				// console.log("active areas: ", activeAreas);
-				if(activeAreas.length > 0) {
-					drawActiveAreas(activeAreas, imageView);
-					initAreaClick(imageView, activeAreas);
-				} else {
-					let inactiveAreas = config.areas.filter(a => a.logId !== config.currentLogId);
-				    let inactiveLogIds = inactiveAreas.map(a => a.logId).filter((v, i, a) => a.indexOf(v) === i); //last filter to make logIds unique
-				    inactiveLogIds.forEach(logId => {
-				        let logIdAreas = config.areas.filter(a => a.logId === logId);
-				        logIdAreas.forEach( (area, index) => drawArea(area, index, imageView));				    
-				    })
-				    initAreaClick(imageView, inactiveAreas);				    
-				}
-
-		    }
-		    function setBrowserLocation(pi, pageNo) {
-		    	const url = new URL(window.location.href);
-           		let pathArray = url.pathname.split("/");
-           		let replacedPathPart = false;
-           		for (var i = pathArray.length-1; i >= 0; i--) {
-					if(/^\d+$/.test(pathArray[i]) && pathArray[i] != pi) {
-						//this is presumably the page number
-						pathArray[i] = pageNo;
-						replacedPathPart = true;
-						break;
-					}
-				}
-           		if(!replacedPathPart) {
-           			if(pathArray[pathArray.length-1].length == 0) {
-           				pathArray.pop();
-           			}
-           			pathArray.push(pageNo)
-           		}
-           		url.pathname = pathArray.join("/");
-           		
-           		//update tab url
-           	 	//alternatively use history.addState to add an entry to the browser history, so navigating back leads to the previous page
-           		window.history.replaceState(null, "", url.toString());
-		    }
-		    
-		    function drawActiveAreas(activeAreas, imageView) {
-		    	let areasOnCanvas = [];
-				activeAreas.forEach((activeArea, index) => {				        
-				    let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(activeArea.coords);
-		            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
-		            areasOnCanvas.push(rect);
-				    drawArea(activeArea, index, imageView);
-	        	    let scrollPosition = window.sessionStorage.getItem("scrollPosition");
-	        	    $(document).scrollTop(parseInt(scrollPosition));
-	        	    window.sessionStorage.removeItem("scrollPosition");
-			    })
-	            let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, 0.5, areasOnCanvas, true);
-				shadow.start();
-		    }
-		    function initAreaClick(imageView, areas) {
-	        	if(areas.length > 0) {
-	        	    let $area = $(".page-area.active");
-	        	    let url = areas[0].url.replace("/" + areas[0].logId, "");
-	        	    $(imageView.viewer.canvas).css("cursor", "pointer");
-	        	     imageView.viewer.addHandler("canvas-release", () => {
-	        	        if(!imageView.dragging) {		        	            
-		        	        let $target = $(event.target);
-		        	        if($target.filter($area).length == 0) {
-			        	    	window.location.href = url;
-		        	        }
-	        	        }
-	        	    })
-	        	    areas.forEach((area) => {
-		        	    let $area = $(".page-area:not(.active)[id^=pageAreaFrame_"+area.logId+"_]");
-			        	$area.on("click", () => {
-			        	    if(!imageView.dragging) {		        	        
-				        	    window.sessionStorage.setItem("scrollPosition", $(document).scrollTop());
-				        	    window.location.href = area.url;
-			        	    }
-			        	});
-			        });
-	        	}
-		    }
-		    function drawArea(area, shapeIndex, imageView, clickToLeave) {
-		        let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
-	            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
-	        	let $area = $("#pageAreaFrame_" + area.logId + "_" + shapeIndex);
-	        	let $label = $("#pageAreaLabel_" + area.logId + "_" + shapeIndex);
-	            let overlay = new ImageView.Overlay({
-	                rect: rect,
-	                viewer: imageView.viewer,
-	                rotateWithImage: true,
-	                element: $area.get(0),
-	                label: $label.get(0)
-	            });
-	        	overlay.draw();
-
-	        	$area.hover(
-	        		() => $label.addClass("hover"),
-	        		() => $label.removeClass("hover")
-	        	);
-
-		    }
-		    
-		    
-		    viewImage.observables.viewportUpdate.pipe(RxOp.first()).subscribe( () => {
-       	 	    let originClean = viewImage.isOriginClean();
-       	 	    if(originClean) {
-       	    		drawPageAreas(pageAreaConfig, viewImage);
-       	 	    }
-       			highlightUGC();
-       			enableGeoMapHighlighting();
-		    })
-		    
-		} else {
-		   //image not reachable or access denied
 		}
-		
-		function enableGeoMapHighlighting() {
-			let mapFeatureMap = new Map();
-			viewImage.overlays?.getOverlays().forEach(imageArea => {
-				let id = imageArea.id;
-				let mapMarker = viewerJS.GeoMap.maps.get('widget_geoMap_').layers.flatMap(l => l.markers)
-				.find(marker => marker.feature?.properties?.documentId == id);
-				//highlight image overlay on hover over map marker with same annotation id
-				if(mapMarker) {
-					mapMarker.on("mouseover", e => imageArea.element.focus(true));
-					mapMarker.on("mouseout", e => imageArea.element.focus(false));
-					mapFeatureMap.set(imageArea, mapMarker);
-				}
-			});
-			//highlight map marker when hovering over image overlay with same annotation id
-			viewImage.overlays?.onFocus((overlay, focus) => {
-				let marker = mapFeatureMap.get(overlay);
-				if(focus) {
-					marker?.feature?.layer?.highlightMarker(marker);					
-				} else {
-					marker?.feature?.layer?.highlightMarker();
-				}
-			})
-		}
-		
-		// Focus UGC
-		function highlightUGC() {		    
-			var hash = window.location.hash;
-			if(hash && hash.startsWith("#ugc=")) {
-			    let ugcId = hash.substring(5);
-			    if($('#viewObject').length) {			        
-			    	$("html, body").scrollTop($('#viewObject').offset().top - 40);
-			    }
-			    if(viewImage && viewImage.overlays) {
-			        let widgetTitle = $("#widgetAnnotations").find(".widget__title.collapsible");
-			        if(widgetTitle.length > 0 && !widgetTitle.hasClass("in")) {			            
-			            widgetTitle.toggleClass('in').next().slideToggle('fast');
-			        }
-			        $("#words-" + ugcId).addClass("ugc-highlight");
-			        viewImage.overlays.focusBox("ugc", ugcId);
-			    }
-			}
-		}
-		
-        
 
-        
 		       	
       	//]]>
   		

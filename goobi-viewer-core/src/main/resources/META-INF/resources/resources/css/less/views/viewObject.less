@@ -91,6 +91,7 @@
 			background: rgba(255, 0, 0, 0.4) !important;
 			z-index: 1 !important;
 		}
+		
 	}
 	&__object-3d-world-before-load-text {
 		text-align: center;
@@ -237,14 +238,15 @@
 		border-color: #3365a9;
 	}
 
-	&-label {
+	&-label { 
+		position:absolute;
 		display: none;
 		min-width: 100px;
-		z-index: 3;
 		pointer-events: none;
-
+		z-index: 9999;
+		white-space: nowrap;
+		
 		&-text {
-			display: none;
 			background: rgba(51, 101, 169, 1);
 			color: white;
 			width: 100%;
@@ -259,6 +261,23 @@
 				display: inline-block;
 			}
 		}
+		
+		/* Little arrow */
+		&.test::after {
+			content: '';
+			position: absolute;
+			bottom: -12px;
+			left: 50%;
+			transform: translateX(-50%);
+			border-width: 6px;
+			border-style: solid;
+			border-color: #333 transparent transparent transparent;
+		}
+		
+		&.show {
+			opacity: 1;
+		}
+		
 	}
 }
 
@@ -293,6 +312,46 @@ popover [data-copy] {
 	position: absolute;
 	background: rgba(255, 255, 255, 1.0);
 	z-index: 10; //must be >1 to be visible
+}
+
+/* TOOLTIPS are directly in body*/
+.highlight-tooltip {
+	position: absolute;
+	background: #333;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 6px;
+	white-space: nowrap;
+	display: none;
+	z-index: 1000; /* ensure it shows above canvas */
+	pointer-events: none; /* tooltip doesn't block hover */
+}
+.image-tooltip {
+	position: absolute;
+	display: none;
+	background: #333;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 6px;
+	font-size: 14px;
+	white-space: nowrap;
+	transform: translateY(-5px);
+	transition: opacity 0.2s ease, transform 0.2s ease;
+	z-index: 9999;
+}
+/* Little arrow */
+.image-tooltip::after {
+	content: '';
+	position: absolute;
+	bottom: -12px;
+	left: 50%;
+	transform: translateX(-50%);
+	border-width: 6px;
+	border-style: solid;
+	border-color: #333 transparent transparent transparent;
+}
+.image-tooltip.show {
+	opacity: 1;
 }
 
 //@{RTL} {
@@ -342,3 +401,4 @@ popover [data-copy] {
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}
+
