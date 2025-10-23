@@ -196,7 +196,7 @@
 												type="button"
 												class="btn btn--link"
 												jsf:action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
-												<util:icon icon="square-minus" />
+												<util:icon icon="square-rounded-minus" />
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
 												<f:passThroughAttribute name="data-placement" value="top" />
 												<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
@@ -208,7 +208,7 @@
 												type="button"
 												class="btn btn--link"
 												jsf:action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
-												<util:icon icon="square-plus-2" />
+												<util:icon icon="square-rounded-plus" />
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
 												<f:passThroughAttribute name="data-placement" value="top" />
 												<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
@@ -232,7 +232,7 @@
 																		type="button"
 																		class="btn btn--link"
 																		jsf:action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{!tocElement.expanded}">
-																		<util:icon icon="square-plus-2" />
+																		<util:icon icon="square-rounded-plus" />
 																		<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
 																		<f:ajax render="@form" />
 																	</button>
@@ -240,7 +240,7 @@
 																		type="button"
 																		class="btn btn--link"
 																		jsf:action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.expanded}">
-																		<util:icon icon="square-minus" />
+																		<util:icon icon="square-rounded-minus" />
 																		<f:passThroughAttribute name="aria-label" value="#{msg.all}" />
 																		<f:ajax render="@form" />
 																	</button>

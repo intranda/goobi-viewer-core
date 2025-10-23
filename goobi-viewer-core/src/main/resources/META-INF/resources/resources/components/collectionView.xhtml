@@ -30,10 +30,10 @@
                                                     jsf:action="#{cc.attrs.collection.toggleChildren(browseDcElement)}">
                                                 	<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__show_details}"/>
                                                     <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
-                                                        <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+                                                        <util:icon icon="square-rounded-plus" />
                                                     </h:panelGroup>
                                                     <h:panelGroup rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
-                                                        <i class="fa fa-minus-square-o" aria-hidden="true"></i>
+                                                        <util:icon icon="square-rounded-minus" />
                                                     </h:panelGroup>
                                                     <f:ajax render="@form" />
                                                 </button>
@@ -63,11 +63,11 @@
 													jsf:styleClass="btn btn-link"
 													title="#{msg[browseDcElement.label]}">
 													<h:panelGroup rendered="#{not browseDcElement.showDescription}">
-														<util:icon icon="chevron-down" aria-hidden="true" />
+														<util:icon icon="chevron-down" />
 													</h:panelGroup>
 
 													<h:panelGroup rendered="#{browseDcElement.showDescription}">
-														<util:icon icon="chevron-up" aria-hidden="true" />
+														<util:icon icon="chevron-up" />
 													</h:panelGroup>
 
 													<f:setPropertyActionListener target="#{browseDcElement.showDescription}" value="#{not browseDcElement.showDescription}" />
