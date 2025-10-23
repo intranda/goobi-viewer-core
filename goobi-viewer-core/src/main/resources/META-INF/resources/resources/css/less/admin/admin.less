@@ -8,7 +8,7 @@
 		margin-bottom: 3rem;
 		&.-padding-left {
 			padding-left: 15px;
-		}
+ }
 	}
 
 	&__small-info {
@@ -1067,6 +1067,18 @@
 		&.-showExportOptions {
 			display: flex;
 			animation: slideInUp 0.25s ease 0s 1 forwards;
+		}
+	}
+
+	&__overlay-bar-action,
+	&__annotations-download-all-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+
+		.icon-wrapper {
+			display: inline-flex;
 		}
 	}
 
