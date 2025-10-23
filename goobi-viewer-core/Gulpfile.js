@@ -856,6 +856,8 @@ function watchMode() {
         joinPosix(paths.staticRoot, 'resources', '**', '*.svg'),
         joinPosix(paths.staticRoot, 'resources', '**', '*.gif'),
         joinPosix(paths.staticRoot, 'resources', '**', '*.ico'),
+        joinPosix(paths.staticRoot, 'resources', '**', '*.css'),
+        '!' + joinPosix(paths.staticRoot, 'resources', 'css', 'dist', '**', '*.css'),
     ];
 
     const staticWatcher = gulp.watch(staticGlobs, {ignoreInitial: true});

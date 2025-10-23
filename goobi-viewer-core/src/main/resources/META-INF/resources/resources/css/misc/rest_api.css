@@ -73,10 +73,10 @@
 	padding-top: 40px;
 }
 
-#swagger-container-v1 .fa-spinner, #swagger-container-v2 .fa-spinner {
+.swagger-api__loader-icon {
 	margin-left: 30px;
 	margin-bottom: 30px;
-}
+}t
 
 #swagger-container-v2 {
 	display: none;
