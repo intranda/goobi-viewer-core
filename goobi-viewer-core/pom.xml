@@ -170,7 +170,7 @@
 		 <dependency>
 		      <groupId>de.intranda.js.content-view</groupId>
 		      <artifactId>content-view</artifactId>
-		      <version>0.2.2-SNAPSHOT</version>
+		      <version>0.2.4-SNAPSHOT</version>
 		 </dependency>
 		<dependency>
 			<groupId>de.intranda.goobi</groupId>
