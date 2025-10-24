@@ -45,21 +45,34 @@
 			margin: 0;
 			flex: 0 0 auto;
 		}
-		&__options {
-			display: flex;
-			align-items: center;
-			flex-wrap: wrap;
-			column-gap: 6px;
-			row-gap: 4px;
-			margin-left: auto;
-			font-size: @fontMedium;
-			color: inherit;
-			--search-divider-color: rgba(128, 128, 128, 0.5);
+				&__options {
+					display: flex;
+					align-items: center;
+					flex-wrap: wrap;
+					column-gap: 6px;
+					row-gap: 4px;
+					margin-left: auto;
+					font-size: @fontMedium;
+					color: inherit;
+					--search-divider-color: var(--gv-search-divider-color, rgba(31, 41, 55, 0.28));
+					--search-option-button-size: 36px;
+					--search-option-icon-size: 20px;
+					--search-option-icon-color: var(--gv-search-option-icon-color, #1f2933);
+					--search-option-color: var(--gv-search-option-color, #1f2933);
+					--search-option-bg: var(--gv-search-option-bg, #f3f5f7);
+					--search-option-border: var(--gv-search-option-border, #c8d4e2);
+					--search-option-bg-hover: var(--gv-search-option-bg-hover, #e4ebf5);
+					--search-option-border-hover: var(--gv-search-option-border-hover, #b7c8db);
+					--search-option-bg-active: var(--gv-search-option-bg-active, #035999);
+					--search-option-border-active: var(--gv-search-option-border-active, #0a6fb1);
+					--search-option-color-active: var(--gv-search-option-color-active, #ffffff);
+					--search-option-shadow-active: var(--gv-search-option-shadow-active, 0 0 0 1px rgba(3, 89, 153, 0.4), 0 8px 18px rgba(3, 89, 153, 0.35));
+					--search-option-outline: var(--gv-search-option-outline, #035999);
 
-			> * {
-				position: relative;
-				display: inline-flex;
-				align-items: center;
+				> * {
+					position: relative;
+					display: inline-flex;
+					align-items: center;
 				gap: 4px;
 				min-height: 22px;
 				color: inherit;
@@ -67,17 +80,19 @@
 
 			> * + * {
 				padding-left: 8px;
-				border-left: 1px solid var(--search-divider-color);
-			}
+					border-left: 1px solid var(--search-divider-color);
+				}
 
-			a,
-			button {
-				padding: 0;
-				color: inherit;
-			}
+				a,
+				button {
+					padding: 0;
+					color: inherit;
+					color: var(--search-option-color);
+					line-height: 0;
+				}
 
-			form {
-				display: inline-flex;
+				form {
+					display: inline-flex;
 				align-items: center;
 				gap: 4px;
 			}
@@ -155,13 +170,16 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 20px !important;
-		height: 20px !important;
+		width: var(--search-option-button-size);
+		height: var(--search-option-button-size);
+		min-width: var(--search-option-button-size);
 		border-radius: 6px;
 		line-height: 1;
-		color: inherit;
-		background-color: transparent;
-		transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+		color: var(--search-option-icon-color);
+		background-color: var(--search-option-bg);
+		border: 1px solid var(--search-option-border);
+		box-shadow: none;
+		transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
 	}
 
 	&__views .btn.btn--icon .icon-wrapper,
@@ -174,6 +192,9 @@
 		line-height: 0;
 		display: inline-flex;
 		align-items: center;
+		justify-content: center;
+		width: calc(var(--search-option-button-size) - 6px);
+		height: calc(var(--search-option-button-size) - 6px);
 	}
 
 	&__views .btn.btn--icon .icon-wrapper svg,
@@ -184,14 +205,15 @@
 	&__save-search .btn.btn--icon .icon-wrapper svg,
 	&__help .btn.btn--icon .icon-wrapper svg {
 		display: block;
-		width: 14px !important;
-		height: 14px !important;
+		width: var(--search-option-icon-size);
+		height: var(--search-option-icon-size);
+		stroke-width: 1.6;
 	}
 
 	&__toggle-thumbs [data-action="toggle-thumbs"] .icon-wrapper svg,
 	&__save-search .btn.btn--icon .icon-wrapper svg {
-		width: 14px !important;
-		height: 14px !important;
+		width: var(--search-option-icon-size);
+		height: var(--search-option-icon-size);
 	}
 
 	&__views .btn.btn--icon:hover,
@@ -208,19 +230,26 @@
 	&__save-search .btn.btn--icon:focus,
 	&__help .btn.btn--icon:hover,
 	&__help .btn.btn--icon:focus {
-		background-color: fade(@black, 12%);
-		box-shadow: 0 2px 6px fade(@black, 12%), inset 0 0 0 1px fade(@black, 10%);
-		transform: translateY(-1px);
+		background-color: var(--search-option-bg-hover);
+		border-color: var(--search-option-border-hover);
+		color: var(--search-option-color);
 	}
 
 	&__views .btn.btn--icon.active,
 	&__toggle-thumbs .btn.btn--icon.-active,
 	&__help .btn.btn--icon.is-modal-trigger-open,
 	&__save-search .btn.btn--icon.is-modal-trigger-open {
-		background-color: fade(#4ca8ff, 18%);
-		color: #015999;
-		box-shadow: 0 0 0 1px fade(#015999, 32%), 0 4px 12px fade(#015999, 22%);
-		transform: translateY(-1px);
+		background-color: var(--search-option-bg-active);
+		border-color: var(--search-option-border-active);
+		color: var(--search-option-color-active);
+		box-shadow: var(--search-option-shadow-active);
+	}
+
+	&__views .btn.btn--icon.active .icon-wrapper svg,
+	&__toggle-thumbs .btn.btn--icon.-active .icon-wrapper svg,
+	&__help .btn.btn--icon.is-modal-trigger-open .icon-wrapper svg,
+	&__save-search .btn.btn--icon.is-modal-trigger-open .icon-wrapper svg {
+		stroke: currentColor;
 	}
 
 	&__views .btn.btn--icon:focus-visible,
@@ -230,7 +259,7 @@
 	&__rss .btn.btn--icon:focus-visible,
 	&__save-search .btn.btn--icon:focus-visible,
 	&__help .btn.btn--icon:focus-visible {
-		outline: 2px solid #015999;
+		outline: 2px solid var(--search-option-outline);
 		outline-offset: 2px;
 	}
 
@@ -819,6 +848,22 @@
 
 .stacked-thumbnail a img {
 	display: block;
+}
+
+.mx-theme-dark .search-list__options,
+.color-theme-dark .search-list__options {
+	--search-divider-color: var(--gv-search-divider-color-dark, rgba(255, 255, 255, 0.2));
+	--search-option-icon-color: var(--gv-search-option-icon-color-dark, rgba(243, 244, 246, 0.92));
+	--search-option-color: var(--gv-search-option-color-dark, rgba(243, 244, 246, 0.92));
+	--search-option-bg: var(--gv-search-option-bg-dark, rgba(148, 163, 184, 0.16));
+	--search-option-border: var(--gv-search-option-border-dark, rgba(148, 163, 184, 0.26));
+	--search-option-bg-hover: var(--gv-search-option-bg-hover-dark, rgba(203, 213, 225, 0.22));
+	--search-option-border-hover: var(--gv-search-option-border-hover-dark, rgba(203, 213, 225, 0.38));
+	--search-option-bg-active: var(--gv-search-option-bg-active-dark, #49a5ff);
+	--search-option-border-active: var(--gv-search-option-border-active-dark, #5fb3ff);
+	--search-option-color-active: var(--gv-search-option-color-active-dark, #021019);
+	--search-option-shadow-active: var(--gv-search-option-shadow-active-dark, 0 0 0 1px rgba(73, 165, 255, 0.45), 0 12px 24px rgba(1, 6, 15, 0.65));
+	--search-option-outline: var(--gv-search-option-outline-dark, #49a5ff);
 }
 
 @{RTL} .search-list {

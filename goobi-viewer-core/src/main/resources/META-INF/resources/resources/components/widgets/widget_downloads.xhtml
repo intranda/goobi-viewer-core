@@ -203,7 +203,7 @@
 								data-toggle="tooltip" data-placement="top" data-trigger="hover"
 								target="_blank" rel="nofollow noopener"
 								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-								<util:icon-text icon="file-type-pdf" text="(#{msg.label__pdf_download_small})"/>
+								<util:icon-text icon="file" text="(#{msg.label__pdf_download} (#{msg.label__pdf_download_small}))"/>
 							</a>
 							<a
 								href="#{activeDocumentBean.viewManager.getPdfDownloadLink([['usePdfSource', 'false']])}"
@@ -213,7 +213,7 @@
 								data-toggle="tooltip" data-placement="top" data-trigger="hover"
 								target="_blank" rel="nofollow noopener"
 								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-								<util:icon-text icon="file-type-pdf" text="(#{msg.label__pdf_download_full})"/>
+								<util:icon-text icon="file" text="#{msg.downloadButton} (#{msg.label__pdf_download_full})"/>
 							</a>
 						</ui:fragment>
 						<ui:fragment visibility-class="widget-element"
@@ -225,7 +225,7 @@
 								data-placement="top" data-trigger="hover" target="_blank"
 								rel="nofollow noopener"
 								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-								<util:icon icon="file-type-pdf"/>
+								<util:icon-text icon="file" text="#{msg.label__pdf_download} (#{msg.label__pdf_download_small})"/>
 							</a>
 						</ui:fragment>
 
@@ -238,7 +238,7 @@
 								title="#{msg.label__pdf_download_record}" data-toggle="tooltip"
 								data-placement="top" data-trigger="hover"
 								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-								<util:icon icon="file-type-pdf"/>
+								<util:icon-text icon="file" text="#{msg.label__pdf_download}"/>
 							</a>
 						</ui:fragment>
 
@@ -335,7 +335,7 @@
 							data-placement="top" data-trigger="hover" target="_blank"
 							rel="nofollow noopener"
 							aria-label="#{msg.image}: #{msg.label__pdf_download}"> 
-							<util:icon icon="file-type-pdf"/>
+							<util:icon-text icon="file" text="#{msg.label__pdf_download}"/>
 						</a>
 					</ui:fragment>
 
@@ -528,7 +528,7 @@
 									data-toggle="tooltip" data-placement="bottom"
 									data-trigger="hover" rel="nofollow noopener"
 									aria-label="#{msg.image}: #{msg.label__pdf_download}">
-									<util:icon-text icon="file-type-pdf" text="(#{msg.downloadButton})"/>
+									<util:icon-text icon="file" text="#{msg.downloadButton}"/>
 								</button>
 							</h:form>
 
