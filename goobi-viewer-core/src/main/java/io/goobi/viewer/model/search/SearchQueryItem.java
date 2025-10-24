@@ -864,7 +864,7 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * @param sameFieldGroupStart the sameFieldGroupStart to set
-     * 
+     * @return this
      */
     public SearchQueryItem setSameFieldGroupStart(boolean sameFieldGroupStart) {
         this.sameFieldGroupStart = sameFieldGroupStart;
