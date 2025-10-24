@@ -22,6 +22,12 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <description>Inline color for the icon wrapper; forwarded as style=\"color:…\".</description>
+            <name>color</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
             <description>Set to "true" to render the filled variant; otherwise outline.</description>
             <name>filled</name>
             <required>false</required>
@@ -36,6 +42,12 @@
         <attribute>
             <description>Accessible label announced to assistive technologies.</description>
             <name>ariaLabel</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>Inline color for the wrapper; forwarded as style=\"color:…\" so currentColor picks it up.</description>
+            <name>color</name>
             <required>false</required>
             <type>java.lang.String</type>
         </attribute>
