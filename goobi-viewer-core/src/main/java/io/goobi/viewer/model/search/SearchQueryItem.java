@@ -86,8 +86,12 @@ public class SearchQueryItem implements Serializable {
     private String preselectValue;
     /** Last copy in the list of items with the same field. */
     private boolean displayAddNewItemButton = false;
-    /** Indicates whether this is a duplicate of an item for the same index field. */
-    private boolean additionalCopy = false;
+    /** Indicates whether this is the first item of a group with the same index field. */
+    private boolean sameFieldGroupStart = false;
+    /** Indicates whether this is a non-first item of a group with the same index field. */
+    private boolean sameFieldGroupCopy = false;
+    /** Indicates whether this is the last item of a group with the same index field. */
+    private boolean sameFieldGroupEnd = false;
 
     /**
      * Zero-argument constructor.
@@ -852,24 +856,61 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * @return the additionalCopy
+     * @return the sameFieldGroupStart
      */
-    public boolean isAdditionalCopy() {
-        return additionalCopy;
+    public boolean isSameFieldGroupStart() {
+        return sameFieldGroupStart;
     }
 
     /**
-     * @param additionalCopy the additionalCopy to set
-     * @return this
+     * @param sameFieldGroupStart the sameFieldGroupStart to set
+     * 
      */
-    public SearchQueryItem setAdditionalCopy(boolean additionalCopy) {
-        this.additionalCopy = additionalCopy;
+    public SearchQueryItem setSameFieldGroupStart(boolean sameFieldGroupStart) {
+        this.sameFieldGroupStart = sameFieldGroupStart;
         return this;
     }
 
-//    /** {@inheritDoc} */
-//    @Override
-//    public String toString() {
-//        return field + " " + operator + " " + getValue();
-//    }
+    @Deprecated
+    public boolean isAdditionalCopy() {
+        return isSameFieldGroupCopy();
+    }
+
+    /**
+     * @return the sameFieldGroupCopy
+     */
+    public boolean isSameFieldGroupCopy() {
+        return sameFieldGroupCopy;
+    }
+
+    /**
+     * @param sameFieldGroupCopy the sameFieldGroupCopy to set
+     * @return this
+     */
+    public SearchQueryItem setSameFieldGroupCopy(boolean sameFieldGroupCopy) {
+        this.sameFieldGroupCopy = sameFieldGroupCopy;
+        return this;
+    }
+
+    /**
+     * @return the sameFieldGroupEnd
+     */
+    public boolean isSameFieldGroupEnd() {
+        return sameFieldGroupEnd;
+    }
+
+    /**
+     * @param sameFieldGroupEnd the sameFieldGroupEnd to set
+     * @return this
+     */
+    public SearchQueryItem setSameFieldGroupEnd(boolean sameFieldGroupEnd) {
+        this.sameFieldGroupEnd = sameFieldGroupEnd;
+        return this;
+    }
+
+    //    /** {@inheritDoc} */
+    //    @Override
+    //    public String toString() {
+    //        return field + " " + operator + " " + getValue();
+    //    }
 }
