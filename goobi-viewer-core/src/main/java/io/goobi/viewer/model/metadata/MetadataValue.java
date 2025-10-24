@@ -185,7 +185,7 @@ public class MetadataValue implements Serializable {
             // Only add prefix if the total parameter value lengths is > 0 so far
             if (addPrefix && paramPrefixes.size() > index && StringUtils.isNotEmpty(paramPrefixes.get(index))) {
                 sb.append(paramPrefixes.get(index));
-            } else if (sb.length() > 0) {
+            } else if (!sb.isEmpty()) {
                 // Use separator between values if no prefix is used
                 sb.append(", ");
             }
