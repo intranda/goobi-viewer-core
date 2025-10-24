@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -94,6 +95,8 @@ public class AdminLicenseBean implements Serializable {
     private Role currentRole = null;
     private LicenseType currentLicenseType = null;
     private License currentLicense = null;
+
+    private Locale selectedLanguage;
 
     /**
      * <p>
@@ -903,6 +906,20 @@ public class AdminLicenseBean implements Serializable {
         if (ObjectUtils.notEqual(getCurrentLicenseId(), id)) {
             setCurrentLicense(DataManager.getInstance().getDao().getLicense(id));
         }
+    }
+
+    /**
+     * @return the selectedLanguage
+     */
+    public Locale getSelectedLanguage() {
+        return selectedLanguage;
+    }
+
+    /**
+     * @param selectedLanguage the selectedLanguage to set
+     */
+    public void setSelectedLanguage(Locale selectedLanguage) {
+        this.selectedLanguage = selectedLanguage;
     }
 
     /**

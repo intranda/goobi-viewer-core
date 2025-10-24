@@ -54,6 +54,100 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                        <h2>#{msg.admin__license_placeholders}</h2>
+                        <h:panelGroup layout="block" id="placeholderGroup">
+                        
+                            <div class="admin__language-tabs">
+                                <viewerComponent:localeSelector object="#{adminLicenseBean.currentLicenseType}" render="placeholderGroup" />
+                            </div>
+                                                    
+                            <div class="admin__default-block">
+                                <ui:param name="language" value="de"></ui:param>
+                                <div id="nameLanguage-#{adminLicenseBean.currentLicenseType.selectedLocale}">
+
+                                    <!-- IMAGE SELECITON -->
+                                    <div class="form-group form-row">
+                                        <h:panelGroup layout="block" id="imageModeGroup" styleClass="admin__cms-edit-collection-image-actions-wrapper">
+                            
+                                            <div class="form-group admin__cms-edit-collection-connected-radio-buttons">
+                                                <div class="connected-top">
+                                                    <h:selectOneRadio group="imageModeRadio" value="#{adminLicenseBean.imageMode}" immediate="true">
+                                                        <f:selectItem itemValue="DEFAULT" itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
+                                                        <f:ajax render="imageModeGroup" />
+                                                    </h:selectOneRadio>
+                                                </div>
+                                                <div class="connected-middle">
+                                                    <h:selectOneRadio group="imageModeRadio" value="#{adminLicenseBean.imageMode}" immediate="true">
+                                                        <f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
+                                                        <f:ajax render="imageModeGroup" />
+                                                    </h:selectOneRadio>
+                                                </div>
+                                            </div>
+                                
+                            
+                                            <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image"
+                                                id="mediaGroup" rendered="#{adminLicenseBean.imageMode == 'IMAGE'}">
+                                                <!-- THUMBNAIL -->
+                                                <div class="admin__cms-edit-collection-image-thumbnail">
+                                                    <ui:fragment rendered="#{adminLicenseBean.currentLicenseType.isHasImage(adminLicenseBean.currentLicenseType.selectedLocale)}">
+                                                        <img src="#{adminLicenseBean.currentLicenseType.iconURI}" class="img-fluid" alt="" />
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{!adminLicenseBean.currentCollection.isHasImage(adminLicenseBean.currentLicenseType.selectedLocale)}">
+                                                        <img src="#{imageDelivery.thumbs.getThumbnailPath(null)}" data-viewer-thumbnail="thumbnail" class="img-fluid" alt="" />
+                                                    </ui:fragment> 
+                                                </div>
+                                
+                                                <!-- ACTIONS -->
+                                                <div class="admin__cms-edit-collection-image-actions">
+                                                    <h:commandLink 
+                                                        action="#{cmsBean.setSelectedMediaHolder(adminLicenseBean.currentCollection)}" 
+                                                        value="#{adminLicenseBean.currentLicenseType.getMediaItem(adminLicenseBean.currentLicenseType.selectedLocale) == null ? msg.cms_selectMedia : msg.cms_media_editFile}" 
+                                                        class="#{adminLicenseBean.currentLicenseType.getMediaItem(adminLicenseBean.currentLicenseType.selectedLocale) == null ? 'btn btn--default' : ''}" 
+                                                        role="button">
+                                                        <f:ajax execute="@form" render="mediaSelectPanel" />
+                                                    </h:commandLink>
+                                                    <h:commandLink 
+                                                        rendered="#{adminLicenseBean.currentCollection.getMediaItem() != null}" 
+                                                        action="#{adminLicenseBean.currentCollection.setMediaItem(adminLicenseBean.currentLicenseType.selectedLocale, null)}" 
+                                                        value="#{msg.cms_selectMediaItem_deselect}" 
+                                                        class="-redlink"
+                                                        role="button">
+                                                        <f:ajax render="mediaGroup" />
+                                                    </h:commandLink>                    
+                                                </div>
+                                            </h:panelGroup> 
+                                            
+                                        </h:panelGroup>
+                                    </div>
+
+                                        <!-- DESCRIPTION -->
+                                        <div class="form-group form-row">
+                                            <div class="col-2 control-label admin__form-label">
+                                                <label for="placeholderDesc">#{msg.description}:</label>
+                                            </div>
+                                            <div class="col-9 admin__form-input cms-module__option-control">
+                                                <h:inputTextarea id="placeholderDescDesc" styleClass="form-control"
+                                                    value="#{adminLicenseBean.currentLicenseType.getPlaceholderDescription(adminLicenseBean.currentLicenseType.selectedLocale).translationValue}">
+                                                    <f:passThroughAttribute name="aria-label"
+                                                        value="#{msg.description}" />
+                                                </h:inputTextarea>
+                                                <div id="descHelp"
+                                                    class="admin__form-help-text">#{msg.admin__license_placeholders_description__help}</div>
+                                            </div>
+                                            <div class="col-1 admin__form-help-icon">
+                                                <button type="button" class="btn btn--clean"
+                                                    data-toggle="helptext" 
+                                                    aria-label="inline help icon">
+                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                
+                            </h:panelGroup>
 
                             <!-- FUNCTIONS -->
                             <h2>#{msg.admin__license_functions}</h2>
