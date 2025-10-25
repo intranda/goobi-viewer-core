@@ -1,0 +1,187 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:jsf="http://xmlns.jcp.org/jsf"
+  xmlns:o="http://omnifaces.org/ui"
+  xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+  xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+  xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+>
+  <composite:interface>
+    <composite:attribute name="title" required="true" />
+    <composite:attribute name="fileSize" required="true" />
+  </composite:interface>
+
+  <composite:implementation>
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="downloadModal"
+      tabindex="-1"
+      aria-labelledby="abc"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title">#{cc.attrs.title}</h1>
+            <button
+              type="button"
+              class="fancy-close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">x</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <!-- PDF-DOWNLOAD DESCRIPTION -->
+            <div>
+              <!--TODO: PDF-Reader Icon-->
+              <!-- TODO dynamische Eigenschaft - ist nicht immer PDF -->
+              <h2>PDF-Download</h2>
+
+              <dl class="row">
+                <!--TODO: MSG-->
+                <dt class="col-sm-3">Werk:</dt>
+                <dd class="col-sm-9">#{cc.attrs.title}</dd>
+
+                <!--TODO: MSG-->
+                <dt class="col-sm-3">Größe:</dt>
+                <dd class="col-sm-9">#{cc.attrs.fileSize}</dd>
+              </dl>
+
+              <!--TODO: MSG-->
+              <p class="mt-4 mb-2">
+                Um per E-Mail informiert zu werden sobald der Download zur
+                Verfügung steht, können Sie hier optional Ihre E-Mail Adresse
+                hinterlassen:
+              </p>
+            </div>
+
+            <!-- FORM -->
+            <!-- TODO: pt:data-target="requestTicketForm" TODO: emailFormRequest -->
+            <!-- TODO: brauche ich enctype="multipart/form-data" ist ja kein Datei upload -->
+            <h:form
+              id="download-modal__emailFormRequest"
+              styleClass="form-horizontal"
+              prependId="false"
+            >
+              <!-- E-MAIL -->
+              <div class="form-group">
+                <label for="download-modal__email" class="col-form-label">
+                  #{msg.email}
+                </label>
+
+                <!-- TODO value kommt aus dem Bean -->
+                <h:inputText
+                  id="download-modal__email"
+                  label="downloadEmail"
+                  required="false"
+                  value=""
+                  styleClass="form-control"
+                  pt:data-require-input-text="emailRequired"
+                  pt:data-target="emailValidatorCheck"
+                >
+                  <f:passThroughAttribute
+                    name="aria-labelledby"
+                    value="download-modal__labelEmail"
+                  />
+
+                  <f:passThroughAttribute name="type" value="email" />
+
+                  <f:validator
+                    validatorId="emailValidator"
+                    for="downloadEmail"
+                  />
+                </h:inputText>
+              </div>
+
+              <!-- ACCEPT TERMS -->
+              <div class="access-ticket-modal__required-checkbox-wrapper">
+                <div class="form-row">
+                  <p class="col-12 feedback-modal__accept-terms-text">
+                    <h:outputText
+                      escape="false"
+                      value="#{msg.feedbackAcceptingTerms}"
+                    />
+                  </p>
+
+                  <div
+                    id="sendContactFormAcceptTerms"
+                    class="col-12 col-sm-3 feedback-modal__accept-terms-label"
+                  >
+                    <label class="mr-3 mb-0"
+                      >#{msg.admin__terms_of_use__accept}:</label
+                    >
+                  </div>
+
+                  <div
+                    class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch"
+                  >
+                    <h:selectOneRadio
+                      group="requiredAccessTicketTerms"
+                      value="false"
+                      immediate="true"
+                      checked="false"
+                      pt:data-require-input-checkbox="uncheckedChecker"
+                    >
+                      <f:selectItem
+                        itemValue="#{false}"
+                        itemLabel="#{msg.no}"
+                      />
+                    </h:selectOneRadio>
+                    <h:selectOneRadio
+                      id="requiredAccessTicketCheckbox2"
+                      group="requiredAccessTicketTerms"
+                      value="true"
+                      immediate="true"
+                      checked="true"
+                      pt:data-require-input-checkbox="ticketRequired"
+                    >
+                      <f:selectItem
+                        itemValue="#{feedbackModalAcceptedTerms}"
+                        itemLabel="#{msg.yes}"
+                      />
+                    </h:selectOneRadio>
+                    <span class="toggle-outside"
+                      ><span class="toggle-inside"></span
+                    ></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SUBMIT EMAIL ADRESS -->
+              <div class="form-row">
+                <div class="col-sm-12 d-flex justify-content-end">
+                  <button
+                    type="button"
+                    data-dismiss="modal"
+                    class="btn btn--clean mr-4"
+                  >
+                    #{msg.cancel}
+                  </button>
+
+                  <!--TODO: action="#{accessTicketBean.requestNewRecordAccessTicketAction} pt:data-require-input="ticketRequired""-->
+                  <h:commandButton
+                    styleClass="btn btn--full"
+                    value="#{msg.submit}"
+                    pt:data-target="buttonLoaderClickEvent"
+                  >
+                  </h:commandButton>
+                </div>
+              </div>
+            </h:form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHOW LOADER AFTER BUTTON CLICK FOR REQUESTING TICKET -->
+    <!-- OPEN MODAL ON PAGE LOAD -->
+  </composite:implementation>
+</ui:composition>

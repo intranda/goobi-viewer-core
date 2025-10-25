@@ -1,106 +1,205 @@
-
 <!-- Deprecated -->
 
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:jsf="http://xmlns.jcp.org/jsf" 
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:jsf="http://xmlns.jcp.org/jsf"
+  xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+  xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+  xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+  xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+>
+  <h2>#{msg.downloads}</h2>
 
-    <h2>#{msg.downloads}</h2>
+  <!-- VIEW METADATA DOWNLOADS -->
+  <h:form
+    id="viewMetadataDownloadsForm"
+    rendered="#{configurationBean.displayMetadataPageLinkBlock}"
+    prependId="false"
+  >
+    <nav id="viewMetadataDownloads" class="dl-links">
+      <ul>
+        <li class="dl-links__mets">
+          <h:outputLink
+            id="metsLink"
+            styleClass="btn btn--full"
+            rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}"
+            value="#{activeDocumentBean.viewManager.metsResolverUrl}"
+            title="#{msg.metadata_dl_mets}"
+            target="_blank"
+          >
+            #{msg.downloadMetsButtonLabel}
+            <f:passThroughAttribute name="data-toggle" value="tooltip" />
+            <f:passThroughAttribute name="data-placement" value="top" />
+          </h:outputLink>
+          <h:outputLink
+            id="lidoLink"
+            styleClass="btn btn--full"
+            rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'LIDO'}"
+            value="#{activeDocumentBean.viewManager.lidoResolverUrl}"
+            title="#{msg.metadata_dl_lido}"
+            target="_blank"
+          >
+            #{msg.downloadLidoButtonLabel}
+            <f:passThroughAttribute name="data-toggle" value="tooltip" />
+            <f:passThroughAttribute name="data-placement" value="top" />
+          </h:outputLink>
+        </li>
+        <h:panelGroup
+          rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}"
+        >
+          <li class="dl-links__mets-all">
+            <h:outputLink
+              id="metsAnchorLink"
+              styleClass="btn btn--full"
+              value="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
+              title="#{msg.metadata_dl_metsAnchor}"
+              target="_blank"
+            >
+              #{msg.downloadAnchorMetsButtonLabel}
+              <f:passThroughAttribute name="data-toggle" value="tooltip" />
+              <f:passThroughAttribute name="data-placement" value="top" />
+            </h:outputLink>
+          </li>
+        </h:panelGroup>
+        <li class="dl-links__marcxml">
+          <a
+            id="marc"
+            href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
+            class="btn btn--full"
+            title="#{msg.metadata_dl_marc}"
+            data-toggle="tooltip"
+            data-placement="top"
+            target="_blank"
+            >#{msg.marcLink}</a
+          >
+        </li>
+        <li class="dl-links__dc">
+          <a
+            id="dc"
+            href="#{activeDocumentBean.viewManager.oaiDcUrl}"
+            class="btn btn--full"
+            title="#{msg.metadata_dl_dublinCore}"
+            data-toggle="tooltip"
+            data-placement="top"
+            target="_blank"
+          >
+            #{msg.dcLink}
+          </a>
+        </li>
+        <h:panelGroup
+          rendered="#{activeDocumentBean.viewManager.oaiEseUrl != null}"
+        >
+          <li class="dl-links__ese">
+            <a
+              id="eseLink"
+              href="#{activeDocumentBean.viewManager.oaiEseUrl}"
+              class="btn btn--full"
+              title="#{msg.metadata_dl_ese}"
+              data-toggle="tooltip"
+              data-placement="top"
+              target="_blank"
+              >#{msg.eseLink}</a
+            >
+          </li>
+        </h:panelGroup>
+        <h:panelGroup
+          rendered="#{activeDocumentBean.viewManager.opacUrl != null}"
+        >
+          <li class="dl-links__opac">
+            <a
+              id="opacLink"
+              href="#{activeDocumentBean.viewManager.opacUrl}"
+              class="btn btn--full"
+              title="#{msg.metadata_dl_opac}"
+              data-toggle="tooltip"
+              data-placement="top"
+              target="_blank"
+              >#{msg.opacLink}</a
+            >
+          </li>
+        </h:panelGroup>
+        <h:panelGroup
+          rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages}"
+        >
+          <li class="dl-links__dfg">
+            <h:outputLink
+              id="dfgLink"
+              styleClass="btn btn--full"
+              value="#{activeDocumentBean.viewManager.linkForDFGViewer}"
+              title="#{msg.metadata_dl_dfg}"
+              target="_blank"
+            >
+              #{msg.dfgViewerLink}
+              <f:passThroughAttribute name="data-toggle" value="tooltip" />
+              <f:passThroughAttribute name="data-placement" value="top" />
+            </h:outputLink>
+          </li>
+        </h:panelGroup>
+        <h:panelGroup
+          rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages}"
+        >
+          <h:panelGroup rendered="#{activeDocumentBean.accessPermissionPdf}">
+            <h:panelGroup
+              rendered="#{!configurationBean.generatePdfInMessageQueue}"
+            >
+              <li class="dl-links__pdf">
+                <a
+                  id="pdfDownloadLink"
+                  href="#{activeDocumentBean.viewManager.pdfDownloadLink}"
+                  title="#{msg.metadata_dl_pdf}"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  class="btn btn--full"
+                  target="_blank"
+                  >#{msg.label__pdf_download}</a
+                >
+              </li>
+            </h:panelGroup>
+            <h:panelGroup
+              rendered="#{configurationBean.generatePdfInMessageQueue}"
+            >
+              <li class="dl-links__pdf">
+                <a
+                  href="#"
+                  class="btn btn--full download-modal"
+                  data-type="pdf"
+                  data-title="#{activeDocumentBean.titleBarLabel}"
+                  data-id=""
+                  data-pi="#{activeDocumentBean.viewManager.pi}"
+                  title="#{msg.label__pdf_download}"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  target="_blank"
+                  >#{msg.label__pdf_download}</a
+                >
+              </li>
+            </h:panelGroup>
+          </h:panelGroup>
+        </h:panelGroup>
 
-    <!-- VIEW METADATA DOWNLOADS -->
-    <h:form id="viewMetadataDownloadsForm" rendered="#{configurationBean.displayMetadataPageLinkBlock}" prependId="false">
-        <nav id="viewMetadataDownloads" class="dl-links">
-            <ul>
-                <li class="dl-links__mets">
-                    <h:outputLink id="metsLink" styleClass="btn btn--full" rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}"
-                        value="#{activeDocumentBean.viewManager.metsResolverUrl}" title="#{msg.metadata_dl_mets}" target="_blank"> 
-                        #{msg.downloadMetsButtonLabel}
-                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                        <f:passThroughAttribute name="data-placement" value="top" />
-                    </h:outputLink>
-                    <h:outputLink id="lidoLink" styleClass="btn btn--full" rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'LIDO'}"
-                        value="#{activeDocumentBean.viewManager.lidoResolverUrl}" title="#{msg.metadata_dl_lido}" target="_blank"> 
-                        #{msg.downloadLidoButtonLabel}
-                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                        <f:passThroughAttribute name="data-placement" value="top" />
-                    </h:outputLink>
-                </li>
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}">
-                    <li class="dl-links__mets-all">
-                        <h:outputLink id="metsAnchorLink" styleClass="btn btn--full" value="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}" title="#{msg.metadata_dl_metsAnchor}"
-                            target="_blank">
-                            #{msg.downloadAnchorMetsButtonLabel}
-                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                            <f:passThroughAttribute name="data-placement" value="top" />
-                        </h:outputLink>
-                    </li>
-                </h:panelGroup>
-                <li class="dl-links__marcxml">
-                    <a id="marc" href="#{activeDocumentBean.viewManager.oaiMarcUrl}" class="btn btn--full" title="#{msg.metadata_dl_marc}" data-toggle="tooltip" data-placement="top"
-                        target="_blank">#{msg.marcLink}</a>
-                </li>
-                <li class="dl-links__dc">
-                    <a id="dc" href="#{activeDocumentBean.viewManager.oaiDcUrl}" class="btn btn--full" title="#{msg.metadata_dl_dublinCore}" data-toggle="tooltip" data-placement="top"
-                        target="_blank"> #{msg.dcLink} </a>
-                </li>
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.oaiEseUrl != null}">
-                    <li class="dl-links__ese">
-                        <a id="eseLink" href="#{activeDocumentBean.viewManager.oaiEseUrl}" class="btn btn--full" title="#{msg.metadata_dl_ese}" data-toggle="tooltip" data-placement="top"
-                            target="_blank">#{msg.eseLink}</a>
-                    </li>
-                </h:panelGroup>
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
-                    <li class="dl-links__opac">
-                        <a id="opacLink" href="#{activeDocumentBean.viewManager.opacUrl}" class="btn btn--full" title="#{msg.metadata_dl_opac}" data-toggle="tooltip" data-placement="top"
-                            target="_blank">#{msg.opacLink}</a>
-                    </li>
-                </h:panelGroup>
-                <h:panelGroup
-                    rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages}">
-                    <li class="dl-links__dfg">
-                        <h:outputLink id="dfgLink" styleClass="btn btn--full" value="#{activeDocumentBean.viewManager.linkForDFGViewer}" title="#{msg.metadata_dl_dfg}" target="_blank">
-                            #{msg.dfgViewerLink}
-                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                            <f:passThroughAttribute name="data-placement" value="top" />
-                        </h:outputLink>
-                    </li>
-                </h:panelGroup>
-                <h:panelGroup rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages}">
-                    <h:panelGroup rendered="#{activeDocumentBean.accessPermissionPdf}">
-                        <h:panelGroup rendered="#{!configurationBean.generatePdfInMessageQueue}">
-                            <li class="dl-links__pdf">
-                                <a id="pdfDownloadLink" href="#{activeDocumentBean.viewManager.pdfDownloadLink}" title="#{msg.metadata_dl_pdf}" data-toggle="tooltip"
-                                    data-placement="top" class="btn btn--full" target="_blank">#{msg.label__pdf_download}</a>
-                            </li>
-                        </h:panelGroup>
-                        <h:panelGroup rendered="#{configurationBean.generatePdfInMessageQueue}">
-                            <li class="dl-links__pdf">
-                                <a href="#" class="btn btn--full download-modal" data-type="pdf" data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
-                                    data-pi="#{activeDocumentBean.viewManager.pi}" title="#{msg.label__pdf_download}" data-toggle="tooltip" data-placement="top"
-                                    target="_blank">#{msg.label__pdf_download}</a>
-                            </li>
-                        </h:panelGroup>
-                    </h:panelGroup>
-                </h:panelGroup>
+        <!-- EPUB DOWNLOAD -->
+        <h:panelGroup rendered="#{activeDocumentBean.accessPermissionEpub}">
+          <li class="dl-links__epub">
+            <a
+              href="#"
+              class="btn btn--full download-modal"
+              data-type="epub"
+              data-title="#{activeDocumentBean.titleBarLabel}"
+              data-id=""
+              data-pi="#{activeDocumentBean.viewManager.pi}"
+              title="#{msg.epubDownload}"
+            >
+              #{msg.epubDownload}
+            </a>
+          </li>
+        </h:panelGroup>
+      </ul>
+    </nav>
+  </h:form>
 
-                <!-- EPUB DOWNLOAD -->
-                <h:panelGroup rendered="#{activeDocumentBean.accessPermissionEpub}">
-                    <li class="dl-links__epub">
-                        <a href="#" class="btn btn--full download-modal" data-type="epub" data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
-                            data-pi="#{activeDocumentBean.viewManager.pi}" title="#{msg.epubDownload}"> #{msg.epubDownload} </a>
-                    </li>
-                </h:panelGroup>
-            </ul>
-        </nav>
-    </h:form>
-    
-    <div class="clearfix"></div>
+  <div class="clearfix"></div>
 </ui:composition>
