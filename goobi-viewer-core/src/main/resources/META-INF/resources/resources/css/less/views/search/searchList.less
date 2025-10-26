@@ -57,17 +57,17 @@
 					--search-divider-color: var(--gv-search-divider-color, rgba(31, 41, 55, 0.28));
 					--search-option-button-size: 36px;
 					--search-option-icon-size: 20px;
-					--search-option-icon-color: var(--gv-search-option-icon-color, #1f2933);
-					--search-option-color: var(--gv-search-option-color, #1f2933);
-					--search-option-bg: var(--gv-search-option-bg, #f3f5f7);
-					--search-option-border: var(--gv-search-option-border, #c8d4e2);
-					--search-option-bg-hover: var(--gv-search-option-bg-hover, #e4ebf5);
-					--search-option-border-hover: var(--gv-search-option-border-hover, #b7c8db);
-					--search-option-bg-active: var(--gv-search-option-bg-active, #035999);
-					--search-option-border-active: var(--gv-search-option-border-active, #0a6fb1);
-					--search-option-color-active: var(--gv-search-option-color-active, #ffffff);
-					--search-option-shadow-active: var(--gv-search-option-shadow-active, 0 0 0 1px rgba(3, 89, 153, 0.4), 0 8px 18px rgba(3, 89, 153, 0.35));
-					--search-option-outline: var(--gv-search-option-outline, #035999);
+					--search-option-border-radius: var(--gv-search-option-border-radius, var(--border-radius, 0));
+					--search-option-icon-color: var(--gv-search-option-icon-color, var(--fg-general, #1f2933));
+					--search-option-color: var(--gv-search-option-color, var(--fg-general, #1f2933));
+					--search-option-bg: var(--gv-search-option-bg, var(--surface, #f3f5f7));
+					--search-option-border: var(--gv-search-option-border, var(--border-color, #c8d4e2));
+					--search-option-bg-hover: var(--gv-search-option-bg-hover, var(--bg-hover, #e4ebf5));
+					--search-option-border-hover: var(--gv-search-option-border-hover, var(--border-hover-color, #b7c8db));
+					--search-option-bg-active: #015999;
+					--search-option-color-active: var(--gv-search-option-color-active, var(--fg-on-active, #ffffff));
+					--search-option-shadow-active: var(--gv-search-option-shadow-active, none);
+					--search-option-outline: var(--gv-search-option-outline, var(--outline-color, #035999));
 
 				> * {
 					position: relative;
@@ -173,11 +173,11 @@
 		width: var(--search-option-button-size);
 		height: var(--search-option-button-size);
 		min-width: var(--search-option-button-size);
-		border-radius: 6px;
+		border-radius: var(--search-option-border-radius);
 		line-height: 1;
 		color: var(--search-option-icon-color);
 		background-color: var(--search-option-bg);
-		border: 1px solid var(--search-option-border);
+		border: var(--border, 1px solid var(--search-option-border));
 		box-shadow: none;
 		transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
 	}
@@ -240,9 +240,8 @@
 	&__help .btn.btn--icon.is-modal-trigger-open,
 	&__save-search .btn.btn--icon.is-modal-trigger-open {
 		background-color: var(--search-option-bg-active);
-		border-color: var(--search-option-border-active);
 		color: var(--search-option-color-active);
-		box-shadow: var(--search-option-shadow-active);
+		box-shadow: var(--search-option-shadow-active, none);
 	}
 
 	&__views .btn.btn--icon.active .icon-wrapper svg,
@@ -853,6 +852,7 @@
 .mx-theme-dark .search-list__options,
 .color-theme-dark .search-list__options {
 	--search-divider-color: var(--gv-search-divider-color-dark, rgba(255, 255, 255, 0.2));
+	--search-option-border-radius: var(--gv-search-option-border-radius-dark, var(--border-radius, 0));
 	--search-option-icon-color: var(--gv-search-option-icon-color-dark, rgba(243, 244, 246, 0.92));
 	--search-option-color: var(--gv-search-option-color-dark, rgba(243, 244, 246, 0.92));
 	--search-option-bg: var(--gv-search-option-bg-dark, rgba(148, 163, 184, 0.16));
@@ -860,10 +860,9 @@
 	--search-option-bg-hover: var(--gv-search-option-bg-hover-dark, rgba(203, 213, 225, 0.22));
 	--search-option-border-hover: var(--gv-search-option-border-hover-dark, rgba(203, 213, 225, 0.38));
 	--search-option-bg-active: var(--gv-search-option-bg-active-dark, #49a5ff);
-	--search-option-border-active: var(--gv-search-option-border-active-dark, #5fb3ff);
 	--search-option-color-active: var(--gv-search-option-color-active-dark, #021019);
-	--search-option-shadow-active: var(--gv-search-option-shadow-active-dark, 0 0 0 1px rgba(73, 165, 255, 0.45), 0 12px 24px rgba(1, 6, 15, 0.65));
-	--search-option-outline: var(--gv-search-option-outline-dark, #49a5ff);
+	--search-option-shadow-active: var(--gv-search-option-shadow-active-dark, none);
+	--search-option-outline: var(--gv-search-option-outline-dark, var(--outline-color, #49a5ff));
 }
 
 @{RTL} .search-list {
