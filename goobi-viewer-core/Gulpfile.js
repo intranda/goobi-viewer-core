@@ -952,5 +952,5 @@ exports.icons = buildIcons;
    - npm run icons      → rebuilds Tabler SVG sprite assets
    - npm run sync       → one-shot full project → deploy mirror
    - npm run target     → prints resolved paths / env overrides
-   - npm run java       → maven: core [install] + theme [package]
+   - npm run java       → maven: core [install] + theme [package] 
 ──────────────────────────────────────────────────────────────────────────────────────────────── */
