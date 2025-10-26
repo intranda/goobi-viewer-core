@@ -28,26 +28,12 @@
 			justify-content: end;
 		    color: @blue;
 		    background-image: none;
-		    font-size: 2rem;
-		    .fa-bookmark-o,
-		    .fa-bookmark {
-		        color: @blue;
-		        margin-right: 0;
+		    .bookmark-toggle {
+		    	align-items: center;
 		    }
-		    .fa-bookmark-o {
-		        display: inline-block;
-		    }
-		    .fa-bookmark {
-		        display: none;
-		    }
-		    &.added, 
-		    &:hover {
-		        .fa-bookmark-o {
-		            display: none;
-		        }
-		        .fa-bookmark {
-		            display: inline-block;
-		        }
+		    .bookmark-toggle__icon {
+		    	width: 2.4rem;
+		    	height: 2.4rem;
 		    }
 		}
 	}
@@ -219,16 +205,18 @@
 		&.level-1,
 		&.level-2 {
 			&:before {
-				content: "\f148";
+				content: "";
 				display: inline-block;
-				font-family: "FontAwesome";
-				font-size: 2.3rem;
-				text-rendering: auto;
+				width: 2.8rem;
+				height: 2.8rem;
+				position: absolute;
+				left: -48px;
+				top: -9px;
 				transform: rotate(90deg);
 				opacity: 1;
-				position: absolute;
-				left: -43px;
-				top: -7px;
+				background-color: currentColor;
+				mask: url("../../icons/outline/chevron-right.svg") center/100% 100% no-repeat;
+				-webkit-mask: url("../../icons/outline/chevron-right.svg") center/100% 100% no-repeat;
 			}
 		}
 		&.level-1 {

@@ -103,7 +103,7 @@
 									
 									<div class="archives-tree__list-entry-title #{entry.id == archiveTree.selectedEntry.id ? '-archives-selected' : ''} #{entry.searchHit ? '-archives-search-hit':''}">
 										<span class="archives-tree__list-title-icon">
-											<span class="fa-stack archives-tree__list-entry-title-icon-wrapper" data-level="#{entry.nodeType}">
+											<span class="archives-tree__list-entry-title-icon-wrapper" data-level="#{entry.nodeType}">
 												<util:icon
 													icon="#{archiveBean.getNodeType(entry.nodeType).icon}"
 													styleClass="archives-tree__list-entry-title-icon"

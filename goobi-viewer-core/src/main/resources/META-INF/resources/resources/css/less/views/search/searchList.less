@@ -496,28 +496,18 @@
 				display: flex;
 			}
 			// position: absolute;
-			font-size: @fontLarge;
 			color: @blue;
 			background-image: none;
-			.fa-bookmark-o,
-			.fa-bookmark {
-				color: @blue;
+			.bookmark-toggle {
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				height: 100%;
 			}
-			.fa-bookmark-o {
-				display: inline-block;
-			}
-			.fa-bookmark {
-				display: none;
-			}
-			&.added,
-			&:hover {
-				.fa-bookmark-o {
-					display: none;
-				}
-				.fa-bookmark {
-					display: inline-block;
-				}
-			}
+		.bookmark-toggle__icon {
+			width: 2.2rem;
+			height: 2.2rem;
+		}
 		}
 	}
 	&__hit-thumbnail {
@@ -541,31 +531,21 @@
 		}
 		[data-bookmark-list-type="add"] {
 			position: absolute;
-			top: 0;
+			top: 8px;
 			right: 5px;
-			font-size: @fontLarge;
 			color: @blue;
 			background-image: none;
 			z-index: 10;
-			.fa-bookmark-o,
-			.fa-bookmark {
-				color: @blue;
+			.bookmark-toggle {
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				height: 100%;
 			}
-			.fa-bookmark-o {
-				display: inline-block;
-			}
-			.fa-bookmark {
-				display: none;
-			}
-			&.added,
-			&:hover {
-				.fa-bookmark-o {
-					display: none;
-				}
-				.fa-bookmark {
-					display: inline-block;
-				}
-			}
+		.bookmark-toggle__icon {
+			width: 2.2rem;
+			height: 2.2rem;
+		}
 		}
 	}
 	&__hit-information {

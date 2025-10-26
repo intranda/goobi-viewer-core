@@ -37,17 +37,17 @@
 						<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
 	
 			            <!-- ADD TO BOOKMARK -->
-			            <ui:fragment rendered="#{configurationBean.bookmarksEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
-			                    <button type="button" class="btn btn--icon metadata__bookmark-button" aria-label="#{msg.bookmarkList_addToBookmarkList}"
-			                        data-bookmark-list-type="add" 
-			                        data-pi="#{activeDocumentBean.viewManager.pi}"
-			                        data-page="#{activeDocumentBean.viewManager.currentImageOrder}">
-			                        <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}">
-			                            <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true" ></i>
-			                            <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
-			                        </span>
-			                    </button>
-			            </ui:fragment>
+	            <ui:fragment rendered="#{configurationBean.bookmarksEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
+	                    <button type="button" class="btn btn--icon metadata__bookmark-button bookmark-toggle__button" aria-label="#{msg.bookmarkList_addToBookmarkList}"
+	                        data-bookmark-list-type="add" 
+	                        data-pi="#{activeDocumentBean.viewManager.pi}"
+	                        data-page="#{activeDocumentBean.viewManager.currentImageOrder}">
+			                        <span class="bookmark-toggle" data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip">
+	                            <util:icon icon="bookmark" svgClass="icon icon-lg" styleClass="bookmark-toggle__icon bookmark-toggle__icon--outline" />
+	                            <util:icon icon="bookmark" filled="true" svgClass="icon icon-lg" styleClass="bookmark-toggle__icon bookmark-toggle__icon--filled" />
+	                        </span>
+	                    </button>
+	            </ui:fragment>
 	
 	                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 							<viewerComponent:copyrightIndicator />

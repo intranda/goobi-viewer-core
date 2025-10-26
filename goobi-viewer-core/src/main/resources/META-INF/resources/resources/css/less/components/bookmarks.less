@@ -4,6 +4,65 @@
    ==============================================================*/
 /* BOOKMARK NAVIGATION */
 /* BLOCK */
+.bookmark-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+
+	&__button {
+		position: relative;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&__icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.55rem;
+		height: 1.55rem;
+
+		svg {
+			width: 100% !important;
+			height: 100% !important;
+			stroke: currentColor;
+			stroke-width: 1.8;
+			fill: transparent;
+		}
+	}
+
+	&__icon--filled {
+		display: none;
+
+		svg {
+			stroke: none;
+			fill: currentColor;
+		}
+	}
+}
+
+[data-bookmark-list-type="add"] {
+	.bookmark-toggle__icon--outline {
+		display: inline-flex;
+	}
+
+	.bookmark-toggle__icon--filled {
+		display: none;
+	}
+
+	&.added,
+	&:hover {
+		.bookmark-toggle__icon--outline {
+			display: none;
+		}
+
+		.bookmark-toggle__icon--filled {
+			display: inline-flex;
+		}
+	}
+}
+
 .bookmark-navigation {
 	/* ELEMENT */
 	&__dropdown-wrapper {

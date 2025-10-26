@@ -1021,7 +1021,7 @@
 		}
 	}
 
-	// FONT AWESOME CHECKBOXES
+	// ICON CHECKBOXES
 	&__fancy-checkbox {
 		display: none;
 
@@ -1033,14 +1033,20 @@
 
 		&+label::before {
 			display: inline-block;
-			content: "\f096";
-			font: normal normal normal 17px/1 FontAwesome;
+			content: "";
+			width: 22px;
+			height: 22px;
+			margin-right: 8px;
+			background-color: currentColor;
+			mask: url("../../icons/outline/square.svg") center/100% 100% no-repeat;
+			-webkit-mask: url("../../icons/outline/square.svg") center/100% 100% no-repeat;
+			vertical-align: middle;
 		}
 
 		&:checked+label::before {
 			animation: fadeIn 0.15s ease-in 0s 1 forwards;
-			content: "\f046";
-			font: normal normal normal 17px/1 FontAwesome;
+			mask: url("../../icons/outline/square-check.svg") center/100% 100% no-repeat;
+			-webkit-mask: url("../../icons/outline/square-check.svg") center/100% 100% no-repeat;
 		}
 	}
 
@@ -1231,28 +1237,33 @@
 		}
 	}
 
-	&__topbar-backend-language {
-		position: relative;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		padding: 0 20px;
-		transition: all 0.2s ease;
-		gap: 0.9rem;
-		position: relative;
-		cursor: default;
+		&__topbar-backend-language {
+			position: relative;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 0 20px;
+			transition: all 0.2s ease;
+			gap: 0.9rem;
+			position: relative;
+			cursor: default;
 
-		.activeLang {
-			font-weight: 700;
-			background: @adminBackend-active-state;
+			.activeLang {
+				font-weight: 700;
+				background: @adminBackend-active-state;
 
-			a {
-				&:after {
-					font: normal normal normal 14px/1 FontAwesome;
-					content: "\f00c";
-					margin-left: .7rem;
+				a {
+					&:after {
+						content: "";
+						display: inline-block;
+						width: 1.2rem;
+						height: 1.2rem;
+						margin-left: .7rem;
+						background-color: currentColor;
+						mask: url("../../icons/outline/check.svg") center/100% 100% no-repeat;
+						-webkit-mask: url("../../icons/outline/check.svg") center/100% 100% no-repeat;
+					}
 				}
-			}
 
 			&:hover {
 				background: @adminBackend-active-state;
@@ -2698,19 +2709,22 @@
 		width: 100%;
 		position: relative;
 
-		input {
-			//			width: 100%;
-			//			border: 1px solid #ced4da;
-			//			padding: 0.2rem 2.2rem 0.2rem 0.4rem;
-		}
-
 		&::after {
-			content: "\f133";
-			font-family: FontAwesome;
+			content: "";
 			position: absolute;
 			right: 0.7rem;
 			top: 50%;
-			transform: translate(0%, -52%);
+			transform: translateY(-50%);
+			width: 1.75rem;
+			height: 1.75rem;
+			background-color: currentColor;
+			mask: url("../../icons/outline/calendar.svg") center/100% 100% no-repeat;
+			-webkit-mask: url("../../icons/outline/calendar.svg") center/100% 100% no-repeat;
+			pointer-events: none;
+		}
+
+		&.admin__highlighted-objects-date-picker::after {
+			display: none;
 		}
 	}
 

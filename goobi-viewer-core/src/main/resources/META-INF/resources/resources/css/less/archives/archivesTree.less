@@ -55,10 +55,8 @@
 			.archives-tree__record-link {
 				color: #5BA2E5;
 				}
-			.fa-stack {
-				color: green;
-			}
-			.fa-file-o {
+			.archives-tree__list-entry-title-icon-wrapper,
+			.archives-tree__list-entry-title-icon {
 				color: green;
 			}
 		}
@@ -70,37 +68,30 @@
 					pointer-events: auto;
 				}
 			}
-			.fa-stack {
-				color: green;
-			}
-			.fa-file-o {
+			.archives-tree__list-entry-title-icon-wrapper,
+			.archives-tree__list-entry-title-icon {
 				color: green;
 			}
 		}
 		position: relative;
 		flex: 0 0 calc(~"100% - 25px");
 		display: flex;
-		.fa-stack {
-			width: unset;
-			height: unset;
-			line-height: unset;
+		.archives-tree__list-entry-title-icon-wrapper {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			position: relative;
+			width: 1.8rem;
+			height: 1.8rem;
+			color: currentColor;
 		}
-		.fa-stack-text {
-			font-size: 10px;
-			position: absolute;
-			left: 0;
+		.archives-tree__list-entry-title-icon {
+			position: relative;
+			color: inherit;
+		}
+		.archives-tree__list-entry-title-icon-svg {
 			width: 100%;
-			text-align: center;
-			line-height: inherit;
-			padding-top: 4px;
-		}
-		.fa-file-o {
-			font-size: 2rem;
-		}
-		.fa-caret-up,
-		.fa-caret-down {
-			font-size: 1.5rem;
-			padding-left: 0.5rem;
+			height: 100%;
 		}
 		a {
 			color: #222;
@@ -116,60 +107,68 @@
 	&__active-title {
 		font-weight: 700;
 		&::after {
-			content: "\f0d8";
-			font-family: "FontAwesome";
-			margin-right: -15px;
+			content: "";
 			display: inline-block;
-			padding-left: 0.7rem;
+			width: 1.3rem;
+			height: 1.3rem;
+			margin-right: -15px;
+			margin-left: 0.7rem;
+			background-color: currentColor;
+			mask: url("../../icons/outline/chevron-up.svg") center/100% 100% no-repeat;
+			-webkit-mask: url("../../icons/outline/chevron-up.svg") center/100% 100% no-repeat;
 		}
 	}
 	&__record-link {
 		display: block; 
-		&.-recordHasImage { 
+		&.-recordHasImage {
 			&:after {
-				content: "\f03e";
-				font-family: "FontAwesome";
-				display: inline;
-				font-size: 14px;
-				margin: unset;
-				font-weight: 400;
-				padding-left: 1.2rem;
+				content: "";
+				display: inline-block;
+				width: 1.15rem;
+				height: 1.15rem;
+				margin-left: 1.2rem;
+				background-color: currentColor;
+				mask: url("../../icons/outline/photo.svg") center/100% 100% no-repeat;
+				-webkit-mask: url("../../icons/outline/photo.svg") center/100% 100% no-repeat;
 			}
 		}
 		&.-recordHasImageAccessDenied {
 			&:before {
-			display: inline-block;
-		  font: normal normal normal 14px/1 FontAwesome;
-		    font-size: 14px;
-		  font-size: inherit;
-		  text-rendering: auto;
-			content: "\f05e";
-		  position: absolute;
-		  // content: "/";
-		  color: red;
-		  font-weight: 700;
-		  font-size: 1.7em;
-		  right: -6px;
-		  top: -6px;
-		  opacity: 0.4;
-		}
+				display: inline-block;
+				content: "";
+				position: absolute;
+				right: -6px;
+				top: -6px;
+				width: 2em;
+				height: 2em;
+				color: fade(@red, 60%);
+				background-color: currentColor;
+				opacity: 0.4;
+				mask: url("../../icons/outline/ban.svg") center/100% 100% no-repeat;
+				-webkit-mask: url("../../icons/outline/ban.svg") center/100% 100% no-repeat;
+			}
         &:after {
             opacity: 0.5;
-            content: "\f03e";
-            font-family: "FontAwesome";
-            display: inline;
-            font-size: 14px;
-            margin: unset;
-            font-weight: 400;
-            padding-left: 1.2rem;
+            content: "";
+            display: inline-block;
+            width: 1.15rem;
+            height: 1.15rem;
+            margin-left: 1.2rem;
+            background-color: currentColor;
+            mask: url("../../icons/outline/photo.svg") center/100% 100% no-repeat;
+            -webkit-mask: url("../../icons/outline/photo.svg") center/100% 100% no-repeat;
         }
 		}
 		&::after {
-			content: "\f0d7";
-			font-family: "FontAwesome";
-			margin-right: -15px;
+			content: "";
 			display: inline-block;
-			padding-left: 0.7rem;
+			width: 1.15rem;
+			height: 1.15rem;
+			margin-right: -15px;
+			margin-left: 0.7rem;
+			background-color: currentColor;
+			mask: url("../../icons/outline/chevron-down.svg") center/100% 100% no-repeat;
+			-webkit-mask: url("../../icons/outline/chevron-down.svg") center/100% 100% no-repeat;
 		}
 	}
 	&__record-link-icon-wrapper-outer {

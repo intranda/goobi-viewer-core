@@ -11,24 +11,19 @@
 		}
 	    &__bookmark-button {
 	    	&[data-bookmark-list-type="add"] {
-			    .fa-bookmark-o,
-			    .fa-bookmark {
-			    }
-			    .fa-bookmark-o {
-			    }
-			    .fa-bookmark {
-			    }
-			    &.added, 
-			    &:hover {
-			        .fa-bookmark-o {
-			        }
-			        .fa-bookmark {
-			        }
-			    }
+				color: @blue;
+				background-image: none;
+
+				.bookmark-toggle {
+					align-items: center;
+				}
+
+			.bookmark-toggle__icon {
+				width: 2.1rem;
+				height: 2.1rem;
+			}
 			}
 		}
-	    .fa {
-	    }
 		/* ELEMENTS / EVENTS */
 		&__elements,
 		&__events {
