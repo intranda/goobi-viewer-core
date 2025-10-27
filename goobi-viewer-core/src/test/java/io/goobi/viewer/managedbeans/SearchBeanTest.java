@@ -556,7 +556,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(1).setValue("person2");
         group.getQueryItems().get(1).setDisplaySelectItems(false);
 
-        assertEquals("( +((MD_NAME:(person1)) (MD_NAME:(person2))))", searchBean.generateAdvancedSearchMainQuery());
+        assertEquals("(+((MD_NAME:(person1)) (MD_NAME:(person2))))", searchBean.generateAdvancedSearchMainQuery());
     }
 
     /**

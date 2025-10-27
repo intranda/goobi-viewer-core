@@ -824,7 +824,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     sbSameFieldGroup.append(itemQuery);
                     if (item.isSameFieldGroupEnd()) {
                         sbSameFieldGroup.append(")");
-                        if (!sb.isEmpty()) {
+                        if (sb.length() > 1) {
                             sb.append(' ');
                         }
                         logger.debug("Query item group query: {}", sbSameFieldGroup);
@@ -833,7 +833,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                 } else {
                     // Single item query
-                    if (!sb.isEmpty()) {
+                    if (sb.length() > 1) {
                         sb.append(' ');
                     }
                     sb.append(itemQuery);
