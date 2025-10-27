@@ -185,7 +185,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /** Keep lists of select values, once generated, for performance reasons. */
     private final Map<String, List<StringPair>> advancedSearchSelectItems = new HashMap<>();
     /** Group of query item clusters for the advanced search. */
-    private final SearchQueryGroup advancedSearchQueryGroup =
+    private SearchQueryGroup advancedSearchQueryGroup =
             new SearchQueryGroup(
                     DataManager.getInstance()
                             .getConfiguration()
@@ -410,7 +410,7 @@ public class SearchBean implements SearchInterface, Serializable {
             resetSearchParameters();
             facets.resetSliderRange();
         }
-        searchStringInternal = generateAdvancedSearchString();
+        searchStringInternal = generateAdvancedSearchMainQuery();
 
         return StringConstants.PRETTY_SEARCHADVANCED5;
     }
@@ -633,30 +633,32 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should not add more facets if field value combo already in current facets
      * @should not replace obsolete facets with duplicates
      * @should remove facets that are not matched among query items
+     * @should put item sequences with the same field into common parentheses
      */
-    String generateAdvancedSearchString() {
-        logger.trace("generateAdvancedSearchString");
+    String generateAdvancedSearchMainQuery() {
+        logger.trace("generateAdvancedSearchMainQuery");
         StringBuilder sb = new StringBuilder("(");
         StringBuilder sbInfo = new StringBuilder();
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
+        StringBuilder sbSameFieldGroup = new StringBuilder();
         Set<String> usedHierarchicalFields = new HashSet<>();
         Set<String> usedFieldValuePairs = new HashSet<>();
         this.proximitySearchDistance = 0;
-        for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+        for (SearchQueryItem item : advancedSearchQueryGroup.getQueryItems()) {
             // logger.trace("Query item: {}", queryItem.toString()); //NOSONAR Debug
-            if (StringUtils.isEmpty(queryItem.getField()) || StringUtils.isBlank(queryItem.getValue())) {
+            if (StringUtils.isEmpty(item.getField()) || StringUtils.isBlank(item.getValue())) {
                 continue;
             }
             if (sbInfo.length() > 1) {
                 sbInfo.append(' ');
             }
-            sbInfo.append(ViewerResourceBundle.getTranslation("searchOperator_" + queryItem.getOperator().name(),
+            sbInfo.append(ViewerResourceBundle.getTranslation("searchOperator_" + item.getOperator().name(),
                     BeanUtils.getLocale()))
                     .append(' ');
 
             // Generate the hierarchical facet parameter from query items
-            if (queryItem.isHierarchical()) {
+            if (item.isHierarchical()) {
                 // logger.trace("{} is hierarchical", queryItem.getField()); //NOSONAR Debug
                 // Skip identical hierarchical items
 
@@ -664,17 +666,17 @@ public class SearchBean implements SearchInterface, Serializable {
                 boolean skipQueryItem = false;
                 for (IFacetItem facetItem : facets.getActiveFacetsCopy()) {
                     // logger.trace("checking facet item: {}", facetItem.getLink()); //NOSONAR Debug
-                    if (!facetItem.getField().equals(queryItem.getField())) {
+                    if (!facetItem.getField().equals(item.getField())) {
                         continue;
                     }
                     if (usedFieldValuePairs.contains(facetItem.getLink())) {
                         // logger.trace("facet item already handled: {}", facetItem.getLink()); //NOSONAR Debug
                         continue;
                     }
-                    if (!usedFieldValuePairs.contains(queryItem.getField() + ":" + queryItem.getValue())) {
-                        facetItem.setLink(queryItem.getField() + ":" + queryItem.getValue());
+                    if (!usedFieldValuePairs.contains(item.getField() + ":" + item.getValue())) {
+                        facetItem.setLink(item.getField() + ":" + item.getValue());
                         usedFieldValuePairs.add(facetItem.getLink());
-                        usedHierarchicalFields.add(queryItem.getField());
+                        usedHierarchicalFields.add(item.getField());
                         // logger.trace("reuse facet item: {}", facetItem); //NOSONAR Debug
                         skipQueryItem = true;
                         break;
@@ -683,7 +685,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
                 if (!skipQueryItem) {
                     String itemQuery =
-                            new StringBuilder().append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).toString();
+                            new StringBuilder().append(item.getField()).append(':').append(item.getValue().trim()).toString();
                     // logger.trace("item query: {}", itemQuery); //NOSONAR Debug
 
                     // Check whether this combination already exists and skip, if that's the case
@@ -692,14 +694,14 @@ public class SearchBean implements SearchInterface, Serializable {
                         continue;
                     }
                     usedFieldValuePairs.add(itemQuery);
-                    usedHierarchicalFields.add(queryItem.getField());
+                    usedHierarchicalFields.add(item.getField());
 
-                    sbCurrentCollection.append(itemQuery + ";;");
+                    sbCurrentCollection.append(itemQuery).append(";;");
 
                     sbInfo.append('(')
-                            .append(ViewerResourceBundle.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
+                            .append(ViewerResourceBundle.getTranslation(item.getField(), BeanUtils.getLocale()))
                             .append(": \"")
-                            .append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
+                            .append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()))
                             .append('"')
                             .append(')');
                 }
@@ -712,10 +714,10 @@ public class SearchBean implements SearchInterface, Serializable {
             }
 
             String itemQuery = null;
-            if (SolrConstants.BOOKMARKS.equals(queryItem.getField())) {
+            if (SolrConstants.BOOKMARKS.equals(item.getField())) {
 
                 // Bookmark list search
-                if (StringUtils.isEmpty(queryItem.getValue())) {
+                if (StringUtils.isEmpty(item.getValue())) {
                     continue;
                 }
 
@@ -726,7 +728,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     try {
                         BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
                         if (bookmarkList != null) {
-                            queryItem.setValue(bookmarkList.getName());
+                            item.setValue(bookmarkList.getName());
                             itemQuery = bookmarkList.getFilterQuery();
                         }
                     } catch (DAOException e) {
@@ -736,7 +738,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     try {
                         BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(name, null);
                         if (bookmarkList != null) {
-                            queryItem.setValue(bookmarkList.getName());
+                            item.setValue(bookmarkList.getName());
                             itemQuery = bookmarkList.getFilterQuery();
                         }
                     } catch (DAOException e) {
@@ -745,7 +747,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 } else if (userBean.isLoggedIn()) {
                     // User bookmark list
                     try {
-                        BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(queryItem.getValue(), userBean.getUser());
+                        BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(item.getValue(), userBean.getUser());
                         if (bookmarkList != null) {
                             itemQuery = bookmarkList.getFilterQuery();
                         }
@@ -766,56 +768,76 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
             } else {
                 // Generate item query
-                itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true, fuzzySearchEnabled);
-                this.proximitySearchDistance = Math.max(this.proximitySearchDistance, queryItem.getProximitySearchDistance());
+                itemQuery = item.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true, fuzzySearchEnabled);
+                this.proximitySearchDistance = Math.max(this.proximitySearchDistance, item.getProximitySearchDistance());
             }
 
             logger.trace("Item query: {}", itemQuery);
             String infoFieldLabel =
-                    SearchHelper.SEARCH_FILTER_ALL.getField().equals(queryItem.getField()) ? queryItem.getLabel() : queryItem.getField();
+                    SearchHelper.SEARCH_FILTER_ALL.getField().equals(item.getField()) ? item.getLabel() : item.getField();
             sbInfo.append('(').append(ViewerResourceBundle.getTranslation(infoFieldLabel, BeanUtils.getLocale())).append(": ");
-            switch (queryItem.getOperator()) {
+            switch (item.getOperator()) {
                 case AND:
-                    if (SolrConstants.BOOKMARKS.equals(queryItem.getField()) && !userBean.isLoggedIn()) {
+                    if (SolrConstants.BOOKMARKS.equals(item.getField()) && !userBean.isLoggedIn()) {
                         // Session bookmark list value
                         sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
-                    } else if (queryItem.isRange()) {
-                        sbInfo.append('[').append(queryItem.getValue()).append(" - ").append(queryItem.getValue2()).append(']');
+                    } else if (item.isRange()) {
+                        sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
                     } else {
-                        if (queryItem.isDisplaySelectItems()) {
-                            sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        if (item.isDisplaySelectItems()) {
+                            sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
                         } else {
-                            sbInfo.append(queryItem.getValue());
+                            sbInfo.append(item.getValue());
                         }
                     }
                     break;
                 case NOT:
-                    if (queryItem.isDisplaySelectItems()) {
-                        sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                    if (item.isDisplaySelectItems()) {
+                        sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
                     } else {
-                        sbInfo.append(queryItem.getValue());
+                        sbInfo.append(item.getValue());
                     }
                     break;
                 default:
-                    if (queryItem.isRange()) {
-                        sbInfo.append('[').append(queryItem.getValue()).append(" - ").append(queryItem.getValue2()).append(']');
+                    if (item.isRange()) {
+                        sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
                     } else {
-                        if (queryItem.isDisplaySelectItems()) {
-                            sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        if (item.isDisplaySelectItems()) {
+                            sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
                         } else {
-                            sbInfo.append(queryItem.getValue());
+                            sbInfo.append(item.getValue());
                         }
                     }
             }
             sbInfo.append(')');
 
             // Add item query part to the group query
-            if (itemQuery.length() > 0) {
-                if (sb.length() > 1) {
-                    // If this is not the first item, add the group's operator
-                    sb.append(' ');
+            if (!itemQuery.isEmpty()) {
+                if (item.isSameFieldGroupStart() || item.isSameFieldGroupCopy()) {
+                    // Put a group of same-field items into a single query
+                    if (item.isSameFieldGroupStart()) {
+                        sbSameFieldGroup.append("+(");
+                    }
+                    if (sbSameFieldGroup.length() > 2) {
+                        sbSameFieldGroup.append(' ');
+                    }
+                    sbSameFieldGroup.append(itemQuery);
+                    if (item.isSameFieldGroupEnd()) {
+                        sbSameFieldGroup.append(")");
+                        if (!sb.isEmpty()) {
+                            sb.append(' ');
+                        }
+                        logger.debug("Query item group query: {}", sbSameFieldGroup);
+                        sb.append(sbSameFieldGroup);
+                        sbSameFieldGroup = new StringBuilder();
+                    }
+                } else {
+                    // Single item query
+                    if (!sb.isEmpty()) {
+                        sb.append(' ');
+                    }
+                    sb.append(itemQuery);
                 }
-                sb.append(itemQuery);
             }
         }
 
@@ -832,13 +854,13 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         // Add this group's query part to the main query
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) {
             sb.append(')');
         }
         if (sb.toString().equals("()")) {
             sb.delete(0, 2);
         }
-        if (sbCurrentCollection.length() > 0) {
+        if (!sbCurrentCollection.isEmpty()) {
             logger.trace("{} + {}", facets.getActiveFacetStringPrefix(), sbCurrentCollection);
             facets.setActiveFacetString(facets.getActiveFacetStringPrefix() + sbCurrentCollection.toString());
         } else {
@@ -2214,6 +2236,15 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public SearchQueryGroup getAdvancedSearchQueryGroup() {
         return advancedSearchQueryGroup;
+    }
+
+    /**
+     * For unit tests.
+     * 
+     * @param advancedSearchQueryGroup the advancedSearchQueryGroup to set
+     */
+    void setAdvancedSearchQueryGroup(SearchQueryGroup advancedSearchQueryGroup) {
+        this.advancedSearchQueryGroup = advancedSearchQueryGroup;
     }
 
     /**

@@ -39,11 +39,13 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.search.SearchSortingOption;
@@ -311,11 +313,11 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#generateAdvancedSearchString()
+     * @see SearchBean#generateAdvancedSearchMainQuery()
      * @verifies construct query correctly
      */
     @Test
-    void generateAdvancedSearchString_shouldConstructQueryCorrectly() {
+    void generateAdvancedSearchMainQuery_shouldConstructQueryCorrectly() {
         searchBean.resetAdvancedSearchParameters();
 
         // First group
@@ -337,15 +339,15 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals("((SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) SUPERSEARCHTERMS_ARCHIVE:(foo bar)"
                 + " DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) SEARCHTERMS_ARCHIVE:(foo bar)"
                 + " CMS_TEXT_ALL:(foo bar)) +(MD_TITLE:(bla AND \\\"blup\\\" -nein)))",
-                searchBean.generateAdvancedSearchString());
+                searchBean.generateAdvancedSearchMainQuery());
     }
 
     /**
-     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
      * @verifies construct query info correctly
      */
     @Test
-    void generateAdvancedSearchString_shouldConstructQueryInfoCorrectly() {
+    void generateAdvancedSearchMainQuery_shouldConstructQueryInfoCorrectly() {
         searchBean.resetAdvancedSearchParameters();
 
         // First group
@@ -371,17 +373,17 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("monograph"); // should be translated
         }
 
-        searchBean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchMainQuery();
         assertEquals("OR (Global search: monograph) AND (Title: bla &quot;blup&quot; -nein) NOT (Structure type: Monograph)",
                 searchBean.getAdvancedSearchQueryInfo());
     }
 
     /**
-     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
      * @verifies add multiple facets for the same field correctly
      */
     @Test
-    void generateAdvancedSearchString_shouldAddMultipleFacetsForTheSameFieldCorrectly() throws Exception {
+    void generateAdvancedSearchMainQuery_shouldAddMultipleFacetsForTheSameFieldCorrectly() throws Exception {
         searchBean.resetAdvancedSearchParameters();
 
         {
@@ -396,18 +398,18 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("bar");
             Assertions.assertTrue(item.isHierarchical());
         }
-        searchBean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchMainQuery();
 
         assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
                 searchBean.getFacets().getActiveFacetString());
     }
 
     /**
-     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
      * @verifies add multiple facets for the same field correctly if field already in current facets
      */
     @Test
-    void generateAdvancedSearchString_shouldAddMultipleFacetsForTheSameFieldCorrectlyIfFieldAlreadyInActiveFacets() throws Exception {
+    void generateAdvancedSearchMainQuery_shouldAddMultipleFacetsForTheSameFieldCorrectlyIfFieldAlreadyInActiveFacets() throws Exception {
         searchBean.resetAdvancedSearchParameters();
         searchBean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;"); // current facet string already contains this field
 
@@ -423,18 +425,18 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("bar");
             Assertions.assertTrue(item.isHierarchical());
         }
-        searchBean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchMainQuery();
 
         assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
                 searchBean.getFacets().getActiveFacetString());
     }
 
     /**
-     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
      * @verifies only add identical facets once
      */
     @Test
-    void generateAdvancedSearchString_shouldOnlyAddIdenticalFacetsOnce() throws Exception {
+    void generateAdvancedSearchMainQuery_shouldOnlyAddIdenticalFacetsOnce() throws Exception {
         searchBean.resetAdvancedSearchParameters();
 
         {
@@ -449,18 +451,18 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("foo");
             Assertions.assertTrue(item.isHierarchical());
         }
-        searchBean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchMainQuery();
 
         assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
                 searchBean.getFacets().getActiveFacetString());
     }
 
     /**
-     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
      * @verifies not add more facets if field value combo already in current facets
      */
     @Test
-    void generateAdvancedSearchString_shouldNotAddMoreFacetsIfFieldValueComboAlreadyInActiveFacets() throws Exception {
+    void generateAdvancedSearchMainQuery_shouldNotAddMoreFacetsIfFieldValueComboAlreadyInActiveFacets() throws Exception {
         searchBean.resetAdvancedSearchParameters();
 
         searchBean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;");
@@ -477,18 +479,18 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("foo");
             Assertions.assertTrue(item.isHierarchical());
         }
-        searchBean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchMainQuery();
 
         assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
                 searchBean.getFacets().getActiveFacetString());
     }
 
     /**
-     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
      * @verifies not replace obsolete facets with duplicates
      */
     @Test
-    void generateAdvancedSearchString_shouldNotReplaceObsoleteFacetsWithDuplicates() throws Exception {
+    void generateAdvancedSearchMainQuery_shouldNotReplaceObsoleteFacetsWithDuplicates() throws Exception {
         searchBean.resetAdvancedSearchParameters();
 
         // Current facets are DC:foo and DC:bar
@@ -507,7 +509,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("foo");
             Assertions.assertTrue(item.isHierarchical());
         }
-        searchBean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchMainQuery();
 
         // Only one DC:foo should be in the facets
         assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
@@ -515,11 +517,11 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
      * @verifies remove facets that are not matched among query items
      */
     @Test
-    void generateAdvancedSearchString_shouldRemoveFacetsThatAreNotMatchedAmongQueryItems() throws Exception {
+    void generateAdvancedSearchMainQuery_shouldRemoveFacetsThatAreNotMatchedAmongQueryItems() throws Exception {
         searchBean.resetAdvancedSearchParameters();
 
         searchBean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
@@ -530,10 +532,31 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         item.setField(SolrConstants.DC);
         item.setValue("foo");
 
-        searchBean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchMainQuery();
 
         assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
                 searchBean.getFacets().getActiveFacetString());
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
+     * @verifies put item sequences with the same field into common parentheses
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldPutItemSequencesWithSameFieldIntoCommonParentheses() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
+
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance()
+                .getConfiguration()
+                .getAdvancedSearchFields("person", false, BeanUtils.getLocale().getLanguage()), "person");
+        searchBean.setAdvancedSearchQueryGroup(group);
+        Assertions.assertTrue(group.addNewQueryItem(group.getQueryItems().get(0).getField(), 0));
+        group.getQueryItems().get(0).setValue("person1");
+        group.getQueryItems().get(0).setDisplaySelectItems(false);
+        group.getQueryItems().get(1).setValue("person2");
+        group.getQueryItems().get(1).setDisplaySelectItems(false);
+
+        assertEquals("( +((MD_NAME:(person1)) (MD_NAME:(person2))))", searchBean.generateAdvancedSearchMainQuery());
     }
 
     /**
