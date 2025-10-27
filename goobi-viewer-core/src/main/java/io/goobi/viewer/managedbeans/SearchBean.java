@@ -663,7 +663,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 if (StringUtils.isBlank(item.getValue())) {
                     continue;
                 }
-                
+
                 // Skip identical hierarchical items
 
                 // Find existing facet items that can be re-purposed for the existing facets
@@ -825,7 +825,8 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (sbSameFieldGroup.length() > 2) {
                         sbSameFieldGroup.append(' ');
                     }
-                    // Hack for allowing OR-searches if AND is configured as the item's operator (fields won't work properly if OR is configured and only one item exists)
+                    // Hack for allowing OR-searches if AND is configured as the item's operator
+                    // (fields won't work properly if OR is configured and only one item exists)
                     sbSameFieldGroup.append(itemQuery.startsWith("+") ? itemQuery.substring(1) : itemQuery);
                 }
                 if (item.isSameFieldGroupEnd()) {
