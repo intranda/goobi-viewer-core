@@ -469,7 +469,7 @@
                     <field displaySelectItemsThreshold="20" selectType="badges" preselectValue="monograph">DOCSTRCT</field>
                 </template>
                 <template name="person" query="DOCSTRCT:person">
-                    <field visible="true" allowMultipleItems="true" defaultOperator="OR">MD_NAME</field>
+                    <field visible="true" allowMultipleItems="true" defaultOperator="AND">MD_NAME</field>
                     <field>MD_BIRTHPLACE</field>
                 </template>
 			</searchFields>

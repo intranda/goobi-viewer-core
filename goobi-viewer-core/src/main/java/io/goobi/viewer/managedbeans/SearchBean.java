@@ -647,7 +647,7 @@ public class SearchBean implements SearchInterface, Serializable {
         this.proximitySearchDistance = 0;
         for (SearchQueryItem item : advancedSearchQueryGroup.getQueryItems()) {
             // logger.trace("Query item: {}", queryItem.toString()); //NOSONAR Debug
-            if (StringUtils.isEmpty(item.getField()) || StringUtils.isBlank(item.getValue())) {
+            if (StringUtils.isEmpty(item.getField())) {
                 continue;
             }
             if (sbInfo.length() > 1) {
@@ -660,6 +660,10 @@ public class SearchBean implements SearchInterface, Serializable {
             // Generate the hierarchical facet parameter from query items
             if (item.isHierarchical()) {
                 // logger.trace("{} is hierarchical", queryItem.getField()); //NOSONAR Debug
+                if (StringUtils.isBlank(item.getValue())) {
+                    continue;
+                }
+                
                 // Skip identical hierarchical items
 
                 // Find existing facet items that can be re-purposed for the existing facets
@@ -812,27 +816,30 @@ public class SearchBean implements SearchInterface, Serializable {
             sbInfo.append(')');
 
             // Add item query part to the group query
-            if (!itemQuery.isEmpty()) {
-                if (item.isSameFieldGroupStart() || item.isSameFieldGroupCopy()) {
-                    // Put a group of same-field items into a single query
-                    if (item.isSameFieldGroupStart()) {
-                        sbSameFieldGroup.append("+(");
-                    }
+            if (item.isSameFieldGroupStart() || item.isSameFieldGroupCopy()) {
+                // Put a group of same-field items into a single query
+                if (item.isSameFieldGroupStart()) {
+                    sbSameFieldGroup.append("+(");
+                }
+                if (!itemQuery.isEmpty()) {
                     if (sbSameFieldGroup.length() > 2) {
                         sbSameFieldGroup.append(' ');
                     }
-                    sbSameFieldGroup.append(itemQuery);
-                    if (item.isSameFieldGroupEnd()) {
-                        sbSameFieldGroup.append(")");
-                        if (sb.length() > 1) {
-                            sb.append(' ');
-                        }
-                        logger.debug("Query item group query: {}", sbSameFieldGroup);
-                        sb.append(sbSameFieldGroup);
-                        sbSameFieldGroup = new StringBuilder();
+                    // Hack for allowing OR-searches if AND is configured as the item's operator (fields won't work properly if OR is configured and only one item exists)
+                    sbSameFieldGroup.append(itemQuery.startsWith("+") ? itemQuery.substring(1) : itemQuery);
+                }
+                if (item.isSameFieldGroupEnd()) {
+                    sbSameFieldGroup.append(")");
+                    if (sb.length() > 1) {
+                        sb.append(' ');
                     }
-                } else {
-                    // Single item query
+                    logger.debug("Query item group query: {}", sbSameFieldGroup);
+                    sb.append(sbSameFieldGroup);
+                    sbSameFieldGroup = new StringBuilder();
+                }
+            } else {
+                // Single item query
+                if (!itemQuery.isEmpty()) {
                     if (sb.length() > 1) {
                         sb.append(' ');
                     }

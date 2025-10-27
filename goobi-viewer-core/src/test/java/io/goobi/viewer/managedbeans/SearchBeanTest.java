@@ -557,6 +557,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(1).setDisplaySelectItems(false);
 
         assertEquals("(+((MD_NAME:(person1)) (MD_NAME:(person2))))", searchBean.generateAdvancedSearchMainQuery());
+
+        // Removing the value from one of the group items should trigger the finalization of the group query correctly
+        group.getQueryItems().get(1).setValue("");
+        assertEquals("(+((MD_NAME:(person1))))", searchBean.generateAdvancedSearchMainQuery());
     }
 
     /**
