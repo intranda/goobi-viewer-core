@@ -140,7 +140,7 @@
 		<quartz.version>2.5.0</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
-		<spring.version>6.2.11</spring.version>
+		<spring.version>6.2.12</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.9.0</solr.version>
 		<swagger.version>2.2.39</swagger.version>
@@ -167,6 +167,11 @@
 
 	<dependencies>
 		<!-- intranda libraries -->
+		 <dependency>
+		      <groupId>de.intranda.js.content-view</groupId>
+		      <artifactId>content-view</artifactId>
+		      <version>0.2.4-SNAPSHOT</version>
+		 </dependency>
 		<dependency>
 			<groupId>de.intranda.goobi</groupId>
 			<artifactId>alto</artifactId>
@@ -920,6 +925,7 @@
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-models</ignoredUsedUndeclaredDependency>
 
 								<ignoredUsedUndeclaredDependency>org.glassfish.hk2.external:jakarta.inject</ignoredUsedUndeclaredDependency>
+								
 							</ignoredUsedUndeclaredDependencies>
 
 							<ignoredUnusedDeclaredDependencies>
@@ -1005,9 +1011,10 @@
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-context</ignoredUnusedDeclaredDependency>
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-core</ignoredUnusedDeclaredDependency>
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-expression</ignoredUnusedDeclaredDependency>
-
-								<!-- xml-apis imports org.xml or org.w3c packages that is used for xml handling in several classes -->
-								<ignoredUnusedDeclaredDependency>xml-apis:xml-apis</ignoredUnusedDeclaredDependency>
+									<!-- xml-apis imports org.xml or org.w3c packages that is used for xml handling in several classes -->
+									<ignoredUnusedDeclaredDependency>xml-apis:xml-apis</ignoredUnusedDeclaredDependency>
+									<!-- only used in Javascript -->
+									<ignoredUnusedDeclaredDependency>de.intranda.js.content-view:content-view</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 
 							<ignoredNonTestScopedDependencies>
@@ -1202,7 +1209,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>12.0.1</version>
+						<version>12.1.0</version>
 					</dependency>
 				</dependencies>
 				<executions>

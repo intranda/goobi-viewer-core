@@ -60,16 +60,16 @@
     
     rotateRight()
     {
-        if ( this.opts.image ) {
-            this.opts.image.controls.rotateRight();
+        if ( this.opts.rotate ) {
+            this.opts.rotate.rotateRight();
         }
     	this.handleAction("rotate", 90)
     }
 
     rotateLeft()
     {
-        if ( this.opts.image ) {
-            this.opts.image.controls.rotateLeft();
+        if ( this.opts.rotate ) {
+            this.opts.rotate.rotateLeft();
         }
     	this.handleAction("rotate", -90)
     }
@@ -90,6 +90,7 @@
     }    
 
     toggleThumbs() {
+    	console.log("toggle thumbs " + this.opts.showthumbs);
     	this.opts.showthumbs = !this.opts.showthumbs;
     	this.handleAction("toggleThumbs", this.opts.showthumbs)
     }
