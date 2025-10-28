@@ -93,9 +93,27 @@
 						</li>
 					</h:panelGroup>
 					<script type="text/javascript">
-						$("#words-#{content.id}").on('click', function(e) {
-							viewImage.overlays.focusBox("ugc", "#{content.id}");
-							highlightCurrentSelection($(this));
+						$("#words-#{content.id}").on('click', (e) => {
+							const id = "#{content.id}";
+                   		    if(window.selectedUgcId !== id) {
+								image?.overlayGroups?.forEach(group => {
+	                     		   const overlayGroup = group.overlayGroup;
+	                     		   overlayGroup.removeHighlight();
+                   			   	   overlayGroup.setHighlight(id);
+								});
+                    		    window.selectedUgcId = id;
+								highlightCurrentSelection($(this));
+                   		    } else {
+                   		    	//click on active ugc
+                   		    	image?.overlayGroups?.forEach(group => {
+ 	                     		   const overlayGroup = group.overlayGroup;
+ 	                     		   overlayGroup.removeHighlight();
+ 								});
+                     		    window.selectedUgcId = undefined;
+                     		    highlightCurrentSelection(undefined);
+                   		    }
+                     		   
+							
 							if(!#{cc.attrs.sidebar}) {
 								$([document.documentElement, document.body]).animate({
 	                                scrollTop: $("#imageContainer").offset().top - 175
@@ -111,8 +129,9 @@
                          	$( '#user_generated_content_nav li' ).removeClass( 'ugc-highlight' );
                          	
                          	// highlight clicked li element
-                         	$Obj.addClass( 'ugc-highlight' );
+                         	$Obj?.addClass( 'ugc-highlight' );
                          };
+                         
   					    function mountRiotTags() {		                    
 	                        riot.mount("annotationBody", {
 	                            currentlang: "#{navigationHelper.localeString}",
@@ -124,6 +143,7 @@
                                 }
 	                        });
 		                }
+  					    
 					    function initView() {
 	                           
 	                           var coordinates = {
@@ -132,12 +152,30 @@
 	                           	coordinates:  #{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}
 	                           };
 	                          
-	                           // console.log("crowdsourcing coordinates: ", coordinates);
-	                           if(configViewer.image && coordinates) {
-	                           	if(!configViewer.image.highlightCoords) {
-	                           		configViewer.image.highlightCoords = [];
-	                           	}
-	                           	configViewer.image.highlightCoords.push(coordinates);
+	                           if( typeof image !== "undefined" ) {
+	                        	   image.viewer.onOpened.subscribe( viewer => {
+		                        	   image.overlayGroups.forEach(group => {
+		                        		   const overlayGroup = group.overlayGroup;
+		                        		   group.overlays.forEach(overlay => {
+		                        			   const id = overlay.id;
+		                        			   if(id) {
+		                        				   const annoElement = document.getElementById("words-" + id);
+		                        				   if(annoElement) {
+		                        					   annoElement.addEventListener("mouseenter", e => {
+		                        						   if(window.selectedUgcId !== id) {
+			                        						   overlayGroup.setHighlight(id, false);		                        							   
+		                        						   }
+		                        					   });
+		                        					   annoElement.addEventListener("mouseleave", e => {
+		                        						   if(window.selectedUgcId !== id) {
+			                        						   overlayGroup.removeHighlight(id, false);        					   		                        							   
+		                        						   }
+		                        					   });
+		                        				   }
+		                        			   }
+		                        		   })
+		                        	   })
+	                        	   })
 	                           }
 
 	  

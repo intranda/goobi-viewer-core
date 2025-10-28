@@ -16,6 +16,9 @@ const colors = require('ansi-colors');
 const log = require('fancy-log');
 const {spawn} = require('child_process');
 
+const { rollup } = require('rollup');
+const terser = require('gulp-terser');
+
 const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
 const reporter = require('postcss-reporter');
@@ -188,6 +191,7 @@ const prettyPath = (p) => (p ? toPosix(String(p).replace(homeDir, '~')) : '');
  */
 function safeDest(subPath) {
     const full = path.join(DEPLOYMENT_DIR, subPath);
+    fs.mkdirSync(full, { recursive: true });
     if (!fs.existsSync(full)) {
         log(colors.yellow(`[deploy] target does not exist, skipping: ${prettyPath(full)}`));
         return through.obj((f, _e, cb) => cb(null, f));
@@ -379,7 +383,23 @@ function buildStyles(changedFilePath = null) {
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 /**
- * Bundles viewer/cms/admin/crowdsourcing modules into `viewer.min.js`.
+ *  Additional Tasks to bundle es6 modules 
+ */
+async function bundleModules() {
+  const bundle = await rollup({
+    input: paths.jsModulesRoot + 'modules.mjs'
+  });
+
+  await bundle.write({
+    file: paths.jsModulesRoot + 'modules.js',
+    format: 'iife',
+  });
+}
+
+
+
+/**
+ * Bundles both iife and es6 modules in javascript/dev/modules into viewer.min.js
  *
  * @param {?string=} changedFilePath Optional path that triggered rebuild (for logging).
  * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
@@ -396,6 +416,7 @@ function bundleViewerJS(changedFilePath = null) {
                 joinPosix(paths.jsModulesRoot, 'viewer', 'viewerJS.js'),
                 joinPosix(paths.jsModulesRoot, 'viewer', 'viewerJS.helper.js'),
                 joinPosix(paths.jsModulesRoot, 'viewer', 'viewerJS.*.js'),
+                joinPosix(paths.jsModulesRoot, 'modules.js'),
                 joinPosix(paths.jsModulesRoot, 'viewer', 'geoMap', 'viewerJS.geoMap.js'),
                 joinPosix(paths.jsModulesRoot, 'viewer', 'geoMap', '*.js'),
                 joinPosix(paths.jsModulesRoot, 'cms', 'cmsJS.js'),
@@ -406,7 +427,7 @@ function bundleViewerJS(changedFilePath = null) {
                 joinPosix(paths.jsModulesRoot, 'crowdsourcing', 'Crowdsourcing.Annotation.js'),
                 joinPosix(paths.jsModulesRoot, 'crowdsourcing', 'Crowdsourcing.*.js'),
             ],
-            {allowEmpty: true}
+           {allowEmpty: true}
         )
         .pipe(guard())
         .pipe(concat('viewer.min.js'))
@@ -741,8 +762,15 @@ function watchMode() {
     requireDeploymentDir();
     // JS bundles
     gulp
-        .watch(joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'))
-        .on('change', (p) => bundleViewerJS(p));
+        .watch([
+            joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'),
+            joinPosix(paths.jsModulesRoot, '**', '*.mjs')
+        ])
+        .on('change', (p) => {
+            bundleModules();
+            bundleViewerJS(p);
+        });
+
     gulp.watch(joinPosix(paths.jsModulesRoot, 'statistics', '**', '*.js')).on('change', (p) =>
         bundleStatisticsJS(p)
     );
@@ -843,7 +871,7 @@ function printTargets(cb) {
    ║ Task composition & exports                                           ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
-const buildJS = gulp.series(bundleViewerJS, bundleStatisticsJS, bundleBrowserSupportJS);
+const buildJS = gulp.series(bundleModules, bundleViewerJS, bundleStatisticsJS, bundleBrowserSupportJS);
 const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags));
 
 exports.build = buildAll;

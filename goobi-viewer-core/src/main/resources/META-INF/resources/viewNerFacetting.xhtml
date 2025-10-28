@@ -261,16 +261,22 @@
         </f:view>
     </ui:define>
 
-    <ui:define name="sidebar">
-        <widgetComponent:widget_views pageType="nerfacetting" />
 
-        <c:forEach var="module" items="#{configurationBean.modules}">
-            <c:forEach var="contribution" items="#{module.sidebarContributions}">
-                <ui:include src="/#{contribution}" />
-            </c:forEach>
-        </c:forEach>
+	<ui:define name="sidebar">
+		<!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
+		<ui:fragment
+			rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
+			<widgetComponent:widget_views pageType="nerfacetting" />
 
-        <widgetComponent:widget_userInteractions />
-    </ui:define>
+			<c:forEach var="module" items="#{configurationBean.modules}">
+				<c:forEach var="contribution" items="#{module.sidebarContributions}">
+					<ui:include src="/#{contribution}" />
+				</c:forEach>
+			</c:forEach>
+
+			<widgetComponent:widget_userInteractions />
+		</ui:fragment>
+	</ui:define>
+
 
 </ui:composition>

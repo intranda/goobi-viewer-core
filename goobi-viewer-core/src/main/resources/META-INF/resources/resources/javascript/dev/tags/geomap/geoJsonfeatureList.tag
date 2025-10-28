@@ -1,4 +1,4 @@
-<geoJsonFeatureList onclick="{preventBubble}">
+<geoJsonFeatureList>
 
 <div class="custom-map__sidebar-inner-wrapper">
 	<div class="custom-map__sidebar-inner-top">
@@ -23,11 +23,27 @@
 this.entities = [];
 this.filteredEntities = undefined;
 
+this.on("update", () => {
+	if(this.opts.onUpdate) {
+		this.opts.onUpdate(this);
+	}
+});
+
+this.on("updated", () => {
+	if(this.opts.onUpdated) {
+		this.opts.onUpdated(this);
+	}
+});
+
+
 this.on("mount", () => {
 	this.opts.featureGroups.forEach(group => {
 		group.onFeatureClick.subscribe(f => { 
 			this.title = f.properties?.title;
 			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => this.getEntityLabel(e)?.length > 0));
+			if(this.opts.onFeatureClick) {
+				this.opts.onFeatureClick(this);
+			}
 		});
 	})
 	this.opts.geomap.onMapClick.subscribe(e => this.hide());
@@ -35,7 +51,6 @@ this.on("mount", () => {
 })
 
 setEntities(entities) {
-	//console.log("Show Entities", entities, this.opts.showAlways);
 	this.entities = [];
 	this.filteredEntities = undefined;
 	if(this.refs["search"]) {		
@@ -58,9 +73,6 @@ getVisibleEntities() {
 	}
 }
 
-preventBubble(e) {
-	event.stopPropagation();
-}
 
 filterList(e) {
 	let filter = e.target.value;

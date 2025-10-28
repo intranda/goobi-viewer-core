@@ -1223,8 +1223,8 @@ this.on("mount", () => {
     this.fetchCollections()
     .then( () => {
         let keys = this.collectionSets.map(set => set[0]);
-        this.translator = new viewerJS.translator(this.opts.restapi.replace("/rest", "/api/v1"), this.opts.language);
-        return this.translator.init(keys);
+        this.translator = viewerJS.translator;
+        return this.translator.addTranslations(keys);
     })
     .then( () => {
         this.update();
@@ -1981,7 +1981,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 			filters: {
 		        brightness : {
 				    label: "Brightness",
-				    type: ImageView.Tools.Filter.Brightness,
+				    type: ImageView.ImageFilters.Brightness,
 				    min: -255,
 				    max: 255,
 				    step: 1,
@@ -1992,7 +1992,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        contrast : {
 				    label: "Contrast",
-				    type: ImageView.Tools.Filter.Contrast,
+				    type: ImageView.ImageFilters.Contrast,
 				    min: 0,
 				    max: 2,
 				    step: 0.05,
@@ -2003,7 +2003,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        saturate : {
 				    label: "Color Saturation",
-				    type: ImageView.Tools.Filter.ColorSaturation,
+				    type: ImageView.ImageFilters.ColorSaturation,
 				    min: 0,
 				    max: 5,
 				    step: 0.1,
@@ -2014,7 +2014,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 				hue : {
 				    label: "Color rotation",
-				    type: ImageView.Tools.Filter.ColorRotate,
+				    type: ImageView.ImageFilters.ColorRotate,
 				    min: -180,
 				    max: 180,
 				    step: 1,
@@ -2025,7 +2025,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 				threshold : {
 				    label: "Bitonal",
-				    type: ImageView.Tools.Filter.Threshold,
+				    type: ImageView.ImageFilters.Threshold,
 				    min: 0,
 				    max: 255,
 				    step: 1,
@@ -2037,7 +2037,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        grayscale : {
 				    label: "Grayscale",
-				    type: ImageView.Tools.Filter.Grayscale,
+				    type: ImageView.ImageFilters.Grayscale,
 				    slider: false,
 				    checkbox: true,
 				    visible: true,
@@ -2045,14 +2045,14 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 				invert : {
 				    label: "Invert",
-				    type: ImageView.Tools.Filter.Invert,
+				    type: ImageView.ImageFilters.Invert,
 				    slider: false,
 				    checkbox: true,
 				    visible: true
 				},
 		        blur : {
 				    label: "Blur",
-				    type: ImageView.Tools.Filter.Blur,
+				    type: ImageView.ImageFilters.Blur,
 				    min: 1,
 				    max: 10,
 				    step: 1,
@@ -2063,7 +2063,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        sharpen : {
 				    label: "Sharpen",
-				    type: ImageView.Tools.Filter.Sharpen,
+				    type: ImageView.ImageFilters.Sharpen,
 				    base: 1,
 				    slider: false,
 				    checkbox: true,
@@ -2149,7 +2149,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 		}.bind(this)
 
 });
-riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'end\' : \'start\'} {isFirstPage() ? \'inactive\' : \'\'}"><a if="{!isFirstPage() && !isSequenceMode()}" data-target="paginatorFirstPage" href="{getPageUrl(opts.firstPageNumber)}" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></a><button if="{!isFirstPage() && isSequenceMode()}" data-target="paginatorFirstPage" onclick="{gotoFirstPage}" type="button" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></button><span if="{isFirstPage()}"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual></span></li><li each="{step in opts.navigationSteps.slice().reverse()}" class="image-controls__action page-browse prev {getPageNumberMinus(step) < opts.firstPageNumber ? \'inactive\' : \'\'}"><virtual if="{opts.numPages > step}"><a if="{getPageNumberMinus(step) >= opts.firstPageNumber && !isSequenceMode()}" data-target="paginatorPrevPage" href="{getPageUrl(getPageNumberMinus(step))}" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span></a><button if="{getPageNumberMinus(step) >= opts.firstPageNumber && isSequenceMode()}" data-target="paginatorPrevPage" onclick="{navigateBack}" type="button" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step} {msg.stepBack}</span></button><span if="{getPageNumberMinus(step) < opts.firstPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual></span></virtual></li><li if="{opts.showDropdown}" class="image-controls__action select"><div class="custom-control custom-control--select"><select ref="dropdown" id="pageDropdown" aria-label="{msg.aria_label__select_page}" onchange="{changeDropdownValue}"><option each="{item in opts.pageList}" riot-value="{item.value}" title="{item.description ? item.description : item.label}">{item.label}</option></select></div></li><li each="{step in opts.navigationSteps}" class="image-controls__action page-browse next {getPageNumberPlus(step) > opts.lastPageNumber ? \'inactive\' : \'\'}"><virtual if="{opts.numPages > step}"><a if="{getPageNumberPlus(step) <= opts.lastPageNumber && !isSequenceMode()}" data-target="paginatorNextPage" href="{getPageUrl(getPageNumberPlus(step))}" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></a><button if="{getPageNumberPlus(step) <= opts.lastPageNumber && isSequenceMode()}" data-target="paginatorNextPage" onclick="{navigateForward}" type="button" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></button><span if="{getPageNumberPlus(step) > opts.lastPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual></span></virtual></li><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'start\' : \'end\'} {isLastPage() ? \'inactive\' : \'\'}"><a if="{!isLastPage() && !isSequenceMode()}" data-target="paginatorLastPage" href="{getPageUrl(opts.lastPageNumber)}" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></a><button if="{!isLastPage() && isSequenceMode()}" data-target="paginatorLastPage" onclick="{gotoLastPage}" type="button" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></button><span if="{isLastPage()}"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual></span></li></virtual>', '', '', function(opts) {
+riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'end\' : \'start\'} {isFirstPage() ? \'inactive\' : \'\'}"><a if="{!isFirstPage() && !isSequenceMode()}" data-target="paginatorFirstPage" href="{getPageUrl(opts.firstPageNumber)}" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></a><button if="{!isFirstPage() && isSequenceMode()}" data-target="paginatorFirstPage" onclick="{gotoFirstPage}" type="button" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></button><span if="{isFirstPage()}"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual></span></li><virtual each="{step in opts.navigationSteps.slice().reverse()}" if="{opts.numPages > step}"><li class="image-controls__action page-browse prev {getPageNumberMinus(step) < opts.firstPageNumber ? \'inactive\' : \'\'}"><a if="{getPageNumberMinus(step) >= opts.firstPageNumber && !isSequenceMode()}" data-target="paginatorPrevPage" href="{getPageUrl(getPageNumberMinus(step))}" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span></a><button if="{getPageNumberMinus(step) >= opts.firstPageNumber && isSequenceMode()}" data-target="paginatorPrevPage" onclick="{navigateBack}" type="button" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step} {msg.stepBack}</span></button><span if="{getPageNumberMinus(step) < opts.firstPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual></span></li></virtual><li if="{opts.showDropdown}" class="image-controls__action select"><div class="custom-control custom-control--select"><select ref="dropdown" id="pageDropdown" aria-label="{msg.aria_label__select_page}" onchange="{changeDropdownValue}"><option each="{item in opts.pageList}" riot-value="{item.value}" title="{item.description ? item.description : item.label}">{item.label}</option></select></div></li><virtual each="{step in opts.navigationSteps}" if="{opts.numPages > step}"><li class="image-controls__action page-browse next {getPageNumberPlus(step) > opts.lastPageNumber ? \'inactive\' : \'\'}"><a if="{getPageNumberPlus(step) <= opts.lastPageNumber && !isSequenceMode()}" data-target="paginatorNextPage" href="{getPageUrl(getPageNumberPlus(step))}" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></a><button if="{getPageNumberPlus(step) <= opts.lastPageNumber && isSequenceMode()}" data-target="paginatorNextPage" onclick="{navigateForward}" type="button" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></button><span if="{getPageNumberPlus(step) > opts.lastPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual></span></li></virtual><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'start\' : \'end\'} {isLastPage() ? \'inactive\' : \'\'}"><a if="{!isLastPage() && !isSequenceMode()}" data-target="paginatorLastPage" href="{getPageUrl(opts.lastPageNumber)}" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></a><button if="{!isLastPage() && isSequenceMode()}" data-target="paginatorLastPage" onclick="{gotoLastPage}" type="button" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></button><span if="{isLastPage()}"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual></span></li></virtual>', '', '', function(opts) {
 
         this.currentPageNumbers = [0];
         this.msg = {};
@@ -3254,228 +3254,159 @@ riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematri
 
 });
 
+riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}" initialview="{this.opts.geomap.initialView}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource><datasetresource if="{isDatasetResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></datasetResource>', '', '', function(opts) {
+
+this.on("mount", () => {
+    if(this.opts.contentid) {
+        let content = document.getElementById(this.opts.contentid).innerText;
+        try {
+	        this.annotationBody = JSON.parse(content);
+	        this.type = this.annotationBody.type;
+	        if(!this.type) {
+	            this.type = this.anotationBody["@type"];
+	        }
+	        this.format = this.annotationBody.format;
+    	} catch(e) {
+    	    this.annotationBody = {value: content};
+    	    this.type = "TextualResource";
+    	    this.format = "text/plain";
+   		}
+        this.update();
+    }
+})
+
+this.isPlaintext = function() {
+    if(this.type == "TextualBody" || this.type == "TextualResource") {
+        return !this.format || this.format == "text/plain";
+    }
+    return false;
+}.bind(this)
+
+this.isHtml = function() {
+    if(this.type == "TextualBody" || this.type == "TextualResource") {
+        return this.format == "text/html";
+    }
+    return false;
+}.bind(this)
+
+this.isGeoJson = function() {
+    return this.type == "Feature";
+}.bind(this)
+
+this.isAuthorityResource = function() {
+    return this.type == "AuthorityResource";
+}.bind(this)
+
+this.isDatasetResource = function() {
+    return this.type == "Dataset";
+}.bind(this)
+
+});
 
 
-riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showStandardNav}" ref="navigation" class="slider-navigation-wrapper slider-navigation-wrapper-{this.styleName} slider-navigation-wrapper-{this.sliderInstance}"><div ref="navigationLeft" class="swiper-button-prev"></div><div ref="navigationRight" class="swiper-button-next"></div></div><div if="{this.showStandardPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div></div>', '', '', function(opts) {
+riot.tag2('authorityresource', '<div class="annotation__body__authority"><div if="{normdataList.length == 0}">{authorityId}</div><dl class="annotation__body__authority__normdata_list" each="{normdata in normdataList}"><dt class="normdata_list__label">{normdata.property}: </dt><dd class="normdata_list__value">{normdata.value}</dd></dl></div>', '', '', function(opts) {
+    this.normdataList = [];
 
+	this.on("mount", () => {
+		this.authorityId = this.opts.resource.id;
+	    this.url = this.opts.resturl + "authority/resolver?id=" + this.unicodeEscapeUri(this.authorityId) + "&template=ANNOTATION&lang=" + this.opts.currentlang
+		this.update();
+	    fetch(this.url)
+	    .then(response => {
+	        if(!response.ok) {
+	            throw "Error: " + response.status;
+	        } else {
+	            return response;
+	        }
+	    })
+	    .then(response => response.json())
+	    .then(response => {
+	        this.normdataList = this.parseResponse(response);
+	    })
+	    .catch(error => {
+	        console.error("failed to load ", this.url, ": " + error);
+	    })
+	    .then(() => this.update());
+	})
 
-	this.showStandardPaginator = true;
-	this.showStandardNav = true;
+	this.unicodeEscapeUri = function(uri) {
+    	return uri.replace(/\//g, 'U002F').replace('/\\/g','U005C').replace('/?/g','U003F').replace('/%/g','U0025');
+	}.bind(this)
 
-    this.on( 'mount', function() {
-    	this.sliderInstance = this.opts.sliderinstanceid;
+	this.parseResponse = function(jsonResponse) {
+	    let normdataList = [];
+	    $.each( jsonResponse, (i, object ) => {
+            $.each( object, ( property, value ) => {
+                let stringValue = value.map(v => v.text).join("; ");
+                normdataList.push({property: property, value:stringValue});
+            });
+	    });
+	    return normdataList;
+	}.bind(this)
 
-		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
+});
+riot.tag2('datasetresource', '<div class="annotation__body__dataset"><dl class="annotation__body__dataset__data_list" each="{field in dataFields}"><dt class="data_list__label">{getName(field)}: </dt><dd class="data_list__value">{getValue(field)}</dd></dl></div>', '', '', function(opts) {
+    this.dataSet = {};
+    this.dataFields = [];
 
-		this.amendStyle(this.style);
-		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
-
-		this.timeout = this.style.timeout ? this.style.timeout : 100000;
-		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
-		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
-
-		firstSlideMessage = this.opts.firstslidemessage;
-
-    	let pSource;
-    	if(this.opts.sourceelement) {
-    		let sourceElement = document.getElementById(this.opts.sourceelement);
-    		if(sourceElement) {
-    			pSource = Promise.resolve(JSON.parse(sourceElement.textContent));
-
-    		} else {
-    			logger.error("sourceElement was included but no matching dom element found");
-    			return;
-    		}
-    	} else if(this.opts.slides) {
-    		let sourceArray = this.opts.slides.replaceAll("_qm_", "?").split("$")
-    		pSource = Promise.resolve(sourceArray);
-    	}  else {
-    		pSource = fetch(this.opts.source)
-        	.then(result => result.json());
-    	}
-    	rxjs.from(pSource)
-    	.pipe(
-    		rxjs.operators.flatMap(source => source),
-    		rxjs.operators.flatMap(uri => fetch(uri), undefined, 5),
-    		rxjs.operators.filter(result => result.status == 200),
-    		rxjs.operators.takeUntil(rxjs.timer(this.timeout)),
-    		rxjs.operators.flatMap(result => result.json()),
-    		rxjs.operators.map(element => this.createSlide(element)),
-    		rxjs.operators.filter(element => element != undefined),
-    		rxjs.operators.take(this.maxSlides),
-    		rxjs.operators.reduce((res, item) => res.concat(item), []),
-    		rxjs.operators.map(array => array.sort( (s1,s2) => s1.order-s2.order ))
-    	)
-    	.subscribe(slides => this.setSlides(slides))
-    });
-
-    this.on( 'updated', function() {
-
-    	if(this.slides && this.slides.length > 0) {
-    		if(this.slider) {
-    			this.slider.destroy();
-
-    		}
-			this.initSlideTags(this.slides);
-    		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
-    		window.viewerJS.slider.sliders.push(this.swiper);
-
-    	}
-
-    	if (this.style.onUpdate) {
-    		this.style.onUpdate();
-    	}
-
-    });
-
-    this.setSlides = function(slides) {
-
-    	this.slides = slides;
-    	this.update();
-    }.bind(this)
-
-    let imagealtmsgkey = this.opts.imagealtmsgkey;
-
-    this.initSlideTags = function(slides) {
-    	slides.forEach( (slide, index) => {
-    		let tagElement = this.refs["slide_" + index];
-
-    		riot.mount(tagElement, "slide_" + this.getLayout(),  {
-    			stylename: this.styleName,
-   				link: this.getLink(slide),
-   				link_target: this.linkTarget,
-   				image: this.getImage(slide),
-   				label: this.translate(slide.label),
-   				description: this.translate(slide.description),
-   				alttext: this.translate(slide.altText),
-   				altimagemsgkey: this.translate(imagealtmsgkey),
-    		});
-    	});
-    }.bind(this)
-
-	this.getElements = function(source) {
-		if(viewerJS.iiif.isCollection(source)) {
-			return source.members.filter(member => viewerJS.iiif.isCollection(member));
+	this.on("mount", () => {
+		this.dataSet = this.opts.resource.data;
+		this.dataFields = Object.keys(this.dataSet);
+		if(viewerJS.translator) {
+		    viewerJS.translator.addTranslations(this.dataFields)
+			.then(() => this.update());
 		} else {
-			console.error("Cannot get slides from ", source);
+			viewerJS.initialized.subscribe(() => {
+		        viewerJS.translator.addTranslations(this.dataFields)
+				.then(() => this.update());
+			});
 		}
+	})
+
+	this.getValue = function(field) {
+	    let value = this.dataSet[field];
+	    if(!value) {
+	        return "";
+	    } else if(Array.isArray(value)) {
+	        return value.join("; ")
+	    } else {
+	        return value;
+	    }
 	}.bind(this)
 
-    this.createSlide = function(element) {
-
-    	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
-    		let slide = {
-    				label : element.label,
-    				description : element.description,
-    				image : element.thumbnail,
-    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element)),
-    				order : element.order
-    		}
-    		return slide;
-    	} else {
-    		return element;
-    	}
-    }.bind(this)
-
-    this.translate = function(text) {
-    	let translation =  viewerJS.iiif.getValue(text, this.opts.language, this.opts.defaultlanguage);
-    	if(!translation) {
-    			translation = viewerJS.getMetadataValue(text, this.opts.language, this.opts.defaultlanguage);
-    	}
-    	return translation;
-    }.bind(this)
-
-    this.getImage = function(slide) {
-    	let image = slide.image;
-    	if(image == undefined) {
-    		return undefined;
-    	} else if(viewerJS.isString(image)) {
-    		return image;
-    	} else if(image.service && (this.style.imageWidth || this.style.imageHeight)) {
-    		let url = viewerJS.iiif.getId(image.service) + "/full/" + this.getIIIFSize(this.style.imageWidth, this.style.imageHeight) + "/0/default.jpg"
-    		return url;
-    	} else if(image["@id"]) {
-    		return image["@id"]
-    	} else {
-    		return image.id;
-    	}
-    }.bind(this)
-
-    this.getIIIFSize = function(width, height) {
-    	if(width && height) {
-    		return "!" + width + "," + height;
-    	} else if(width) {
-    		return width + ",";
-    	} else if(height) {
-    		return "," + height;
-    	} else {
-    		return "max";
-    	}
-    }.bind(this)
-
-    this.getLink = function(slide) {
-    	if(this.linkTarget == 'none') {
-    		return "";
-    	} else {
-    		return slide.link;
-    	}
-    }.bind(this)
-
-    this.amendStyle = function(styleConfig) {
-    	let swiperConfig = styleConfig.swiperConfig;
-    	if(swiperConfig.pagination && !swiperConfig.pagination.el)  {
-
-    		if (this.opts.paginator != 'none') {
-    			swiperConfig.pagination.el = this.opts.paginator;
-
-        		this.showStandardPaginator = false;
-    		} else {
-        		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
-        		this.showStandardPaginator = true;
-
-    		}
-
-    	} else {
-    		this.showStandardPaginator = false;
-
-    	}
-
-	  	swiperConfig.a11y = {
-	  		prevSlideMessage: this.opts.prevslideMessage,
-			nextSlideMessage: this.opts.nextslideMessage,
-	  		lastSlideMessage: this.opts.firstslidemessage,
-			firstSlideMessage: this.opts.lastslidemessage,
-			paginationBulletMessage: this.opts.paginationbulletmessage + ' \{\{index\}\}',
-		}
-
-    	if(swiperConfig.navigation && swiperConfig.navigation.prevEl == '.swiper-button-prev' && swiperConfig.navigation.nextEl == '.swiper-button-next')  {
-
-        		this.showStandardNav = true;
-    	} else {
-    		this.showStandardNav = false;
-
-    	}
-
+	this.getName = function(field) {
+	    return viewerJS.translator.translate(field);
 	}.bind(this)
 
-    this.getLayout = function() {
-    	let layout = this.style.layout ? this.style.layout : 'default';
-
-    	return layout;
-    }.bind(this)
-
-});
-riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"><p class="swiper-description slider-{this.opts.stylename}__description" ref="description"></p></a>', '', '', function(opts) {
-		this.on("mount", () => {
-			if(this.refs.description) {
-				   this.refs.description.innerHTML = this.opts.description;
-			}
-		});
 });
 
-riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
+riot.tag2('geomapresource', '<div id="geomap_{opts.annotationid}" class="annotation__body__geomap geomap"></div>', '', '', function(opts) {
+
+this.on("mount", () => {
+	this.feature = this.opts.resource;
+	this.config = {
+	        popover: undefined,
+	        mapId: "geomap_" + this.opts.annotationid,
+	        fixed: true,
+	        clusterMarkers: false,
+	        initialView : this.opts.initialview,
+	    };
+    this.geoMap = new viewerJS.GeoMap(this.config);
+    let view = this.feature.view;
+    let features = [this.feature];
+    this.geoMap.init(view, features);
+
 });
-riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
+
+});
+riot.tag2('htmltextresource', '<div ref="container" class="annotation__body__htmltext"></div>', '', '', function(opts) {
+
+	this.on("mount", () => {
+	    this.refs.container.innerHTML = this.opts.resource.value;
+	})
+
+});
+riot.tag2('plaintextresource', '<div class="annotation__body__plaintext">{this.opts.resource.value}</div>', '', '', function(opts) {
 });
 riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area -small"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div if="{!this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><span class="crowdsourcing-annotations__gnd-text">https://d-nb.info/gnd/</span><input class="crowdsourcing-annotations__gnd-id form-control" onchange="{setIdFromEvent}" riot-value="{question.authorityData.baseUri && getIdAsNumber(anno)}"></input></div><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><input class="form-control pl-1" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" riot-value="{question.authorityData.baseUri}{getIdAsNumber(anno)}"></input><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__jump-to-gnd"><a target="_blank" href="{question.authorityData.baseUri}{getIdAsNumber(anno)}">{Crowdsourcing.translate(⁗cms_menu_create_item_new_tab⁗)}</a></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
 
@@ -4239,16 +4170,16 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
 
     this.rotateRight = function()
     {
-        if ( this.opts.image ) {
-            this.opts.image.controls.rotateRight();
+        if ( this.opts.rotate ) {
+            this.opts.rotate.rotateRight();
         }
     	this.handleAction("rotate", 90)
     }.bind(this)
 
     this.rotateLeft = function()
     {
-        if ( this.opts.image ) {
-            this.opts.image.controls.rotateLeft();
+        if ( this.opts.rotate ) {
+            this.opts.rotate.rotateLeft();
         }
     	this.handleAction("rotate", -90)
     }.bind(this)
@@ -4268,6 +4199,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
     }.bind(this)
 
     this.toggleThumbs = function() {
+    	console.log("toggle thumbs " + this.opts.showthumbs);
     	this.opts.showthumbs = !this.opts.showthumbs;
     	this.handleAction("toggleThumbs", this.opts.showthumbs)
     }.bind(this)
@@ -4317,8 +4249,9 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" imageindex="{this.opts.item.currentCanvasIndex}" imagecount="{this.opts.item.canvases.length}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" rotate="{this.rotate}" imageindex="{this.opts.item.currentCanvasIndex}" imagecount="{this.opts.item.canvases.length}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
 
+	this.actionListener = new rxjs.Subject();
 
 	this.on("updated", function() {
 		this.initTooltips();
@@ -4327,31 +4260,26 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	this.on("mount", function() {
 		this.showThumbs = this.isShowThumbs();
 		this.initFilters();
-
 		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{
-			imageViewConfig.image.tileSource = this.getImageInfo(opts.source);
 			this.image = new ImageView.Image(imageViewConfig);
-			this.image.load()
-			.then( (image) => {
-				if(this.opts.item) {
-					this.opts.item.image = this.image;
+			this.zoom = new ImageView.Controls.Zoom(this.image);
+			this.rotate = new ImageView.Controls.Rotation(this.image);
+			if(this.opts.item) {
+				this.opts.item.image = this.image;
+		    	this.opts.item.notifyImageOpened(this.image.onOpened.pipe(rxjs.operators.map( () => this.image)));
 
-				    var now = rxjs.of(image);
-					this.opts.item.setImageSource = function(source) {
-					    this.image.setTileSource(this.getImageInfo(source));
-					}.bind(this);
-				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
-				}
-				return image;
-			})
+				this.opts.item.setImageSource = function(source) {
+				    this.update();
+				    this.image.load(this.getImageInfo(source))
+				    .then(e => this.zoom.goHome());
+				}.bind(this);
+			}
 		} catch(error) {
 		    console.error("ERROR ", error);
 	    	this.error = error;
 	    	this.update();
 		}
-
-		this.actionListener = new rxjs.Subject();
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
 		if(this.opts.item.setShowThumbs) {
 		    this.opts.item.setShowThumbs.subscribe(show => {
@@ -4359,6 +4287,11 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 		        this.update();
 		    });
 		}
+
+		if(!this.showThumbs) {
+			this.opts.item.loadImage(0);
+		}
+		this.update();
 	})
 
 	this.initTooltips = function() {
@@ -4429,7 +4362,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	this.handleImageControlAction = function(event) {
-
+		console.log("image action ", event.action);
 		switch(event.action) {
 			case "toggleThumbs":
 				this.showThumbs = event.value;
@@ -4479,16 +4412,8 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	const imageViewConfig = {
-			global : {
-				divId : "image_" + opts.id,
-				fitToContainer: true,
-				adaptContainerWidth: false,
-				adaptContainerHeight: false,
-				footerHeight: 00,
-				zoomSpeed: 1.3,
-				allowPanning : true,
-			},
-			image : {}
+			element: "#image_" + opts.id,
+			fittingMode: "fixed"
 	};
 
 	const drawStyle = {
@@ -4501,7 +4426,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 			lineColor : "#EEC83B"
 	}
 
-	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
+	const pointStyle = ImageView.DataPoint.Point.getPointStyle(20, "#EEC83B");
 
 });
 
@@ -4839,161 +4764,7 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 });
 
 
-riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}" initialview="{this.opts.geomap.initialView}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource><datasetresource if="{isDatasetResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></datasetResource>', '', '', function(opts) {
-
-this.on("mount", () => {
-    if(this.opts.contentid) {
-        let content = document.getElementById(this.opts.contentid).innerText;
-        try {
-	        this.annotationBody = JSON.parse(content);
-	        this.type = this.annotationBody.type;
-	        if(!this.type) {
-	            this.type = this.anotationBody["@type"];
-	        }
-	        this.format = this.annotationBody.format;
-    	} catch(e) {
-    	    this.annotationBody = {value: content};
-    	    this.type = "TextualResource";
-    	    this.format = "text/plain";
-   		}
-        this.update();
-    }
-})
-
-this.isPlaintext = function() {
-    if(this.type == "TextualBody" || this.type == "TextualResource") {
-        return !this.format || this.format == "text/plain";
-    }
-    return false;
-}.bind(this)
-
-this.isHtml = function() {
-    if(this.type == "TextualBody" || this.type == "TextualResource") {
-        return this.format == "text/html";
-    }
-    return false;
-}.bind(this)
-
-this.isGeoJson = function() {
-    return this.type == "Feature";
-}.bind(this)
-
-this.isAuthorityResource = function() {
-    return this.type == "AuthorityResource";
-}.bind(this)
-
-this.isDatasetResource = function() {
-    return this.type == "Dataset";
-}.bind(this)
-
-});
-
-
-riot.tag2('authorityresource', '<div class="annotation__body__authority"><div if="{normdataList.length == 0}">{authorityId}</div><dl class="annotation__body__authority__normdata_list" each="{normdata in normdataList}"><dt class="normdata_list__label">{normdata.property}: </dt><dd class="normdata_list__value">{normdata.value}</dd></dl></div>', '', '', function(opts) {
-    this.normdataList = [];
-
-	this.on("mount", () => {
-		this.authorityId = this.opts.resource.id;
-	    this.url = this.opts.resturl + "authority/resolver?id=" + this.unicodeEscapeUri(this.authorityId) + "&template=ANNOTATION&lang=" + this.opts.currentlang
-		this.update();
-	    fetch(this.url)
-	    .then(response => {
-	        if(!response.ok) {
-	            throw "Error: " + response.status;
-	        } else {
-	            return response;
-	        }
-	    })
-	    .then(response => response.json())
-	    .then(response => {
-	        this.normdataList = this.parseResponse(response);
-	    })
-	    .catch(error => {
-	        console.error("failed to load ", this.url, ": " + error);
-	    })
-	    .then(() => this.update());
-	})
-
-	this.unicodeEscapeUri = function(uri) {
-    	return uri.replace(/\//g, 'U002F').replace('/\\/g','U005C').replace('/?/g','U003F').replace('/%/g','U0025');
-	}.bind(this)
-
-	this.parseResponse = function(jsonResponse) {
-	    let normdataList = [];
-	    $.each( jsonResponse, (i, object ) => {
-            $.each( object, ( property, value ) => {
-                let stringValue = value.map(v => v.text).join("; ");
-                normdataList.push({property: property, value:stringValue});
-            });
-	    });
-	    return normdataList;
-	}.bind(this)
-
-});
-riot.tag2('datasetresource', '<div class="annotation__body__dataset"><dl class="annotation__body__dataset__data_list" each="{field in dataFields}"><dt class="data_list__label">{getName(field)}: </dt><dd class="data_list__value">{getValue(field)}</dd></dl></div>', '', '', function(opts) {
-    this.dataSet = {};
-    this.dataFields = [];
-
-	this.on("mount", () => {
-		this.dataSet = this.opts.resource.data;
-		this.dataFields = Object.keys(this.dataSet);
-		if(viewerJS.translator) {
-		    viewerJS.translator.addTranslations(this.dataFields)
-			.then(() => this.update());
-		} else {
-			viewerJS.initialized.subscribe(() => {
-		        viewerJS.translator.addTranslations(this.dataFields)
-				.then(() => this.update());
-			});
-		}
-	})
-
-	this.getValue = function(field) {
-	    let value = this.dataSet[field];
-	    if(!value) {
-	        return "";
-	    } else if(Array.isArray(value)) {
-	        return value.join("; ")
-	    } else {
-	        return value;
-	    }
-	}.bind(this)
-
-	this.getName = function(field) {
-	    return viewerJS.translator.translate(field);
-	}.bind(this)
-
-});
-
-riot.tag2('geomapresource', '<div id="geomap_{opts.annotationid}" class="annotation__body__geomap geomap"></div>', '', '', function(opts) {
-
-this.on("mount", () => {
-	this.feature = this.opts.resource;
-	this.config = {
-	        popover: undefined,
-	        mapId: "geomap_" + this.opts.annotationid,
-	        fixed: true,
-	        clusterMarkers: false,
-	        initialView : this.opts.initialview,
-	    };
-    this.geoMap = new viewerJS.GeoMap(this.config);
-    let view = this.feature.view;
-    let features = [this.feature];
-    this.geoMap.init(view, features);
-
-});
-
-});
-riot.tag2('htmltextresource', '<div ref="container" class="annotation__body__htmltext"></div>', '', '', function(opts) {
-
-	this.on("mount", () => {
-	    this.refs.container.innerHTML = this.opts.resource.value;
-	})
-
-});
-riot.tag2('plaintextresource', '<div class="annotation__body__plaintext">{this.opts.resource.value}</div>', '', '', function(opts) {
-});
-riot.tag2('featuresetfilter', '<ul if="{filters.length > 0}"><li each="{filter in filters}" class="{filter.styleClass}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><div each="{option, index in filter.options}"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></div></li></ul>', '', '', function(opts) {
+riot.tag2('featuresetfilter', '<div if="{filters.length > 0}"><div each="{filter in filters}" class="{filter.styleClass}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><ul class="geomap__feature-options-list"><li each="{option, index in filter.options}" class="geomap__feature-options-list-entry"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></li></ul></div></div>', '', '', function(opts) {
 
 this.filters = [];
 
@@ -5061,8 +4832,6 @@ this.findValues = function(featureGroups, filterField) {
 
 this.findEntities = function(featureGroups, filterField) {
 	let entities = featureGroups.flatMap(group => group.markers).filter(m => m.feature.properties.entities).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
-	console.log("groups", featureGroups);
-	console.log("entities", entities, filterField);
 	return entities;
 }.bind(this)
 
@@ -5122,16 +4891,31 @@ this.isActive = function(featureGroup) {
 }.bind(this)
 
 });
-riot.tag2('geojsonfeaturelist', '<div class="custom-map__sidebar-inner-wrapper"><div class="custom-map__sidebar-inner-top"><h4 class="custom-map__sidebar-inner-heading"><rawhtml content="{getListLabel()}"></rawhtml></h4><input if="{getVisibleEntities().length > 0}" class="custom-map__sidebar-inner-search-input" type="text" ref="search" oninput="{filterList}"></input></div><div class="custom-map__sidebar-inner-bottom"><ul if="{getVisibleEntities().length > 0}" class="custom-map__inner-wrapper-list"><li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a></li></ul></div></div>', '', 'onclick="{preventBubble}"', function(opts) {
+riot.tag2('geojsonfeaturelist', '<div class="custom-map__sidebar-inner-wrapper"><div class="custom-map__sidebar-inner-top"><h4 class="custom-map__sidebar-inner-heading"><rawhtml content="{getListLabel()}"></rawhtml></h4><input if="{getVisibleEntities().length > 0}" class="custom-map__sidebar-inner-search-input" type="text" ref="search" oninput="{filterList}"></input></div><div class="custom-map__sidebar-inner-bottom"><ul if="{getVisibleEntities().length > 0}" class="custom-map__inner-wrapper-list"><li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a></li></ul></div></div>', '', '', function(opts) {
 
 this.entities = [];
 this.filteredEntities = undefined;
+
+this.on("update", () => {
+	if(this.opts.onUpdate) {
+		this.opts.onUpdate(this);
+	}
+});
+
+this.on("updated", () => {
+	if(this.opts.onUpdated) {
+		this.opts.onUpdated(this);
+	}
+});
 
 this.on("mount", () => {
 	this.opts.featureGroups.forEach(group => {
 		group.onFeatureClick.subscribe(f => {
 			this.title = f.properties?.title;
 			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => this.getEntityLabel(e)?.length > 0));
+			if(this.opts.onFeatureClick) {
+				this.opts.onFeatureClick(this);
+			}
 		});
 	})
 	this.opts.geomap.onMapClick.subscribe(e => this.hide());
@@ -5139,7 +4923,6 @@ this.on("mount", () => {
 })
 
 this.setEntities = function(entities) {
-
 	this.entities = [];
 	this.filteredEntities = undefined;
 	if(this.refs["search"]) {
@@ -5160,10 +4943,6 @@ this.getVisibleEntities = function() {
 	} else {
 		return this.filteredEntities;
 	}
-}.bind(this)
-
-this.preventBubble = function(e) {
-	event.stopPropagation();
 }.bind(this)
 
 this.filterList = function(e) {
@@ -5232,4 +5011,227 @@ this.show = function() {
 	this.root.style.display = "block";
 }.bind(this)
 
+});
+
+
+riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showStandardNav}" ref="navigation" class="slider-navigation-wrapper slider-navigation-wrapper-{this.styleName} slider-navigation-wrapper-{this.sliderInstance}"><div ref="navigationLeft" class="swiper-button-prev"></div><div ref="navigationRight" class="swiper-button-next"></div></div><div if="{this.showStandardPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div></div>', '', '', function(opts) {
+
+
+	this.showStandardPaginator = true;
+	this.showStandardNav = true;
+
+    this.on( 'mount', function() {
+    	this.sliderInstance = this.opts.sliderinstanceid;
+
+		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
+
+		this.amendStyle(this.style);
+		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
+
+		this.timeout = this.style.timeout ? this.style.timeout : 100000;
+		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
+		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
+
+		firstSlideMessage = this.opts.firstslidemessage;
+
+    	let pSource;
+    	if(this.opts.sourceelement) {
+    		let sourceElement = document.getElementById(this.opts.sourceelement);
+    		if(sourceElement) {
+    			pSource = Promise.resolve(JSON.parse(sourceElement.textContent));
+
+    		} else {
+    			logger.error("sourceElement was included but no matching dom element found");
+    			return;
+    		}
+    	} else if(this.opts.slides) {
+    		let sourceArray = this.opts.slides.replaceAll("_qm_", "?").split("$")
+    		pSource = Promise.resolve(sourceArray);
+    	}  else {
+    		pSource = fetch(this.opts.source)
+        	.then(result => result.json());
+    	}
+    	rxjs.from(pSource)
+    	.pipe(
+    		rxjs.operators.flatMap(source => source),
+    		rxjs.operators.flatMap(uri => fetch(uri), undefined, 5),
+    		rxjs.operators.filter(result => result.status == 200),
+    		rxjs.operators.takeUntil(rxjs.timer(this.timeout)),
+    		rxjs.operators.flatMap(result => result.json()),
+    		rxjs.operators.map(element => this.createSlide(element)),
+    		rxjs.operators.filter(element => element != undefined),
+    		rxjs.operators.take(this.maxSlides),
+    		rxjs.operators.reduce((res, item) => res.concat(item), []),
+    		rxjs.operators.map(array => array.sort( (s1,s2) => s1.order-s2.order ))
+    	)
+    	.subscribe(slides => this.setSlides(slides))
+    });
+
+    this.on( 'updated', function() {
+
+    	if(this.slides && this.slides.length > 0) {
+    		if(this.slider) {
+    			this.slider.destroy();
+
+    		}
+			this.initSlideTags(this.slides);
+    		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
+    		window.viewerJS.slider.sliders.push(this.swiper);
+
+    	}
+
+    	if (this.style.onUpdate) {
+    		this.style.onUpdate();
+    	}
+
+    });
+
+    this.setSlides = function(slides) {
+
+    	this.slides = slides;
+    	this.update();
+    }.bind(this)
+
+    let imagealtmsgkey = this.opts.imagealtmsgkey;
+
+    this.initSlideTags = function(slides) {
+    	slides.forEach( (slide, index) => {
+    		let tagElement = this.refs["slide_" + index];
+
+    		riot.mount(tagElement, "slide_" + this.getLayout(),  {
+    			stylename: this.styleName,
+   				link: this.getLink(slide),
+   				link_target: this.linkTarget,
+   				image: this.getImage(slide),
+   				label: this.translate(slide.label),
+   				description: this.translate(slide.description),
+   				alttext: this.translate(slide.altText),
+   				altimagemsgkey: this.translate(imagealtmsgkey),
+    		});
+    	});
+    }.bind(this)
+
+	this.getElements = function(source) {
+		if(viewerJS.iiif.isCollection(source)) {
+			return source.members.filter(member => viewerJS.iiif.isCollection(member));
+		} else {
+			console.error("Cannot get slides from ", source);
+		}
+	}.bind(this)
+
+    this.createSlide = function(element) {
+
+    	if(viewerJS.iiif.isCollection(element) || viewerJS.iiif.isManifest(element)) {
+    		let slide = {
+    				label : element.label,
+    				description : element.description,
+    				image : element.thumbnail,
+    				link : viewerJS.iiif.getId(viewerJS.iiif.getViewerPage(element)),
+    				order : element.order
+    		}
+    		return slide;
+    	} else {
+    		return element;
+    	}
+    }.bind(this)
+
+    this.translate = function(text) {
+    	let translation =  viewerJS.iiif.getValue(text, this.opts.language, this.opts.defaultlanguage);
+    	if(!translation) {
+    			translation = viewerJS.getMetadataValue(text, this.opts.language, this.opts.defaultlanguage);
+    	}
+    	return translation;
+    }.bind(this)
+
+    this.getImage = function(slide) {
+    	let image = slide.image;
+    	if(image == undefined) {
+    		return undefined;
+    	} else if(viewerJS.isString(image)) {
+    		return image;
+    	} else if(image.service && (this.style.imageWidth || this.style.imageHeight)) {
+    		let url = viewerJS.iiif.getId(image.service) + "/full/" + this.getIIIFSize(this.style.imageWidth, this.style.imageHeight) + "/0/default.jpg"
+    		return url;
+    	} else if(image["@id"]) {
+    		return image["@id"]
+    	} else {
+    		return image.id;
+    	}
+    }.bind(this)
+
+    this.getIIIFSize = function(width, height) {
+    	if(width && height) {
+    		return "!" + width + "," + height;
+    	} else if(width) {
+    		return width + ",";
+    	} else if(height) {
+    		return "," + height;
+    	} else {
+    		return "max";
+    	}
+    }.bind(this)
+
+    this.getLink = function(slide) {
+    	if(this.linkTarget == 'none') {
+    		return "";
+    	} else {
+    		return slide.link;
+    	}
+    }.bind(this)
+
+    this.amendStyle = function(styleConfig) {
+    	let swiperConfig = styleConfig.swiperConfig;
+    	if(swiperConfig.pagination && !swiperConfig.pagination.el)  {
+
+    		if (this.opts.paginator != 'none') {
+    			swiperConfig.pagination.el = this.opts.paginator;
+
+        		this.showStandardPaginator = false;
+    		} else {
+        		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
+        		this.showStandardPaginator = true;
+
+    		}
+
+    	} else {
+    		this.showStandardPaginator = false;
+
+    	}
+
+	  	swiperConfig.a11y = {
+	  		prevSlideMessage: this.opts.prevslideMessage,
+			nextSlideMessage: this.opts.nextslideMessage,
+	  		lastSlideMessage: this.opts.firstslidemessage,
+			firstSlideMessage: this.opts.lastslidemessage,
+			paginationBulletMessage: this.opts.paginationbulletmessage + ' \{\{index\}\}',
+		}
+
+    	if(swiperConfig.navigation && swiperConfig.navigation.prevEl == '.swiper-button-prev' && swiperConfig.navigation.nextEl == '.swiper-button-next')  {
+
+        		this.showStandardNav = true;
+    	} else {
+    		this.showStandardNav = false;
+
+    	}
+
+	}.bind(this)
+
+    this.getLayout = function() {
+    	let layout = this.style.layout ? this.style.layout : 'default';
+
+    	return layout;
+    }.bind(this)
+
+});
+riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"><p class="swiper-description slider-{this.opts.stylename}__description" ref="description"></p></a>', '', '', function(opts) {
+		this.on("mount", () => {
+			if(this.refs.description) {
+				   this.refs.description.innerHTML = this.opts.description;
+			}
+		});
+});
+
+riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
+});
+riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
 });
