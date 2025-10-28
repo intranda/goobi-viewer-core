@@ -25,6 +25,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -33,6 +37,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -40,6 +46,10 @@ import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
+import io.goobi.viewer.exceptions.MessageQueueException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
@@ -50,6 +60,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.WebApplicationException;
 
 /**
  * <p>
@@ -72,6 +83,8 @@ public class DownloadBean implements Serializable {
     private String downloadIdentifier;
     //    private DownloadJob downloadJob;
     private ViewerMessage message;
+
+    private String email = BeanUtils.getUserBean().getEmail();
 
     /**
      * <p>
@@ -235,6 +248,14 @@ public class DownloadBean implements Serializable {
         return downloadIdentifier;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     /**
      * <p>
      * Setter for the field <code>downloadIdentifier</code>.
@@ -244,6 +265,56 @@ public class DownloadBean implements Serializable {
      */
     public void setDownloadIdentifier(String downloadIdentifier) {
         this.downloadIdentifier = downloadIdentifier;
+    }
+
+    public String createPDFDownloadJob(String pi, String logId, String usePdfSource)
+            throws DAOException, URISyntaxException, JsonProcessingException {
+
+        ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
+        // create new downloadjob
+
+        DownloadJob job = new PDFDownloadJob(pi, logId, LocalDateTime.now(), DownloadBean.getTimeToLive());
+        if (StringUtils.isNotBlank(email)) {
+            job.getObservers().add(email.toLowerCase());
+            message.getProperties().put("email", email.toLowerCase());
+        }
+        message.getProperties().put("pi", pi);
+        if (StringUtils.isNotBlank(logId)) {
+            message.getProperties().put("logId", logId);
+        } else {
+            message.getProperties().put("logId", "-");
+        }
+        if (StringUtils.isNotBlank(usePdfSource)) {
+            message.getProperties().put("usePdfSource", usePdfSource);
+        }
+
+        job.setStatus(JobStatus.WAITING);
+        DataManager.getInstance().getDao().addDownloadJob(job);
+
+        // create new activemq message
+        String messageId = message.getMessageId();
+        try {
+            messageId = this.messageBroker.addToQueue(message);
+            messageId = URLEncoder.encode(messageId, Charset.defaultCharset());
+        } catch (MessageQueueException e) {
+            throw new WebApplicationException(e);
+        }
+
+        // forward to download page
+        DownloadJob.generateDownloadJobId(PDFDownloadJob.LOCAL_TYPE, pi, logId);
+        URI downloadPageUrl = getDownloadPageUrl(messageId);
+        return downloadPageUrl.toString();
+    }
+
+    /**
+     * 
+     * @param id
+     * @return {@link URI}
+     * @throws URISyntaxException
+     */
+    private URI getDownloadPageUrl(String id) throws URISyntaxException {
+
+        return new URI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/download/" + id + "/");
     }
 
 }

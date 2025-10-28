@@ -24,6 +24,8 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,6 +45,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.goobi.presentation.contentServlet.controller.GetMetsPageCountAction;
 import org.json.JSONObject;
 import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
@@ -54,11 +57,18 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
+import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -100,6 +110,7 @@ import io.goobi.viewer.model.toc.TOCElement;
 import io.goobi.viewer.model.toc.export.pdf.TocWriter;
 import io.goobi.viewer.model.toc.export.pdf.WriteTocException;
 import io.goobi.viewer.model.translations.language.Language;
+import io.goobi.viewer.model.viewer.Dataset;
 import io.goobi.viewer.model.viewer.PageNavigation;
 import io.goobi.viewer.model.viewer.PageOrientation;
 import io.goobi.viewer.model.viewer.PageType;
@@ -1797,6 +1808,34 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return null;
+    }
+
+    public String getPdfSize() throws PresentationException {
+        return getPdfSize(null);
+    }
+
+    public String getPdfSize(String logId) throws PresentationException {
+        try {
+            Dataset dataset = new ProcessDataResolver().getDataset(getPersistentIdentifier());
+            Map<String, String> params = Map.of("imageSource",
+                    dataset.getMediaFolderPath().getParent().toString(), "pdfSource", dataset.getPdfFolderPath().getParent().toString(), "altoSource",
+                    dataset.getAltoFolderPath().getParent().toString());
+            MetsPdfRequest request = new MetsPdfRequest(PathConverter.toURI(dataset.getMetadataFilePath()), logId, false, params);
+            long size = new GetMetsPageCountAction(ContentServerCacheManager.getInstance()).getPdfInfo(request).getSize();
+            return FileSizeCalculator.formatSize(size);
+        } catch (URISyntaxException | ContentLibException | IndexUnreachableException | IOException | RecordNotFoundException e) {
+            logger.error("Error getting pdf file sizes", e.toString());
+            return "unknown";
+        }
+
+    }
+
+    public Path getMetsFilePath() throws IndexUnreachableException {
+
+        String dataRepository = getViewManager().getTopStructElement().getDataRepository();
+        String filePath =
+                DataFileTools.getSourceFilePath(getPersistentIdentifier() + ".xml", dataRepository, SolrConstants.SOURCEDOCFORMAT_METS);
+        return Path.of(filePath);
     }
 
     /**
