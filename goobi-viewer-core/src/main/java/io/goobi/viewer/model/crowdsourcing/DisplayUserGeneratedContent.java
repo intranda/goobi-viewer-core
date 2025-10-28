@@ -876,8 +876,9 @@ public class DisplayUserGeneratedContent {
 
     /**
      * @deprecated use {@link #getIconName()} and Tabler icons instead of Font Awesome.
+     * @return {@link String}
      */
-    @Deprecated
+    @Deprecated(since = "25.10")
     public String getIconClass() {
         return getIconName();
     }

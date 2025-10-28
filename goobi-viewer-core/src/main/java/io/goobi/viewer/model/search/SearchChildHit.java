@@ -97,8 +97,9 @@ public class SearchChildHit {
 
     /**
      * @deprecated use {@link #getIconName()} instead.
+     * @return {@link String}
      */
-    @Deprecated
+    @Deprecated(since = "25.10")
     public String getIconClass() {
         return getIconNameForType(this.type);
     }
