@@ -538,7 +538,14 @@
 			&.-active {
 				.fa {
 					&:before {
-						content: "\f00d";
+						content: "";
+						display: inline-block;
+						width: 1em;
+						height: 1em;
+						vertical-align: middle;
+						background-color: currentColor;
+						mask: url("../../icons/outline/x.svg") center/100% 100% no-repeat;
+						-webkit-mask: url("../../icons/outline/x.svg") center/100% 100% no-repeat;
 					}
 				}
 			}

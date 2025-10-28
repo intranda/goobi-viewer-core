@@ -72,7 +72,14 @@
 	    		padding-left: 10px;
 	    		&.fa-angle-flip {
 	    			&::before {
-	    				content: "\f106";
+	    				content: "";
+						display: inline-block;
+						width: 1em;
+						height: 1em;
+						vertical-align: middle;
+						background-color: currentColor;
+						mask: url("../../icons/outline/chevron-up.svg") center/contain no-repeat;
+						-webkit-mask: url("../../icons/outline/chevron-up.svg") center/contain no-repeat;
 	    			}
 	    		}
 	    	}
@@ -83,7 +90,8 @@
 	    		i {
 		    		&.fa-angle-flip {
 		    			&::before {
-		    				content: "\f107";
+		    				mask: url("../../icons/outline/chevron-down.svg") center/contain no-repeat;
+		    				-webkit-mask: url("../../icons/outline/chevron-down.svg") center/contain no-repeat;
 		    			}
 		    		}
 	    		}

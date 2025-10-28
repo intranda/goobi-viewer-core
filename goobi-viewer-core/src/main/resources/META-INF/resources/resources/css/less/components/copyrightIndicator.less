@@ -18,7 +18,8 @@
         &.-green {
 			.copyright-indicator__status-icon {
 				&:before {
-					content: "\f09c";
+					mask: url("../../icons/outline/lock-open.svg") center/100% 100% no-repeat;
+					-webkit-mask: url("../../icons/outline/lock-open.svg") center/100% 100% no-repeat;
 				}
 			}
 			.copyright-indicator__dot-wrapper {
@@ -27,7 +28,8 @@
         &.-yellow {
 			.copyright-indicator__status-icon {
 				&:before {
-					content: "\f023";
+					mask: url("../../icons/outline/lock.svg") center/100% 100% no-repeat;
+					-webkit-mask: url("../../icons/outline/lock.svg") center/100% 100% no-repeat;
 				}
 			}
 			.copyright-indicator__dot-wrapper {
@@ -36,7 +38,8 @@
         &.-red {
 			.copyright-indicator__status-icon {
 				&:before {
-					content: "\f023";
+					mask: url("../../icons/outline/lock.svg") center/100% 100% no-repeat;
+					-webkit-mask: url("../../icons/outline/lock.svg") center/100% 100% no-repeat;
 				}
 			}
 			.copyright-indicator__dot-wrapper {
@@ -54,6 +57,16 @@
         justify-content: center;
         font-size: 30px;
         color: rgba(0, 0, 0, 1);
+	}
+	&__status-icon {
+		&:before {
+			content: "";
+			display: inline-block;
+			width: 1em;
+			height: 1em;
+			vertical-align: middle;
+			background-color: currentColor;
+		}
 	}
     &__icon-wrapper {
         display: flex;
