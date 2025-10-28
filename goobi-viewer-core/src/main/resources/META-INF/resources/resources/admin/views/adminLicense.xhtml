@@ -72,14 +72,16 @@
                             
                                             <div class="form-group admin__cms-edit-collection-connected-radio-buttons">
                                                 <div class="connected-top">
-                                                    <h:selectOneRadio group="imageModeRadio" value="#{adminLicenseBean.imageMode}" immediate="true">
-                                                        <f:selectItem itemValue="DEFAULT" itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
+                                                    <h:selectOneRadio group="imageModeRadio" immediate="true"
+                                                        value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode}">
+                                                        <f:selectItem itemValue="DEFAULT" itemLabel="#{msg.admin__license_image_mode_default}" />
                                                         <f:ajax render="imageModeGroup" />
                                                     </h:selectOneRadio>
                                                 </div>
                                                 <div class="connected-middle">
-                                                    <h:selectOneRadio group="imageModeRadio" value="#{adminLicenseBean.imageMode}" immediate="true">
-                                                        <f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
+                                                    <h:selectOneRadio group="imageModeRadio" immediate="true"
+                                                        value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode}">
+                                                        <f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__license_image_mode_custom}" />
                                                         <f:ajax render="imageModeGroup" />
                                                     </h:selectOneRadio>
                                                 </div>
@@ -87,13 +89,16 @@
                                 
                             
                                             <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image"
-                                                id="mediaGroup" rendered="#{adminLicenseBean.imageMode == 'IMAGE'}">
+                                                id="mediaGroup"
+                                                rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'UPLOADED_IMAGE'}">
                                                 <!-- THUMBNAIL -->
                                                 <div class="admin__cms-edit-collection-image-thumbnail">
-                                                    <ui:fragment rendered="#{adminLicenseBean.currentLicenseType.isHasImage(adminLicenseBean.currentLicenseType.selectedLocale)}">
+                                                    <ui:fragment
+                                                        rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
                                                         <img src="#{adminLicenseBean.currentLicenseType.iconURI}" class="img-fluid" alt="" />
                                                     </ui:fragment>
-                                                    <ui:fragment rendered="#{!adminLicenseBean.currentCollection.isHasImage(adminLicenseBean.currentLicenseType.selectedLocale)}">
+                                                    <ui:fragment
+                                                        rendered="#{!adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
                                                         <img src="#{imageDelivery.thumbs.getThumbnailPath(null)}" data-viewer-thumbnail="thumbnail" class="img-fluid" alt="" />
                                                     </ui:fragment> 
                                                 </div>
@@ -101,15 +106,15 @@
                                                 <!-- ACTIONS -->
                                                 <div class="admin__cms-edit-collection-image-actions">
                                                     <h:commandLink 
-                                                        action="#{cmsBean.setSelectedMediaHolder(adminLicenseBean.currentCollection)}" 
-                                                        value="#{adminLicenseBean.currentLicenseType.getMediaItem(adminLicenseBean.currentLicenseType.selectedLocale) == null ? msg.cms_selectMedia : msg.cms_media_editFile}" 
-                                                        class="#{adminLicenseBean.currentLicenseType.getMediaItem(adminLicenseBean.currentLicenseType.selectedLocale) == null ? 'btn btn--default' : ''}" 
+                                                        action="#{cmsBean.setSelectedMediaHolder(adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale))}" 
+                                                        value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem() ? msg.cms_selectMedia : msg.cms_media_editFile}" 
+                                                        class="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem() ? 'btn btn--default' : ''}" 
                                                         role="button">
                                                         <f:ajax execute="@form" render="mediaSelectPanel" />
                                                     </h:commandLink>
                                                     <h:commandLink 
-                                                        rendered="#{adminLicenseBean.currentCollection.getMediaItem() != null}" 
-                                                        action="#{adminLicenseBean.currentCollection.setMediaItem(adminLicenseBean.currentLicenseType.selectedLocale, null)}" 
+                                                        rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).getMediaItem() != null}" 
+                                                        action="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).setMediaItem(null)}" 
                                                         value="#{msg.cms_selectMediaItem_deselect}" 
                                                         class="-redlink"
                                                         role="button">
@@ -462,6 +467,26 @@
 		            </script>
                         
                     </h:form>
+                    
+            <h:panelGroup id="mediaSelectPanel">
+                <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+                       <div class="admin-cms-media-select-overlay">
+                        
+                        <!-- SELECT MEDIA ITEM OVERLAY -->
+                            <div class="admin-cms-media__select-overlay"></div>
+                            
+                            <!-- SELECT MEDIA ITEM -->
+                            <div class="admin-cms-media__select">                            
+                                 <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+                                    <ui:param name="mediaDisplayPanel" value="mediaGroup" />
+                                    <ui:param name="fileTypes" value="#{cmsMediaBean.getImageTypes()}"/>
+                                    <ui:param name="fileTypeValidator" value="#{cmsCollectionsBean.currentCollection.getMediaFilter()}"/>
+                                </ui:include>
+                            </div>
+                       </div>
+                </ui:fragment>
+            </h:panelGroup>
+                    
                 </h:panelGroup>
             </div>
             

@@ -144,7 +144,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
     @JsonSerialize(using = TranslationListSerializer.class)
-    private Set<LicenseTypePlaceholderInfo> placeholders = new HashSet<>();
+    private Set<LicenseTypePlaceholderInfo> imagePlaceholders = new HashSet<>();
 
     @Transient
     private Set<String> privilegesCopy = new HashSet<>();
@@ -848,6 +848,21 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
+     * 
+     * @param language
+     * @return {@link LicenseTypePlaceholderInfo}
+     */
+    public LicenseTypePlaceholderInfo getPlaceholderInfo(String language) {
+        for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
+            if (info.getLanguage() != null && info.getLanguage().equals(language)) {
+                return info;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>mediaItem</code>.
      * </p>
@@ -885,14 +900,14 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
 
         synchronized (lockTranslations) {
-            LicenseTypePlaceholderInfo ret = placeholders.stream()
+            LicenseTypePlaceholderInfo ret = imagePlaceholders.stream()
                     .filter(t -> tag.equals(t.getTag()))
                     .filter(t -> language.equals(t.getLanguage()))
                     .findFirst()
                     .orElse(null);
             if (ret == null) {
                 ret = new LicenseTypePlaceholderInfo(language, tag, this);
-                placeholders.add(ret);
+                imagePlaceholders.add(ret);
             }
 
             return ret;

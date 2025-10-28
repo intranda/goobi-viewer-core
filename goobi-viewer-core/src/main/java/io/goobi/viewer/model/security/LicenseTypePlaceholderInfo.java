@@ -1,5 +1,9 @@
 package io.goobi.viewer.model.security;
 
+import java.util.Collections;
+
+import io.goobi.viewer.managedbeans.CmsMediaBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
@@ -45,6 +49,7 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
     @Column(name = "image_mode")
     private LicenseTypeImageMode imageMode = LicenseTypeImageMode.DEFAULT;
     
+    @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
 
     /**
@@ -108,14 +113,12 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
 
     @Override
     public String getMediaFilter() {
-        // TODO Auto-generated method stub
-        return null;
+        return CmsMediaBean.getImageFilter();
     }
 
     @Override
     public String getMediaTypes() {
-        // TODO Auto-generated method stub
-        return null;
+        return CmsMediaBean.getImageTypes();
     }
 
     @Override
@@ -125,7 +128,11 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
 
     @Override
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
-        // TODO Auto-generated method stub
+        if (hasMediaItem()) {
+            return new CategorizableTranslatedSelectable<>(mediaItem, true,
+                    mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
+        }
+
         return null;
     }
 }
