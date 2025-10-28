@@ -2,6 +2,10 @@
    Image Controls
    Style declarations for imageControls.xhtml
    ==============================================================*/
+
+@image-controls-touch-size: 26px;
+@image-controls-icon-size: 17px;
+@image-controls-gap: 0.1rem;
 /* CONTROLS */
 /* BLOCK */
 .image-controls {
@@ -24,88 +28,68 @@
     &__actions-additional,
 	&__options {
 		display: flex;
-		gap: 6px;
+		gap: 3px;
 		flex-wrap: wrap;
 	}
 	/* DOCUMENT OPTIONS */
 	&__options {
 		margin-left: auto;
-		gap: 6px;
 		display: flex;
+		align-items: center;
+		align-content: center;
 		flex-wrap: wrap;
-		ul {}
-	    li {
-	    	align-self: center;
-	    }
-
-		.btn.btn--icon,
-		.image-controls__share-image-link {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			width: 32px;
-			height: 32px;
-			border: var(--image-controls-button-border, var(--border, 1px solid @gray));
-			border-radius: var(--image-controls-button-radius, 0);
-			line-height: 1;
-			background-color: transparent;
-			transition: background-color .15s ease, box-shadow .15s ease, border-color .15s ease;
-		}
-
-        .btn.btn--icon .icon-wrapper,
-        .image-controls__share-image-link .icon-wrapper {
-            line-height: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 22px;
-            height: 22px;
-        }
-
-        .btn.btn--icon .icon-wrapper svg,
-        .image-controls__share-image-link .icon-wrapper svg {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        .btn.btn--icon:hover,
-        .image-controls__share-image-link:hover,
-        .image-controls__share-image-link:focus {
-            background-color: fade(@black, 8%);
-            border-color: fade(@black, 24%);
-            box-shadow: 0 2px 6px fade(@black, 10%);
-        }
-		.btn.btn--icon:focus-visible,
-		.image-controls__share-image-link:focus-visible {
-			outline-offset: 2px;
-		}
+		gap: @image-controls-gap;
+		padding: 0;
+		list-style: none;
 	}
 	&__option {
-		a, 
-		span, 
-		button {
-			color: @gray;
-			&:hover,
-			&:active,
-			&:focus {
-				color: @gray;
+		display: flex;
+		align-items: center;
+		flex: 0 0 auto;
+		margin: 0;
+		color: @gray;
+		font-size: inherit;
+		line-height: 1;
+
+		&.-ltr {
+			margin-right: 0.75rem;
+			a {
+				display: inline;
 			}
+		}
+
+		a,
+		span,
+		button {
+			color: inherit;
+			text-align: center;
+			transition: color .18s ease;
 			&[disabled] {
 				cursor: default;
 			}
 		}
-			a, button {
-				display: block;
-				width: 100%;
-				text-align: center;
-			}
+
+		a,
+		button {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		&:hover,
+		&:focus-within {
+			color: darken(@gray, 12%);
+		}
+		&:active {
+			color: darken(@gray, 18%);
+		}
+
 		&.fulltext {}
         &.add-to-bookmark {
             [data-bookmark-list-type="add"] {
                 background-image: none;
                 .icon-bookmark-outline {
-                    display: inline-block;
+                    display: inline-flex;
                 }
                 .icon-bookmark-filled {
                     display: none;
@@ -121,14 +105,18 @@
                         display: none;
                     }
                     .icon-bookmark-filled {
-                        display: inline-block;
+                        display: inline-flex;
                         svg {
                             stroke: none;
                             outline: none;
                             border: none;
+                            transform: translateY(-1px);
                         }
                     }
                 }
+            }
+            .icon-wrapper svg {
+                transform: translateY(-1px);
             }
         }
 		&.share-image-region {
@@ -137,6 +125,53 @@
 				color: #FF2523;
 			}
 		}
+	}
+	&__option > .btn.btn--icon,
+	&__option > .image-controls__share-image-link,
+	&__option > button,
+	&__option [data-bookmark-list-type="add"] {
+		min-width: @image-controls-touch-size;
+		min-height: @image-controls-touch-size;
+		padding: 0;
+		border: none;
+		background: transparent;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		transition: transform .18s ease, filter .18s ease;
+	}
+	&__option > .btn.btn--icon:focus-visible,
+	&__option > .image-controls__share-image-link:focus-visible,
+	&__option > button:focus-visible,
+	&__option [data-bookmark-list-type="add"]:focus-visible {
+		outline-offset: 2px;
+	}
+	&__option .icon-wrapper {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: @image-controls-icon-size;
+		height: @image-controls-icon-size;
+		line-height: 0;
+		transition: transform .18s ease;
+	}
+	&__option .icon-wrapper svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		fill: currentColor;
+		transition: transform .18s ease, stroke-width .18s ease, fill .18s ease;
+	}
+	&__option > .btn.btn--icon:hover .icon-wrapper,
+	&__option > .btn.btn--icon:focus .icon-wrapper,
+	&__option > .image-controls__share-image-link:hover .icon-wrapper,
+	&__option > .image-controls__share-image-link:focus .icon-wrapper,
+	&__option > button:hover .icon-wrapper,
+	&__option > button:focus .icon-wrapper,
+	&__option [data-bookmark-list-type="add"]:hover .icon-wrapper,
+	&__option [data-bookmark-list-type="add"]:focus .icon-wrapper {
+		transform: scale(1.08) translateY(-1px);
+		filter: drop-shadow(0 3px 8px fade(@black, 18%));
 	}
     /* ACTIONS */
     &__actions {
