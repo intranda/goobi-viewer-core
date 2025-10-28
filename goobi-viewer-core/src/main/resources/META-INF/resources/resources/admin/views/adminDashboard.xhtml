@@ -275,7 +275,7 @@
 																	style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
 															</div>
 			                                            </ui:fragment>
-			                                            <ui:fragment rendered="#{!group.loadError}">
+			                                            <ui:fragment rendered="#{group.loadError}">
 			                                            	<div class="row admin__translations-not-translated-entry"
 			                                                    aria-label="#{msg.edit}: #{msg[group.name]}">
 			                                                    <div class="col-8 pl-5">
