@@ -1,5 +1,6 @@
 <ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components" 
@@ -30,21 +31,21 @@
 	                                	<button class="btn" aria-label="#{msg.search}"
 	                               			 jsf:action="#{searchBean.searchInRecord(activeDocumentBean.viewManager.topStructElement.groupIdField, activeDocumentBean.persistentIdentifier)}">
 		                                	<f:passThroughAttribute name="aria-label" value="#{msg.search}" />
-		                                    <i class="fa fa-search"/>
+		                                    <util:icon icon="search" />
 	                                	</button>
                                 	</c:when>
                                 	<c:when test="#{activeDocumentBean.anchor}">
                                 		<button class="btn" aria-label="#{msg.search}"
 	                               			 jsf:action="#{searchBean.searchInRecord('PI_ANCHOR', activeDocumentBean.persistentIdentifier)}">
 		                                	<f:passThroughAttribute name="aria-label" value="#{msg.search}" />
-		                                    <i class="fa fa-search"/>
+		                                    <util:icon icon="search" />
 	                                	</button>
                                 	</c:when>
                                 	<c:otherwise>
                                 		<button class="btn" aria-label="#{msg.search}"
 	                               			 jsf:action="#{searchBean.searchInRecord('PI_TOPSTRUCT', activeDocumentBean.persistentIdentifier)}">
 		                                	<f:passThroughAttribute name="aria-label" value="#{msg.search}" />
-		                                    <i class="fa fa-search"/>
+		                                    <util:icon icon="search" />
 	                                	</button>
                                 	</c:otherwise>
                                 </c:choose>

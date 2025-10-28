@@ -1,12 +1,13 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:h="http://xmlns.jcp.org/jsf/html">
-
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+>
     <composite:interface />
 
     <composite:implementation>
@@ -15,22 +16,41 @@
                 <h:form id="widgetLegalForm">
                     <div class="admin-widget__header">#{msg.admin__legal__title}</div>
                     <ul>
-                    	<li class="#{navigationHelper.currentPage == 'adminUserTerms' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUserTerms')}/">
-                                <i class="fa fa-check-square-o" aria-hidden="true"></i>
-                                <span>#{msg.admin__terms_of_use__title}</span>
+                        <li
+                            class="#{navigationHelper.currentPage == 'adminUserTerms' ? 'active' : ''}"
+                        >
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminUserTerms')}/">
+                                <util:icon-text
+                                    icon="checkbox"
+                                    text="#{msg.admin__terms_of_use__title}"
+                                    styleClass="icon-text--nav"
+                                />
                             </h:outputLink>
                         </li>
-                        <li class="#{navigationHelper.currentPage == 'adminCookieBanner' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminCookieBanner')}/">
-                                <i class="fa fa-bullhorn" aria-hidden="true"></i>
-                                <span>#{msg.label__cookie_banner}</span>
+                        <li
+                            class="#{navigationHelper.currentPage == 'adminCookieBanner' ? 'active' : ''}"
+                        >
+                            <h:outputLink
+                                value="#{navigationHelper.getPageUrl('adminCookieBanner')}/"
+                            >
+                                <util:icon-text
+                                    icon="speakerphone"
+                                    text="#{msg.label__cookie_banner}"
+                                    styleClass="icon-text--nav"
+                                />
                             </h:outputLink>
                         </li>
-                        <li class="#{navigationHelper.currentPage == 'adminDisclaimer' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminDisclaimer')}/">
-                                <i class="fa fa-gavel" aria-hidden="true"></i>
-                                <span>#{msg.label__legal_disclaimer}</span>
+                        <li
+                            class="#{navigationHelper.currentPage == 'adminDisclaimer' ? 'active' : ''}"
+                        >
+                            <h:outputLink
+                                value="#{navigationHelper.getPageUrl('adminDisclaimer')}/"
+                            >
+                                <util:icon-text
+                                    icon="gavel"
+                                    text="#{msg.label__legal_disclaimer}"
+                                    styleClass="icon-text--nav"
+                                />
                             </h:outputLink>
                         </li>
                     </ul>

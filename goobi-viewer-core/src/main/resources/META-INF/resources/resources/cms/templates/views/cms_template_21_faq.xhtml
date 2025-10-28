@@ -7,6 +7,7 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:util="http://goobi.io/util"
 	template="/resources/themes/#{navigationHelper.theme}/template.html">
 
 	<composite:interface>
@@ -47,10 +48,13 @@
 											aria-expanded="#{status.count eq 1 ? 'true' : 'false'}"
 											aria-controls="collapse-#{faqItem.id}">
 											#{subPage.title}
-										</a> <a class="fa fa-link card-header__fragment-link"
+										</a>
+										<a class="card-header__fragment-link"
 											href="#card-#{subPage.id}"
 											data-collapse-show="#collapse-#{subPage.id}"
-											aria-label="#{msg.aria__label_faq_direct_link}"> </a>
+											aria-label="#{msg.aria__label_faq_direct_link}">
+											<util:icon-text icon="link" text="" iconSvgClass="icon" />
+										</a>
 									</h2>
 								</div>
 								<div role="region" id="collapse-#{subPage.id}"
@@ -118,12 +122,13 @@
 												class="#{(classification_status.count eq 1) and (status.count eq 1) ? '' : 'collapsed'}"
 												data-toggle="collapse"
 												aria-expanded="#{(classification_status.count eq 1) and (status.count eq 1) ? 'true' : 'false'}"
-												aria-controls="collapseOne"> <!-- 	            <i class="fa fa-chevron-down" aria-hidden="true"></i>
-	                                                    <i class="fa fa-chevron-up" aria-hidden="true"></i> -->
+												aria-controls="collapseOne"> 
 												#{faqItem.title}
-											</a> <a class="fa fa-link card-header__fragment-link"
+											</a>
+											<a class="card-header__fragment-link"
 												href="#card-#{faqItem.id}-#{category.id}"
 												data-collapse-show="#collapse-#{faqItem.id}-#{category.id}">
+												<util:icon-text icon="link" text="" iconSvgClass="icon" />
 											</a>
 										</h2>
 									</div>

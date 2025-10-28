@@ -5,7 +5,8 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:x="http://myfaces.apache.org/tomahawk"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:jsf="http://xmlns.jcp.org/jsf">
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:util="http://goobi.io/util">
 
 	<composite:interface>
 		<composite:attribute name="itemCount" required="true" type="java.lang.Integer" />
@@ -28,22 +29,22 @@
 	            	<!-- FIRST ITEM -->
                     <li class="inputfield-paginator__navigate inputfield-paginator__navigate-first-svg #{cc.attrs.itemActive == cc.attrs.firstItem ? 'inactive' : ''}">
                         <a onclick="if(#{cc.attrs.itemActive == cc.attrs.firstItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_last}">
-							<ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
-                                <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}"/>
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
+                                <util:icon icon="chevrons-left" styleClass="inputfield-paginator__icon" svgClass="inputfield-paginator__icon-svg" />
                             </ui:fragment>
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
-                                <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}" />
+                                <util:icon icon="chevrons-right" styleClass="inputfield-paginator__icon" svgClass="inputfield-paginator__icon-svg" />
                             </ui:fragment>
 						</a>
                     </li>
 	                <!-- PREVIOUS ITEM -->
                     <li class="inputfield-paginator__navigate inputfield-paginator__navigate-prev-svg #{cc.attrs.itemActive == cc.attrs.firstItem ? 'inactive' : ''}">
-                        <a onclick="if(#{cc.attrs.itemActive == cc.attrs.firstItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_previous}">
+                        <a onclick="if(#{cc.attrs.itemActive == cc.attrs.firstItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_previous}" class="image-controls__share-image-link">
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
-                                <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}" />
+                                <util:icon icon="chevron-left" styleClass="inputfield-paginator__icon" svgClass="inputfield-paginator__icon-svg" />
                             </ui:fragment>
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
-                                <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}" />
+                                <util:icon icon="chevron-right" styleClass="inputfield-paginator__icon" svgClass="inputfield-paginator__icon-svg" />
                             </ui:fragment>
                         </a>
                     </li>
@@ -62,10 +63,10 @@
                     <li class="inputfield-paginator__navigate inputfield-paginator__navigate-next-svg #{cc.attrs.itemActive == cc.attrs.lastItem ? 'inactive' : ''}">
                         <a onclick="if(#{cc.attrs.itemActive == cc.attrs.lastItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_next}">
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
-                                <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}" />
+                                <util:icon icon="chevron-right" styleClass="inputfield-paginator__icon" svgClass="inputfield-paginator__icon-svg" />
                             </ui:fragment>
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
-                                <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}" />
+                                <util:icon icon="chevron-left" styleClass="inputfield-paginator__icon" svgClass="inputfield-paginator__icon-svg" />
                             </ui:fragment>
                         </a>
                     </li>
@@ -73,10 +74,10 @@
                     <li class="inputfield-paginator__navigate inputfield-paginator__navigate-last-svg #{cc.attrs.itemActive == cc.attrs.lastItem ? 'inactive' : ''}">
                         <a onclick="if(#{cc.attrs.itemActive == cc.attrs.lastItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.lastItem}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_last}">
                          <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
-                             <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}" />
+                             <util:icon icon="chevrons-right" styleClass="inputfield-paginator__icon" svgClass="inputfield-paginator__icon-svg" />
                          </ui:fragment>
                          <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
-                             <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}"/>
+                             <util:icon icon="chevrons-left" styleClass="inputfield-paginator__icon" svgClass="inputfield-paginator__icon-svg" />
                          </ui:fragment>
                         </a>
                     </li>

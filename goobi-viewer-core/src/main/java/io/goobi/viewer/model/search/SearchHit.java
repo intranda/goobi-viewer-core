@@ -652,32 +652,44 @@ public class SearchHit implements Comparable<SearchHit> {
         return type != null ? SEARCH_HIT_TYPE_PREFIX + type.name() : "";
     }
 
-    public String getIconClassForType() {
+    public String getIconName() {
+        return getIconNameForType(this.type);
+    }
+
+    private static String getIconNameForType(HitType type) {
         if (type != null) {
             switch (type) {
                 case PAGE:
-                    return "fa fa-file-text";
+                    return "file-text";
                 case PERSON:
-                    return "fa fa-user";
+                    return "user";
                 case CORPORATION:
-                    return "fa fa-university";
+                    return "building";
                 case LOCATION:
                 case ADDRESS:
-                    return "fa fa-envelope";
+                    return "mail";
                 case COMMENT:
-                    return "fa fa-comment-o";
+                    return "message";
                 case CMS:
-                    return "fa fa-file-text-o";
+                    return "file-text";
                 case EVENT:
-                    return "fa fa-calendar";
+                    return "calendar";
                 case ACCESSDENIED:
-                    return "fa fa-lock";
+                    return "lock";
                 default:
-                    return "fa fa-file-text";
+                    return "file-text";
             }
         }
 
-        return "";
+        return "file-text";
+    }
+
+    /**
+     * @deprecated use {@link #getIconName()} instead.
+     */
+    @Deprecated
+    public String getIconClassForType() {
+        return getIconNameForType(this.type);
     }
 
     /**

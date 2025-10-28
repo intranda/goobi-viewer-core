@@ -12,6 +12,8 @@ const riot = require('gulp-riot');
 const rename = require('gulp-rename');
 const merge = require('merge-stream');
 const through = require('through2');
+const svgmin = require('gulp-svgmin');
+const cheerio = require('cheerio');
 const colors = require('ansi-colors');
 const log = require('fancy-log');
 const {spawn} = require('child_process');
@@ -22,7 +24,7 @@ const terser = require('gulp-terser');
 const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
 const reporter = require('postcss-reporter');
-const {depsPathsJS, depsPathsCSS} = require('./gulp/depsPaths');
+const {depsPathsJS, depsPathsCSS, tablerIconSources} = require('./gulp/depsPaths');
 
 const isWin = process.platform === 'win32';
 const toPosix = (p) => (p ? p.replace(/\\/g, '/') : p);
@@ -37,6 +39,8 @@ const paths = {
     lessRoot: 'src/main/resources/META-INF/resources/resources/css/less/',
     staticRoot: 'src/main/resources/META-INF/resources',
 };
+
+const iconOutputRoot = joinPosix(paths.staticRoot, 'resources', 'icons');
 
 const banner = `/*!
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
@@ -54,6 +58,9 @@ const SHOW_AP_WARNINGS = process.env.GV_APWARN !== '0';
 
 /** Optional: completely disable Autoprefixer (set GV_AUTOPREFIX=0). */
 const ENABLE_AUTOPREFIX = process.env.GV_AUTOPREFIX !== '0';
+
+/** Optional: verbose file list for sync-all (set GV_SYNC_VERBOSE=1). */
+const VERBOSE_SYNC = process.env.GV_SYNC_VERBOSE === '1';
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
    ║ Resolve deployment/Core/Theme directories                            ║
@@ -261,6 +268,72 @@ function collectFiles(push) {
     });
 }
 
+/**
+ * Generates gulp streams that process Tabler SVG icons into the viewer resources.
+ *
+ * @param {Function} [onCopy] Optional callback invoked for every processed file.
+ * @returns {NodeJS.ReadWriteStream[]} Streams (one per icon variant).
+ */
+function createIconStreams(onCopy) {
+    if (!Array.isArray(tablerIconSources) || tablerIconSources.length === 0) {
+        return [];
+    }
+
+    return tablerIconSources
+        .map(({variant, src, base}) => {
+            if (!src) return null;
+
+            const srcOpts = {allowEmpty: true};
+            if (base) srcOpts.base = base;
+
+            const destDir = variant ? joinPosix(iconOutputRoot, variant) : iconOutputRoot;
+            let stream = gulp
+                .src(src, srcOpts)
+                .pipe(guard())
+                .pipe(
+                    svgmin({
+                        plugins: [{removeViewBox: false}],
+                    })
+                )
+                .pipe(
+                    through.obj((file, _enc, cb) => {
+                        if (file.isBuffer()) {
+                            const $ = cheerio.load(file.contents.toString(), {xmlMode: true});
+                            const svg = $('svg');
+                            if (svg.length) {
+                                if (!svg.attr('id')) svg.attr('id', 'icon');
+                                svg.removeAttr('width');
+                                svg.removeAttr('height');
+                                file.contents = Buffer.from($.xml());
+                            }
+                        }
+                        cb(null, file);
+                    })
+                );
+
+            if (typeof onCopy === 'function') {
+                stream = stream.pipe(collectFiles(onCopy));
+            }
+
+            return stream.pipe(gulp.dest(destDir));
+        })
+        .filter(Boolean);
+}
+
+/**
+ * Processes Tabler SVG icons and writes them to `resources/icons`.
+ *
+ * @returns {Promise<void>|NodeJS.ReadWriteStream}
+ */
+function buildIcons() {
+    const streams = createIconStreams();
+    if (streams.length === 0) {
+        return Promise.resolve();
+    }
+
+    return streams.length === 1 ? streams[0] : merge(streams);
+}
+
 /** Unified footer line for task summaries. */
 function taskFooter(generated, copied, errors, started) {
     return (
@@ -299,9 +372,12 @@ function logTask({
                  }) {
     const changedPath = (typeof changed === 'string') ? changed : undefined;
 
-    const lines = [];
-    if (changedPath) lines.push(`changed: ${colors.green(prettyPath(changedPath))}`);
-    if (src) lines.push(`src: ${colors.green(src)}`);
+    const lines = [`time: ${colors.gray(new Date().toLocaleTimeString('de-DE', {hour12: false}))}`];
+    if (changedPath) {
+        lines.push(`changed: ${colors.green(prettyPath(changedPath))}`);
+    } else if (src) {
+        lines.push(`src: ${colors.green(src)}`);
+    }
     if (projOut.length) lines.push('→ project:', ...projOut.map((p) => '  • ' + colors.blue(prettyPath(p))));
     if (deployOut.length) lines.push('→ deploy:', ...deployOut.map((p) => '  • ' + colors.blue(prettyPath(p))));
     if (extra.length) lines.push(...extra);
@@ -650,13 +726,19 @@ function fullSync() {
     requireDeploymentDir();
     const started = process.hrtime.bigint();
     let copied = 0;
+    const copiedEntries = VERBOSE_SYNC ? [] : null;
 
     return gulp
         .src(joinPosix(paths.staticRoot, '**', '*'), { dot: true, allowEmpty: true })
         .pipe(guard())
         .pipe(
-            collectFiles(() => {
+            collectFiles((file) => {
                 copied++;
+                if (copiedEntries && file && typeof file.path === 'string' && !file.isDirectory()) {
+                    const rel = toPosix(path.relative(paths.staticRoot, file.path));
+                    const dst = joinPosix(DEPLOYMENT_DIR, rel);
+                    copiedEntries.push({src: rel, dst});
+                }
             })
         )
         .pipe(gulp.dest(DEPLOYMENT_DIR))
@@ -667,7 +749,14 @@ function fullSync() {
                 src: toPosix(path.resolve(paths.staticRoot)) + '/**/*',
                 genCount: 0,
                 copyCount: copied,
-                extra: [`dst: ${colors.blue(prettyPath(DEPLOYMENT_DIR))}`],
+                extra: [
+                    `dst: ${colors.blue(prettyPath(DEPLOYMENT_DIR))}`,
+                    ...(copiedEntries
+                        ? copiedEntries.map(({src, dst}) =>
+                              `  • ${colors.green(src)} → ${colors.blue(dst)}`
+                          )
+                        : []),
+                ],
             });
         });
 }
@@ -795,6 +884,8 @@ function watchMode() {
         joinPosix(paths.staticRoot, 'resources', '**', '*.svg'),
         joinPosix(paths.staticRoot, 'resources', '**', '*.gif'),
         joinPosix(paths.staticRoot, 'resources', '**', '*.ico'),
+        joinPosix(paths.staticRoot, 'resources', '**', '*.css'),
+        '!' + joinPosix(paths.staticRoot, 'resources', 'css', 'dist', '**', '*.css'),
     ];
 
     const staticWatcher = gulp.watch(staticGlobs, {ignoreInitial: true});
@@ -875,19 +966,19 @@ const buildJS = gulp.series(bundleModules, bundleViewerJS, bundleStatisticsJS, b
 const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags));
 
 exports.build = buildAll;
-exports.dev = watchMode;
-exports.devsync = gulp.series(fullSync, watchMode);
-exports['copy-deps'] = copyDependencies;
+exports.dev = gulp.series(buildIcons, fullSync, watchMode);
+exports['copy-deps'] = gulp.series(buildIcons, copyDependencies);
 exports['sync-all'] = fullSync;
 exports.target = printTargets;
 exports.java = java;
+exports.icons = buildIcons;
 
-/* ── Task exports ──────────────────────────────────────────────────────────
-   - npm run build      → builds styles, JS bundles, riot tags
-   - npm run dev        → starts watchers (incremental rebuild + mirror)
-   - npm run devsync    → one-shot full sync, then watchers
+/* ── Task exports ────────────────────────────────────────────────────────────────────────────
+   - npm run build      → builds styles, JS bundles, riot tags, icons
+   - npm run dev        → builds icons, full project → deploy mirror once, then starts watchers
    - npm run copyDeps   → copies declared 3rd-party assets
+   - npm run icons      → rebuilds Tabler SVG sprite assets
    - npm run sync       → one-shot full project → deploy mirror
    - npm run target     → prints resolved paths / env overrides
    - npm run java       → maven: core [install] + theme [package]
-─────────────────────────────────────────────────────────────────────────── */
+──────────────────────────────────────────────────────────────────────────────────────────────── */

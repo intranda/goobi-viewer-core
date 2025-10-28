@@ -23,7 +23,9 @@
 				<button class="btn btn--clean" type="button"
 					data-bookmark-list-type="delete" onclick="{remove}"
 					aria-label="{msg('bookmarkList_removeFromBookmarkList')}">
-					<i class="fa fa-ban" aria-hidden="true"></i>
+					<svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                    	<use riot-href="{getIconHref('ban')}"></use>
+                	</svg>
 				</button>
 			</div>
 		</div>
@@ -36,7 +38,9 @@
 		<button class="btn btn--clean" type="button"
 			data-bookmark-list-type="reset" onclick="{deleteList}">
 			<span>{msg('bookmarkList_reset')}</span>
-			<i class="fa fa-trash-o" aria-hidden="true"></i>
+				<svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                    <use riot-href="{getIconHref('trash')}"></use>
+                </svg>
 		</button>
 	</div>
 
@@ -44,7 +48,9 @@
 	<div if="{maySendList(bookmarkList)}" class="{mainClass}-send">
 		<a href="{sendListUrl(bookmarkList)}"> 
 			<span>{msg('bookmarkList_session_mail_sendList')}</span> 
-			<i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+				<svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                    <use riot-href="{getIconHref('send')}"></use>
+                </svg>
 		</a>
 	</div>
 
@@ -54,19 +60,27 @@
 			data-toggle="tooltip" data-placement="top" data-original-title=""
 			title=""> 
 			<span>{msg('action__search_in_bookmarks')}</span> 
-			<i class="fa fa-search" aria-hidden="true"></i>
+				<svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                    <use riot-href="{getIconHref('search')}"></use>
+                </svg>
 		</a>
 	</div>
 
 	<div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador">
 		<a href="{miradorUrl(bookmarkList)}" target="_blank"> 
 			<span>{msg('viewMiradorComparison')}</span> 
-			<i class="fa fa-th" aria-hidden="true"></i>
+				<svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                    <use riot-href="{getIconHref('grid-dots')}"></use>
+                </svg>
 		</a>
 	</div>
 </div>
 
-<script> 
+<script>
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`; 
 
 this.pi = this.opts.data.pi;
 this.logid = this.opts.data.logid;
@@ -155,4 +169,3 @@ msg(key) {
 </script> 
 
 </bookmarkListSession>
-

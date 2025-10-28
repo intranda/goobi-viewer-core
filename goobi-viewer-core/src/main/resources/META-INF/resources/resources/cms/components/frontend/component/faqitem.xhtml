@@ -6,6 +6,7 @@
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:util="http://goobi.io/util"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
 
@@ -34,9 +35,10 @@
 							aria-controls="collapse-#{cc.attrs.component.order}">
 								#{cc.attrs.component.getContent('title').text}
 						</a> 
-						<a class="fa fa-link card-header__fragment-link"
+						<a class="card-header__fragment-link"
 							href="#card-#{cc.attrs.component.order}" data-copy="copyFAQanchor"
-							aria-label="#{msg.aria__label_faq_direct_link}" title="#{msg.copyUrlDone}"> 
+							aria-label="#{msg.aria__label_faq_direct_link}" title="#{msg.copyUrlDone}">
+							<util:icon icon="link"/>
 						</a>
 						<script>
 						$('[data-copy="copyFAQanchor"]').on('click', function(e) {

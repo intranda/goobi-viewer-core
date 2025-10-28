@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -14,22 +16,22 @@
 			<!-- CLIENT IS REGISTERED/CONNECTED -->
 			<ui:fragment rendered="#{accessGranted and matchIP}">
 					<div class="client-status__icon-wrapper" data-toggle="tooltip" title="#{msg.info__client_application_accepted}">
-						<i class="client-status__icon-status -accepted" aria-hidden="true"></i>
-						<i class="fa fa-desktop client-status__icon-client" aria-hidden="true"></i>
+						<util:icon icon="device-desktop" styleClass="client-status__icon-client" ariaLabel="#{msg.info__client_application_accepted}" />
+						<util:icon icon="check" styleClass="client-status__icon-status -accepted" svgClass="icon icon-xs" ariaLabel="" />
 					</div>
 			</ui:fragment>
 			<!-- CLIENT IS REGISTERED/CONNECTED BUT WRONG NETWORK -->
 			<ui:fragment rendered="#{accessGranted and !matchIP}">
 					<div class="client-status__icon-wrapper" data-toggle="tooltip" title="#{msg.info__client_application_wrong_network}">
-						<i class="client-status__icon-status -wrongNetwork" aria-hidden="true"></i>
-						<i class="fa fa-desktop client-status__icon-client" aria-hidden="true"></i>
+						<util:icon icon="device-desktop" styleClass="client-status__icon-client" ariaLabel="#{msg.info__client_application_wrong_network}" />
+						<util:icon icon="exclamation-mark" styleClass="client-status__icon-status -wrongNetwork" svgClass="icon icon-xs" ariaLabel="" />
 					</div>
 			</ui:fragment>
 			<!-- CLIENT IS NOT REGISTERED/CONNECTED -->
 			<ui:fragment rendered="#{!accessGranted}">
 					<div class="client-status__icon-wrapper" data-toggle="tooltip" title="#{msg.info__client_application_rejected}">
-						<i class="client-status__icon-status -rejected" aria-hidden="true"></i>
-						<i class="fa fa-desktop client-status__icon-client" aria-hidden="true"></i>
+						<util:icon icon="device-desktop" styleClass="client-status__icon-client" ariaLabel="#{msg.info__client_application_rejected}" />
+						<util:icon icon="x" styleClass="client-status__icon-status -rejected" svgClass="icon icon-xs" ariaLabel="" />
 					</div>
 			</ui:fragment>
 		</ui:fragment>

@@ -3,8 +3,16 @@
 	<div class="crowdsourcing-annotations__log-wrapper">
 		<div class="crowdsourcing-annotations__log-title">
 			<span>{Crowdsourcing.translate("log")}</span>
-			<button ref="compress" onclick="{compressLog}" class="crowdsourcing-annotations__log-expand btn btn--clear"><i class="fa fa-angle-up" aria-hidden="true"></i></button>
-			<button ref="expand" onclick="{expandLog}" class="btn btn--clear crowdsourcing-annotations__log-expand"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
+			<button ref="compress" onclick="{compressLog}" class="crowdsourcing-annotations__log-expand btn btn--clear">
+				<svg class="crowdsourcing-annotations__log-expand-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+					<use riot-href="{getIconHref('chevron-up')}"></use>
+				</svg>
+			</button>
+			<button ref="expand" onclick="{expandLog}" class="btn btn--clear crowdsourcing-annotations__log-expand">
+				<svg class="crowdsourcing-annotations__log-expand-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+					<use riot-href="{getIconHref('chevron-down')}"></use>
+				</svg>
+			</button>
 		</div>
 		<div ref="toggleBox" class="crowdsourcing-annotations__toggle-box">
 			<div ref="innerWrapper" class="crowdsourcing-annotations__log-inner-wrapper">
@@ -28,8 +36,6 @@
 			</div>
 
 			<div ref="messageBox" class="crowdsourcing-annotations__log-send-message-area">
-	<!-- 			<div>{currentUser.name}</div> -->
-	<!-- 			<img src="{currentUser.avatar}"></img> -->
 				<input onkeypress="{addMessageOnEnter}" placeholder="{Crowdsourcing.translate('label__enter_message_here')}" class="crowdsourcing-annotations__log-message-input" id="crowdsourcingAnnotationsLogMessageInput" name="crowdsourcingAnnotationsLogMessageInput" ref="messageText"></input>
 				<button class="btn btn--default crowdsourcing-annotations__log-message-send-button" onclick="{addMessage}">{Crowdsourcing.translate('action__send')}</button>
 			</div>
@@ -38,6 +44,10 @@
 
 
 <script>
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 this.currentUser = this.opts.item.currentUser;
 this.messages = this.opts.item.log;

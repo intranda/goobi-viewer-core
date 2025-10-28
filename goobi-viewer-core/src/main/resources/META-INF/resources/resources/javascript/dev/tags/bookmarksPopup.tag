@@ -24,15 +24,12 @@
 			<div class="col-11 no-padding">
 				<input ref="inputValue" type="text" placeholder="{msg('bookmarkList_addNewBookmarkList')}" aria-label="{msg('bookmarkList_addNewBookmarkList')}"/>
 			</div>
-			<div class="col-1 no-padding">
-				<button class="btn btn-clean" type="button"  aria-label="{msg('bookmarkList_addNewBookmarkList')}" onclick="{add}">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41.57 41.57">
-					  <g id="icon-bs-add" transform="translate(-27.5 -243.5)">
-					    <line id="Linie_12" data-name="Linie 12" class="cls-1" x2="41.57" transform="translate(27.5 264.285)"/>
-					    <line id="Linie_13" data-name="Linie 13" class="cls-1" x2="41.57" transform="translate(48.285 243.5) rotate(90)"/>
-					  </g>
-					</svg>
-				</button>
+				<div class="col-1 no-padding">
+					<button class="btn btn-clean bookmark-popup__add-button" type="button"  aria-label="{msg('bookmarkList_addNewBookmarkList')}" onclick="{add}">
+						<svg class="bookmark-popup__add-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+						  <use riot-href="{getIconHref('plus')}"></use>
+						</svg>
+					</button>
 			</div>
 		</div>
 	</div>
@@ -40,6 +37,10 @@
 <script>
 
 const popupOffset = 6;
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 this.opts.loader = ".bookmark-popup__body-loader";
 

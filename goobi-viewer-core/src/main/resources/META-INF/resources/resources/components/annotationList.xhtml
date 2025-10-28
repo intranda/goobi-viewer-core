@@ -6,7 +6,8 @@
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:util="http://goobi.io/util">
 
 	<composite:interface>
 		<composite:attribute name="contentList" required="true"
@@ -26,26 +27,28 @@
 							
 							<ui:fragment rendered="#{!content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
 								<div class="widget-annotations__entry #{content.isOnThisPage(activeDocumentBean.viewManager.currentPage) ? '-onpage' : ''}">
-									<div class="widget-annotations__type">
-										<i class="#{content.iconClass}" aria-hidden="true"></i>
-									</div>
-									<h:panelGroup display="block" rendered="#{content.type != 'NORMDATA' or cc.attrs.sidebar}" class="widget-annotations__content">
+                                    <div class="widget-annotations__type">
+                                        <util:icon icon="#{content.iconName}" />
+                                    </div>
+									<h:panelGroup display="block" class="widget-annotations__content">
 										<h:outputText value="#{msg[contentBean.cleanUpValue(content.extendendLabel)]}" escape="false">
 										</h:outputText>
 									</h:panelGroup>
 									<ui:fragment rendered="#{content.type == 'NORMDATA' and cc.attrs.sidebar}">
-										<button type="button"
-											data-remotecontent="#{request.contextPath}/api/v1/authority/resolver?id=#{contentBean.getEscapedBodyUrl(content)}&amp;template=ANNOTATION&amp;lang=#{navigationHelper.localeString}/"
-											data-toggle="tooltip" data-placement="top" data-trigger="hover"
-											class="widget-annotations__button">
-											<i class="fa fa-list-ul" aria-hidden="true"></i>
-											<div class="normdata-preloader"></div>
-										</button>
-										<i class="fa fa-times closeAllPopovers" aria-hidden="true"
-											data-toggle="tooltip" data-placement="top" data-trigger="hover"
-											title="#{msg.normdataPopoverCloseAll}"></i>
+                                        <button type="button"
+                                            data-remotecontent="#{request.contextPath}/api/v1/authority/resolver?id=#{contentBean.getEscapedBodyUrl(content)}&amp;template=ANNOTATION&amp;lang=#{navigationHelper.localeString}/"
+                                            data-toggle="tooltip" data-placement="top" data-trigger="hover"
+                                            class="widget-annotations__button">
+                                            <util:icon icon="list" />
+                                            <div class="normdata-preloader"></div>
+                                        </button>
+                                        <span class="closeAllPopovers"
+                                            data-toggle="tooltip" data-placement="top" data-trigger="hover"
+                                            title="#{msg.normdataPopoverCloseAll}">
+                                            <util:icon icon="x" />
+                                        </span>
 									</ui:fragment>
-									<ui:fragment rendered="#{content.type == 'NORMDATA' and not cc.attrs.sidebar}">
+									<ui:fragment>
 										<div id="annotation_body_#{content.id}" class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(content.annotationBody.toString())}</div>
 											<annotationBody annotationid="#{content.id}" contentid="annotation_body_#{content.id}"/>
 									</ui:fragment>
@@ -58,9 +61,9 @@
 							</ui:fragment>
 							<ui:fragment rendered="#{content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
 								<h:outputLink pt:class="widget-annotations__entry #{content.isOnThisPage(activeDocumentBean.viewManager.currentPage) ? '-onpage' : ''}" value="#{content.pageUrl}" styleClass="p-0">
-									<div class="widget-annotations__type">
-										<i class="#{content.iconClass}" aria-hidden="true"></i>
-									</div>
+                                    <div class="widget-annotations__type">
+                                        <util:icon icon="#{content.iconName}" />
+                                    </div>
 									<h:panelGroup display="block" rendered="#{content.type != 'NORMDATA' or cc.attrs.sidebar}" class="widget-annotations__content">
 										<h:outputText
 											value="#{msg[contentBean.cleanUpValue(content.extendendLabel)]}"
@@ -68,16 +71,18 @@
 										</h:outputText>
 									</h:panelGroup>
 									<ui:fragment rendered="#{content.type == 'NORMDATA' and cc.attrs.sidebar}">
-										<button type="button"
-											data-remotecontent="#{request.contextPath}/api/v1/authority/resolver?id=#{contentBean.getEscapedBodyUrl(content)}&amp;template=ANNOTATION&amp;lang=#{navigationHelper.localeString}/"
-											data-toggle="tooltip" data-placement="top" data-trigger="hover"
-											class="widget-annotations__button">
-											<i class="fa fa-list-ul" aria-hidden="true"></i>
-											<div class="normdata-preloader"></div>
-										</button>
-										<i class="fa fa-times closeAllPopovers" aria-hidden="true"
-											data-toggle="tooltip" data-placement="top" data-trigger="hover"
-											title="#{msg.normdataPopoverCloseAll}"></i>
+                                        <button type="button"
+                                            data-remotecontent="#{request.contextPath}/api/v1/authority/resolver?id=#{contentBean.getEscapedBodyUrl(content)}&amp;template=ANNOTATION&amp;lang=#{navigationHelper.localeString}/"
+                                            data-toggle="tooltip" data-placement="top" data-trigger="hover"
+                                            class="widget-annotations__button">
+                                            <util:icon icon="list" />
+                                            <div class="normdata-preloader"></div>
+                                        </button>
+                                        <span class="closeAllPopovers"
+                                            data-toggle="tooltip" data-placement="top" data-trigger="hover"
+                                            title="#{msg.normdataPopoverCloseAll}">
+                                            <util:icon icon="x" />
+`                                        </span>
 									</ui:fragment>
 									<ui:fragment rendered="#{content.type == 'NORMDATA' and not cc.attrs.sidebar}">
 										<div id="annotation_body_#{content.id}" class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(content.annotationBody.toString())}</div>

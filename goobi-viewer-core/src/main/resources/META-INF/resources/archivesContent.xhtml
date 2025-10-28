@@ -1,5 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -8,105 +9,159 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-    template="/resources/themes/#{navigationHelper.theme}/templateArchives.html">
-
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('archives', false, true)}" />
-			<f:event type="preRenderView" listener="#{archiveBean.redirectToOnlyDatabase()}" />
-			<f:viewAction onPostback="false" action="#{archiveBean.updateArchives()}" />
-		</f:metadata>
-	</ui:define>
+    template="/resources/themes/#{navigationHelper.theme}/templateArchives.html"
+>
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPage('archives', false, true)}"
+            />
+            <f:event type="preRenderView" listener="#{archiveBean.redirectToOnlyDatabase()}" />
+            <f:viewAction onPostback="false" action="#{archiveBean.updateArchives()}" />
+        </f:metadata>
+    </ui:define>
 
     <ui:define name="breadcrumbs">
         <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
     </ui:define>
 
     <ui:define name="content">
-
         <f:view contentType="text/html" encoding="utf-8">
-        	<div class="archives__wrapper">
+            <div class="archives__wrapper">
+                <!-- LEFT SIDE -->
+                <div class="archives__left-side">
+                    <ui:fragment rendered="#{archiveBean.getNumArchives() > 1}">
+                        <h:form styleClass="archives__select-database-dropdown-wrapper">
+                            <h:outputLabel
+                                for="selectArchiveDatabaseDropdown"
+                                class="archives__select-database-dropdown-label"
+                                >#{msg.archives__current_collection}:</h:outputLabel
+                            >
 
-        		<!-- LEFT SIDE -->
-				<div class="archives__left-side">
-
-					<ui:fragment rendered="#{archiveBean.getNumArchives() > 1}">
-							<h:form styleClass="archives__select-database-dropdown-wrapper">
-							<h:outputLabel for="selectArchiveDatabaseDropdown" class="archives__select-database-dropdown-label">#{msg.archives__current_collection}:</h:outputLabel>
-
-							<div class="archives__select-database-dropdown-element">
-
-			                    <div class="custom-control custom-control--select archives__select-database-dropdown-element-select">
-				                    <h:selectOneMenu id="selectArchiveDatabaseDropdown" value="#{archiveBean.currentResource}"
-				                        styleClass="archives__select-database-dropdown" onchange="$(this).next().click()">
-										<f:selectItems value="#{archiveBean.filteredDatabases}" var="database"
-										    itemValue="#{database.resourceId}" itemLabel="#{database.combinedName}" ></f:selectItems>
-									</h:selectOneMenu>
-									<h:commandButton styleClass="d-none" action="pretty:archives1"></h:commandButton>
-									</div>
-		                    </div>
-
-			                    </h:form>
-					</ui:fragment>
+                            <div class="archives__select-database-dropdown-element">
+                                <div
+                                    class="custom-control custom-control--select archives__select-database-dropdown-element-select"
+                                >
+                                    <h:selectOneMenu
+                                        id="selectArchiveDatabaseDropdown"
+                                        value="#{archiveBean.currentResource}"
+                                        styleClass="archives__select-database-dropdown"
+                                        onchange="$(this).next().click()"
+                                    >
+                                        <f:selectItems
+                                            value="#{archiveBean.filteredDatabases}"
+                                            var="database"
+                                            itemValue="#{database.resourceId}"
+                                            itemLabel="#{database.combinedName}"
+                                        ></f:selectItems>
+                                    </h:selectOneMenu>
+                                    <h:commandButton
+                                        styleClass="d-none"
+                                        action="pretty:archives1"
+                                    ></h:commandButton>
+                                </div>
+                            </div>
+                        </h:form>
+                    </ui:fragment>
 
                     <div class="archives__tree-heading">
-                      <h2>#{msg.archives__archive_tree_heading}</h2>  
-                    	<button
-							id="archivesSearchTrigger"
-							class="#{not empty archiveBean.searchString ? '-active' : ''} btn"
-							aria-label="#{msg.search}"> 
-							<i class="fa fa-search"></i>
-						</button>
+                        <h2>#{msg.archives__archive_tree_heading}</h2>
+                        <button
+                            id="archivesSearchTrigger"
+                            class="#{not empty archiveBean.searchString ? '-active' : ''} btn"
+                            aria-label="#{msg.search}"
+                        >
+                            <util:icon
+                                icon="search"
+                            />
+                        </button>
                     </div>
                     <h:panelGroup layout="block" id="treeGroup" styleClass="archives__graphic-tree">
-	                    <div class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
-		                    <h:form id="searchForm" prependId="false">
-		                        <h:inputText id="archivesSearchField" styleClass="form-control filter-input archives__search-input"
-		                            value="#{archiveBean.searchString}" immediate="true">
-		                            <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
-		                            <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__search_form}" />
-		                        </h:inputText>
-		                        <div class="archives__search-clear #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">x</div>
-		                        <h:commandButton styleClass="archives__search-submit-button" value="#{msg.search}" action="#{archiveBean.searchAction}">
-		                        </h:commandButton>
-		            		</h:form>
-	                    </div>
-	                    <ui:include src="/resources/includes/archives/archiveTreeView.xhtml">
-	                    	<ui:param name="indent" value="#{configurationBean.tocIndentation * 1.5}"/>
-	                    	<ui:param name="render" value="treeGroup hierarchyGroup metadataGroup" />
-	                    </ui:include>
-
-					</h:panelGroup>
-				</div>
+                        <div
+                            class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}"
+                        >
+                            <h:form id="searchForm" prependId="false">
+                                <h:inputText
+                                    id="archivesSearchField"
+                                    styleClass="form-control filter-input archives__search-input"
+                                    value="#{archiveBean.searchString}"
+                                    immediate="true"
+                                >
+                                    <f:passThroughAttribute
+                                        name="placeholder"
+                                        value="#{msg.searchFieldDemoText}"
+                                    />
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.aria_label__search_form}"
+                                    />
+                                </h:inputText>
+                                <div
+                                    class="archives__search-clear #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}"
+                                >
+                                    x
+                                </div>
+                                <h:commandButton
+                                    styleClass="archives__search-submit-button"
+                                    value="#{msg.search}"
+                                    action="#{archiveBean.searchAction}"
+                                >
+                                </h:commandButton>
+                            </h:form>
+                        </div>
+                        <ui:include src="/resources/includes/archives/archiveTreeView.xhtml">
+                            <ui:param
+                                name="indent"
+                                value="#{configurationBean.tocIndentation * 1.5}"
+                            />
+                            <ui:param
+                                name="render"
+                                value="treeGroup hierarchyGroup metadataGroup"
+                            />
+                        </ui:include>
+                    </h:panelGroup>
+                </div>
 
                 <!-- RIGHT SIDE -->
                 <div class="archives__right-side">
                     <!-- HIERARCHY OF THE CURRENT NODE -->
                     <ui:fragment rendered="#{archiveBean.displayEntry.accessAllowed}">
-                        <h:panelGroup layout="block" id="hierarchyGroup" styleClass="archives__text-tree">
-                            <ui:repeat var="entry" value="#{archiveBean.getArchiveHierarchyForIdentifier(archiveBean.displayEntry.id)}">
+                        <h:panelGroup
+                            layout="block"
+                            id="hierarchyGroup"
+                            styleClass="archives__text-tree"
+                        >
+                            <ui:repeat
+                                var="entry"
+                                value="#{archiveBean.getArchiveHierarchyForIdentifier(archiveBean.displayEntry.id)}"
+                            >
                                 <!-- TODO proper level tag -->
                                 <!-- TODO bold via CSS -->
                                 <div class="archives__text-tree-entry">
                                     <div class="archives__text-tree-level">
-                                        <h:outputText rendered="#{entry.descriptionLevel != null}" value="#{msg[entry.descriptionLevel]}:" />
+                                        <h:outputText
+                                            rendered="#{entry.descriptionLevel != null}"
+                                            value="#{msg[entry.descriptionLevel]}:"
+                                        />
                                     </div>
                                     <span class="archives__text-tree-value">#{entry.label}</span>
                                 </div>
                             </ui:repeat>
                         </h:panelGroup>
                         <h:panelGroup layout="block" id="metadataGroup">
-                            <ui:include src="/resources/includes/archives/archiveMetadataView.xhtml">
-                                <ui:param name="archiveEntry" value="#{archiveBean.displayEntry}"/>
+                            <ui:include
+                                src="/resources/includes/archives/archiveMetadataView.xhtml"
+                            >
+                                <ui:param name="archiveEntry" value="#{archiveBean.displayEntry}" />
                             </ui:include>
                         </h:panelGroup>
                     </ui:fragment>
-                    
+
                     <!-- (ADMIN) WIDGET FOR ARCHIVE INTERACTIONS -->
                     <div class="archives__widget-archives-interactions-wrapper">
-						<widgetComponent:widget_archivesInteractions />
-					</div>
-                    
+                        <widgetComponent:widget_archivesInteractions />
+                    </div>
                 </div>
             </div>
         </f:view>

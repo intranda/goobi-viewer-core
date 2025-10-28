@@ -5,7 +5,9 @@
 	<ul>
 		<li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev">
 			<span  onclick="{this.loadPrevious}">
-				<i class="fa fa-angle-left" aria-hidden="true"></i>
+				<svg class="numeric-paginator__navigate-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+					<use riot-href="{getIconHref('chevron-left')}"></use>
+				</svg>
 			</span>
 		</li>
 		<li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? 'numeric-paginator__active' : ''}">
@@ -21,17 +23,20 @@
 		</li>
 		<li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next">
 			<span  onclick="{this.loadNext}">
-				<i class="fa fa-angle-right" aria-hidden="true"></i>
+				<svg class="numeric-paginator__navigate-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+					<use riot-href="{getIconHref('chevron-right')}"></use>
+				</svg>
 			</span>
 		</li>
-<!-- 		<li > -->
-<!-- 			<input placeholder="Enter page number" onchange="{this.toPageNumber}" data-input='number'></input> -->
-<!-- 		</li> -->
 	</ul>
 
 </nav>
 
 <script>
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 this.on( "mount", function() {
 	
