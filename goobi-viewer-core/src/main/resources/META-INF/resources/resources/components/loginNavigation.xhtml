@@ -13,22 +13,22 @@
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displayUserNavigation || userBean.loggedIn }">
-            <ul class="login-navigation">
-                <!-- USER NOT LOGGED IN -->
-                <ui:fragment rendered="#{!userBean.loggedIn}">
-                    <li data-login="false">
-                        <!-- TOGGLE LOGIN -->
-                        <button type="button" class="btn btn--clean" data-toggle="modal" data-target="#userLoginModal" aria-label="#{msg.userNotLoggedIn}">
-                            <util:icon-text icon="user-circle" text="#{msg.userNotLoggedIn}" textPosition="left" />
-                        </button>
-                    </li>
-                </ui:fragment>
+			<!-- USER NOT LOGGED IN -->
+			<ui:fragment rendered="#{!userBean.loggedIn}">
+			    <div data-login="false">
+			        <!-- TOGGLE LOGIN -->
+			        <button type="button" class="btn btn--clean login-navigation__toggle-button" data-toggle="modal" data-target="#userLoginModal" aria-label="#{msg.userNotLoggedIn}">
+			            <util:icon-text icon="user-circle" text="#{msg.userNotLoggedIn}" textPosition="left" />
+			        </button>
+			    </div>
+			</ui:fragment>
                 <!-- USER LOGGED IN -->
                 <ui:fragment rendered="#{userBean.loggedIn}">
+            	<ul class="login-navigation">
                     <li data-login="true">
                         <!-- TOGGLE USER DROPDOWN WITHOUT CUSTOM NAME -->
                         <ui:fragment rendered="#{!cc.attrs.customName}">
-                            <button type="button" class="btn btn--clean" data-toggle="user-dropdown">
+                            <button type="button" class="btn btn--clean login-navigation__toggle-button" data-toggle="user-dropdown">
                                 <!-- USER NAME -->
 								<span class="login-navigation__user-name" data-toggle="tooltip" data-placement="bottom">
 								    <h:outputText escape="true">#{userBean.user.displayName}</h:outputText>
@@ -188,8 +188,8 @@
                             </h:form>
                         </div>
                     </li>
+            		</ul>
                 </ui:fragment>
-            </ul>
         </ui:fragment>
     </composite:implementation>
 </ui:composition>
