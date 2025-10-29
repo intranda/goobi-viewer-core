@@ -1,6 +1,8 @@
 package io.goobi.viewer.model.security;
 
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.Objects;
 
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -18,7 +20,9 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "license_type_placeholder_info")
-public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaHolder {
+public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaHolder, Serializable {
+
+    private static final long serialVersionUID = -6171783524157218760L;
 
     public enum LicenseTypeImageMode {
         DEFAULT,
@@ -48,7 +52,7 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
     @Enumerated(EnumType.STRING)
     @Column(name = "image_mode")
     private LicenseTypeImageMode imageMode = LicenseTypeImageMode.DEFAULT;
-    
+
     @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
 
@@ -69,6 +73,26 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
         this.language = language;
         this.tag = tag;
         this.owner = owner;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + Objects.hash(language);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LicenseTypePlaceholderInfo other = (LicenseTypePlaceholderInfo) obj;
+        return language == other.language;
     }
 
     /**
@@ -98,7 +122,6 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
     public void setImageMode(LicenseTypeImageMode imageMode) {
         this.imageMode = imageMode;
     }
-    
 
     @Override
     public CMSMediaItem getMediaItem() {
@@ -109,7 +132,6 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
     public void setMediaItem(CMSMediaItem item) {
         this.mediaItem = item;
     }
-
 
     @Override
     public String getMediaFilter() {
