@@ -108,17 +108,17 @@
                                                     <h:commandLink 
                                                         action="#{cmsBean.setSelectedMediaHolder(adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale))}" 
                                                         value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem() ? msg.cms_selectMedia : msg.cms_media_editFile}" 
-                                                        class="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem() ? 'btn btn--default' : ''}" 
+                                                        class="#{!adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem() ? 'btn btn--default' : ''}" 
                                                         role="button">
                                                         <f:ajax execute="@form" render="mediaSelectPanel" />
                                                     </h:commandLink>
                                                     <h:commandLink 
-                                                        rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).getMediaItem() != null}" 
+                                                        rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}" 
                                                         action="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).setMediaItem(null)}" 
                                                         value="#{msg.cms_selectMediaItem_deselect}" 
                                                         class="-redlink"
                                                         role="button">
-                                                        <f:ajax render="mediaGroup" />
+                                                        <f:ajax render="mediaGroup" /> 
                                                     </h:commandLink>                    
                                                 </div>
                                             </h:panelGroup> 
