@@ -68,15 +68,23 @@
 		margin-left: auto;
 		display: flex;
 
-		a {
-			display: inline-block;
-			width: 32px;
-			height: 32px;
+			a {
+			display: inline-grid;
+			place-items: center;
+			width: 30px;
+			height: 30px;
+			color: @black;
 
-			svg {
-				stroke: #666;
-				width: 32px;
-				height: 32px;
+			svg { display: none; }
+
+			&::before {
+				content: "";
+				display: block;
+				width: 30px;
+				height: 30px;
+				background-color: currentColor;
+				mask: url("../../icons/outline/logout.svg") center/100% 100% no-repeat;
+				-webkit-mask: url("../../icons/outline/logout.svg") center/100% 100% no-repeat;
 			}
 		}
 	}
