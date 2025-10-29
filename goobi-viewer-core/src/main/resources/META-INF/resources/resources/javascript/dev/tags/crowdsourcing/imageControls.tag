@@ -7,25 +7,41 @@
 			</a>
 		</div>
 		<!-- NEXT AND BACK -->
-		<div if="{this.opts.image}" class="image-controls__action -imageControlsFont back {this.opts.imageindex === 0 ? '-inactive' : ''}">
+		<div if="{this.opts.image}" class="image-controls__action back {this.opts.imageindex === 0 ? '-inactive' : ''}">
 			<a onclick="{previousItem}">
-				<i class="image-back"></i>
+				<span class="icon-wrapper image-controls__icon" aria-hidden="true">
+					<svg class="image-controls__icon-svg" focusable="false">
+						<use href="{iconHref('arrow-narrow-left')}"></use>
+					</svg>
+				</span>
 			</a>
 		</div>
-		<div if="{this.opts.image}" class="image-controls__action -imageControlsFont forward {this.opts.imageindex === this.opts.imagecount -1 ? '-inactive' : ''}">
+		<div if="{this.opts.image}" class="image-controls__action forward {this.opts.imageindex === this.opts.imagecount -1 ? '-inactive' : ''}">
 			<a onclick="{nextItem}">
-				<i class="image-forward"></i>
+				<span class="icon-wrapper image-controls__icon" aria-hidden="true">
+					<svg class="image-controls__icon-svg" focusable="false">
+						<use href="{iconHref('arrow-narrow-right')}"></use>
+					</svg>
+				</span>
 			</a>
 		</div>
 		<!-- ROTATE LEFT + RIGHT -->			
-		<div if="{this.opts.image}" class="image-controls__action -imageControlsFont rotate-left">
+		<div if="{this.opts.image}" class="image-controls__action rotate-left">
 			<a onclick="{rotateLeft}">
-				<i class="image-rotate_left"></i>
+				<span class="icon-wrapper image-controls__icon" aria-hidden="true">
+					<svg class="image-controls__icon-svg" focusable="false">
+						<use href="{iconHref('rotate-2')}"></use>
+					</svg>
+				</span>
 			</a>
 		</div>
-		<div if="{this.opts.image}" class="image-controls__action -imageControlsFont rotate-right">
+		<div if="{this.opts.image}" class="image-controls__action rotate-right">
 			<a onclick="{rotateRight}">
-				<i class="image-rotate_right"></i>
+				<span class="icon-wrapper image-controls__icon" aria-hidden="true">
+					<svg class="image-controls__icon-svg" focusable="false">
+						<use href="{iconHref('rotate-clockwise-2')}"></use>
+					</svg>
+				</span>
 			</a>
 		</div>
         <div if="{this.opts.image}" class="image-controls__action zoom-slider-wrapper">
@@ -36,6 +52,11 @@
 
 
 <script>
+    
+    this.iconHref = function(name) {
+        const base = window.currentPath || '';
+        return base + '/resources/icons/outline/' + name + '.svg#icon';
+    }.bind(this)
     
     rotateRight()
     {

@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
@@ -71,11 +73,11 @@
 																	<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__show_details}" />
 																	<h:panelGroup
 																		rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
-																		<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+																		<util:icon icon="square-rounded-plus" svgClass="icon icon-md"  />
 																	</h:panelGroup>
 																	<h:panelGroup
 																		rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
-																		<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+																		<util:icon icon="square-rounded-minus" svgClass="icon icon-md" />
 																	</h:panelGroup>
 																	<f:ajax render="collectionTreeGroup" />
 																</button>
@@ -109,12 +111,12 @@
 																<h:commandLink title="#{msg[browseDcElement.label]}">
 																	<h:panelGroup
 																		rendered="#{not browseDcElement.showDescription}">
-																		<i class="fa fa-angle-down" aria-hidden="true"></i>
+																		<util:icon icon="chevron-down" aria-hidden="true" />
 																	</h:panelGroup>
 
 																	<h:panelGroup
 																		rendered="#{browseDcElement.showDescription}">
-																		<i class="fa fa-angle-up" aria-hidden="true"></i>
+																		<util:icon icon="chevron-up" aria-hidden="true" />
 																	</h:panelGroup>
 
 																	<f:setPropertyActionListener

@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
@@ -30,7 +32,7 @@
 							src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 					</div>
 
-					<i class="widget__topbar-icon-collapsible fa fa-angle-down" aria-hidden="true"></i>
+					<util:icon icon="chevron-down" color="white" styleClass="icon-rot-on-open" />
 				</div>
 			</div>
 
@@ -201,8 +203,7 @@
 								data-toggle="tooltip" data-placement="top" data-trigger="hover"
 								target="_blank" rel="nofollow noopener"
 								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-								<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-								#{msg.label__pdf_download} (#{msg.label__pdf_download_small})
+								<util:icon-text icon="file" text="(#{msg.label__pdf_download} (#{msg.label__pdf_download_small}))"/>
 							</a>
 							<a
 								href="#{activeDocumentBean.viewManager.getPdfDownloadLink([['usePdfSource', 'false']])}"
@@ -212,8 +213,7 @@
 								data-toggle="tooltip" data-placement="top" data-trigger="hover"
 								target="_blank" rel="nofollow noopener"
 								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-								<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-								#{msg.label__pdf_download} (#{msg.label__pdf_download_full})
+								<util:icon-text icon="file" text="#{msg.downloadButton} (#{msg.label__pdf_download_full})"/>
 							</a>
 						</ui:fragment>
 						<ui:fragment visibility-class="widget-element"
@@ -225,8 +225,7 @@
 								data-placement="top" data-trigger="hover" target="_blank"
 								rel="nofollow noopener"
 								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-								<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-								#{msg.label__pdf_download}
+								<util:icon-text icon="file" text="#{msg.label__pdf_download} (#{msg.label__pdf_download_small})"/>
 							</a>
 						</ui:fragment>
 
@@ -239,8 +238,7 @@
 								title="#{msg.label__pdf_download_record}" data-toggle="tooltip"
 								data-placement="top" data-trigger="hover"
 								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-								<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-								#{msg.label__pdf_download}
+								<util:icon-text icon="file" text="#{msg.label__pdf_download}"/>
 							</a>
 						</ui:fragment>
 
@@ -251,13 +249,12 @@
 						rendered="#{activeDocumentBean.viewManager.externalDownloadUrl != null}">
 						<a href="#{activeDocumentBean.viewManager.externalDownloadUrl}"
 							id="externalDownloadWork"
-							class="badge badge-dark widget-format-links__work-download-external"
+							class="badge badge-dark widget-downloads__work-download-pdf"
 							title="#{msg.downloadWorkExternal}" data-toggle="tooltip"
 							data-placement="top" data-trigger="hover" target="_blank"
 							rel="nofollow noopener"
 							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadWorkExternal}">
-							<i class="fa fa-download" aria-hidden="true"></i>
-							#{msg.downloadWorkExternal}
+							<util:icon-text icon="download" text="#{msg.downloadWorkExternal}"/>
 						</a>
 					</ui:fragment>
 
@@ -337,9 +334,8 @@
 							title="#{msg.label__pdf_download_image}" data-toggle="tooltip"
 							data-placement="top" data-trigger="hover" target="_blank"
 							rel="nofollow noopener"
-							aria-label="#{msg.image}: #{msg.label__pdf_download}"> <i
-							class="fa fa-file-pdf-o" aria-hidden="true"></i>
-							#{msg.label__pdf_download}
+							aria-label="#{msg.image}: #{msg.label__pdf_download}"> 
+							<util:icon-text icon="file" text="#{msg.label__pdf_download}"/>
 						</a>
 					</ui:fragment>
 
@@ -532,8 +528,7 @@
 									data-toggle="tooltip" data-placement="bottom"
 									data-trigger="hover" rel="nofollow noopener"
 									aria-label="#{msg.image}: #{msg.label__pdf_download}">
-									<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-									#{msg.downloadButton}
+									<util:icon-text icon="file" text="#{msg.downloadButton}"/>
 								</button>
 							</h:form>
 

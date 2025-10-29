@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -42,7 +44,7 @@
 							<img
 								src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 						</div>
-						<i class="widget__topbar-icon-collapsible fa fa-angle-down" aria-hidden="true"></i>
+						<util:icon icon="chevron-down" color="white" styleClass="icon-rot-on-open" />
 					</div>
 				</div>
 
@@ -83,8 +85,9 @@
 												<ui:fragment rendered="#{val.accessRestricted}">
 													<span class="metadata__locked-value-icon"
 														data-toggle="tooltip"
-														title="#{msg.metadata__restricted_value_tooltip}"><i
-														class="fa fa-unlock" /></span>
+														title="#{msg.metadata__restricted_value_tooltip}">
+														<util:icon icon="lock-open-2" />
+													</span>
 												</ui:fragment>
 												<h:outputFormat
 													value="#{val.getDisplayValue(navigationHelper.locale, true)}"
@@ -129,8 +132,9 @@
 												<ui:fragment rendered="#{val.accessRestricted}">
 													<span class="metadata__locked-value-icon"
 														data-toggle="tooltip"
-														title="#{msg.metadata__restricted_value_tooltip}"><i
-														class="fa fa-unlock" /></span>
+														title="#{msg.metadata__restricted_value_tooltip}">
+														<util:icon icon="lock-open-2" />
+													</span>
 												</ui:fragment>
 												<h:outputText value="#{val.getComboValueShort(ind0)}"
 													escape="false" />

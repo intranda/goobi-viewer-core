@@ -105,8 +105,12 @@
 		position: relative;
 		display: flex;
 		[data-toggle="local"] {
-			.fa {
-				padding-right: .5rem;
+			display: inline-flex;
+			align-items: center;
+			gap: .5rem;
+			color: inherit;
+			.icon {
+				padding-top: 20px;
 			}
 		}
 		.change-local {
@@ -278,23 +282,22 @@
 									z-index: 10;
 								}
 								&:after {
-									content: '\f023';
-									font: normal normal normal 13px/1 FontAwesome;
+									content: "";
 									position: absolute;
 									color: #444;
-									padding: 0px;
-									height: 50px;
-									width: 50px;
+				height: 60px;
+				width: 60px;
 									display: flex;
 									opacity: 0;
 									align-items: center;
 									justify-content: center;
-									font-size: 13px;
 									top: 50%;
 									left: 50%;
 									transform: translateY(-50%) translateX(-50%);
-									font-size: 4rem;
 									transition: opacity 0.2s ease;
+				background-color: currentColor;
+				mask: url("../../icons/outline/lock.svg") center/100% 100% no-repeat;
+				-webkit-mask: url("../../icons/outline/lock.svg") center/100% 100% no-repeat;
 								}
 								&:hover {
 									&:after {
@@ -333,26 +336,23 @@
 									z-index: 10;
 								}
 								&:after {
-									content: "\f00c";
-									font: normal normal normal 13px/1 FontAwesome;
+									content: "";
 									position: absolute;
-									top: 6px;
-									left: 6px;
+									top: 50%;
+									left: 50%;
 									color: #444;
-									padding: 0px;
-									height: 50px;
-									width: 50px;
+				height: 60px;
+				width: 60px;
 									display: flex;
 									opacity: 0;
 									align-items: center;
 									justify-content: center;
-									font-size: 13px;
-									top: 50%;
-									left: 50%;
 									transform: translateY(-50%) translateX(-50%);
-									font-size: 4rem;
 									transition: opacity 0.2s ease;
 									z-index: 10;
+									background-color: currentColor;
+									mask: url("../../icons/outline/check.svg") center/100% 100% no-repeat;
+									-webkit-mask: url("../../icons/outline/check.svg") center/100% 100% no-repeat;
 								}
 								&:hover {
 									&:after {
@@ -402,24 +402,17 @@
 			}
 			.thumbnails-filter-finished {
 				&::before {
-//					content: "\f00c";
 				}
 			}
 			.thumbnails-filter-unfinished {
 				&::before {
-//					content: "\f10c";
 				}
 			}
 			.thumbnails-filter-reset {
 				&::before {
-//					content: "\f111";
 				}
 			}
 			.thumbnails-filter-annotated {
-//				display: none;
-//				&::before {
-//					content: "\f03a";
-//				}
 			}
 			.image_thumbnails  {
 				display: grid;
@@ -448,7 +441,6 @@
 						&:before {
 						}
 						&:after {
-//							content: "\f03a";
 //							font: normal normal normal 13px/1 FontAwesome;
 //							position: absolute;
 //							background: #fff;
@@ -488,23 +480,22 @@
 							z-index: 10;
 						}
 						&:after {
-							content: '\f023';
-							font: normal normal normal 13px/1 FontAwesome;
+							content: "";
 							position: absolute;
 							color: #444;
-							padding: 0px;
-							height: 50px;
-							width: 50px;
+				height: 60px;
+				width: 60px;
 							display: flex;
 							opacity: 0;
 							align-items: center;
 							justify-content: center;
-							font-size: 13px;
 							top: 50%;
 							left: 50%;
 							transform: translateY(-50%) translateX(-50%);
-							font-size: 4rem;
 							transition: opacity 0.2s ease;
+							background-color: currentColor;
+							mask: url("../../icons/outline/lock.svg") center/100% 100% no-repeat;
+							-webkit-mask: url("../../icons/outline/lock.svg") center/100% 100% no-repeat;
 						}
 						&:hover {
 							&:after {
@@ -531,26 +522,23 @@
 							z-index: 10;
 						}
 						&:after {
-							content: '\f085';
-							font: normal normal normal 13px/1 FontAwesome;
+							content: "";
 							position: absolute;
-							top: 6px;
-							left: 6px;
+							top: 50%;
+							left: 50%;
 							color: #444;
-							padding: 0px;
-							height: 50px;
-							width: 50px;
+				height: 60px;
+				width: 60px;
 							display: flex;
 							opacity: 0;
 							align-items: center;
 							justify-content: center;
-							font-size: 13px;
-							top: 50%;
-							left: 50%;
 							transform: translateY(-50%) translateX(-50%);
-							font-size: 4rem;
 							transition: opacity 0.2s ease;
 							z-index: 10;
+							background-color: currentColor;
+							mask: url("../../icons/outline/settings.svg") center/100% 100% no-repeat;
+							-webkit-mask: url("../../icons/outline/settings.svg") center/100% 100% no-repeat;
 						}
 						&:hover {
 							&:after {
@@ -576,26 +564,23 @@
 							z-index: 10;
 						}
 						&:after {
-							content: "\f00c";
-							font: normal normal normal 13px/1 FontAwesome;
+							content: "";
 							position: absolute;
-							top: 6px;
-							left: 6px;
+							top: 50%;
+							left: 50%;
 							color: #444;
-							padding: 0px;
-							height: 50px;
-							width: 50px;
+			height: 60px;
+			width: 60px;
 							display: flex;
 							opacity: 0;
 							align-items: center;
 							justify-content: center;
-							font-size: 13px;
-							top: 50%;
-							left: 50%;
 							transform: translateY(-50%) translateX(-50%);
-							font-size: 4rem;
 							transition: opacity 0.2s ease;
 							z-index: 10;
+							background-color: currentColor;
+							mask: url("../../icons/outline/check.svg") center/100% 100% no-repeat;
+							-webkit-mask: url("../../icons/outline/check.svg") center/100% 100% no-repeat;
 						}
 						&:hover {
 							&:after {
@@ -1147,4 +1132,3 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}
-

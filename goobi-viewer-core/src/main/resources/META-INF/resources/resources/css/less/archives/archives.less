@@ -259,6 +259,19 @@
 				opacity: 1;
 			}
 		}
+
+		&.-disabled {
+			cursor: default;
+			pointer-events: none;
+
+			.archives__object-image-overlay {
+				opacity: 0.2;
+			}
+
+			.archives__object-image-hover-text {
+				opacity: 0;
+			}
+		}
 	}
 
 	&__object-image-overlay {
@@ -274,13 +287,19 @@
 		position: absolute;
 		right: 20px;
 		bottom: 20px;
-		font-size: 3.2rem;
 		transform: translate(0%, 0%);
 		transition: all 0.3s ease;
 		color: @white;
 
-		.fa {
+		.icon-wrapper {
 			display: block;
+			line-height: 0;
+		}
+
+		.icon-wrapper > svg {
+			width: 3.2rem;
+			height: 3.2rem;
+			color: inherit;
 		}
 	}
 
@@ -519,7 +538,14 @@
 			&.-active {
 				.fa {
 					&:before {
-						content: "\f00d";
+						content: "";
+						display: inline-block;
+						width: 1em;
+						height: 1em;
+						vertical-align: middle;
+						background-color: currentColor;
+						mask: url("../../icons/outline/x.svg") center/100% 100% no-repeat;
+						-webkit-mask: url("../../icons/outline/x.svg") center/100% 100% no-repeat;
 					}
 				}
 			}
