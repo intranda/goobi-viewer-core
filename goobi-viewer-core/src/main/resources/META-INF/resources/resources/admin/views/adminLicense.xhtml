@@ -96,7 +96,8 @@
                                                 <div class="admin__cms-edit-collection-image-thumbnail">
                                                     <ui:fragment
                                                         rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
-                                                        <img src="#{adminLicenseBean.currentLicenseType.iconURI}" class="img-fluid" alt="" />
+                                                        <img class="img-fluid" alt=""
+                                                            src="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).mediaThumbnailURI}" />
                                                     </ui:fragment>
                                                     <ui:fragment
                                                         rendered="#{!adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">

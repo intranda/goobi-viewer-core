@@ -1,8 +1,10 @@
 package io.goobi.viewer.model.security;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
 
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -95,6 +97,10 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
         return language == other.language;
     }
 
+    public URI getMediaThumbnailURI() {
+        return Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI()).orElse(null);
+    }
+
     /**
      * @return the owner
      */
@@ -113,6 +119,9 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
      * @return the imageMode
      */
     public LicenseTypeImageMode getImageMode() {
+        if (imageMode == null) {
+            imageMode = LicenseTypeImageMode.DEFAULT;
+        }
         return imageMode;
     }
 
