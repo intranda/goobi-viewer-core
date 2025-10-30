@@ -258,14 +258,16 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
 
     @Override
     public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedThumbnailUrl: locale: {}, LOGID: {}", locale, logId);
         if (accessPermissionThumbnail != null) {
             LicenseTypePlaceholderInfo placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
             if (placeholderInfo != null && placeholderInfo.getMediaItem() != null) {
+                logger.trace("returning custom image: {}", placeholderInfo.getMediaThumbnailURI());
                 return placeholderInfo.getMediaThumbnailURI().toString();
             }
         }
 
-        return ViewerResourceBundle.getTranslation("noImage_fileNotFound", locale);
+        return null;
     }
 
     /**

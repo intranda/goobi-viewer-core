@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -454,6 +453,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     @Override
     public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedThumbnailUrl: locale: {}, page: {}", locale, order);
         if (accessPermissionThumbnail == null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             accessPermissionThumbnail = AccessConditionUtils
@@ -463,11 +463,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         if (accessPermissionThumbnail != null) {
             LicenseTypePlaceholderInfo placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
             if (placeholderInfo != null && placeholderInfo.getMediaItem() != null) {
+                logger.trace("returning custom image: {}", placeholderInfo.getMediaThumbnailURI());
                 return placeholderInfo.getMediaThumbnailURI().toString();
             }
         }
 
-        return ViewerResourceBundle.getTranslation("noImage_fileNotFound", locale);
+        return null;
     }
 
     /**
