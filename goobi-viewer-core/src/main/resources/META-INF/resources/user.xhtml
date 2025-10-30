@@ -68,13 +68,13 @@
 		<facelet:userAvatar user="#{userBean.user.copy}" />
 		
 		<!-- CROWDSOURCING USER SETTINGS (E-MAIL NOTIFICATIONS) -->
-		<div class="user-settings__crowdsourcing-box">
 			<c:forEach var="module" items="#{configurationBean.modules}">
-			    <c:forEach var="contribution" items="#{module.getWidgets('userSettings')}">
-			        <ui:include src="/#{contribution}" />
-			    </c:forEach>
+				<div class="user-settings__crowdsourcing-box">
+			    	<c:forEach var="contribution" items="#{module.getWidgets('userSettings')}">
+			        	<ui:include src="/#{contribution}" />
+			    	</c:forEach>
+				</div>
 			</c:forEach>
-		</div>
 		
 	</ui:define>
 

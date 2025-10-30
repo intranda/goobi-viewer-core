@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -55,7 +57,7 @@
 	
 	                                <!-- CLOSE -->
 	                                <h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
-	                                    <i class="fa fa-minus-square-o" aria-hidden="true"></i>
+										<util:icon icon="square-rounded-minus" svgClass="icon icon-lg" />
 	                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
 										<f:passThroughAttribute name="data-placement" value="top" />
 										<f:passThroughAttribute name="aria-label" value="#{msg.allClose}"/>
@@ -64,7 +66,7 @@
 	                                </h:commandLink>
 	                                <!-- OPEN -->
 	                                <h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
-	                                    <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+										<util:icon icon="square-rounded-plus" svgClass="icon icon-lg" />
 	                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
 										<f:passThroughAttribute name="data-placement" value="top" />
 										<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}"/>
@@ -89,13 +91,13 @@
     												<ui:fragment rendered="#{tocElement.hasChild == true}">
     													<div class="widget-toc__element-expand">
     														<h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{tocElement.visible and !tocElement.expanded}">
-																<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+																<util:icon icon="square-rounded-plus" svgClass="icon icon-lg" />
 																<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}"/>
 																<f:passThroughAttribute name="role" value="button"/>
 																<f:ajax render="@form" />
     														</h:commandLink>
     														<h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.visible and tocElement.expanded}">
-																<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+																<util:icon icon="square-rounded-minus" svgClass="icon icon-lg" />
 																<f:passThroughAttribute name="aria-label" value="#{msg.allClose}"/>
 																<f:passThroughAttribute name="role" value="button"/>
     															<f:ajax render="@form" />

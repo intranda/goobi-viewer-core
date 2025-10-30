@@ -141,9 +141,8 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
             inverseJoinColumns = @JoinColumn(name = "overriding_license_type_id"))
     private Set<LicenseType> overriddenLicenseTypes = new HashSet<>();
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
     @PrivateOwned
-    @JsonSerialize(using = TranslationListSerializer.class)
     private Set<LicenseTypePlaceholderInfo> imagePlaceholders = new HashSet<>();
 
     @Transient
@@ -166,7 +165,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private boolean displayRecordSearchLink = true;
 
     @Transient
-    private Locale selectedLocale = BeanUtils.getLocale();
+    private Locale selectedLocale; // Do not init with BeanUtils.getLocale() here!
 
     /**
      * Empty constructor.
@@ -1093,6 +1092,9 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     @Override
     public Locale getSelectedLocale() {
+        if (this.selectedLocale == null) {
+            this.selectedLocale = BeanUtils.getLocale();
+        }
         return this.selectedLocale;
     }
 

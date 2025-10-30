@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -54,7 +56,10 @@
 									<button
 										jsf:action="#{adminDeveloperBean.downloadDeveloperArchive()}"
 										class="btn btn--full admin__developer-download-button">
-										<i class="fa fa-download" aria-hidden="true"></i> <span>#{msg.downloadButton}</span>
+										<util:icon-text 
+											icon="download"
+											iconSvgClass="icon icon-xxl"
+											text="#{msg.downloadButton}" />
 									</button>
 									<!-- START: zip archive progress monitor -->
 									<span class="admin__developer_download_archive__loader"
@@ -95,7 +100,7 @@
 										title="#{msg.copy_to_clipboard}"
 										data-copy-done-msg="#{msg.copied_to_clipboard}"
 										data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__unzip_file_code, navigationHelper.theme)}">
-										<i class="fa fa-clipboard" aria-hidden="true"></i>
+										<util:icon icon="clipboard-copy" svgClass="icon icon-xxl" />
 									</div>
 									<code data-target="sqlCode"><h:outputFormat value="#{msg.admin__developer__unzip_file_code}" escape="false"> <f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
 
@@ -119,7 +124,7 @@
 									title="#{msg.copy_to_clipboard}"
 									data-copy-done-msg="#{msg.copied_to_clipboard}"
 									data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__sql_commands, navigationHelper.theme)}">
-									<i class="fa fa-clipboard" aria-hidden="true"></i>
+									<util:icon icon="clipboard-copy" svgClass="icon icon-xxl" />
 								</div>
 								<code data-target="code"><h:outputFormat value="#{msg.admin__developer__sql_commands}" escape="false"><f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
 
@@ -138,7 +143,7 @@
 									title="#{msg.copy_to_clipboard}"
 									data-copy-done-msg="#{msg.copied_to_clipboard}"
 									data-copy-value="#{msg.admin__developer__local_messages_config_code}">
-									<i class="fa fa-clipboard" aria-hidden="true"></i>
+									<util:icon icon="clipboard-copy" svgClass="icon icon-xxl" />
 								</div>
 								<code data-target="code"><h:outputFormat value="#{msg.admin__developer__local_messages_config_code}" escape="false"> <f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
 

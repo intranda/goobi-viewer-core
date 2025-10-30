@@ -38,17 +38,8 @@ var viewerJS = ( function ( viewer ) {
     		
     		// off canvas
             $( '[data-toggle="offcanvas"]' ).on( 'click', function() {
-                var icon = $( this ).children( '.fa' );
-                
                 $( '.row-offcanvas' ).toggleClass( 'active' );
                 $( this ).toggleClass( 'in' );
-                
-                if ( icon.hasClass( 'fa-ellipsis-v' ) ) {
-                    icon.removeClass( 'fa-ellipsis-v' ).addClass( 'fa-ellipsis-h' );
-                }
-                else {
-                    icon.removeClass( 'fa-ellipsis-h' ).addClass( 'fa-ellipsis-v' );
-                }
             } );
             
             // toggle mobile navigation

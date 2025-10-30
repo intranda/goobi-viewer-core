@@ -31,41 +31,67 @@
 		margin-bottom: 2rem;
 	}
 	/* OPTIONS */
-	&__options-container {
-		width: 100%;
-		display: flex;
-		justify-content: flex-end;
-		flex-wrap: wrap;
-		margin-bottom: 15px;
-	}
-	&__options-container-heading {
-		margin-right: auto;
-		margin-bottom: 15px;
-	}
-	&__options {
-		display: flex;
-		align-items: center;
-		font-size: @fontMedium;
-		a,
-		button {
-			display: inline-block;
-			padding: 3px;
-			font-size: @fontNormal;
-			color: @black;
-			&:hover,
-			&:focus,
-			&:active,
-			&.active {
-				color: @blue;
+		&__options-container {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			column-gap: 4px;
+			row-gap: 4px;
+			flex-wrap: wrap;
+			margin-bottom: 14px;
+		}
+		&__options-container-heading {
+			margin: 0;
+			flex: 0 0 auto;
+		}
+				&__options {
+					display: flex;
+					align-items: center;
+					flex-wrap: wrap;
+					column-gap: 4px;
+					row-gap: 2px;
+					margin-left: auto;
+					font-size: @fontMedium;
+					color: inherit;
+					--search-divider-color: var(--gv-search-divider-color, rgba(31, 41, 55, 0.28));
+					--search-option-button-size: 30px;
+					--search-option-icon-size: 18px;
+					--search-option-border-radius: var(--gv-search-option-border-radius, var(--border-radius, 0));
+					--search-option-icon-color: var(--gv-search-option-icon-color, var(--fg-general, #1f2933));
+					--search-option-color: var(--gv-search-option-color, var(--fg-general, #1f2933));
+					--search-option-bg-active: var(--gv-search-option-bg-active, var(--ci-color1, #015999));
+					--search-option-color-active: var(--gv-search-option-color-active, #ffffff);
+					--search-option-shadow-active: var(--gv-search-option-shadow-active, none);
+					--search-option-outline: var(--gv-search-option-outline, var(--outline-color, #035999));
+
+				> * {
+					position: relative;
+					display: inline-flex;
+					align-items: center;
+				gap: 4px;
+				min-height: 22px;
+				color: inherit;
+			}
+
+			> * + * {
+				padding-left: 4px;
+				border-left: 1px solid var(--search-divider-color);
+			}
+
+					a,
+					button {
+						padding: 0;
+						color: var(--search-option-color);
+						line-height: 0;
+					}
+
+				form {
+					display: inline-flex;
+				align-items: center;
+				gap: 4px;
 			}
 		}
-		form {
-			display: inline-block;
-		}
-	}
-	&__help {
-		padding-left: 5px;
-	}
 	&__geomap {
 		height: 200px;
 		margin-bottom: 21px;
@@ -78,62 +104,181 @@
 	&__rss,
 	&__save-search,
 	&__excel-export,
-	&__views {
+	&__ris-export,
+	&__toggle-thumbs,
+	&__views,
+	&__help {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
 	}
 	&__hitcount {
-		padding-right: 5px;
-	}
-	&__rss {
-		padding-left: 5px;
-		border-left: 1px solid @middlegray;
+		white-space: nowrap;
 	}
 	&__save-search {
-		padding-left: 4px;
-	}
-	&__excel-export {
-		a {
-		}
-		.excel-export-loader {
-			padding-right: 5px;
-			display: none;
-			padding-left: 5px;
-			img {
-				width: 14px;
-				margin-top: -4px;
-			}
+		> span {
+			display: inline-flex;
+			align-items: center;
 		}
 	}
+	&__excel-export,
 	&__ris-export {
-		padding-right: 5px;
+		.excel-export-loader,
 		.ris-export-loader {
 			display: none;
-			padding-left: 5px;
+			font-size: @fontSmall;
+			color: @middlegray;
+			gap: 3px;
+			align-items: center;
 			img {
 				width: 14px;
-				margin-top: -4px;
+				height: 14px;
+				margin: 0;
 			}
 		}
-	} 
-	&__toggle-thumbs {
-		padding: 0 5px;
-		border-left: 1px solid @middlegray;
-		.-active {
-			color: @blue;
-		}
 	}
-	&__views {
-		padding-left: 5px;
-		border-left: 1px solid @middlegray;
-		padding-right: 5px;
-		border-right: 1px solid @middlegray;
-		button {
-		}
-		[data-view="search-list-default"] {
-		}
-		[data-view="search-list-grid"] {
-		}
-		[data-view="search-list-list"] {
-		}
+	&__toggle-thumbs {
+		position: relative;
+	}
+	/* ICON BUTTON STRIP */
+	&__views .btn.btn--icon,
+	&__toggle-thumbs .btn.btn--icon,
+	&__excel-export .btn.btn--icon,
+	&__ris-export .btn.btn--icon,
+	&__rss .btn.btn--icon,
+	&__save-search .btn.btn--icon,
+	&__help .btn.btn--icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: var(--search-option-button-size);
+		height: var(--search-option-button-size);
+		min-width: var(--search-option-button-size);
+		border-radius: var(--search-option-border-radius);
+		line-height: 1;
+		color: var(--search-option-icon-color);
+		background-color: transparent;
+		border: none;
+		box-shadow: none;
+		transition: transform .18s ease, filter .18s ease, color .18s ease;
+	}
+
+	&__views .btn.btn--icon .icon-wrapper,
+	&__toggle-thumbs .btn.btn--icon .icon-wrapper,
+	&__excel-export .btn.btn--icon .icon-wrapper,
+	&__ris-export .btn.btn--icon .icon-wrapper,
+	&__rss .btn.btn--icon .icon-wrapper,
+	&__save-search .btn.btn--icon .icon-wrapper,
+	&__help .btn.btn--icon .icon-wrapper {
+		line-height: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: var(--search-option-icon-size);
+		height: var(--search-option-icon-size);
+		transition: transform .18s ease, filter .18s ease;
+	}
+
+	&__views .btn.btn--icon .icon-wrapper svg,
+	&__toggle-thumbs .btn.btn--icon .icon-wrapper svg,
+	&__excel-export .btn.btn--icon .icon-wrapper svg,
+	&__ris-export .btn.btn--icon .icon-wrapper svg,
+	&__rss .btn.btn--icon .icon-wrapper svg,
+	&__save-search .btn.btn--icon .icon-wrapper svg,
+	&__help .btn.btn--icon .icon-wrapper svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		stroke-width: 1.6;
+		transition: transform .18s ease;
+	}
+
+	&__views .btn.btn--icon:hover,
+	&__views .btn.btn--icon:focus,
+	&__toggle-thumbs .btn.btn--icon:hover,
+	&__toggle-thumbs .btn.btn--icon:focus,
+	&__excel-export .btn.btn--icon:hover,
+	&__excel-export .btn.btn--icon:focus,
+	&__ris-export .btn.btn--icon:hover,
+	&__ris-export .btn.btn--icon:focus,
+	&__rss .btn.btn--icon:hover,
+	&__rss .btn.btn--icon:focus,
+	&__save-search .btn.btn--icon:hover,
+	&__save-search .btn.btn--icon:focus,
+	&__help .btn.btn--icon:hover,
+	&__help .btn.btn--icon:focus {
+		color: var(--search-option-color);
+	}
+
+	&__views .btn.btn--icon:hover .icon-wrapper,
+	&__views .btn.btn--icon:focus .icon-wrapper,
+	&__toggle-thumbs .btn.btn--icon:hover .icon-wrapper,
+	&__toggle-thumbs .btn.btn--icon:focus .icon-wrapper,
+	&__excel-export .btn.btn--icon:hover .icon-wrapper,
+	&__excel-export .btn.btn--icon:focus .icon-wrapper,
+	&__ris-export .btn.btn--icon:hover .icon-wrapper,
+	&__ris-export .btn.btn--icon:focus .icon-wrapper,
+	&__rss .btn.btn--icon:hover .icon-wrapper,
+	&__rss .btn.btn--icon:focus .icon-wrapper,
+	&__save-search .btn.btn--icon:hover .icon-wrapper,
+	&__save-search .btn.btn--icon:focus .icon-wrapper,
+	&__help .btn.btn--icon:hover .icon-wrapper,
+	&__help .btn.btn--icon:focus .icon-wrapper {
+		transform: scale(1.08) translateY(-1px);
+		filter: drop-shadow(0 3px 8px fade(@black, 18%));
+	}
+
+	&__views .btn.btn--icon.active,
+	&__toggle-thumbs .btn.btn--icon.-active,
+	&__help .btn.btn--icon.is-modal-trigger-open,
+	&__save-search .btn.btn--icon.is-modal-trigger-open {
+		background-color: var(--search-option-bg-active);
+		color: var(--search-option-color-active);
+		box-shadow: var(--search-option-shadow-active, none);
+		transform: none;
+	}
+
+	&__views .btn.btn--icon.active .icon-wrapper svg,
+	&__toggle-thumbs .btn.btn--icon.-active .icon-wrapper svg,
+	&__help .btn.btn--icon.is-modal-trigger-open .icon-wrapper svg,
+	&__save-search .btn.btn--icon.is-modal-trigger-open .icon-wrapper svg {
+		stroke: currentColor;
+	}
+	&__views .btn.btn--icon.active .icon-wrapper,
+	&__toggle-thumbs .btn.btn--icon.-active .icon-wrapper,
+	&__help .btn.btn--icon.is-modal-trigger-open .icon-wrapper,
+	&__save-search .btn.btn--icon.is-modal-trigger-open .icon-wrapper {
+		transform: none;
+		filter: none;
+	}
+
+	&__views .btn.btn--icon.active:hover,
+	&__views .btn.btn--icon.active:focus,
+	&__toggle-thumbs .btn.btn--icon.-active:hover,
+	&__toggle-thumbs .btn.btn--icon.-active:focus,
+	&__help .btn.btn--icon.is-modal-trigger-open:hover,
+	&__help .btn.btn--icon.is-modal-trigger-open:focus,
+	&__save-search .btn.btn--icon.is-modal-trigger-open:hover,
+	&__save-search .btn.btn--icon.is-modal-trigger-open:focus {
+		background-color: var(--search-option-bg-active);
+		color: var(--search-option-color-active);
+	}
+
+	&__views .btn.btn--icon:focus-visible,
+	&__toggle-thumbs .btn.btn--icon:focus-visible,
+	&__excel-export .btn.btn--icon:focus-visible,
+	&__ris-export .btn.btn--icon:focus-visible,
+	&__rss .btn.btn--icon:focus-visible,
+	&__save-search .btn.btn--icon:focus-visible,
+	&__help .btn.btn--icon:focus-visible {
+		outline: 2px solid var(--search-option-outline);
+		outline-offset: 2px;
+	}
+
+	&__help span[data-toggle="tooltip"],
+	&__save-search span[data-toggle="tooltip"] {
+		display: inline-flex;
+		align-items: center;
 	}
 	/* CURRENT SEARCH */
 	&__label {
@@ -364,28 +509,18 @@
 				display: flex;
 			}
 			// position: absolute;
-			font-size: @fontLarge;
 			color: @blue;
 			background-image: none;
-			.fa-bookmark-o,
-			.fa-bookmark {
-				color: @blue;
+			.bookmark-toggle {
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				height: 100%;
 			}
-			.fa-bookmark-o {
-				display: inline-block;
-			}
-			.fa-bookmark {
-				display: none;
-			}
-			&.added,
-			&:hover {
-				.fa-bookmark-o {
-					display: none;
-				}
-				.fa-bookmark {
-					display: inline-block;
-				}
-			}
+		.bookmark-toggle__icon {
+			width: 2.2rem;
+			height: 2.2rem;
+		}
 		}
 	}
 	&__hit-thumbnail {
@@ -409,31 +544,21 @@
 		}
 		[data-bookmark-list-type="add"] {
 			position: absolute;
-			top: 0;
+			top: 8px;
 			right: 5px;
-			font-size: @fontLarge;
 			color: @blue;
 			background-image: none;
 			z-index: 10;
-			.fa-bookmark-o,
-			.fa-bookmark {
-				color: @blue;
+			.bookmark-toggle {
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				height: 100%;
 			}
-			.fa-bookmark-o {
-				display: inline-block;
-			}
-			.fa-bookmark {
-				display: none;
-			}
-			&.added,
-			&:hover {
-				.fa-bookmark-o {
-					display: none;
-				}
-				.fa-bookmark {
-					display: inline-block;
-				}
-			}
+		.bookmark-toggle__icon {
+			width: 2.2rem;
+			height: 2.2rem;
+		}
 		}
 	}
 	&__hit-information {
@@ -640,7 +765,6 @@
 	
 }
 
-
 /* STACKED MULTIVOLUME THUMBNAIL */
 .stacked-thumbnail-before,
 .stacked-thumbnail-after {
@@ -716,6 +840,20 @@
 
 .stacked-thumbnail a img {
 	display: block;
+}
+
+
+.mx-theme-dark .search-list__options,
+.color-theme-dark .search-list__options {
+	--search-divider-color: var(--gv-search-divider-color-dark, rgba(255, 255, 255, 0.2));
+	--search-option-border-radius: var(--gv-search-option-border-radius-dark, var(--border-radius, 0));
+	--search-option-icon-color: var(--gv-search-option-icon-color-dark, rgba(243, 244, 246, 0.92));
+	--search-option-color: var(--gv-search-option-color-dark, rgba(243, 244, 246, 0.92));
+	// Unused bg/border vars omitted in dark mode as well
+	--search-option-bg-active: var(--gv-search-option-bg-active-dark, var(--ci-color1, #49a5ff));
+	--search-option-color-active: var(--gv-search-option-color-active-dark, #ffffff);
+	--search-option-shadow-active: var(--gv-search-option-shadow-active-dark, none);
+	--search-option-outline: var(--gv-search-option-outline-dark, var(--outline-color, #49a5ff));
 }
 
 @{RTL} .search-list {

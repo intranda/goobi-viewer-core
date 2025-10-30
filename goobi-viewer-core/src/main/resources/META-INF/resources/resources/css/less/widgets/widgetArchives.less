@@ -7,12 +7,14 @@
 		&__entry {
 			text-align: center;
 			&:after {
-				font: normal normal normal 14px/1 FontAwesome;
-				content: "\f107";
-				font-size: 1.4rem;
-				display: inline-block;
-				width: 100%;
-				text-align: center;
+				content: "";
+				display: block;
+				width: 1.8rem;
+				height: 1.8rem;
+				margin: 0 auto;
+				background-color: currentColor;
+				mask: url("../../icons/outline/chevron-down.svg") center/100% 100% no-repeat;
+				-webkit-mask: url("../../icons/outline/chevron-down.svg") center/100% 100% no-repeat;
 			}
 			&:nth-last-child(2) {
 				&::after {
@@ -36,14 +38,31 @@
 			color: inherit;
 			border: none;
 			background: transparent;
+			transition: color 0.2s ease;
+			.icon-wrapper {
+				transition: transform 0.2s ease, color 0.2s ease;
+			}
 			&.-disabled {
 				opacity: 0.5;
 				cursor: default;
+				pointer-events: none;
+				.icon-wrapper {
+					transform: none;
+				}
 			}
-			&:hover,
-			&:active,
-			&:focus {
-				color: inherit;
+			&:hover:not(.-disabled),
+			&:focus-visible:not(.-disabled) {
+				color: @hoverblue;
+				outline: none;
+				.icon-wrapper {
+					transform: scale(1.08);
+				}
+			}
+			&:active:not(.-disabled) {
+				color: @activeblue;
+				.icon-wrapper {
+					transform: scale(0.94);
+				}
 			}
 		}
 		&__prev {
