@@ -79,7 +79,7 @@
                                                         <f:ajax render="imageModeGroup" />
                                                     </h:selectOneRadio>
                                                 </div>
-                                                <div class="connected-middle">
+                                                <div class="connected-bottom">
                                                     <h:selectOneRadio group="imageModeRadio" immediate="true"
                                                         value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode}">
                                                         <f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__license_image_mode_custom}" />
@@ -141,7 +141,7 @@
                                                 <label for="placeholderDesc">#{msg.description}:</label>
                                             </div>
                                             <div class="col-9 admin__form-input cms-module__option-control">
-                                                <h:inputTextarea id="placeholderDescDesc" styleClass="form-control"
+                                                <h:inputTextarea id="placeholderDescDesc" styleClass="form-control tinyMCE"
                                                     value="#{adminLicenseBean.currentLicenseType.getPlaceholderDescription(adminLicenseBean.currentLicenseType.selectedLocale).translationValue}">
                                                     <f:passThroughAttribute name="aria-label"
                                                         value="#{msg.description}" />
