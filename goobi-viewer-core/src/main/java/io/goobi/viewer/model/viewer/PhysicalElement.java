@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,6 +81,7 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.LicenseTypePlaceholderInfo;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
 import io.goobi.viewer.model.viewer.record.views.FileType;
@@ -457,11 +459,15 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             accessPermissionThumbnail = AccessConditionUtils
                     .checkAccessPermissionForThumbnail(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request));
         }
-        if (accessPermissionThumbnail == null || accessPermissionThumbnail.isGranted()) {
-            return ViewerResourceBundle.getTranslation("noImage_fileNotFound", locale);
+        
+        if (accessPermissionThumbnail != null) {
+            LicenseTypePlaceholderInfo placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && placeholderInfo.getMediaItem() != null) {
+                return placeholderInfo.getMediaThumbnailURI().toString();
+            }
         }
 
-        return accessPermissionThumbnail.getAccessDeniedImageUriMap().get(locale.getLanguage());
+        return ViewerResourceBundle.getTranslation("noImage_fileNotFound", locale);
     }
 
     /**

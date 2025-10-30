@@ -46,6 +46,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
+import io.goobi.viewer.model.security.LicenseTypePlaceholderInfo;
 import io.goobi.viewer.model.viewer.PageType;
 
 /**
@@ -257,12 +258,14 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
 
     @Override
     public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
-        if (accessPermissionThumbnail == null || accessPermissionThumbnail.isGranted()) {
-            logger.trace("Default thumbnail for LOGID '{}'", logId);
-            return ViewerResourceBundle.getTranslation("noImage_fileNotFound", locale);
+        if (accessPermissionThumbnail != null) {
+            LicenseTypePlaceholderInfo placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && placeholderInfo.getMediaItem() != null) {
+                return placeholderInfo.getMediaThumbnailURI().toString();
+            }
         }
 
-        return accessPermissionThumbnail.getAccessDeniedImageUriMap().get(locale.getLanguage());
+        return ViewerResourceBundle.getTranslation("noImage_fileNotFound", locale);
     }
 
     /**

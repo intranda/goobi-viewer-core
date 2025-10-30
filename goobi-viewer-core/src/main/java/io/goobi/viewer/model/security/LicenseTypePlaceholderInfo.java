@@ -87,19 +87,22 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         LicenseTypePlaceholderInfo other = (LicenseTypePlaceholderInfo) obj;
         return language == other.language;
     }
-    
+
     public URI getURI() {
-        return switch(imageMode) {
-            case DEFAULT -> null; // TODO
+        return switch (imageMode) {
+            case DEFAULT -> null; // TODO?
             case UPLOADED_IMAGE -> getMediaThumbnailURI();
         };
     }

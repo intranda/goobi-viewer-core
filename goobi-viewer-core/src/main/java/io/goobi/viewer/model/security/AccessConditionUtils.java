@@ -938,9 +938,14 @@ public final class AccessConditionUtils {
         boolean accessTicketRequired = false;
         boolean redirect = false;
         String redirectUrl = null;
+        List<LicenseType> licenseTypesWithCustomAccessDeniedInfo = new ArrayList<>();
         // Check whether *all* relevant license types allow the requested privilege by default. As soon as one doesn't, set to false.
         for (LicenseType licenseType : relevantLicenseTypes) {
             useAccessConditions.add(licenseType.getName());
+            if (licenseType.isHasCustomPlaceholderInfo()) {
+                licenseTypesWithCustomAccessDeniedInfo.add(licenseType);
+                logger.trace("Considering access denied image URI map from LicenseType '{}'.", licenseType.getName());
+            }
             if (licenseType.isRedirect()) {
                 redirect = true;
                 redirectUrl = licenseType.getRedirectUrl();
@@ -956,7 +961,10 @@ public final class AccessConditionUtils {
         }
         if (licenseTypeAllowsPriv) {
             // logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName); //NOSONAR Debug
-            return AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl).setAccessTicketRequired(accessTicketRequired);
+            return AccessPermission.granted()
+                    .setRedirect(redirect)
+                    .setRedirectUrl(redirectUrl)
+                    .setAccessTicketRequired(accessTicketRequired);
         } else if (isFreeOpenAccess(useAccessConditions, relevantLicenseTypes)) {
             logger.trace("Privilege '{}' is OpenAccess", privilegeName);
             return AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl).setAccessTicketRequired(accessTicketRequired);
@@ -1014,12 +1022,19 @@ public final class AccessConditionUtils {
             }
         }
 
-        return AccessPermission.denied();
+        // TODO Determine "best" set configuration, if several LicenseTypes contain custom config?
+        Map<String, LicenseTypePlaceholderInfo> imagePlaceholders = null;
+        if (!licenseTypesWithCustomAccessDeniedInfo.isEmpty()) {
+            imagePlaceholders = licenseTypesWithCustomAccessDeniedInfo.get(0).getImagePlaceholdersAsMap();
+            logger.trace("Using image placeholder configuration from LicenseType '{}'.", licenseTypesWithCustomAccessDeniedInfo.get(0).getName());
+        }
+
+        return AccessPermission.denied().setAccessDeniedPlaceholderInfo(imagePlaceholders);
     }
 
     /**
      * Check whether the requiredAccessConditions consist only of the {@link io.goobi.viewer.solr.SolrConstants#OPEN_ACCESS_VALUE OPENACCESS}
-     * condition and OPENACCESS is not contained in allLicenseTypes. In this and only this case can we savely assume that everything is permitted. If
+     * condition and OPENACCESS is not contained in allLicenseTypes. In this and only this case can we safe1y assume that everything is permitted. If
      * OPENACCESS is in the database then it likely contains some access restrictions which need to be checked
      *
      * @param requiredAccessConditions a {@link java.util.Set} object.

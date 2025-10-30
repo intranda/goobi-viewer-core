@@ -45,6 +45,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.LicenseTypePlaceholderInfo.LicenseTypeImageMode;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -91,8 +92,6 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private static final String LICENSE_TYPE_DESC_LEGAL_DISCLAIMER = "licenseType_disclaimer_desc";
 
     private static final String METADATA_TAG_PLACEHOLDER_DESCRIPTION = "PlaceholderDescription";
-    private static final String METADATA_TAG_PLACEHOLDER_IMAGE_FILE = "PlaceholderImageFile";
-    private static final String METADATA_TAG_PLACEHOLDER_IMAGE_MODE = "PlaceholderImageMode";
 
     @Transient
     private final transient Object lockTranslations = new Object();
@@ -847,6 +846,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      * @param language
      * @return {@link LicenseTypePlaceholderInfo}
      */
+    @Deprecated
     public LicenseTypePlaceholderInfo getPlaceholderInfo(String language) {
         for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
             if (info.getLanguage() != null && info.getLanguage().equals(language)) {
@@ -857,13 +857,38 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         return null;
     }
 
-    public LicenseTypePlaceholderInfo getPlaceholderDescription(String language) {
-        return getTranslation(METADATA_TAG_PLACEHOLDER_DESCRIPTION, language);
-    }
-
+    @Deprecated
     public URI getPlaceholderURI(String language) {
         LicenseTypePlaceholderInfo info = getPlaceholderInfo(language);
         return info != null ? info.getURI() : null;
+    }
+
+    public boolean isHasCustomPlaceholderInfo() {
+        for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
+            if ((LicenseTypeImageMode.UPLOADED_IMAGE.equals(info.getImageMode()) && info.getMediaItem() != null)
+                    || StringUtils.isNotEmpty(getPlaceholderDescription(info.getLanguage()).getTranslationValue())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return Map containing the access denied image URI for each language
+     */
+    @Deprecated
+    public Map<String, URI> getPlaceholderUriMap() {
+        Map<String, URI> ret = HashMap.newHashMap(imagePlaceholders.size());
+        for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
+            ret.put(info.getLanguage(), info.getURI());
+        }
+
+        return ret;
+    }
+
+    public LicenseTypePlaceholderInfo getPlaceholderDescription(String language) {
+        return getTranslation(METADATA_TAG_PLACEHOLDER_DESCRIPTION, language);
     }
 
     /**
@@ -893,6 +918,20 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
             return ret;
         }
+    }
+
+    /**
+     * Returns configurations as a map for further usage.
+     * 
+     * @return the imagePlaceholders
+     */
+    public Map<String, LicenseTypePlaceholderInfo> getImagePlaceholdersAsMap() {
+        Map<String, LicenseTypePlaceholderInfo> ret = HashMap.newHashMap(imagePlaceholders.size());
+        for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
+            ret.put(info.getLanguage(), info);
+        }
+
+        return ret;
     }
 
     /**

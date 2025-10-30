@@ -65,6 +65,7 @@ import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
+import io.goobi.viewer.model.security.LicenseTypePlaceholderInfo;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.PageType;
@@ -787,11 +788,14 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
     @Override
     public String getAccessDeniedThumbnailUrl(Locale locale) {
-        if (accessPermissionThumbnail == null || accessPermissionThumbnail.isGranted()) {
-            return ViewerResourceBundle.getTranslation("noImage_fileNotFound", locale);
+        if (accessPermissionThumbnail != null) {
+            LicenseTypePlaceholderInfo placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && placeholderInfo.getMediaItem() != null) {
+                return placeholderInfo.getMediaThumbnailURI().toString();
+            }
         }
 
-        return accessPermissionThumbnail.getAccessDeniedImageUriMap().get(locale.getLanguage());
+        return ViewerResourceBundle.getTranslation("noImage_fileNotFound", locale);
     }
 
     /**

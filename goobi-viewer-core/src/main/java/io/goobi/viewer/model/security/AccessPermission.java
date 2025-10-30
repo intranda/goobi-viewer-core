@@ -37,7 +37,7 @@ public class AccessPermission implements Serializable {
     private boolean downloadTicketRequired = false;
     private boolean redirect = false;
     private String redirectUrl;
-    private Map<String, String> accessDeniedImageUriMap = new HashMap<>();
+    private Map<String, LicenseTypePlaceholderInfo> accessDeniedPlaceholderInfo = new HashMap<>();
 
     /**
      * @return {@link AccessPermission} with denied status
@@ -134,17 +134,19 @@ public class AccessPermission implements Serializable {
     }
 
     /**
-     * @return the accessDeniedImageUriMap
+     * @return the accessDeniedPlaceholderInfo
      */
-    public Map<String, String> getAccessDeniedImageUriMap() {
-        return accessDeniedImageUriMap;
+    public Map<String, LicenseTypePlaceholderInfo> getAccessDeniedPlaceholderInfo() {
+        return accessDeniedPlaceholderInfo;
     }
 
     /**
-     * @param accessDeniedImageUriMap the accessDeniedImageUriMap to set
+     * @param accessDeniedPlaceholderInfo the accessDeniedPlaceholderInfo to set
+     * @return this
      */
-    public void setAccessDeniedImageUriMap(Map<String, String> accessDeniedImageUriMap) {
-        this.accessDeniedImageUriMap = accessDeniedImageUriMap;
+    public AccessPermission setAccessDeniedPlaceholderInfo(Map<String, LicenseTypePlaceholderInfo> accessDeniedPlaceholderInfo) {
+        this.accessDeniedPlaceholderInfo = accessDeniedPlaceholderInfo;
+        return this;
     }
 
     @Override
