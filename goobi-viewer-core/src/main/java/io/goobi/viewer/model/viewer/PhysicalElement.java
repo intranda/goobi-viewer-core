@@ -153,6 +153,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     private Boolean fulltextAccessPermission;
 
+    private AccessPermission accessPermissionImage = null;
+
     private AccessPermission accessPermissionThumbnail = null;
     /** True if a download ticket is required before files may be downloaded. Value is set during the access permission check. */
     private Boolean bornDigitalDownloadTicketRequired = null; // TODO reset when logging in/out or persist in session
@@ -451,17 +453,34 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return thumbHandler.getThumbnailUrl(this, width, height);
     }
 
+    public String getAccessDeniedImageUrl(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedImageUrl: locale: {}, page: {}", locale, order);
+        if (accessPermissionImage == null) {
+            accessPermissionImage = loadAccessPermissionImage();
+        }
+
+        return getAccessDeniedUrl(accessPermissionImage, locale);
+    }
+
     @Override
     public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
         logger.trace("getAccessDeniedThumbnailUrl: locale: {}, page: {}", locale, order);
         if (accessPermissionThumbnail == null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            accessPermissionThumbnail = AccessConditionUtils
-                    .checkAccessPermissionForThumbnail(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request));
+            accessPermissionThumbnail = loadAccessPermissionThumbnail();
         }
-        
-        if (accessPermissionThumbnail != null) {
-            LicenseTypePlaceholderInfo placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+
+        return getAccessDeniedUrl(accessPermissionThumbnail, locale);
+    }
+
+    /**
+     * 
+     * @param accessPermission
+     * @param locale
+     * @return Access denied image url; null if none found
+     */
+    String getAccessDeniedUrl(AccessPermission accessPermission, Locale locale) {
+        if (accessPermission != null) {
+            LicenseTypePlaceholderInfo placeholderInfo = accessPermission.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
             if (placeholderInfo != null && placeholderInfo.getMediaItem() != null) {
                 logger.trace("returning custom image: {}", placeholderInfo.getMediaThumbnailURI());
                 return placeholderInfo.getMediaThumbnailURI().toString();
@@ -469,6 +488,32 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         }
 
         return null;
+    }
+
+    /**
+     * @return the accessPermissionThumbnail
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    AccessPermission loadAccessPermissionImage() throws IndexUnreachableException, DAOException {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        accessPermissionImage = AccessConditionUtils
+                .checkAccessPermissionForImage(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request));
+
+        return accessPermissionImage;
+    }
+
+    /**
+     * @return the accessPermissionThumbnail
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    AccessPermission loadAccessPermissionThumbnail() throws IndexUnreachableException, DAOException {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        accessPermissionThumbnail = AccessConditionUtils
+                .checkAccessPermissionForThumbnail(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request));
+
+        return accessPermissionThumbnail;
     }
 
     /**
@@ -1360,7 +1405,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     public String getImageUrl(int size) {
         Scale scale = new Scale.ScaleToWidth(size);
         return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, scale);
-
     }
 
     /**
@@ -1506,10 +1550,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         }
 
-        return AccessConditionUtils
-                .checkAccessPermissionForImage(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request))
-                .isGranted()
-                && FilterTools.checkForConcurrentViewLimit(pi, request);
+        if (accessPermissionImage == null) {
+            accessPermissionImage = AccessConditionUtils
+                    .checkAccessPermissionForImage(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request));
+        }
+
+        return accessPermissionImage.isGranted() && FilterTools.checkForConcurrentViewLimit(pi, request);
     }
 
     /**
@@ -1581,20 +1627,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             logger.debug("DAOException thrown here: {}", e.getMessage());
             return false;
         }
-    }
-
-    /**
-     * @return the accessPermissionThumbnail
-     */
-    public AccessPermission getAccessPermissionThumbnail() {
-        return accessPermissionThumbnail;
-    }
-
-    /**
-     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
-     */
-    public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
-        this.accessPermissionThumbnail = accessPermissionThumbnail;
     }
 
     /**

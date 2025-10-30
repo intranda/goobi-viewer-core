@@ -788,14 +788,16 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
     @Override
     public String getAccessDeniedThumbnailUrl(Locale locale) {
+        logger.trace("getAccessDeniedThumbnailUrl: locale: {}, PI: {}", locale, pi);
         if (accessPermissionThumbnail != null) {
             LicenseTypePlaceholderInfo placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
             if (placeholderInfo != null && placeholderInfo.getMediaItem() != null) {
+                logger.trace("returning custom image: {}", placeholderInfo.getMediaThumbnailURI());
                 return placeholderInfo.getMediaThumbnailURI().toString();
             }
         }
 
-        return ViewerResourceBundle.getTranslation("noImage_fileNotFound", locale);
+        return null;
     }
 
     /**

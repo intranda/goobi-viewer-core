@@ -36,7 +36,14 @@
 			</div>
 		</div>
 		<div jsf:id="mainImageForbidden" class="view-object__image-map" rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
-			<div class="view-object__access-denied" >#{msg.noImage_accessDenied}</div>
+            <div class="view-object__access-denied" >
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) != null}">
+                    <img src="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale)}" alt="access denied" />
+                </ui:fragment>
+                <ui:fragment rendered="activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) == null}">
+                    #{msg.noImage_accessDenied}
+                </ui:fragment>
+            </div>
 		</div>
 
 		<!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
