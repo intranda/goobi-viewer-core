@@ -637,14 +637,13 @@ public final class TocMaker {
         logger.trace("populateTocTree: {}; number of items in toc: {}", pi, ret.size());
 
         // Check PDF download permissions for all docstructs and save into map
+        Map<String, AccessPermission> thumbnailPermissionMap =
+                AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS,
+                        BeanUtils.getRequest());
         Map<String, AccessPermission> pdfPermissionMap = null;
-        Map<String, AccessPermission> thumbnailPermissionMap = null;
         if (sourceFormatPdfAllowed && DataManager.getInstance().getConfiguration().isTocPdfEnabled()) {
             pdfPermissionMap =
                     AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, BeanUtils.getRequest());
-            thumbnailPermissionMap =
-                    AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS,
-                            BeanUtils.getRequest());
         }
 
         // Real children (struct elements of the main record)
