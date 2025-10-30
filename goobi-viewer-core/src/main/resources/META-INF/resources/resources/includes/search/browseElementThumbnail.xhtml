@@ -21,7 +21,9 @@
 					rendered="#{browseElement.thumbnailUrl != null and !browseElement.anchor}"
 					title="#{browseElement.label}">
 					<img src="#{browseElement.thumbnailUrl}"
-						alt="#{browseElement.label}" data-viewer-thumbnail="thumbnail" />
+						alt="#{browseElement.label}"
+						data-viewer-thumbnail="thumbnail"
+						data-viewer-access-denied-url="#{browseElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
 				</h:outputLink>
 
 				<!-- SINGLEVOLUME WITHOUT IMAGE -->
@@ -41,6 +43,7 @@
 					<div class="stackedThumbEffect-inner">
 						<img src="#{browseElement.thumbnailUrl}"
 							data-viewer-thumbnail="thumbnail"
+							data-viewer-access-denied-url="#{browseElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}"
 							class="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}"
 							alt="Thumbnail" />
 						<h:panelGroup

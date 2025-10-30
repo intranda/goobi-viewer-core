@@ -85,7 +85,8 @@
 									<!--                                 <img src="#{image.thumbnailUrl}" alt="#{image.order}:#{image.orderLabel}" title="#{image.order}:#{image.orderLabel}" /> -->
 									<img src="#{image.thumbnailUrl}" alt="#{image.order}"
 										title="#{image.order}:#{image.orderLabel}"
-										data-viewer-thumbnail="thumbnail" />
+										data-viewer-thumbnail="thumbnail"
+										data-viewer-access-denied-url="#{image.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
 									<figcaption>
 										<!-- THUMBNAIL IMAGE ORDER -->
 										<div class="view-thumbs__thumbnail-image-order">#{image.order}:#{image.orderLabel}</div>

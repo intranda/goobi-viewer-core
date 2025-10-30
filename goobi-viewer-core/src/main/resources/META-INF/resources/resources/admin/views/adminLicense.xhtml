@@ -87,15 +87,22 @@
                                                     </h:selectOneRadio>
                                                 </div>
                                             </div>
-                                
+                                            
+                                            <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image"
+                                                id="defaultImageGroup"
+                                                rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'DEFAULT'}">
+                                                <div class="admin__cms-edit-collection-image-thumbnail">
+                                                    <img class="img-fluid" alt="" src="#{imageDelivery.staticImagesURI}access_denied.png}" />
+                                                </div>
+                                            </h:panelGroup>
                             
                                             <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image"
                                                 id="mediaGroup"
                                                 rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'UPLOADED_IMAGE'}">
-                                                <!-- THUMBNAIL -->
+                                                <!-- MEDIA THUMBNAIL -->
                                                 <div class="admin__cms-edit-collection-image-thumbnail">
                                                     <ui:fragment
-                                                        rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
+                                                        rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'UPLOADED_IMAGE' and adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
                                                         <img class="img-fluid" alt=""
                                                             src="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).mediaThumbnailURI}" />
                                                     </ui:fragment>

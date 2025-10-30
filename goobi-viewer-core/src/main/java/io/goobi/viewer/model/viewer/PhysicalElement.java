@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -77,6 +78,7 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
@@ -89,7 +91,7 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * Physical element (page) containing an image, video or audio.
  */
-public class PhysicalElement implements Comparable<PhysicalElement>, Serializable {
+public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeniedThumbnailOutput, Serializable {
 
     public enum CoordsFormat {
         UNCHECKED,
@@ -149,6 +151,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private boolean fulltextAvailable = false;
 
     private Boolean fulltextAccessPermission;
+
+    private AccessPermission accessPermissionThumbnail = null;
     /** True if a download ticket is required before files may be downloaded. Value is set during the access permission check. */
     private Boolean bornDigitalDownloadTicketRequired = null; // TODO reset when logging in/out or persist in session
     /** File name of the full-text document in the file system. */
@@ -444,6 +448,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public String getThumbnailUrl(int width, int height) {
         ThumbnailHandler thumbHandler = BeanUtils.getImageDeliveryBean().getThumbs();
         return thumbHandler.getThumbnailUrl(this, width, height);
+    }
+
+    @Override
+    public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
+        if (accessPermissionThumbnail == null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            accessPermissionThumbnail = AccessConditionUtils
+                    .checkAccessPermissionForThumbnail(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request));
+        }
+        if (accessPermissionThumbnail == null || accessPermissionThumbnail.isGranted()) {
+            return ViewerResourceBundle.getTranslation("noImage_fileNotFound", locale);
+        }
+
+        return accessPermissionThumbnail.getAccessDeniedImageUriMap().get(locale.getLanguage());
     }
 
     /**
@@ -1556,6 +1574,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             logger.debug("DAOException thrown here: {}", e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * @return the accessPermissionThumbnail
+     */
+    public AccessPermission getAccessPermissionThumbnail() {
+        return accessPermissionThumbnail;
+    }
+
+    /**
+     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
+     */
+    public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
+        this.accessPermissionThumbnail = accessPermissionThumbnail;
     }
 
     /**

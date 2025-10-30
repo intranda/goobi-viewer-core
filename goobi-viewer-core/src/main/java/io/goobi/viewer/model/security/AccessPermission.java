@@ -22,6 +22,8 @@
 package io.goobi.viewer.model.security;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Access permission check outcome. Apart from access granted true/false status, additional attributes can be defined here.
@@ -35,6 +37,7 @@ public class AccessPermission implements Serializable {
     private boolean downloadTicketRequired = false;
     private boolean redirect = false;
     private String redirectUrl;
+    private Map<String, String> accessDeniedImageUriMap = new HashMap<>();
 
     /**
      * @return {@link AccessPermission} with denied status
@@ -128,6 +131,20 @@ public class AccessPermission implements Serializable {
     public AccessPermission setRedirectUrl(String redirectUrl) {
         this.redirectUrl = redirectUrl;
         return this;
+    }
+
+    /**
+     * @return the accessDeniedImageUriMap
+     */
+    public Map<String, String> getAccessDeniedImageUriMap() {
+        return accessDeniedImageUriMap;
+    }
+
+    /**
+     * @param accessDeniedImageUriMap the accessDeniedImageUriMap to set
+     */
+    public void setAccessDeniedImageUriMap(Map<String, String> accessDeniedImageUriMap) {
+        this.accessDeniedImageUriMap = accessDeniedImageUriMap;
     }
 
     @Override

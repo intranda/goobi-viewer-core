@@ -15,7 +15,9 @@
 	    <!-- THUMBNAIL -->
 	    <div class="view-object-content__thumb">
 	        <figure>
-	            <img src="#{activeDocumentBean.viewManager.getRepresentativeImageUrl(300,300)}" alt="#{msg.thumbnail}" data-viewer-thumbnail="thumbnail" />
+	            <img src="#{activeDocumentBean.viewManager.getRepresentativeImageUrl(300,300)}" alt="#{msg.thumbnail}"
+	                data-viewer-thumbnail="thumbnail"
+	                data-viewer-access-denied-url="#{representativePage.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
 	        </figure>
 	    </div>
 	    <div class="view-object-content__objects">

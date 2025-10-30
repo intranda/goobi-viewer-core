@@ -63,6 +63,8 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.PageType;
@@ -76,7 +78,7 @@ import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 /**
  * Representation of a search hit.
  */
-public class BrowseElement implements Serializable {
+public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable {
 
     private static final long serialVersionUID = 6621169815560734613L;
 
@@ -152,6 +154,8 @@ public class BrowseElement implements Serializable {
     private final Locale locale;
     @JsonIgnore
     private final String dataRepository;
+    @JsonIgnore
+    private AccessPermission accessPermissionThumbnail = null;
 
     private List<String> recordLanguages;
 
@@ -781,6 +785,15 @@ public class BrowseElement implements Serializable {
         }
     }
 
+    @Override
+    public String getAccessDeniedThumbnailUrl(Locale locale) {
+        if (accessPermissionThumbnail == null || accessPermissionThumbnail.isGranted()) {
+            return ViewerResourceBundle.getTranslation("noImage_fileNotFound", locale);
+        }
+
+        return accessPermissionThumbnail.getAccessDeniedImageUriMap().get(locale.getLanguage());
+    }
+
     /**
      * <p>
      * Getter for the field <code>imageNo</code>.
@@ -894,7 +907,7 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * Checks whether the search hit should identify itself as a group document when being displayed. 
+     * Checks whether the search hit should identify itself as a group document when being displayed.
      * 
      * @return true if group and not newspaper; false otherwise
      */
@@ -1368,6 +1381,20 @@ public class BrowseElement implements Serializable {
      */
     public String getDataRepository() {
         return dataRepository;
+    }
+
+    /**
+     * @return the accessPermissionThumbnail
+     */
+    public AccessPermission getAccessPermissionThumbnail() {
+        return accessPermissionThumbnail;
+    }
+
+    /**
+     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
+     */
+    public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
+        this.accessPermissionThumbnail = accessPermissionThumbnail;
     }
 
     /**

@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.security;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,17 +39,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.security.LicenseTypePlaceholderInfo.LicenseTypeImageMode;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -861,27 +857,13 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         return null;
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>mediaItem</code>.
-     * </p>
-     *
-     * @param language
-     * @return the mediaItem
-     */
-    public CMSMediaItem getPlaceholderMediaItem(String language) {
-        LicenseTypePlaceholderInfo imageName = getTranslation(METADATA_TAG_PLACEHOLDER_IMAGE_FILE, language);
-        // TODO
-        return null;
-    }
-
-    public LicenseTypeImageMode getImageMode(String language) {
-        LicenseTypePlaceholderInfo mode = getTranslation(METADATA_TAG_PLACEHOLDER_IMAGE_MODE, language);
-        return LicenseTypeImageMode.getByName(mode.getTranslationValue());
-    }
-
     public LicenseTypePlaceholderInfo getPlaceholderDescription(String language) {
         return getTranslation(METADATA_TAG_PLACEHOLDER_DESCRIPTION, language);
+    }
+
+    public URI getPlaceholderURI(String language) {
+        LicenseTypePlaceholderInfo info = getPlaceholderInfo(language);
+        return info != null ? info.getURI() : null;
     }
 
     /**
