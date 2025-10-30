@@ -77,10 +77,10 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.model.security.LicenseTypePlaceholderInfo;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
 import io.goobi.viewer.model.viewer.record.views.FileType;
@@ -480,10 +480,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      */
     String getAccessDeniedUrl(AccessPermission accessPermission, Locale locale) {
         if (accessPermission != null) {
-            LicenseTypePlaceholderInfo placeholderInfo = accessPermission.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
-            if (placeholderInfo != null && placeholderInfo.getMediaItem() != null) {
-                logger.trace("returning custom image: {}", placeholderInfo.getMediaThumbnailURI());
-                return placeholderInfo.getMediaThumbnailURI().toString();
+            AccessDeniedInfoConfig placeholderInfo = accessPermission.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
+                logger.trace("returning custom image: {}", placeholderInfo.getImageUri());
+                return placeholderInfo.getImageUri();
             }
         }
 

@@ -43,10 +43,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
-import io.goobi.viewer.model.security.LicenseTypePlaceholderInfo;
 import io.goobi.viewer.model.viewer.PageType;
 
 /**
@@ -260,10 +259,10 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
         logger.trace("getAccessDeniedThumbnailUrl: locale: {}, LOGID: {}", locale, logId);
         if (accessPermissionThumbnail != null) {
-            LicenseTypePlaceholderInfo placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
-            if (placeholderInfo != null && placeholderInfo.getMediaItem() != null) {
-                logger.trace("returning custom image: {}", placeholderInfo.getMediaThumbnailURI());
-                return placeholderInfo.getMediaThumbnailURI().toString();
+            AccessDeniedInfoConfig placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
+                logger.trace("returning custom image: {}", placeholderInfo.getImageUri());
+                return placeholderInfo.getImageUri();
             }
         }
 

@@ -925,10 +925,11 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      * 
      * @return the imagePlaceholders
      */
-    public Map<String, LicenseTypePlaceholderInfo> getImagePlaceholdersAsMap() {
-        Map<String, LicenseTypePlaceholderInfo> ret = HashMap.newHashMap(imagePlaceholders.size());
+    public Map<String, AccessDeniedInfoConfig> getImagePlaceholdersAsMap() {
+        Map<String, AccessDeniedInfoConfig> ret = HashMap.newHashMap(imagePlaceholders.size());
         for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
-            ret.put(info.getLanguage(), info);
+            ret.put(info.getLanguage(), new AccessDeniedInfoConfig(info.getLanguage(), info.getMediaImageURI(),
+                    getPlaceholderDescription(info.getLanguage()).getTranslationValue()));
         }
 
         return ret;

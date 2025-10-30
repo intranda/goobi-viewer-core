@@ -1023,7 +1023,7 @@ public final class AccessConditionUtils {
         }
 
         // TODO Determine "best" set configuration, if several LicenseTypes contain custom config?
-        Map<String, LicenseTypePlaceholderInfo> imagePlaceholders = null;
+        Map<String, AccessDeniedInfoConfig> imagePlaceholders = null;
         if (!licenseTypesWithCustomAccessDeniedInfo.isEmpty()) {
             imagePlaceholders = licenseTypesWithCustomAccessDeniedInfo.get(0).getImagePlaceholdersAsMap();
             logger.trace("Using image placeholder configuration from LicenseType '{}'.", licenseTypesWithCustomAccessDeniedInfo.get(0).getName());
