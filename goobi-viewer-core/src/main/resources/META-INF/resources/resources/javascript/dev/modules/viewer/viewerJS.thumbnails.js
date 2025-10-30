@@ -87,7 +87,7 @@ var viewerJS = ( function( viewer ) {
             var status = error.status;
                 switch(status) {
                     case 403:
-                        element.src = this.accessDenied;
+                        element.src = this.getAccessDeniedUrl(element);
                         break;
                     case 500:
                     case 404:
@@ -100,6 +100,10 @@ var viewerJS = ( function( viewer ) {
                 element.style.display = display;
                 this.thumbnailImageLoaded.next(element);
             });  
+    }
+
+    viewer.loadThumbnails.prototype.getAccessDeniedUrl = function(imageElement) {
+        return imageElement.dataset.viewerAccessDeniedUrl ?? this.accessDenied;
     }
     
     return viewer;
