@@ -5,13 +5,15 @@
 /* WIDGETS */
 /* BLOcK */
 .widget {
-	margin-bottom: 20px;
-	width: 100%;
-	&__topbar {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+    .icon-wrapper { color: @white; }
+    .icon-wrapper svg { color: currentColor; }
+    &__topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
 		min-height: 35px;
 		&.collapsible {
 			cursor: pointer;

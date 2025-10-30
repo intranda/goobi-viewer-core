@@ -99,6 +99,15 @@
 			color: @loginNavFG;
 			transition: color 0.2s ease;
 		}
+		&__user-dropdown-item-icon-text {
+			svg {
+				color: @loginNavFG;
+				transition: color 0.2s ease;
+			}
+		}
+		&__user-dropdown-item-link:hover &__user-dropdown-item-icon-text svg {
+			color: @loginNavFGHover;
+		}
 		&__user-dropdown-item-caret {
 			margin-left: auto;
 			color: @loginNavFG;
