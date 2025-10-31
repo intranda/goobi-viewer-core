@@ -88,11 +88,13 @@
                                                 </div>
                                             </div>
                                             
+
                                             <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image"
                                                 id="defaultImageGroup"
                                                 rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'DEFAULT'}">
                                                 <div class="admin__cms-edit-collection-image-thumbnail">
-                                                    <img class="img-fluid" alt="" src="#{imageDelivery.staticImagesURI}access_denied.png}" />
+                                                    <img class="img-fluid" alt=""
+                                                        src="#{request.contextPath}#{navigationHelper.getResource('images/access_denied.png')}" />
                                                 </div>
                                             </h:panelGroup>
                             

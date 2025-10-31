@@ -301,11 +301,11 @@ public class AdminLicenseBean implements Serializable {
         if (!currentLicenseType.isRedirect()) {
             currentLicenseType.setRedirectUrl(null);
         }
-        
+
         // Strip any JS from HTML descriptions
-        for(LicenseTypePlaceholderInfo info : currentLicenseType.getImagePlaceholders()) {
+        for (LicenseTypePlaceholderInfo info : currentLicenseType.getImagePlaceholders()) {
             String desc = currentLicenseType.getPlaceholderDescription(info.getLanguage()).getTranslationValue();
-            if(StringUtils.isNotEmpty(desc)) {
+            if (StringUtils.isNotEmpty(desc)) {
                 currentLicenseType.getPlaceholderDescription(info.getLanguage()).setTranslationValue(StringTools.stripJS(desc));
             }
         }
