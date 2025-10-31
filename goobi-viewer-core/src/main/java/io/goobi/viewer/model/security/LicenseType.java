@@ -860,8 +860,11 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
                 return info;
             }
         }
+        
+        LicenseTypePlaceholderInfo info = new LicenseTypePlaceholderInfo(language, METADATA_TAG_PLACEHOLDER_DESCRIPTION, this);
+        imagePlaceholders.add(info);
 
-        return null;
+        return info;
     }
 
     public boolean isHasCustomPlaceholderInfo() {
