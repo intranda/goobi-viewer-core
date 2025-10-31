@@ -127,7 +127,8 @@
 											<div class="solr-query-collection__image">
 												<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}">
 													<img src="#{hit.browseElement.thumbnailUrl}" class="img-fluid" alt="#{hit.browseElement.label}"
-													data-viewer-thumbnail="thumbnail" />
+													data-viewer-thumbnail="thumbnail"
+													data-viewer-access-denied-url="#{hit.browseElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
 												</h:outputLink>
 											</div>
 	
