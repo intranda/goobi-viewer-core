@@ -17,7 +17,7 @@
 	        <figure>
 	            <img src="#{activeDocumentBean.viewManager.getRepresentativeImageUrl(300,300)}" alt="#{msg.thumbnail}"
 	                data-viewer-thumbnail="thumbnail"
-	                data-viewer-access-denied-url="#{representativePage.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
+	                data-viewer-access-denied-url="#{activeDocumentBean.viewManager.representativePage.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
 	        </figure>
 	    </div>
 	    <div class="view-object-content__objects">
