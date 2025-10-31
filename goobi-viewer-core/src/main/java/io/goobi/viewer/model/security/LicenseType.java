@@ -842,11 +842,18 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
+     * @return the imagePlaceholders
+     */
+    public Set<LicenseTypePlaceholderInfo> getImagePlaceholders() {
+        return imagePlaceholders;
+    }
+
+    /**
+     * Used to access individual language info when editing this LicenseType.
      * 
      * @param language
      * @return {@link LicenseTypePlaceholderInfo}
      */
-    @Deprecated
     public LicenseTypePlaceholderInfo getPlaceholderInfo(String language) {
         for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
             if (info.getLanguage() != null && info.getLanguage().equals(language)) {

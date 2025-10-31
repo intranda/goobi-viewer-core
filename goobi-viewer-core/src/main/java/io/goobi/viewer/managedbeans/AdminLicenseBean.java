@@ -59,6 +59,7 @@ import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.LicenseTypePlaceholderInfo;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
 import io.goobi.viewer.solr.SolrConstants;
@@ -299,6 +300,14 @@ public class AdminLicenseBean implements Serializable {
 
         if (!currentLicenseType.isRedirect()) {
             currentLicenseType.setRedirectUrl(null);
+        }
+        
+        // Strip any JS from HTML descriptions
+        for(LicenseTypePlaceholderInfo info : currentLicenseType.getImagePlaceholders()) {
+            String desc = currentLicenseType.getPlaceholderDescription(info.getLanguage()).getTranslationValue();
+            if(StringUtils.isNotEmpty(desc)) {
+                currentLicenseType.getPlaceholderDescription(info.getLanguage()).setTranslationValue(StringTools.stripJS(desc));
+            }
         }
 
         if (currentLicenseType.getId() != null) {
