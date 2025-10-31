@@ -453,6 +453,23 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return thumbHandler.getThumbnailUrl(this, width, height);
     }
 
+    public String getAccessDeniedDescriptionText(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedDescriptionText: locale: {}, page: {}", locale, order);
+        if (accessPermissionImage == null) {
+            accessPermissionImage = loadAccessPermissionImage();
+        }
+
+        if (accessPermissionImage != null) {
+            AccessDeniedInfoConfig placeholderInfo = accessPermissionImage.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getDescription())) {
+                logger.trace("returning custom description text: {}", placeholderInfo.getDescription());
+                return StringTools.stripJS(placeholderInfo.getDescription());
+            }
+        }
+
+        return null;
+    }
+
     public String getAccessDeniedImageUrl(Locale locale) throws IndexUnreachableException, DAOException {
         logger.trace("getAccessDeniedImageUrl: locale: {}, page: {}", locale, order);
         if (accessPermissionImage == null) {

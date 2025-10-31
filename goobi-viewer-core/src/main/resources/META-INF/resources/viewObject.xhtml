@@ -130,6 +130,13 @@
                     </ui:insert>
                 </h:panelGroup>
                 
+                <!-- ACCESS DENIED DESCRIPTION TEXT -->
+                <h:panelGroup
+                    rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionObject and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionText(navigationHelper.locale) != null}">
+                    <h:outputText escape="false"
+                        value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionText(navigationHelper.locale)}" />
+                </h:panelGroup>
+                
                 <!-- PAGINATOR -->
                 <h:panelGroup id="paginatorGroup">
 	                    <div id="simplePaginator"/>

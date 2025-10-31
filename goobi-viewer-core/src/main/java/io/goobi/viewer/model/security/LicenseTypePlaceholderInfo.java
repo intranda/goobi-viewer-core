@@ -125,7 +125,7 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
     }
 
     public String getMediaThumbnailURI() {
-        return Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(0,0).toString()).orElse(null);
+        return Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(0, 0).toString()).orElse(null);
     }
 
     /**
