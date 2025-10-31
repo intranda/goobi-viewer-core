@@ -75,14 +75,14 @@
                                                 <div class="connected-top">
                                                     <h:selectOneRadio group="imageModeRadio" immediate="true"
                                                         value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode}">
-                                                        <f:selectItem itemValue="DEFAULT" itemLabel="#{msg.admin__license_image_mode_default}" />
+                                                        <f:selectItem itemValue="DEFAULT" itemLabel="#{msg.admin__license_placeholders_image_mode_default}" />
                                                         <f:ajax render="imageModeGroup" />
                                                     </h:selectOneRadio>
                                                 </div>
                                                 <div class="connected-bottom">
                                                     <h:selectOneRadio group="imageModeRadio" immediate="true"
                                                         value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode}">
-                                                        <f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__license_image_mode_custom}" />
+                                                        <f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__license_placeholders_image_mode_custom}" />
                                                         <f:ajax render="imageModeGroup" />
                                                     </h:selectOneRadio>
                                                 </div>

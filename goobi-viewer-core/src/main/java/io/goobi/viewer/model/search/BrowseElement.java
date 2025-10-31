@@ -354,12 +354,13 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
             if (sbThumbnailUrl != null && !sbThumbnailUrl.isEmpty()) {
                 thumbnailUrl = StringTools.intern(sbThumbnailUrl);
             }
-            
+
             // Check thumbnail access so that a custom access denied image can be used
             PhysicalElement pe = thumbs.getPage(pi, imageNo);
-            accessPermissionThumbnail = pe.loadAccessPermissionThumbnail();
+            if (pe != null) {
+                accessPermissionThumbnail = pe.loadAccessPermissionThumbnail();
+            }
         }
-
 
         BaseMimeType baseMimeType = BaseMimeType.getByName(this.mimeType);
         //check if we have images
