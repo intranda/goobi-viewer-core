@@ -525,7 +525,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    AccessPermission loadAccessPermissionThumbnail() throws IndexUnreachableException, DAOException {
+    public AccessPermission loadAccessPermissionThumbnail() throws IndexUnreachableException, DAOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         accessPermissionThumbnail = AccessConditionUtils
                 .checkAccessPermissionForThumbnail(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request));

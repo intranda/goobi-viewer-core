@@ -46,6 +46,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
@@ -63,12 +64,14 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.StructElementStub;
@@ -203,7 +206,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * @throws ViewerConfigurationException
      */
     BrowseElement(StructElement structElement, Map<String, List<Metadata>> metadataListMap, Locale locale, String fulltext,
-            Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException {
+            Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException, DAOException {
         if (structElement == null) {
             throw new IllegalArgumentException("structElement may not be null");
         }
@@ -351,7 +354,12 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
             if (sbThumbnailUrl != null && !sbThumbnailUrl.isEmpty()) {
                 thumbnailUrl = StringTools.intern(sbThumbnailUrl);
             }
+            
+            // Check thumbnail access so that a custom access denied image can be used
+            PhysicalElement pe = thumbs.getPage(pi, imageNo);
+            accessPermissionThumbnail = pe.loadAccessPermissionThumbnail();
         }
+
 
         BaseMimeType baseMimeType = BaseMimeType.getByName(this.mimeType);
         //check if we have images
