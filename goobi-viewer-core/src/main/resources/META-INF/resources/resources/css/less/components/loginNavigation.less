@@ -10,6 +10,10 @@
 	&__list {
 		.mx-list-reset;
 	}
+	&__toggle-button {
+		display: flex;
+		align-items: center;
+	}
 	/* ELEMENT */
 	/* NOT LOGGED IN */
 	[data-login="false"] {
@@ -94,6 +98,15 @@
 			white-space: nowrap;
 			color: @loginNavFG;
 			transition: color 0.2s ease;
+		}
+		&__user-dropdown-item-icon-text {
+			svg {
+				color: @loginNavFG;
+				transition: color 0.2s ease;
+			}
+		}
+		&__user-dropdown-item-link:hover &__user-dropdown-item-icon-text svg {
+			color: @loginNavFGHover;
 		}
 		&__user-dropdown-item-caret {
 			margin-left: auto;

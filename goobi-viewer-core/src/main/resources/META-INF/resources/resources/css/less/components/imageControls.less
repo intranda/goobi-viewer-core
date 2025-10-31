@@ -11,6 +11,7 @@
 .image-controls {
 	padding: 10px;
 	position: relative;
+	color: @gray;
     &.-ltr, .-ltr {
         direction: ltr;
     }
@@ -221,8 +222,8 @@
 			font-size: 1.2rem;
 			white-space: nowrap;
 			font-weight: 400;
-			color: @gray;
-			fill: @gray;
+			color: inherit;
+			fill: currentColor;
 			border: none;
 			cursor: pointer;
 			&:hover,
@@ -383,6 +384,16 @@
 	}
 }
 
+.image-controls__actions-nav .image-controls__icon,
+.image-controls__actions-additional .image-controls__icon {
+    color: @gray;
+}
+
+.mx-theme-dark .image-controls .image-controls__icon,
+.color-theme-dark .image-controls .image-controls__icon {
+    color: #f1f2f3;
+}
+
 .image-controls__icon {
     display: inline-flex;
     align-items: center;
@@ -408,10 +419,6 @@
 }
 
 .image-controls {
-    .icon-wrapper {
-        color: #6F6F6F;
-    }
-
     .icon-wrapper svg {
         color: inherit;
         stroke: currentColor;

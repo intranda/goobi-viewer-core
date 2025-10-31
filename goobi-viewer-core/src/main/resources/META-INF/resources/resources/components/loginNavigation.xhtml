@@ -13,22 +13,22 @@
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displayUserNavigation || userBean.loggedIn }">
-            <ul class="login-navigation">
-                <!-- USER NOT LOGGED IN -->
-                <ui:fragment rendered="#{!userBean.loggedIn}">
-                    <li data-login="false">
-                        <!-- TOGGLE LOGIN -->
-                        <button type="button" class="btn btn--clean" data-toggle="modal" data-target="#userLoginModal" aria-label="#{msg.userNotLoggedIn}">
-                            <util:icon-text icon="user-circle" text="#{msg.userNotLoggedIn}" textPosition="left" />
-                        </button>
-                    </li>
-                </ui:fragment>
+			<!-- USER NOT LOGGED IN -->
+			<ui:fragment rendered="#{!userBean.loggedIn}">
+			    <div data-login="false">
+			        <!-- TOGGLE LOGIN -->
+			        <button type="button" class="btn btn--clean login-navigation__toggle-button" data-toggle="modal" data-target="#userLoginModal" aria-label="#{msg.userNotLoggedIn}">
+			            <util:icon-text icon="user-circle" text="#{msg.userNotLoggedIn}" textPosition="left" />
+			        </button>
+			    </div>
+			</ui:fragment>
                 <!-- USER LOGGED IN -->
                 <ui:fragment rendered="#{userBean.loggedIn}">
+            	<ul class="login-navigation">
                     <li data-login="true">
                         <!-- TOGGLE USER DROPDOWN WITHOUT CUSTOM NAME -->
                         <ui:fragment rendered="#{!cc.attrs.customName}">
-                            <button type="button" class="btn btn--clean" data-toggle="user-dropdown">
+                            <button type="button" class="btn btn--clean login-navigation__toggle-button" data-toggle="user-dropdown">
                                 <!-- USER NAME -->
 								<span class="login-navigation__user-name" data-toggle="tooltip" data-placement="bottom">
 								    <h:outputText escape="true">#{userBean.user.displayName}</h:outputText>
@@ -55,7 +55,6 @@
                                             <util:icon-text
                                                 icon="dashboard"
                                                 text="#{msg.admin__user_profile}"
-                                                color="white"
                                                 styleClass="login-navigation__user-dropdown-item-icon-text"
                                                 iconSvgClass="icon"
                                                 textClass="login-navigation__user-dropdown-item-text" />
@@ -70,7 +69,6 @@
                                                     <util:icon-text
                                                         icon="bookmark"
                                                         text="#{msg.bookmarks}"
-                                                        color="white"
                                                         styleClass="login-navigation__user-dropdown-item-icon-text"
                                                         iconSvgClass="icon"
                                                         textClass="login-navigation__user-dropdown-item-text" />
@@ -90,7 +88,6 @@
                                                 <util:icon-text
                                                     icon="search"
                                                     text="#{msg.user_mySearches}"
-                                                    color="white"
                                                     styleClass="login-navigation__user-dropdown-item-icon-text"
                                                     iconSvgClass="icon"
                                                     textClass="login-navigation__user-dropdown-item-text" />
@@ -104,7 +101,6 @@
                                                 <util:icon-text
                                                     icon="message-circle"
                                                     text="#{msg.userComments}"
-                                                    color="white"
                                                     styleClass="login-navigation__user-dropdown-item-icon-text"
                                                     iconSvgClass="icon"
                                                     textClass="login-navigation__user-dropdown-item-text" />
@@ -118,7 +114,6 @@
                                                 <util:icon-text
                                                     icon="note"
                                                     text="#{msg.annotations}"
-                                                    color="white"
                                                     styleClass="login-navigation__user-dropdown-item-icon-text"
                                                     iconSvgClass="icon"
                                                     textClass="login-navigation__user-dropdown-item-text" />
@@ -139,7 +134,6 @@
                                                 <util:icon-text
                                                     icon="upload"
                                                     text="#{msg.user__upload_content}"
-                                                    color="white"
                                                     styleClass="login-navigation__user-dropdown-item-icon-text"
                                                     iconSvgClass="icon"
                                                     textClass="login-navigation__user-dropdown-item-text" />
@@ -152,7 +146,6 @@
                                             <util:icon-text
                                                 icon="tool"
                                                 text="#{msg.accountSettings}"
-                                                color="white"
                                                 styleClass="login-navigation__user-dropdown-item-icon-text"
                                                 iconSvgClass="icon"
                                                 textClass="login-navigation__user-dropdown-item-text" />
@@ -165,7 +158,6 @@
                                                 <util:icon-text
                                                     icon="settings-cog"
                                                     text="#{msg.admin}"
-                                                    color="white"
                                                     styleClass="login-navigation__user-dropdown-item-icon-text"
                                                     iconSvgClass="icon"
                                                     textClass="login-navigation__user-dropdown-item-text" />
@@ -178,7 +170,6 @@
                                             <util:icon-text
                                                 icon="power"
                                                 text="#{msg.logout}"
-                                                color="white"
                                                 styleClass="login-navigation__user-dropdown-item-icon-text"
                                                 iconSvgClass="icon"
                                                 textClass="login-navigation__user-dropdown-item-text" />
@@ -188,8 +179,8 @@
                             </h:form>
                         </div>
                     </li>
+            		</ul>
                 </ui:fragment>
-            </ul>
         </ui:fragment>
     </composite:implementation>
 </ui:composition>
