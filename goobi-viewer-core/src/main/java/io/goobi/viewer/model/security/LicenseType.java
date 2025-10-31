@@ -857,12 +857,6 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         return null;
     }
 
-    @Deprecated
-    public URI getPlaceholderURI(String language) {
-        LicenseTypePlaceholderInfo info = getPlaceholderInfo(language);
-        return info != null ? info.getURI() : null;
-    }
-
     public boolean isHasCustomPlaceholderInfo() {
         for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
             if ((LicenseTypeImageMode.UPLOADED_IMAGE.equals(info.getImageMode()) && info.getMediaItem() != null)
@@ -872,19 +866,6 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
 
         return false;
-    }
-
-    /**
-     * @return Map containing the access denied image URI for each language
-     */
-    @Deprecated
-    public Map<String, URI> getPlaceholderUriMap() {
-        Map<String, URI> ret = HashMap.newHashMap(imagePlaceholders.size());
-        for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
-            ret.put(info.getLanguage(), info.getURI());
-        }
-
-        return ret;
     }
 
     public LicenseTypePlaceholderInfo getPlaceholderDescription(String language) {
@@ -928,7 +909,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     public Map<String, AccessDeniedInfoConfig> getImagePlaceholdersAsMap() {
         Map<String, AccessDeniedInfoConfig> ret = HashMap.newHashMap(imagePlaceholders.size());
         for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
-            ret.put(info.getLanguage(), new AccessDeniedInfoConfig(info.getLanguage(), info.getMediaImageURI(),
+            ret.put(info.getLanguage(), new AccessDeniedInfoConfig(info.getLanguage(), info.getMediaThumbnailURI(),
                     getPlaceholderDescription(info.getLanguage()).getTranslationValue()));
         }
 

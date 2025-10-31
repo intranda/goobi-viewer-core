@@ -457,15 +457,13 @@ public final class FileTools {
         String os = System.getProperty("os.name").toLowerCase();
 
         String ret = path;
-        logger.trace("orig path: " + ret);
         if (os.indexOf("win") >= 0 && ret.startsWith("/opt/")) {
             ret = "C:" + ret;
         }
-//        else if (os.indexOf("win") >= 0 && ret.startsWith("file:///C:/opt/")) {
-//            // In case Paths.get() automatically adds "C:" to Unix paths on Windows machines, remove the "C:"
-//            ret = ret.replace("/C:", "");
-//        }
-        logger.trace("final path: " + ret);
+        //        else if (os.indexOf("win") >= 0 && ret.startsWith("file:///C:/opt/")) {
+        //            // In case Paths.get() automatically adds "C:" to Unix paths on Windows machines, remove the "C:"
+        //            ret = ret.replace("/C:", "");
+        //        }
         return ret;
     }
 
@@ -612,7 +610,7 @@ public final class FileTools {
 
         return mimeType;
     }
-    
+
     /**
      * @param mimeType Full mime type
      * @return First part of the mime type

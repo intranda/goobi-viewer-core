@@ -22,7 +22,6 @@
 package io.goobi.viewer.model.security;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
@@ -121,20 +120,12 @@ public class LicenseTypePlaceholderInfo extends Translation implements CMSMediaH
         return language == other.language;
     }
 
-    @Deprecated
-    public URI getURI() {
-        return switch (imageMode) {
-            case DEFAULT -> null; // TODO?
-            case UPLOADED_IMAGE -> getMediaThumbnailURI();
-        };
-    }
-
     public String getMediaImageURI() {
-        return Optional.ofNullable(getMediaItem()).map(item -> item.getImageURI()).orElse(null);
+        return Optional.ofNullable(getMediaItem()).map(CMSMediaItem::getImageURI).orElse(null);
     }
 
-    public URI getMediaThumbnailURI() {
-        return Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI()).orElse(null);
+    public String getMediaThumbnailURI() {
+        return Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(0,0).toString()).orElse(null);
     }
 
     /**
