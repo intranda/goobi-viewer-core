@@ -314,6 +314,7 @@ public class SolrSearchIndex {
         }
 
         try {
+                         logger.trace("Solr URL : {}", ((Http2SolrClient) client).getBaseURL()); //NOSONAR Debug
             //             logger.trace("Solr query : {}", solrQuery.getQuery()); //NOSONAR Debug
             //             logger.debug("range: {} - {}", first, first + rows); //NOSONAR Debug
             //             logger.debug("facetFields: {}", facetFields); //NOSONAR Debug

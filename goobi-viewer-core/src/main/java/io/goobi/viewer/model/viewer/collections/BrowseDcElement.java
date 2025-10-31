@@ -29,23 +29,33 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Collection tree element.
  */
-public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializable {
+public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeniedThumbnailOutput, Serializable {
 
     private static final long serialVersionUID = -3308596220913009726L;
+
+    private static final Logger logger = LogManager.getLogger(BrowseDcElement.class);
 
     /** Collection name */
     private final String name;
@@ -59,6 +69,8 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     private boolean showDescription = false;
     private int displayNumberOfVolumesLevel;
     private BrowseElementInfo info;
+    private AccessPermission accessPermissionThumbnail = null;
+
     /**
      * A list of metadata values of a specified SOLR field contained in any volumes within the collection. Used to group collections into groups with
      * matching elements in "facetValues"
@@ -90,6 +102,12 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         this.displayNumberOfVolumesLevel = displayNumberOfVolumesLevel;
         this.info = new SimpleBrowseElementInfo(name);
         this.splittingChar = splittingChar;
+
+        // Check thumbnail access so that a custom access denied image can be used
+        //        PhysicalElement pe = thumbs.getPage(pi, imageNo);
+        //        if (pe != null) {
+        //            accessPermissionThumbnail = pe.loadAccessPermissionThumbnail();
+        //        }
     }
 
     /**
@@ -117,9 +135,6 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         return this.getName().compareTo(o.getName());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -129,9 +144,6 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -546,4 +558,17 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         this.facetValues = new ArrayList<>(facetValues);
     }
 
+    @Override
+    public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedThumbnailUrl: locale: {}, collection: {}", locale, name);
+        if (accessPermissionThumbnail != null) {
+            AccessDeniedInfoConfig placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
+                logger.trace("returning custom image: {}", placeholderInfo.getImageUri());
+                return placeholderInfo.getImageUri();
+            }
+        }
+
+        return null;
+    }
 }

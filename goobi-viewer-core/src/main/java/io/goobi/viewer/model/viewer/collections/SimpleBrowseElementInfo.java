@@ -21,22 +21,24 @@
  */
 package io.goobi.viewer.model.viewer.collections;
 
+import java.io.Serializable;
 import java.net.URI;
 
-import jakarta.servlet.http.HttpServletRequest;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * <p>
  * SimpleBrowseElementInfo class.
  * </p>
  */
-public class SimpleBrowseElementInfo implements BrowseElementInfo {
+public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable {
+
+    private static final long serialVersionUID = -6636480919554406541L;
 
     private static final Logger logger = LogManager.getLogger(SimpleBrowseElementInfo.class);
 
