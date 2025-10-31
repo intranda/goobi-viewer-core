@@ -476,7 +476,7 @@ public final class TocMaker {
             throw new IllegalArgumentException("page must be >=1");
         }
 
-        String query = new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(iddoc).toString();
+        String query = new StringBuilder(SolrConstants.IDDOC_PARENT).append(":\"").append(iddoc).append('"').toString();
         int hits = (int) DataManager.getInstance().getSearchIndex().getHitCount(query);
         int offset = 0;
         int useHitsPerPage = hitsPerPage;
@@ -498,12 +498,14 @@ public final class TocMaker {
             volumeFieldList.add(tocGroupField);
             logger.trace("group field: {}", tocGroupField);
         }
+        // logger.trace("Volume query: {}", query);
         QueryResponse queryResponse = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, offset, useHitsPerPage,
                         DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(anchorDocstructType), null, volumeFieldList);
         if (queryResponse != null) {
             HttpServletRequest request = BeanUtils.getRequest();
+            // logger.trace("Volumes found: {}", queryResponse.getResults().size());
             for (SolrDocument volumeDoc : queryResponse.getResults()) {
                 String topStructPi = (String) volumeDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
                 // Skip volumes that may not be listed
@@ -555,7 +557,8 @@ public final class TocMaker {
                     accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
                             volumeLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request).isGranted();
                     accessPermissionThumbnail = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
-                            volumeLogId, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, request);
+                            volumeLogId, IPrivilegeHolder.PRIV_VIEW_IMAGES, request);
+                    logger.trace("accessPermissionThumbnail: " + accessPermissionThumbnail.isGranted());
                 } catch (RecordNotFoundException e) {
                     logger.error("Record not found in index: {}", topStructPi);
                     continue;

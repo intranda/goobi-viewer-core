@@ -121,7 +121,7 @@
                                                             <h:outputLink rendered="#{tocElement.thumbnailUrl != null}" value="#{tocElement.url}">
                                                                 <img src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}"
                                                                     data-viewer-thumbnail="thumbnail"
-                                                                    data-viewer-access-denied-url="#{tocElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}"/>
+                                                                    data-viewer-access-denied-url="#{tocElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
                                                             </h:outputLink>
                                                         </div>
                                                     </div>
@@ -165,7 +165,8 @@
     													<div class="toc__mv-element-img text-center">
     														<h:outputLink rendered="#{tocElement.thumbnailUrl != null}" value="#{tocElement.url}">
     															<img src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}"
-    															data-viewer-thumbnail="thumbnail" />
+    															data-viewer-thumbnail="thumbnail"
+    															data-viewer-access-denied-url="#{tocElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
     														</h:outputLink>
     													</div>
     												</div>
