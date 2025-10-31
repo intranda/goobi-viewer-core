@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.DataManager;
@@ -48,7 +49,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.solr.SolrConstants;
 
-class SearchFacetsTest extends AbstractSolrEnabledTest {
+class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @BeforeAll
     public static void setUpClass() throws Exception {
