@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -118,6 +119,52 @@ class SearchQueryGroupTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals(1, group.getQueryItems().size());
         Assertions.assertTrue(group.addNewQueryItem("MD_FOO", -1));
         Assertions.assertEquals(2, group.getQueryItems().size());
+    }
+
+    /**
+     * @see SearchQueryGroup#addNewQueryItem()
+     * @verifies set group statuses correctly
+     */
+    @Test
+    void addNewQueryItem_shouldSetGroupStatusesCorrectly() {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance()
+                .getConfiguration()
+                .getAdvancedSearchFields("person", true, BeanUtils.getLocale().getLanguage()), "person");
+        Assertions.assertEquals(1, group.getQueryItems().size());
+        SearchQueryItem item1 = group.getQueryItems().get(0);
+        Assertions.assertFalse(item1.isSameFieldGroupStart());
+        Assertions.assertFalse(item1.isSameFieldGroupCopy());
+        Assertions.assertFalse(item1.isSameFieldGroupEnd());
+
+        // First copy
+        Assertions.assertTrue(group.addNewQueryItem(item1.getField(), 0));
+        Assertions.assertEquals(2, group.getQueryItems().size());
+        SearchQueryItem item2 = group.getQueryItems().get(1);
+
+        Assertions.assertTrue(item1.isSameFieldGroupStart());
+        Assertions.assertFalse(item1.isSameFieldGroupCopy());
+        Assertions.assertFalse(item1.isSameFieldGroupEnd());
+
+        Assertions.assertFalse(item2.isSameFieldGroupStart());
+        Assertions.assertTrue(item2.isSameFieldGroupCopy());
+        Assertions.assertTrue(item2.isSameFieldGroupEnd());
+
+        // Second copy
+        Assertions.assertTrue(group.addNewQueryItem(item1.getField(), 1));
+        Assertions.assertEquals(3, group.getQueryItems().size());
+        SearchQueryItem item3 = group.getQueryItems().get(2);
+
+        Assertions.assertTrue(item1.isSameFieldGroupStart());
+        Assertions.assertFalse(item1.isSameFieldGroupCopy());
+        Assertions.assertFalse(item1.isSameFieldGroupEnd());
+
+        Assertions.assertFalse(item2.isSameFieldGroupStart());
+        Assertions.assertTrue(item2.isSameFieldGroupCopy());
+        Assertions.assertFalse(item2.isSameFieldGroupEnd());
+
+        Assertions.assertFalse(item3.isSameFieldGroupStart());
+        Assertions.assertTrue(item3.isSameFieldGroupCopy());
+        Assertions.assertTrue(item3.isSameFieldGroupEnd());
     }
 
     /**

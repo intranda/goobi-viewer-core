@@ -1,5 +1,6 @@
 <ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html" 
@@ -108,7 +109,7 @@
                                 <!-- Related archive entry --> 
                                 <ui:fragment rendered="#{hit.altUrl != null}">
                                     <a class="search-list__hit-archive-link" href="#{request.contextPath}/#{hit.altUrl}" title="#{hit.altLabel}">
-                                        #{msg.archives__open_in_archive_view} <i class="fa fa-archive"></i>
+                                        <util:icon-text icon="archive" text="#{msg.archives__open_in_archive_view}" textPosition="left" />
                                     </a>
                                 </ui:fragment> 
                             </div>
@@ -119,12 +120,7 @@
                             <div class="search-list__child-hits-button-wrapper">
                                 <button onclick="viewerJS.searchList.openChildHits(this, 'search_subhits_ajaxloader_#{status.index}')" type="button" class="btn btn--clean" 
                                 data-toggle="hit-content" data-toggle-id="childHits_#{status.index}" data-load-hits-script="loadChildHits_#{status.index}" data-childhits="#{hit.hitCount}">
-                                    <ui:fragment rendered="#{hit.hitsPopulated == 0}">
-	                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{hit.hitsPopulated > 0}">
-	                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                    </ui:fragment>
+                                    <util:icon icon="caret-right" svgClass="icon" styleClass="icon-rot-on-open" />
                                     <h:outputFormat rendered="#{hit.cmsPageHitCount > 0}" value="#{msg.searchChildCmsPageHitCount}">
                                         <f:param value="#{hit.cmsPageHitCount}" />
                                     </h:outputFormat>
@@ -185,16 +181,17 @@
                                                 <!-- TODO proper placement -->
                                                 <ui:fragment rendered="#{childHit.altUrl != null}">
                                                     <a href="#{request.contextPath}/#{childHit.altUrl}" title="#{childHit.altLabel}">
-                                                        #{msg.archives__open_record} <i class="fa fa-picture-o"></i>
+                                                        #{msg.archives__open_record} 
+                                                        <util:icon icon="photo" />
                                                     </a>
                                                 </ui:fragment>
                                             </div>
                             				<div class="search-list__struct-child-hits">
                             					<ui:repeat var="grandChildHit" value="#{childHit.children}">                            						
-                            						<dl class="dl-horizontal">
-                            							<dt>
-	                            							<i class="#{grandChildHit.iconClassForType}" title="#{grandChildHit.translatedType}" aria-hidden="true"></i>
-                            							</dt>
+                            							<dl class="dl-horizontal">
+	                            						<dt>
+	                            							<util:icon icon="#{grandChildHit.iconName}" svgClass="icon icon-sm" ariaLabel="#{grandChildHit.translatedType}" />
+	                            						</dt>
                             							<dd>
                             								<a href="#{request.contextPath}/#{grandChildHit.url}"><h:outputFormat escape="false" value="#{grandChildHit.displayText}"/></a>
 		                            						<ui:fragment rendered="#{grandChildHit.includeMetadata()}">
@@ -235,7 +232,7 @@
                     </ui:repeat>
                     <!-- EXPAND LINK -->
                     <ui:fragment rendered="#{groupPreviewMode and searchBean.activeContext eq '-' and resultGroup.displayExpandUrl}">
-                        <a class="search-list__expand-group-link" href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{resultGroup.name}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetString}/">#{msg.search__all_records}: #{msg[resultGroup.name]} <i class="fa fa-caret-right" aria-hidden="true"></i></a>
+                        <a class="search-list__expand-group-link" href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{resultGroup.name}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetString}/">#{msg.search__all_records}: #{msg[resultGroup.name]} <util:icon icon="caret-right" /></a>
                     </ui:fragment> 
                 </ui:fragment>
             </ui:repeat> 

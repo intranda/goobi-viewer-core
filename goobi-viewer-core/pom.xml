@@ -85,10 +85,10 @@
 		<normdataimporter.version>2.0.2</normdataimporter.version>
 
 		<!-- other libraries -->
-		<activemq.version>6.1.7</activemq.version>
+		<activemq.version>6.1.8</activemq.version>
 		<angus-mail.version>2.0.5</angus-mail.version>
-		<citationstyles.version>25.4</citationstyles.version>
-		<citeproc-java.version>3.3.0</citeproc-java.version>
+		<citationstyles.version>25.10</citationstyles.version>
+		<citeproc-java.version>3.4.0</citeproc-java.version>
 		<commons-collections4.version>4.5.0</commons-collections4.version>
 		<commons-configuration2.version>2.12.0</commons-configuration2.version>
 		<commons-io.version>2.20.0</commons-io.version>
@@ -103,8 +103,8 @@
 		<httpclient.version>4.5.14</httpclient.version>
 		<httpcore.version>4.4.16</httpcore.version>
 		<httpmime.version>4.5.14</httpmime.version>
-		<icu.version>77.1</icu.version>
-		<jackson.version>2.20.0</jackson.version>
+		<icu.version>78.1</icu.version>
+		<jackson.version>2.20.1</jackson.version>
 		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
 		<jakarta.enterprise.version>4.1.0</jakarta.enterprise.version>
@@ -137,13 +137,13 @@
 		<openpdf.version>2.2.4</openpdf.version>
 		<poi.version>5.4.1</poi.version>
 		<prettyfaces.version>10.0.2.Final</prettyfaces.version>
-		<quartz.version>2.5.0</quartz.version>
+		<quartz.version>2.5.1</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
-		<spring.version>6.2.11</spring.version>
+		<spring.version>6.2.12</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.9.0</solr.version>
-		<swagger.version>2.2.39</swagger.version>
+		<swagger.version>2.2.40</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
 		<weld-servlet-shaded.version>5.1.6.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -167,6 +167,11 @@
 
 	<dependencies>
 		<!-- intranda libraries -->
+		 <dependency>
+		      <groupId>de.intranda.js.content-view</groupId>
+		      <artifactId>content-view</artifactId>
+		      <version>0.2.4-SNAPSHOT</version>
+		 </dependency>
 		<dependency>
 			<groupId>de.intranda.goobi</groupId>
 			<artifactId>alto</artifactId>
@@ -920,6 +925,7 @@
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-models</ignoredUsedUndeclaredDependency>
 
 								<ignoredUsedUndeclaredDependency>org.glassfish.hk2.external:jakarta.inject</ignoredUsedUndeclaredDependency>
+								
 							</ignoredUsedUndeclaredDependencies>
 
 							<ignoredUnusedDeclaredDependencies>
@@ -1005,9 +1011,10 @@
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-context</ignoredUnusedDeclaredDependency>
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-core</ignoredUnusedDeclaredDependency>
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-expression</ignoredUnusedDeclaredDependency>
-
-								<!-- xml-apis imports org.xml or org.w3c packages that is used for xml handling in several classes -->
-								<ignoredUnusedDeclaredDependency>xml-apis:xml-apis</ignoredUnusedDeclaredDependency>
+									<!-- xml-apis imports org.xml or org.w3c packages that is used for xml handling in several classes -->
+									<ignoredUnusedDeclaredDependency>xml-apis:xml-apis</ignoredUnusedDeclaredDependency>
+									<!-- only used in Javascript -->
+									<ignoredUnusedDeclaredDependency>de.intranda.js.content-view:content-view</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 
 							<ignoredNonTestScopedDependencies>
@@ -1202,7 +1209,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>12.0.1</version>
+						<version>12.1.1</version>
 					</dependency>
 				</dependencies>
 				<executions>

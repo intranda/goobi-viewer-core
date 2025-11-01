@@ -4,7 +4,9 @@
 			<div class="card-body__links">
 				<a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a>
 				<a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, 'Rss feed')['@id']}" target="_blank">
-					<i class="fa fa-rss" aria-hidden="true"/>
+					<svg class="card-body__rss-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+						<use riot-href="{getIconHref('rss')}"></use>
+					</svg>
 				</a> 
 			</div>
 			<subCollection if="{child.members && child.members.length > 0}" collection="{child}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"/>
@@ -12,6 +14,11 @@
 	</ul>
 
 	<script>
+		const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+		const viewerConfig = window.viewerConfig || {};
+		this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+		this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
+
 		this.collection = this.opts.collection;
 		
 		getId(element) {

@@ -6,7 +6,8 @@
 	template="/resources/themes/#{navigationHelper.theme}/template.html"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:util="http://goobi.io/util">
 
 	<ui:define name="metadata">
 		<f:metadata>
@@ -93,7 +94,7 @@
 										<ui:fragment
 											rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
 											<div class="view-thumbs__thumbnail-image-fulltext">
-												<i class="fa fa-file-text-o" aria-hidden="true"></i>
+												<util:icon icon="file-text" />
 											</div>
 										</ui:fragment>
 									</figcaption>
@@ -162,8 +163,14 @@
         </script>
 	</ui:define>
 
+
 	<ui:define name="sidebar">
-		<viewerComponent:record_sidebar />
+		<!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
+		<ui:fragment
+			rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
+			<viewerComponent:record_sidebar id="sidebar" />
+		</ui:fragment>
 	</ui:define>
+
 
 </ui:composition>

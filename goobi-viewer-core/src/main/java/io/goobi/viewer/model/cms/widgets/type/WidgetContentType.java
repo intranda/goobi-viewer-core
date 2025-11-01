@@ -26,7 +26,7 @@ import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 
 public interface WidgetContentType {
 
-    public String getIconClass();
+    String getIconName();
 
     /**
      * Get a message key providing a label for this widget.

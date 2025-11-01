@@ -194,7 +194,7 @@ var viewerJS = ( function( viewer ) {
         html += '<div id="normdataPopover-' + id + '" class="normdata-popover">';
         html += '<div class="normdata-popover-title">';
         html += '<h3>' + _defaults.lang.popoverTitle + '</h3>';
-        html += '<button type="button" class="normdata-popover-close" aria-label="' + _defaults.lang.popoverClose + '"><i class="fa fa-times"aria-hidden="true"></i></button>';
+        html += '<button type="button" class="normdata-popover-close" aria-label="' + _defaults.lang.popoverClose + '"><span class="icon-wrapper normdata-popover-close__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="' + _defaults.path + '/resources/icons/outline/x.svg#icon"></use></svg></span></button>';
         html += '</div>';
         html += '<div class="normdata-popover-content">';
         html += '<dl class="dl-horizontal">';
@@ -223,7 +223,7 @@ var viewerJS = ( function( viewer ) {
                         html += _unicodeEscapeUri(v.url);
                         html += '?template=_DEFAULT&lang='+currentLang+'"'; // TODO use navigationHelper.localeString
                         html += '" title="' + _defaults.lang.showNormdata + '">';
-                        html += '<i class="fa fa-list-ul" aria-hidden="true"></i>';
+                        html += '<span class="icon-wrapper normdata-popover-button__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="' + _defaults.path + '/resources/icons/outline/list-details.svg#icon"></use></svg></span>';
                         html += '<div class="normdata-preloader"></div>';
                         html += '</button>';
                     }

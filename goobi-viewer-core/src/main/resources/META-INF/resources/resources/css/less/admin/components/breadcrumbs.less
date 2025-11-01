@@ -36,11 +36,15 @@
 			text-decoration: none;
 		}
 		&:after {
-			font: normal normal normal 14px/1 FontAwesome;
-			content: "\f105";
+			content: "";
 			display: block;
+			width: 1.1rem;
+			height: 1.1rem;
 			margin: 0 8px;
 			color: #222;
+			background-color: currentColor;
+			mask: url("../../icons/outline/chevron-right.svg") center/100% 100% no-repeat;
+			-webkit-mask: url("../../icons/outline/chevron-right.svg") center/100% 100% no-repeat;
 		}
 	}
 }

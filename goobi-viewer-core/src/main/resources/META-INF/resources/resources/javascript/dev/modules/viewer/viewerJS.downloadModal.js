@@ -302,14 +302,22 @@ var viewerJS = (function (viewer) {
       modalBody += '<div id="modalAlerts"></div>';
       // Title
       if (type === "pdf") {
-        modalBody += "<h3>";
+        modalBody += '<h3 class="modal__title">';
         modalBody +=
-          '<i class="fa fa-file-pdf-o" aria-hidden="true"></i> PDF-Download: ';
+          '<span class="icon-wrapper modal__title-icon" aria-hidden="true">' +
+          '<svg class="icon" focusable="false"><use href="' +
+          _defaults.path +
+          'resources/icons/outline/file-type-pdf.svg#icon"></use></svg>' +
+          "</span>PDF-Download: ";
         modalBody += "</h3>";
       } else {
-        modalBody += "<h3>";
+        modalBody += '<h3 class="modal__title">';
         modalBody +=
-          '<i class="fa fa-file-text-o" aria-hidden="true"></i> ePub-Download: ';
+          '<span class="icon-wrapper modal__title-icon" aria-hidden="true">' +
+          '<svg class="icon" focusable="false"><use href="' +
+          _defaults.path +
+          'resources/icons/outline/file-text.svg#icon"></use></svg>' +
+          "</span>ePub-Download: ";
         modalBody += "</h3>";
       }
       // Info

@@ -7,6 +7,7 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:o="http://omnifaces.org/ui"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:util="http://goobi.io/util"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     template="/resources/themes/#{navigationHelper.theme}/template.html"
@@ -48,7 +49,11 @@
 									<div class="user-dashboard__last-activities-timeline-wrapper">
 										<ui:repeat value="#{activities}" var="activity">
 											<div class="user-dashboard__last-activities-timeline-item">
-												<div class="user-dashboard__last-activities-timeline-item-type"><i class="#{activity.type.icon}"></i>#{msg[activity.type.label]}</div>
+												<div class="user-dashboard__last-activities-timeline-item-type">
+													<util:icon-text
+														icon="#{activity.type.icon}"
+														text="#{msg[activity.type.label]}" />
+												</div>
 												<div class="user-dashboard__last-activities-timeline-item-date">
 													<h:outputText value="#{activity.date}">
 			                                            <f:converter converterId="localDateTimeConverter" />
@@ -64,8 +69,10 @@
 						</c:when>
 						<c:otherwise>
 							<div class="user-dashboard__last-activities-wrapper -noEntry">
-								<div class="user-dashboard__last-activities-placeholder-wrappper"><i class="fa fa-rocket" aria-hidden="true"></i>
-								<p>#{msg.warning__no_user_activity}</p></div>
+								<div class="user-dashboard__last-activities-placeholder-wrappper">
+									<util:icon-text icon="rocket" styleClass="user-dashboard__last-activities-placeholder" iconSvgClass="icon icon-xxxl" />
+									<p>#{msg.warning__no_user_activity}</p>
+								</div>
 							</div>
 						</c:otherwise>
 					</c:choose>

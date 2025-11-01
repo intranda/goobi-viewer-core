@@ -43,6 +43,7 @@ public class TranslationUpdate implements IModelUpdate {
     @SuppressWarnings("unchecked")
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         // Update column names
+        boolean updated = false;
         for (String table : TABLES) {
             if (dao.tableExists(table)) {
                 boolean newColumnHasEntries = dao.getNativeQueryResults("SELECT translation_value FROM " + table).stream().anyMatch(Objects::nonNull);
@@ -60,11 +61,11 @@ public class TranslationUpdate implements IModelUpdate {
                     if (!dao.columnsExists("cms_pages", "page_template_id")) {
                         dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + table + " ADD COLUMN page_template_id varchar(255);");
                     }
-                    return true;
+                    updated = true;
                 }
             }
         }
 
-        return false;
+        return updated;
     }
 }
