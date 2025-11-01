@@ -22,7 +22,6 @@
 package io.goobi.viewer.model.security;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -860,7 +859,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
                 return info;
             }
         }
-        
+
         LicenseTypePlaceholderInfo info = new LicenseTypePlaceholderInfo(language, METADATA_TAG_PLACEHOLDER_DESCRIPTION, this);
         imagePlaceholders.add(info);
 
@@ -1090,7 +1089,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     @Override
     public boolean isComplete(Locale locale) {
-        return true;
+        if (locale == null) {
+            return false;
+        }
+
+        return getPlaceholderInfo(locale.getLanguage()).hasMediaItem()
+                && StringUtils.isNotBlank(getPlaceholderDescription(locale.getLanguage()).getTranslationValue());
     }
 
     @Override
@@ -1100,7 +1104,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     @Override
     public boolean isEmpty(Locale locale) {
-        return false;
+        if (locale == null) {
+            return false;
+        }
+
+        return !getPlaceholderInfo(locale.getLanguage()).hasMediaItem()
+                && !StringUtils.isNotBlank(getPlaceholderDescription(locale.getLanguage()).getTranslationValue());
     }
 
     @Override
