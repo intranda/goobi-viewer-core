@@ -99,41 +99,39 @@
                   </p>
 
                   <div
-                    class="col-12 col-sm-3 download-modal__accept-terms-label"
-                  >
-                    <label class="mr-3 mb-0"
-                      >#{msg.admin__terms_of_use__accept}:</label
-                    >
-                  </div>
-
-                  <div
                     id="downloadAcceptTerms"
-                    class="col-12 col-md-9 mt-3 mt-sm-0 download-modal__accept-terms-radios admin__radio-switch"
+                    class="form-group form-row col-12"
                   >
-                    <h:selectOneRadio
-                      group="downloadTerms"
-                      value="false"
-                      immediate="true"
-                      checked="false"
-                      pt:data-require-input-checkbox="uncheckedChecker"
-                    >
-                      <f:selectItem
-                        itemValue="#{false}"
-                        itemLabel="#{msg.no}"
-                      />
-                    </h:selectOneRadio>
-                    <h:selectOneRadio
-                      group="downloadTerms"
-                      value="true"
-                      immediate="true"
-                      checked="true"
-                      pt:data-require-input-checkbox="ticketRequired"
-                    >
-                      <f:selectItem itemLabel="#{msg.yes}" />
-                    </h:selectOneRadio>
-                    <span class="toggle-outside">
-                      <span class="toggle-inside"></span>
-                    </span>
+                    <label class="col-lg-3 control-label">
+                      #{msg.admin__terms_of_use__accept}:
+                    </label>
+
+                    <div class="col-12 col-lg-9 admin__radio-switch">
+                      <h:selectOneRadio
+                        group="downloadTerms"
+                        value="false"
+                        immediate="true"
+                        checked="false"
+                        pt:data-require-input-checkbox="uncheckedChecker"
+                      >
+                        <f:selectItem
+                          itemValue="#{false}"
+                          itemLabel="#{msg.no}"
+                        />
+                      </h:selectOneRadio>
+                      <h:selectOneRadio
+                        group="downloadTerms"
+                        value="true"
+                        immediate="true"
+                        checked="true"
+                        pt:data-require-input-checkbox="ticketRequired"
+                      >
+                        <f:selectItem itemLabel="#{msg.yes}" />
+                      </h:selectOneRadio>
+                      <span class="toggle-outside">
+                        <span class="toggle-inside"></span>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -180,41 +178,44 @@
                 );
               </script>
 
-              <!--VALIDATION: ENABLE ACCEPT TERMS AND SUBMIT BUTTONS BASED ON EMAIL INPUT AND ACCEPT TERMS-->
+              <!--VALIDATION-->
               <script>
                 $(document).ready(function () {
                   const $emailInput = $("input[id$='download-modal__email']");
+                  const $radiosWrapper = $("#downloadAcceptTerms");
                   const $radios = $("#downloadAcceptTerms").find(
                     "input[type='radio']"
                   );
                   const $submitBtn = $("input[id$='downloadSubmitButton']");
 
-                  $radios.prop("disabled", true);
+                  $radiosWrapper.hide();
                   $submitBtn.prop("disabled", true);
 
-                  function toggleRadios() {
+                  function updateFormState() {
                     const emailVal = $emailInput.val().trim();
+                    const isEmailValid = $emailInput[0].checkValidity();
+
                     const acceptTermsVal = $radios.filter(":checked").val();
                     const isTermsAccepted = acceptTermsVal
                       ? acceptTermsVal?.split(":")?.pop() !== "false"
                       : false;
 
-                    if (emailVal.length > 0) {
-                      $radios.prop("disabled", false).prop("required", true);
+                    if (emailVal.length &amp;&amp; isEmailValid) {
+                      $radiosWrapper.show();
                       $submitBtn.prop("disabled", true);
 
                       if (isTermsAccepted) $submitBtn.prop("disabled", false);
                       else $submitBtn.prop("disabled", true);
                     } else {
-                      $radios.prop("disabled", true).prop("required", false);
+                      $radiosWrapper.hide();
                       $submitBtn.prop("disabled", false);
                     }
                   }
 
-                  $emailInput.on("input change", toggleRadios);
-                  $radios.on("change", toggleRadios);
+                  $emailInput.on("input change", updateFormState);
+                  $radios.on("change", updateFormState);
 
-                  toggleRadios();
+                  updateFormState();
                 });
               </script>
             </h:form>
