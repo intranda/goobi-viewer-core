@@ -43,6 +43,13 @@
                 <ui:fragment rendered="activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) == null}">
                     #{msg.noImage_accessDenied}
                 </ui:fragment>
+                <!-- ACCESS DENIED DESCRIPTION TEXT -->
+                <h:panelGroup styleClass="view-object__access-denied-text"
+                    rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionObject and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionText(navigationHelper.locale) != null}">
+                    <h:outputText escape="false"
+                        value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionText(navigationHelper.locale)}" />
+                </h:panelGroup>
+                
             </div>
 		</div>
 

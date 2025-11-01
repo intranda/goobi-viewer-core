@@ -89,10 +89,10 @@
 
 
                 <!-- IMAGE CONTROLS -->
-	                <h:panelGroup
-	                    rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'video' and activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'audio'}">
-	                    <viewerComponent:imageControls id="imageControls" />
-	                </h:panelGroup>
+                <h:panelGroup
+                    rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'video' and activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'audio' and activeDocumentBean.viewManager.currentPage.accessPermissionObject}">
+                    <viewerComponent:imageControls id="imageControls" />
+                </h:panelGroup>
 
                 <!-- VIEW IMAGE -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">
@@ -129,14 +129,7 @@
                         <ui:include src="/resources/includes/object/text.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
-                
-                <!-- ACCESS DENIED DESCRIPTION TEXT -->
-                <h:panelGroup
-                    rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionObject and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionText(navigationHelper.locale) != null}">
-                    <h:outputText escape="false"
-                        value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionText(navigationHelper.locale)}" />
-                </h:panelGroup>
-                
+
                 <!-- PAGINATOR -->
                 <h:panelGroup id="paginatorGroup">
 	                    <div id="simplePaginator"/>
