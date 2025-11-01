@@ -1,5 +1,6 @@
 <ui:composition
   xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:util="http://goobi.io/util"
   xmlns:c="http://java.sun.com/jsp/jstl/core"
   xmlns:h="http://xmlns.jcp.org/jsf/html"
   xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -41,25 +42,18 @@
           <div class="modal-body">
             <!-- PDF-DOWNLOAD DESCRIPTION -->
             <div>
-              <!--TODO: PDF-Reader Icon, MK-->
+              <!--TODO MK-->
               <h2>PDF-Download</h2>
 
               <dl class="row">
-                <!--TODO: MSG-->
-                <dt class="col-sm-3">Werk:</dt>
+                <dt class="col-sm-3">#{msg.downloadInfoTitle}:</dt>
                 <dd class="col-sm-9">#{cc.attrs.title}</dd>
 
-                <!--TODO: MSG, viewObject.xhtml-->
-                <dt class="col-sm-3">Größe:</dt>
-                <dd class="col-sm-9">#{cc.attrs.fileSize}</dd>
+                <dt class="col-sm-3">#{msg.downloadInfoFileSize}:</dt>
+                <dd class="col-sm-9">~ #{cc.attrs.fileSize}</dd>
               </dl>
 
-              <!--TODO: MSG-->
-              <p class="mt-4 mb-2">
-                Um per E-Mail informiert zu werden sobald der Download zur
-                Verfügung steht, können Sie hier optional Ihre E-Mail Adresse
-                hinterlassen:
-              </p>
+              <p class="mt-4 mb-4">#{msg.downloadEMailText}</p>
             </div>
 
             <!-- FORM -->
@@ -69,43 +63,43 @@
               prependId="false"
             >
               <!-- E-MAIL -->
-              <div class="form-group">
-                <label for="download-modal__email" class="col-form-label">
+              <div class="form-group form-row">
+                <label
+                  for="download-modal__email"
+                  class="col-lg-3 control-label"
+                >
                   #{msg.email}
                 </label>
 
-                <!-- TODO value kommt aus dem Bean -->
-                <h:inputText
-                  id="download-modal__email"
-                  label="downloadEmail"
-                  required="false"
-                  value=""
-                  styleClass="form-control"
-                  pt:data-require-input-text="emailRequired"
-                  pt:data-target="emailValidatorCheck"
-                  pt:aria-labelledby="download-modal__labelEmail"
-                  pt:type="email"
-                >
-                  <f:validator
-                    validatorId="emailValidator"
-                    for="downloadEmail"
-                  />
-                </h:inputText>
+                <div class="col-12 col-lg-9">
+                  <h:inputText
+                    id="download-modal__email"
+                    label="downloadEmail"
+                    required="false"
+                    value="#{downloadBean.email}"
+                    styleClass="form-control"
+                    pt:data-require-input-text="emailRequired"
+                    pt:data-target="emailValidatorCheck"
+                    pt:aria-labelledby="download-modal__labelEmail"
+                    pt:type="email"
+                  >
+                    <f:validator
+                      validatorId="emailValidator"
+                      for="downloadEmail"
+                    />
+                  </h:inputText>
+                </div>
               </div>
 
               <!-- ACCEPT TERMS -->
-              <div class="access-ticket-modal__required-checkbox-wrapper">
+              <div class="download-modal__required-checkbox-wrapper">
                 <div class="form-row">
-                  <p class="col-12 feedback-modal__accept-terms-text">
-                    <h:outputText
-                      escape="false"
-                      value="#{msg.feedbackAcceptingTerms}"
-                    />
+                  <p class="col-12">
+                    <h:outputText escape="false" />
                   </p>
 
                   <div
-                    id="sendContactFormAcceptTerms"
-                    class="col-12 col-sm-3 feedback-modal__accept-terms-label"
+                    class="col-12 col-sm-3 download-modal__accept-terms-label"
                   >
                     <label class="mr-3 mb-0"
                       >#{msg.admin__terms_of_use__accept}:</label
@@ -113,10 +107,11 @@
                   </div>
 
                   <div
-                    class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch"
+                    id="downloadAcceptTerms"
+                    class="col-12 col-md-9 mt-3 mt-sm-0 download-modal__accept-terms-radios admin__radio-switch"
                   >
                     <h:selectOneRadio
-                      group="requiredAccessTicketTerms"
+                      group="downloadTerms"
                       value="false"
                       immediate="true"
                       checked="false"
@@ -128,21 +123,17 @@
                       />
                     </h:selectOneRadio>
                     <h:selectOneRadio
-                      id="requiredAccessTicketCheckbox2"
-                      group="requiredAccessTicketTerms"
+                      group="downloadTerms"
                       value="true"
                       immediate="true"
                       checked="true"
                       pt:data-require-input-checkbox="ticketRequired"
                     >
-                      <f:selectItem
-                        itemValue="#{feedbackModalAcceptedTerms}"
-                        itemLabel="#{msg.yes}"
-                      />
+                      <f:selectItem itemLabel="#{msg.yes}" />
                     </h:selectOneRadio>
-                    <span class="toggle-outside"
-                      ><span class="toggle-inside"></span
-                    ></span>
+                    <span class="toggle-outside">
+                      <span class="toggle-inside"></span>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -158,22 +149,78 @@
                     #{msg.cancel}
                   </button>
 
-                  <!--TODO: action="#{accessTicketBean.requestNewRecordAccessTicketAction}"-->
                   <h:commandButton
+                    action="#{downloadBean.createPDFDownloadJob(activeDocumentBean.persistentIdentifier, '', true)}"
                     styleClass="btn btn--full"
                     value="#{msg.submit}"
                     pt:data-target="buttonLoaderClickEvent"
+                    id="downloadSubmitButton"
                   >
                   </h:commandButton>
                 </div>
               </div>
+
+              <!-- SHOW LOADER AFTER BUTTON CLICK FOR REQUESTING TICKET -->
+              <script>
+                $.fn.isValid = function () {
+                  return this[0].checkValidity();
+                };
+
+                $('[data-target="buttonLoaderClickEvent"]').on(
+                  "click",
+                  function (e) {
+                    if ($('[data-target="mailValidatorCheck"]').isValid()) {
+                      $('[data-target="buttonLoader"]').fadeIn("fast");
+                      $('[data-target="buttonLoaderClickEvent').css(
+                        "opacity",
+                        "0.5"
+                      );
+                    }
+                  }
+                );
+              </script>
+
+              <!--VALIDATION: ENABLE ACCEPT TERMS AND SUBMIT BUTTONS BASED ON EMAIL INPUT AND ACCEPT TERMS-->
+              <script>
+                $(document).ready(function () {
+                  const $emailInput = $("input[id$='download-modal__email']");
+                  const $radios = $("#downloadAcceptTerms").find(
+                    "input[type='radio']"
+                  );
+                  const $submitBtn = $("input[id$='downloadSubmitButton']");
+
+                  $radios.prop("disabled", true);
+                  $submitBtn.prop("disabled", true);
+
+                  function toggleRadios() {
+                    const emailVal = $emailInput.val().trim();
+                    const acceptTermsVal = $radios.filter(":checked").val();
+                    const isTermsAccepted = acceptTermsVal
+                      ? acceptTermsVal?.split(":")?.pop() !== "false"
+                      : false;
+
+                    if (emailVal.length > 0) {
+                      $radios.prop("disabled", false).prop("required", true);
+                      $submitBtn.prop("disabled", true);
+
+                      if (isTermsAccepted) $submitBtn.prop("disabled", false);
+                      else $submitBtn.prop("disabled", true);
+                    } else {
+                      $radios.prop("disabled", true).prop("required", false);
+                      $submitBtn.prop("disabled", false);
+                    }
+                  }
+
+                  $emailInput.on("input change", toggleRadios);
+                  $radios.on("change", toggleRadios);
+
+                  toggleRadios();
+                });
+              </script>
             </h:form>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- SHOW LOADER AFTER BUTTON CLICK FOR REQUESTING TICKET -->
-    <!-- OPEN MODAL ON PAGE LOAD -->
   </composite:implementation>
 </ui:composition>

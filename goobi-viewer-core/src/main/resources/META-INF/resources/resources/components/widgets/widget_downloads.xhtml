@@ -346,22 +346,28 @@
               visibility-class="widget-element"
               rendered="#{configurationBean.generatePdfInMessageQueue}"
             >
-              <a
-                href="#"
+              <div
                 id="pdfWork"
-                class="badge badge-dark widget-downloads__work-download-pdf download-modal"
-                data-type="pdf"
-                data-title="#{activeDocumentBean.titleBarLabel}"
-                data-id=""
-                data-pi="#{activeDocumentBean.viewManager.pi}"
                 title="#{msg.label__pdf_download_record}"
                 data-toggle="tooltip"
                 data-placement="top"
                 data-trigger="hover"
-                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}"
               >
-                <util:icon-text icon="file" text="#{msg.label__pdf_download}" />
-              </a>
+                <button
+                  class="badge badge-dark widget-downloads__work-download-pdf"
+                  data-toggle="modal"
+                  data-target="#downloadModal"
+                >
+                  <util:icon-text
+                    icon="file"
+                    text="#{msg.label__pdf_download}"
+                  />
+                </button>
+                <viewerComponent:modalDownload
+                  title="#{activeDocumentBean.titleBarLabel}"
+                  fileSize="#{activeDocumentBean.pdfSize}"
+                />
+              </div>
             </ui:fragment>
           </ui:fragment>
 
