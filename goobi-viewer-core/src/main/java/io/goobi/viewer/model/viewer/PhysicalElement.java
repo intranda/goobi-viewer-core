@@ -459,7 +459,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             accessPermissionImage = loadAccessPermissionImage();
         }
 
-        if (accessPermissionImage != null) {
+        if (accessPermissionImage != null && accessPermissionImage.getAccessDeniedPlaceholderInfo() != null) {
             AccessDeniedInfoConfig placeholderInfo = accessPermissionImage.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
             if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getDescription())) {
                 logger.trace("returning custom description text: {}", placeholderInfo.getDescription());
@@ -496,7 +496,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @return Access denied image url; null if none found
      */
     String getAccessDeniedUrl(AccessPermission accessPermission, Locale locale) {
-        if (accessPermission != null) {
+        if (accessPermission != null && accessPermission.getAccessDeniedPlaceholderInfo() != null) {
             AccessDeniedInfoConfig placeholderInfo = accessPermission.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
             if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
                 logger.trace("returning custom image: {}", placeholderInfo.getImageUri());

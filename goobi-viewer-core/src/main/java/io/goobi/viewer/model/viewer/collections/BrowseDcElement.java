@@ -561,7 +561,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     @Override
     public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
         logger.trace("getAccessDeniedThumbnailUrl: locale: {}, collection: {}", locale, name);
-        if (accessPermissionThumbnail != null) {
+        if (accessPermissionThumbnail != null && accessPermissionThumbnail.getAccessDeniedPlaceholderInfo() != null) {
             AccessDeniedInfoConfig placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
             if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
                 logger.trace("returning custom image: {}", placeholderInfo.getImageUri());
