@@ -1,176 +1,179 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	template="/resources/themes/#{navigationHelper.theme}/template.html"
-	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-	xmlns:util="http://goobi.io/util">
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+  template="/resources/themes/#{navigationHelper.theme}/template.html"
+  xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+  xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+  xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+  xmlns:util="http://goobi.io/util"
+>
+  <ui:define name="metadata">
+    <f:metadata>
+      <f:event
+        type="preRenderView"
+        listener="#{navigationHelper.setCurrentView('thumbs')}"
+      />
+    </f:metadata>
+  </ui:define>
 
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentView('thumbs')}" />
-		</f:metadata>
-	</ui:define>
+  <ui:define name="head">
+    <f:view contentType="text/html" encoding="utf-8">
+      <h:outputText
+        escape="false"
+        value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"
+      />
+      <h:outputText
+        escape="false"
+        value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
+      />
+    </f:view>
+  </ui:define>
 
-	<ui:define name="head">
-		<f:view contentType="text/html" encoding="utf-8">
-			<h:outputText escape="false"
-				value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" />
-			<h:outputText escape="false"
-				value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" />
-		</f:view>
-	</ui:define>
+  <ui:define name="breadcrumbs">
+    <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
+  </ui:define>
 
-	<ui:define name="breadcrumbs">
-		<viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
-	</ui:define>
+  <ui:define name="content">
+    <!-- reCAPTCHA API -->
+    <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
+      <script
+        src="https://www.google.com/recaptcha/api.js"
+        async="async"
+        defer="defer"
+      ></script>
+    </h:panelGroup>
 
-	<ui:define name="content">
-		<!-- reCAPTCHA API -->
-		<h:panelGroup rendered="#{configurationBean.useReCaptcha}">
-			<script src="https://www.google.com/recaptcha/api.js" async="async"
-				defer="defer"></script>
-		</h:panelGroup>
+    <!-- VIEW THUMBS -->
 
-		<!-- VIEW THUMBS -->
+    <!-- No access ticket required or already unlocked -->
+    <ui:fragment
+      rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}"
+    >
+      <div id="viewThumbs" class="view-thumbs">
+        <!-- TITLE -->
+        <div id="title" class="title">
+          <!-- TITLE HEADER -->
+          <div class="title__header">
+            <h1 class="h2">
+              <!-- FA* is this still needed? What is the purpose? -->
+              <!-- PAGE TYPE -->
+              <span class="title__header-page-type">
+                <h:outputText
+                  value="#{msg[navigationHelper.currentView]}"
+                  escape="false"
+                />:
+              </span>
 
-		<!-- No access ticket required or already unlocked -->
-		<ui:fragment
-			rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-			<div id="viewThumbs" class="view-thumbs">
-				<!-- TITLE -->
-				<div id="title" class="title">
-					<!-- TITLE HEADER -->
-					<div class="title__header">
-						<h1 class="h2">
+              <!-- NAME OF THE RECORD -->
+              <span class="title__header-label"
+                >#{activeDocumentBean.titleBarLabel}</span
+              >
 
-							<!-- FA* is this still needed? What is the purpose? -->
-							<!-- PAGE TYPE -->
-							<span class="title__header-page-type"> <h:outputText
-									value="#{msg[navigationHelper.currentView]}" escape="false" />:
-							</span>
+              <!-- 	                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}"> -->
+              <!-- 							<viewerComponent:copyrightIndicator /> -->
+              <!-- 						</ui:fragment> -->
+            </h1>
+          </div>
+        </div>
 
-							<!-- NAME OF THE RECORD -->
-							<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
+        <h:panelGroup layout="block">
+          <c:if test="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
+            <f:attribute
+              name="styleClass"
+              value="view-thumbs__thumbnails -ltr"
+            />
+          </c:if>
+          <c:if test="#{activeDocumentBean.viewManager.topStructElement.rtl}">
+            <f:attribute
+              name="styleClass"
+              value="view-thumbs__thumbnails -rtl"
+            />
+          </c:if>
+          <ui:repeat
+            var="image"
+            value="#{activeDocumentBean.viewManager.imagesSection}"
+          >
+            <!-- THUMBNAIL -->
+            <div class="view-thumbs__thumbnail">
+              <!-- THUMBNAIL IMAGE -->
+              <a href="#{navigationHelper.imageActiveUrl}#{image.purlPart}">
+                <figure class="view-thumbs__thumbnail-image">
+                  <!--                                 <img src="#{image.thumbnailUrl}" alt="#{image.order}:#{image.orderLabel}" title="#{image.order}:#{image.orderLabel}" /> -->
+                  <img
+                    src="#{image.thumbnailUrl}"
+                    alt="#{image.order}"
+                    title="#{image.order}:#{image.orderLabel}"
+                    data-viewer-thumbnail="thumbnail"
+                  />
+                  <figcaption>
+                    <!-- THUMBNAIL IMAGE ORDER -->
+                    <div class="view-thumbs__thumbnail-image-order">
+                      #{image.order}:#{image.orderLabel}
+                    </div>
 
-							<!-- 	                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}"> -->
-							<!-- 							<viewerComponent:copyrightIndicator /> -->
-							<!-- 						</ui:fragment> -->
+                    <!-- THUMBNAIL IMAGE FULLTEXT -->
+                    <ui:fragment
+                      rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}"
+                    >
+                      <div class="view-thumbs__thumbnail-image-fulltext">
+                        <util:icon icon="file-text" />
+                      </div>
+                    </ui:fragment>
+                  </figcaption>
+                </figure>
+              </a>
+            </div>
+          </ui:repeat>
+        </h:panelGroup>
 
-						</h1>
-					</div>
-				</div>
+        <!-- PAGINATOR -->
+        <viewerComponent:simplePaginator
+          itemCount="#{activeDocumentBean.viewManager.imagesSizeThumbnail}"
+          itemActive="#{activeDocumentBean.viewManager.currentThumbnailPage}"
+          urlPrefix="#{navigationHelper.thumbsUrl}/#{activeDocumentBean.persistentIdentifier}/"
+        />
+      </div>
+    </ui:fragment>
 
-				<h:panelGroup layout="block">
-					<c:if
-						test="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
-						<f:attribute name="styleClass"
-							value="view-thumbs__thumbnails -ltr" />
-					</c:if>
-					<c:if test="#{activeDocumentBean.viewManager.topStructElement.rtl}">
-						<f:attribute name="styleClass"
-							value="view-thumbs__thumbnails -rtl" />
-					</c:if>
-					<ui:repeat var="image"
-						value="#{activeDocumentBean.viewManager.imagesSection}">
-						<!-- THUMBNAIL -->
-						<div class="view-thumbs__thumbnail">
-							<!-- THUMBNAIL IMAGE -->
-							<a href="#{navigationHelper.imageActiveUrl}#{image.purlPart}">
-								<figure class="view-thumbs__thumbnail-image">
-									<!--                                 <img src="#{image.thumbnailUrl}" alt="#{image.order}:#{image.orderLabel}" title="#{image.order}:#{image.orderLabel}" /> -->
-									<img src="#{image.thumbnailUrl}" alt="#{image.order}"
-										title="#{image.order}:#{image.orderLabel}"
-										data-viewer-thumbnail="thumbnail" />
-									<figcaption>
-										<!-- THUMBNAIL IMAGE ORDER -->
-										<div class="view-thumbs__thumbnail-image-order">#{image.order}:#{image.orderLabel}</div>
+    <!-- Access ticket required -->
+    <ui:fragment
+      rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}"
+    >
+      <div class="access-ticket-info">
+        <div class="access-ticket-info__inner">
+          <h1>
+            <span class="access-ticket-modal__object-title"
+              >#{activeDocumentBean.titleBarLabel}</span
+            >
+          </h1>
+          <p>#{msg.access_tickets__record_access_ticket_required}</p>
+          <button
+            class="btn btn--full"
+            data-toggle="modal"
+            data-target="#accessTicketModal"
+          >
+            #{msg.action__born_digital__unlock}
+          </button>
+          <viewerComponent:modalAccessTicket />
+        </div>
+      </div>
+    </ui:fragment>
 
-										<!-- THUMBNAIL IMAGE FULLTEXT -->
-										<ui:fragment
-											rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
-											<div class="view-thumbs__thumbnail-image-fulltext">
-												<util:icon icon="file-text" />
-											</div>
-										</ui:fragment>
-									</figcaption>
-								</figure>
-							</a>
-						</div>
-					</ui:repeat>
-				</h:panelGroup>
+    <!-- HIDDEN USER EMAIL -->
+    <h:panelGroup rendered="#{userBean.loggedIn}">
+      <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
+    </h:panelGroup>
+  </ui:define>
 
-				<!-- PAGINATOR -->
-				<viewerComponent:simplePaginator
-					itemCount="#{activeDocumentBean.viewManager.imagesSizeThumbnail}"
-					itemActive="#{activeDocumentBean.viewManager.currentThumbnailPage}"
-					urlPrefix="#{navigationHelper.thumbsUrl}/#{activeDocumentBean.persistentIdentifier}/" />
-			</div>
-		</ui:fragment>
-
-		<!-- Access ticket required -->
-		<ui:fragment
-			rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
-			<div class="access-ticket-info">
-				<div class="access-ticket-info__inner">
-					<h1>
-						<span class="access-ticket-modal__object-title">#{activeDocumentBean.titleBarLabel}</span>
-					</h1>
-					<p>#{msg.access_tickets__record_access_ticket_required}</p>
-					<button class="btn btn--full" data-toggle="modal"
-						data-target="#accessTicketModal">#{msg.action__born_digital__unlock}</button>
-					<viewerComponent:modalAccessTicket />
-				</div>
-			</div>
-		</ui:fragment>
-
-		<!-- HIDDEN USER EMAIL -->
-		<h:panelGroup rendered="#{userBean.loggedIn}">
-			<input id="userEmail" type="hidden" value="#{userBean.user.email}" />
-		</h:panelGroup>
-
-		<script type="text/javascript">
-        	var downloadModalConfig = {
-            	downloadBtn: $( ".download-modal" ),
-                path: "#{navigationHelper.applicationUrl}",
-                iiifPath: "#{configurationBean.iiifApiUrl}",
-                userEmail: $( "#userEmail" ).val(),
-                useReCaptcha: #{configurationBean.useReCaptcha},
-                reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
-                messages: {
-                    downloadInfo: {
-                        text: "#{msg.downloadInfoText}",
-                        title: "#{msg.downloadInfoTitle}",
-                        part: "#{msg.downloadInfoPart}",
-                        fileSize: "#{msg.downloadInfoFileSize}"
-                    },
-                    reCaptchaText: "#{msg.downloadReCaptchaText}",
-                    rcInvalid: "#{msg.downloadRcInvalid}",
-                    rcValid: "#{msg.downloadRcValid}",
-                    eMailText: "#{msg.downloadEMailText}",
-                    eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
-                    eMail: "#{msg.downloadEmail}",
-                    closeBtn: "#{msg.downloadCloseModal}",
-                    saveBtn: "#{msg.downloadGenerateFile}",
-                }
-            };
-
-            viewerJS.downloadModal.init( downloadModalConfig );
-        </script>
-	</ui:define>
-
-
-	<ui:define name="sidebar">
-		<!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
-		<ui:fragment
-			rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-			<viewerComponent:record_sidebar id="sidebar" />
-		</ui:fragment>
-	</ui:define>
-
-
+  <ui:define name="sidebar">
+    <!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
+    <ui:fragment
+      rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}"
+    >
+      <viewerComponent:record_sidebar id="sidebar" />
+    </ui:fragment>
+  </ui:define>
 </ui:composition>

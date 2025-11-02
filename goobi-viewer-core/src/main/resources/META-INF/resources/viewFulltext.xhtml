@@ -1,140 +1,144 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	template="/resources/themes/#{navigationHelper.theme}/template.html"
-	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+  template="/resources/themes/#{navigationHelper.theme}/template.html"
+  xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+  xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+  xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+>
+  <ui:define name="metadata">
+    <f:metadata>
+      <f:event
+        type="preRenderView"
+        listener="#{navigationHelper.setCurrentView('fulltext')}"
+      />
+    </f:metadata>
+  </ui:define>
 
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('fulltext')}" />
-		</f:metadata>
-	</ui:define>
+  <ui:define name="head">
+    <f:view contentType="text/html" encoding="utf-8">
+      <h:outputText
+        escape="false"
+        value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"
+      />
+      <h:outputText
+        escape="false"
+        value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
+      />
+    </f:view>
+  </ui:define>
 
-	<ui:define name="head">
-		<f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" />
-		</f:view>
-	</ui:define>
+  <ui:define name="breadcrumbs">
+    <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
+  </ui:define>
 
-    <ui:define name="breadcrumbs">
-        <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
-    </ui:define>
+  <ui:define name="content">
+    <f:view contentType="text/html" encoding="utf-8">
+      <!-- reCAPTCHA API -->
+      <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
+        <script
+          src="https://www.google.com/recaptcha/api.js"
+          async="async"
+          defer="defer"
+        ></script>
+      </h:panelGroup>
 
-	<ui:define name="content">
-		<f:view contentType="text/html" encoding="utf-8">
-            <!-- reCAPTCHA API -->
-            <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
-                <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
-            </h:panelGroup>
+      <!-- No access ticket required or already unlocked -->
+      <ui:fragment
+        rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}"
+      >
+        <div id="view_fulltext" class="view-fulltext">
+          <!-- TITLE -->
+          <div id="title" class="title">
+            <!-- TITLE HEADER -->
+            <div class="title__header">
+              <h1 class="h2">
+                <!-- FA* is this still needed? What is the purpose? -->
+                <!-- PAGE TYPE -->
+                <span class="title__header-page-type">
+                  <h:outputText
+                    value="#{msg[navigationHelper.currentView]}"
+                    escape="false"
+                  />:
+                </span>
 
-            <!-- No access ticket required or already unlocked -->
-            <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-			<div id="view_fulltext" class="view-fulltext">
+                <!-- NAME OF THE RECORD -->
+                <span class="title__header-label"
+                  >#{activeDocumentBean.titleBarLabel}</span
+                >
 
-				<!-- TITLE -->
-		    	<div id="title" class="title">
-		    		<!-- TITLE HEADER -->
-					<div class="title__header">
-						<h1 class="h2">
-		
-							<!-- FA* is this still needed? What is the purpose? -->
-							<!-- PAGE TYPE -->
-							<span class="title__header-page-type">
-								<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />:
-							</span>
-		
-							<!-- NAME OF THE RECORD -->
-							<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
-		
-<!-- 		                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}"> -->
-<!-- 								<viewerComponent:copyrightIndicator /> -->
-<!-- 							</ui:fragment> -->
-		
-						</h1>
-					</div>
-				</div>
-
-                <ui:fragment rendered="#{!activeDocumentBean.viewManager.fulltextFromTEI}">
-                    <viewerComponent:imageControls />
-                </ui:fragment>
-
-                <h:form id="viewFulltextForm" prependId="false">
-                    <div id="view_fulltext_wrapp" class="view-fulltext__wrapper">
-						<ui:include src="/resources/includes/object/fulltext.xhtml" />
-                    </div>
-
-                    <div class="clearfix"></div>
-
-                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.belowFulltextThreshold}">
-                        <viewerComponent:simplePaginator itemCount="#{activeDocumentBean.viewManager.imagesCount}"
-                            itemActive="#{activeDocumentBean.viewManager.currentImageOrderForPaginator}"
-                            urlPrefix="#{navigationHelper.fulltextUrl}/#{activeDocumentBean.persistentIdentifier}/" />
-                    </ui:fragment>
-                </h:form>
+                <!-- <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}"> -->
+                <!-- <viewerComponent:copyrightIndicator /> -->
+                <!-- </ui:fragment> -->
+              </h1>
             </div>
+          </div>
+
+          <ui:fragment
+            rendered="#{!activeDocumentBean.viewManager.fulltextFromTEI}"
+          >
+            <viewerComponent:imageControls />
+          </ui:fragment>
+
+          <h:form id="viewFulltextForm" prependId="false">
+            <div id="view_fulltext_wrapp" class="view-fulltext__wrapper">
+              <ui:include src="/resources/includes/object/fulltext.xhtml" />
+            </div>
+
+            <div class="clearfix"></div>
+
+            <ui:fragment
+              rendered="#{!activeDocumentBean.viewManager.belowFulltextThreshold}"
+            >
+              <viewerComponent:simplePaginator
+                itemCount="#{activeDocumentBean.viewManager.imagesCount}"
+                itemActive="#{activeDocumentBean.viewManager.currentImageOrderForPaginator}"
+                urlPrefix="#{navigationHelper.fulltextUrl}/#{activeDocumentBean.persistentIdentifier}/"
+              />
             </ui:fragment>
-            
-            <!-- Access ticket required -->
-            <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
-            	<div class="access-ticket-info">
-            		<div class="access-ticket-info__inner">
-            			<h1><span class="access-ticket-info__object-title">#{activeDocumentBean.titleBarLabel}</span></h1>
-		                <p>#{msg.access_tickets__record_access_ticket_required}</p>
-		                <button class="btn btn--full" data-toggle="modal"
-		                    data-target="#accessTicketModal">#{msg.action__born_digital__unlock}</button>
-		                <viewerComponent:modalAccessTicket />
-	                </div>
-                </div>
-            </ui:fragment>
-            
-		</f:view>
+          </h:form>
+        </div>
+      </ui:fragment>
 
-        <h:panelGroup rendered="#{userBean.loggedIn}">
-            <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
-        </h:panelGroup>
+      <!-- Access ticket required -->
+      <ui:fragment
+        rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}"
+      >
+        <div class="access-ticket-info">
+          <div class="access-ticket-info__inner">
+            <h1>
+              <span class="access-ticket-info__object-title"
+                >#{activeDocumentBean.titleBarLabel}</span
+              >
+            </h1>
+            <p>#{msg.access_tickets__record_access_ticket_required}</p>
+            <button
+              class="btn btn--full"
+              data-toggle="modal"
+              data-target="#accessTicketModal"
+            >
+              #{msg.action__born_digital__unlock}
+            </button>
+            <viewerComponent:modalAccessTicket />
+          </div>
+        </div>
+      </ui:fragment>
+    </f:view>
 
-        <script type="text/javascript">
-            var downloadModalConfig = {
-                	downloadBtn: $( ".download-modal" ),
-                    path: "#{navigationHelper.applicationUrl}",
-                    iiifPath: "#{configurationBean.iiifApiUrl}",
-                    userEmail: $( "#userEmail" ).val(),
-                    useReCaptcha: #{configurationBean.useReCaptcha},
-                    reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
-                    messages: {
-                        downloadInfo: {
-                            text: "#{msg.downloadInfoText}",
-                            title: "#{msg.downloadInfoTitle}",
-                            part: "#{msg.downloadInfoPart}",
-                            fileSize: "#{msg.downloadInfoFileSize}"
-                        },
-                        reCaptchaText: "#{msg.downloadReCaptchaText}",
-                        rcInvalid: "#{msg.downloadRcInvalid}",
-                        rcValid: "#{msg.downloadRcValid}",
-                        eMailText: "#{msg.downloadEMailText}",
-                        eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
-                        eMail: "#{msg.downloadEmail}",
-                        closeBtn: "#{msg.downloadCloseModal}",
-                        saveBtn: "#{msg.downloadGenerateFile}",
-                    }
-                };
+    <h:panelGroup rendered="#{userBean.loggedIn}">
+      <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
+    </h:panelGroup>
+  </ui:define>
 
-                viewerJS.downloadModal.init( downloadModalConfig );
-        </script>
-	</ui:define>
-
-
-	<ui:define name="sidebar">
-		<!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
-		<ui:fragment
-			rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-			<viewerComponent:record_sidebar id="sidebar" />
-		</ui:fragment>
-	</ui:define>
-
+  <ui:define name="sidebar">
+    <!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
+    <ui:fragment
+      rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}"
+    >
+      <viewerComponent:record_sidebar id="sidebar" />
+    </ui:fragment>
+  </ui:define>
 </ui:composition>

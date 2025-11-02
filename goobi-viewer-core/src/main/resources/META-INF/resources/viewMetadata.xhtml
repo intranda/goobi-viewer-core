@@ -1,121 +1,126 @@
 <ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    template="/resources/themes/#{navigationHelper.theme}/template.html">
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+  xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+  xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+  template="/resources/themes/#{navigationHelper.theme}/template.html"
+>
+  <ui:define name="metadata">
+    <f:metadata>
+      <f:event
+        type="preRenderView"
+        listener="#{navigationHelper.setCurrentView('metadata'.concat(metadataBean.metadataViewUrl))}"
+      />
+    </f:metadata>
+  </ui:define>
 
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('metadata'.concat(metadataBean.metadataViewUrl))}" />
-        </f:metadata>
-    </ui:define>
+  <ui:define name="head">
+    <f:view contentType="text/html" encoding="utf-8">
+      <h:outputText
+        escape="false"
+        value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"
+      />
+      <h:outputText
+        escape="false"
+        value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
+      />
+    </f:view>
+  </ui:define>
 
-    <ui:define name="head">
-        <f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" />
-        </f:view>
-    </ui:define>
+  <ui:define name="breadcrumbs">
+    <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
+  </ui:define>
 
-    <ui:define name="breadcrumbs">
-        <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
-    </ui:define>
+  <ui:define name="content">
+    <f:view contentType="text/html" encoding="utf-8">
+      <!-- reCAPTCHA API -->
+      <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
+        <script
+          src="https://www.google.com/recaptcha/api.js"
+          async="async"
+          defer="defer"
+        ></script>
+      </h:panelGroup>
 
-    <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">
-            <!-- reCAPTCHA API -->
-            <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
-                <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
-            </h:panelGroup>
+      <!-- No access ticket required or already unlocked -->
+      <ui:fragment
+        rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}"
+      >
+        <div
+          id="view_metadata"
+          class="view-metadata #{activeDocumentBean.viewManager.cssClass}"
+        >
+          <!-- METADATA -->
+          <ui:insert name="viewMetadataMetadata">
+            <ui:include src="/resources/includes/metadata/metadata.xhtml">
+              <ui:param
+                name="metadataViewIndex"
+                value="#{metadataBean.activeMetadataView.index}"
+              />
+              <ui:param
+                name="metadataViewLabel"
+                value="#{metadataBean.activeMetadataView.label != null ? metadataBean.activeMetadataView.label : metadataBean.defaultMetadataLabel}"
+              />
+            </ui:include>
+          </ui:insert>
+        </div>
+      </ui:fragment>
 
-            <!-- No access ticket required or already unlocked -->
-            <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-                <div id="view_metadata" class="view-metadata #{activeDocumentBean.viewManager.cssClass}">
-                    <!-- METADATA -->
-                    <ui:insert name="viewMetadataMetadata">
-                        <ui:include src="/resources/includes/metadata/metadata.xhtml">
-                            <ui:param name="metadataViewIndex" value="#{metadataBean.activeMetadataView.index}"/>
-                            <ui:param name="metadataViewLabel"
-                                value="#{metadataBean.activeMetadataView.label != null ? metadataBean.activeMetadataView.label : metadataBean.defaultMetadataLabel}"/>
-                        </ui:include>
-                    </ui:insert>
-                </div>
-            </ui:fragment>
-            
-            <!-- Access ticket required -->
-            <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
-            	<div class="access-ticket-info">
-            		<div class="access-ticket-info__inner">
-            			<h1><span class="access-ticket-info__object-title">#{activeDocumentBean.titleBarLabel}</span></h1>
-		                <p>#{msg.access_tickets__record_access_ticket_required}</p>
-		                <button class="btn btn--full" data-toggle="modal"
-		                    data-target="#accessTicketModal">#{msg.action__born_digital__unlock}</button>
-		                <viewerComponent:modalAccessTicket />
-	                </div>
-                </div>
-            </ui:fragment>
+      <!-- Access ticket required -->
+      <ui:fragment
+        rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}"
+      >
+        <div class="access-ticket-info">
+          <div class="access-ticket-info__inner">
+            <h1>
+              <span class="access-ticket-info__object-title"
+                >#{activeDocumentBean.titleBarLabel}</span
+              >
+            </h1>
+            <p>#{msg.access_tickets__record_access_ticket_required}</p>
+            <button
+              class="btn btn--full"
+              data-toggle="modal"
+              data-target="#accessTicketModal"
+            >
+              #{msg.action__born_digital__unlock}
+            </button>
+            <viewerComponent:modalAccessTicket />
+          </div>
+        </div>
+      </ui:fragment>
 
-            <!-- HIDDEN USER E-MAIL -->
-            <h:panelGroup rendered="#{userBean.loggedIn}">
-                <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
-            </h:panelGroup>
-        </f:view>
+      <!-- HIDDEN USER E-MAIL -->
+      <h:panelGroup rendered="#{userBean.loggedIn}">
+        <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
+      </h:panelGroup>
+    </f:view>
 
-        <script type="text/javascript">
-            var normdataConfig = {
-                path: "#{request.contextPath}",
-                lang: {
-                    popoverTitle: "#{msg.normdataPopoverTitle}",
-                    popoverClose: "#{msg.normdataPopoverClose}",
-                    showNormdata: "#{msg.normdataExpand}"
-                },
-                elemWrapper: $( "#metadataElementWrapper" )
-            };
+    <script type="text/javascript">
+      var normdataConfig = {
+        path: "#{request.contextPath}",
+        lang: {
+          popoverTitle: "#{msg.normdataPopoverTitle}",
+          popoverClose: "#{msg.normdataPopoverClose}",
+          showNormdata: "#{msg.normdataExpand}",
+        },
+        elemWrapper: $("#metadataElementWrapper"),
+      };
 
-            viewerJS.normdata.init( normdataConfig );
+      viewerJS.normdata.init(normdataConfig);
+    </script>
+  </ui:define>
 
-            var downloadModalConfig = {
-                downloadBtn: $( ".download-modal" ),
-                path: "#{navigationHelper.applicationUrl}",
-                iiifPath: "#{configurationBean.iiifApiUrl}",
-                userEmail: $( "#userEmail" ).val(),
-                useReCaptcha: #{configurationBean.useReCaptcha},
-                reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
-                messages: {
-                	downloadInfo: {
-                		text: "#{msg.downloadInfoText}",
-                		title: "#{msg.downloadInfoTitle}",
-                		part: "#{msg.downloadInfoPart}",
-                		fileSize: "#{msg.downloadInfoFileSize}"
-                	},
-                	reCaptchaText: "#{msg.downloadReCaptchaText}",
-                	rcInvalid: "#{msg.downloadRcInvalid}",
-                	rcValid: "#{msg.downloadRcValid}",
-                	eMailText: "#{msg.downloadEMailText}",
-                	eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
-                	eMail: "#{msg.downloadEmail}",
-                	closeBtn: "#{msg.downloadCloseModal}",
-                	saveBtn: "#{msg.downloadGenerateFile}",
-                }
-            };
-
-            viewerJS.downloadModal.init( downloadModalConfig );
-        </script>
-    </ui:define>
-
-
-	<ui:define name="sidebar">
-		<!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
-		<ui:fragment
-			rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-			<viewerComponent:record_sidebar id="sidebar" />
-		</ui:fragment>
-	</ui:define>
-
-
+  <ui:define name="sidebar">
+    <!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
+    <ui:fragment
+      rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}"
+    >
+      <viewerComponent:record_sidebar id="sidebar" />
+    </ui:fragment>
+  </ui:define>
 </ui:composition>
