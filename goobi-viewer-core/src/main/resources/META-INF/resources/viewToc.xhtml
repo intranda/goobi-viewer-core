@@ -1,472 +1,660 @@
-<ui:composition 
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    template="/resources/themes/#{navigationHelper.theme}/template.html"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:util="http://goobi.io/util"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:jsf="http://xmlns.jcp.org/jsf"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+  template="/resources/themes/#{navigationHelper.theme}/template.html"
+  xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+  xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+  xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+>
+  <ui:define name="metadata">
+    <f:metadata>
+      <f:event
+        type="preRenderView"
+        listener="#{navigationHelper.setCurrentView('toc')}"
+      />
+    </f:metadata>
+  </ui:define>
 
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('toc')}" />
-        </f:metadata>
-    </ui:define>
+  <ui:define name="head">
+    <f:view contentType="text/html" encoding="utf-8">
+      <h:outputText
+        escape="false"
+        value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"
+      />
+      <h:outputText
+        escape="false"
+        value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
+      />
+    </f:view>
+  </ui:define>
 
-	<ui:define name="head">
-		<f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" />
-		</f:view>
-	</ui:define>
+  <ui:define name="breadcrumbs">
+    <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
+  </ui:define>
 
-    <ui:define name="breadcrumbs">
-        <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
-    </ui:define>
+  <ui:define name="content">
+    <f:view contentType="text/html" encoding="utf-8">
+      <!-- reCAPTCHA API -->
+      <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
+        <script
+          src="https://www.google.com/recaptcha/api.js"
+          async="async"
+          defer="defer"
+        ></script>
+      </h:panelGroup>
 
-    <ui:define name="content">
-		<f:view contentType="text/html" encoding="utf-8">
-            <!-- reCAPTCHA API -->
-            <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
-                <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
-            </h:panelGroup>
-            
-            <!-- No access ticket required or already unlocked -->
-            <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-			<div id="viewToc" class="view-toc">
-		    	<div id="title" class="title">
-		    		<!-- TITLE HEADER -->
-					<div class="title__header">
-						<h1 class="h2">
-		
-							<!-- FA* is this still needed? What is the purpose? -->
-							<!-- PAGE TYPE -->
-							<span class="title__header-page-type">
-								<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />:
-							</span>
-		
-							<!-- NAME OF THE RECORD -->
-							<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
-		
-<!-- 		                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}"> -->
-<!-- 								<viewerComponent:copyrightIndicator /> -->
-<!-- 							</ui:fragment> -->
-		
-						</h1>
-					</div>
-				</div>
+      <!-- No access ticket required or already unlocked -->
+      <ui:fragment
+        rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}"
+      >
+        <div id="viewToc" class="view-toc">
+          <div id="title" class="title">
+            <!-- TITLE HEADER -->
+            <div class="title__header">
+              <h1 class="h2">
+                <!-- FA* is this still needed? What is the purpose? -->
+                <!-- PAGE TYPE -->
+                <span class="title__header-page-type">
+                  <h:outputText
+                    value="#{msg[navigationHelper.currentView]}"
+                    escape="false"
+                  />:
+                </span>
 
-				<div class="toc">
-					<h:form id="tocForm" prependId="false">
-						<!-- MULTI VOLUME TOC -->
-						<h:panelGroup rendered="#{activeDocumentBean.anchor or activeDocumentBean.group}">
-							<div class="toc_metadata">
-								<ui:include
-									src="/resources/includes/metadata/metadataElement.xhtml">
-									<ui:param name="metadataElement"
-										value="#{metadataBean.getTopMetadataElement(0)}" />
-									<ui:param name="renderTitle" value="false"/>
-								</ui:include>
-							</div>
+                <!-- NAME OF THE RECORD -->
+                <span class="title__header-label"
+                  >#{activeDocumentBean.titleBarLabel}</span
+                >
 
-							<div class="toc__multi-volume">
-								<ui:repeat var="group" value="#{activeDocumentBean.toc.groupNames}">
-									<!-- MV GROUP -->
-									<h:panelGroup rendered="#{group != '_DEFAULT'}">
-										<div class="toc__mv-group">
-											<h4>
-                                                <button type="button" class="btn btn--link" data-toggle="mv-element">
-                                                    <span></span>
-                                                </button>
-                                                #{msg[group]}
-                                            </h4>
-										</div>
+                <!-- 		                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}"> -->
+                <!-- 								<viewerComponent:copyrightIndicator /> -->
+                <!-- 							</ui:fragment> -->
+              </h1>
+            </div>
+          </div>
 
-                                        <!-- MV ELEMENT -->
-                                        <ui:repeat var="tocElement" value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}">
-                                            <div class="toc__mv-element level-#{tocElement.level}">
-                                                <h:panelGroup rendered="#{tocElement.pageNo == null}">
-                                                    <h4 >#{tocElement.label}</h4>
-                                                </h:panelGroup>
-
-                                                <div class="row">
-                                                    <div class="col-12 col-sm-8 col-md-9">
-                                                        <!-- MV TITLE -->
-                                                        <h:panelGroup rendered="#{tocElement.label != null and tocElement.pageNo != null}">
-                                                            <div class="toc__mv-element-title">
-                                                                <a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.label}</a>
-                                                            </div>
-                                                        </h:panelGroup>
-                                                    </div>
-                                                    <div class="col-6 col-sm-2">
-                                                        <!-- MV GROUPLINK -->
-                                                        <h:panelGroup rendered="#{activeDocumentBean.anchor and fn:length(tocElement.groupIds) > 0}">
-                                                            <div class="toc__mv-element-link text-right">
-                                                                <ui:repeat var="groupId" value="#{tocElement.groupIds}">
-                                                                    <h:outputLink value="#{navigationHelper.tocUrl}/#{groupId}/1/" target="_blank">
-                                                                        <h:outputText value="#{msg.convolutePart}" />
-                                                                    </h:outputLink>
-                                                                </ui:repeat>
-                                                            </div>
-                                                        </h:panelGroup>
-                                                    </div>
-                                                    <div class="col-6 col-sm-2 col-md-1">
-                                                        <!-- MV IMAGE -->
-                                                        <div class="toc__mv-element-  text-center">
-                                                            <h:outputLink rendered="#{tocElement.thumbnailUrl != null}" value="#{tocElement.url}">
-                                                                <img src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}"
-                                                                data-viewer-thumbnail="thumbnail"/>
-                                                            </h:outputLink>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </ui:repeat>
-								    </h:panelGroup>
-
-                                    <!-- MV FLAT -->
-                                    <h:panelGroup rendered="#{group == '_DEFAULT'}">
-    									<!-- MV ELEMENT -->
-    									<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.flatView}">
-    										<div class="toc__mv-element level-#{tocElement.level}">
-        										<h:panelGroup rendered="#{tocElement.pageNo == null}">
-        											<h4 >#{tocElement.label}</h4>
-        										</h:panelGroup>
-
-    											<div class="row">
-    												<div class="col-6 col-sm-8 col-md-9">
-    													<!-- MV TITLE -->
-    													<h:panelGroup rendered="#{tocElement.label != null and tocElement.pageNo != null}">
-    														<div class="toc__mv-element-title">
-    															<a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.label}</a>
-    														</div>
-    													</h:panelGroup>
-    												</div>
-    												<div class="col-6 col-sm-2">
-    													<!-- MV GROUPLINK -->
-    													<h:panelGroup rendered="#{activeDocumentBean.anchor and fn:length(tocElement.groupIds) > 0}">
-    														<div class="toc__mv-element-link text-right">
-    															<ui:repeat var="groupId" value="#{tocElement.groupIds}">
-    																<h:outputLink value="#{navigationHelper.tocUrl}/#{groupId}/1/" target="_blank">
-    																	<h:outputText value="#{msg.convolutePart}" />
-    																</h:outputLink>
-    															</ui:repeat>
-    														</div>
-    													</h:panelGroup>
-    												</div>
-    												<div class="col-6 col-sm-2 col-md-1">
-    													<!-- MV IMAGE -->
-    													<div class="toc__mv-element-img text-center">
-    														<h:outputLink rendered="#{tocElement.thumbnailUrl != null}" value="#{tocElement.url}">
-    															<img src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}"
-    															data-viewer-thumbnail="thumbnail" />
-    														</h:outputLink>
-    													</div>
-    												</div>
-    											</div>
-    										</div>
-    									</ui:repeat>
-                                    </h:panelGroup>
-								</ui:repeat>
-								
-								<!-- Render paginator if multiple TOC groups exists or the default group has children -->
-                                <ui:fragment rendered="#{fn:length(activeDocumentBean.toc.groupNames) > 1 or activeDocumentBean.toc.hasChildren}">
-								    <viewerComponent:simplePaginator itemCount="#{activeDocumentBean.toc.numPages}"
-								        itemActive="#{activeDocumentBean.toc.currentPage}"
-									    urlPrefix="#{navigationHelper.tocUrl}/#{activeDocumentBean.persistentIdentifier}/" urlSuffix="" />
-								</ui:fragment>
-							</div>
-						</h:panelGroup>
-
-						<!-- TOC TREEVIEW -->
-						<h:panelGroup rendered="#{!activeDocumentBean.anchor and !activeDocumentBean.group}">
-							<c:set var="indent" value="#{configurationBean.tocIndentation}" scope="request" />
-							<!-- EXPANDABLE TREEVIEW -->
-							<h:panelGroup rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
-								<!-- EXPAND ALL -->
-								<div class="toc__list-expandable-all clearfix">
-									<ul>
-										<li>
-											<button
-												type="button"
-												class="btn btn--link"
-												jsf:action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
-												<util:icon icon="square-rounded-minus" />
-												<f:passThroughAttribute name="data-toggle" value="tooltip" />
-												<f:passThroughAttribute name="data-placement" value="top" />
-												<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
-												<f:ajax render="tocForm" />
-											</button>
-										</li>
-										<li>
-											<button
-												type="button"
-												class="btn btn--link"
-												jsf:action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
-												<util:icon icon="square-rounded-plus" />
-												<f:passThroughAttribute name="data-toggle" value="tooltip" />
-												<f:passThroughAttribute name="data-placement" value="top" />
-												<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
-												<f:ajax render="tocForm" />
-											</button>
-										</li>
-									</ul>
-								</div>
-
-								<nav class="toc__list-expandable clearfix">
-									<ul>
-										<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.treeView}">
-											<h:panelGroup rendered="#{tocElement.visible}">
-												<li class="toc__list-expandable-elem #{tocElement.hasChild == true ? 'parent' : 'child' }" data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
-													<div class="row">
-														<div class="col-12 col-sm-1">
-															<h:panelGroup rendered="#{tocElement.hasChild}">
-																<!-- EXPAND -->
-																<div class="toc__list-expandable-expand">
-																	<button
-																		type="button"
-																		class="btn btn--link"
-																		jsf:action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{!tocElement.expanded}">
-																		<util:icon icon="square-rounded-plus" />
-																		<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
-																		<f:ajax render="@form" />
-																	</button>
-																	<button
-																		type="button"
-																		class="btn btn--link"
-																		jsf:action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.expanded}">
-																		<util:icon icon="square-rounded-minus" />
-																		<f:passThroughAttribute name="aria-label" value="#{msg.all}" />
-																		<f:ajax render="@form" />
-																	</button>
-																</div>
-															</h:panelGroup>
-														</div>
-														<div class="col-12 col-sm-8 col-md-9">
-															<!-- TITLE -->
-															<div class="toc__list-expandable-title">
-																<h:outputLink rendered="#{tocElement.pageNo == null}" title="#{tocElement.label}" value="#{tocElement.url}">
-																		#{tocElement.label}
-																	</h:outputLink>
-																<h:outputLink rendered="#{tocElement.pageNo != null}" title="#{tocElement.label}" value="#{tocElement.url}">
-																		#{tocElement.label}
-																</h:outputLink>
-															</div>
-														</div>
-														<div class="col-12 col-sm-3 col-md-2">
-															<!-- NUMBER -->
-															<div class="toc__list-expandable-number text-right">
-																<ul>
-																	<h:panelGroup rendered="#{tocElement.label != null}">
-																		<li>
-																			<a href="#{tocElement.url}" title="#{tocElement.label}" aria-label="#{tocElement.label}">#{tocElement.pageNoLabel}</a>
-																		</li>
-																	</h:panelGroup>
-																	<h:panelGroup rendered="#{tocElement.pageNo == null}">
-																		<li>#{tocElement.pageNoLabel}</li>
-																	</h:panelGroup>
-
-																	<!-- PDF DOWNLOAD -->
-																	<h:panelGroup rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
-																	                          tocElement.pageNo != null and tocElement.accessPermissionPdf}">
-																		<h:panelGroup rendered="#{!configurationBean.generatePdfInMessageQueue}">
-																			<li>
-																				<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}">
-																					<util:icon icon="file-type-pdf" />
-																				</a>
-																			</li>
-																		</h:panelGroup>
-																		<h:panelGroup rendered="#{configurationBean.generatePdfInMessageQueue}">
-																			<li>
-																				<a
-																					href="#"
-																					class="download-modal"
-																					data-type="pdf"
-																					data-title="#{tocElement.label}"
-																					data-id="#{tocElement.logId}"
-																					data-pi="#{tocElement.topStructPi}"
-																					title="#{msg.label__pdf_download}">
-																					<util:icon icon="file-type-pdf" />
-																				</a>
-																			</li>
-																		</h:panelGroup>
-																	</h:panelGroup>
-																</ul>
-															</div>
-														</div>
-													</div>
-												</li>
-											</h:panelGroup>
-										</ui:repeat>
-									</ul>
-								</nav>
-							</h:panelGroup>
-
-							<!-- FULL TREEVIEW -->
-							<h:panelGroup rendered="#{!configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
-								<nav class="toc__list-full clearfix">
-									<ul>
-										<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.treeView}">
-											<li data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
-												<div class="row">
-													<div class="col-12 col-sm-8 col-md-9">
-														<!-- TITLE -->
-														<div class="toc__list-full-title">
-															<h:outputLink rendered="#{tocElement.pageNo == null}" title="#{tocElement.label}" value="#{tocElement.url}">
-																	#{tocElement.label}
-																</h:outputLink>
-															<h:outputLink rendered="#{tocElement.pageNo != null}" title="#{tocElement.label}" value="#{tocElement.url}">
-																	#{tocElement.label}
-															</h:outputLink>
-														</div>
-													</div>
-													<div class="col-12 col-sm-4 col-md-3">
-														<!-- NUMBER -->
-														<div class="toc__list-full-number text-right">
-															<ul>
-																<h:panelGroup rendered="#{tocElement.label != null}">
-																	<li>
-																		<a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.pageNoLabel}</a>
-																	</li>
-																</h:panelGroup>
-																<h:panelGroup rendered="#{tocElement.pageNo == null}">
-																	<li>#{tocElement.pageNoLabel}</li>
-																</h:panelGroup>
-
-																<!-- PDF DOWNLOAD -->
-																<h:panelGroup rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
-																                          tocElement.pageNo != null and tocElement.accessPermissionPdf}">
-																	<h:panelGroup rendered="#{!configurationBean.generatePdfInMessageQueue}">
-																		<li>
-																			<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}">
-																				<util:icon icon="file-type-pdf" />
-																			</a>
-																		</li>
-																	</h:panelGroup>
-																	<h:panelGroup rendered="#{configurationBean.generatePdfInMessageQueue}">
-																		<li>
-																			<a
-																				href="#"
-																				class="download-modal"
-																				data-type="pdf"
-																				data-title="#{tocElement.label}"
-																				data-id="#{tocElement.logId}"
-																				data-pi="#{tocElement.topStructPi}"
-																				title="#{msg.label__pdf_download}">
-																				<util:icon icon="file-type-pdf" />
-																			</a>
-																		</li>
-																	</h:panelGroup>
-																</h:panelGroup>
-															</ul>
-														</div>
-													</div>
-												</div>
-											</li>
-										</ui:repeat>
-									</ul>
-								</nav>
-							</h:panelGroup>
-						</h:panelGroup>
-					</h:form>
-				</div>
-			</div>
-			</ui:fragment>
-			
-            <!-- Access ticket required -->
-            <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
-            	<div class="access-ticket-info">
-            		<div class="access-ticket-info__inner">
-            			<h1><span class="access-ticket-info__object-title">#{activeDocumentBean.titleBarLabel}</span></h1>
-		                <p>#{msg.access_tickets__record_access_ticket_required}</p>
-		                <button class="btn btn--full" data-toggle="modal"
-		                    data-target="#accessTicketModal">#{msg.action__born_digital__unlock}</button>
-		                <viewerComponent:modalAccessTicket />
-	                </div>
+          <div class="toc">
+            <h:form id="tocForm" prependId="false">
+              <!-- MULTI VOLUME TOC -->
+              <h:panelGroup
+                rendered="#{activeDocumentBean.anchor or activeDocumentBean.group}"
+              >
+                <div class="toc_metadata">
+                  <ui:include
+                    src="/resources/includes/metadata/metadataElement.xhtml"
+                  >
+                    <ui:param
+                      name="metadataElement"
+                      value="#{metadataBean.getTopMetadataElement(0)}"
+                    />
+                    <ui:param name="renderTitle" value="false" />
+                  </ui:include>
                 </div>
-            </ui:fragment>
 
-            <h:panelGroup rendered="#{userBean.loggedIn}">
-                <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
-            </h:panelGroup>
+                <div class="toc__multi-volume">
+                  <ui:repeat
+                    var="group"
+                    value="#{activeDocumentBean.toc.groupNames}"
+                  >
+                    <!-- MV GROUP -->
+                    <h:panelGroup rendered="#{group != '_DEFAULT'}">
+                      <div class="toc__mv-group">
+                        <h4>
+                          <button
+                            type="button"
+                            class="btn btn--link"
+                            data-toggle="mv-element"
+                          >
+                            <span></span>
+                          </button>
+                          #{msg[group]}
+                        </h4>
+                      </div>
 
-            <script type="text/javascript">
-                $( '[data-toggle="mv-element"]' ).on( "click", function() {
-                    var currBtn = $( this );
+                      <!-- MV ELEMENT -->
+                      <ui:repeat
+                        var="tocElement"
+                        value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}"
+                      >
+                        <div class="toc__mv-element level-#{tocElement.level}">
+                          <h:panelGroup rendered="#{tocElement.pageNo == null}">
+                            <h4>#{tocElement.label}</h4>
+                          </h:panelGroup>
 
-                    currBtn.toggleClass( "active" );
-                    currBtn.parents().next( ".toc__mv-element" ).slideToggle( {
-                        duration: 0,
-                        start: function() {
-                            currBtn.prev().toggleClass( "inactive" );
-                        }
-                    } );
-                } );
+                          <div class="row">
+                            <div class="col-12 col-sm-8 col-md-9">
+                              <!-- MV TITLE -->
+                              <h:panelGroup
+                                rendered="#{tocElement.label != null and tocElement.pageNo != null}"
+                              >
+                                <div class="toc__mv-element-title">
+                                  <a
+                                    href="#{tocElement.url}"
+                                    title="#{tocElement.label}"
+                                    >#{tocElement.label}</a
+                                  >
+                                </div>
+                              </h:panelGroup>
+                            </div>
+                            <div class="col-6 col-sm-2">
+                              <!-- MV GROUPLINK -->
+                              <h:panelGroup
+                                rendered="#{activeDocumentBean.anchor and fn:length(tocElement.groupIds) > 0}"
+                              >
+                                <div class="toc__mv-element-link text-right">
+                                  <ui:repeat
+                                    var="groupId"
+                                    value="#{tocElement.groupIds}"
+                                  >
+                                    <h:outputLink
+                                      value="#{navigationHelper.tocUrl}/#{groupId}/1/"
+                                      target="_blank"
+                                    >
+                                      <h:outputText
+                                        value="#{msg.convolutePart}"
+                                      />
+                                    </h:outputLink>
+                                  </ui:repeat>
+                                </div>
+                              </h:panelGroup>
+                            </div>
+                            <div class="col-6 col-sm-2 col-md-1">
+                              <!-- MV IMAGE -->
+                              <div class="toc__mv-element- text-center">
+                                <h:outputLink
+                                  rendered="#{tocElement.thumbnailUrl != null}"
+                                  value="#{tocElement.url}"
+                                >
+                                  <img
+                                    src="#{tocElement.thumbnailUrl}"
+                                    class="img-responsive"
+                                    alt="#{tocElement.label}"
+                                    data-viewer-thumbnail="thumbnail"
+                                  />
+                                </h:outputLink>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ui:repeat>
+                    </h:panelGroup>
 
-                 $( '[data-iddoc*="iddoc"] a' ).on( "click", function( event ) {
-                     event.preventDefault();
+                    <!-- MV FLAT -->
+                    <h:panelGroup rendered="#{group == '_DEFAULT'}">
+                      <!-- MV ELEMENT -->
+                      <ui:repeat
+                        var="tocElement"
+                        value="#{activeDocumentBean.toc.flatView}"
+                      >
+                        <div class="toc__mv-element level-#{tocElement.level}">
+                          <h:panelGroup rendered="#{tocElement.pageNo == null}">
+                            <h4>#{tocElement.label}</h4>
+                          </h:panelGroup>
 
-                     var currIdDoc = $( this ).parents( "li" ).attr( "data-iddoc" );
-                     var currUrl = $( this ).attr( "href" );
+                          <div class="row">
+                            <div class="col-6 col-sm-8 col-md-9">
+                              <!-- MV TITLE -->
+                              <h:panelGroup
+                                rendered="#{tocElement.label != null and tocElement.pageNo != null}"
+                              >
+                                <div class="toc__mv-element-title">
+                                  <a
+                                    href="#{tocElement.url}"
+                                    title="#{tocElement.label}"
+                                    >#{tocElement.label}</a
+                                  >
+                                </div>
+                              </h:panelGroup>
+                            </div>
+                            <div class="col-6 col-sm-2">
+                              <!-- MV GROUPLINK -->
+                              <h:panelGroup
+                                rendered="#{activeDocumentBean.anchor and fn:length(tocElement.groupIds) > 0}"
+                              >
+                                <div class="toc__mv-element-link text-right">
+                                  <ui:repeat
+                                    var="groupId"
+                                    value="#{tocElement.groupIds}"
+                                  >
+                                    <h:outputLink
+                                      value="#{navigationHelper.tocUrl}/#{groupId}/1/"
+                                      target="_blank"
+                                    >
+                                      <h:outputText
+                                        value="#{msg.convolutePart}"
+                                      />
+                                    </h:outputLink>
+                                  </ui:repeat>
+                                </div>
+                              </h:panelGroup>
+                            </div>
+                            <div class="col-6 col-sm-2 col-md-1">
+                              <!-- MV IMAGE -->
+                              <div class="toc__mv-element-img text-center">
+                                <h:outputLink
+                                  rendered="#{tocElement.thumbnailUrl != null}"
+                                  value="#{tocElement.url}"
+                                >
+                                  <img
+                                    src="#{tocElement.thumbnailUrl}"
+                                    class="img-responsive"
+                                    alt="#{tocElement.label}"
+                                    data-viewer-thumbnail="thumbnail"
+                                  />
+                                </h:outputLink>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ui:repeat>
+                    </h:panelGroup>
+                  </ui:repeat>
 
-                     sessionStorage.setItem( "currIdDoc", currIdDoc );
-                     location.href = currUrl;
-                 } );
+                  <!-- Render paginator if multiple TOC groups exists or the default group has children -->
+                  <ui:fragment
+                    rendered="#{fn:length(activeDocumentBean.toc.groupNames) > 1 or activeDocumentBean.toc.hasChildren}"
+                  >
+                    <viewerComponent:simplePaginator
+                      itemCount="#{activeDocumentBean.toc.numPages}"
+                      itemActive="#{activeDocumentBean.toc.currentPage}"
+                      urlPrefix="#{navigationHelper.tocUrl}/#{activeDocumentBean.persistentIdentifier}/"
+                      urlSuffix=""
+                    />
+                  </ui:fragment>
+                </div>
+              </h:panelGroup>
 
-                var downloadModalConfig = {
-                	downloadBtn: $( ".download-modal" ),
-                    path: "#{navigationHelper.applicationUrl}",
-                    iiifPath: "#{configurationBean.iiifApiUrl}",
-                    userEmail: $( "#userEmail" ).val(),
-                    useReCaptcha: #{configurationBean.useReCaptcha},
-                    reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
-                    messages: {
-                        downloadInfo: {
-                            text: "#{msg.downloadInfoText}",
-                            title: "#{msg.downloadInfoTitle}",
-                            part: "#{msg.downloadInfoPart}",
-                            fileSize: "#{msg.downloadInfoFileSize}"
-                        },
-                        reCaptchaText: "#{msg.downloadReCaptchaText}",
-                        rcInvalid: "#{msg.downloadRcInvalid}",
-                        rcValid: "#{msg.downloadRcValid}",
-                        eMailText: "#{msg.downloadEMailText}",
-                        eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
-                        eMail: "#{msg.downloadEmail}",
-                        closeBtn: "#{msg.downloadCloseModal}",
-                        saveBtn: "#{msg.downloadGenerateFile}",
-                    }
-                };
+              <!-- TOC TREEVIEW -->
+              <h:panelGroup
+                rendered="#{!activeDocumentBean.anchor and !activeDocumentBean.group}"
+              >
+                <c:set
+                  var="indent"
+                  value="#{configurationBean.tocIndentation}"
+                  scope="request"
+                />
+                <!-- EXPANDABLE TREEVIEW -->
+                <h:panelGroup
+                  rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}"
+                >
+                  <!-- EXPAND ALL -->
+                  <div class="toc__list-expandable-all clearfix">
+                    <ul>
+                      <li>
+                        <button
+                          type="button"
+                          class="btn btn--link"
+                          jsf:action="#{activeDocumentBean.toc.collapseAll}"
+                          title="#{msg.allClose}"
+                        >
+                          <util:icon icon="square-rounded-minus" />
+                          <f:passThroughAttribute
+                            name="data-toggle"
+                            value="tooltip"
+                          />
+                          <f:passThroughAttribute
+                            name="data-placement"
+                            value="top"
+                          />
+                          <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.allClose}"
+                          />
+                          <f:ajax render="tocForm" />
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          type="button"
+                          class="btn btn--link"
+                          jsf:action="#{activeDocumentBean.toc.expandAll}"
+                          title="#{msg.allOpen}"
+                        >
+                          <util:icon icon="square-rounded-plus" />
+                          <f:passThroughAttribute
+                            name="data-toggle"
+                            value="tooltip"
+                          />
+                          <f:passThroughAttribute
+                            name="data-placement"
+                            value="top"
+                          />
+                          <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.allOpen}"
+                          />
+                          <f:ajax render="tocForm" />
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
 
-                viewerJS.downloadModal.init( downloadModalConfig );
+                  <nav class="toc__list-expandable clearfix">
+                    <ul>
+                      <ui:repeat
+                        var="tocElement"
+                        value="#{activeDocumentBean.toc.treeView}"
+                      >
+                        <h:panelGroup rendered="#{tocElement.visible}">
+                          <li
+                            class="toc__list-expandable-elem #{tocElement.hasChild == true ? 'parent' : 'child' }"
+                            data-iddoc="iddoc_#{tocElement.iddoc}"
+                            style="padding-left: #{tocElement.level * indent}px"
+                          >
+                            <div class="row">
+                              <div class="col-12 col-sm-1">
+                                <h:panelGroup rendered="#{tocElement.hasChild}">
+                                  <!-- EXPAND -->
+                                  <div class="toc__list-expandable-expand">
+                                    <button
+                                      type="button"
+                                      class="btn btn--link"
+                                      jsf:action="#{activeDocumentBean.setChildrenVisible(tocElement)}"
+                                      rendered="#{!tocElement.expanded}"
+                                    >
+                                      <util:icon icon="square-rounded-plus" />
+                                      <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.allOpen}"
+                                      />
+                                      <f:ajax render="@form" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      class="btn btn--link"
+                                      jsf:action="#{activeDocumentBean.setChildrenInvisible(tocElement)}"
+                                      rendered="#{tocElement.expanded}"
+                                    >
+                                      <util:icon icon="square-rounded-minus" />
+                                      <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.all}"
+                                      />
+                                      <f:ajax render="@form" />
+                                    </button>
+                                  </div>
+                                </h:panelGroup>
+                              </div>
+                              <div class="col-12 col-sm-8 col-md-9">
+                                <!-- TITLE -->
+                                <div class="toc__list-expandable-title">
+                                  <h:outputLink
+                                    rendered="#{tocElement.pageNo == null}"
+                                    title="#{tocElement.label}"
+                                    value="#{tocElement.url}"
+                                  >
+                                    #{tocElement.label}
+                                  </h:outputLink>
+                                  <h:outputLink
+                                    rendered="#{tocElement.pageNo != null}"
+                                    title="#{tocElement.label}"
+                                    value="#{tocElement.url}"
+                                  >
+                                    #{tocElement.label}
+                                  </h:outputLink>
+                                </div>
+                              </div>
+                              <div class="col-12 col-sm-3 col-md-2">
+                                <!-- NUMBER -->
+                                <div
+                                  class="toc__list-expandable-number text-right"
+                                >
+                                  <ul>
+                                    <h:panelGroup
+                                      rendered="#{tocElement.label != null}"
+                                    >
+                                      <li>
+                                        <a
+                                          href="#{tocElement.url}"
+                                          title="#{tocElement.label}"
+                                          aria-label="#{tocElement.label}"
+                                          >#{tocElement.pageNoLabel}</a
+                                        >
+                                      </li>
+                                    </h:panelGroup>
+                                    <h:panelGroup
+                                      rendered="#{tocElement.pageNo == null}"
+                                    >
+                                      <li>#{tocElement.pageNoLabel}</li>
+                                    </h:panelGroup>
 
-                var normdataConfig = {
-                    path: "#{request.contextPath}",
-                    lang: {
-                        popoverTitle: "#{msg.normdataPopoverTitle}",
-                        popoverClose: "#{msg.normdataPopoverClose}",
-                        showNormdata: "#{msg.normdataExpand}"
-                    },
-                    elemWrapper: $( "#metadataElementWrapper" )
-                };
+                                    <!-- PDF DOWNLOAD -->
+                                    <h:panelGroup
+                                      rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
+																	                          tocElement.pageNo != null and tocElement.accessPermissionPdf}"
+                                    >
+                                      <h:panelGroup
+                                        rendered="#{!configurationBean.generatePdfInMessageQueue}"
+                                      >
+                                        <li>
+                                          <a
+                                            href="#{tocElement.contentServerPdfUrl}"
+                                            title="#{msg.label__pdf_download}"
+                                          >
+                                            <util:icon icon="file-type-pdf" />
+                                          </a>
+                                        </li>
+                                      </h:panelGroup>
+                                      <h:panelGroup
+                                        rendered="#{configurationBean.generatePdfInMessageQueue}"
+                                      >
+                                        <li>
+                                          <button
+                                            data-toggle="modal"
+                                            data-target="#downloadModal"
+                                          >
+                                            <util:icon-text
+                                              icon="file-type-pdf"
+                                              text="#{msg.label__pdf_download}"
+                                            />
+                                          </button>
+                                          <viewerComponent:modalDownload
+                                            id="#{tocElement.logId}"
+                                            title="#{tocElement.label}"
+                                            fileSize="#{activeDocumentBean.getPdfSize(tocElement.logId)}"
+                                          />
+                                        </li>
+                                      </h:panelGroup>
+                                    </h:panelGroup>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                        </h:panelGroup>
+                      </ui:repeat>
+                    </ul>
+                  </nav>
+                </h:panelGroup>
 
-                viewerJS.normdata.init( normdataConfig );
-            </script>
-		</f:view>
-	</ui:define>
+                <!-- FULL TREEVIEW -->
+                <h:panelGroup
+                  rendered="#{!configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}"
+                >
+                  <nav class="toc__list-full clearfix">
+                    <ul>
+                      <ui:repeat
+                        var="tocElement"
+                        value="#{activeDocumentBean.toc.treeView}"
+                      >
+                        <li
+                          data-iddoc="iddoc_#{tocElement.iddoc}"
+                          style="padding-left: #{tocElement.level * indent}px"
+                        >
+                          <div class="row">
+                            <div class="col-12 col-sm-8 col-md-9">
+                              <!-- TITLE -->
+                              <div class="toc__list-full-title">
+                                <h:outputLink
+                                  rendered="#{tocElement.pageNo == null}"
+                                  title="#{tocElement.label}"
+                                  value="#{tocElement.url}"
+                                >
+                                  #{tocElement.label}
+                                </h:outputLink>
+                                <h:outputLink
+                                  rendered="#{tocElement.pageNo != null}"
+                                  title="#{tocElement.label}"
+                                  value="#{tocElement.url}"
+                                >
+                                  #{tocElement.label}
+                                </h:outputLink>
+                              </div>
+                            </div>
+                            <div class="col-12 col-sm-4 col-md-3">
+                              <!-- NUMBER -->
+                              <div class="toc__list-full-number text-right">
+                                <ul>
+                                  <h:panelGroup
+                                    rendered="#{tocElement.label != null}"
+                                  >
+                                    <li>
+                                      <a
+                                        href="#{tocElement.url}"
+                                        title="#{tocElement.label}"
+                                        >#{tocElement.pageNoLabel}</a
+                                      >
+                                    </li>
+                                  </h:panelGroup>
+                                  <h:panelGroup
+                                    rendered="#{tocElement.pageNo == null}"
+                                  >
+                                    <li>#{tocElement.pageNoLabel}</li>
+                                  </h:panelGroup>
 
+                                  <!-- PDF DOWNLOAD -->
+                                  <h:panelGroup
+                                    rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
+																                          tocElement.pageNo != null and tocElement.accessPermissionPdf}"
+                                  >
+                                    <h:panelGroup
+                                      rendered="#{!configurationBean.generatePdfInMessageQueue}"
+                                    >
+                                      <li>
+                                        <a
+                                          href="#{tocElement.contentServerPdfUrl}"
+                                          title="#{msg.label__pdf_download}"
+                                        >
+                                          <util:icon icon="file-type-pdf" />
+                                        </a>
+                                      </li>
+                                    </h:panelGroup>
+                                    <h:panelGroup
+                                      rendered="#{configurationBean.generatePdfInMessageQueue}"
+                                    >
+                                      <li>
+                                        <button
+                                          data-toggle="modal"
+                                          data-target="#downloadModal"
+                                        >
+                                          <util:icon-text
+                                            icon="file-type-pdf"
+                                          />
+                                        </button>
+                                        <viewerComponent:modalDownload
+                                          id="#{tocElement.logId}"
+                                          title="#{tocElement.label}"
+                                          fileSize="#{activeDocumentBean.getPdfSize(tocElement.logId)}"
+                                        />
+                                      </li>
+                                    </h:panelGroup>
+                                  </h:panelGroup>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      </ui:repeat>
+                    </ul>
+                  </nav>
+                </h:panelGroup>
+              </h:panelGroup>
+            </h:form>
+          </div>
+        </div>
+      </ui:fragment>
 
-	<ui:define name="sidebar">
-		<!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
-		<ui:fragment
-			rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-			<viewerComponent:record_sidebar id="sidebar" />
-		</ui:fragment>
-	</ui:define>
+      <!-- Access ticket required -->
+      <ui:fragment
+        rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}"
+      >
+        <div class="access-ticket-info">
+          <div class="access-ticket-info__inner">
+            <h1>
+              <span class="access-ticket-info__object-title"
+                >#{activeDocumentBean.titleBarLabel}</span
+              >
+            </h1>
+            <p>#{msg.access_tickets__record_access_ticket_required}</p>
+            <button
+              class="btn btn--full"
+              data-toggle="modal"
+              data-target="#accessTicketModal"
+            >
+              #{msg.action__born_digital__unlock}
+            </button>
+            <viewerComponent:modalAccessTicket />
+          </div>
+        </div>
+      </ui:fragment>
 
+      <h:panelGroup rendered="#{userBean.loggedIn}">
+        <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
+      </h:panelGroup>
+
+      <script type="text/javascript">
+        $('[data-toggle="mv-element"]').on("click", function () {
+          var currBtn = $(this);
+
+          currBtn.toggleClass("active");
+          currBtn
+            .parents()
+            .next(".toc__mv-element")
+            .slideToggle({
+              duration: 0,
+              start: function () {
+                currBtn.prev().toggleClass("inactive");
+              },
+            });
+        });
+
+        $('[data-iddoc*="iddoc"] a').on("click", function (event) {
+          event.preventDefault();
+
+          var currIdDoc = $(this).parents("li").attr("data-iddoc");
+          var currUrl = $(this).attr("href");
+
+          sessionStorage.setItem("currIdDoc", currIdDoc);
+          location.href = currUrl;
+        });
+
+        var normdataConfig = {
+          path: "#{request.contextPath}",
+          lang: {
+            popoverTitle: "#{msg.normdataPopoverTitle}",
+            popoverClose: "#{msg.normdataPopoverClose}",
+            showNormdata: "#{msg.normdataExpand}",
+          },
+          elemWrapper: $("#metadataElementWrapper"),
+        };
+
+        viewerJS.normdata.init(normdataConfig);
+      </script>
+    </f:view>
+  </ui:define>
+
+  <ui:define name="sidebar">
+    <!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
+    <ui:fragment
+      rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}"
+    >
+      <viewerComponent:record_sidebar id="sidebar" />
+    </ui:fragment>
+  </ui:define>
 </ui:composition>

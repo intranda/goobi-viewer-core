@@ -12,8 +12,9 @@
   xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 >
   <composite:interface>
-    <composite:attribute name="title" required="true" />
     <composite:attribute name="fileSize" required="true" />
+    <composite:attribute name="id" required="false" default="" />
+    <composite:attribute name="title" required="true" />
   </composite:interface>
 
   <composite:implementation>
@@ -148,7 +149,7 @@
                   </button>
 
                   <h:commandButton
-                    action="#{downloadBean.createPDFDownloadJob(activeDocumentBean.persistentIdentifier, '', true)}"
+                    action="#{downloadBean.createPDFDownloadJob(activeDocumentBean.persistentIdentifier, cc.attrs.id, true)}"
                     styleClass="btn btn--full"
                     value="#{msg.submit}"
                     pt:data-target="buttonLoaderClickEvent"
@@ -179,7 +180,7 @@
               </script>
 
               <!--VALIDATION-->
-              <script>
+              <script type="text/javascript">
                 $(document).ready(function () {
                   const $emailInput = $("input[id$='download-modal__email']");
                   const $radiosWrapper = $("#downloadAcceptTerms");
