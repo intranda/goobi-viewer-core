@@ -23,7 +23,6 @@ package io.goobi.viewer.model.search;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -365,7 +364,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
                     logger.trace("Using first volume for thumbnail: {}", thumbnailPi);
                 }
             }
-            PhysicalElement pe = thumbs.getPage(thumbnailPi, imageNo);
+            PhysicalElement pe = ThumbnailHandler.getPage(thumbnailPi, imageNo);
             if (pe != null) {
                 accessPermissionThumbnail = pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
             }

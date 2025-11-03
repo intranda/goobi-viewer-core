@@ -922,7 +922,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
             SolrDocument docVolume = DataManager.getInstance()
                     .getSearchIndex()
-                    .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(":\"").append(luceneId).append('"').toString(), fields, sortFields);
+                    .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(":\"").append(luceneId).append('"').toString(), fields,
+                            sortFields);
             if (docVolume == null) {
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");
             } else {

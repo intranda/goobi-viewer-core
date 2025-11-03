@@ -50,6 +50,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.Translation;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -117,6 +118,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     @Transient
     private Locale selectedLocale = BeanUtils.getLocale();
+
+    @Transient
+    private AccessPermission accessPermissionThumbnail = null;
 
     /**
      * <p>
@@ -733,4 +737,17 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         this.selectedLocale = locale;
     }
 
+    /**
+     * @return the accessPermissionThumbnail
+     */
+    public AccessPermission getAccessPermissionThumbnail() {
+        return accessPermissionThumbnail;
+    }
+
+    /**
+     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
+     */
+    public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
+        this.accessPermissionThumbnail = accessPermissionThumbnail;
+    }
 }

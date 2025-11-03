@@ -43,6 +43,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
@@ -69,7 +70,6 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     private boolean showDescription = false;
     private int displayNumberOfVolumesLevel;
     private BrowseElementInfo info;
-    private AccessPermission accessPermissionThumbnail = null;
 
     /**
      * A list of metadata values of a specified SOLR field contained in any volumes within the collection. Used to group collections into groups with
@@ -561,11 +561,14 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     @Override
     public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
         logger.trace("getAccessDeniedThumbnailUrl: locale: {}, collection: {}", locale, name);
-        if (accessPermissionThumbnail != null && accessPermissionThumbnail.getAccessDeniedPlaceholderInfo() != null) {
-            AccessDeniedInfoConfig placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
-            if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
-                logger.trace("returning custom image: {}", placeholderInfo.getImageUri());
-                return placeholderInfo.getImageUri();
+        if (info instanceof CMSCollection cmsCollection) {
+            AccessPermission accessPermissionThumbnail = cmsCollection.getAccessPermissionThumbnail();
+            if (accessPermissionThumbnail != null && accessPermissionThumbnail.getAccessDeniedPlaceholderInfo() != null) {
+                AccessDeniedInfoConfig placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+                if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
+                    logger.trace("returning custom image: {}", placeholderInfo.getImageUri());
+                    return placeholderInfo.getImageUri();
+                }
             }
         }
 

@@ -341,7 +341,7 @@ public class ThumbnailHandler {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
+    public static PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (doc != null) {
             StructElement struct = new StructElement((String) doc.getFirstValue(SolrConstants.IDDOC), doc);
