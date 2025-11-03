@@ -456,9 +456,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return getAccessDeniedDescriptionText(IPrivilegeHolder.PRIV_VIEW_IMAGES, locale);
     }
 
+    public String getAccessDeniedDescriptionTextForVideo(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedDescriptionTextForAudio: locale: {}, page: {}", locale, order);
+        return getAccessDeniedDescriptionText(IPrivilegeHolder.PRIV_VIEW_VIDEO, locale);
+    }
+
     public String getAccessDeniedDescriptionTextForAudio(Locale locale) throws IndexUnreachableException, DAOException {
         logger.trace("getAccessDeniedDescriptionTextForAudio: locale: {}, page: {}", locale, order);
         return getAccessDeniedDescriptionText(IPrivilegeHolder.PRIV_VIEW_AUDIO, locale);
+    }
+
+    public String getAccessDeniedDescriptionTextFor3D(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedDescriptionTextFor3D: locale: {}, page: {}", locale, order);
+        return getAccessDeniedDescriptionTextForImage(locale);
     }
 
     /**
@@ -1705,6 +1715,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
                 .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi, fileName,
                         IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request))
                 .isGranted();
+    }
+
+    /**
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean isAccessPermissionVideo() throws IndexUnreachableException, DAOException {
+        HttpServletRequest request = null;
+        if (getFilepath().startsWith("http")) {
+            //External urls are always free to use
+            return true;
+        } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        }
+
+        return getAccessPermission(IPrivilegeHolder.PRIV_VIEW_VIDEO).isGranted() && FilterTools.checkForConcurrentViewLimit(pi, request);
     }
 
     /**
