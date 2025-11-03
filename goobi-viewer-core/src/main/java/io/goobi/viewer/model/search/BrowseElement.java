@@ -23,6 +23,7 @@ package io.goobi.viewer.model.search;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -358,7 +359,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
             String thumbnailPi = pi;
             if (isAnchor() && StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME
                     .equals(DataManager.getInstance().getConfiguration().getAnchorThumbnailMode())) {
-                StructElement firstVolume = structElement.getFirstVolume(Collections.singletonList(SolrConstants.PI));
+                StructElement firstVolume = structElement.getFirstVolume(new ArrayList<>(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
                 if (firstVolume != null) {
                     thumbnailPi = firstVolume.getPi();
                     logger.trace("Using first volume for thumbnail: {}", thumbnailPi);
