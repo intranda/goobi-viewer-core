@@ -89,9 +89,6 @@ public class ThumbnailHandler {
     private static final String OBJECT_3D_THUMB = "thumbnail_3d.png";
     private static final String GROUP_THUMB = "thumbnail_group.jpg";
 
-    private static final String ANCHOR_THUMBNAIL_MODE_GENERIC = "GENERIC";
-    private static final String ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME = "FIRSTVOLUME";
-
     /** Constant <code>REQUIRED_SOLR_FIELDS</code>. */
     public static final Set<String> REQUIRED_SOLR_FIELDS =
             Collections.unmodifiableSet(Set.of(SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT,
@@ -913,9 +910,9 @@ public class ThumbnailHandler {
         String ret = thumbnailUrl;
 
         // Anchor
-        if (ANCHOR_THUMBNAIL_MODE_GENERIC.equals(anchorThumbnailMode)) {
+        if (StringConstants.ANCHOR_THUMBNAIL_MODE_GENERIC.equals(anchorThumbnailMode)) {
             ret = getThumbnailPath(ANCHOR_THUMB).toString();
-        } else if (ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(anchorThumbnailMode)) {
+        } else if (StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(anchorThumbnailMode)) {
             try {
                 StructElement volume = doc.getFirstVolume(new ArrayList<>(REQUIRED_SOLR_FIELDS));
                 if (volume != null) {

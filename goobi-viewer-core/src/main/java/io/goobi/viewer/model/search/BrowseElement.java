@@ -355,7 +355,16 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
             }
 
             // Check thumbnail access so that a custom access denied image can be used
-            PhysicalElement pe = thumbs.getPage(pi, imageNo);
+            String thumbnailPi = pi;
+            if (isAnchor() && StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME
+                    .equals(DataManager.getInstance().getConfiguration().getAnchorThumbnailMode())) {
+                StructElement firstVolume = structElement.getFirstVolume(Collections.singletonList(SolrConstants.PI));
+                if (firstVolume != null) {
+                    thumbnailPi = firstVolume.getPi();
+                    logger.trace("Using first volume for thumbnail: {}", thumbnailPi);
+                }
+            }
+            PhysicalElement pe = thumbs.getPage(thumbnailPi, imageNo);
             if (pe != null) {
                 accessPermissionThumbnail = pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
             }

@@ -2226,7 +2226,7 @@ public class Configuration extends AbstractConfiguration {
     public String getAdvancedSearchFieldDefaultOperator(String field, String template, boolean fallbackToDefaultTemplate) {
         return getAdvancedSearchFieldGetAttributeValue(field, "defaultOperator", template, fallbackToDefaultTemplate);
     }
-    
+
     /**
      * 
      * @param template
@@ -4203,7 +4203,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getAnchorThumbnailMode() {
-        return getLocalString("viewer.anchorThumbnailMode", "GENERIC");
+        return getLocalString("viewer.anchorThumbnailMode", StringConstants.ANCHOR_THUMBNAIL_MODE_GENERIC);
     }
 
     /**
