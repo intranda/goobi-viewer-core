@@ -2226,7 +2226,7 @@ public class Configuration extends AbstractConfiguration {
     public String getAdvancedSearchFieldDefaultOperator(String field, String template, boolean fallbackToDefaultTemplate) {
         return getAdvancedSearchFieldGetAttributeValue(field, "defaultOperator", template, fallbackToDefaultTemplate);
     }
-    
+
     /**
      * 
      * @param template
@@ -5361,34 +5361,6 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return urlString;
-    }
-
-    /**
-     * <p>
-     * getTaskManagerServiceUrl.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     * @deprecated currently unused since download jobs are handled via message queues
-     */
-    @Deprecated(since = "24.10")
-    public String getTaskManagerServiceUrl() {
-        return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "service";
-    }
-
-    /**
-     * <p>
-     * getTaskManagerRestUrl.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     * @deprecated jobs are no longs handled via TaskManager but via queues
-     */
-    @Deprecated(since = "24.10")
-    public String getTaskManagerRestUrl() {
-        return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "rest";
     }
 
     /**

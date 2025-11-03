@@ -49,13 +49,11 @@ import io.goobi.viewer.model.viewer.record.views.VisibilityConditionInfo;
 import jakarta.el.ELException;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.component.UIComponent;
-import jakarta.faces.component.UINamingContainer;
-import jakarta.faces.component.html.HtmlPanelGrid;
-import jakarta.faces.component.html.HtmlPanelGroup;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * DisplayConditions tests whether GUI elements in record views should be visible by a number of factors. These factors encompass the the current
@@ -354,15 +352,6 @@ public class DisplayConditions implements Serializable {
             }
 
             return false;
-        }
-
-        @Deprecated(since = "24.10")
-        public boolean isHasChildrenIfComposite(UIComponent child) {
-            if (child instanceof UINamingContainer || child instanceof HtmlPanelGroup || child instanceof HtmlPanelGrid) {
-                return child.getChildCount() > 0;
-            }
-
-            return true;
         }
 
         UIComponentHelper getChild(String id) {

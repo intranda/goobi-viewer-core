@@ -116,20 +116,11 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
          * Hidden for all users except in the admin backend
          */
         PRIVATE,
-        /**
-         * Hidden to all except users having the appropriate rights
-         */
-        @Deprecated(since = "24.10")
-        RESTRICTED,
+
         /**
          * Visible by all users
          */
-        PUBLIC,
-        /**
-         * Visible to all, but no creation of annotations possible
-         */
-        @Deprecated(since = "24.10")
-        FINISHED;
+        PUBLIC;
 
         public static CampaignVisibility getByName(String name) {
             for (CampaignVisibility viz : CampaignVisibility.values()) {
@@ -1094,40 +1085,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
-     * getDateStartString.
-     * </p>
-     *
-     * @return formatted ISO string representation of stateStart
-     */
-    @Deprecated(since = "24.10")
-    public String getDateStartString() {
-        if (dateStart == null) {
-            return null;
-        }
-
-        return DateTools.format(dateStart, DateTools.FORMATTERISO8601DATE, false);
-    }
-
-    /**
-     * <p>
-     * setDateStartString.
-     * </p>
-     *
-     * @param dateStartString a {@link java.lang.String} object.
-     * @should parse string correctly
-     */
-    @Deprecated(since = "24.10")
-    public void setDateStartString(String dateStartString) {
-        logger.trace("setDateStartString: {}", dateStartString);
-        if (dateStartString != null) {
-            this.dateStart = DateTools.parseDateTimeFromString(dateStartString, false);
-        } else {
-            this.dateStart = null;
-        }
-    }
-
-    /**
      *
      * @return {@link LocalDate}
      */
@@ -1171,39 +1128,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      */
     public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
-    }
-
-    /**
-     * <p>
-     * getDateEndString.
-     * </p>
-     *
-     * @return formatted ISO string representation of dateEnd
-     */
-    @Deprecated(since = "24.10")
-    public String getDateEndString() {
-        if (dateEnd == null) {
-            return null;
-        }
-
-        return DateTools.format(dateEnd, DateTools.FORMATTERISO8601DATE, false);
-    }
-
-    /**
-     * <p>
-     * setDateEndString.
-     * </p>
-     *
-     * @param dateEndString a {@link java.lang.String} object.
-     * @should parse string correctly
-     */
-    @Deprecated(since = "24.10")
-    public void setDateEndString(String dateEndString) {
-        if (dateEndString != null) {
-            this.dateEnd = DateTools.parseDateTimeFromString(dateEndString, false);
-        } else {
-            this.dateEnd = null;
-        }
     }
 
     /**

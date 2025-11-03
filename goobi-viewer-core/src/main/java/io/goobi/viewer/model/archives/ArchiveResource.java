@@ -104,15 +104,11 @@ public class ArchiveResource implements Serializable {
 
     /**
      * @return Combination of databaseName and resourceName
+     * @deprecated TODO Still in use in HTML
      */
     @Deprecated(since = "24.10")
     public String getCombinedName() {
         return resourceName.replaceAll("(?i)\\.xml", "");
-    }
-
-    @Deprecated(since = "24.10")
-    public String getCombinedId() {
-        return getResourceId();
     }
 
     @Override

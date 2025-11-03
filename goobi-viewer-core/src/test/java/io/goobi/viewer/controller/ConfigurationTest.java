@@ -2985,24 +2985,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getTaskManagerRestUrl()
-     * @verifies return correct value
-     */
-    @Test
-    void getTaskManagerRestUrl_shouldReturnCorrectValue() {
-        assertEquals("taskmanager_url/rest", DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
-    }
-
-    /**
-     * @see Configuration#getTaskManagerServiceUrl()
-     * @verifies return correct value
-     */
-    @Test
-    void getTaskManagerServiceUrl_shouldReturnCorrectValue() {
-        assertEquals("taskmanager_url/service", DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl());
-    }
-
-    /**
      * @see Configuration#getThemeRootPath()
      * @verifies return correct value
      */

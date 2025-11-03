@@ -291,9 +291,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      */
     public void setLabel(String value, String language) {
         getLabels().stream()
-            .filter(label -> label.getLanguage().equalsIgnoreCase(language))
-            .findFirst()
-            .ifPresent(label -> label.setTranslationValue(value));
+                .filter(label -> label.getLanguage().equalsIgnoreCase(language))
+                .findFirst()
+                .ifPresent(label -> label.setTranslationValue(value));
     }
 
     /**
@@ -576,30 +576,21 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     public URI getIconURI() {
         logger.trace("getIconURI for {}: {}", getSolrFieldValue(), getRepresentativeWork().isPresent() ? getRepresentativeWorkPI() : "-");
         return getRepresentativeWork().map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(work)))
-                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI()).orElse(getDefaultIcon(getSolrFieldValue())));
+                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI()).orElse(null));
     }
 
     /** {@inheritDoc} */
     @Override
     public URI getIconURI(int width, int height) {
         return getRepresentativeWork().map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(work, width, height)))
-                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(width, height)).orElse(getDefaultIcon(getSolrFieldValue())));
+                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(width, height)).orElse(null));
     }
 
     /** {@inheritDoc} */
     @Override
     public URI getIconURI(int size) {
         return getRepresentativeWork().map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(work, size)))
-                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(size)).orElse(getDefaultIcon(getSolrFieldValue())));
-    }
-
-    /**
-     * @param collectionName
-     * @return {@link URI}
-     */
-    @Deprecated(since = "24.10")
-    public static URI getDefaultIcon(String collectionName) {
-        return null;
+                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(size)).orElse(null));
     }
 
     /**
