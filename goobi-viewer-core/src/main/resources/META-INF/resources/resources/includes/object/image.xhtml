@@ -12,8 +12,8 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- IMAGE CONTAINER -->
-    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3 ? '-thumbnailPreviewGallery' : ''}">
-
+    <div id="imageContainer" class="view-object__image #{!activeDocumentBean.viewManager.currentPage.accessPermissionImage ? '-setBorderTop' : ''} #{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3 ? '-thumbnailPreviewGallery' : ''}">
+		
         <!-- MAP -->
 <!--         <div id="imageMap" class="view-object__image-map" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"></div> -->
 
