@@ -395,7 +395,7 @@ public class CollectionView implements Serializable {
                         PhysicalElement pe = ThumbnailHandler.getPage(cmsCollection.getRepresentativeWorkPI(),
                                 SolrTools.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO));
                         if (pe != null) {
-                            cmsCollection.setAccessPermissionThumbnail(pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS)) ;
+                            cmsCollection.setAccessPermissionThumbnail(pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
                         }
                     }
                 } catch (PresentationException | IndexUnreachableException | DAOException e) {
@@ -456,9 +456,8 @@ public class CollectionView implements Serializable {
     public static int getLevel(String collectionName, String splittingChar) {
         if (StringUtils.isBlank(collectionName)) {
             return -1;
-        } else {
-            return collectionName.length() - collectionName.replace(splittingChar, "").length();
         }
+        return collectionName.length() - collectionName.replace(splittingChar, "").length();
     }
 
     /**
@@ -1087,9 +1086,8 @@ public class CollectionView implements Serializable {
         } else if (openInSearch) {
             if (hasSingleRecordLink(collection)) {
                 return getFirstRecordUrl(collection, field);
-            } else {
-                return getSearchUrl(collection, field, baseSearchUrl);
             }
+            return getSearchUrl(collection, field, baseSearchUrl);
         } else {
             return getCollectionViewUrl(collection);
         }
@@ -1121,16 +1119,15 @@ public class CollectionView implements Serializable {
         // Link directly to single record, if record PI known
         if (collection.getSingleRecordUrl() != null) {
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + collection.getSingleRecordUrl();
-        } else {
-
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
-                    .append("/browse/")
-                    .append(field)
-                    .append("/")
-                    .append(collection.getLuceneName())
-                    .append("/record/")
-                    .toString();
         }
+        
+        return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                .append("/browse/")
+                .append(field)
+                .append("/")
+                .append(collection.getLuceneName())
+                .append("/record/")
+                .toString();
     }
 
     public boolean hasCollectionPage(HierarchicalBrowseDcElement collection) {
@@ -1143,9 +1140,9 @@ public class CollectionView implements Serializable {
             String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
             logger.trace("COLLECTION static url: {}", ret);
             return ret;
-        } else {
-            return "";
         }
+        
+        return "";
     }
 
     public String getSearchUrl(HierarchicalBrowseDcElement collection, String field, final String baseSearchUrl) {
