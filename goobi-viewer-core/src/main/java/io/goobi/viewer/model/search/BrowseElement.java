@@ -66,6 +66,7 @@ import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.PageType;
@@ -356,7 +357,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
             // Check thumbnail access so that a custom access denied image can be used
             PhysicalElement pe = thumbs.getPage(pi, imageNo);
             if (pe != null) {
-                accessPermissionThumbnail = pe.loadAccessPermissionThumbnail();
+                accessPermissionThumbnail = pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
             }
         }
 

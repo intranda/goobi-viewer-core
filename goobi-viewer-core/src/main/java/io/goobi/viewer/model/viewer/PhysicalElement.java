@@ -152,10 +152,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     private boolean fulltextAvailable = false;
 
     private Boolean fulltextAccessPermission;
-
-    private AccessPermission accessPermissionImage = null;
-
-    private AccessPermission accessPermissionThumbnail = null;
+    /** Map containing AccessPermission access check results and custom access denied info. */
+    private Map<String, AccessPermission> accessPermissionMap = new HashMap<>();
     /** True if a download ticket is required before files may be downloaded. Value is set during the access permission check. */
     private Boolean bornDigitalDownloadTicketRequired = null; // TODO reset when logging in/out or persist in session
     /** File name of the full-text document in the file system. */
@@ -453,16 +451,30 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return thumbHandler.getThumbnailUrl(this, width, height);
     }
 
-    public String getAccessDeniedDescriptionText(Locale locale) throws IndexUnreachableException, DAOException {
-        logger.trace("getAccessDeniedDescriptionText: locale: {}, page: {}", locale, order);
-        if (accessPermissionImage == null) {
-            accessPermissionImage = loadAccessPermissionImage();
-        }
+    public String getAccessDeniedDescriptionTextForImage(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedDescriptionTextForImage: locale: {}, page: {}", locale, order);
+        return getAccessDeniedDescriptionText(IPrivilegeHolder.PRIV_VIEW_AUDIO, locale);
+    }
 
-        if (accessPermissionImage != null && accessPermissionImage.getAccessDeniedPlaceholderInfo() != null) {
-            AccessDeniedInfoConfig placeholderInfo = accessPermissionImage.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+    public String getAccessDeniedDescriptionTextForAudio(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedDescriptionTextForAudio: locale: {}, page: {}", locale, order);
+        return getAccessDeniedDescriptionText(IPrivilegeHolder.PRIV_VIEW_AUDIO, locale);
+    }
+
+    /**
+     * 
+     * @param accessPermission
+     * @param locale
+     * @return Description text if found; otherwise null
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    private String getAccessDeniedDescriptionText(String privilegeName, Locale locale) throws IndexUnreachableException, DAOException {
+        AccessPermission accessPermission = getAccessPermission(privilegeName);
+        if (accessPermission != null && accessPermission.getAccessDeniedPlaceholderInfo() != null) {
+            AccessDeniedInfoConfig placeholderInfo = accessPermission.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
             if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getDescription())) {
-                logger.trace("returning custom description text: {}", placeholderInfo.getDescription());
+                logger.trace("returning custom description text for {}: {}", privilegeName, placeholderInfo.getDescription());
                 return StringTools.stripJS(placeholderInfo.getDescription());
             }
         }
@@ -472,21 +484,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     public String getAccessDeniedImageUrl(Locale locale) throws IndexUnreachableException, DAOException {
         logger.trace("getAccessDeniedImageUrl: locale: {}, page: {}", locale, order);
-        if (accessPermissionImage == null) {
-            accessPermissionImage = loadAccessPermissionImage();
-        }
-
-        return getAccessDeniedUrl(accessPermissionImage, locale);
+        return getAccessDeniedUrl(getAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES), locale);
     }
 
     @Override
     public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
         logger.trace("getAccessDeniedThumbnailUrl: locale: {}, page: {}", locale, order);
-        if (accessPermissionThumbnail == null) {
-            accessPermissionThumbnail = loadAccessPermissionThumbnail();
-        }
-
-        return getAccessDeniedUrl(accessPermissionThumbnail, locale);
+        return getAccessDeniedUrl(getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS), locale);
     }
 
     /**
@@ -495,7 +499,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @param locale
      * @return Access denied image url; null if none found
      */
-    String getAccessDeniedUrl(AccessPermission accessPermission, Locale locale) {
+    static String getAccessDeniedUrl(AccessPermission accessPermission, Locale locale) {
         if (accessPermission != null && accessPermission.getAccessDeniedPlaceholderInfo() != null) {
             AccessDeniedInfoConfig placeholderInfo = accessPermission.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
             if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
@@ -508,29 +512,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * @return the accessPermissionThumbnail
+     * @param privilegeName
+     * @return the accessPermissionAudio
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    AccessPermission loadAccessPermissionImage() throws IndexUnreachableException, DAOException {
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        accessPermissionImage = AccessConditionUtils
-                .checkAccessPermissionForImage(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request));
+    public AccessPermission getAccessPermission(String privilegeName) throws IndexUnreachableException, DAOException {
+        if (accessPermissionMap.get(privilegeName) == null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            accessPermissionMap.put(privilegeName, AccessConditionUtils
+                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi, fileName,
+                            privilegeName, NetTools.getIpAddress(request)));
+        }
 
-        return accessPermissionImage;
-    }
-
-    /**
-     * @return the accessPermissionThumbnail
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     */
-    public AccessPermission loadAccessPermissionThumbnail() throws IndexUnreachableException, DAOException {
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        accessPermissionThumbnail = AccessConditionUtils
-                .checkAccessPermissionForThumbnail(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request));
-
-        return accessPermissionThumbnail;
+        return accessPermissionMap.get(privilegeName);
     }
 
     /**
@@ -1567,12 +1562,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         }
 
-        if (accessPermissionImage == null) {
-            accessPermissionImage = AccessConditionUtils
-                    .checkAccessPermissionForImage(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request));
-        }
-
-        return accessPermissionImage.isGranted() && FilterTools.checkForConcurrentViewLimit(pi, request);
+        return getAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES).isGranted() && FilterTools.checkForConcurrentViewLimit(pi, request);
     }
 
     /**
@@ -1712,6 +1702,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
                 .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi, fileName,
                         IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request))
                 .isGranted();
+    }
+
+    /**
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean isAccessPermissionAudio() throws IndexUnreachableException, DAOException {
+        HttpServletRequest request = null;
+        if (getFilepath().startsWith("http")) {
+            //External urls are always free to use
+            return true;
+        } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        }
+
+        return getAccessPermission(IPrivilegeHolder.PRIV_VIEW_AUDIO).isGranted() && FilterTools.checkForConcurrentViewLimit(pi, request);
     }
 
     /**
