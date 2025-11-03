@@ -453,7 +453,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     public String getAccessDeniedDescriptionTextForImage(Locale locale) throws IndexUnreachableException, DAOException {
         logger.trace("getAccessDeniedDescriptionTextForImage: locale: {}, page: {}", locale, order);
-        return getAccessDeniedDescriptionText(IPrivilegeHolder.PRIV_VIEW_AUDIO, locale);
+        return getAccessDeniedDescriptionText(IPrivilegeHolder.PRIV_VIEW_IMAGES, locale);
     }
 
     public String getAccessDeniedDescriptionTextForAudio(Locale locale) throws IndexUnreachableException, DAOException {
@@ -519,7 +519,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      */
     public AccessPermission getAccessPermission(String privilegeName) throws IndexUnreachableException, DAOException {
         if (accessPermissionMap.get(privilegeName) == null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            HttpServletRequest request = null;
+            if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+                request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            }
             accessPermissionMap.put(privilegeName, AccessConditionUtils
                     .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi, fileName,
                             privilegeName, NetTools.getIpAddress(request)));
