@@ -36,6 +36,8 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -65,6 +67,8 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -76,11 +80,17 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -122,12 +132,27 @@ public class ManifestBuilder extends AbstractBuilder {
      */
     public AbstractPresentationModelElement2 generateManifest(StructElement ele, List<Integer> pagesToInclude)
             throws URISyntaxException, PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
-
         final AbstractPresentationModelElement2 manifest;
 
         if (ele.isAnchor()) {
             manifest = new Collection2(getManifestURI(ele.getPi()), ele.getPi());
             manifest.addViewingHint(ViewingHint.multipart);
+
+            StructElement firstVolume = ele.getFirstVolume(new ArrayList<>(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
+            if (firstVolume != null) {
+                String thumbnailPi = firstVolume.getPi();
+                logger.trace("Using first volume for thumbnail: {}", thumbnailPi);
+                String thumbPageNo = firstVolume.getMetadataValue(SolrConstants.THUMBPAGENO);
+                PhysicalElement pe = ThumbnailHandler.getPage(thumbnailPi, StringUtils.isNotBlank(thumbPageNo) ? Integer.parseInt(thumbPageNo) : 1);
+                if (pe != null) {
+                    AccessPermission accessPermission = pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
+                    if (accessPermission != null && accessPermission.getAccessDeniedPlaceholderInfo() != null) {
+                        for (Entry<String, AccessDeniedInfoConfig> entry : accessPermission.getAccessDeniedPlaceholderInfo().entrySet()) {
+                            manifest.getAccessDeniedThumbnailUris().put(entry.getKey(), entry.getValue().getImageUri());
+                        }
+                    }
+                }
+            }
         } else {
             ele.setImageNumber(1);
             manifest = new Manifest2(getManifestURI(ele.getPi()));
@@ -135,6 +160,27 @@ public class ManifestBuilder extends AbstractBuilder {
             AutoSuggestService autoComplete = new AutoSuggestService(getAutoCompleteServiceURI(ele.getPi()));
             search.addService(autoComplete);
             manifest.addService(search);
+
+            List<String> accessConditions = ele.getMetadataFields().get(SolrConstants.ACCESSCONDITION);
+            if (accessConditions != null && accessConditions.isEmpty()) {
+                for (String accessCondition : accessConditions) {
+                    logger.trace("{} has access condition: {}", ele.getPi(), accessCondition);
+                }
+                String fileName = ele.getFirstPageFieldValue(SolrConstants.THUMBNAIL);
+
+                HttpServletRequest request = null;
+                if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+                    request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+                }
+                AccessPermission accessPermission = AccessConditionUtils
+                        .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, ele.getPi(),
+                                fileName, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, NetTools.getIpAddress(request));
+                if (accessPermission != null && accessPermission.getAccessDeniedPlaceholderInfo() != null) {
+                    for (Entry<String, AccessDeniedInfoConfig> entry : accessPermission.getAccessDeniedPlaceholderInfo().entrySet()) {
+                        manifest.getAccessDeniedThumbnailUris().put(entry.getKey(), entry.getValue().getImageUri());
+                    }
+                }
+            }
         }
 
         List<PhysicalElement> pages = pagesToInclude.stream().map(pageNo -> getPhysicalElement(pageNo, ele)).toList();

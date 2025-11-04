@@ -91,8 +91,8 @@ public class ThumbnailHandler {
 
     /** Constant <code>REQUIRED_SOLR_FIELDS</code>. */
     public static final Set<String> REQUIRED_SOLR_FIELDS =
-            Collections.unmodifiableSet(Set.of(SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT,
-                    SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME,
+            Collections.unmodifiableSet(Set.of(SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE,
+                    SolrConstants.THUMBNAIL, SolrConstants.THUMBPAGENO, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME,
                     SolrConstants.FILENAME_HTML_SANDBOXED));
 
     private final String staticImagesPath;

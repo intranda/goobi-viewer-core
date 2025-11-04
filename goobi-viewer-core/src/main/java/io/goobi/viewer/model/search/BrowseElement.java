@@ -252,11 +252,11 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
         // Populate metadata
         int length = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueLength();
-        int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
+        // int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
         for (Entry<String, List<Metadata>> entry : this.metadataListMap.entrySet()) {
             if (!entry.getValue().isEmpty()) {
                 // logger.trace("populating metadata list {}", entry.getKey()); //NOSONAR Debug
-                populateMetadataList(entry.getValue(), structElement, topStructElement, anchorStructElement, searchTerms, length, number, locale);
+                populateMetadataList(entry.getValue(), structElement, anchorStructElement, searchTerms, length, locale);
             }
         }
 
@@ -362,6 +362,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
                 if (firstVolume != null) {
                     thumbnailPi = firstVolume.getPi();
                     logger.trace("Using first volume for thumbnail: {}", thumbnailPi);
+                    String thumbPageNo = firstVolume.getMetadataValue(SolrConstants.THUMBPAGENO);
+                    imageNo = StringUtils.isNotBlank(thumbPageNo) ? Integer.parseInt(thumbPageNo) : 1;
                 }
             }
             PhysicalElement pe = ThumbnailHandler.getPage(thumbnailPi, imageNo);
@@ -395,18 +397,15 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * 
      * @param metadataList
      * @param structElement
-     * @param topStructElement
      * @param anchorStructElement
      * @param searchTerms
      * @param length
-     * @param number
      * @param locale
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    void populateMetadataList(List<Metadata> metadataList, StructElement structElement, StructElement topStructElement,
-            StructElement anchorStructElement, Map<String, Set<String>> searchTerms, int length, int number, Locale locale)
-            throws IndexUnreachableException, PresentationException {
+    void populateMetadataList(List<Metadata> metadataList, StructElement structElement, StructElement anchorStructElement,
+            Map<String, Set<String>> searchTerms, int length, Locale locale) throws IndexUnreachableException, PresentationException {
         if (metadataList == null) {
             throw new IllegalArgumentException("metadataList may not be null");
         }
