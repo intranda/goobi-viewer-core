@@ -5,26 +5,24 @@
 /* WIDGETS */
 /* BLOcK */
 .widget {
-	margin-bottom: 20px;
-	width: 100%;
-	&__topbar {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+    .icon-wrapper { color: @white; }
+    .icon-wrapper svg { color: currentColor; }
+    &__topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
 		min-height: 35px;
 		&.collapsible {
 			cursor: pointer;
 			pointer-events: all;
 			.widget__topbar-icon-collapsible  {
 				font-size: @fontNormal;
-				display: inline-block;
-			}
-
-			&.in {
-				.fa-angle-down {
-					transform: rotate(-180deg);
-				}
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
 			}
 		}
 
@@ -121,6 +119,22 @@
 			}
 		}
 	}
+
+    .widget-usage__page-download-pdf,
+    .widget-downloads__page-download-pdf,
+    .widget-downloads__work-download-pdf {
+        line-height: 1;
+        .icon-text { gap: 3px !important; }
+        .icon-wrapper { line-height: 0; display: inline-flex; }
+        .icon-wrapper > svg { display: block; width: 22.5px !important; height: 22.5px !important;}
+    }
+
+    .widget-usage__page-download-pdf.badge,
+    .widget-downloads__page-download-pdf.badge,
+    .widget-downloads__work-download-pdf.badge {
+        padding-top: .1rem;
+        padding-bottom: .1rem;
+    }
 
 	&__badge-container-heading {
 		margin-bottom: 0px;

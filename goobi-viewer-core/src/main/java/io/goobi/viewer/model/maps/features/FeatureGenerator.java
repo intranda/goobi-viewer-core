@@ -120,7 +120,7 @@ public class FeatureGenerator {
             MetadataContainer relation = metadataGroups.getRelatedRecord(group);
             if (relation != null) {
                 MetadataContainer groupMd = new MetadataContainer(group.getMetadata());
-                List<String> coordinates = getCoordinates(group, coordinateFields);
+                List<String> coordinates = getCoordinates(relation, coordinateFields);
                 Collection<GeoMapFeature> f = getFeatures(groupMd, relation, coordinates);
                 features.addAll(f);
             }

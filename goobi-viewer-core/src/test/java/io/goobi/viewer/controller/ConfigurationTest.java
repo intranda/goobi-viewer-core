@@ -1803,7 +1803,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getAdvancedSearchFieldDefaultOperator_shouldReturnCorrectValue() {
-        assertEquals("OR", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDefaultOperator("MD_NAME", "person", false));
+        assertEquals("AND", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDefaultOperator("MD_NAME", "person", false));
     }
 
     /**

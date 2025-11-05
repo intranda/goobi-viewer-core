@@ -55,6 +55,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -1155,6 +1156,29 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#generateAdvancedExpandQuery(SearchQueryGroup,boolean)
+     * @verifies put item sequences with the same field into common parentheses
+     */
+    @Test
+    void generateAdvancedExpandQuery_shouldPutItemSequencesWithSameFieldIntoCommonParentheses() {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance()
+                .getConfiguration()
+                .getAdvancedSearchFields("person", false, BeanUtils.getLocale().getLanguage()), "person");
+        Assertions.assertTrue(group.addNewQueryItem(group.getQueryItems().get(0).getField(), 0));
+        group.getQueryItems().get(0).setValue("person1");
+        group.getQueryItems().get(0).setDisplaySelectItems(false);
+        group.getQueryItems().get(1).setValue("person2");
+        group.getQueryItems().get(1).setDisplaySelectItems(false);
+
+        Assertions.assertEquals(" +(+((MD_NAME:(person1)) (MD_NAME:(person2))))", SearchHelper.generateAdvancedExpandQuery(group, false));
+        
+        // Removing the value from one of the group items should trigger the finalization of the group query correctly
+        group.getQueryItems().get(1).setValue("");
+        Assertions.assertEquals(" +(+((MD_NAME:(person1))))", SearchHelper.generateAdvancedExpandQuery(group, false));
+        
+    }
+
+    /**
      * @see SearchHelper#exportSearchAsExcel(String,List,Map)
      * @verifies create excel workbook correctly
      */
@@ -1565,7 +1589,8 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void getQueryForAccessCondition_shouldBuildEscapedQueryCorrectly() {
         Assertions.assertEquals(
-                "+(ISWORK:true ISANCHOR:true DOCTYPE:(UGC METADATA ARCHIVE)) +" + SolrConstants.ACCESSCONDITION + ":\"foo" + StringTools.SLASH_REPLACEMENT + "bar\"",
+                "+(ISWORK:true ISANCHOR:true DOCTYPE:(UGC METADATA ARCHIVE)) +" + SolrConstants.ACCESSCONDITION + ":\"foo"
+                        + StringTools.SLASH_REPLACEMENT + "bar\"",
                 SearchHelper.getQueryForAccessCondition("foo/bar", true));
     }
 

@@ -1,5 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -11,6 +12,7 @@
     <composite:interface />
 
     <composite:implementation>
+        <div class="widget">
 
                     <!-- PAGE -->
 					<ui:fragment
@@ -30,17 +32,17 @@
 							<!-- PDF (PAGE) -->
 							<ui:fragment rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
 							                         activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
-								<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
-									id="pdfPage"
-									class="badge badge-dark widget-usage__page-download-pdf"
+                                <a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
+                                    id="pdfPage"
+                                    class="badge badge-dark widget-usage__page-download-pdf widget-downloads__page-download-pdf"
                                     title="#{msg.label__pdf_download_image}"
                                     data-toggle="tooltip"
 									data-placement="top"
 									data-trigger="hover"
 									target="_blank" rel="nofollow noopener"
                                     aria-label="#{msg.image}: #{msg.label__pdf_download}">
-									<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-									#{msg.label__pdf_download} </a>
+                                    <util:icon icon="file-type-pdf"/>
+                                </a>
 							</ui:fragment>
 
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital}">
@@ -265,5 +267,6 @@
 						</div>
 					</ui:fragment>
 
-	</composite:implementation>
+        </div>
+    </composite:implementation>
 </ui:composition>

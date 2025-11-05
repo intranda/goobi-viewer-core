@@ -269,12 +269,12 @@ public abstract class AbstractPageLoader implements IPageLoader {
                 .setDataRepository(dataRepository)
                 .build();
 
-        //        if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
-        //            pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
-        //        }
-        //        if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
-        //            pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
-        //        }
+        if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
+            pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
+        }
+        if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
+            pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
+        }
 
         // Full-text filename
         pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));

@@ -1,5 +1,11 @@
-riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div class="admin-cms-media__upload" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file"><img riot-src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"><div class="delete_overlay" onclick="{deleteFile}"><i class="fa fa-trash" aria-hidden="true"></i></div></div></div></div>', '', '', function(opts) {
+riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div class="admin-cms-media__upload" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><svg class="admin-cms-media__upload-icon admin-cms-media__upload-icon--spinner" viewbox="0 0 24 24" width="30" height="30" aria-hidden="true"><use riot-href="{getIconHref(\'loader-2\')}"></use></svg> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><svg class="admin-cms-media__upload-icon" viewbox="0 0 24 24" width="30" height="30" aria-hidden="true"><use riot-href="{getIconHref(\'check\')}"></use></svg> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><svg class="admin-cms-media__upload-icon" viewbox="0 0 24 24" width="30" height="30" aria-hidden="true"><use riot-href="{getIconHref(\'alert-circle\')}"></use></svg><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file"><img riot-src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"><div class="delete_overlay" onclick="{deleteFile}"><svg class="admin-cms-media__delete-icon" viewbox="0 0 24 24" width="30" height="24" aria-hidden="true"><use riot-href="{getIconHref(\'trash\')}"></use></svg></div></div></div></div>', '', '', function(opts) {
+        const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+        const viewerConfig = window.viewerConfig || {};
+        this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+        this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
+
         this.files = [];
+
         this.displayFiles = [];
         this.uploadedFiles = []
         if(this.opts.fileTypes) {
@@ -290,8 +296,11 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         }.bind(this)
 });
 
-riot.tag2('bookmarklist', '<ul class="{mainClass} list"><li each="{bookmarkList in getBookmarkLists()}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><i if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-9 no-padding"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="col-2 no-padding icon-list"><a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{msg(\'bookmarkList_session_mail_sendList\')}"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}"><i class="fa fa-search" aria-hidden="true"></i></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg(\'viewMiradorComparison\')}"><i class="fa fa-th" aria-hidden="true"></i></a></div><div class="col-1 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul>', '', '', function(opts) {
-
+riot.tag2('bookmarklist', '<ul class="{mainClass} list"><li each="{bookmarkList in getBookmarkLists()}"><button if="{pi}" class="btn btn--clean" type="button" onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}"><svg if="{inList(bookmarkList, this.pi, this.page, this.logid)}" class="bookmark-popup__check-icon" viewbox="0 0 24 24" width="16" height="16" aria-hidden="true"><use riot-href="{getIconHref(\'check\')}"></use></svg> {bookmarkList.name} <span>{bookmarkList.numItems}</span></button><div if="{!pi}" class="row no-margin"><div class="col-9 no-padding"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="col-2 no-padding icon-list"><a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{msg(\'bookmarkList_session_mail_sendList\')}"><svg class="bookmark-popup__action-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'send\')}"></use></svg></a><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}"><svg class="bookmark-popup__action-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'search\')}"></use></svg></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg(\'viewMiradorComparison\')}"><svg class="bookmark-popup__action-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'grid-dots\')}"></use></svg></a></div><div class="col-1 no-padding"><span class="{mainClass}-counter">{bookmarkList.numItems}</span></div></div></li></ul>', '', '', function(opts) {
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 this.pi = this.opts.data.pi;
 this.logid = this.opts.data.logid;
@@ -394,9 +403,13 @@ this.msg = function(key) {
 
 });
 
+riot.tag2('bookmarklistloggedin', '<ul if="{opts.bookmarks.config.userLoggedIn}" class="{mainClass}-small-list list"><li class="{mainClass}-entry" each="{bookmarkList in getBookmarkLists()}"><div class="login-navigation__bookmarks-name"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="login-navigation__bookmarks-icon-list icon-list"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}"><svg class="admin-cms-media__upload-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'search\')}"></use></svg></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg(\'viewMiradorComparison\')}"><svg class="admin-cms-media__upload-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'grid-dots\')}"></use></svg></a><span title="{msg(\'admin__crowdsourcing_campaign_statistics_numRecords\')}" class="{mainClass}-counter">{bookmarkList.numItems}</span></div></li><li class="{mainClass}-entry"><a class="login-navigation__bookmarks-overview-link" href="{allBookmarksUrl()}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'bookmarkList_overview_all\')}">{msg(\'bookmarkList_overview_all\')} </a></li></ul>', '', '', function(opts) {
 
-riot.tag2('bookmarklistloggedin', '<ul if="{opts.bookmarks.config.userLoggedIn}" class="{mainClass}-small-list list"><li class="{mainClass}-entry" each="{bookmarkList in getBookmarkLists()}"><div class="login-navigation__bookmarks-name"><a href="{opts.bookmarks.getBookmarkListUrl(bookmarkList.id)}">{bookmarkList.name}</a></div><div class="login-navigation__bookmarks-icon-list icon-list"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'action__search_in_bookmarks\')}"><i class="fa fa-search" aria-hidden="true"></i></a><a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg(\'viewMiradorComparison\')}"><i class="fa fa-th" aria-hidden="true"></i></a><span title="{msg(\'admin__crowdsourcing_campaign_statistics_numRecords\')}" class="{mainClass}-counter">{bookmarkList.numItems}</span></div></li><li class="{mainClass}-entry"><a class="login-navigation__bookmarks-overview-link" href="{allBookmarksUrl()}" data-toggle="tooltip" data-placement="top" data-original-title="" title="{msg(\'bookmarkList_overview_all\')}">{msg(\'bookmarkList_overview_all\')} </a></li></ul>', '', '', function(opts) {
 
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 this.pi = this.opts.data.pi;
 this.logid = this.opts.data.logid;
@@ -501,9 +514,11 @@ this.msg = function(key) {
 
 });
 
-
-riot.tag2('bookmarklistsession', '<ul each="{bookmarkList in getBookmarkLists()}" class="{mainClass} list"><li each="{bookmark in bookmarkList.items}"><div class="row no-margin {mainClass}-single-entry"><div class="col-11 no-padding {mainClass}-title"><a href="{opts.bookmarks.config.root}{bookmark.url}"><div class="row no-gutters"><div class="col-4 no-padding"><div class="{mainClass}-image" riot-style="background-image: url({bookmark.representativeImageUrl});"></div></div><div class="col-7 no-padding"><h3>{bookmark.name}</h3></div></div></a></div><div class="col-1 no-padding {mainClass}-remove"><button class="btn btn--clean" type="button" data-bookmark-list-type="delete" onclick="{remove}" aria-label="{msg(\'bookmarkList_removeFromBookmarkList\')}"><i class="fa fa-ban" aria-hidden="true"></i></button></div></div></li></ul><div each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions"><div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset"><button class="btn btn--clean" type="button" data-bookmark-list-type="reset" onclick="{deleteList}"><span>{msg(\'bookmarkList_reset\')}</span><i class="fa fa-trash-o" aria-hidden="true"></i></button></div><div if="{maySendList(bookmarkList)}" class="{mainClass}-send"><a href="{sendListUrl(bookmarkList)}"><span>{msg(\'bookmarkList_session_mail_sendList\')}</span><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a></div><div if="{maySearchList(bookmarkList)}" class="{mainClass}-search"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title=""><span>{msg(\'action__search_in_bookmarks\')}</span><i class="fa fa-search" aria-hidden="true"></i></a></div><div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador"><a href="{miradorUrl(bookmarkList)}" target="_blank"><span>{msg(\'viewMiradorComparison\')}</span><i class="fa fa-th" aria-hidden="true"></i></a></div></div>', '', '', function(opts) {
-
+riot.tag2('bookmarklistsession', '<ul each="{bookmarkList in getBookmarkLists()}" class="{mainClass} list"><li each="{bookmark in bookmarkList.items}"><div class="row no-margin {mainClass}-single-entry"><div class="col-11 no-padding {mainClass}-title"><a href="{opts.bookmarks.config.root}{bookmark.url}"><div class="row no-gutters"><div class="col-4 no-padding"><div class="{mainClass}-image" riot-style="background-image: url({bookmark.representativeImageUrl});"></div></div><div class="col-7 no-padding"><h3>{bookmark.name}</h3></div></div></a></div><div class="col-1 no-padding {mainClass}-remove"><button class="btn btn--clean" type="button" data-bookmark-list-type="delete" onclick="{remove}" aria-label="{msg(\'bookmarkList_removeFromBookmarkList\')}"><svg class="admin-cms-media__upload-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'ban\')}"></use></svg></button></div></div></li></ul><div each="{bookmarkList in getBookmarkLists()}" class="{mainClass}-actions"><div if="{mayEmptyList(bookmarkList)}" class="{mainClass}-reset"><button class="btn btn--clean" type="button" data-bookmark-list-type="reset" onclick="{deleteList}"><span>{msg(\'bookmarkList_reset\')}</span><svg class="admin-cms-media__upload-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'trash\')}"></use></svg></button></div><div if="{maySendList(bookmarkList)}" class="{mainClass}-send"><a href="{sendListUrl(bookmarkList)}"><span>{msg(\'bookmarkList_session_mail_sendList\')}</span><svg class="admin-cms-media__upload-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'send\')}"></use></svg></a></div><div if="{maySearchList(bookmarkList)}" class="{mainClass}-search"><a href="{searchListUrl(bookmarkList)}" data-toggle="tooltip" data-placement="top" data-original-title="" title=""><span>{msg(\'action__search_in_bookmarks\')}</span><svg class="admin-cms-media__upload-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'search\')}"></use></svg></a></div><div if="{mayCompareList(bookmarkList)}" class="{mainClass}-mirador"><a href="{miradorUrl(bookmarkList)}" target="_blank"><span>{msg(\'viewMiradorComparison\')}</span><svg class="admin-cms-media__upload-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'grid-dots\')}"></use></svg></a></div></div>', '', '', function(opts) {
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 this.pi = this.opts.data.pi;
 this.logid = this.opts.data.logid;
@@ -589,10 +604,13 @@ this.msg = function(key) {
 
 });
 
-
-riot.tag2('bookmarkspopup', '<div class="bookmark-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookmark-popup__radio-buttons"><div><label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" riot-value="{msg(\'bookmarkList_typeRecord\')}" onclick="{setBookmarkTypeRecord}">{msg(\'bookmarkList_typeRecord\')}</label></div><div><label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" riot-value="{msg(\'bookmarkList_typePage\')}" onclick="{setBookmarkTypePage}">{msg(\'bookmarkList_typePage\')}</label></div></div><div class="bookmark-popup__header"> {msg(\'bookmarkList_selectBookmarkList\')} </div><div class="bookmark-popup__body"><bookmarklist data="{this.opts.data}" loader="{this.opts.loader}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookmark-popup__footer"><div class="row no-margin"><div class="col-11 no-padding"><input ref="inputValue" type="text" placeholder="{msg(\'bookmarkList_addNewBookmarkList\')}" aria-label="{msg(\'bookmarkList_addNewBookmarkList\')}"></div><div class="col-1 no-padding"><button class="btn btn-clean" type="button" aria-label="{msg(\'bookmarkList_addNewBookmarkList\')}" onclick="{add}"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 41.57 41.57"><g id="icon-bs-add" transform="translate(-27.5 -243.5)"><line id="Linie_12" data-name="Linie 12" class="cls-1" x2="41.57" transform="translate(27.5 264.285)"></line><line id="Linie_13" data-name="Linie 13" class="cls-1" x2="41.57" transform="translate(48.285 243.5) rotate(90)"></line></g></svg></button></div></div></div>', '', 'class="bookmark-popup bottom" role="region" aria-label="{msg(\'bookmarks\')}"', function(opts) {
+riot.tag2('bookmarkspopup', '<div class="bookmark-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookmark-popup__radio-buttons"><div><label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" riot-value="{msg(\'bookmarkList_typeRecord\')}" onclick="{setBookmarkTypeRecord}">{msg(\'bookmarkList_typeRecord\')}</label></div><div><label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" riot-value="{msg(\'bookmarkList_typePage\')}" onclick="{setBookmarkTypePage}">{msg(\'bookmarkList_typePage\')}</label></div></div><div class="bookmark-popup__header"> {msg(\'bookmarkList_selectBookmarkList\')} </div><div class="bookmark-popup__body"><bookmarklist data="{this.opts.data}" loader="{this.opts.loader}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookmark-popup__footer"><div class="row no-margin"><div class="col-11 no-padding"><input ref="inputValue" type="text" placeholder="{msg(\'bookmarkList_addNewBookmarkList\')}" aria-label="{msg(\'bookmarkList_addNewBookmarkList\')}"></div><div class="col-1 no-padding"><button class="btn btn-clean bookmark-popup__add-button" type="button" aria-label="{msg(\'bookmarkList_addNewBookmarkList\')}" onclick="{add}"><svg class="bookmark-popup__add-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false"><use riot-href="{getIconHref(\'plus\')}"></use></svg></button></div></div></div>', '', 'class="bookmark-popup bottom" role="region" aria-label="{msg(\'bookmarks\')}"', function(opts) {
 
 const popupOffset = 6;
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 this.opts.loader = ".bookmark-popup__body-loader";
 
@@ -687,6 +705,7 @@ this.msg = function(key) {
 }.bind(this)
 
 });
+
 riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYearStart}" title="{msg.enterYearStart}" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYearEnd}" title="{msg.enterYearEnd}" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
 
 
@@ -1132,7 +1151,11 @@ this.$getSlider = function() {
 }.bind(this)
 
 });
-riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" alt="{getValue(collection.label)}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h3 class="card-title"><a href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed card-title-collapse" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h3><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"><raw html="{getDescription(collection)}"></raw></p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><subcollection if="{collection.members && collection.members.length > 0}" collection="{collection}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"></subcollection></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
+riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" alt="{getValue(collection.label)}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h3 class="card-title"><a href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed card-title-collapse" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><svg class="tpl-stacked-collection__icon tpl-stacked-collection__icon--collapse" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'chevron-down\')}"></use></svg></a></h3><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><svg class="tpl-stacked-collection__icon tpl-stacked-collection__icon--info" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'info-circle\')}"></use></svg></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><svg class="tpl-stacked-collection__icon tpl-stacked-collection__icon--rss" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'rss\')}"></use></svg></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"><raw html="{getDescription(collection)}"></raw></p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><subcollection if="{collection.members && collection.members.length > 0}" collection="{collection}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"></subcollection></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 riot.tag('raw', '', function(opts) {
     this.root.innerHTML = opts.html;
@@ -1213,7 +1236,6 @@ this.getId = function(element) {
 
 });
 
-
 riot.tag2('collectionview', '<div each="{set, index in collectionSets}"><h2 if="{set[0] != \'\'}">{translator.translate(set[0])}</h2><collectionlist collections="{set[1]}" language="{opts.language}" defaultlanguage="{opts.defaultlanguage}" setindex="{index}" depth="{opts.depth}"></collectionlist></div>', '', '', function(opts) {
 
 this.collectionSets = [];
@@ -1223,8 +1245,8 @@ this.on("mount", () => {
     this.fetchCollections()
     .then( () => {
         let keys = this.collectionSets.map(set => set[0]);
-        this.translator = new viewerJS.translator(this.opts.restapi.replace("/rest", "/api/v1"), this.opts.language);
-        return this.translator.init(keys);
+        this.translator = viewerJS.translator;
+        return this.translator.addTranslations(keys);
     })
     .then( () => {
         this.update();
@@ -1308,7 +1330,12 @@ this.addToMap = function(map, key, value) {
 
 });
 
-riot.tag2('external-resource-download', '<div class="download-external-resource__list"><div class="download-external-resource__item" each="{url in urls}"><div class="download-external-resource__error_wrapper {isError(url) ? \'-active\' : \'\'}"><i class="fa fa-exclamation-triangle"></i><label class="download-external-resource__error">{getErrorMessage(url)}</label></div><div class="download-external-resource__inner-wrapper {isFinished(url) ? \'\' : \'-active\'}"><span class="download-external-resource__label">{url}</span><div class="download-external-resource__button-wrapper"><button class="download-external-resource__order download-external-resource__button btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? \'\' : \'-active\'}" onclick="{startDownloadTask}">{msg.downloadButton}</button></div><div class="download-external-resource__waiting_animation {isWaiting(url) ? \'-active\' : \'\'}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div class="download-external-resource__loading_animation {isDownloading(url) ? \'-active\' : \'\'}"><progress riot-value="{getDownloadProgress(url)}" max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress></div></div><div class="download-external-resource__results {isFinished(url) ? \'-active\' : \'\'}"><virtual each="{object in getFiles(url)}"><div class="born-digital__items-wrapper"><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filename}</span></div><div class="born-digital__item"><span>{object.path}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filedescription}</span></div><div class="born-digital__item"><span>{object.description}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filesize}</span></div><div class="born-digital__item"><span>{object.size}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__fileformat}</span></div><div class="born-digital__item"><span>{msg[object.mimeType]}</span></div><div class="born-digital__item-download-last"><a class="born-digital__item__download btn btn--full" href="{object.url}" target="_blank">{msg.action__born_digital__download}</a></div></div></virtual></div></div></div>', '', '', function(opts) {
+
+riot.tag2('external-resource-download', '<div class="download-external-resource__list"><div class="download-external-resource__item" each="{url in urls}"><div class="download-external-resource__error_wrapper {isError(url) ? \'-active\' : \'\'}"><svg class="download-external-resource__error_icon" viewbox="0 0 24 24" width="16" height="16" aria-hidden="true"><use riot-href="{getIconHref(\'alert-triangle\')}"></use></svg><label class="download-external-resource__error">{getErrorMessage(url)}</label></div><div class="download-external-resource__inner-wrapper {isFinished(url) ? \'\' : \'-active\'}"><span class="download-external-resource__label">{url}</span><div class="download-external-resource__button-wrapper"><button class="download-external-resource__order download-external-resource__button btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? \'\' : \'-active\'}" onclick="{startDownloadTask}">{msg.downloadButton}</button></div><div class="download-external-resource__waiting_animation {isWaiting(url) ? \'-active\' : \'\'}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div class="download-external-resource__loading_animation {isDownloading(url) ? \'-active\' : \'\'}"><progress riot-value="{getDownloadProgress(url)}" max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress></div></div><div class="download-external-resource__results {isFinished(url) ? \'-active\' : \'\'}"><virtual each="{object in getFiles(url)}"><div class="born-digital__items-wrapper"><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filename}</span></div><div class="born-digital__item"><span>{object.path}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filedescription}</span></div><div class="born-digital__item"><span>{object.description}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filesize}</span></div><div class="born-digital__item"><span>{object.size}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__fileformat}</span></div><div class="born-digital__item"><span>{msg[object.mimeType]}</span></div><div class="born-digital__item-download-last"><a class="born-digital__item__download btn btn--full" href="{object.url}" target="_blank">{msg.action__born_digital__download}</a></div></div></virtual></div></div></div>', '', '', function(opts) {
+      const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+      const viewerConfig = window.viewerConfig || {};
+      this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+      this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
       this.urls = [];
       this.downloads = new Map();
       this.updateListeners = new Map();
@@ -1981,7 +2008,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 			filters: {
 		        brightness : {
 				    label: "Brightness",
-				    type: ImageView.Tools.Filter.Brightness,
+				    type: ImageView.ImageFilters.Brightness,
 				    min: -255,
 				    max: 255,
 				    step: 1,
@@ -1992,7 +2019,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        contrast : {
 				    label: "Contrast",
-				    type: ImageView.Tools.Filter.Contrast,
+				    type: ImageView.ImageFilters.Contrast,
 				    min: 0,
 				    max: 2,
 				    step: 0.05,
@@ -2003,7 +2030,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        saturate : {
 				    label: "Color Saturation",
-				    type: ImageView.Tools.Filter.ColorSaturation,
+				    type: ImageView.ImageFilters.ColorSaturation,
 				    min: 0,
 				    max: 5,
 				    step: 0.1,
@@ -2014,7 +2041,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 				hue : {
 				    label: "Color rotation",
-				    type: ImageView.Tools.Filter.ColorRotate,
+				    type: ImageView.ImageFilters.ColorRotate,
 				    min: -180,
 				    max: 180,
 				    step: 1,
@@ -2025,7 +2052,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 				threshold : {
 				    label: "Bitonal",
-				    type: ImageView.Tools.Filter.Threshold,
+				    type: ImageView.ImageFilters.Threshold,
 				    min: 0,
 				    max: 255,
 				    step: 1,
@@ -2037,7 +2064,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        grayscale : {
 				    label: "Grayscale",
-				    type: ImageView.Tools.Filter.Grayscale,
+				    type: ImageView.ImageFilters.Grayscale,
 				    slider: false,
 				    checkbox: true,
 				    visible: true,
@@ -2045,14 +2072,14 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 				invert : {
 				    label: "Invert",
-				    type: ImageView.Tools.Filter.Invert,
+				    type: ImageView.ImageFilters.Invert,
 				    slider: false,
 				    checkbox: true,
 				    visible: true
 				},
 		        blur : {
 				    label: "Blur",
-				    type: ImageView.Tools.Filter.Blur,
+				    type: ImageView.ImageFilters.Blur,
 				    min: 1,
 				    max: 10,
 				    step: 1,
@@ -2063,7 +2090,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 				},
 		        sharpen : {
 				    label: "Sharpen",
-				    type: ImageView.Tools.Filter.Sharpen,
+				    type: ImageView.ImageFilters.Sharpen,
 				    base: 1,
 				    slider: false,
 				    checkbox: true,
@@ -2149,7 +2176,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 		}.bind(this)
 
 });
-riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'end\' : \'start\'} {isFirstPage() ? \'inactive\' : \'\'}"><a if="{!isFirstPage() && !isSequenceMode()}" data-target="paginatorFirstPage" href="{getPageUrl(opts.firstPageNumber)}" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></a><button if="{!isFirstPage() && isSequenceMode()}" data-target="paginatorFirstPage" onclick="{gotoFirstPage}" type="button" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></button><span if="{isFirstPage()}"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual></span></li><li each="{step in opts.navigationSteps.slice().reverse()}" class="image-controls__action page-browse prev {getPageNumberMinus(step) < opts.firstPageNumber ? \'inactive\' : \'\'}"><virtual if="{opts.numPages > step}"><a if="{getPageNumberMinus(step) >= opts.firstPageNumber && !isSequenceMode()}" data-target="paginatorPrevPage" href="{getPageUrl(getPageNumberMinus(step))}" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span></a><button if="{getPageNumberMinus(step) >= opts.firstPageNumber && isSequenceMode()}" data-target="paginatorPrevPage" onclick="{navigateBack}" type="button" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step} {msg.stepBack}</span></button><span if="{getPageNumberMinus(step) < opts.firstPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual></span></virtual></li><li if="{opts.showDropdown}" class="image-controls__action select"><div class="custom-control custom-control--select"><select ref="dropdown" id="pageDropdown" aria-label="{msg.aria_label__select_page}" onchange="{changeDropdownValue}"><option each="{item in opts.pageList}" riot-value="{item.value}" title="{item.description ? item.description : item.label}">{item.label}</option></select></div></li><li each="{step in opts.navigationSteps}" class="image-controls__action page-browse next {getPageNumberPlus(step) > opts.lastPageNumber ? \'inactive\' : \'\'}"><virtual if="{opts.numPages > step}"><a if="{getPageNumberPlus(step) <= opts.lastPageNumber && !isSequenceMode()}" data-target="paginatorNextPage" href="{getPageUrl(getPageNumberPlus(step))}" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></a><button if="{getPageNumberPlus(step) <= opts.lastPageNumber && isSequenceMode()}" data-target="paginatorNextPage" onclick="{navigateForward}" type="button" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></button><span if="{getPageNumberPlus(step) > opts.lastPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual></span></virtual></li><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'start\' : \'end\'} {isLastPage() ? \'inactive\' : \'\'}"><a if="{!isLastPage() && !isSequenceMode()}" data-target="paginatorLastPage" href="{getPageUrl(opts.lastPageNumber)}" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></a><button if="{!isLastPage() && isSequenceMode()}" data-target="paginatorLastPage" onclick="{gotoLastPage}" type="button" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></button><span if="{isLastPage()}"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual></span></li></virtual>', '', '', function(opts) {
+riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'end\' : \'start\'} {isFirstPage() ? \'inactive\' : \'\'}"><a if="{!isFirstPage() && !isSequenceMode()}" data-target="paginatorFirstPage" href="{getPageUrl(opts.firstPageNumber)}" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></a><button if="{!isFirstPage() && isSequenceMode()}" data-target="paginatorFirstPage" onclick="{gotoFirstPage}" type="button" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></button><span if="{isFirstPage()}"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual></span></li><virtual each="{step in opts.navigationSteps.slice().reverse()}" if="{opts.numPages > step}"><li class="image-controls__action page-browse prev {getPageNumberMinus(step) < opts.firstPageNumber ? \'inactive\' : \'\'}"><a if="{getPageNumberMinus(step) >= opts.firstPageNumber && !isSequenceMode()}" data-target="paginatorPrevPage" href="{getPageUrl(getPageNumberMinus(step))}" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span></a><button if="{getPageNumberMinus(step) >= opts.firstPageNumber && isSequenceMode()}" data-target="paginatorPrevPage" onclick="{navigateBack}" type="button" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step} {msg.stepBack}</span></button><span if="{getPageNumberMinus(step) < opts.firstPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual></span></li></virtual><li if="{opts.showDropdown}" class="image-controls__action select"><div class="custom-control custom-control--select"><select ref="dropdown" id="pageDropdown" aria-label="{msg.aria_label__select_page}" onchange="{changeDropdownValue}"><option each="{item in opts.pageList}" riot-value="{item.value}" title="{item.description ? item.description : item.label}">{item.label}</option></select></div></li><virtual each="{step in opts.navigationSteps}" if="{opts.numPages > step}"><li class="image-controls__action page-browse next {getPageNumberPlus(step) > opts.lastPageNumber ? \'inactive\' : \'\'}"><a if="{getPageNumberPlus(step) <= opts.lastPageNumber && !isSequenceMode()}" data-target="paginatorNextPage" href="{getPageUrl(getPageNumberPlus(step))}" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></a><button if="{getPageNumberPlus(step) <= opts.lastPageNumber && isSequenceMode()}" data-target="paginatorNextPage" onclick="{navigateForward}" type="button" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></button><span if="{getPageNumberPlus(step) > opts.lastPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual></span></li></virtual><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'start\' : \'end\'} {isLastPage() ? \'inactive\' : \'\'}"><a if="{!isLastPage() && !isSequenceMode()}" data-target="paginatorLastPage" href="{getPageUrl(opts.lastPageNumber)}" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></a><button if="{!isLastPage() && isSequenceMode()}" data-target="paginatorLastPage" onclick="{gotoLastPage}" type="button" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></button><span if="{isLastPage()}"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="first-page"></yield></virtual></span></li></virtual>', '', '', function(opts) {
 
         this.currentPageNumbers = [0];
         this.msg = {};
@@ -2272,7 +2299,11 @@ riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{
 
 });
 
-riot.tag2('metadataeditor', '<div if="{this.metadataList}"><h2>Pin content</h2><div class="admin__language-tabs"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="admin__language-tab {language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul></div><div class="cms__geomap__featureset_panel "><div class="active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="admin__geomap-edit-delete-wrapper"><a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean -redlink" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
+riot.tag2('metadataeditor', '<div><h2>Pin content</h2><div class="admin__language-tabs"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="admin__language-tab {language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul></div><div class="cms__geomap__featureset_panel "><div class="active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><svg class="admin-cms-media__upload-icon" viewbox="0 0 24 24" width="200" height="200" aria-hidden="true"><use riot-href="{getIconHref(\'help\')}"></use></svg></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="admin__geomap-edit-delete-wrapper"><a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean -redlink" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
+    const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+    const viewerConfig = window.viewerConfig || {};
+    this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+    this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
  	this.on("mount", () => {
  	    this.currentLanguage = this.opts.currentLanguage;
@@ -2508,14 +2539,42 @@ riot.tag2('rawhtml', '', '', '', function(opts) {
     this.root.innerHTML = opts.content;
   })
 });
-riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? \'numeric-paginator -rtl\' : \'numeric-paginator -ltr\'} {opts.classSuffix}"><nav aria-label="{opts.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}"><ul><li if="{this.currentItem > this.opts.firstItem}" class="numeric-paginator__navigate navigate_prev"><a if="{isRenderLinks()}" href="{getItemUrl(currentItem-1)}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i></a><button if="{isRenderButtons()}" onclick="{navigateToPrevItem}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i></button></li><li each="{item in getFirstItems()}" class="numeric-paginator__navigate"><a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button></li><li class="numeric-paginator__dots" if="{isShowDotsAfterFirstItems()}"><span>...</span></li><li each="{item in getCenterItems()}" class="numeric-paginator__navigate {item == currentItem ? \'-active\' : \'\'}"><a if="{isRenderLinks() && item != currentItem}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons() && item != currentItem}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button><span if="{item == currentItem}">{item}</span></li><li class="numeric-paginator__dots" if="{isShowDotsBeforeLastItems()}"><span>...</span></li><li each="{item in getLastItems()}" class="numeric-paginator__navigate"><a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button></li><li if="{this.currentItem < this.opts.lastItem}" class="numeric-paginator__navigate navigate_next"><a if="{isRenderLinks()}" href="{getItemUrl(currentItem+1)}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i></a><button if="{isRenderButtons()}" onclick="{navigateToNextItem}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i></button></li></ul></nav></div>', '', '', function(opts) {
+riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? \'numeric-paginator -rtl\' : \'numeric-paginator -ltr\'} {opts.classSuffix}"><nav aria-label="{opts.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}"><ul><li if="{this.currentItem > this.opts.firstItem}" class="numeric-paginator__navigate navigate_prev"><a if="{isRenderLinks()}" href="{getItemUrl(currentItem-1)}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}"><svg if="{!opts.rtl}" class="numeric-paginator__icon-svg" viewbox="0 0 24 24" aria-hidden="true"><use riot-href="{prevIconHref}"></use></svg><svg if="{opts.rtl}" class="numeric-paginator__icon-svg" viewbox="0 0 24 24" aria-hidden="true"><use riot-href="{nextIconHref}"></use></svg></a><button if="{isRenderButtons()}" onclick="{navigateToPrevItem}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}"><svg if="{!opts.rtl}" class="numeric-paginator__icon-svg" viewbox="0 0 24 24" aria-hidden="true"><use riot-href="{prevIconHref}"></use></svg><svg if="{opts.rtl}" class="numeric-paginator__icon-svg" viewbox="0 0 24 24" aria-hidden="true"><use riot-href="{nextIconHref}"></use></svg></button></li><li each="{item in getFirstItems()}" class="numeric-paginator__navigate"><a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button></li><li class="numeric-paginator__dots" if="{isShowDotsAfterFirstItems()}"><span>...</span></li><li each="{item in getCenterItems()}" class="numeric-paginator__navigate {item == currentItem ? \'-active\' : \'\'}"><a if="{isRenderLinks() && item != currentItem}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons() && item != currentItem}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button><span if="{item == currentItem}">{item}</span></li><li class="numeric-paginator__dots" if="{isShowDotsBeforeLastItems()}"><span>...</span></li><li each="{item in getLastItems()}" class="numeric-paginator__navigate"><a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button></li><li if="{this.currentItem < this.opts.lastItem}" class="numeric-paginator__navigate navigate_next"><a if="{isRenderLinks()}" href="{getItemUrl(currentItem+1)}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}"><svg if="{!opts.rtl}" class="numeric-paginator__icon-svg" viewbox="0 0 24 24" aria-hidden="true"><use riot-href="{nextIconHref}"></use></svg><svg if="{opts.rtl}" class="numeric-paginator__icon-svg" viewbox="0 0 24 24" aria-hidden="true"><use riot-href="{prevIconHref}"></use></svg></a><button if="{isRenderButtons()}" onclick="{navigateToNextItem}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}"><svg if="{!opts.rtl}" class="numeric-paginator__icon-svg" viewbox="0 0 24 24" aria-hidden="true"><use riot-href="{nextIconHref}"></use></svg><svg if="{opts.rtl}" class="numeric-paginator__icon-svg" viewbox="0 0 24 24" aria-hidden="true"><use riot-href="{prevIconHref}"></use></svg></button></li></ul></nav></div>', '', '', function(opts) {
+
+const ensureTrailingSlash = value => {
+    if (!value) {
+        return '/';
+    }
+    return value.endsWith('/') ? value : `${value}/`;
+};
+const viewerConfig = window.viewerConfig || {};
+const iconVariant = viewerConfig.iconVariant || 'outline';
+const iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+const toIconHref = iconName => {
+    const trimmed = (iconName || '').trim();
+    if (!trimmed) {
+        return null;
+    }
+    if (trimmed.includes('/') || trimmed.startsWith('#')) {
+        return trimmed;
+    }
+    return `${iconBasePath}resources/icons/${iconVariant}/${trimmed}.svg#icon`;
+};
+
+this.refreshIconHrefs = () => {
+    const prevIconName = (this.msg && this.msg.numericPaginator_prev) || 'chevron-left';
+    const nextIconName = (this.msg && this.msg.numericPaginator_next) || 'chevron-right';
+    this.prevIconHref = toIconHref(prevIconName) || toIconHref('chevron-left');
+    this.nextIconHref = toIconHref(nextIconName) || toIconHref('chevron-right');
+};
 
         this.currentItem = 0;
         this.msg = {};
         this.range = 2;
 
         this.on("mount", () => {
-            this.msg = opts.msg;
+            this.msg = opts.msg || {};
+            this.refreshIconHrefs();
             this.currentItem = opts.itemActive;
             if(this.opts.range) {
                 this.range = this.opts.range;
@@ -2530,6 +2589,8 @@ riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? 
         });
 
         this.on("update", () => {
+            this.msg = this.opts.msg || this.msg;
+            this.refreshIconHrefs();
 
             $("[data-toggle='tooltip']").tooltip('hide');
             if(this.refs.dropdown) {
@@ -2625,6 +2686,7 @@ riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? 
             return this.currentItem == this.opts.lastItem;
         }.bind(this)
 });
+
 
 
 
@@ -2858,7 +2920,12 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
             viewerJS.handleScrollPositionClick($target);
         }.bind(this)
 });
-riot.tag2('subcollection', '<ul if="{collection.members && collection.members.length > 0}" class="list card-body__list"><li each="{child in getChildren(collection)}"><div class="card-body__links"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></div><subcollection if="{child.members && child.members.length > 0}" collection="{child}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"></subcollection></li></ul>', '', '', function(opts) {
+riot.tag2('subcollection', '<ul if="{collection.members && collection.members.length > 0}" class="list card-body__list"><li each="{child in getChildren(collection)}"><div class="card-body__links"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><svg class="card-body__rss-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'rss\')}"></use></svg></a></div><subcollection if="{child.members && child.members.length > 0}" collection="{child}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"></subcollection></li></ul>', '', '', function(opts) {
+		const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+		const viewerConfig = window.viewerConfig || {};
+		this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+		this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
+
 		this.collection = this.opts.collection;
 
 		this.getId = function(element) {
@@ -3781,7 +3848,11 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	}.bind(this)
 
 });
-riot.tag2('campaignitemlog', '<div class="crowdsourcing-annotations__log-wrapper"><div class="crowdsourcing-annotations__log-title"><span>{Crowdsourcing.translate(⁗log⁗)}</span><button ref="compress" onclick="{compressLog}" class="crowdsourcing-annotations__log-expand btn btn--clear"><i class="fa fa-angle-up" aria-hidden="true"></i></button><button ref="expand" onclick="{expandLog}" class="btn btn--clear crowdsourcing-annotations__log-expand"><i class="fa fa-angle-down" aria-hidden="true"></i></button></div><div ref="toggleBox" class="crowdsourcing-annotations__toggle-box"><div ref="innerWrapper" class="crowdsourcing-annotations__log-inner-wrapper"><div each="{message in messages}" class="crowdsourcing-annotations__log-message-entry {isCurrentUser(message.creator) ? \'-from-me\' : \'\'}"><img class="crowdsourcing-annotations__log-round-avatar" riot-src="{message.creator.avatar}"></img><div class="crowdsourcing-annotations__log-speech-bubble"><div class="crowdsourcing-annotations__log-message-info"><div class="crowdsourcing-annotations__log-message-user-name"> {message.creator.name} </div></div><div class="crowdsourcing-annotations__log-message-text"> {message.message} </div><div class="crowdsourcing-annotations__log-message-time-stamp"> {formatDate(message.dateCreated)} </div></div></div></div><div ref="messageBox" class="crowdsourcing-annotations__log-send-message-area"><input onkeypress="{addMessageOnEnter}" placeholder="{Crowdsourcing.translate(\'label__enter_message_here\')}" class="crowdsourcing-annotations__log-message-input" id="crowdsourcingAnnotationsLogMessageInput" name="crowdsourcingAnnotationsLogMessageInput" ref="messageText"></input><button class="btn btn--default crowdsourcing-annotations__log-message-send-button" onclick="{addMessage}">{Crowdsourcing.translate(\'action__send\')}</button></div></div></div>', '', '', function(opts) {
+riot.tag2('campaignitemlog', '<div class="crowdsourcing-annotations__log-wrapper"><div class="crowdsourcing-annotations__log-title"><span>{Crowdsourcing.translate(⁗log⁗)}</span><button ref="compress" onclick="{compressLog}" class="crowdsourcing-annotations__log-expand btn btn--clear"><svg class="crowdsourcing-annotations__log-expand-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'chevron-up\')}"></use></svg></button><button ref="expand" onclick="{expandLog}" class="btn btn--clear crowdsourcing-annotations__log-expand"><svg class="crowdsourcing-annotations__log-expand-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'chevron-down\')}"></use></svg></button></div><div ref="toggleBox" class="crowdsourcing-annotations__toggle-box"><div ref="innerWrapper" class="crowdsourcing-annotations__log-inner-wrapper"><div each="{message in messages}" class="crowdsourcing-annotations__log-message-entry {isCurrentUser(message.creator) ? \'-from-me\' : \'\'}"><img class="crowdsourcing-annotations__log-round-avatar" riot-src="{message.creator.avatar}"></img><div class="crowdsourcing-annotations__log-speech-bubble"><div class="crowdsourcing-annotations__log-message-info"><div class="crowdsourcing-annotations__log-message-user-name"> {message.creator.name} </div></div><div class="crowdsourcing-annotations__log-message-text"> {message.message} </div><div class="crowdsourcing-annotations__log-message-time-stamp"> {formatDate(message.dateCreated)} </div></div></div></div><div ref="messageBox" class="crowdsourcing-annotations__log-send-message-area"><input onkeypress="{addMessageOnEnter}" placeholder="{Crowdsourcing.translate(\'label__enter_message_here\')}" class="crowdsourcing-annotations__log-message-input" id="crowdsourcingAnnotationsLogMessageInput" name="crowdsourcingAnnotationsLogMessageInput" ref="messageText"></input><button class="btn btn--default crowdsourcing-annotations__log-message-send-button" onclick="{addMessage}">{Crowdsourcing.translate(\'action__send\')}</button></div></div></div>', '', '', function(opts) {
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 this.currentUser = this.opts.item.currentUser;
 this.messages = this.opts.item.log;
@@ -3871,7 +3942,11 @@ this.formatDate = function(dateString) {
 
 });
 
-riot.tag2('canvaspaginator', '<nav class="numeric-paginator" aria-label="{Crowdsourcing.translate(aria_label__nav_pagination)}"><ul><li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev"><span onclick="{this.loadPrevious}"><i class="fa fa-angle-left" aria-hidden="true"></i></span></li><li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useMiddleButtons()}">...</li><li each="{canvas in this.middleCanvases()}" class="group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useLastButtons()}">...</li><li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next"><span onclick="{this.loadNext}"><i class="fa fa-angle-right" aria-hidden="true"></i></span></li></ul></nav>', '', '', function(opts) {
+riot.tag2('canvaspaginator', '<nav class="numeric-paginator" aria-label="{Crowdsourcing.translate(aria_label__nav_pagination)}"><ul><li if="{getCurrentIndex() > 0}" class="numeric-paginator__navigate navigate_prev"><span onclick="{this.loadPrevious}"><svg class="numeric-paginator__navigate-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'chevron-left\')}"></use></svg></span></li><li each="{canvas in this.firstCanvases()}" class="group_left {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useMiddleButtons()}">...</li><li each="{canvas in this.middleCanvases()}" class="group_middle {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li class="numeric-paginator__separator" if="{this.useLastButtons()}">...</li><li each="{canvas in this.lastCanvases()}" class="group_right {this.getIndex(canvas) == this.getCurrentIndex() ? \'numeric-paginator__active\' : \'\'}"><span index="{this.getIndex(canvas)}" onclick="{this.loadFromEvent}">{this.getOrder(canvas)}</span></li><li if="{getCurrentIndex() < getTotalImageCount()-1}" class="numeric-paginator__navigate navigate_next"><span onclick="{this.loadNext}"><svg class="numeric-paginator__navigate-icon" viewbox="0 0 24 24" width="18" height="18" aria-hidden="true"><use riot-href="{getIconHref(\'chevron-right\')}"></use></svg></span></li></ul></nav>', '', '', function(opts) {
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 this.on( "mount", function() {
 
@@ -3975,6 +4050,7 @@ this.toPageNumber = function(e) {
 }.bind(this)
 
 });
+
 riot.tag2('geolocationquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showAddMarkerInstructions()}" class="crowdsourcing-annotations__single-instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__add_marker_to_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div id="geoMap_{opts.index}" class="geo-map"></div></div><div id="annotation_{index}" each="{anno, index in this.annotations}"></div>', '', '', function(opts) {
 
 
@@ -4166,20 +4242,25 @@ this.removeFeature = function(feature) {
 });
 
 
-riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-controls__actions"><div onclick="{toggleThumbs}" class="image-controls__action thumbs {this.opts.imagecount < 2 ? \'d-none\' : \'\'} {this.opts.showthumbs ? \'in\' : \'\'}"><a></a></div><div if="{this.opts.image}" class="image-controls__action -imageControlsFont back {this.opts.imageindex === 0 ? \'-inactive\' : \'\'}"><a onclick="{previousItem}"><i class="image-back"></i></a></div><div if="{this.opts.image}" class="image-controls__action -imageControlsFont forward {this.opts.imageindex === this.opts.imagecount -1 ? \'-inactive\' : \'\'}"><a onclick="{nextItem}"><i class="image-forward"></i></a></div><div if="{this.opts.image}" class="image-controls__action -imageControlsFont rotate-left"><a onclick="{rotateLeft}"><i class="image-rotate_left"></i></a></div><div if="{this.opts.image}" class="image-controls__action -imageControlsFont rotate-right"><a onclick="{rotateRight}"><i class="image-rotate_right"></i></a></div><div if="{this.opts.image}" class="image-controls__action zoom-slider-wrapper"><input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"></div></div></div>', '', '', function(opts) {
+riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-controls__actions"><div onclick="{toggleThumbs}" class="image-controls__action thumbs {this.opts.imagecount < 2 ? \'d-none\' : \'\'} {this.opts.showthumbs ? \'in\' : \'\'}"><a></a></div><div if="{this.opts.image}" class="image-controls__action back {this.opts.imageindex === 0 ? \'-inactive\' : \'\'}"><a onclick="{previousItem}"><span class="icon-wrapper image-controls__icon" aria-hidden="true"><svg class="image-controls__icon-svg" focusable="false"><use href="{iconHref(\'arrow-narrow-left\')}"></use></svg></span></a></div><div if="{this.opts.image}" class="image-controls__action forward {this.opts.imageindex === this.opts.imagecount -1 ? \'-inactive\' : \'\'}"><a onclick="{nextItem}"><span class="icon-wrapper image-controls__icon" aria-hidden="true"><svg class="image-controls__icon-svg" focusable="false"><use href="{iconHref(\'arrow-narrow-right\')}"></use></svg></span></a></div><div if="{this.opts.image}" class="image-controls__action rotate-left"><a onclick="{rotateLeft}"><span class="icon-wrapper image-controls__icon" aria-hidden="true"><svg class="image-controls__icon-svg" focusable="false"><use href="{iconHref(\'rotate-2\')}"></use></svg></span></a></div><div if="{this.opts.image}" class="image-controls__action rotate-right"><a onclick="{rotateRight}"><span class="icon-wrapper image-controls__icon" aria-hidden="true"><svg class="image-controls__icon-svg" focusable="false"><use href="{iconHref(\'rotate-clockwise-2\')}"></use></svg></span></a></div><div if="{this.opts.image}" class="image-controls__action zoom-slider-wrapper"><input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"></div></div></div>', '', '', function(opts) {
+
+    this.iconHref = function(name) {
+        const base = window.currentPath || '';
+        return base + '/resources/icons/outline/' + name + '.svg#icon';
+    }.bind(this)
 
     this.rotateRight = function()
     {
-        if ( this.opts.image ) {
-            this.opts.image.controls.rotateRight();
+        if ( this.opts.rotate ) {
+            this.opts.rotate.rotateRight();
         }
     	this.handleAction("rotate", 90)
     }.bind(this)
 
     this.rotateLeft = function()
     {
-        if ( this.opts.image ) {
-            this.opts.image.controls.rotateLeft();
+        if ( this.opts.rotate ) {
+            this.opts.rotate.rotateLeft();
         }
     	this.handleAction("rotate", -90)
     }.bind(this)
@@ -4199,6 +4280,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
     }.bind(this)
 
     this.toggleThumbs = function() {
+    	console.log("toggle thumbs " + this.opts.showthumbs);
     	this.opts.showthumbs = !this.opts.showthumbs;
     	this.handleAction("toggleThumbs", this.opts.showthumbs)
     }.bind(this)
@@ -4241,6 +4323,7 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
 	});
 
 });
+
 /**
  * Takes a IIIF canvas object in opts.source. 
  * If opts.item exists, it creates the method opts.item.setImageSource(canvas) 
@@ -4248,8 +4331,9 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
  * The imageView itself is stored in opts.item.image
  */
 
-riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" imageindex="{this.opts.item.currentCanvasIndex}" imagecount="{this.opts.item.canvases.length}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
+riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><span if="{this.error}" class="loader_wrapper"><span class="error_message">{this.error.message}</span></span><imagecontrols if="{this.image}" image="{this.image}" rotate="{this.rotate}" imageindex="{this.opts.item.currentCanvasIndex}" imagecount="{this.opts.item.canvases.length}" actionlistener="{this.actionListener}" showthumbs="{this.showThumbs}" class="{this.showThumbs ? \'d-none\' : \'\'}"></imageControls><div class="image_container {this.showThumbs ? \'d-none\' : \'\'}"><div id="image_{opts.id}" class="image"></div></div><div class="image_thumbnails-wrapper {this.opts.item.reviewMode ? \'reviewmode\' : \'\'} {this.showThumbs ? \'\' : \'d-none\'}"><div class="thumbnails-filters"><button ref="filter_unfinished" class="thumbnails-filter-unfinished btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_unfinished⁗)}</button><button ref="filter_reset" class="thumbnails-filter-reset btn btn--clean">{Crowdsourcing.translate(⁗crowdsourcing__campaign_filter_show_all⁗)}</button></div><thumbnails class="image_thumbnails" source="{{items: this.opts.item.canvases}}" actionlistener="{this.actionListener}" imagesize=",200" index="{this.opts.item.currentCanvasIndex}" statusmap="{getPageStatusMap()}"></thumbnails></div></div>', '', '', function(opts) {
 
+	this.actionListener = new rxjs.Subject();
 
 	this.on("updated", function() {
 		this.initTooltips();
@@ -4258,31 +4342,26 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	this.on("mount", function() {
 		this.showThumbs = this.isShowThumbs();
 		this.initFilters();
-
 		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{
-			imageViewConfig.image.tileSource = this.getImageInfo(opts.source);
 			this.image = new ImageView.Image(imageViewConfig);
-			this.image.load()
-			.then( (image) => {
-				if(this.opts.item) {
-					this.opts.item.image = this.image;
+			this.zoom = new ImageView.Controls.Zoom(this.image);
+			this.rotate = new ImageView.Controls.Rotation(this.image);
+			if(this.opts.item) {
+				this.opts.item.image = this.image;
+		    	this.opts.item.notifyImageOpened(this.image.onOpened.pipe(rxjs.operators.map( () => this.image)));
 
-				    var now = rxjs.of(image);
-					this.opts.item.setImageSource = function(source) {
-					    this.image.setTileSource(this.getImageInfo(source));
-					}.bind(this);
-				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
-				}
-				return image;
-			})
+				this.opts.item.setImageSource = function(source) {
+				    this.update();
+				    this.image.load(this.getImageInfo(source))
+				    .then(e => this.zoom.goHome());
+				}.bind(this);
+			}
 		} catch(error) {
 		    console.error("ERROR ", error);
 	    	this.error = error;
 	    	this.update();
 		}
-
-		this.actionListener = new rxjs.Subject();
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
 		if(this.opts.item.setShowThumbs) {
 		    this.opts.item.setShowThumbs.subscribe(show => {
@@ -4290,6 +4369,11 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 		        this.update();
 		    });
 		}
+
+		if(!this.showThumbs) {
+			this.opts.item.loadImage(0);
+		}
+		this.update();
 	})
 
 	this.initTooltips = function() {
@@ -4360,7 +4444,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	this.handleImageControlAction = function(event) {
-
+		console.log("image action ", event.action);
 		switch(event.action) {
 			case "toggleThumbs":
 				this.showThumbs = event.value;
@@ -4410,16 +4494,8 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	const imageViewConfig = {
-			global : {
-				divId : "image_" + opts.id,
-				fitToContainer: true,
-				adaptContainerWidth: false,
-				adaptContainerHeight: false,
-				footerHeight: 00,
-				zoomSpeed: 1.3,
-				allowPanning : true,
-			},
-			image : {}
+			element: "#image_" + opts.id,
+			fittingMode: "fixed"
 	};
 
 	const drawStyle = {
@@ -4432,7 +4508,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 			lineColor : "#EEC83B"
 	}
 
-	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
+	const pointStyle = ImageView.DataPoint.Point.getPointStyle(20, "#EEC83B");
 
 });
 
@@ -4770,258 +4846,6 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 });
 
 
-riot.tag2('featuresetfilter', '<ul if="{filters.length > 0}"><li each="{filter in filters}" class="{filter.styleClass}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><div each="{option, index in filter.options}"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></div></li></ul>', '', '', function(opts) {
-
-this.filters = [];
-
-this.on("mount", () => {
-	this.geomap = this.opts.geomap;
-	this.featureGroups = this.opts.featureGroups;
-	this.filters = this.createFilters(this.opts.filters, this.featureGroups);
-	if(this.opts.comparator) {
-		this.filters.forEach(filter => {
-			if(filter.options) {
-				filter.options.sort(this.opts.comparator.compare);
-			}
-		})
-	}
-	this.geomap.onActiveLayerChange.subscribe(groups => {
-		this.featureGroups = groups;
-		this.filters = this.createFilters(this.opts.filters, this.featureGroups);
- 		this.update();
-	})
-	this.update();
-})
-
-this.createFilters = function(filterMap, featureGroups) {
-	let filters = [];
-	for (const entry of filterMap.entries()) {
-		let layerName = entry[0];
-		let filterConfigs = JSON.parse(entry[1]);
-		let groups = featureGroups.filter(g => g.config.identifier == layerName);
-		if(layerName && filterConfigs?.filter && filterConfigs.filter.length > 0 && groups.length > 0) {
-			filterConfigs.filter.forEach(filterConfig => {
-				let filter = {
-						field: filterConfig.value,
-						label: filterConfig.label,
-						styleClass: filterConfig.styleClass,
-						layers: groups,
-						options: this.findValues(groups, filterConfig.value).map(v => {
-							return {
-								name: v,
-								field: filterConfig.value
-							}
-						}),
-					};
-				filters.push(filter);
-			});
-		}
-	}
-	return filters.filter(filter => filter.options.length > 1);
-}.bind(this)
-
-this.getLayerName = function(layer) {
-	let name = viewerJS.iiif.getValue(layer.config.label, this.opts.defaultLocale);
-	return name;
-}.bind(this)
-
-this.getFilterName = function(filter) {
-	let name = viewerJS.iiif.getValue(filter.label, this.opts.defaultLocale);
-	return name;
-}.bind(this)
-
-this.findValues = function(featureGroups, filterField) {
-	return Array.from(new Set(this.findEntities(featureGroups, filterField)
-	.map(e => e[filterField]).map(a => a[0])
-	.map(value => viewerJS.iiif.getValue(value, this.opts.locale, this.opts.defaultLocale)).filter(e => e)));
-}.bind(this)
-
-this.findEntities = function(featureGroups, filterField) {
-	let entities = featureGroups.flatMap(group => group.markers).filter(m => m.feature.properties.entities).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
-	console.log("groups", featureGroups);
-	console.log("entities", entities, filterField);
-	return entities;
-}.bind(this)
-
-this.resetFilter = function(event) {
-	let filter = event.item.filter;
-	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, undefined)));
-}.bind(this)
-
-this.setFilter = function(event) {
-	let filter = this.getFilterForField(event.item.option.field);
-	let value = event.item.option.name;
-	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, value)));
-}.bind(this)
-
-this.isShowMarker = function(entity, filter, value) {
-	let filters = this.filters.filter(f => f.layers.filter(g => filter.layers.includes(g)).length > 0);
-
-	filter.selectedValue = value;
-	let match = filters.map(filter => {
-		if(filter.selectedValue) {
-			let show = entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(filter.selectedValue);
-			return show;
-		} else {
-			return true;
-		}
-	})
-	.every(match => match);
-	return match;
-}.bind(this)
-
-this.getFilterForField = function(field) {
-	return this.filters.find(f => f.field == field);
-}.bind(this)
-
-});
-riot.tag2('featuresetselector', '<div class="tab" if="{featureGroups.length > 1}"><button each="{featureGroup, index in featureGroups}" class="tablinks {isActive(featureGroup) ? \'-active\':\'\'}" onclick="{setFeatureGroup}">{getLabel(featureGroup)}</button></div>', '', '', function(opts) {
-
-this.featureGroups = [];
-
-this.on("mount", () => {
-	this.featureGroups = opts.featureGroups;
-	this.geomap = opts.geomap;
-	this.update();
-})
-
-this.setFeatureGroup = function(event) {
-	let featureGroup = event.item.featureGroup;
-	this.geomap.setActiveLayers([featureGroup]);
-}.bind(this)
-
-this.getLabel = function(featureGroup) {
-	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale, this.opts.defaultLocale);
-}.bind(this)
-
-this.isActive = function(featureGroup) {
-	return featureGroup.active;
-}.bind(this)
-
-});
-riot.tag2('geojsonfeaturelist', '<div class="custom-map__sidebar-inner-wrapper"><div class="custom-map__sidebar-inner-top"><h4 class="custom-map__sidebar-inner-heading"><rawhtml content="{getListLabel()}"></rawhtml></h4><input if="{getVisibleEntities().length > 0}" class="custom-map__sidebar-inner-search-input" type="text" ref="search" oninput="{filterList}"></input></div><div class="custom-map__sidebar-inner-bottom"><ul if="{getVisibleEntities().length > 0}" class="custom-map__inner-wrapper-list"><li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a></li></ul></div></div>', '', 'onclick="{preventBubble}"', function(opts) {
-
-this.entities = [];
-this.filteredEntities = undefined;
-
-this.on("mount", () => {
-	this.opts.featureGroups.forEach(group => {
-		group.onFeatureClick.subscribe(f => {
-			this.title = f.properties?.title;
-			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => this.getEntityLabel(e)?.length > 0));
-		});
-	})
-	this.opts.geomap.onMapClick.subscribe(e => this.hide());
-	this.hide();
-})
-
-this.setEntities = function(entities) {
-
-	this.entities = [];
-	this.filteredEntities = undefined;
-	if(this.refs["search"]) {
-		this.refs["search"].value = "";
-	}
-	if(entities?.length || this.opts.showAlways) {
-		this.entities = entities;
-		this.show();
-		this.update();
-	}
-}.bind(this)
-
-this.getVisibleEntities = function() {
-	if(!this.entities) {
-		return [];
-	} else if(this.filteredEntities === undefined) {
-		return this.entities;
-	} else {
-		return this.filteredEntities;
-	}
-}.bind(this)
-
-this.preventBubble = function(e) {
-	event.stopPropagation();
-}.bind(this)
-
-this.filterList = function(e) {
-	let filter = e.target.value;
-	if(filter) {
-		this.filteredEntities = this.entities.filter(e => this.getLabel(e).toLowerCase().includes(filter.toLowerCase() ));
-	} else {
-		this.filteredEntities = undefined;
-	}
-}.bind(this)
-
-this.getEntityLabel = function(entity) {
-	if(entity) {
-		return this.getLabel(entity);
-	}
-}.bind(this)
-
-this.getListLabel = function() {
-	if(this.title) {
-		let label = viewerJS.iiif.getValue(this.title, this.opts.locale, this.opts.defaulLocale);
-		return label;
-	}
-}.bind(this)
-
-this.getLink = function(entity) {
-	if(entity) {
-		if(entity.link) {
-			return entity.link;
-		} else {
-			let labels = this.opts.entityLinkFormat;
-			label = labels.map(format => {
-				let groups = [...format.matchAll(/\${(.*?)}/g)];
-				let l = "";
-				groups.forEach(group => {
-					if(group.length > 1) {
-						let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
-						if(value) {
-							l += format.replaceAll(group[0], value ? value : "");
-						}
-					}
-				})
-				return l;
-			}).join("");
-			return label;
-
-		}
-	}
-}.bind(this)
-
-this.getLabel = function(entity) {
-
-	if(entity.title) {
-		let label = viewerJS.iiif.getValue(entity.title, this.opts.locale, this.opts.defaulLocale);
-		return label;
-	} else {
-		return "";
-	}
-
-}.bind(this)
-
-this.hide = function() {
-	this.root.style.display = "none";
-}.bind(this)
-
-this.show = function() {
-	this.root.style.display = "block";
-}.bind(this)
-
-});
-riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"><p class="swiper-description slider-{this.opts.stylename}__description" ref="description"></p></a>', '', '', function(opts) {
-		this.on("mount", () => {
-			if(this.refs.description) {
-				   this.refs.description.innerHTML = this.opts.description;
-			}
-		});
-});
-
-riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
-});
-riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
-});
 
 
 riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showStandardNav}" ref="navigation" class="slider-navigation-wrapper slider-navigation-wrapper-{this.styleName} slider-navigation-wrapper-{this.sliderInstance}"><div ref="navigationLeft" class="swiper-button-prev"></div><div ref="navigationRight" class="swiper-button-next"></div></div><div if="{this.showStandardPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div></div>', '', '', function(opts) {
@@ -5231,5 +5055,265 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
 
     	return layout;
     }.bind(this)
+
+});
+riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"><p class="swiper-description slider-{this.opts.stylename}__description" ref="description"></p></a>', '', '', function(opts) {
+		this.on("mount", () => {
+			if(this.refs.description) {
+				   this.refs.description.innerHTML = this.opts.description;
+			}
+		});
+});
+
+riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
+});
+riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
+});
+riot.tag2('featuresetfilter', '<div if="{filters.length > 0}"><div each="{filter in filters}" class="{filter.styleClass}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><ul class="geomap__feature-options-list"><li each="{option, index in filter.options}" class="geomap__feature-options-list-entry"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></li></ul></div></div>', '', '', function(opts) {
+
+this.filters = [];
+
+this.on("mount", () => {
+	this.geomap = this.opts.geomap;
+	this.featureGroups = this.opts.featureGroups;
+	this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+	if(this.opts.comparator) {
+		this.filters.forEach(filter => {
+			if(filter.options) {
+				filter.options.sort(this.opts.comparator.compare);
+			}
+		})
+	}
+	this.geomap.onActiveLayerChange.subscribe(groups => {
+		this.featureGroups = groups;
+		this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+ 		this.update();
+	})
+	this.update();
+})
+
+this.createFilters = function(filterMap, featureGroups) {
+	let filters = [];
+	for (const entry of filterMap.entries()) {
+		let layerName = entry[0];
+		let filterConfigs = JSON.parse(entry[1]);
+		let groups = featureGroups.filter(g => g.config.identifier == layerName);
+		if(layerName && filterConfigs?.filter && filterConfigs.filter.length > 0 && groups.length > 0) {
+			filterConfigs.filter.forEach(filterConfig => {
+				let filter = {
+						field: filterConfig.value,
+						label: filterConfig.label,
+						styleClass: filterConfig.styleClass,
+						layers: groups,
+						options: this.findValues(groups, filterConfig.value).map(v => {
+							return {
+								name: v,
+								field: filterConfig.value
+							}
+						}),
+					};
+				filters.push(filter);
+			});
+		}
+	}
+	return filters.filter(filter => filter.options.length > 1);
+}.bind(this)
+
+this.getLayerName = function(layer) {
+	let name = viewerJS.iiif.getValue(layer.config.label, this.opts.defaultLocale);
+	return name;
+}.bind(this)
+
+this.getFilterName = function(filter) {
+	let name = viewerJS.iiif.getValue(filter.label, this.opts.defaultLocale);
+	return name;
+}.bind(this)
+
+this.findValues = function(featureGroups, filterField) {
+	return Array.from(new Set(this.findEntities(featureGroups, filterField)
+	.map(e => e[filterField]).map(a => a[0])
+	.map(value => viewerJS.iiif.getValue(value, this.opts.locale, this.opts.defaultLocale)).filter(e => e)));
+}.bind(this)
+
+this.findEntities = function(featureGroups, filterField) {
+	let entities = featureGroups.flatMap(group => group.markers).filter(m => m.feature.properties.entities).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
+	return entities;
+}.bind(this)
+
+this.resetFilter = function(event) {
+	let filter = event.item.filter;
+	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, undefined)));
+}.bind(this)
+
+this.setFilter = function(event) {
+	let filter = this.getFilterForField(event.item.option.field);
+	let value = event.item.option.name;
+	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, value)));
+}.bind(this)
+
+this.isShowMarker = function(entity, filter, value) {
+	let filters = this.filters.filter(f => f.layers.filter(g => filter.layers.includes(g)).length > 0);
+
+	filter.selectedValue = value;
+	let match = filters.map(filter => {
+		if(filter.selectedValue) {
+			let show = entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(filter.selectedValue);
+			return show;
+		} else {
+			return true;
+		}
+	})
+	.every(match => match);
+	return match;
+}.bind(this)
+
+this.getFilterForField = function(field) {
+	return this.filters.find(f => f.field == field);
+}.bind(this)
+
+});
+riot.tag2('featuresetselector', '<div class="tab" if="{featureGroups.length > 1}"><button each="{featureGroup, index in featureGroups}" class="tablinks {isActive(featureGroup) ? \'-active\':\'\'}" onclick="{setFeatureGroup}">{getLabel(featureGroup)}</button></div>', '', '', function(opts) {
+
+this.featureGroups = [];
+
+this.on("mount", () => {
+	this.featureGroups = opts.featureGroups;
+	this.geomap = opts.geomap;
+	this.update();
+})
+
+this.setFeatureGroup = function(event) {
+	let featureGroup = event.item.featureGroup;
+	this.geomap.setActiveLayers([featureGroup]);
+}.bind(this)
+
+this.getLabel = function(featureGroup) {
+	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale, this.opts.defaultLocale);
+}.bind(this)
+
+this.isActive = function(featureGroup) {
+	return featureGroup.active;
+}.bind(this)
+
+});
+riot.tag2('geojsonfeaturelist', '<div class="custom-map__sidebar-inner-wrapper"><div class="custom-map__sidebar-inner-top"><h4 class="custom-map__sidebar-inner-heading"><rawhtml content="{getListLabel()}"></rawhtml></h4><input if="{getVisibleEntities().length > 0}" class="custom-map__sidebar-inner-search-input" type="text" ref="search" oninput="{filterList}"></input></div><div class="custom-map__sidebar-inner-bottom"><ul if="{getVisibleEntities().length > 0}" class="custom-map__inner-wrapper-list"><li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a></li></ul></div></div>', '', '', function(opts) {
+
+this.entities = [];
+this.filteredEntities = undefined;
+
+this.on("update", () => {
+	if(this.opts.onUpdate) {
+		this.opts.onUpdate(this);
+	}
+});
+
+this.on("updated", () => {
+	if(this.opts.onUpdated) {
+		this.opts.onUpdated(this);
+	}
+});
+
+this.on("mount", () => {
+	this.opts.featureGroups.forEach(group => {
+		group.onFeatureClick.subscribe(f => {
+			this.title = f.properties?.title;
+			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => this.getEntityLabel(e)?.length > 0));
+			if(this.opts.onFeatureClick) {
+				this.opts.onFeatureClick(this);
+			}
+		});
+	})
+	this.opts.geomap.onMapClick.subscribe(e => this.hide());
+	this.hide();
+})
+
+this.setEntities = function(entities) {
+	this.entities = [];
+	this.filteredEntities = undefined;
+	if(this.refs["search"]) {
+		this.refs["search"].value = "";
+	}
+	if(entities?.length || this.opts.showAlways) {
+		this.entities = entities;
+		this.show();
+		this.update();
+	}
+}.bind(this)
+
+this.getVisibleEntities = function() {
+	if(!this.entities) {
+		return [];
+	} else if(this.filteredEntities === undefined) {
+		return this.entities;
+	} else {
+		return this.filteredEntities;
+	}
+}.bind(this)
+
+this.filterList = function(e) {
+	let filter = e.target.value;
+	if(filter) {
+		this.filteredEntities = this.entities.filter(e => this.getLabel(e).toLowerCase().includes(filter.toLowerCase() ));
+	} else {
+		this.filteredEntities = undefined;
+	}
+}.bind(this)
+
+this.getEntityLabel = function(entity) {
+	if(entity) {
+		return this.getLabel(entity);
+	}
+}.bind(this)
+
+this.getListLabel = function() {
+	if(this.title) {
+		let label = viewerJS.iiif.getValue(this.title, this.opts.locale, this.opts.defaulLocale);
+		return label;
+	}
+}.bind(this)
+
+this.getLink = function(entity) {
+	if(entity) {
+		if(entity.link) {
+			return entity.link;
+		} else {
+			let labels = this.opts.entityLinkFormat;
+			label = labels.map(format => {
+				let groups = [...format.matchAll(/\${(.*?)}/g)];
+				let l = "";
+				groups.forEach(group => {
+					if(group.length > 1) {
+						let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
+						if(value) {
+							l += format.replaceAll(group[0], value ? value : "");
+						}
+					}
+				})
+				return l;
+			}).join("");
+			return label;
+
+		}
+	}
+}.bind(this)
+
+this.getLabel = function(entity) {
+
+	if(entity.title) {
+		let label = viewerJS.iiif.getValue(entity.title, this.opts.locale, this.opts.defaulLocale);
+		return label;
+	} else {
+		return "";
+	}
+
+}.bind(this)
+
+this.hide = function() {
+	this.root.style.display = "none";
+}.bind(this)
+
+this.show = function() {
+	this.root.style.display = "block";
+}.bind(this)
 
 });
