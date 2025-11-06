@@ -282,7 +282,10 @@ public class CmsPageEditBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String deleteSelectedPage() throws DAOException {
-        deletePage(selectedPage);
+        if (deletePage(selectedPage)) {
+            selectedPage = null;
+        }
+
         return "cmsOverview";
     }
 
@@ -292,52 +295,54 @@ public class CmsPageEditBean implements Serializable {
      * @param page Page to delete
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void deletePage(CMSPage page) throws DAOException {
-        if (this.dao != null && page != null && page.getId() != null) {
-            logger.info("Deleting CMS page: {}", page);
-
-            if (!page.isComponentsLoaded()) {
-                page.initialiseCMSComponents(this.templateManager);
-            }
-
-            List<CMSComponent> components = new ArrayList<>(page.getComponents());
-            for (CMSComponent component : components) {
-                PersistentCMSComponent persistentComponent = component.getPersistentComponent();
-                List<CMSContentItem> contentItems = new ArrayList<>(component.getContentItems());
-                for (CMSContentItem contentItem : contentItems) {
-                    CMSContent content = contentItem.getContent();
-                    component.removeContentItem(contentItem);
-                    dao.deleteCMSContent(content);
-                }
-                page.removeComponent(component);
-                dao.deleteCMSComponent(persistentComponent);
-            }
-            Long pageId = page.getId(); // This is gone after deleting
-            if (this.dao.deleteCMSPage(page)) {
-                // Delete files matching content item IDs of the deleted page and re-index record
-                try {
-                    if (page.deleteExportedTextFiles() > 0) {
-                        try {
-                            IndexerTools.reIndexRecord(page.getRelatedPI());
-                            logger.debug("Re-indexing record: {}", page.getRelatedPI());
-                        } catch (RecordNotFoundException e) {
-                            logger.error(e.getMessage());
-                        }
-                    }
-                } catch (ViewerConfigurationException e) {
-                    logger.error(e.getMessage());
-                    Messages.error(e.getMessage());
-                }
-                // Delete page metadata from the index
-                deletePageMetadataFromIndex(selectedPage, pageId);
-                cmsBean.getLazyModelPages().update();
-                Messages.info("cms_deletePage_success");
-            } else {
-                Messages.error("cms_deletePage_failure");
-            }
+    public boolean deletePage(CMSPage page) throws DAOException {
+        if (this.dao == null || page == null || page.getId() == null) {
+            return false;
         }
 
-        selectedPage = null;
+        logger.info("Deleting CMS page: {}", page);
+
+        if (!page.isComponentsLoaded()) {
+            page.initialiseCMSComponents(this.templateManager);
+        }
+
+        List<CMSComponent> components = new ArrayList<>(page.getComponents());
+        for (CMSComponent component : components) {
+            PersistentCMSComponent persistentComponent = component.getPersistentComponent();
+            List<CMSContentItem> contentItems = new ArrayList<>(component.getContentItems());
+            for (CMSContentItem contentItem : contentItems) {
+                CMSContent content = contentItem.getContent();
+                component.removeContentItem(contentItem);
+                dao.deleteCMSContent(content);
+            }
+            page.removeComponent(component);
+            dao.deleteCMSComponent(persistentComponent);
+        }
+        Long pageId = page.getId(); // This is gone after deleting
+        if (this.dao.deleteCMSPage(page)) {
+            // Delete files matching content item IDs of the deleted page and re-index record
+            try {
+                if (page.deleteExportedTextFiles() > 0) {
+                    try {
+                        IndexerTools.reIndexRecord(page.getRelatedPI());
+                        logger.debug("Re-indexing record: {}", page.getRelatedPI());
+                    } catch (RecordNotFoundException e) {
+                        logger.error(e.getMessage());
+                    }
+                }
+            } catch (ViewerConfigurationException e) {
+                logger.error(e.getMessage());
+                Messages.error(e.getMessage());
+            }
+            // Delete page metadata from the index
+            deletePageMetadataFromIndex(page, pageId);
+            cmsBean.getLazyModelPages().update();
+            Messages.info("cms_deletePage_success");
+            return true;
+        }
+        Messages.error("cms_deletePage_failure");
+
+        return false;
     }
 
     /**
@@ -347,10 +352,10 @@ public class CmsPageEditBean implements Serializable {
      */
     static void deletePageMetadataFromIndex(CMSPage page, Long pageId) {
         if (page == null) {
-            throw new org.jboss.weld.exceptions.IllegalArgumentException("page may not be null");
+            throw new IllegalArgumentException("page may not be null");
         }
         if (pageId == null) {
-            throw new org.jboss.weld.exceptions.IllegalArgumentException("pageId may not be null");
+            throw new IllegalArgumentException("pageId may not be null");
         }
 
         try {
