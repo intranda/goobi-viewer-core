@@ -395,10 +395,11 @@ public final class RSSFeed {
             description.setValue(descValue);
             entry.setDescription(description);
 
-            //            if (!accessConditions.isEmpty() && !(accessConditions.size() == 1 && SolrConstants.OPEN_ACCESS_VALUE.equals(accessConditions.get(0)))) {
-            //                AccessPermission accessPermission = AccessConditionUtils.getAccessPermission(pi, thumbnail, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-            //                entry.setAccessPermissionThumbnail(accessPermission);
-            //            }
+            // if (!accessConditions.isEmpty() && !(accessConditions.size() == 1 
+            //     && SolrConstants.OPEN_ACCESS_VALUE.equals(accessConditions.get(0)))) {
+            // AccessPermission accessPermission = AccessConditionUtils.getAccessPermission(pi, thumbnail, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
+            // entry.setAccessPermissionThumbnail(accessPermission);
+            // }
 
             entries.add(entry);
         }
