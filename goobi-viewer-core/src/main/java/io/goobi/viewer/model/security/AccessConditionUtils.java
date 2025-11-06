@@ -1359,8 +1359,10 @@ public final class AccessConditionUtils {
     }
 
     /**
+     * @param pi
+     * @param fileName
      * @param privilegeName
-     * @return the accessPermissionAudio
+     * @return {@link AccessPermission}
      * @throws DAOException
      * @throws IndexUnreachableException
      */
