@@ -64,8 +64,7 @@
 	&__image-map {
 		position: relative;
 		width: 100%;
-		height: 600px;
-
+		height: auto;
 		span {
 			display: inline-block;
 			vertical-align: middle;
@@ -126,6 +125,7 @@
 	/* VIDEO */
 	&__video {
 		display: flex;
+		flex-direction: column;
 	}
 
 	&__video-file {
@@ -171,6 +171,16 @@
 		display: none !important;
 	}
 	
+	&__access-denied {
+		margin-top: 10px;
+	}
+
+	&__access-denied-text {
+		margin-top: 20px;
+		margin-bottom: 20px;
+		width: 100%;
+	}
+	
 }
 
 .view-object-content {
@@ -208,6 +218,13 @@
 			margin-left: auto;
 			margin-right: auto;
 		}
+	} 
+	&__audio-title {
+		h3 {
+			text-align: center;
+			margin-bottom: 30px;	
+		}
+
 	}
 }
 

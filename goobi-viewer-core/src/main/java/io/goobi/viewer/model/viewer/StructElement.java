@@ -906,7 +906,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
             SolrDocument docVolume = DataManager.getInstance()
                     .getSearchIndex()
-                    .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), fields, sortFields);
+                    .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(":\"").append(luceneId).append('"').toString(), fields,
+                            sortFields);
             if (docVolume == null) {
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");
             } else {
@@ -920,7 +921,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
             SolrDocument docVolume = DataManager.getInstance()
                     .getSearchIndex()
-                    .getFirstDoc(new StringBuilder("GROUPID_SERIES_2").append(':').append(this.pi).toString(), fields, sortFields);
+                    .getFirstDoc(new StringBuilder("GROUPID_SERIES_2").append(":\"").append(this.pi).append('"').toString(), fields, sortFields);
             if (docVolume == null) {
                 logger.warn("Group has no child element: Cannot determine appropriate value");
             } else {

@@ -603,7 +603,7 @@ public class Bookmark implements Serializable {
     }
 
     @JsonIgnore
-    public BrowseElement getBrowseElement() throws IndexUnreachableException {
+    public BrowseElement getBrowseElement() throws DAOException, IndexUnreachableException {
         if (this.browseElement == null) {
             try {
                 SolrDocument doc = retrieveSolrDocument();

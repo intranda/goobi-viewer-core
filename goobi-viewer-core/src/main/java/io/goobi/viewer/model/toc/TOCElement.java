@@ -39,14 +39,19 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * Single TOC entry.
  */
-public class TOCElement implements Serializable {
+public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
 
     private static final long serialVersionUID = 5022749180237132594L;
 
@@ -67,6 +72,7 @@ public class TOCElement implements Serializable {
     private String urlPrefix = "";
     private String urlSuffix = "";
     private final boolean accessPermissionPdf;
+    private AccessPermission accessPermissionThumbnail = null;
     /** Element is visible in the current tree. */
     private boolean visible = true;
     private int id = -1;
@@ -198,6 +204,20 @@ public class TOCElement implements Serializable {
     }
 
     /**
+     * @return the accessPermissionThumbnail
+     */
+    public AccessPermission getAccessPermissionThumbnail() {
+        return accessPermissionThumbnail;
+    }
+
+    /**
+     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
+     */
+    public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
+        this.accessPermissionThumbnail = accessPermissionThumbnail;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>thumbnailUrl</code>.
      * </p>
@@ -235,7 +255,19 @@ public class TOCElement implements Serializable {
         return url;
     }
 
-    /*********************************** Getter and Setter ***************************************/
+    @Override
+    public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedThumbnailUrl: locale: {}, LOGID: {}", locale, logId);
+        if (accessPermissionThumbnail != null && accessPermissionThumbnail.getAccessDeniedPlaceholderInfo() != null) {
+            AccessDeniedInfoConfig placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
+                logger.trace("returning custom image: {}", placeholderInfo.getImageUri());
+                return placeholderInfo.getImageUri();
+            }
+        }
+
+        return null;
+    }
 
     /**
      * <p>
@@ -575,5 +607,4 @@ public class TOCElement implements Serializable {
     public boolean isEmpty() {
         return StringUtils.isBlank(this.label.toString());
     }
-
 }

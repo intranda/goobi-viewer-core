@@ -2467,7 +2467,7 @@ public class ViewManager implements Serializable {
      * @return true if a download ticket requirement is present and not yet satisfied; false otherwise
      */
     public boolean isRecordAccessTicketRequired() {
-        logger.trace("isRecordAccessTicketRequired: {}", recordAccessTicketRequired); //NOSONAR Debug
+        // logger.trace("isRecordAccessTicketRequired: {}", recordAccessTicketRequired); //NOSONAR Debug
 
         // If license requires a download ticket, check agent session for loaded ticket
         if (Boolean.TRUE.equals(recordAccessTicketRequired) && FacesContext.getCurrentInstance() != null

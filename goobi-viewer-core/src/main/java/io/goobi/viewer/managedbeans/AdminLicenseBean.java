@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -58,6 +59,7 @@ import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.LicenseTypePlaceholderInfo;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
 import io.goobi.viewer.solr.SolrConstants;
@@ -94,6 +96,8 @@ public class AdminLicenseBean implements Serializable {
     private Role currentRole = null;
     private LicenseType currentLicenseType = null;
     private License currentLicense = null;
+
+    private Locale selectedLanguage;
 
     /**
      * <p>
@@ -296,6 +300,14 @@ public class AdminLicenseBean implements Serializable {
 
         if (!currentLicenseType.isRedirect()) {
             currentLicenseType.setRedirectUrl(null);
+        }
+
+        // Strip any JS from HTML descriptions
+        for (LicenseTypePlaceholderInfo info : currentLicenseType.getImagePlaceholders()) {
+            String desc = currentLicenseType.getPlaceholderDescription(info.getLanguage()).getTranslationValue();
+            if (StringUtils.isNotEmpty(desc)) {
+                currentLicenseType.getPlaceholderDescription(info.getLanguage()).setTranslationValue(StringTools.stripJS(desc));
+            }
         }
 
         if (currentLicenseType.getId() != null) {
@@ -903,6 +915,20 @@ public class AdminLicenseBean implements Serializable {
         if (ObjectUtils.notEqual(getCurrentLicenseId(), id)) {
             setCurrentLicense(DataManager.getInstance().getDao().getLicense(id));
         }
+    }
+
+    /**
+     * @return the selectedLanguage
+     */
+    public Locale getSelectedLanguage() {
+        return selectedLanguage;
+    }
+
+    /**
+     * @param selectedLanguage the selectedLanguage to set
+     */
+    public void setSelectedLanguage(Locale selectedLanguage) {
+        this.selectedLanguage = selectedLanguage;
     }
 
     /**
