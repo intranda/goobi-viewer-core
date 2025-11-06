@@ -293,6 +293,7 @@ public class CmsPageEditBean implements Serializable {
      * Deletes given CMS page from the database.
      *
      * @param page Page to delete
+     * @return true if deletion was successful; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deletePage(CMSPage page) throws DAOException {
