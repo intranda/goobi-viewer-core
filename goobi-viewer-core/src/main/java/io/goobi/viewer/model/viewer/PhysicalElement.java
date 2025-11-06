@@ -529,13 +529,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      */
     public AccessPermission getAccessPermission(String privilegeName) throws IndexUnreachableException, DAOException {
         if (accessPermissionMap.get(privilegeName) == null) {
-            HttpServletRequest request = null;
-            if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
-                request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            AccessPermission accessPermission = AccessConditionUtils.getAccessPermission(pi, fileName, privilegeName);
+            if (accessPermission != null) {
+                accessPermissionMap.put(privilegeName, accessPermission);
             }
-            accessPermissionMap.put(privilegeName, AccessConditionUtils
-                    .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi, fileName,
-                            privilegeName, NetTools.getIpAddress(request)));
         }
 
         return accessPermissionMap.get(privilegeName);

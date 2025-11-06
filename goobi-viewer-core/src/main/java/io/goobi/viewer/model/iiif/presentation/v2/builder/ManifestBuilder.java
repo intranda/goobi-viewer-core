@@ -162,19 +162,11 @@ public class ManifestBuilder extends AbstractBuilder {
             manifest.addService(search);
 
             List<String> accessConditions = ele.getMetadataFields().get(SolrConstants.ACCESSCONDITION);
-            if (accessConditions != null && accessConditions.isEmpty()) {
-                for (String accessCondition : accessConditions) {
-                    logger.trace("{} has access condition: {}", ele.getPi(), accessCondition);
-                }
+            if (accessConditions != null && accessConditions.isEmpty()
+                    && !(accessConditions.size() == 1 && SolrConstants.OPEN_ACCESS_VALUE.equals(accessConditions.get(0)))) {
                 String fileName = ele.getFirstPageFieldValue(SolrConstants.THUMBNAIL);
-
-                HttpServletRequest request = null;
-                if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
-                    request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-                }
-                AccessPermission accessPermission = AccessConditionUtils
-                        .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, ele.getPi(),
-                                fileName, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, NetTools.getIpAddress(request));
+                AccessPermission accessPermission =
+                        AccessConditionUtils.getAccessPermission(ele.getPi(), fileName, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
                 if (accessPermission != null && accessPermission.getAccessDeniedPlaceholderInfo() != null) {
                     for (Entry<String, AccessDeniedInfoConfig> entry : accessPermission.getAccessDeniedPlaceholderInfo().entrySet()) {
                         manifest.getAccessDeniedThumbnailUris().put(entry.getKey(), entry.getValue().getImageUri());

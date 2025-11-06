@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -67,6 +68,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.faces.context.FacesContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -1354,5 +1356,22 @@ public final class AccessConditionUtils {
         }
 
         return ret;
+    }
+
+    /**
+     * @param privilegeName
+     * @return the accessPermissionAudio
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public static AccessPermission getAccessPermission(String pi, String fileName, String privilegeName)
+            throws IndexUnreachableException, DAOException {
+        HttpServletRequest request = null;
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        }
+        return AccessConditionUtils
+                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi, fileName,
+                        privilegeName, NetTools.getIpAddress(request));
     }
 }
