@@ -13,7 +13,7 @@
 >
   <composite:interface>
     <composite:attribute name="fileSize" required="true" />
-    <composite:attribute name="id" required="false" default="" />
+    <composite:attribute name="logId" required="false" default="" />
     <composite:attribute name="title" required="true" />
   </composite:interface>
 
@@ -44,7 +44,7 @@
             <!-- PDF-DOWNLOAD DESCRIPTION -->
             <div>
               <!--TODO MK-->
-              <h2>PDF-Download</h2>
+              <h2>#{msg.downloadHeading}</h2>
 
               <dl class="row">
                 <dt class="col-sm-3">#{msg.downloadInfoTitle}:</dt>
@@ -86,7 +86,7 @@
                   >
                     <f:validator
                       validatorId="emailValidator"
-                      for="downloadEmail"
+                      for="download-modal__email"
                     />
                   </h:inputText>
                 </div>
@@ -103,6 +103,7 @@
                     id="downloadAcceptTerms"
                     class="form-group form-row col-12"
                   >
+                    <p class="mb-4">#{msg.feedbackAcceptingTerms}</p>
                     <label class="col-lg-3 control-label">
                       #{msg.admin__terms_of_use__accept}:
                     </label>
@@ -120,6 +121,7 @@
                           itemLabel="#{msg.no}"
                         />
                       </h:selectOneRadio>
+
                       <h:selectOneRadio
                         group="downloadTerms"
                         value="true"
@@ -129,6 +131,7 @@
                       >
                         <f:selectItem itemLabel="#{msg.yes}" />
                       </h:selectOneRadio>
+
                       <span class="toggle-outside">
                         <span class="toggle-inside"></span>
                       </span>
@@ -149,7 +152,7 @@
                   </button>
 
                   <h:commandButton
-                    action="#{downloadBean.createPDFDownloadJob(activeDocumentBean.persistentIdentifier, cc.attrs.id, true)}"
+                    action="#{downloadBean.createPDFDownloadJob(activeDocumentBean.persistentIdentifier, cc.attrs.logId, true)}"
                     styleClass="btn btn--full"
                     value="#{msg.submit}"
                     pt:data-target="buttonLoaderClickEvent"
@@ -181,6 +184,7 @@
 
               <!--VALIDATION-->
               <script type="text/javascript">
+                //<![CDATA[
                 $(document).ready(function () {
                   const $emailInput = $("input[id$='download-modal__email']");
                   const $radiosWrapper = $("#downloadAcceptTerms");
@@ -201,7 +205,7 @@
                       ? acceptTermsVal?.split(":")?.pop() !== "false"
                       : false;
 
-                    if (emailVal.length &amp;&amp; isEmailValid) {
+                    if (emailVal.length && isEmailValid) {
                       $radiosWrapper.show();
                       $submitBtn.prop("disabled", true);
 
@@ -218,6 +222,7 @@
 
                   updateFormState();
                 });
+                //]]>
               </script>
             </h:form>
           </div>

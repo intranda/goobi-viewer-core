@@ -446,6 +446,7 @@
                                       >
                                         <li>
                                           <button
+                                            type="button"
                                             data-toggle="modal"
                                             data-target="#downloadModal"
                                           >
@@ -455,7 +456,7 @@
                                             />
                                           </button>
                                           <viewerComponent:modalDownload
-                                            id="#{tocElement.logId}"
+                                            logId="#{tocElement.logId}"
                                             title="#{tocElement.label}"
                                             fileSize="#{activeDocumentBean.getPdfSize(tocElement.logId)}"
                                           />
@@ -480,6 +481,7 @@
                   <nav class="toc__list-full clearfix">
                     <ul>
                       <ui:repeat
+                        varStatus="status"
                         var="tocElement"
                         value="#{activeDocumentBean.toc.treeView}"
                       >
@@ -550,6 +552,7 @@
                                     >
                                       <li>
                                         <button
+                                          type="button"
                                           data-toggle="modal"
                                           data-target="#downloadModal"
                                         >
@@ -558,7 +561,7 @@
                                           />
                                         </button>
                                         <viewerComponent:modalDownload
-                                          id="#{tocElement.logId}"
+                                          logId="#{tocElement.logId}"
                                           title="#{tocElement.label}"
                                           fileSize="#{activeDocumentBean.getPdfSize(tocElement.logId)}"
                                         />
