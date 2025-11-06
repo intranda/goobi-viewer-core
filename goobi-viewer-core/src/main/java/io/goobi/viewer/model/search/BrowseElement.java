@@ -806,12 +806,10 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     public String getAccessDeniedThumbnailUrl(Locale locale) {
         logger.trace("getAccessDeniedThumbnailUrl: locale: {}, PI: {}", locale, pi);
         if (accessPermissionThumbnail != null && accessPermissionThumbnail.getAccessDeniedPlaceholderInfo() != null) {
-            if (accessPermissionThumbnail.getAccessDeniedPlaceholderInfo() != null) {
-                AccessDeniedInfoConfig placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
-                if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
-                    logger.trace("returning custom image: {}", placeholderInfo.getImageUri());
-                    return placeholderInfo.getImageUri();
-                }
+            AccessDeniedInfoConfig placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
+                logger.trace("returning custom image: {}", placeholderInfo.getImageUri());
+                return placeholderInfo.getImageUri();
             }
         }
 

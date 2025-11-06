@@ -57,11 +57,9 @@ public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutpu
     @Override
     public String getAccessDeniedThumbnailUrl(Locale locale) {
         if (accessPermissionThumbnail != null && accessPermissionThumbnail.getAccessDeniedPlaceholderInfo() != null) {
-            if (accessPermissionThumbnail.getAccessDeniedPlaceholderInfo() != null) {
-                AccessDeniedInfoConfig placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
-                if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
-                    return placeholderInfo.getImageUri();
-                }
+            AccessDeniedInfoConfig placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
+                return placeholderInfo.getImageUri();
             }
         }
 

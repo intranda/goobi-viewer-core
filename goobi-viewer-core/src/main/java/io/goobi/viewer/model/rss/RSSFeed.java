@@ -53,6 +53,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
@@ -60,6 +61,7 @@ import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.BaseMimeType;
@@ -112,11 +114,10 @@ public final class RSSFeed {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @deprecated Doesn't seem to be in use anymore.
+     * @throws DAOException
      */
-    @Deprecated(since = "2025.10")
     public static SyndFeed createRss(String rootPath, String query, int maxItems)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         return createRss(rootPath, query, null, null, maxItems, null, true);
     }
 
@@ -138,9 +139,7 @@ public final class RSSFeed {
     }
 
     /**
-     * <p>
-     * createRss.
-     * </p>
+     * Creates RSS feed for the RSS REST API endpoint.
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -153,11 +152,12 @@ public final class RSSFeed {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws DAOException
      * @should produce feed correctly
      */
-    @Deprecated(since = "2025.10")
     public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language, int maxItems,
-            final String sortField, boolean sortDescending) throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            final String sortField, boolean sortDescending)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         String feedType = "rss_2.0";
 
         Locale locale = null;
@@ -197,6 +197,7 @@ public final class RSSFeed {
             return feed;
         }
 
+        logger.trace("Found {} RSS hits.", docs.size());
         for (SolrDocument doc : docs) {
             String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
             boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
@@ -359,6 +360,32 @@ public final class RSSFeed {
 
             String imageUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight);
 
+            // Set access denied image
+            if (!accessConditions.isEmpty() && !(accessConditions.size() == 1 && SolrConstants.OPEN_ACCESS_VALUE.equals(accessConditions.get(0)))) {
+                AccessPermission accessPermission = AccessConditionUtils.getAccessPermission(pi, thumbnail, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
+                if (accessPermission != null && !accessPermission.isGranted()) {
+                    logger.trace("{} does not allow thumbnail display.", pi);
+                    imageUrl = null;
+                    // Custom access denied image
+                    if (accessPermission.getAccessDeniedPlaceholderInfo() != null) {
+                        AccessDeniedInfoConfig placeholderInfo = accessPermission.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+                        if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
+                            imageUrl = placeholderInfo.getImageUri();
+                            logger.trace("{} has custom access denied image: {}", pi, imageUrl);
+                        }
+                    }
+
+                    // Default access denied image
+                    if (StringUtils.isEmpty(imageUrl)) {
+                        NavigationHelper nh = BeanUtils.getNavigationHelper();
+                        if (nh == null) {
+                            nh = new NavigationHelper();
+                        }
+                        imageUrl = nh.getApplicationUrl() + "resources/images/access_denied.png";
+                    }
+                }
+            }
+
             String imageHtmlElement = null;
             if (StringUtils.isNotEmpty(pi) && StringUtils.isNotEmpty(imageUrl)) {
                 imageHtmlElement = new StringBuilder("<a href=\"").append(rootPath)
@@ -394,12 +421,6 @@ public final class RSSFeed {
                             .toString();
             description.setValue(descValue);
             entry.setDescription(description);
-
-            // if (!accessConditions.isEmpty() && !(accessConditions.size() == 1 
-            //     && SolrConstants.OPEN_ACCESS_VALUE.equals(accessConditions.get(0)))) {
-            // AccessPermission accessPermission = AccessConditionUtils.getAccessPermission(pi, thumbnail, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-            // entry.setAccessPermissionThumbnail(accessPermission);
-            // }
 
             entries.add(entry);
         }
