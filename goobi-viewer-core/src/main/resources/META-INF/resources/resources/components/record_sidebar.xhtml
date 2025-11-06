@@ -110,7 +110,7 @@
                 </ui:fragment>
 
 				<!-- WIDGET USAGE STATS -->
-                <ui:fragment rendered="#{widgetName == 'statistics-usage'}">
+                <ui:fragment rendered="#{widgetName == 'statistics-usage' and statisticsBean.usageStatisticsActive}">
                     <widgetComponent:widget_statistics_usage />
                 </ui:fragment>
                 
