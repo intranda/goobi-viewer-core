@@ -133,7 +133,7 @@
 		<mariadb-java-client.version>3.5.6</mariadb-java-client.version>
 		<mockito.version>5.20.0</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
-		<omnifaces.version>4.6.5</omnifaces.version>
+		<omnifaces.version>4.7</omnifaces.version>
 		<openpdf.version>2.2.4</openpdf.version>
 		<poi.version>5.4.1</poi.version>
 		<prettyfaces.version>10.0.2.Final</prettyfaces.version>
