@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -38,7 +40,10 @@
 							<img
 								src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 						</div>
-						<i class="widget__topbar-icon-collapsible fa fa-angle-down" aria-hidden="true"></i>
+						 <util:icon
+							icon="chevron-down"
+							styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
+							svgClass="icon" />
 					</div>
 				</div>
 			</ui:fragment>
@@ -53,7 +58,10 @@
 					</h2>
 					
 					<div class="widget__topbar-icons-container">
-						<i class="fa fa-angle-down" aria-hidden="true"></i>
+						<util:icon
+							icon="chevron-down"
+							styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
+							svgClass="icon" />
 					</div>
 				</div>
 			</ui:fragment>

@@ -2,11 +2,16 @@
    Image Controls
    Style declarations for imageControls.xhtml
    ==============================================================*/
+
+@image-controls-touch-size: 26px;
+@image-controls-icon-size: 17px;
+@image-controls-gap: 0.1rem;
 /* CONTROLS */
 /* BLOCK */
 .image-controls {
 	padding: 10px;
 	position: relative;
+	color: @gray;
     &.-ltr, .-ltr {
         direction: ltr;
     }
@@ -16,7 +21,7 @@
 	&__inner {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 5px;
+		gap: 4px;
 	}
 	// GRID/GAP SIZING FOR THE IMAGE ACTIONS/CONTROLS + (DOC) OPTIONS
     &__actions,
@@ -24,66 +29,150 @@
     &__actions-additional,
 	&__options {
 		display: flex;
-		gap: 6px;
+		gap: 3px;
 		flex-wrap: wrap;
 	}
 	/* DOCUMENT OPTIONS */
 	&__options {
 		margin-left: auto;
-		gap: 10px;
 		display: flex;
+		align-items: center;
+		align-content: center;
 		flex-wrap: wrap;
-		ul {}
-	    li {
-	    	align-self: center;
-	    }
+		gap: @image-controls-gap;
+		padding: 0;
+		list-style: none;
 	}
 	&__option {
-		a, 
-		span, 
-		button {
-			color: @gray;
-			&:hover,
-			&:active,
-			&:focus {
-				color: @gray;
+		display: flex;
+		align-items: center;
+		flex: 0 0 auto;
+		margin: 0;
+		color: @gray;
+		font-size: inherit;
+		line-height: 1;
+
+		&.-ltr {
+			margin-right: 0.75rem;
+			a {
+				display: inline;
 			}
+		}
+
+		a,
+		span,
+		button {
+			color: inherit;
+			text-align: center;
+			transition: color .18s ease;
 			&[disabled] {
 				cursor: default;
 			}
 		}
-		a, button {
-			display: block;
-			width: 100%;
-			text-align: center;
+
+		a,
+		button {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
 		}
+
+		&:hover,
+		&:focus-within {
+			color: darken(@gray, 12%);
+		}
+		&:active {
+			color: darken(@gray, 18%);
+		}
+
 		&.fulltext {}
-		&.add-to-bookmark {
-			[data-bookmark-list-type="add"] {
-			    background-image: none;
-			    .fa-bookmark-o {
-			    	display: inline-block;
-			    }
-			    .fa-bookmark {
-			    	display: none;
-			    }
-			    &.added, 
-			    &:hover {
-			    	.fa-bookmark-o {
-			    		display: none;
-			    	}
-			    	.fa-bookmark {
-			    		display: inline-block;
-			    	}
-			    }
-			}
-		}
+        &.add-to-bookmark {
+            [data-bookmark-list-type="add"] {
+                background-image: none;
+                .icon-bookmark-outline {
+                    display: inline-flex;
+                }
+                .icon-bookmark-filled {
+                    display: none;
+                    svg {
+                        stroke: none;
+                        outline: none;
+                        border: none;
+                    }
+                }
+                &.added,
+                &:hover {
+                    .icon-bookmark-outline {
+                        display: none;
+                    }
+                    .icon-bookmark-filled {
+                        display: inline-flex;
+                        svg {
+                            stroke: none;
+                            outline: none;
+                            border: none;
+                            transform: translateY(-1px);
+                        }
+                    }
+                }
+            }
+            .icon-wrapper svg {
+                transform: translateY(-1px);
+            }
+        }
 		&.share-image-region {
 			cursor: pointer;
 			a.active {
 				color: #FF2523;
 			}
 		}
+	}
+	&__option > .btn.btn--icon,
+	&__option > .image-controls__share-image-link,
+	&__option > button,
+	&__option [data-bookmark-list-type="add"] {
+		min-width: @image-controls-touch-size;
+		min-height: @image-controls-touch-size;
+		padding: 0;
+		border: none;
+		background: transparent;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		transition: transform .18s ease, filter .18s ease;
+	}
+	&__option > .btn.btn--icon:focus-visible,
+	&__option > .image-controls__share-image-link:focus-visible,
+	&__option > button:focus-visible,
+	&__option [data-bookmark-list-type="add"]:focus-visible {
+		outline-offset: 2px;
+	}
+	&__option .icon-wrapper {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: @image-controls-icon-size;
+		height: @image-controls-icon-size;
+		line-height: 0;
+		transition: transform .18s ease;
+	}
+	&__option .icon-wrapper svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		fill: currentColor;
+		transition: transform .18s ease, stroke-width .18s ease, fill .18s ease;
+	}
+	&__option > .btn.btn--icon:hover .icon-wrapper,
+	&__option > .btn.btn--icon:focus .icon-wrapper,
+	&__option > .image-controls__share-image-link:hover .icon-wrapper,
+	&__option > .image-controls__share-image-link:focus .icon-wrapper,
+	&__option > button:hover .icon-wrapper,
+	&__option > button:focus .icon-wrapper,
+	&__option [data-bookmark-list-type="add"]:hover .icon-wrapper,
+	&__option [data-bookmark-list-type="add"]:focus .icon-wrapper {
+		transform: scale(1.08) translateY(-1px);
+		filter: drop-shadow(0 3px 8px fade(@black, 18%));
 	}
     /* ACTIONS */
     &__actions {
@@ -106,9 +195,9 @@
 	&__includes-container {
 		display: none;
 	}
-    &__action {
-		width: 32px;
-		height: 32px;
+	&__action {
+		width: 36px;
+		height: 36px;
 		border: 1px solid @gray;
 		display: flex;
 		justify-content: center;
@@ -120,7 +209,7 @@
 		    	background-color: @lightgray; 
 		    }
 	    /* ELEMENT */
-	    a, 
+		a, 
 		span, 
 		button {
 			background: transparent;
@@ -129,12 +218,12 @@
 			align-items: center;
 			height: 100%;
 			width: 100%;
-			padding: 0.4rem;
+			padding: 0.2rem;
 			font-size: 1.2rem;
 			white-space: nowrap;
 			font-weight: 400;
-			color: @gray;
-			fill: @gray;
+			color: inherit;
+			fill: currentColor;
 			border: none;
 			cursor: pointer;
 			&:hover,
@@ -157,7 +246,7 @@
 			font-size: 12px;
 		}
 		span {
-			cursor: default;
+			cursor: inherit;
 		}
 		&.inactive {
 			opacity: 0.4;
@@ -211,13 +300,6 @@
 	    &.double-page-view,
 	    &.single-page-view,
 	    &.switch-pages {
-		    [class*="image-"] {
-				font-size: @fontXLarge;
-			}	    	
-	    }
-	    &.double-page-view,
-	    &.single-page-view,
-	    &.switch-pages {
 	    	a,
 	    	span,
 	    	button {
@@ -229,10 +311,6 @@
 	    &.switch-pages {
 	    	a {}
 	    	svg {}
-	    }
-	    &.rotate-left,
-	    &.rotate-right {
-	    	[class*="image-"] {}
 	    }
 	    &.rotate-left {}
 	    &.rotate-right {}
@@ -277,13 +355,6 @@
 				} 
 	        }
 	    }
-		&.-imageControlsFont {
-			font-family: image-controls;
-			font-style: normal;
-			i {
-				font-style: normal;
-			}
-		}
 	}
     /* MODIFICATION */
 	.labeltext {
@@ -311,6 +382,47 @@
 			}
 		}
 	}
+}
+
+.image-controls__actions-nav .image-controls__icon,
+.image-controls__actions-additional .image-controls__icon {
+    color: @gray;
+}
+
+.image-controls__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.image-controls__icon-svg {
+    width: 28px;
+    height: 28px;
+    display: inline-block;
+    line-height: 0;
+    color: inherit;
+    stroke: currentColor;
+    fill: none;
+}
+
+.image-controls__action .image-controls__icon-svg {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.image-controls {
+    .icon-wrapper {
+        color: currentColor;
+    }
+
+    .icon-wrapper svg {
+        color: inherit;
+        stroke: currentColor;
+        fill: none;
+    }
 }
 
 

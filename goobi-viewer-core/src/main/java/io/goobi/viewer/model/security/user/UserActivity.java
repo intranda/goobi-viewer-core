@@ -41,12 +41,12 @@ public class UserActivity {
     public static final String LABEL_TRUNCATE_SUFFIX = "...";
 
     public enum ActivityType {
-        CROWDSOURCING_CONTENT("ugc", "fa fa-sticky-note-o"),
-        CROWDSOURCING_TRANSCRIPTION("transcription", "fa fa-file-text"),
-        CAMPAIGN_ANNOTATION("Annotation", "fa fa-sticky-note"),
-        COMMENT("Comment", "fa fa-comment"),
-        SEARCH("label__user_search", "fa fa-search"),
-        BOOKMARK("bookmarkList", "fa fa-bookmark");
+        CROWDSOURCING_CONTENT("ugc", "note"),
+        CROWDSOURCING_TRANSCRIPTION("transcription", "file"),
+        CAMPAIGN_ANNOTATION("Annotation", "edit"),
+        COMMENT("Comment", "message-circle"),
+        SEARCH("label__user_search", "search"),
+        BOOKMARK("bookmarkList", "bookmark");
 
         private final String icon;
         private final String label;

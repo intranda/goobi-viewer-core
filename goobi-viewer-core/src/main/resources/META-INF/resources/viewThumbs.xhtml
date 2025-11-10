@@ -6,7 +6,8 @@
 	template="/resources/themes/#{navigationHelper.theme}/template.html"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:util="http://goobi.io/util">
 
 	<ui:define name="metadata">
 		<f:metadata>
@@ -84,7 +85,8 @@
 									<!--                                 <img src="#{image.thumbnailUrl}" alt="#{image.order}:#{image.orderLabel}" title="#{image.order}:#{image.orderLabel}" /> -->
 									<img src="#{image.thumbnailUrl}" alt="#{image.order}"
 										title="#{image.order}:#{image.orderLabel}"
-										data-viewer-thumbnail="thumbnail" />
+										data-viewer-thumbnail="thumbnail"
+										data-viewer-access-denied-url="#{image.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
 									<figcaption>
 										<!-- THUMBNAIL IMAGE ORDER -->
 										<div class="view-thumbs__thumbnail-image-order">#{image.order}:#{image.orderLabel}</div>
@@ -93,7 +95,7 @@
 										<ui:fragment
 											rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
 											<div class="view-thumbs__thumbnail-image-fulltext">
-												<i class="fa fa-file-text-o" aria-hidden="true"></i>
+												<util:icon icon="file-text" />
 											</div>
 										</ui:fragment>
 									</figcaption>

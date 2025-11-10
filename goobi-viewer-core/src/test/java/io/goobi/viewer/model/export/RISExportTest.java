@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import jakarta.faces.context.FacesContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.solr.SolrConstants;
 
 class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -52,6 +54,7 @@ class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void executeSearch_shouldExecuteSearchCorrectly() throws Exception {
+        TestUtils.mockFacesContext();
         RISExport export = new RISExport();
         export.executeSearch(SolrConstants.PI + ":" + PI_KLEIUNIV, null, null, null, null, Locale.ENGLISH, 0);
         Assertions.assertEquals(1, export.getSearchHits().size());
@@ -63,6 +66,7 @@ class RISExportTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void isHasResults_shouldReturnCorrectValue() throws Exception {
+        TestUtils.mockFacesContext();
         RISExport export = new RISExport();
         Assertions.assertFalse(export.isHasResults());
         export.executeSearch(SolrConstants.PI + ":" + PI_KLEIUNIV, null, null, null, null, Locale.ENGLISH, 0);

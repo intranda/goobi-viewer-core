@@ -483,7 +483,7 @@ public class SearchQueryItem implements Serializable {
      * 
      * @param displaySelectItems the displaySelectItems to set
      */
-    void setDisplaySelectItems(boolean displaySelectItems) {
+    public void setDisplaySelectItems(boolean displaySelectItems) {
         this.displaySelectItems = displaySelectItems;
     }
 

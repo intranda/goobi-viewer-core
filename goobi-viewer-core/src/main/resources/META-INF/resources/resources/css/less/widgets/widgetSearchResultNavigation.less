@@ -2,86 +2,127 @@
    Widget Search Result Navigation
    style declarations for widget_searchresultNavigation.xhtml
    ==============================================================*/
-.widget-search-result-navigation {
-	&__topbar {}
-	&__title {}
-	&__body {}
-	&__wrapper {
-		display: flex;
-		align-items: center;
-		margin-bottom: 5px;
-	}
-	&__left,
-	&__center,
-	&__right {
-		overflow: hidden;
-		&:hover {
-			svg {
-				background-color: @lightgray;
+	.widget-search-result-navigation {
+		&__topbar {}
+		&__title {}
+		&__body {}
+		&__wrapper {
+			display: flex;
+			align-items: center;
+			margin-bottom: 5px;
+		}
+		&__left,
+		&__center,
+		&__right {
+            overflow: hidden;
+		}
+		&__left,
+		&__right {
+			overflow: visible;
+		}
+			&__left {
+				max-width: 20%;
+				flex: 0 0 20%;
+				text-align: left;
+				.searchResultNavigationBackImg {
+                display: inline-grid;
+                place-items: center;
+                width: 30px;
+                height: 30px;
+                box-sizing: border-box;
+                color: inherit;
+                border: 1px solid currentColor;
+                border-radius: 4px;
+                overflow: hidden;
+                }
+            .searchResultNavigationBackImg::before {
+                content: "";
+                display: block;
+                width: 26px;
+                height: 26px;
+                background-color: currentColor;
+                mask: url("../../icons/outline/text-wrap-disabled.svg") center/100% 100% no-repeat;
+                -webkit-mask: url("../../icons/outline/text-wrap-disabled.svg") center/100% 100% no-repeat;
+                transform: rotate(180deg);
+                transition: transform 140ms ease;
+            }
+            .searchResultNavigationBackImg:hover::before { transform: rotate(180deg); }
 			}
+		&__center {
+			max-width: 60%;
+			flex: 0 0 60%;
+			text-align: center;
+			margin-left: auto;
+			margin-right: auto;
 		}
-	}
-	&__left,
-	&__right {
-		overflow: visible;
-	}
-	&__left {
-		max-width: 20%;
-		flex: 0 0 20%;
-		text-align: left;
-		svg {
-			width: 28px;
-			height: 28px;
-		}
-	}
-	&__center {
-		max-width: 60%;
-		flex: 0 0 60%;
-		text-align: center;
-		margin-left: auto;
-		margin-right: auto;
-	}
-	&__right {
-		max-width: 20%;
-		flex: 0 0 20%;
-		text-align: right;
-		svg {
-			width: 28px;
-			height: 28px;
-		}
-	}
-	&__back-to-collection {
-		display: flex;
-		align-items: center;
-		gap: 5px;
-		padding: 0.4375rem 0 0 0;
-		a {
-			svg {
-				margin: -0.1875rem 0.1875rem 0 0;
-				margin-right: 0.3rem;
+			&__right {
+				max-width: 20%;
+				flex: 0 0 20%;
+				text-align: right;
+				.searchResultNavigationForwardImg {
+                display: inline-grid;
+                place-items: center;
+                width: 30px;
+                height: 30px;
+                box-sizing: border-box;
+                color: inherit;
+                border: 1px solid currentColor;
+                border-radius: 4px;
+                overflow: hidden;
+                }
+            .searchResultNavigationForwardImg::before {
+                content: "";
+                display: block;
+                width: 26px;
+                height: 26px;
+                background-color: currentColor;
+                mask: url("../../icons/outline/text-wrap-disabled.svg") center/100% 100% no-repeat;
+                -webkit-mask: url("../../icons/outline/text-wrap-disabled.svg") center/100% 100% no-repeat;
+                transition: transform 140ms ease;
+            }
 			}
+			&__back-to-collection {
+				display: flex;
+				align-items: center;
+				gap: 5px;
+				padding: 0.4375rem 0 0 0;
+				a {
+                display: inline-flex;
+                align-items: center;
+                line-height: 1;
+                &::before {
+                    content: "";
+                    display: inline-block;
+                    width: 30px;
+                    height: 30px;
+                    margin-right: 0.3rem;
+                    color: inherit;
+                    background-color: currentColor;
+                    mask: url("../../icons/outline/arrow-forward.svg") 5px 5px/20px 20px no-repeat;
+                    -webkit-mask: url("../../icons/outline/arrow-forward.svg") 5px 5px/20px 20px no-repeat;
+                    vertical-align: middle;
+                    transform: rotate(180deg);
+                }
+
+				}
+            a::before { transition: transform 140ms ease; }
+            a:hover::before { transform: rotate(180deg); }
 		}
-		&:hover {
-			svg {
-				background-color: @lightgray;
-			}
-		}
+		
 	}
 	
-}
-
-
-@{RTL} .widget-search-result-navigation {
-	&__back-to-collection {
-		a {
-		    svg {
-		       	margin-right: unset;
-		       	margin-left: 0.3rem;
-		       	transform: rotate(180deg);
+	
+	@{RTL} .widget-search-result-navigation {
+		&__back-to-collection {
+			a {
+				&::before {
+					margin-right: unset;
+					margin-left: 0.3rem;
+					transform: rotate(180deg);
+				}
 			}
 		}
 	}
-}
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 

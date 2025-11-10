@@ -25,5 +25,11 @@
             <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mp4')}" type="video/mp4" />
             <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('ogg')}" type="video/ogg" />
         </video>
+	    <!-- ACCESS DENIED DESCRIPTION TEXT -->
+	    <h:panelGroup styleClass="view-object__access-denied-text"
+	        rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionObject and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForVideo(navigationHelper.locale) != null}">
+	        <h:outputText escape="false"
+	            value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForVideo(navigationHelper.locale)}" />
+	    </h:panelGroup>
     </div>
 </ui:composition>

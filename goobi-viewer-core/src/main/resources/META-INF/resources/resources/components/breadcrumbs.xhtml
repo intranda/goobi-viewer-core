@@ -2,7 +2,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html">
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:util="http://goobi.io/util">
 
     <composite:interface>
         <composite:attribute name="showIcon" required="false" default="false" />
@@ -25,7 +26,7 @@
 							<h:panelGroup rendered="#{(status.first and !status.last and breadcrumb.link) and (cc.attrs.showIcon == true)}">
 								<li class="breadcrumbs__crumb">
 									<a href="#{breadcrumb.url}" title="#{msg.home}" aria-label="#{msg.home}">
-										<i class="fa fa-home breadcrumbs__first-crumb-icon" aria-hidden="true"></i>
+										<util:icon icon="home" styleClass="breadcrumbs__first-crumb-icon" />
 									</a>
 								</li>
 							</h:panelGroup>
@@ -34,7 +35,7 @@
 							<h:panelGroup rendered="#{(status.first and status.last) and (cc.attrs.showIcon == true)}">
 								<li class="breadcrumbs__crumb" aria-current="page">
 									<span aria-label="#{msg.home}">
-										<i class="fa fa-home breadcrumbs__first-crumb-icon" aria-hidden="true"></i>
+										<util:icon icon="home" styleClass="breadcrumbs__first-crumb-icon" />
 									</span>
 								</li>
 							</h:panelGroup>

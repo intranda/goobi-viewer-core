@@ -46,6 +46,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -111,10 +112,11 @@ public class SearchHitFactory {
      * @return a {@link io.goobi.viewer.model.search.SearchHit} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws DAOException 
      * @should add export fields correctly
      */
     public SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, String fulltext, HitType overrideType)
-            throws PresentationException, IndexUnreachableException {
+            throws PresentationException, IndexUnreachableException, DAOException {
 
         List<String> fulltextFragments =
                 (fulltext == null || searchTerms == null) ? null

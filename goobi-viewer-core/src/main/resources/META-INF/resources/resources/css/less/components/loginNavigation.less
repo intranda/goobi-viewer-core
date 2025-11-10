@@ -10,6 +10,10 @@
 	&__list {
 		.mx-list-reset;
 	}
+	&__toggle-button {
+		display: flex;
+		align-items: center;
+	}
 	/* ELEMENT */
 	/* NOT LOGGED IN */
 	[data-login="false"] {
@@ -49,82 +53,66 @@
 				}
 			}
 			/* USER DROPDOWN */
-			&__user-dropdown {
-				display: none;
-				position: absolute;
-				top: ~"calc(100% + 4px)";
-				right: 0;
-				width: 240px;
-				padding-bottom: 0;
-				padding-top: 0;
-				font-size: @fontMedium;
-				background-color: @loginNavBG;
-				overflow: hidden;
-				z-index: 2020;
-				li {
-					margin: 0;
-				}
+		&__user-dropdown {
+			display: none;
+			position: absolute;
+			top: ~"calc(100% + 6px)";
+			right: 0;
+			width: 260px;
+			padding: 0.35rem 0;
+			font-size: @fontMedium;
+			background: lighten(@loginNavBG, 2%);
+			border: 1px solid fade(@loginNavFG, 10%);
+			box-shadow: 0 18px 36px fade(#000, 18%);
+			border-radius: 0.85rem;
+			overflow: hidden;
+			z-index: 2020;
+			color: @loginNavFG;
+			li {
+				margin: 0;
 			}
-			&__user-dropdown-item {
-				display: flex;
-				align-items: center;
-				font-size: @fontMedium;
-				&:hover {
-					background-color: @loginNavBGHover;
-					a, button, .fa {
-					color: @loginNavFGHover;
-					}
-		    	}
+		}
+		&__user-dropdown-item {
+			font-size: @fontMedium;
+			&:hover {
+				background-color: fade(@loginNavFG, 9%);
 			}
-			&__user-dropdown-item-icon {
-				min-width: 30px;
-				padding-left: 1.5rem;
-				text-align: center;
-				.fa {
-					color: @loginNavFG;
-          			font-size: @fontMedium;
-				}
+		}
+		&__user-dropdown-item-link {
+			display: inline-flex;
+			align-items: center;
+			gap: 1rem;
+			width: 100%;
+			padding: 0.7rem 1.2rem 0.7rem 1.5rem;
+			line-height: 1;
+			text-decoration: none;
+			color: @loginNavFG;
+			transition: color 0.2s ease, padding-left 0.18s ease, background-color 0.2s ease;
+		}
+		&__user-dropdown-item-link:hover {
+			color: @loginNavFGHover;
+			padding-left: 1.8rem;
+			background-color: fade(@loginNavFG, 8%);
+		}
+		&__user-dropdown-item-text {
+			white-space: nowrap;
+			color: @loginNavFG;
+			transition: color 0.2s ease;
+		}
+		&__user-dropdown-item-icon-text {
+			svg {
+				color: @loginNavFG;
+				transition: color 0.2s ease;
 			}
-			&__user-dropdown-item-string {
-				-webkit-box-flex: 1;
-			    -ms-flex-positive: 1;
-			    flex-grow: 1;
-				a {
-					display: block;
-					color: @loginNavFG;
-					padding: 0.7rem 1.2rem;
-				  	white-space: nowrap;
-					&:hover,
-					&:active,
-					&:focus {
-						text-decoration: none;
-					}
-				}
-			}
-
-			&__bookmarks-trigger {
-				white-space: nowrap;
-        		color: @loginNavFG;
-      }
-			/* USER DROPDOWN ACTION */
-			&__user-dropdown-action {
-				padding-top: 10px;
-				.btn {
-					width: 100%;
-					margin: 0;
-					&:hover,
-					&:active,
-					&:focus {}
-				}
-			}
+		}
+		&__user-dropdown-item-link:hover &__user-dropdown-item-icon-text svg {
+			color: @loginNavFGHover;
+		}
+		&__user-dropdown-item-caret {
+			margin-left: auto;
+			color: @loginNavFG;
+		}
 			/* BOOKMARK DROPDOWN */
-			&__bookmarks-list-wrapper {
-				.-opened {
-					.fa-caret-down {
-						transform: rotate(180deg);
-					}
-				}
-			}
 			&__bookmarks-dropdown {
 				.mx-list-reset;
 				display: block;
@@ -152,10 +140,11 @@
 			}
 			&__bookmarks-name a, 
 			&__bookmarks-icon-list .fa, 
+			&__bookmarks-icon-list svg,
 			&__bookmarks-icon-list {
 				color: @loginNavBookmarksFG;
 				a {
-					margin-right: 0.7rem;
+					margin-right: 0;
 					color: @loginNavBookmarksFG;
 				}
 				&:hover {
@@ -167,6 +156,19 @@
 				display: flex;
 				text-decoration: none;
 				align-items: center;
+				gap: 0.7rem;
+			}
+			&__bookmarks-icon-list a {
+				transition: color 0.2s ease;
+			}
+			&__bookmarks-icon-list svg {
+				width: 1.8rem;
+				height: 1.8rem;
+				stroke: currentColor;
+				transition: stroke 0.2s ease, transform 0.2s ease;
+			}
+			&__bookmarks-icon-list a:hover svg {
+				transform: scale(1.08);
 			}
 			&__bookmarks-counter {
 				padding: 0 0.3rem;
@@ -186,14 +188,6 @@
 			&__bookmarks-trigger {
 				.mx-no-style-button;
 				width: 100%;
-				display: flex;
-				justify-content: space-between;
-				padding: 0.7rem 1.2rem;
-				.fa-caret-down {
-					align-self: center;
-					margin-left: 0.8rem;
-					transition: all 0.2s ease;	
-				}
 			}
 			&__mini-avatar {
 				border-radius: 20px;

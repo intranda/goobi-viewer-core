@@ -514,8 +514,18 @@ public class SearchHit implements Comparable<SearchHit> {
         }
     }
 
+    /**
+     * 
+     * @param childDoc
+     * @param fulltext
+     * @param docType
+     * @param acccessDeniedType
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     public void handleMetadataHit(SolrDocument childDoc, String fulltext, DocType docType, boolean acccessDeniedType)
-            throws IndexUnreachableException, PresentationException {
+            throws DAOException, IndexUnreachableException, PresentationException {
         String ownerIddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
         SearchHit ownerHit = ownerHits.get(ownerIddoc);
         if (ownerHit == null) {
@@ -652,32 +662,45 @@ public class SearchHit implements Comparable<SearchHit> {
         return type != null ? SEARCH_HIT_TYPE_PREFIX + type.name() : "";
     }
 
-    public String getIconClassForType() {
+    public String getIconName() {
+        return getIconNameForType(this.type);
+    }
+
+    private static String getIconNameForType(HitType type) {
         if (type != null) {
             switch (type) {
                 case PAGE:
-                    return "fa fa-file-text";
+                    return "file-text";
                 case PERSON:
-                    return "fa fa-user";
+                    return "user";
                 case CORPORATION:
-                    return "fa fa-university";
+                    return "building";
                 case LOCATION:
                 case ADDRESS:
-                    return "fa fa-envelope";
+                    return "mail";
                 case COMMENT:
-                    return "fa fa-comment-o";
+                    return "message";
                 case CMS:
-                    return "fa fa-file-text-o";
+                    return "file-text";
                 case EVENT:
-                    return "fa fa-calendar";
+                    return "calendar";
                 case ACCESSDENIED:
-                    return "fa fa-lock";
+                    return "lock";
                 default:
-                    return "fa fa-file-text";
+                    return "file-text";
             }
         }
 
-        return "";
+        return "file-text";
+    }
+
+    /**
+     * @deprecated use {@link #getIconName()} instead.
+     * @return {@link String}
+     */
+    @Deprecated(since = "25.10")
+    public String getIconClassForType() {
+        return getIconNameForType(this.type);
     }
 
     /**

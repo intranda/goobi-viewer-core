@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -35,14 +36,19 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.annotations.PrivateOwned;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.LicenseTypePlaceholderInfo.LicenseTypeImageMode;
+import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -54,6 +60,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -63,7 +70,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "license_types")
-public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType, Serializable {
+public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType, IPolyglott, Serializable {
 
     private static final long serialVersionUID = 9206827867178660886L;
 
@@ -82,6 +89,11 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private static final String LICENSE_TYPE_DESC_CMS = "licenseType_cms_desc";
     public static final String LICENSE_TYPE_LEGAL_DISCLAIMER = "licenseType_disclaimer";
     private static final String LICENSE_TYPE_DESC_LEGAL_DISCLAIMER = "licenseType_disclaimer_desc";
+
+    private static final String METADATA_TAG_PLACEHOLDER_DESCRIPTION = "PlaceholderDescription";
+
+    @Transient
+    private final transient Object lockTranslations = new Object();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -123,6 +135,10 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
             inverseJoinColumns = @JoinColumn(name = "overriding_license_type_id"))
     private Set<LicenseType> overriddenLicenseTypes = new HashSet<>();
 
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+    @PrivateOwned
+    private Set<LicenseTypePlaceholderInfo> imagePlaceholders = new HashSet<>();
+
     @Transient
     private Set<String> privilegesCopy = new HashSet<>();
 
@@ -141,6 +157,9 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
 
     @Transient
     private boolean displayRecordSearchLink = true;
+
+    @Transient
+    private Locale selectedLocale; // Do not init with BeanUtils.getLocale() here!
 
     /**
      * Empty constructor.
@@ -822,6 +841,91 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
+     * @return the imagePlaceholders
+     */
+    public Set<LicenseTypePlaceholderInfo> getImagePlaceholders() {
+        return imagePlaceholders;
+    }
+
+    /**
+     * Used to access individual language info when editing this LicenseType.
+     * 
+     * @param language
+     * @return {@link LicenseTypePlaceholderInfo}
+     */
+    public LicenseTypePlaceholderInfo getPlaceholderInfo(String language) {
+        for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
+            if (info.getLanguage() != null && info.getLanguage().equals(language)) {
+                return info;
+            }
+        }
+
+        LicenseTypePlaceholderInfo info = new LicenseTypePlaceholderInfo(language, METADATA_TAG_PLACEHOLDER_DESCRIPTION, this);
+        imagePlaceholders.add(info);
+
+        return info;
+    }
+
+    public boolean isHasCustomPlaceholderInfo() {
+        for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
+            if ((LicenseTypeImageMode.UPLOADED_IMAGE.equals(info.getImageMode()) && info.getMediaItem() != null)
+                    || StringUtils.isNotEmpty(getPlaceholderDescription(info.getLanguage()).getTranslationValue())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public LicenseTypePlaceholderInfo getPlaceholderDescription(String language) {
+        return getTranslation(METADATA_TAG_PLACEHOLDER_DESCRIPTION, language);
+    }
+
+    /**
+     * 
+     * @param tag
+     * @param language
+     * @return {@link LicenseTypeTranslation}
+     */
+    private LicenseTypePlaceholderInfo getTranslation(String tag, String language) {
+        if (tag == null) {
+            throw new IllegalArgumentException("tag may not be null");
+        }
+        if (language == null) {
+            throw new IllegalArgumentException("language may not be null");
+        }
+
+        synchronized (lockTranslations) {
+            LicenseTypePlaceholderInfo ret = imagePlaceholders.stream()
+                    .filter(t -> tag.equals(t.getTag()))
+                    .filter(t -> language.equals(t.getLanguage()))
+                    .findFirst()
+                    .orElse(null);
+            if (ret == null) {
+                ret = new LicenseTypePlaceholderInfo(language, tag, this);
+                imagePlaceholders.add(ret);
+            }
+
+            return ret;
+        }
+    }
+
+    /**
+     * Returns configurations as a map for further usage.
+     * 
+     * @return the imagePlaceholders
+     */
+    public Map<String, AccessDeniedInfoConfig> getImagePlaceholdersAsMap() {
+        Map<String, AccessDeniedInfoConfig> ret = HashMap.newHashMap(imagePlaceholders.size());
+        for (LicenseTypePlaceholderInfo info : imagePlaceholders) {
+            ret.put(info.getLanguage(), new AccessDeniedInfoConfig(info.getLanguage(), info.getMediaThumbnailURI(),
+                    getPlaceholderDescription(info.getLanguage()).getTranslationValue()));
+        }
+
+        return ret;
+    }
+
+    /**
      * @return the privilegesCopy
      */
     public Set<String> getPrivilegesCopy() {
@@ -981,6 +1085,45 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
                 // .append(" *:*))")
                 .append(')')
                 .toString();
+    }
+
+    @Override
+    public boolean isComplete(Locale locale) {
+        if (locale == null) {
+            return false;
+        }
+
+        return getPlaceholderInfo(locale.getLanguage()).hasMediaItem()
+                && StringUtils.isNotBlank(getPlaceholderDescription(locale.getLanguage()).getTranslationValue());
+    }
+
+    @Override
+    public boolean isValid(Locale locale) {
+        return true;
+    }
+
+    @Override
+    public boolean isEmpty(Locale locale) {
+        if (locale == null) {
+            return false;
+        }
+
+        return !getPlaceholderInfo(locale.getLanguage()).hasMediaItem()
+                && !StringUtils.isNotBlank(getPlaceholderDescription(locale.getLanguage()).getTranslationValue());
+    }
+
+    @Override
+    public Locale getSelectedLocale() {
+        if (this.selectedLocale == null) {
+            this.selectedLocale = BeanUtils.getLocale();
+        }
+        return this.selectedLocale;
+    }
+
+    @Override
+    public void setSelectedLocale(Locale locale) {
+        this.selectedLocale = locale;
+
     }
 
     /** {@inheritDoc} */

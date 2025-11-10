@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -76,7 +77,9 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
@@ -89,7 +92,7 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * Physical element (page) containing an image, video or audio.
  */
-public class PhysicalElement implements Comparable<PhysicalElement>, Serializable {
+public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeniedThumbnailOutput, Serializable {
 
     public enum CoordsFormat {
         UNCHECKED,
@@ -149,6 +152,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private boolean fulltextAvailable = false;
 
     private Boolean fulltextAccessPermission;
+    /** Map containing AccessPermission access check results and custom access denied info. */
+    private Map<String, AccessPermission> accessPermissionMap = new HashMap<>();
     /** True if a download ticket is required before files may be downloaded. Value is set during the access permission check. */
     private Boolean bornDigitalDownloadTicketRequired = null; // TODO reset when logging in/out or persist in session
     /** File name of the full-text document in the file system. */
@@ -444,6 +449,93 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public String getThumbnailUrl(int width, int height) {
         ThumbnailHandler thumbHandler = BeanUtils.getImageDeliveryBean().getThumbs();
         return thumbHandler.getThumbnailUrl(this, width, height);
+    }
+
+    public String getAccessDeniedDescriptionTextForImage(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedDescriptionTextForImage: locale: {}, page: {}", locale, order);
+        return getAccessDeniedDescriptionText(IPrivilegeHolder.PRIV_VIEW_IMAGES, locale);
+    }
+
+    public String getAccessDeniedDescriptionTextForVideo(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedDescriptionTextForAudio: locale: {}, page: {}", locale, order);
+        return getAccessDeniedDescriptionText(IPrivilegeHolder.PRIV_VIEW_VIDEO, locale);
+    }
+
+    public String getAccessDeniedDescriptionTextForAudio(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedDescriptionTextForAudio: locale: {}, page: {}", locale, order);
+        return getAccessDeniedDescriptionText(IPrivilegeHolder.PRIV_VIEW_AUDIO, locale);
+    }
+
+    public String getAccessDeniedDescriptionTextFor3D(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedDescriptionTextFor3D: locale: {}, page: {}", locale, order);
+        return getAccessDeniedDescriptionTextForImage(locale);
+    }
+
+    /**
+     * 
+     * @param accessPermission
+     * @param locale
+     * @return Description text if found; otherwise null
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    private String getAccessDeniedDescriptionText(String privilegeName, Locale locale) throws IndexUnreachableException, DAOException {
+        AccessPermission accessPermission = getAccessPermission(privilegeName);
+        if (accessPermission != null && accessPermission.getAccessDeniedPlaceholderInfo() != null) {
+            AccessDeniedInfoConfig placeholderInfo = accessPermission.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getDescription())) {
+                logger.trace("returning custom description text for {}: {}", privilegeName, placeholderInfo.getDescription());
+                return StringTools.stripJS(placeholderInfo.getDescription());
+            }
+        }
+
+        return null;
+    }
+
+    public String getAccessDeniedImageUrl(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedImageUrl: locale: {}, page: {}", locale, order);
+        return getAccessDeniedUrl(getAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES), locale);
+    }
+
+    @Override
+    public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
+        logger.trace("getAccessDeniedThumbnailUrl: locale: {}, page: {}", locale, order);
+        return getAccessDeniedUrl(getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS), locale);
+    }
+
+    /**
+     * 
+     * @param accessPermission
+     * @param locale
+     * @return Access denied image url; null if none found
+     */
+    static String getAccessDeniedUrl(AccessPermission accessPermission, Locale locale) {
+        if (accessPermission != null && accessPermission.getAccessDeniedPlaceholderInfo() != null) {
+            AccessDeniedInfoConfig placeholderInfo = accessPermission.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
+                logger.trace("returning custom image: {}", placeholderInfo.getImageUri());
+                return placeholderInfo.getImageUri();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param privilegeName
+     * @return the accessPermissionAudio
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public AccessPermission getAccessPermission(String privilegeName) throws IndexUnreachableException, DAOException {
+        if (accessPermissionMap.get(privilegeName) == null) {
+            AccessPermission accessPermission = AccessConditionUtils.getAccessPermission(pi, fileName, privilegeName);
+            if (accessPermission != null) {
+                accessPermissionMap.put(privilegeName, accessPermission);
+            }
+        }
+
+        return accessPermissionMap.get(privilegeName);
     }
 
     /**
@@ -1335,7 +1427,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public String getImageUrl(int size) {
         Scale scale = new Scale.ScaleToWidth(size);
         return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, scale);
-
     }
 
     /**
@@ -1481,10 +1572,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         }
 
-        return AccessConditionUtils
-                .checkAccessPermissionForImage(request != null ? request.getSession() : null, pi, fileName, NetTools.getIpAddress(request))
-                .isGranted()
-                && FilterTools.checkForConcurrentViewLimit(pi, request);
+        return getAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES).isGranted() && FilterTools.checkForConcurrentViewLimit(pi, request);
     }
 
     /**
@@ -1624,6 +1712,42 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi, fileName,
                         IPrivilegeHolder.PRIV_VIEW_FULLTEXT, NetTools.getIpAddress(request))
                 .isGranted();
+    }
+
+    /**
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean isAccessPermissionVideo() throws IndexUnreachableException, DAOException {
+        HttpServletRequest request = null;
+        if (getFilepath().startsWith("http")) {
+            //External urls are always free to use
+            return true;
+        } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        }
+
+        return getAccessPermission(IPrivilegeHolder.PRIV_VIEW_VIDEO).isGranted() && FilterTools.checkForConcurrentViewLimit(pi, request);
+    }
+
+    /**
+     *
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean isAccessPermissionAudio() throws IndexUnreachableException, DAOException {
+        HttpServletRequest request = null;
+        if (getFilepath().startsWith("http")) {
+            //External urls are always free to use
+            return true;
+        } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        }
+
+        return getAccessPermission(IPrivilegeHolder.PRIV_VIEW_AUDIO).isGranted() && FilterTools.checkForConcurrentViewLimit(pi, request);
     }
 
     /**

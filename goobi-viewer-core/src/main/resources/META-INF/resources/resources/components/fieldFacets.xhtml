@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -31,7 +33,7 @@
 							<button type="button" class="btn btn--clean"
 								data-toggle="searchFacetFilter"
 								aria-label="#{msg.placeholder__filter_search_results}">
-								<i class="fa fa-search" aria-hidden="true"></i>
+								<util:icon icon="search" />
 							</button>
 						</div>
 						</ui:fragment>

@@ -50,6 +50,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.Translation;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -117,6 +118,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     @Transient
     private Locale selectedLocale = BeanUtils.getLocale();
+
+    @Transient
+    private AccessPermission accessPermissionThumbnail = null;
 
     /**
      * <p>
@@ -291,9 +295,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      */
     public void setLabel(String value, String language) {
         getLabels().stream()
-            .filter(label -> label.getLanguage().equalsIgnoreCase(language))
-            .findFirst()
-            .ifPresent(label -> label.setTranslationValue(value));
+                .filter(label -> label.getLanguage().equalsIgnoreCase(language))
+                .findFirst()
+                .ifPresent(label -> label.setTranslationValue(value));
     }
 
     /**
@@ -534,9 +538,6 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         return getSolrField() + "/" + getSolrFieldValue();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getName()
-     */
     /** {@inheritDoc} */
     @Override
     public String getName() {
@@ -549,9 +550,6 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         return getLinkURI(BeanUtils.getRequest());
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getLinkURI(jakarta.servlet.http.HttpServletRequest)
-     */
     /** {@inheritDoc} */
     @Override
     public URI getLinkURI(HttpServletRequest request) {
@@ -568,38 +566,26 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getIconURI()
-     */
     /** {@inheritDoc} */
     @Override
     public URI getIconURI() {
         logger.trace("getIconURI for {}: {}", getSolrFieldValue(), getRepresentativeWork().isPresent() ? getRepresentativeWorkPI() : "-");
         return getRepresentativeWork().map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(work)))
-                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI()).orElse(getDefaultIcon(getSolrFieldValue())));
+                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI()).orElse(null));
     }
 
     /** {@inheritDoc} */
     @Override
     public URI getIconURI(int width, int height) {
         return getRepresentativeWork().map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(work, width, height)))
-                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(width, height)).orElse(getDefaultIcon(getSolrFieldValue())));
+                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(width, height)).orElse(null));
     }
 
     /** {@inheritDoc} */
     @Override
     public URI getIconURI(int size) {
         return getRepresentativeWork().map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(work, size)))
-                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(size)).orElse(getDefaultIcon(getSolrFieldValue())));
-    }
-
-    /**
-     * @param collectionName
-     * @return {@link URI}
-     */
-    @Deprecated(since = "24.10")
-    public static URI getDefaultIcon(String collectionName) {
-        return null;
+                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(size)).orElse(null));
     }
 
     /**
@@ -751,4 +737,17 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         this.selectedLocale = locale;
     }
 
+    /**
+     * @return the accessPermissionThumbnail
+     */
+    public AccessPermission getAccessPermissionThumbnail() {
+        return accessPermissionThumbnail;
+    }
+
+    /**
+     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
+     */
+    public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
+        this.accessPermissionThumbnail = accessPermissionThumbnail;
+    }
 }

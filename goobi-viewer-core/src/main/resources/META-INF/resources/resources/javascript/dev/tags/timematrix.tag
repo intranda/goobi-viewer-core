@@ -36,6 +36,7 @@
 			<div class="timematrix__img">
 			<a href="{getViewerUrl(manifest)}"> <img ref="image" src="{getImageUrl(manifest)}"
 				class="timematrix__image" data-viewer-thumbnail="thumbnail"  alt="" aria-hidden="true"
+				data-viewer-access-denied-url="{getAccessDeniedThumbnailUrl(manifest)}"
 				onLoad="$(this).parents('.timematrix__img').css('background', 'transparent')" />
 					<div class="timematrix__text">	
 						<p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p>
@@ -122,6 +123,23 @@
 	            let url = manifest.thumbnail["@id"];
 	            return url;
 	        }
+	    }
+	    
+	    /**
+	     * Extracts an optional custom access denied thumbnail URL for the current language from JSON.
+	     */
+	    getAccessDeniedThumbnailUrl(manifest) {
+	    	try {
+	    		const uris = manifest.accessDeniedThumbnailUris;
+	    		if (!uris) { 
+	    		    return null;
+	    		}
+	    		const uri = uris[this.opts.language];
+	    		return uri || null;
+	    		} catch (e) {
+	    		    console.error("getAccessDeniedThumbnailUrl() failed:", e);
+	    		    return null;
+	    		} 
 	    }
 	    
 	    hasTitle(manifest) {

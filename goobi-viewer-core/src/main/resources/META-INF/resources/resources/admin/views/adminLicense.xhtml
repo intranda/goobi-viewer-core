@@ -1,5 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -49,11 +50,120 @@
                                     </div>
                                     <div class="col-1 admin__form-help-icon">
                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            <util:icon icon="help" />
                                         </button>
                                     </div>
                                 </div>
                             </div>
+                            
+                        <h2>#{msg.admin__license_placeholders}</h2>
+                        <h:panelGroup layout="block" id="placeholderGroup">
+                        
+                            <div class="admin__language-tabs">
+                                <viewerComponent:localeSelector object="#{adminLicenseBean.currentLicenseType}" render="placeholderGroup" />
+                            </div>
+                                                    
+                            <div class="admin__default-block">
+                                <ui:param name="language" value="de"></ui:param>
+                                <div id="nameLanguage-#{adminLicenseBean.currentLicenseType.selectedLocale}">
+
+                                    <!-- IMAGE SELECTION -->
+                                    <div class="form-group form-row">
+                                        <h:panelGroup layout="block" id="imageModeGroup" styleClass="admin__cms-edit-collection-image-actions-wrapper">
+                            
+                                            <div class="form-group admin__cms-edit-collection-connected-radio-buttons">
+                                                <div class="connected-top">
+                                                    <h:selectOneRadio group="imageModeRadio" immediate="true"
+                                                        value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode}">
+                                                        <f:selectItem itemValue="DEFAULT" itemLabel="#{msg.admin__license_placeholders_image_mode_default}" />
+                                                        <f:ajax render="imageModeGroup" />
+                                                    </h:selectOneRadio>
+                                                </div>
+                                                <div class="connected-bottom">
+                                                    <h:selectOneRadio group="imageModeRadio" immediate="true"
+                                                        value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode}">
+                                                        <f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__license_placeholders_image_mode_custom}" />
+                                                        <f:ajax render="imageModeGroup" />
+                                                    </h:selectOneRadio>
+                                                </div>
+                                            </div>
+                                            
+
+                                            <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image"
+                                                id="defaultImageGroup"
+                                                rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'DEFAULT'}">
+                                                <div class="admin__cms-edit-collection-image-thumbnail">
+                                                    <img class="img-fluid" alt=""
+                                                        src="#{request.contextPath}#{navigationHelper.getResource('images/access_denied.png')}" />
+                                                </div>
+                                            </h:panelGroup>
+                            
+                                            <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image"
+                                                id="mediaGroup"
+                                                rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'UPLOADED_IMAGE'}">
+                                                <!-- MEDIA THUMBNAIL -->
+                                                <div class="admin__cms-edit-collection-image-thumbnail">
+                                                    <ui:fragment
+                                                        rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).imageMode == 'UPLOADED_IMAGE' and adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
+                                                        <img class="img-fluid" alt=""
+                                                            src="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).mediaThumbnailURI}" />
+                                                    </ui:fragment>
+                                                    <ui:fragment
+                                                        rendered="#{!adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
+                                                        <img src="#{imageDelivery.thumbs.getThumbnailPath(null)}" data-viewer-thumbnail="thumbnail" class="img-fluid" alt="" />
+                                                    </ui:fragment> 
+                                                </div>
+                                
+                                                <!-- ACTIONS -->
+                                                <div class="admin__cms-edit-collection-image-actions">
+                                                    <h:commandLink 
+                                                        action="#{cmsBean.setSelectedMediaHolder(adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale))}" 
+                                                        value="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem() ? msg.cms_selectMedia : msg.cms_media_editFile}" 
+                                                        class="#{!adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem() ? 'btn btn--default' : ''}" 
+                                                        role="button">
+                                                        <f:ajax execute="@form" render="mediaSelectPanel" />
+                                                    </h:commandLink>
+                                                    <h:commandLink 
+                                                        rendered="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}" 
+                                                        action="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).setMediaItem(null)}" 
+                                                        value="#{msg.cms_selectMediaItem_deselect}" 
+                                                        class="-redlink"
+                                                        role="button"> 
+                                                        <f:ajax render="mediaGroup" /> 
+                                                    </h:commandLink>                    
+                                                </div>
+                                            </h:panelGroup> 
+                                            
+                                        </h:panelGroup>
+                                    </div>
+
+                                        <!-- DESCRIPTION -->
+                                        <div class="form-group form-row">
+                                            <div class="col-2 control-label admin__form-label">
+                                                <label for="placeholderDesc">#{msg.description}:</label>
+                                            </div>
+                                            <div class="col-9 admin__form-input cms-module__option-control">
+                                                <h:inputTextarea id="placeholderDescDesc" styleClass="form-control tinyMCE"
+                                                    value="#{adminLicenseBean.currentLicenseType.getPlaceholderDescription(adminLicenseBean.currentLicenseType.selectedLocale).translationValue}">
+                                                    <f:passThroughAttribute name="aria-label"
+                                                        value="#{msg.description}" />
+                                                </h:inputTextarea>
+                                                <div id="descHelp"
+                                                    class="admin__form-help-text">#{msg.admin__license_placeholders_description__help}</div>
+                                            </div>
+                                            <div class="col-1 admin__form-help-icon">
+                                                <button type="button" class="btn btn--clean"
+                                                    data-toggle="helptext" 
+                                                    aria-label="inline help icon">
+                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                
+                            </h:panelGroup>
 
                             <!-- FUNCTIONS -->
                             <h2>#{msg.admin__license_functions}</h2>
@@ -202,7 +312,7 @@
                                                             title="#{msg.remove}">
                                                             <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
                                                             <!-- remove button -->
-                                                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                            <util:icon icon="trash" />
                                                         </button>
                                                     </c:otherwise>
                                                 </c:choose>
@@ -210,7 +320,7 @@
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                <util:icon icon="help" />
                                             </button>
                                         </div>
                                         
@@ -225,7 +335,7 @@
                                                     jsf:action="#{adminLicenseBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
                                                         #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
                                                         <!-- add button -->
-                                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                                        <util:icon icon="plus" />
                                                 </button>
                                             </c:forEach>
                                         </div>
@@ -285,7 +395,7 @@
 	                                <div class="form-group form-row mb-3">
 	                                    <div class="col-2"></div>
 	                                    <h:panelGroup id="pdf_download_quota_info_box" layout="block" styleClass="col-9">
-	                                        <!-- Records found -->
+	                                        Records found
 	                                        <ui:fragment
 	                                            rendered="#{!adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') and !adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
                                                     <div class="admin__default-block mb-0 -info-box">
@@ -309,12 +419,12 @@
                                                                 <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminLicenseBean.currentLicenseType.pdfDownloadQuota}"
                                                                     immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
                                                                     <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                                                    <!-- <f:ajax render="pdf_download_quota_info_box" /> -->
+                                                                    <f:ajax render="pdf_download_quota_info_box" />
                                                                 </h:selectOneRadio>
                                                                 <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminLicenseBean.currentLicenseType.pdfDownloadQuota}"
                                                                     immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
                                                                     <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                                                    <!-- <f:ajax render="pdf_download_quota_info_box" /> -->
+                                                                    <f:ajax render="pdf_download_quota_info_box" />
                                                                 </h:selectOneRadio>
                                                                 <span class="toggle-outside"><span class="toggle-inside"></span></span>
                                                             </div>
@@ -364,10 +474,32 @@
                         </div>
                         
 		            <script>
-		           	adminJS.licenceToggle.init();
+// 		           	adminJS.licenceToggle.init();
 		            </script>
+		            
+		            <h:panelGroup id="mediaSelectPanel">
+						<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+			                   <div class="admin-cms-media-select-overlay">
+			                    
+			                    <!-- SELECT MEDIA ITEM OVERLAY -->
+		                            <div class="admin-cms-media__select-overlay"></div>
+		                            
+		                            <!-- SELECT MEDIA ITEM -->
+		                            <div class="admin-cms-media__select">                            
+		                                 <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+		                                 	<ui:param name="mediaDisplayPanel" value="mediaGroup" />
+		                                 	<ui:param name="fileTypes" value="#{cmsMediaBean.getImageTypes()}"/>
+		        							<ui:param name="fileTypeValidator" value="#{cmsMediaBean.getImageFilter()}"/>
+		                                </ui:include>
+		                            </div>
+			                   </div>
+						</ui:fragment>
+			        </h:panelGroup>
                         
                     </h:form>
+                    
+
+                    
                 </h:panelGroup>
             </div>
             

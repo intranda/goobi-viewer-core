@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
@@ -90,7 +92,7 @@
 												<button type="button" class="btn btn--clean"
 													data-toggle="helptext" 
 													aria-label="inline help icon">
-													<i class="fa fa-question-circle" aria-hidden="true"></i>
+													<util:icon icon="help" />
 												</button>
 											</div>
 
@@ -99,7 +101,7 @@
 										<!-- DESCRIPTION -->
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
-												<label for="mapDes">#{msg.description}:</label>
+												<label for="mapDesc">#{msg.description}:</label>
 											</div>
 											<div class="col-9 admin__form-input cms-module__option-control">
 												<h:inputTextarea id="mapDesc" styleClass="form-control"
@@ -114,7 +116,7 @@
 												<button type="button" class="btn btn--clean"
 													data-toggle="helptext" 
 													aria-label="inline help icon">
-													<i class="fa fa-question-circle" aria-hidden="true"></i>
+													<util:icon icon="help" />
 												</button>
 											</div>
 
@@ -161,7 +163,7 @@
 													<button type="button" class="btn btn--clean"
 														data-toggle="helptext" 
 														aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
+														<util:icon icon="help" />
 													</button>
 												</div>
 
@@ -193,7 +195,7 @@
 													<button type="button" class="btn btn--clean"
 														data-toggle="helptext" 
 														aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
+														<util:icon icon="help" />
 													</button>
 												</div>
 											
@@ -227,7 +229,7 @@
 													<button type="button" class="btn btn--clean"
 														data-toggle="helptext" 
 														aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
+														<util:icon icon="help" />
 													</button>
 												</div>
 											
@@ -252,8 +254,8 @@
 															errorClass="cms-module__option-message-status danger" />
 
 														<div class="input_form__option-message-mark">
-															<i class="fa fa-check" aria-hidden="true"></i> <i
-																class="fa fa-exclamation" aria-hidden="true"></i>
+															<util:icon icon="check" />
+															<util:icon icon="exclamation-mark" />
 														</div>
 													</div>
 													<h:inputText id="solrQueryInput" styleClass="form-control"
@@ -270,7 +272,7 @@
 													<button type="button" class="btn btn--clean"
 														data-toggle="helptext"
 														aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
+														<util:icon icon="help" />
 													</button>
 												</div>
 
@@ -297,7 +299,7 @@
 														data-toggle="helptext"
 														
 														aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
+														<util:icon icon="help" />
 													</button>
 												</div>
 
@@ -358,7 +360,7 @@
 													<button type="button" class="btn btn--clean"
 														data-toggle="helptext" for="titleHelp"
 														aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
+														<util:icon icon="help" />
 													</button>
 												</div>
 
@@ -384,7 +386,7 @@
 													<button type="button" class="btn btn--clean"
 														data-toggle="helptext" for="titleHelp"
 														aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
+														<util:icon icon="help" />
 													</button>
 												</div>
 

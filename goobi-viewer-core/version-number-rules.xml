@@ -16,6 +16,11 @@
                 <ignoreVersion>6.1.0</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="org.glassfish.jersey.*" artifactId="*">
+            <ignoreVersions>
+                <ignoreVersion>4.0.0</ignoreVersion>
+            </ignoreVersions>
+        </rule>
         <rule groupId="jakarta.websocket" artifactId="jakarta.websocket-*">
             <ignoreVersions>
                 <!-- Update is tested already -->
@@ -47,5 +52,11 @@
                 <ignoreVersion>2.0.2</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="commons-io" artifactId="commons-io">
+            <ignoreVersions>
+                <ignoreVersion>20030203.000550</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+
     </rules>
 </ruleset>

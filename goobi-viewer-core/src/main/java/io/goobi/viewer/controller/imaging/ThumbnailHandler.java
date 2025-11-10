@@ -89,13 +89,10 @@ public class ThumbnailHandler {
     private static final String OBJECT_3D_THUMB = "thumbnail_3d.png";
     private static final String GROUP_THUMB = "thumbnail_group.jpg";
 
-    private static final String ANCHOR_THUMBNAIL_MODE_GENERIC = "GENERIC";
-    private static final String ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME = "FIRSTVOLUME";
-
     /** Constant <code>REQUIRED_SOLR_FIELDS</code>. */
     public static final Set<String> REQUIRED_SOLR_FIELDS =
-            Collections.unmodifiableSet(Set.of(SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT,
-                    SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME,
+            Collections.unmodifiableSet(Set.of(SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE,
+                    SolrConstants.THUMBNAIL, SolrConstants.THUMBPAGENO, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME,
                     SolrConstants.FILENAME_HTML_SANDBOXED));
 
     private final String staticImagesPath;
@@ -344,7 +341,7 @@ public class ThumbnailHandler {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
+    public static PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (doc != null) {
             StructElement struct = new StructElement((String) doc.getFirstValue(SolrConstants.IDDOC), doc);
@@ -913,9 +910,9 @@ public class ThumbnailHandler {
         String ret = thumbnailUrl;
 
         // Anchor
-        if (ANCHOR_THUMBNAIL_MODE_GENERIC.equals(anchorThumbnailMode)) {
+        if (StringConstants.ANCHOR_THUMBNAIL_MODE_GENERIC.equals(anchorThumbnailMode)) {
             ret = getThumbnailPath(ANCHOR_THUMB).toString();
-        } else if (ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(anchorThumbnailMode)) {
+        } else if (StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(anchorThumbnailMode)) {
             try {
                 StructElement volume = doc.getFirstVolume(new ArrayList<>(REQUIRED_SOLR_FIELDS));
                 if (volume != null) {

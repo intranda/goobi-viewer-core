@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -62,9 +61,11 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
+import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
+import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
@@ -100,8 +101,6 @@ public class UserBean implements Serializable {
     @Inject
     @Push
     private PushContext sessionTimeoutCounter;
-
-    private Timer sessionTimeoutMonitorTimer;
 
     /**
      * The logged in user
@@ -319,6 +318,10 @@ public class UserBean implements Serializable {
      */
     public String login(IAuthenticationProvider provider)
             throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
+        if (provider instanceof OpenIdProvider) {
+            // Make sure the current URL is added to the provider so the redirection endpoint can redirect there
+            this.redirectUrl = "#";
+        }
         if ("#".equals(this.redirectUrl)) {
             this.redirectUrl = buildRedirectUrl();
         }
@@ -356,8 +359,9 @@ public class UserBean implements Serializable {
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
         logger.debug("completeLogin: {}", Thread.currentThread().threadId());
-        HttpServletResponse response = result.getResponse();
-        HttpServletRequest request = result.getRequest();
+        // Results from a redirection endpoint will contain the wrong request/response objects
+        HttpServletResponse response = provider instanceof HttpAuthenticationProvider ? BeanUtils.getResponse() : result.getResponse();
+        HttpServletRequest request = provider instanceof HttpAuthenticationProvider ? BeanUtils.getRequest() : result.getRequest();
         HttpSession session = request != null ? request.getSession(false) : null;
         try {
             Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
@@ -403,10 +407,6 @@ public class UserBean implements Serializable {
                         session.setAttribute("user", u);
                         logger.trace("Added user to HTTP session ID {}: {}", session.getId(), u.getId());
                     }
-
-                    // Start timer
-                    //                    sessionTimeoutMonitorTimer = new Timer();
-                    //                    sessionTimeoutMonitorTimer.scheduleAtFixedRate(new SessionTimeoutMonitorTask(), 0, 10000);
 
                     if (response != null) {
                         if (isCloseTabAfterLogin()) {
@@ -508,10 +508,6 @@ public class UserBean implements Serializable {
             loggedInProvider = null;
         }
         try {
-            // Kill session timeout update timer
-            if (sessionTimeoutMonitorTimer != null) {
-                sessionTimeoutMonitorTimer.cancel();
-            }
             BeanUtils.wipeSessionAttributes(request.getSession());
             SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
             DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();

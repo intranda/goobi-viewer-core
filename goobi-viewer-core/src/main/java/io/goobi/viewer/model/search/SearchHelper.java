@@ -402,9 +402,9 @@ public final class SearchHelper {
             if (pi != null && childDocsMap != null) {
 
                 SolrDocumentList childDocs = childDocsMap.getOrDefault(pi, new SolrDocumentList());
-                logger.trace("{} child hits found for {}", childDocs.size(), pi);
+                // logger.trace("{} child hits found for {}", childDocs.size(), pi);
                 childDocs = filterChildDocs(childDocs, iddoc, searchTerms, factory);
-                logger.trace("{} child hits left after filtering.", childDocs.size());
+                // logger.trace("{} child hits left after filtering.", childDocs.size());
                 hit.setChildDocs(childDocs);
 
                 // Check whether user may see full-text, before adding them to count
@@ -3053,26 +3053,30 @@ public final class SearchHelper {
                     }
             }
             String itemQuery = item.generateQuery(new HashSet<>(), false, allowFuzzySearch);
-            if (StringUtils.isNotEmpty(itemQuery)) {
-                if (item.isSameFieldGroupStart() || item.isSameFieldGroupCopy()) {
-                    // Put a group of same-field items into a single query
-                    if (item.isSameFieldGroupStart()) {
-                        sbSameFieldGroup.append(orMode ? "-" : "+").append('(');
-                    }
+            if (item.isSameFieldGroupStart() || item.isSameFieldGroupCopy()) {
+                // Put a group of same-field items into a single query
+                if (item.isSameFieldGroupStart()) {
+                    sbSameFieldGroup.append(orMode ? "-" : "+").append('(');
+                }
+                if (StringUtils.isNotEmpty(itemQuery)) {
                     if (sbSameFieldGroup.length() > 2) {
                         sbSameFieldGroup.append(' ');
                     }
-                    sbSameFieldGroup.append(itemQuery);
-                    if (item.isSameFieldGroupEnd()) {
-                        sbSameFieldGroup.append(")");
-                        if (!sbGroup.isEmpty()) {
-                            sbGroup.append(' ');
-                        }
-                        sbGroup.append(sbSameFieldGroup);
-                        sbSameFieldGroup = new StringBuilder();
+                    // Hack for allowing OR-searches if AND is configured as the item's operator
+                    // (fields won't work properly if OR is configured and only one item exists)
+                    sbSameFieldGroup.append(itemQuery.startsWith("+") ? itemQuery.substring(1) : itemQuery);
+                }
+                if (item.isSameFieldGroupEnd()) {
+                    sbSameFieldGroup.append(")");
+                    if (!sbGroup.isEmpty()) {
+                        sbGroup.append(' ');
                     }
-                } else {
-                    // Single item query
+                    sbGroup.append(sbSameFieldGroup);
+                    sbSameFieldGroup = new StringBuilder();
+                }
+            } else {
+                // Single item query
+                if (StringUtils.isNotEmpty(itemQuery)) {
                     if (orMode && itemQuery.charAt(0) == '+') {
                         itemQuery = itemQuery.substring(1);
                     }
@@ -3084,7 +3088,9 @@ public final class SearchHelper {
             }
         }
 
-        if (!sbGroup.isEmpty()) {
+        if (!sbGroup.isEmpty())
+
+        {
             return " +(" + sbGroup.toString() + ')';
         }
 

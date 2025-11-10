@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -49,7 +50,7 @@ import io.goobi.viewer.solr.SolrConstants;
 class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
     @Test
-    void createSearchHit_findWithUmlaut() throws PresentationException, IndexUnreachableException {
+    void createSearchHit_findWithUmlaut() throws PresentationException, IndexUnreachableException, DAOException {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.IDDOC, Long.toString(1l));
         doc.setField("MD_FOO", "Norden");
@@ -60,7 +61,7 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    void createSearchHit_findUmlaute() throws PresentationException, IndexUnreachableException {
+    void createSearchHit_findUmlaute() throws PresentationException, IndexUnreachableException, DAOException {
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.IDDOC, Long.toString(1l));
         doc.setField("MD_FOO", "Nörden");

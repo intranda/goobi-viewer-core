@@ -11,33 +11,43 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- VIEW AUDIO -->
-    <div id="viewObjectContent" class="view-object-content">
-	    <!-- THUMBNAIL -->
-	    <div class="view-object-content__thumb">
-	        <figure>
-	            <img src="#{activeDocumentBean.viewManager.getRepresentativeImageUrl(300,300)}" alt="#{msg.thumbnail}" data-viewer-thumbnail="thumbnail" />
-	        </figure>
-	    </div>
-	    <div class="view-object-content__objects">
-		    <!-- TITLE -->
-		    <div class="search-list__hit-title">
-		        <h3><h:outputText value="#{activeDocumentBean.viewManager.currentStructElement.label}" escape="false" /></h3>
+    <div id="viewObjectContent" class="view-object-content"> 
+		    <!-- THUMBNAIL -->
+		    <div class="view-object-content__thumb">
+		        <figure>
+		            <img src="#{activeDocumentBean.viewManager.getRepresentativeImageUrl(300,300)}" alt="#{msg.thumbnail}"
+		                data-viewer-thumbnail="thumbnail"
+		                data-viewer-access-denied-url="#{activeDocumentBean.viewManager.representativePage.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
+		        </figure>
 		    </div>
-		    <!-- AUDIO -->          
-		    <div id="audioContainer" class="view-object-content__audio" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
-		        <audio 
-		            id="audio_container" 
-		            controls="controls"
-		            controlsList="nodownload">
-		            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('ogg')}" type="audio/ogg" />
-		            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}" type="audio/mpeg" />
-		            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}" type="audio/mp3" />
-		            <object type="application/x-shockwave-flash" data="#{navigationHelper.applicationUrl}resources/components/player_mp3.swf" width="200" height="20">
-		                <param name="movie" value="#{navigationHelper.applicationUrl}resources/components/player_mp3.swf" />
-		                <param name="flashvars" value="mp3=#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}&amp;autoplay=1" />
-		            </object>
-		        </audio>
+		    <div class="view-object-content__objects">
+			    <!-- TITLE -->
+			    <div class="view-object-content__audio-title">
+			        <h3><h:outputText value="#{activeDocumentBean.viewManager.currentStructElement.label}" escape="false" /></h3>
+			    </div>
+			    
+                <!-- ACCESS DENIED DESCRIPTION TEXT -->
+				<h:panelGroup styleClass="view-object__access-denied-text"
+				    rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionAudio and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForAudio(navigationHelper.locale) != null}">
+				    <h:outputText escape="false"
+				        value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForAudio(navigationHelper.locale)}" />
+				</h:panelGroup>
+			    <!-- AUDIO -->          
+			    <div id="audioContainer" class="view-object-content__audio" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
+			        <audio 
+			            id="audio_container" 
+			            controls="controls"
+			            controlsList="nodownload">
+			            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('ogg')}" type="audio/ogg" />
+			            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}" type="audio/mpeg" />
+			            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}" type="audio/mp3" />
+			            <object type="application/x-shockwave-flash" data="#{navigationHelper.applicationUrl}resources/components/player_mp3.swf" width="200" height="20">
+			                <param name="movie" value="#{navigationHelper.applicationUrl}resources/components/player_mp3.swf" />
+			                <param name="flashvars" value="mp3=#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}&amp;autoplay=1" />
+			            </object>
+			        </audio>
+			    </div>
 		    </div>
-	    </div>
-    </div>
+		    
+		 </div>
 </ui:composition>
