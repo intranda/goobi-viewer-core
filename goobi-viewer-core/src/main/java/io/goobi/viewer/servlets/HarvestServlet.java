@@ -278,8 +278,12 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             try {
                                 Files.createDirectory(localTempFolder);
                             } catch (IOException e1) {
-                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                        "Temp folder could not be created: " + localTempFolder.toAbsolutePath().toString());
+                                try {
+                                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                            "Temp folder could not be created: " + localTempFolder.toAbsolutePath().toString());
+                                } catch (IOException e2) {
+                                    logger.error(e.getMessage(), e2);
+                                }
                                 return;
                             }
                             String fileName =
