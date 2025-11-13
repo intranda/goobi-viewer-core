@@ -24,14 +24,14 @@ package io.goobi.viewer.faces.validators;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.validator.FacesValidator;
 import jakarta.faces.validator.Validator;
 import jakarta.faces.validator.ValidatorException;
-
-import io.goobi.viewer.messages.ViewerResourceBundle;
+import software.amazon.awssdk.utils.StringUtils;
 
 /**
  * Syntax validator for e-mail addresses.
@@ -51,7 +51,8 @@ public class EmailValidator implements Validator<String> {
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
-        if (!validateEmailAddress(value)) {
+        boolean allowEmptyString = getAsBoolean(component.getAttributes().get("allowEmptyString"));
+        if (!validateEmailAddress(value, allowEmptyString)) {
             FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("email_errlnvalid", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
@@ -69,11 +70,24 @@ public class EmailValidator implements Validator<String> {
      * @should not match invalid addresses
      * @return a boolean.
      */
-    public static boolean validateEmailAddress(String email) {
+    public static boolean validateEmailAddress(String email, boolean allowEmptyString) {
+        if (allowEmptyString && StringUtils.isBlank(email)) {
+            return true;
+        }
         if (email == null || email.length() > 10_000) {
             return false;
         }
         Matcher m = PATTERN.matcher(email.toLowerCase());
         return m.find();
+    }
+
+    private static boolean getAsBoolean(Object value) {
+        if (value instanceof Boolean) {
+            return ((Boolean) value).booleanValue();
+        } else if (value instanceof String) {
+            return Boolean.parseBoolean((String) value);
+        } else {
+            return false;
+        }
     }
 }

@@ -235,7 +235,7 @@ public final class UserTools {
      * @throws DAOException
      */
     public static User checkAndCreateAnonymousUser() throws DAOException {
-        if (!EmailValidator.validateEmailAddress(User.EMAIL_ADDRESS_ANONYMOUS)) {
+        if (!EmailValidator.validateEmailAddress(User.EMAIL_ADDRESS_ANONYMOUS, false)) {
             logger.warn("'anonymousUserEmailAddress' not configured or contains an invalid address"
                     + " - unable to keep anonymous contributions of deleted users.");
             return null;

@@ -42,6 +42,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
@@ -267,7 +268,12 @@ public class DownloadBean implements Serializable {
         this.downloadIdentifier = downloadIdentifier;
     }
 
-    public String createPDFDownloadJob(String pi, String logId, String usePdfSource)
+    public void startDownload(String pi, String logId, String usePdfSource) throws DAOException {
+        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.LOCAL_TYPE, pi, logId);
+        if(downloadJob != null && (downloadJob.getStatus() == JobStatus.WAITING || downloadJob. )
+    }
+
+    public void createPDFDownloadJob(String pi, String logId, String usePdfSource)
             throws DAOException, URISyntaxException, JsonProcessingException {
 
         ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
@@ -303,7 +309,7 @@ public class DownloadBean implements Serializable {
         // forward to download page
         DownloadJob.generateDownloadJobId(PDFDownloadJob.LOCAL_TYPE, pi, logId);
         URI downloadPageUrl = getDownloadPageUrl(messageId);
-        return downloadPageUrl.toString();
+        PrettyUrlTools.redirectToUrl(downloadPageUrl.toString());
     }
 
     /**
