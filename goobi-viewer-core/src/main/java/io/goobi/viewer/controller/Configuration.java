@@ -880,6 +880,15 @@ public class Configuration extends AbstractConfiguration {
         return getLocalInt("maps.cluster.radius", 80);
     }
 
+    public Integer getGeomapDisableClusteringAtZoom() {
+        String value = getLocalString("maps.cluster.disableAtZoom", "");
+        if (StringTools.isInteger(value)) {
+            return Integer.parseInt(value);
+        } else {
+            return null;
+        }
+    }
+
     public Metadata getGeoMapFeatureConfiguration(String option, String template) {
         return getGeomapFeatureConfigurations(option).getOrDefault(template, new Metadata());
     }

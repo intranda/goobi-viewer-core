@@ -56,7 +56,7 @@
 				           		cluster: {
 				           			spiderfyDistanceMultiplier: #{configurationBean.geomapClusterDistanceMultiplier},
 				                    maxClusterRadius: #{configurationBean.geomapClusterRadius},
-				           		},
+				                    maxClusteringZoom: #{empty configurationBean.getGeomapDisableClusteringAtZoom() ? 'undefined' : configurationBean.getGeomapDisableClusteringAtZoom()}				           		},
 				           		markerIcon: (icon => icon)(#{featureSet.markerAsJSON}),
 				           		
 				           		label: #{featureSet.name.getAsJson()},

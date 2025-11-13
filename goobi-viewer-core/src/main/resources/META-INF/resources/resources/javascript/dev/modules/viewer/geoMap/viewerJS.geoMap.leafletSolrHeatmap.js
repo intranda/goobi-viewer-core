@@ -423,15 +423,20 @@ if (typeof L !== 'undefined') {
 	  },
 	
 	  _createClusters: function(config) {
-		console.log("_createClusters", config);
-			var _this = this;
-			_this.clusterMarkers = new L.MarkerClusterGroup({
-	      		maxClusterRadius: config?.maxClusterRadius ?? 140,
-				spiderfyDistanceMultiplier: config?.spiderfyDistanceMultiplier ?? 1.0,
-	      	iconCreateFunction: function(cluster) {
-	       		return _this._createMarker(_this._computeTotalChildHits(cluster));
-	       	}
-	    });
+		  var _this = this;
+		  const clusterOptions = {
+			  maxClusterRadius: config?.maxClusterRadius ?? 140,
+			  spiderfyDistanceMultiplier: config?.spiderfyDistanceMultiplier ?? 1.0,
+			  iconCreateFunction: function(cluster) {
+				  return _this._createMarker(_this._computeTotalChildHits(cluster));
+				}
+	    	}				
+			if(config?.maxClusteringZoom) {
+				clusterOptions.disableClusteringAtZoom = config?.maxClusteringZoom;
+				clusterOptions.spiderfyOnMaxZoom = false;
+			}
+			console.log("_createClusters", clusterOptions);
+			_this.clusterMarkers = new L.MarkerClusterGroup(clusterOptions);
 		_this.featureGroup.removeAllMarkers();
 	
 	    $.each(_this.facetHeatmap.counts_ints2D, function(row, value) {

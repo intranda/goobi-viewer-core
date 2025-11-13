@@ -1648,4 +1648,8 @@ public class ConfigurationBean implements Serializable {
     public int getGeomapClusterRadius() {
         return DataManager.getInstance().getConfiguration().getGeomapClusterRadius();
     }
+
+    public Integer getGeomapDisableClusteringAtZoom() {
+        return DataManager.getInstance().getConfiguration().getGeomapDisableClusteringAtZoom();
+    }
 }
