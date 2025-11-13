@@ -127,13 +127,15 @@ public class UserBean implements Serializable {
     private String transkribusUserName;
     private String transkribusPassword;
     private Boolean hasAdminBackendAccess;
+    private HttpSession session;
 
     /**
      * Empty constructor.
      */
     public UserBean() {
-        // the emptiness inside
+        logger.trace("User bean instatiated: {}", this);
         this.authenticationProvider = getLocalAuthenticationProvider();
+        this.session = BeanUtils.getSession();
     }
 
     /**
@@ -325,7 +327,7 @@ public class UserBean implements Serializable {
         if ("#".equals(this.redirectUrl)) {
             this.redirectUrl = buildRedirectUrl();
         }
-        logger.trace("login: {}", Thread.currentThread().threadId());
+        logger.trace("login: {}", this);
         if (provider != null) {
             try {
                 // Set provider so it can be accessed from outsde
@@ -358,11 +360,11 @@ public class UserBean implements Serializable {
      * @throws IllegalStateException
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
-        logger.debug("completeLogin: {}", Thread.currentThread().threadId());
+        logger.debug("completeLogin: {}", this);
         // Results from a redirection endpoint will contain the wrong request/response objects
         HttpServletResponse response = provider instanceof HttpAuthenticationProvider ? BeanUtils.getResponse() : result.getResponse();
         HttpServletRequest request = provider instanceof HttpAuthenticationProvider ? BeanUtils.getRequest() : result.getRequest();
-        HttpSession session = request != null ? request.getSession(false) : null;
+        // HttpSession session = request != null ? request.getSession(false) : null;
         try {
             Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
             if (result.isRefused()) {
@@ -395,7 +397,6 @@ public class UserBean implements Serializable {
                     }
 
                     BeanUtils.wipeSessionAttributes(session);
-
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
                     u.setLastLogin(LocalDateTime.now());

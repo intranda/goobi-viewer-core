@@ -707,7 +707,7 @@ public class Metadata implements Serializable {
         Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(field);
         for (String s : valueSplit) {
             if (sbFullValue.length() > 0) {
-                sbFullValue.append(" > ");
+                sbFullValue.append(" <span class=\"hierarchy-separator\" aria-hidden=\"true\"></span> ");
             }
             if (sbHierarchy.length() > 0) {
                 sbHierarchy.append('.');
