@@ -201,6 +201,7 @@ if (typeof L !== 'undefined') {
 	  initialize: function(heatmapUrl, featureUrl, featureGroup, options) {
 	    var _this = this;
 	    L.setOptions(_this, options);
+		console.log("init solrHeatmap ", this.options);
 	    _this.featureGroup = featureGroup;
 	    _this.queryAdapter = new L.SolrHeatmapQueryAdapters[this.options.queryAdapter](this.options, _this);
 	    _this._heatmapUrl = heatmapUrl;
@@ -421,10 +422,12 @@ if (typeof L !== 'undefined') {
 	//    return new L.DivIcon({ html: '<div style="background-color:'+background+'; color:'+color+'"><span>' + count + '</span></div>', className: 'geomap-heatmap-marker', iconSize: new L.Point(40, 40) });
 	  },
 	
-	  _createClusters: function() {
+	  _createClusters: function(config) {
+		console.log("_createClusters", config);
 			var _this = this;
 			_this.clusterMarkers = new L.MarkerClusterGroup({
-	      	maxClusterRadius: 140,
+	      		maxClusterRadius: config?.maxClusterRadius ?? 140,
+				spiderfyDistanceMultiplier: config?.spiderfyDistanceMultiplier ?? 1.0,
 	      	iconCreateFunction: function(cluster) {
 	       		return _this._createMarker(_this._computeTotalChildHits(cluster));
 	       	}
@@ -518,7 +521,7 @@ if (typeof L !== 'undefined') {
 	        _this._createGeojson();
 	        break;
 	      case 'clusters':
-	        _this._createClusters();
+	        _this._createClusters(_this.options.cluster);
 	        break;
 	      case 'heatmap':
 	        _this._createHeatmap();

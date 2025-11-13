@@ -53,7 +53,12 @@
 				           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
 				           		popoverOnHover: #{cc.attrs.popoverOnHover},
 				           		clusterMarkers: #{cc.attrs.clusterMarkers},
+				           		cluster: {
+				           			spiderfyDistanceMultiplier: #{configurationBean.geomapClusterDistanceMultiplier},
+				                    maxClusterRadius: #{configurationBean.geomapClusterRadius},
+				           		},
 				           		markerIcon: (icon => icon)(#{featureSet.markerAsJSON}),
+				           		
 				           		label: #{featureSet.name.getAsJson()},
 				           		identifier: ( id => id )( #{featureSet.id} ) || #{status.index}, 
 				           		controls: { 

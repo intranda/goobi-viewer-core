@@ -210,7 +210,8 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
         	    filterQuery: this.config.heatmap.filterQuery,
         	    labelField: this.config.heatmap.labelField,
         	    searchScope: this.config.heatmap.searchScope,
-        	    queryAdapter: this.config.heatmap.queryAdapter
+        	    queryAdapter: this.config.heatmap.queryAdapter,
+                cluster: this.config.cluster
         	});
         	this.heatmap.addTo(this.geoMap.map);        
     }

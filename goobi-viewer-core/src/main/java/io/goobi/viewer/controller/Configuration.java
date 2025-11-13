@@ -872,6 +872,14 @@ public class Configuration extends AbstractConfiguration {
         return getMetadataForTemplate(template, templateList, true, false);
     }
 
+    public float getGeomapClusterDistanceMultiplier() {
+        return getLocalFloat("maps.cluster.distanceMultiplier", 1.0f);
+    }
+
+    public int getGeomapClusterRadius() {
+        return getLocalInt("maps.cluster.radius", 80);
+    }
+
     public Metadata getGeoMapFeatureConfiguration(String option, String template) {
         return getGeomapFeatureConfigurations(option).getOrDefault(template, new Metadata());
     }

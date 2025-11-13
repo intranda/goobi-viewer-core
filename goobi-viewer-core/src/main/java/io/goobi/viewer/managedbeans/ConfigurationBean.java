@@ -1640,4 +1640,12 @@ public class ConfigurationBean implements Serializable {
                 .map(f -> f.getName())
                 .toList();
     }
+
+    public float getGeomapClusterDistanceMultiplier() {
+        return DataManager.getInstance().getConfiguration().getGeomapClusterDistanceMultiplier();
+    }
+
+    public int getGeomapClusterRadius() {
+        return DataManager.getInstance().getConfiguration().getGeomapClusterRadius();
+    }
 }
