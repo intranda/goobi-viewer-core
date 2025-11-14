@@ -709,15 +709,18 @@ public class ViewerResourceBundle extends ResourceBundle {
 
         try {
             String webContentRoot = servletContext.getRealPath("resources/themes");
-            Path facesConfigPath = Paths.get(webContentRoot).resolve("faces-config.xml");
-            if (Files.exists(facesConfigPath)) {
-                return getLocalesFromFile(facesConfigPath);
+            if (webContentRoot != null) {
+                Path facesConfigPath = Paths.get(webContentRoot).resolve("faces-config.xml");
+                if (Files.exists(facesConfigPath)) {
+                    return getLocalesFromFile(facesConfigPath);
+                }
+                throw new FileNotFoundException("Unable to locate faces-config at " + facesConfigPath);
             }
-            throw new FileNotFoundException("Unable to locate faces-config at " + facesConfigPath);
         } catch (NullPointerException | IllegalArgumentException | IOException | JDOMException e) {
             logger.error("Error getting locales from faces-config", e);
-            return getFacesLocales();
         }
+
+        return getFacesLocales();
     }
 
     /**
