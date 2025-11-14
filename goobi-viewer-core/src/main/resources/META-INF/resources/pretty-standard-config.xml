@@ -181,10 +181,10 @@
 	</url-mapping>
 	<url-mapping id="searchadvanced">
 		<pattern value="/searchadvanced/" />
-        <!-- TODO replace with correct page -->
 		<view-id value="/searchAdvanced.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.facets.resetActiveFacets}</action>
+        <action onPostback="false">#{searchBean.resetSearchParameters(true)}</action>
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveContext('-')}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
