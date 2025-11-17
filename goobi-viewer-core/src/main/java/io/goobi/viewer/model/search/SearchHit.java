@@ -514,8 +514,18 @@ public class SearchHit implements Comparable<SearchHit> {
         }
     }
 
+    /**
+     * 
+     * @param childDoc
+     * @param fulltext
+     * @param docType
+     * @param acccessDeniedType
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     public void handleMetadataHit(SolrDocument childDoc, String fulltext, DocType docType, boolean acccessDeniedType)
-            throws IndexUnreachableException, PresentationException {
+            throws DAOException, IndexUnreachableException, PresentationException {
         String ownerIddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
         SearchHit ownerHit = ownerHits.get(ownerIddoc);
         if (ownerHit == null) {

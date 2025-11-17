@@ -95,7 +95,8 @@
                                             </div>
                                             <h:panelGroup rendered="#{browseDcElement.hasIcon()}">
                                                 <img src="#{browseDcElement.icon}" alt="" class="img-fluid"
-                                                data-viewer-thumbnail="thumbnail"/>
+                                                data-viewer-thumbnail="thumbnail"
+                                                data-viewer-access-denied-url="#{browseDcElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}"/>
                                             </h:panelGroup>
                                         </div>
                                     </h:panelGroup>

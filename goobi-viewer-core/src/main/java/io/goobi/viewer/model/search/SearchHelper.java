@@ -751,7 +751,7 @@ public final class SearchHelper {
                 sbQuery.append(filterQuery);
             }
             if (filterForWhitelist) {
-                if (sbQuery.length() > 0) {
+                if (!sbQuery.isEmpty()) {
                     sbQuery.append(SolrConstants.SOLR_QUERY_AND);
                 }
                 sbQuery.append("+(").append(getDocstrctWhitelistFilterQuery()).append(')');
@@ -767,14 +767,15 @@ public final class SearchHelper {
             FacetField facetResults = null;
             FacetField groupResults = null;
             List<String> facetFields = new ArrayList<>();
-            facetFields.add(luceneField);
+            String facetField = facetifyField(luceneField);
+            facetFields.add(facetField);
             if (StringUtils.isNotBlank(groupingField)) {
                 facetFields.add(groupingField);
             }
             QueryResponse response = DataManager.getInstance()
                     .getSearchIndex()
                     .searchFacetsAndStatistics(sbQuery.toString(), null, facetFields, 1, false);
-            facetResults = response.getFacetField(luceneField);
+            facetResults = response.getFacetField(facetField);
             groupResults = response.getFacetField(groupingField);
 
             Map<String, CollectionResult> ret = createCollectionResults(facetResults, splittingChar);
@@ -801,6 +802,9 @@ public final class SearchHelper {
         Map<String, CollectionResult> ret = new HashMap<>();
 
         Set<String> counted = new HashSet<>();
+        if (facetResults == null) {
+            return ret;
+        }
         for (Count count : facetResults.getValues()) {
             String dc = count.getName();
             // Skip inverted values

@@ -171,7 +171,9 @@
 											<h:outputLink
 												value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}">
 												<img src="#{hit.browseElement.thumbnailUrl}"
-													class="img-fluid" data-viewer-thumbnail="thumbnail"
+													class="img-fluid"
+													data-viewer-thumbnail="thumbnail"
+													data-viewer-access-denied-url="#{hit.browseElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}"
 													alt="#{hit.browseElement.label}" />
 											</h:outputLink>
 										</div>

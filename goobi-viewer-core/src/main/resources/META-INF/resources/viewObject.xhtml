@@ -93,12 +93,185 @@
                   >#{activeDocumentBean.titleBarLabel}</span
                 >
 
-                <ui:fragment
-                  rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}"
-                >
-                  <viewerComponent:copyrightIndicator />
-                </ui:fragment>
-              </h1>
+		    	<div id="title" class="title">
+		    		<!-- TITLE HEADER -->
+					<div class="title__header">
+						<h1 class="h2">
+		
+							<!-- FA* is this still needed? What is the purpose? -->
+							<!-- PAGE TYPE -->
+							<span class="title__header-page-type">
+								<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />:
+							</span>
+		
+							<!-- NAME OF THE RECORD -->
+							<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
+		
+		                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+								<viewerComponent:copyrightIndicator />
+							</ui:fragment>
+		
+						</h1>
+					</div>
+				</div>
+
+				<!-- Update pagenumber and all relevant html areas with ajax when changing image in sequence mode -->
+				<h:form styleClass="view-object__update-form">
+					<h:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
+					onevent="onPageUpdateEvent" onerror="onPageUpdateEvent"
+					render="imageControls:fullscreenLink :viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitation:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetMetadataTech:technicalMetadataList"></h:commandScript>
+					
+					<script>
+						function onPageUpdateEvent(data) {
+							if(data.status === "begin") {
+								document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.remove('-hidden'))
+							} else {
+								document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.add('-hidden'))
+							}
+						}
+					</script>
+		
+				</h:form>
+
+
+                <!-- IMAGE CONTROLS -->
+                <h:panelGroup
+                    rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'video' and activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'audio' and activeDocumentBean.viewManager.currentPage.accessPermissionObject}">
+                    <viewerComponent:imageControls id="imageControls" />
+                </h:panelGroup>
+
+                <!-- VIEW IMAGE -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">
+                    <ui:insert name="viewImage">
+                        <ui:include src="/resources/includes/object/image.xhtml" />
+                    </ui:insert>
+                </h:panelGroup>
+
+                <!-- VIEW VIDEO -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'video'}">
+                    <ui:insert name="viewVideo">
+                        <ui:include src="/resources/includes/object/video.xhtml" />
+                    </ui:insert>
+                </h:panelGroup>
+
+                <!-- VIEW AUDIO -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'audio'}">
+                    <ui:insert name="viewAudio">
+                        <ui:include src="/resources/includes/object/audio.xhtml" />
+                    </ui:insert>
+                </h:panelGroup>
+
+                <!-- VIEW 3D OBJECT -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'object' or activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'model'}">
+                    <ui:insert name="viewObject3d">
+                        <ui:include src="/resources/includes/object/object3d.xhtml" />
+                    </ui:insert>
+                </h:panelGroup>
+
+                <!-- TODO -->
+                <!-- VIEW TEXT -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'text'}">
+                    <ui:insert name="viewText">
+                        <ui:include src="/resources/includes/object/text.xhtml" />
+                    </ui:insert>
+                </h:panelGroup>
+
+                <!-- PAGINATOR -->
+                <h:panelGroup id="paginatorGroup">
+	                    <div id="simplePaginator"/>
+	                    <script>
+	                    	$(document).ready(() => {
+	                    		riot.mount("#simplePaginator", "simplepaginator", {
+	                    			navigationMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase() == 'sequence' ? 'buttons' : 'links'}",
+	                    			itemCount: #{activeDocumentBean.viewManager.imagesCount},
+	            	                itemActive: #{activeDocumentBean.viewManager.currentImageOrderForPaginator},
+	            	                firstItem: #{activeDocumentBean.viewManager.firstPageOrder},
+	            	                lastItem: #{activeDocumentBean.viewManager.lastPageOrder},
+	            	                urlTemplate: (pageNo) => `#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/\${pageNo}#topDocAnchor`,
+	            	                rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
+	            	                classSuffix: "",
+	            	                positionBottom: false,
+	            	                update: typeof imageOrderChanged !== 'undefined' ? imageOrderChanged : undefined,
+									onUpdate: typeof imageOrderChanged !== 'undefined' ? (pageNumber) => changeImageOrder.next(pageNumber) : undefined,
+	            	             	msg: {
+	            	             		aria_label__pagination_bottom: "#{msg.aria_label__pagination_bottom}",
+	            	             		aria_label__pagination_pages: "#{msg.aria_label__pagination_pages}",
+	            	             		aria_label__pagination_previous: "#{msg.aria_label__pagination_previous}",
+	            	             		aria_label__pagination_next: "#{msg.aria_label__pagination_next}",
+	            	             		numericPaginator_prev: "#{msg.numericPaginator_prev}",
+	            	             		numericPaginator_next: "#{msg.numericPaginator_next}",
+	            	             		aria__label_pagination_goto: "#{msg.aria__label_pagination_goto}"
+	            	             	}
+	                    		})
+	                    	})
+						
+	                   	// init viewerJS.paginator.init with config for keyboard controls
+						// RUN FUNCTION ONLY ONCE
+				       	if (typeof doClick === 'function') {
+				       			// console.log('already defined - do nothing');
+				       		} else {
+				       			// console.log('not already defined');
+				               	var paginatorConfig = {
+				               	        previous: () => doClick('[data-target="paginatorPrevPage"]'),
+				               	        next: () => doClick('[data-target="paginatorNextPage"]'),
+				               	        first: () => doClick('[data-target="paginatorFirstPage"]'),
+				               	        last: () => doClick('[data-target="paginatorLastPage"]'),
+				               	        rightToLeft: "#{activeDocumentBean.viewManager.topStructElement.rtl}"
+				               	}
+				               	function doClick(selector) {
+				               	    let query = $(selector);
+				               	    if(query.length) {
+				               	        query.get(0).click();
+				               	    }
+				               	}
+				               	viewerJS.paginator.init(paginatorConfig);
+				       		}
+				        </script>
+	                    
+	                    
+                </h:panelGroup>
+                <!-- METADATA (FIRST GROUP WITH location="objectview" -->    
+                <h:panelGroup id="viewMetadata" rendered="#{metadataBean.activeMetadataView != null}">
+                    <div id="view_metadata" class="view-metadata view-object__metadata">
+                        <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+						</div>
+                        <ui:insert name="viewMetadataMetadata">
+                            <ui:include src="/resources/includes/metadata/metadata.xhtml">
+                                <ui:param name="metadataViewIndex" value="#{metadataBean.activeMetadataView.index}"/>
+                                <ui:param name="metadataViewLabel"
+                                    value="#{metadataBean.activeMetadataView.label != null ? metadataBean.activeMetadataView.label : metadataBean.defaultMetadataLabel}"/>
+                            </ui:include>
+                        </ui:insert>
+                    </div>
+                </h:panelGroup>
+
+				<!-- MODULE CONTRIBUTIONS -->
+                <c:forEach var="module" items="#{configurationBean.modules}">
+                    <c:forEach var="contribution" items="#{module.getWidgets('viewImage')}">
+                        <ui:include src="/#{contribution}" />
+                    </c:forEach>
+                </c:forEach>
+
+				<!-- USER GENERATED CONTENT (ANNOTATIONS) -->
+ 				<h:panelGroup id="userGeneratedContentGroup"> 
+					<ui:fragment rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}">
+						<div id="view_image_user_generated_content" class="view-object__user_generated_content">
+						<h2>
+							<span>#{msg.admin__crowdsourcing_annotations}</span>
+							<div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+							</div>
+						</h2>
+							<viewerComponent:annotationList contentList="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}" sidebar="false"/>
+						</div>
+					</ui:fragment>
+ 				</h:panelGroup>
+
+                <!-- USER COMMENTS -->
+                <ui:insert name="userComments">
+                    <ui:include src="/resources/includes/user/userComments.xhtml" />
+                </ui:insert>
             </div>
           </div>
 

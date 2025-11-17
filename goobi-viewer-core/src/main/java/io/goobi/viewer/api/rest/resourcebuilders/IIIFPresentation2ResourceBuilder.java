@@ -426,6 +426,8 @@ public class IIIFPresentation2ResourceBuilder {
         for (SolrDocument doc : queryResults) {
             String luceneId = (String) doc.getFirstValue(SolrConstants.IDDOC);
             StructElement ele = new StructElement(luceneId, doc);
+            
+            
             AbstractPresentationModelElement2 manifest = builder.generateManifest(ele, Collections.emptyList());
 
             if (this.urls != null && manifest.getThumbnails().isEmpty()) {
@@ -447,7 +449,10 @@ public class IIIFPresentation2ResourceBuilder {
 
     private static List<String> getContainedRecordsFieldList() {
         List<String> list = new ArrayList<>(Arrays.asList(CollectionBuilder.CONTAINED_WORKS_QUERY_FIELDS));
+        list.add(SolrConstants.ACCESSCONDITION);
         list.add(SolrConstants.BOOL_IMAGEAVAILABLE);
+        list.add(SolrConstants.THUMBNAIL);
+        list.add(SolrConstants.THUMBPAGENO);
         return list;
     }
 

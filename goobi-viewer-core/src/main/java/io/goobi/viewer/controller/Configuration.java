@@ -872,6 +872,23 @@ public class Configuration extends AbstractConfiguration {
         return getMetadataForTemplate(template, templateList, true, false);
     }
 
+    public float getGeomapClusterDistanceMultiplier() {
+        return getLocalFloat("maps.cluster.distanceMultiplier", 1.0f);
+    }
+
+    public int getGeomapClusterRadius() {
+        return getLocalInt("maps.cluster.radius", 80);
+    }
+
+    public Integer getGeomapDisableClusteringAtZoom() {
+        String value = getLocalString("maps.cluster.disableAtZoom", "");
+        if (StringTools.isInteger(value)) {
+            return Integer.parseInt(value);
+        } else {
+            return null;
+        }
+    }
+
     public Metadata getGeoMapFeatureConfiguration(String option, String template) {
         return getGeomapFeatureConfigurations(option).getOrDefault(template, new Metadata());
     }
@@ -2226,7 +2243,7 @@ public class Configuration extends AbstractConfiguration {
     public String getAdvancedSearchFieldDefaultOperator(String field, String template, boolean fallbackToDefaultTemplate) {
         return getAdvancedSearchFieldGetAttributeValue(field, "defaultOperator", template, fallbackToDefaultTemplate);
     }
-    
+
     /**
      * 
      * @param template
@@ -4203,7 +4220,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getAnchorThumbnailMode() {
-        return getLocalString("viewer.anchorThumbnailMode", "GENERIC");
+        return getLocalString("viewer.anchorThumbnailMode", StringConstants.ANCHOR_THUMBNAIL_MODE_GENERIC);
     }
 
     /**

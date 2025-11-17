@@ -37,10 +37,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.controller.sorting.ObjectComparatorBuilder;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -48,8 +50,12 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
@@ -350,13 +356,13 @@ public class CollectionView implements Serializable {
      * @param cmsCollections collection data with which to enricht the browse elements
      */
     public void associateElementsWithCMSData(List<CMSCollection> cmsCollections) {
-        associateWithCMSCollections(new ArrayList<>(this.visibleCollectionList), this.field, cmsCollections);
+        associateWithCMSCollections(new ArrayList<>(this.visibleCollectionList), cmsCollections);
     }
 
     public static void associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)
             throws DAOException {
         List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(solrField);
-        associateWithCMSCollections(collections, solrField, cmsCollections);
+        associateWithCMSCollections(collections, cmsCollections);
     }
 
     /**
@@ -366,13 +372,11 @@ public class CollectionView implements Serializable {
      * returns the 'collection' parameter
      *
      * @param collections a {@link java.util.List} object.
-     * @param solrField a {@link java.lang.String} object.
      * @param cmsCollections
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public static void associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField,
-            List<CMSCollection> cmsCollections) {
+    public static void associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, List<CMSCollection> cmsCollections) {
         if (cmsCollections == null || cmsCollections.isEmpty()) {
             return;
         }
@@ -380,6 +384,24 @@ public class CollectionView implements Serializable {
             String collectionName = cmsCollection.getSolrFieldValue();
             if (StringUtils.isBlank(collectionName)) {
                 continue;
+            }
+            if (cmsCollection.hasRepresentativeWork()) {
+                // Check thumbnail access permission if representative record set
+                try {
+                    SolrDocument doc = DataManager.getInstance()
+                            .getSearchIndex()
+                            .getFirstDoc(SolrConstants.PI + ":\"" + cmsCollection.getRepresentativeWorkPI() + '"', null);
+                    if (doc != null) {
+                        PhysicalElement pe = ThumbnailHandler.getPage(cmsCollection.getRepresentativeWorkPI(),
+                                SolrTools.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO));
+                        if (pe != null) {
+                            cmsCollection.setAccessPermissionThumbnail(pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
+                        }
+                    }
+                } catch (PresentationException | IndexUnreachableException | DAOException e) {
+                    logger.error(e.getMessage());
+                }
+
             }
             //include direct child elements to handle views which include children of visible elements (luzern theme e.g.)
             Optional<HierarchicalBrowseDcElement> element = collections.stream()
@@ -434,9 +456,8 @@ public class CollectionView implements Serializable {
     public static int getLevel(String collectionName, String splittingChar) {
         if (StringUtils.isBlank(collectionName)) {
             return -1;
-        } else {
-            return collectionName.length() - collectionName.replace(splittingChar, "").length();
         }
+        return collectionName.length() - collectionName.replace(splittingChar, "").length();
     }
 
     /**
@@ -1065,9 +1086,8 @@ public class CollectionView implements Serializable {
         } else if (openInSearch) {
             if (hasSingleRecordLink(collection)) {
                 return getFirstRecordUrl(collection, field);
-            } else {
-                return getSearchUrl(collection, field, baseSearchUrl);
             }
+            return getSearchUrl(collection, field, baseSearchUrl);
         } else {
             return getCollectionViewUrl(collection);
         }
@@ -1099,16 +1119,15 @@ public class CollectionView implements Serializable {
         // Link directly to single record, if record PI known
         if (collection.getSingleRecordUrl() != null) {
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + collection.getSingleRecordUrl();
-        } else {
-
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
-                    .append("/browse/")
-                    .append(field)
-                    .append("/")
-                    .append(collection.getLuceneName())
-                    .append("/record/")
-                    .toString();
         }
+        
+        return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                .append("/browse/")
+                .append(field)
+                .append("/")
+                .append(collection.getLuceneName())
+                .append("/record/")
+                .toString();
     }
 
     public boolean hasCollectionPage(HierarchicalBrowseDcElement collection) {
@@ -1121,9 +1140,9 @@ public class CollectionView implements Serializable {
             String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
             logger.trace("COLLECTION static url: {}", ret);
             return ret;
-        } else {
-            return "";
         }
+        
+        return "";
     }
 
     public String getSearchUrl(HierarchicalBrowseDcElement collection, String field, final String baseSearchUrl) {

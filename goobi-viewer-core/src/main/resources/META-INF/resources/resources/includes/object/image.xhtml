@@ -12,8 +12,8 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- IMAGE CONTAINER -->
-    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3 ? '-thumbnailPreviewGallery' : ''}">
-
+    <div id="imageContainer" class="view-object__image #{!activeDocumentBean.viewManager.currentPage.accessPermissionImage ? '-setBorderTop' : ''} #{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3 ? '-thumbnailPreviewGallery' : ''}">
+		
         <!-- MAP -->
 <!--         <div id="imageMap" class="view-object__image-map" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"></div> -->
 
@@ -36,7 +36,21 @@
 			</div>
 		</div>
 		<div jsf:id="mainImageForbidden" class="view-object__image-map" rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
-			<div class="view-object__access-denied" >#{msg.noImage_accessDenied}</div>
+            <div class="view-object__access-denied" >
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) != null}">
+                    <img src="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale)}" alt="access denied" />
+                </ui:fragment>
+                <ui:fragment rendered="activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) == null}">
+                    #{msg.noImage_accessDenied}
+                </ui:fragment>
+                <!-- ACCESS DENIED DESCRIPTION TEXT -->
+                <h:panelGroup styleClass="view-object__access-denied-text"
+                    rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionObject and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForImage(navigationHelper.locale) != null}">
+                    <h:outputText escape="false"
+                        value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForImage(navigationHelper.locale)}" />
+                </h:panelGroup>
+                
+            </div>
 		</div>
 
 		<!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->

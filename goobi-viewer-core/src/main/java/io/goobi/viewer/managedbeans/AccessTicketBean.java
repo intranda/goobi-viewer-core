@@ -197,7 +197,7 @@ public class AccessTicketBean implements Serializable {
                             .replace("{0}", ticket.getPi()));
 
             // Notify admin(s)
-            if (EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress())) {
+            if (EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress(), false)) {
                 sendEmailNotification(Collections.singletonList(DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()),
                         ViewerResourceBundle.getTranslation("download_ticket__email_admin_subject", BeanUtils.getLocale())
                                 .replace("{0}", ticket.getEmail())

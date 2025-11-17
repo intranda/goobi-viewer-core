@@ -79,40 +79,31 @@
           </div>
         </div>
 
-        <h:panelGroup layout="block">
-          <c:if test="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
-            <f:attribute
-              name="styleClass"
-              value="view-thumbs__thumbnails -ltr"
-            />
-          </c:if>
-          <c:if test="#{activeDocumentBean.viewManager.topStructElement.rtl}">
-            <f:attribute
-              name="styleClass"
-              value="view-thumbs__thumbnails -rtl"
-            />
-          </c:if>
-          <ui:repeat
-            var="image"
-            value="#{activeDocumentBean.viewManager.imagesSection}"
-          >
-            <!-- THUMBNAIL -->
-            <div class="view-thumbs__thumbnail">
-              <!-- THUMBNAIL IMAGE -->
-              <a href="#{navigationHelper.imageActiveUrl}#{image.purlPart}">
-                <figure class="view-thumbs__thumbnail-image">
-                  <!--                                 <img src="#{image.thumbnailUrl}" alt="#{image.order}:#{image.orderLabel}" title="#{image.order}:#{image.orderLabel}" /> -->
-                  <img
-                    src="#{image.thumbnailUrl}"
-                    alt="#{image.order}"
-                    title="#{image.order}:#{image.orderLabel}"
-                    data-viewer-thumbnail="thumbnail"
-                  />
-                  <figcaption>
-                    <!-- THUMBNAIL IMAGE ORDER -->
-                    <div class="view-thumbs__thumbnail-image-order">
-                      #{image.order}:#{image.orderLabel}
-                    </div>
+      	<h:panelGroup layout="block">
+			<c:if
+				test="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
+				<f:attribute name="styleClass"
+					value="view-thumbs__thumbnails -ltr" />
+			</c:if>
+			<c:if test="#{activeDocumentBean.viewManager.topStructElement.rtl}">
+				<f:attribute name="styleClass"
+					value="view-thumbs__thumbnails -rtl" />
+			</c:if>
+			<ui:repeat var="image"
+				value="#{activeDocumentBean.viewManager.imagesSection}">
+				<!-- THUMBNAIL -->
+				<div class="view-thumbs__thumbnail">
+					<!-- THUMBNAIL IMAGE -->
+					<a href="#{navigationHelper.imageActiveUrl}#{image.purlPart}">
+						<figure class="view-thumbs__thumbnail-image">
+							<!--                                 <img src="#{image.thumbnailUrl}" alt="#{image.order}:#{image.orderLabel}" title="#{image.order}:#{image.orderLabel}" /> -->
+							<img src="#{image.thumbnailUrl}" alt="#{image.order}"
+								title="#{image.order}:#{image.orderLabel}"
+								data-viewer-thumbnail="thumbnail"
+								data-viewer-access-denied-url="#{image.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
+							<figcaption>
+								<!-- THUMBNAIL IMAGE ORDER -->
+								<div class="view-thumbs__thumbnail-image-order">#{image.order}:#{image.orderLabel}</div>
 
                     <!-- THUMBNAIL IMAGE FULLTEXT -->
                     <ui:fragment

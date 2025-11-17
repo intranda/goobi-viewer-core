@@ -55,9 +55,6 @@ public class LoginFilter implements Filter {
 
     private static final Logger logger = LogManager.getLogger(LoginFilter.class);
 
-    /* (non-Javadoc)
-     * @see jakarta.servlet.Filter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
-     */
     /** {@inheritDoc} */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {

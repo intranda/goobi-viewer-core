@@ -47,6 +47,12 @@
 
         	</div>
         </div>
+        <!-- ACCESS DENIED DESCRIPTION TEXT -->
+        <h:panelGroup styleClass="view-object__access-denied-text"
+            rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionObject and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForImage(navigationHelper.locale) != null}">
+            <h:outputText escape="false"
+                value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForImage(navigationHelper.locale)}" />
+        </h:panelGroup>
     </div>
 
     <!-- MOBILE IMAGE VIEW -->
