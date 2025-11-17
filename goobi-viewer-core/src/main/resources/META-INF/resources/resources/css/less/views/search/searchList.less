@@ -141,91 +141,54 @@
 		position: relative;
 	}
 	/* ICON BUTTON STRIP */
-	&__views .btn.btn--icon,
-	&__toggle-thumbs .btn.btn--icon,
-	&__excel-export .btn.btn--icon,
-	&__ris-export .btn.btn--icon,
-	&__rss .btn.btn--icon,
-	&__save-search .btn.btn--icon,
-	&__help .btn.btn--icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: var(--search-option-button-size);
-		height: var(--search-option-button-size);
-		min-width: var(--search-option-button-size);
-		border-radius: var(--search-option-border-radius);
-		line-height: 1;
-		color: var(--search-option-icon-color);
-		background-color: transparent;
-		border: none;
-		box-shadow: none;
-		transition: transform .18s ease, filter .18s ease, color .18s ease;
-	}
-
-	&__views .btn.btn--icon .icon-wrapper,
-	&__toggle-thumbs .btn.btn--icon .icon-wrapper,
-	&__excel-export .btn.btn--icon .icon-wrapper,
-	&__ris-export .btn.btn--icon .icon-wrapper,
-	&__rss .btn.btn--icon .icon-wrapper,
-	&__save-search .btn.btn--icon .icon-wrapper,
-	&__help .btn.btn--icon .icon-wrapper {
-		line-height: 0;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: var(--search-option-icon-size);
-		height: var(--search-option-icon-size);
-		transition: transform .18s ease, filter .18s ease;
-	}
-
-	&__views .btn.btn--icon .icon-wrapper svg,
-	&__toggle-thumbs .btn.btn--icon .icon-wrapper svg,
-	&__excel-export .btn.btn--icon .icon-wrapper svg,
-	&__ris-export .btn.btn--icon .icon-wrapper svg,
-	&__rss .btn.btn--icon .icon-wrapper svg,
-	&__save-search .btn.btn--icon .icon-wrapper svg,
-	&__help .btn.btn--icon .icon-wrapper svg {
-		display: block;
-		width: 100%;
-		height: 100%;
-		stroke-width: 1.6;
-		transition: transform .18s ease;
-	}
-
-	&__views .btn.btn--icon:hover,
-	&__views .btn.btn--icon:focus,
-	&__toggle-thumbs .btn.btn--icon:hover,
-	&__toggle-thumbs .btn.btn--icon:focus,
-	&__excel-export .btn.btn--icon:hover,
-	&__excel-export .btn.btn--icon:focus,
-	&__ris-export .btn.btn--icon:hover,
-	&__ris-export .btn.btn--icon:focus,
-	&__rss .btn.btn--icon:hover,
-	&__rss .btn.btn--icon:focus,
-	&__save-search .btn.btn--icon:hover,
-	&__save-search .btn.btn--icon:focus,
-	&__help .btn.btn--icon:hover,
-	&__help .btn.btn--icon:focus {
-		color: var(--search-option-color);
-	}
-
-	&__views .btn.btn--icon:hover .icon-wrapper,
-	&__views .btn.btn--icon:focus .icon-wrapper,
-	&__toggle-thumbs .btn.btn--icon:hover .icon-wrapper,
-	&__toggle-thumbs .btn.btn--icon:focus .icon-wrapper,
-	&__excel-export .btn.btn--icon:hover .icon-wrapper,
-	&__excel-export .btn.btn--icon:focus .icon-wrapper,
-	&__ris-export .btn.btn--icon:hover .icon-wrapper,
-	&__ris-export .btn.btn--icon:focus .icon-wrapper,
-	&__rss .btn.btn--icon:hover .icon-wrapper,
-	&__rss .btn.btn--icon:focus .icon-wrapper,
-	&__save-search .btn.btn--icon:hover .icon-wrapper,
-	&__save-search .btn.btn--icon:focus .icon-wrapper,
-	&__help .btn.btn--icon:hover .icon-wrapper,
-	&__help .btn.btn--icon:focus .icon-wrapper {
-		transform: scale(1.08) translateY(-1px);
-		filter: drop-shadow(0 3px 8px fade(@black, 18%));
+	&__views,
+	&__toggle-thumbs,
+	&__excel-export,
+	&__ris-export,
+	&__rss,
+	&__save-search,
+	&__help {
+		.btn.btn--icon {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: var(--search-option-button-size);
+			height: var(--search-option-button-size);
+			min-width: var(--search-option-button-size);
+			border-radius: var(--search-option-border-radius);
+			line-height: 1;
+			color: var(--search-option-icon-color);
+			background-color: transparent;
+			border: none;
+			box-shadow: none;
+			transition: transform .18s ease, filter .18s ease, color .18s ease;
+			&:hover,
+			&:focus {
+				color: var(--search-option-color);
+				.icon-wrapper {
+					transform: scale(1.08) translateY(-1px);
+					filter: drop-shadow(0 3px 8px fade(@black, 18%));
+				}
+			}
+			
+			.icon-wrapper {
+				line-height: 0;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				width: var(--search-option-icon-size);
+				height: var(--search-option-icon-size);
+				transition: transform .18s ease, filter .18s ease;
+				svg {
+					display: block;
+					width: 100%;
+					height: 100%;
+					stroke-width: 1.6;
+					transition: transform .18s ease;
+				}
+				
+			}
+		}
 	}
 
 	&__views .btn.btn--icon.active,
