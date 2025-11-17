@@ -1122,7 +1122,7 @@ public class CollectionView implements Serializable {
      * @return URL of the first record in the given collection field/name combo
      * @should escape url encode collection name
      */
-    public String getFirstRecordUrl(HierarchicalBrowseDcElement collection, String field) {
+    public static String getFirstRecordUrl(HierarchicalBrowseDcElement collection, String field) {
 
         // Link directly to single record, if record PI known
         if (collection.getSingleRecordUrl() != null) {
