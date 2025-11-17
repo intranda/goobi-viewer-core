@@ -172,10 +172,13 @@ public class DownloadResource {
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email)
             throws DAOException, URISyntaxException, JsonProcessingException {
 
+        logger.error("trigger PDF generation, PI={}, logId={}, usePdfSource={}, email={}", pi, logId, usePdfSource, email);
+
         ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
         // create new downloadjob
 
         DownloadJob job = new PDFDownloadJob(pi, logId, LocalDateTime.now(), DownloadBean.getTimeToLive());
+        logger.error("create PDF DownloadJob {}", job);
         if (StringUtils.isNotBlank(email)) {
             job.getObservers().add(email.toLowerCase());
             message.getProperties().put("email", email.toLowerCase());
@@ -190,11 +193,15 @@ public class DownloadResource {
             message.getProperties().put("usePdfSource", usePdfSource);
         }
 
+        logger.error("create PDF mq message {}", message);
+
         job.setStatus(JobStatus.WAITING);
         DataManager.getInstance().getDao().addDownloadJob(job);
 
         // create new activemq message
         String messageId = message.getMessageId();
+        logger.error("messageId = {}", messageId);
+        logger.error("add to queue with messageBroker {}", this.messageBroker);
         try {
             messageId = this.messageBroker.addToQueue(message);
             messageId = URLEncoder.encode(messageId, Charset.defaultCharset());
@@ -204,7 +211,9 @@ public class DownloadResource {
 
         // forward to download page
         DownloadJob.generateDownloadJobId(PDFDownloadJob.LOCAL_TYPE, pi, logId);
+        logger.error("generated download job");
         URI downloadPageUrl = getDownloadPageUrl(messageId);
+        logger.error("forward to url {}", downloadPageUrl);
         return getForwardToDownloadPageResponse(downloadPageUrl, job);
     }
 
