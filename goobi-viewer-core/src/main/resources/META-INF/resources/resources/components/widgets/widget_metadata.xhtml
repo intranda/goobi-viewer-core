@@ -38,6 +38,9 @@
 				
 				<c:forEach items="#{cc.attrs.metadataElementList}"
 					var="metadataElement" varStatus="status">
+					
+					<!-- Skip element if it contains no sidebar metadata -->
+					<ui:fragment rendered="#{metadataElement.hasSidebarMetadata}">
 
 					<ui:fragment
 						rendered="#{fn:length(cc.attrs.metadataElementList) gt 1}">
@@ -136,6 +139,8 @@
 							</h:panelGroup>
 						</c:forEach>
 					</dl>
+					
+					</ui:fragment>
 				</c:forEach>
 
 			<!-- LIDO -->
