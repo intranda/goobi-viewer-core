@@ -32,10 +32,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,6 +50,9 @@ import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.StructElement;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * Provides the metadata for the current structure and event elements.
@@ -217,6 +216,23 @@ public class MetadataBean {
         }
 
         return metadataElementList.get(index);
+    }
+
+    /**
+     * The main metadata element is the first element which isn't an anchor if any such elements are in the metadata element list. Otherwise it is
+     * just the first (anchor) metadata element
+     * 
+     * @param index
+     * @return
+     */
+    public MetadataElement getMainMetadataElement(int index) {
+        List<MetadataElement> metadataElementList = getMetadataElementList(index);
+        if (metadataElementList == null || metadataElementList.isEmpty()) {
+            return null;
+        }
+
+        return metadataElementList.stream().filter(ele -> !ele.isAnchor()).findFirst().orElse(metadataElementList.get(0));
+
     }
 
     /**
