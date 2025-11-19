@@ -319,12 +319,13 @@ public final class BeanUtils {
      *
      * @param name a {@link java.lang.String} object.
      * @param clazz a {@link java.lang.Class} object.
+     * @throws ContextNotActiveException if no jsf context is available to retrieve the bean from
      * @return a {@link java.lang.Object} object.
      * @should throw IllegalArgumentException if named bean of different class
      * @should throw IllegalStateException if named bean of different class
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static Object getBeanByName(String name, Class clazz) {
+    public static Object getBeanByName(String name, Class clazz) throws ContextNotActiveException {
         try {
             BeanManager bm = getBeanManager();
             if (bm != null && bm.getBeans(name).iterator().hasNext()) {
@@ -502,10 +503,11 @@ public final class BeanUtils {
      * <p>
      * getUserBean.
      * </p>
-     *
+     * 
+     * @throws ContextNotActiveException if no jsf context is available to retrieve the bean from
      * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
      */
-    public static UserBean getUserBean() {
+    public static UserBean getUserBean() throws ContextNotActiveException {
         return (UserBean) getBeanByName("userBean", UserBean.class);
     }
 
