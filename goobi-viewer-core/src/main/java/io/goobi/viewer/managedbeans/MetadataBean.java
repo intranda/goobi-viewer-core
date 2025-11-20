@@ -223,7 +223,7 @@ public class MetadataBean {
      * just the first (anchor) metadata element
      * 
      * @param index
-     * @return
+     * @return a {@link MetadataElement} object
      */
     public MetadataElement getMainMetadataElement(int index) {
         List<MetadataElement> metadataElementList = getMetadataElementList(index);

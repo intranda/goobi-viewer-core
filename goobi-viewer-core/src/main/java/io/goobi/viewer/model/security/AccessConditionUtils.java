@@ -328,15 +328,12 @@ public final class AccessConditionUtils {
                 }
             }
 
-            if (user == null) {
-                user = retrieveUserFromContext(session);
-            }
-
             Map<String, AccessPermission> ret = HashMap.newHashMap(requiredAccessConditions.size());
             for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
                 Set<String> pageAccessConditions = entry.getValue();
                 AccessPermission access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
-                        privilegeName, user, ipAddress, ClientApplicationManager.getClientFromSession(session), query);
+                        privilegeName, user == null ? retrieveUserFromContext(session) : user, ipAddress,
+                        ClientApplicationManager.getClientFromSession(session), query);
                 ret.put(entry.getKey(), access);
             }
             return ret;
