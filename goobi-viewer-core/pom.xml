@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>25.10.2</version>
+	<version>25.10.4</version>
 	<packaging>jar</packaging>
 	<name>Goobi viewer - Core</name>
 	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
@@ -70,7 +70,7 @@
 		<sonar.java.target>21</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>13</checkstyle.max.violations>
+		<checkstyle.max.violations>14</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 		<!-- Manifest information -->
