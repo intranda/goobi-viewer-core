@@ -499,7 +499,7 @@ public class AuthorizationFlowResource {
                 userBean.logout();
                 // Tokens and origin should be purged from SessionBean by logout process
                 return Response.ok("").build();
-            } catch (AuthenticationProviderException e) {
+            } catch (AuthenticationProviderException | IOException e) {
                 logger.error(e.getMessage());
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage()).build();
             }
