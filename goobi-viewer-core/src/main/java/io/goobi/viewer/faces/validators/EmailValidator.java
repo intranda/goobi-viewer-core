@@ -24,6 +24,8 @@ package io.goobi.viewer.faces.validators;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
@@ -31,7 +33,6 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.validator.FacesValidator;
 import jakarta.faces.validator.Validator;
 import jakarta.faces.validator.ValidatorException;
-import software.amazon.awssdk.utils.StringUtils;
 
 /**
  * Syntax validator for e-mail addresses.
