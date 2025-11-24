@@ -50,7 +50,7 @@ public class Translation {
     protected Long id;
 
     /**
-     * An additional optional field used to identify the purpose or categorization of a translation. Usefull if an object has more than one
+     * An additional optional field used to identify the purpose or categorization of a translation. Useful if an object has more than one
      * relationship with Translation entities and needs to distinguish them in some way
      **/
     @Column(name = "tag", nullable = true, columnDefinition = "LONGTEXT")

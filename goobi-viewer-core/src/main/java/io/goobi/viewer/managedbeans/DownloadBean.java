@@ -268,11 +268,6 @@ public class DownloadBean implements Serializable {
         this.downloadIdentifier = downloadIdentifier;
     }
 
-    public void startDownload(String pi, String logId, String usePdfSource) throws DAOException {
-        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.LOCAL_TYPE, pi, logId);
-        if(downloadJob != null && (downloadJob.getStatus() == JobStatus.WAITING || downloadJob. )
-    }
-
     public void createPDFDownloadJob(String pi, String logId, String usePdfSource)
             throws DAOException, URISyntaxException, JsonProcessingException {
 
