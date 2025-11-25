@@ -1226,6 +1226,8 @@
 							<violationSeverity>warning</violationSeverity>
 							<configLocation>checkstyle.xml</configLocation>
 							<inputEncoding>UTF-8</inputEncoding>
+							<!--suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+							<suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression-->
 						</configuration>
 						<goals>
 							<goal>check</goal>
