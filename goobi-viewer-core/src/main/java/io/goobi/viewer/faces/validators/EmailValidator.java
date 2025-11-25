@@ -66,6 +66,7 @@ public class EmailValidator implements Validator<String> {
      * </p>
      *
      * @param email a {@link java.lang.String} object.
+     * @param allowEmptyString use `true` if an empty email address is allowed
      * @should match correct email addresses
      * @should match entire email address only
      * @should not match invalid addresses
