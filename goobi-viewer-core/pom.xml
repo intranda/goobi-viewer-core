@@ -81,6 +81,7 @@
 		<alto.version>1.6.4</alto.version>
 		<ics.version>4.0.8</ics.version>
 		<tei-conversion.version>1.3.4</tei-conversion.version>
+		<intranda-content-view.version>0.2.5</intranda-content-view.version>
 		<iiif-api-model.version>3.2.0</iiif-api-model.version>
 		<normdataimporter.version>2.1.0</normdataimporter.version>
 
@@ -170,7 +171,7 @@
 		 <dependency>
 		      <groupId>de.intranda.js.content-view</groupId>
 		      <artifactId>content-view</artifactId>
-		      <version>0.2.4</version>
+		      <version>${intranda-content-view.version}</version>
 		 </dependency>
 		<dependency>
 			<groupId>de.intranda.goobi</groupId>
