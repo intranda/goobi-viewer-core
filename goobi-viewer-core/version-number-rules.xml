@@ -43,7 +43,11 @@
                 <ignoreVersion type="regex">4.*</ignoreVersion>
             </ignoreVersions>
         </rule>
-
+        <rule groupId="org.springframework" artifactId="spring-*">
+            <ignoreVersions>
+                <ignoreVersion type="regex">7.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
 
         <!-- Other -->
         <rule groupId="xml-apis" artifactId="xml-apis">
