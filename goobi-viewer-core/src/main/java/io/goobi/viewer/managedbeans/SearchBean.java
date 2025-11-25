@@ -653,9 +653,11 @@ public class SearchBean implements SearchInterface, Serializable {
             if (sbInfo.length() > 1) {
                 sbInfo.append(' ');
             }
-            sbInfo.append(ViewerResourceBundle.getTranslation("searchOperator_" + item.getOperator().name(),
-                    BeanUtils.getLocale()))
-                    .append(' ');
+            if (StringUtils.isNotEmpty(item.getValue())) {
+                sbInfo.append(ViewerResourceBundle.getTranslation("searchOperator_" + item.getOperator().name(),
+                        BeanUtils.getLocale()))
+                        .append(' ');
+            }
 
             // Generate the hierarchical facet parameter from query items
             if (item.isHierarchical()) {
@@ -777,43 +779,45 @@ public class SearchBean implements SearchInterface, Serializable {
             }
 
             logger.trace("Item query: {}", itemQuery);
-            String infoFieldLabel =
-                    SearchHelper.SEARCH_FILTER_ALL.getField().equals(item.getField()) ? item.getLabel() : item.getField();
-            sbInfo.append('(').append(ViewerResourceBundle.getTranslation(infoFieldLabel, BeanUtils.getLocale())).append(": ");
-            switch (item.getOperator()) {
-                case AND:
-                    if (SolrConstants.BOOKMARKS.equals(item.getField()) && !userBean.isLoggedIn()) {
-                        // Session bookmark list value
-                        sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
-                    } else if (item.isRange()) {
-                        sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
-                    } else {
+            if (StringUtils.isNotEmpty(item.getValue())) {
+                String infoFieldLabel =
+                        SearchHelper.SEARCH_FILTER_ALL.getField().equals(item.getField()) ? item.getLabel() : item.getField();
+                sbInfo.append('(').append(ViewerResourceBundle.getTranslation(infoFieldLabel, BeanUtils.getLocale())).append(": ");
+                switch (item.getOperator()) {
+                    case AND:
+                        if (SolrConstants.BOOKMARKS.equals(item.getField()) && !userBean.isLoggedIn()) {
+                            // Session bookmark list value
+                            sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
+                        } else if (item.isRange()) {
+                            sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
+                        } else {
+                            if (item.isDisplaySelectItems()) {
+                                sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
+                            } else {
+                                sbInfo.append(item.getValue());
+                            }
+                        }
+                        break;
+                    case NOT:
                         if (item.isDisplaySelectItems()) {
                             sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
                         } else {
                             sbInfo.append(item.getValue());
                         }
-                    }
-                    break;
-                case NOT:
-                    if (item.isDisplaySelectItems()) {
-                        sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
-                    } else {
-                        sbInfo.append(item.getValue());
-                    }
-                    break;
-                default:
-                    if (item.isRange()) {
-                        sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
-                    } else {
-                        if (item.isDisplaySelectItems()) {
-                            sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
+                        break;
+                    default:
+                        if (item.isRange()) {
+                            sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
                         } else {
-                            sbInfo.append(item.getValue());
+                            if (item.isDisplaySelectItems()) {
+                                sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
+                            } else {
+                                sbInfo.append(item.getValue());
+                            }
                         }
-                    }
+                }
+                sbInfo.append(')');
             }
-            sbInfo.append(')');
 
             // Add item query part to the group query
             if (item.isSameFieldGroupStart() || item.isSameFieldGroupCopy()) {
