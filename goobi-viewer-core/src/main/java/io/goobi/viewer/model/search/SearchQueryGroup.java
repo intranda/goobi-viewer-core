@@ -134,6 +134,15 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
+     * Resets all items.
+     */
+    public void resetItems() {
+        for (SearchQueryItem item : queryItems) {
+            item.reset();
+        }
+    }
+
+    /**
      * 
      * @return true if none of the items has any value input; false otherwise
      * @should return true if all items without value

@@ -646,7 +646,7 @@ public class SearchBean implements SearchInterface, Serializable {
         Set<String> usedFieldValuePairs = new HashSet<>();
         this.proximitySearchDistance = 0;
         for (SearchQueryItem item : advancedSearchQueryGroup.getQueryItems()) {
-            // logger.trace("Query item: {}", queryItem.toString()); //NOSONAR Debug
+            logger.trace("Query item: {}:{}", item.getField(), item.getValue()); //NOSONAR Debug
             if (StringUtils.isEmpty(item.getField())) {
                 continue;
             }
@@ -3282,6 +3282,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return Navigation outcome
      */
     public String searchInRecord(String queryField, String queryValue) {
+        this.advancedSearchQueryGroup.resetItems(); // reset all items first
         this.advancedSearchQueryGroup.getQueryItems().get(0).setField(queryField);
         if (StringUtils.isNotBlank(queryValue)) {
             this.advancedSearchQueryGroup.getQueryItems().get(0).setValue(queryValue);
