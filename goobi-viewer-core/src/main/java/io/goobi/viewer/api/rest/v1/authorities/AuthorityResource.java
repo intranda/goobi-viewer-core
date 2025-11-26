@@ -155,23 +155,24 @@ public class AuthorityResource {
         JSONArray jsonArray = new JSONArray();
 
         // Explorative mode to return all available fields
-        if (template == null || StringConstants.DEFAULT_NAME.equals(template) || "_ALL".equals(template)) {
+        String useTemplate = template;
+        if (useTemplate == null || StringConstants.DEFAULT_NAME.equals(useTemplate) || "_ALL".equals(useTemplate)) {
             for (NormData normData : normDataList) {
                 jsonArray.put(addNormDataValuesToJSON(normData, locale));
             }
             return jsonArray.toString();
-        } else if (TEMPLATE_UNKNOWN.equals(template)) {
+        } else if (TEMPLATE_UNKNOWN.equals(useTemplate)) {
             //if the normdata type is unknown, try to get it from the gndspec field 075$b
             for (NormData normData : normDataList) {
                 if (FIELD_NORM_TYPE.equals(normData.getKey())) {
                     String normVal = normData.getValues().get(0).getText();
-                    template = MetadataTools.findMetadataGroupType(normVal);
+                    useTemplate = MetadataTools.findMetadataGroupType(normVal);
                     break;
                 }
             }
         }
 
-        List<String> normdataFields = DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(template);
+        List<String> normdataFields = DataManager.getInstance().getConfiguration().getNormdataFieldsForTemplate(useTemplate);
         // Missing template config - add all fields
         if (normdataFields.isEmpty()) {
             for (NormData normData : normDataList) {
