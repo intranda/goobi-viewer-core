@@ -206,7 +206,7 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         contentItem.setOwningComponent(component);
 
         CollectionViewBean collectionViewBean = new CollectionViewBean();
-        CollectionView collection = collectionViewBean.getCollection(contentItem, 0, false, false, false);
+        CollectionView collection = collectionViewBean.getCollection(contentItem);
 
         HierarchicalBrowseDcElement element =
                 collection.getVisibleDcElements().stream().filter(ele -> ele.getName().equals("dcimage")).findAny().orElse(null);
