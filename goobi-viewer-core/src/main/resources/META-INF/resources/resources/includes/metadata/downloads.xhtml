@@ -27,7 +27,7 @@
                         <f:passThroughAttribute name="data-placement" value="top" />
                     </h:outputLink>
                     <h:outputLink id="lidoLink" styleClass="btn btn--full" rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'LIDO'}"
-                        value="#{activeDocumentBean.viewManager.lidoResolverUrl}" title="#{msg.metadata_dl_lido}" target="_blank"> 
+                        value="#{activeDocumentBean.viewManager.sourceFileResolverUrl}" title="#{msg.metadata_dl_lido}" target="_blank"> 
                         #{msg.downloadLidoButtonLabel}
                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
                         <f:passThroughAttribute name="data-placement" value="top" />

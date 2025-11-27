@@ -140,7 +140,7 @@
 					<!-- METS -->
 					<ui:fragment visibility-class="widget-element"
 						rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen, viewMetadata]}')}">
-						<a href="#{activeDocumentBean.viewManager.metsResolverUrl}"
+						<a href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
 							id="lidomets"
 							class="badge badge-dark widget-format-links__work-download-lido-mets"
 							title="#{msg.metadata_dl_mets}" data-toggle="tooltip"
@@ -164,7 +164,7 @@
 					<!-- LIDO -->
 					<ui:fragment visibility-class="widget-element"
 						rendered="#{displayConditions.matchRecord('{sourceFormat:[LIDO], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext]}')}">
-						<a href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
+						<a href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
 							id="lidomets"
 							class="badge badge-dark widget-format-links__work-download-lido-mets"
 							title="#{msg.metadata_dl_lido}" data-toggle="tooltip"
@@ -177,7 +177,7 @@
 					<!-- DUBLINCORE -->
 					<ui:fragment visibility-class="widget-element"
 						rendered="#{displayConditions.matchRecord('{sourceFormat:[DUBLINCORE], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen]}')}">
-						<a href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
+						<a href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
 							id="dublincorexml"
 							class="badge badge-dark widget-format-links__work-download-lido-mets"
 							title="#{msg.metadata_dl_dublincore}" data-toggle="tooltip"

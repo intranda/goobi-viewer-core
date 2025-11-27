@@ -1975,58 +1975,6 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * <p>
-     * getMetsResolverUrl.
-     * </p>
-     *
-     * @return METS resolver link
-     * @deprecated Use ViewManager.getSourceFileResolverUrl()
-     */
-    @Deprecated(since = "24.08")
-    public String getMetsResolverUrl() {
-        return getSourceFileResolverUrl();
-    }
-
-    /**
-     * <p>
-     * getLidoResolverUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl()
-     */
-    @Deprecated(since = "24.08")
-    public String getLidoResolverUrl() {
-        return getSourceFileResolverUrl();
-    }
-
-    /**
-     * <p>
-     * getDenkxwebResolverUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl()
-     */
-    @Deprecated(since = "24.08")
-    public String getDenkxwebResolverUrl() {
-        return getSourceFileResolverUrl();
-    }
-
-    /**
-     * <p>
-     * getDublinCoreResolverUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl()
-     */
-    @Deprecated(since = "24.08")
-    public String getDublinCoreResolverUrl() {
-        return getSourceFileResolverUrl();
-    }
-
-    /**
      * 
      * @return Source file resolver URL for the current record identifier
      */
