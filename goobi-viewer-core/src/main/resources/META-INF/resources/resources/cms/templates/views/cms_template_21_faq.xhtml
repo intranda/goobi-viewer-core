@@ -111,7 +111,7 @@
 
 							<!-- FAQ ITEMS -->
 							<c:forEach var="faqItem"
-								items="#{cc.attrs.component.getContentItem('faqList').content.getNestedPages(cc.attrs.random, category, cmsBean.templateManager)}"
+								items="#{cc.attrs.component.getContentItem('faqList').content.getNestedPagesByCategory(cc.attrs.random, category, cmsBean.templateManager)}"
 								varStatus="status">
 								<div class="card" id="card-#{faqItem.id}-#{category.id}">
 									<div class="card-header" role="tab"

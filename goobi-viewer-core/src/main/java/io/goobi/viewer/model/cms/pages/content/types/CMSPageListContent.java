@@ -162,23 +162,6 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * </p>
      * 
      * @param random
-     * @param paged
-     * @param templateManager
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated use {@link #getNestedPages(Boolean, CMSTemplateManager)} instead
-     */
-    @Deprecated(since = "24.02")
-    public List<CMSPage> getNestedPages(Boolean random, Boolean paged, CMSTemplateManager templateManager) throws DAOException {
-        return getNestedPages(random, templateManager);
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>nestedPages</code>.
-     * </p>
-     * 
-     * @param random
      * @param templateManager
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -188,25 +171,6 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
             nestedPages = loadNestedPages(random, templateManager);
         }
         return nestedPages;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>nestedPages</code>.
-     * </p>
-     *
-     * @param random
-     * @param paged
-     * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
-     * @param templateManager
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated use {@link #getNestedPagesByCategory(boolean, CMSCategory, CMSTemplateManager)} instead
-     */
-    @Deprecated(since = "24.02")
-    public List<CMSPage> getNestedPagesByCategory(boolean random, boolean paged, CMSCategory category, CMSTemplateManager templateManager)
-            throws DAOException {
-        return getNestedPagesByCategory(random, category, templateManager);
     }
 
     /**
@@ -256,7 +220,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
                 .stream()
                 .filter(CMSPage::isPublished)
                 .filter(child -> getCategories().isEmpty() || !CollectionUtils.intersection(getCategories(), child.getCategories()).isEmpty())
-                .filter(page  -> {
+                .filter(page -> {
                     try {
                         return AccessConditionUtils.checkAccessPermissionForCmsPage(BeanUtils.getRequest(), page).isGranted();
                     } catch (DAOException | IndexUnreachableException | PresentationException e) {
@@ -314,7 +278,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
         if (!this.categories.isEmpty()) {
             SortedMap<Long, CMSCategory> sortMap = new TreeMap<>();
             for (CMSCategory category : getCategories()) {
-                long order = getNestedPagesByCategory(random, paged, category, templateManager).stream()
+                long order = getNestedPagesByCategory(random, category, templateManager).stream()
                         .filter(page -> page.getPageSorting() != null)
                         .mapToLong(CMSPage::getPageSorting)
                         .sorted()
