@@ -193,8 +193,6 @@ public class SearchBean implements SearchInterface, Serializable {
                     advancedSearchFieldTemplate);
     /** Human-readable representation of the advanced search query for displaying. */
     private String advancedSearchQueryInfo;
-
-    private String searchInCurrentItemString;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
     private Search currentSearch;
     /** If >0, proximity search will be applied to phrase searches. */
@@ -480,7 +478,6 @@ public class SearchBean implements SearchInterface, Serializable {
         mirrorAdvancedSearchCurrentHierarchicalFacets();
         resetSearchResults();
         resetSearchParameters(true, true);
-        searchInCurrentItemString = null;
         proximitySearchDistance = 0;
     }
 
@@ -2444,29 +2441,6 @@ public class SearchBean implements SearchInterface, Serializable {
         return fields;
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>searchInCurrentItemString</code>.
-     * </p>
-     *
-     * @return the searchInCurrentItemString
-     */
-    public String getSearchInCurrentItemString() {
-        return searchInCurrentItemString;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>searchInCurrentItemString</code>.
-     * </p>
-     *
-     * @param searchInCurrentItemString the searchInCurrentItemString to set
-     */
-    public void setSearchInCurrentItemString(String searchInCurrentItemString) {
-        // Reset the advanced search parameters prior to setting
-        resetAdvancedSearchParameters();
-        this.searchInCurrentItemString = searchInCurrentItemString;
-    }
 
     /**
      * <p>
