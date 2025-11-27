@@ -79,7 +79,8 @@
                         currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
                         featureClickHandling="openSearch" />
                 </ui:fragment>
-                <!--  WIDGET METADATA TECH -->
+                
+                <!--  WIDGET METADATA -->
                 <ui:fragment rendered="#{widgetName == 'metadata'}">
                     <widgetComponent:widget_metadata id="widgetMetadata" />
                 </ui:fragment>
@@ -110,7 +111,7 @@
                 </ui:fragment>
 
 				<!-- WIDGET USAGE STATS -->
-                <ui:fragment rendered="#{widgetName == 'statistics-usage'}">
+                <ui:fragment rendered="#{widgetName == 'statistics-usage' and statisticsBean.usageStatisticsActive}">
                     <widgetComponent:widget_statistics_usage />
                 </ui:fragment>
                 

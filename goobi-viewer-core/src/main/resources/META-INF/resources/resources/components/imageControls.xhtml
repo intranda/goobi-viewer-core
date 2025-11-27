@@ -76,7 +76,8 @@
 											firstImage: "#{msg.firstImage}",
 											lastImage: "#{msg.lastImage}",
 											stepBack: "#{msg.stepBack}",
-											stepForward: "#{msg.stepForward}"
+											stepForward: "#{msg.stepForward}",
+											aria_label__select_page: "#{msg.aria_label__select_page}"
 										},
 					icons: {
 						first: "#{request.contextPath}/resources/icons/outline/chevrons-left.svg#icon",
@@ -267,6 +268,7 @@
                             <li id="imageFiltering" class="image-controls__option image-filter">
                                 <button type="button" class="btn btn--icon image-controls__image-filter-button" disabled="disabled"
                             	   data-popover-element="#imageFilterPopover"
+                                   data-popover-placement="bottom"
                                    data-popover-dismiss="click-outside"
                                    data-container="#imageFiltering"
                                    data-popover-aria-label="#{msg.label__image_filter_toolkit}"

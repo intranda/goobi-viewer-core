@@ -216,9 +216,9 @@ var viewerJS = (function () {
         }
 
         // fire search query in autocomplete on enter
-        $('body').on('keyup', '#pfAutocomplete_input, [id*=":pfAutocomplete_input"]', function (event) {
+        $('body').on('keyup', '#pfAutocomplete_input, [id*="\\:pfAutocomplete_input"]', function (event) {
             if (event.keyCode == 13) {
-                $('#submitSearch, [id*=":submitSearch"]').click();
+                $('#submitSearch, [id*="\\:submitSearch"]').click();
             }
         });
 

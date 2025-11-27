@@ -44,7 +44,7 @@ var viewerJS = ( function( viewer ) {
                 spiderfyDistanceMultiplier: 1.0,
                 showCoverageOnHover: true,
                 maxClusterRadius: 80,
-       		},
+            },
             search: {
             	openSearchOnMarkerClick: true,
             	searchUrlTemplate : '/viewer/search/-/WKT_COORDS:"Intersects(POINT({lng} {lat})) distErrPct=0"/1/-/-/',
@@ -210,7 +210,8 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
         	    filterQuery: this.config.heatmap.filterQuery,
         	    labelField: this.config.heatmap.labelField,
         	    searchScope: this.config.heatmap.searchScope,
-        	    queryAdapter: this.config.heatmap.queryAdapter
+        	    queryAdapter: this.config.heatmap.queryAdapter,
+                cluster: this.config.cluster
         	});
         	this.heatmap.addTo(this.geoMap.map);        
     }
@@ -248,6 +249,10 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
 		}
 		
 		let clusterConfig = $.extend(true, {}, baseConfig, this.config.cluster);
+        if(clusterConfig.maxClusteringZoom) {
+            clusterConfig.disableClusteringAtZoom = clusterConfig.maxClusteringZoom;
+            clusterConfig.spiderfyOnMaxZoom = false;
+        }
 		let paneName = this.config.cluster.clusterPane;
 		let paneZIndex = this.config.cluster.zIndex;
 		if(paneName) {

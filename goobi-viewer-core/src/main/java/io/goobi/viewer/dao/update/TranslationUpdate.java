@@ -47,7 +47,8 @@ public class TranslationUpdate implements IModelUpdate {
         for (String table : TABLES) {
             if (dao.tableExists(table)) {
                 boolean newColumnHasEntries = dao.getNativeQueryResults("SELECT translation_value FROM " + table).stream().anyMatch(Objects::nonNull);
-                if (!newColumnHasEntries) {
+                boolean oldColumnExists = dao.columnsExists(table, "value");
+                if (oldColumnExists && !newColumnHasEntries) {
                     logger.debug("Updating table: {}", table);
                     dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + table + " DROP translation_value;");
                     try {

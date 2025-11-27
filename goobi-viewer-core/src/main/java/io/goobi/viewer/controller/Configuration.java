@@ -872,6 +872,23 @@ public class Configuration extends AbstractConfiguration {
         return getMetadataForTemplate(template, templateList, true, false);
     }
 
+    public float getGeomapClusterDistanceMultiplier() {
+        return getLocalFloat("maps.cluster.distanceMultiplier", 1.0f);
+    }
+
+    public int getGeomapClusterRadius() {
+        return getLocalInt("maps.cluster.radius", 80);
+    }
+
+    public Integer getGeomapDisableClusteringAtZoom() {
+        String value = getLocalString("maps.cluster.disableAtZoom", "");
+        if (StringTools.isInteger(value)) {
+            return Integer.parseInt(value);
+        } else {
+            return null;
+        }
+    }
+
     public Metadata getGeoMapFeatureConfiguration(String option, String template) {
         return getGeomapFeatureConfigurations(option).getOrDefault(template, new Metadata());
     }
@@ -4429,7 +4446,9 @@ public class Configuration extends AbstractConfiguration {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BaseHierarchicalConfiguration getZoomImageViewConfig(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("viewer.zoomImageView");
+        List<HierarchicalConfiguration<ImmutableNode>> configs = new ArrayList<>();
+        configs.addAll(getLocalConfigurationsAt("viewer.zoomImageView"));
+        configs.addAll(getConfig().configurationsAt("viewer.zoomImageView"));
 
         for (HierarchicalConfiguration<ImmutableNode> subConfig : configs) {
 
@@ -4449,6 +4468,7 @@ public class Configuration extends AbstractConfiguration {
 
             return (BaseHierarchicalConfiguration) subConfig;
         }
+
         throw new ViewerConfigurationException("Viewer config must define at least a generic <zoomImageView>");
     }
 

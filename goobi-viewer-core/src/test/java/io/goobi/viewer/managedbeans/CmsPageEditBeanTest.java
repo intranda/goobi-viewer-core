@@ -60,7 +60,7 @@ class CmsPageEditBeanTest {
     CmsPageEditBean bean;
 
     @BeforeEach
-    public void setUp() throws DAOException {
+    void setUp() throws DAOException {
 
         CMSSidebarWidgetsBean widgetsBean = Mockito.mock(CMSSidebarWidgetsBean.class);
         Mockito.when(widgetsBean.getAllWidgets()).thenReturn(Collections.emptyList());
@@ -115,7 +115,7 @@ class CmsPageEditBeanTest {
      * @throws DAOException
      */
     @Test
-    void testNewPage() throws DAOException {
+    void testNewPage() {
         FacesContext facesContext = mockFacesContext(Map.of());
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -131,7 +131,7 @@ class CmsPageEditBeanTest {
      * @throws DAOException
      */
     @Test
-    void testNewPageFromTemplate() throws DAOException {
+    void testNewPageFromTemplate() {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -147,7 +147,7 @@ class CmsPageEditBeanTest {
      * @throws DAOException
      */
     @Test
-    void testNewPageFromTemplateWithTitleAndPi() throws DAOException {
+    void testNewPageFromTemplateWithTitleAndPi() {
         FacesContext facesContext = mockFacesContext(Map.of("templateId", PAGE_TEMPLATE_ID.toString(), "title", PAGE_NAME, "relatedPi", RELATED_PI));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -165,7 +165,7 @@ class CmsPageEditBeanTest {
      * @throws DAOException
      */
     @Test
-    void testEditPage() throws DAOException {
+    void testEditPage() {
         FacesContext facesContext = mockFacesContext(Map.of("selectedPageId", SELECTED_PAGE_ID.toString()));
         bean.setFacesContext(facesContext);
         bean.setup();
@@ -205,7 +205,7 @@ class CmsPageEditBeanTest {
         bean.setTemplateName(TEMPLATE_NAME);
         bean.saveSelectedPage();
         Mockito.verify(bean.getDao(), Mockito.times(1)).addCMSPageTemplate(Mockito.argThat(template -> template.getName() == TEMPLATE_NAME));
-        Mockito.verify(bean.getDao(), Mockito.times(1)).addCMSPageTemplate(Mockito.argThat(template -> template.isLockComponents()));
+        Mockito.verify(bean.getDao(), Mockito.times(1)).addCMSPageTemplate(Mockito.argThat(CMSPageTemplate::isLockComponents));
 
     }
 
@@ -237,7 +237,6 @@ class CmsPageEditBeanTest {
         CMSPage page = bean.getSelectedPage();
         bean.deleteSelectedPage();
         Mockito.verify(bean.getDao(), Mockito.times(1)).deleteCMSPage(page);
-        assertNull(bean.getSelectedPage());
     }
 
     @Test

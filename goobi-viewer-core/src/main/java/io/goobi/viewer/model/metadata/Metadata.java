@@ -48,8 +48,6 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
-import de.intranda.digiverso.normdataimporter.model.NormData;
-import de.intranda.digiverso.normdataimporter.model.Record;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.StringConstants;
@@ -567,6 +565,7 @@ public class Metadata implements Serializable {
                     break;
                 case NORMDATAURI:
                     if (StringUtils.isNotEmpty(value)) {
+
                         String normDataType = MetadataGroupType.OTHER.name();
                         // Use the last part of NORM_URI_* field name as the normdata type
                         if (param.getKey() != null) {
@@ -577,18 +576,9 @@ public class Metadata implements Serializable {
                                 if (options != null && options.get(FIELD_NORM_TYPE) != null) {
                                     // Try local NORM_TYPE value, if given
                                     normDataType = MetadataTools.findMetadataGroupType(options.get(FIELD_NORM_TYPE));
-                                } else if (!value.contains("viaf.org")) { // TODO remove this temporary fix eventually
-                                    // Fetch authority data record and determine norm data set type from gndspec field 075$b
-                                    Record authorityRecord = MetadataTools.getAuthorityDataRecord(value);
-                                    if (authorityRecord != null && !authorityRecord.getNormDataList().isEmpty()) {
-                                        for (NormData normData : authorityRecord.getNormDataList()) {
-                                            if (FIELD_NORM_TYPE.equals(normData.getKey())) {
-                                                String normVal = normData.getValues().get(0).getText();
-                                                normDataType = MetadataTools.findMetadataGroupType(normVal);
-                                                break;
-                                            }
-                                        }
-                                    }
+                                } else if (!value.contains("viaf.org")) {
+                                    //set the type to "unknown" to be determined when fetching the normdata record
+                                    normDataType = "unknown";
                                 }
                             }
                         }
@@ -707,7 +697,7 @@ public class Metadata implements Serializable {
         Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(field);
         for (String s : valueSplit) {
             if (sbFullValue.length() > 0) {
-                sbFullValue.append(" > ");
+                sbFullValue.append(" <span class=\"hierarchy-separator\" aria-hidden=\"true\"></span> ");
             }
             if (sbHierarchy.length() > 0) {
                 sbHierarchy.append('.');

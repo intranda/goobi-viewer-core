@@ -29,7 +29,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -106,6 +105,28 @@ public final class AccessConditionUtils {
     public static AccessPermission checkAccess(HttpSession session, String action, String pi, String contentFileName, String ipAddress,
             boolean isThumbnail)
             throws IndexUnreachableException, DAOException {
+        return checkAccess(session, action, pi, contentFileName, ipAddress, isThumbnail, null);
+    }
+
+    /**
+     * <p>
+     * checkAccess.
+     * </p>
+     *
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
+     * @param action a {@link java.lang.String} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param contentFileName a {@link java.lang.String} object.
+     * @param ipAddress
+     * @param isThumbnail a boolean.
+     * @param user the User requesting access. If null, it is fetched from the jsfContext if one exists
+     * @return {@link AccessPermission}
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public static AccessPermission checkAccess(HttpSession session, String action, String pi, String contentFileName, String ipAddress,
+            boolean isThumbnail, User user)
+            throws IndexUnreachableException, DAOException {
         if (session == null) {
             throw new IllegalArgumentException("session may not be null");
         }
@@ -121,7 +142,7 @@ public final class AccessConditionUtils {
             case "application":
                 if ("pdf".equalsIgnoreCase(FilenameUtils.getExtension(contentFileName))) {
                     return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName,
-                            IPrivilegeHolder.PRIV_DOWNLOAD_PDF, ipAddress);
+                            IPrivilegeHolder.PRIV_DOWNLOAD_PDF, ipAddress, user);
                 }
                 if (isThumbnail) {
                     return checkAccessPermissionForThumbnail(session, pi, contentFileName, ipAddress);
@@ -132,22 +153,22 @@ public final class AccessConditionUtils {
             case "text":
             case "ocrdump":
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                        ipAddress);
+                        ipAddress, user);
             case "pdf":
             case "epub":
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
-                        ipAddress);
+                        ipAddress, user);
             case "video":
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_VIDEO,
-                        ipAddress);
+                        ipAddress, user);
             case "audio":
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_AUDIO,
-                        ipAddress);
+                        ipAddress, user);
             case "dimensions":
             case "version":
                 // TODO is priv checking needed here?
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES,
-                        ipAddress);
+                        ipAddress, user);
             default: // nothing
                 break;
         }
@@ -275,7 +296,7 @@ public final class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     static Map<String, AccessPermission> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
-            String ipAddress, HttpSession session) throws IndexUnreachableException, DAOException {
+            String ipAddress, HttpSession session, User user) throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, privilegeName); //NOSONAR Debug
         if (StringUtils.isEmpty(identifier)) {
             return Collections.emptyMap();
@@ -307,19 +328,12 @@ public final class AccessConditionUtils {
                 }
             }
 
-            User user = BeanUtils.getUserFromSession(session);
-            if (user == null) {
-                UserBean userBean = BeanUtils.getUserBean();
-                if (userBean != null) {
-                    user = userBean.getUser();
-                }
-            }
-
             Map<String, AccessPermission> ret = HashMap.newHashMap(requiredAccessConditions.size());
             for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
                 Set<String> pageAccessConditions = entry.getValue();
                 AccessPermission access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
-                        privilegeName, user, ipAddress, ClientApplicationManager.getClientFromSession(session), query);
+                        privilegeName, user == null ? retrieveUserFromContext(session) : user, ipAddress,
+                        ClientApplicationManager.getClientFromSession(session), query);
                 ret.put(entry.getKey(), access);
             }
             return ret;
@@ -327,6 +341,21 @@ public final class AccessConditionUtils {
             logger.debug(e.getMessage());
             return Collections.emptyMap();
         }
+    }
+
+    private static User retrieveUserFromContext(HttpSession session) {
+        User user = BeanUtils.getUserFromSession(session);
+        if (user == null) {
+            try {
+                UserBean userBean = BeanUtils.getUserBean();
+                if (userBean != null) {
+                    user = userBean.getUser();
+                }
+            } catch (ContextNotActiveException e) {
+                logger.warn("Failed to retrieve userBean: No jsf context available");
+            }
+        }
+        return user;
     }
 
     /**
@@ -712,7 +741,26 @@ public final class AccessConditionUtils {
     public static AccessPermission checkAccessPermissionForImage(HttpSession session, String pi, String contentFileName, String ipAddress)
             throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionForImage: {}/{}", pi, contentFileName); //NOSONAR Debug
-        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES, ipAddress);
+        return checkAccessPermissionForImage(session, pi, contentFileName, ipAddress, null);
+    }
+
+    /**
+     * Checks access permission for the given image and puts the permission status into the corresponding session map.
+     *
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param contentFileName a {@link java.lang.String} object.
+     * @param ipAddress
+     * @param user the user requesting permission. If null, it is fetchted from the jsf context if it exists
+     * @return {@link AccessPermission}
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public static AccessPermission checkAccessPermissionForImage(HttpSession session, String pi, String contentFileName, String ipAddress, User user)
+            throws IndexUnreachableException, DAOException {
+        // logger.trace("checkAccessPermissionForImage: {}/{}", pi, contentFileName); //NOSONAR Debug
+        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES, ipAddress,
+                user);
     }
 
     /**
@@ -728,8 +776,26 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermissionForThumbnail(HttpSession session, String pi, String contentFileName, String ipAddress)
             throws IndexUnreachableException, DAOException {
+        return checkAccessPermissionForThumbnail(session, pi, contentFileName, ipAddress, null);
+    }
+
+    /**
+     * Checks access permission for the given thumbnail and puts the permission status into the corresponding session map.
+     *
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
+     * @param pi a {@link java.lang.String} object.
+     * @param contentFileName a {@link java.lang.String} object.
+     * @param ipAddress
+     * @param user the user requesting permission. If null, it is fetchted from the jsf context if it exists
+     * @return {@link AccessPermission}
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public static AccessPermission checkAccessPermissionForThumbnail(HttpSession session, String pi, String contentFileName, String ipAddress,
+            User user)
+            throws IndexUnreachableException, DAOException {
         return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName,
-                IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, ipAddress);
+                IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, ipAddress, user);
     }
 
     /**
@@ -764,6 +830,24 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermissionByIdentifierAndFilePathWithSessionMap(HttpServletRequest request, String filePath,
             String privilegeType) throws IndexUnreachableException, DAOException {
+        return checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, filePath, privilegeType, null);
+    }
+
+    /**
+     * <p>
+     * checkAccessPermissionByIdentifierAndFilePathWithSessionMap.
+     * </p>
+     *
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param filePath FILENAME_ALTO or FILENAME_FULLTEXT value
+     * @param privilegeType a {@link java.lang.String} object.
+     * @param user the user requesting permission. If null, it is fetchted from the jsf context if it exists
+     * @return {@link AccessPermission}
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public static AccessPermission checkAccessPermissionByIdentifierAndFilePathWithSessionMap(HttpServletRequest request, String filePath,
+            String privilegeType, User user) throws IndexUnreachableException, DAOException {
         if (filePath == null) {
             throw new IllegalArgumentException("filePath may not be null");
         }
@@ -773,7 +857,7 @@ public final class AccessConditionUtils {
         }
 
         return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, filePathSplit[1],
-                filePathSplit[2], privilegeType, NetTools.getIpAddress(request));
+                filePathSplit[2], privilegeType, NetTools.getIpAddress(request), user);
     }
 
     /**
@@ -791,6 +875,26 @@ public final class AccessConditionUtils {
     @SuppressWarnings("unchecked")
     public static AccessPermission checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpSession session, String pi,
             String contentFileName, String privilegeType, String ipAddress) throws IndexUnreachableException, DAOException {
+        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, privilegeType, ipAddress, null);
+    }
+
+    /**
+     * Checks access permission of the given privilege type for the given image and puts the permission status into the corresponding session map.
+     * 
+     * @param session {@link HttpSession}
+     * @param pi a {@link java.lang.String} object.
+     * @param contentFileName a {@link java.lang.String} object.
+     * @param privilegeType a {@link java.lang.String} object.
+     * @param ipAddress
+     * @param user the {@link User} requesting access. May be null in which case the the method will attempt to retrieve the user from the
+     *            {@link UserBean}, given an existing jsfContext
+     * @return {@link AccessPermission}
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    @SuppressWarnings("unchecked")
+    public static AccessPermission checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpSession session, String pi,
+            String contentFileName, String privilegeType, String ipAddress, User user) throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType); //NOSONAR Debug
         if (privilegeType == null) {
             throw new IllegalArgumentException("privilegeType may not be null");
@@ -823,7 +927,7 @@ public final class AccessConditionUtils {
         }
         // TODO check for all images and save to map
         Map<String, AccessPermission> accessMap =
-                checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, ipAddress, session);
+                checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, ipAddress, session, user);
         for (Entry<String, AccessPermission> entry : accessMap.entrySet()) {
             String newKey = new StringBuilder(pi).append('_').append(entry.getKey()).toString();
             AccessPermission pageAccess = entry.getValue();
@@ -1368,12 +1472,26 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission getAccessPermission(String pi, String fileName, String privilegeName)
             throws IndexUnreachableException, DAOException {
+        return getAccessPermission(pi, fileName, privilegeName, null);
+    }
+
+    /**
+     * @param pi
+     * @param fileName
+     * @param privilegeName
+     * @param user The user requesting access. If null it is retrieved from the jsfContext if available
+     * @return {@link AccessPermission}
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public static AccessPermission getAccessPermission(String pi, String fileName, String privilegeName, User user)
+            throws IndexUnreachableException, DAOException {
         HttpServletRequest request = null;
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         }
         return AccessConditionUtils
                 .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi, fileName,
-                        privilegeName, NetTools.getIpAddress(request));
+                        privilegeName, NetTools.getIpAddress(request), user);
     }
 }

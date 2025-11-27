@@ -26,11 +26,13 @@ popover {
 
 .popover {
 	z-index: 2020;
+	color: var(--fg-popover, @colorFonts);
+	background-color: var(--bg-popover, @white);
 	.popover-title-custom {
 		padding: 8px 14px;
 		margin: 0;
 		font-size: 14px;
-		background-color: #f7f7f7;
+		background-color: var(--bg-popover, @white);
 		border-bottom: 1px solid #ebebeb;
 		border-radius: 5px 5px 0 0;
 	}

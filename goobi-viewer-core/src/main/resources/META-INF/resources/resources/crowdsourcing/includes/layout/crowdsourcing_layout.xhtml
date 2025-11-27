@@ -30,7 +30,11 @@
 
                 <!-- PAGE HEADER TOP BRAND -->            
                 <div class="crowdsourcing-annotations__top-brand">
-                    <a href="#{request.contextPath}/" target="_self" rel="noopener">#{adminThemesBean.getThemeLabel(configurationBean.name)}</a> › <a href="#{request.contextPath}/campaigns/" target="_self" rel="noopener">#{msg.campaigns}</a>
+                    <a href="#{request.contextPath}/" 
+                        target="_self" 
+                        rel="noopener">#{adminThemesBean.getThemeLabel(configurationBean.name)}</a> 
+                        <util:icon icon="chevron-right" /> 
+                        <a href="#{request.contextPath}/campaigns/" target="_self" rel="noopener">#{msg.campaigns}</a>
                 </div>
                 
                 <!-- PAGE HEADER TOP CAMPAIGN TITLE -->            

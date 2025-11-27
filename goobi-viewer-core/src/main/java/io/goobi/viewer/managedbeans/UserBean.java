@@ -127,13 +127,15 @@ public class UserBean implements Serializable {
     private String transkribusUserName;
     private String transkribusPassword;
     private Boolean hasAdminBackendAccess;
+    private HttpSession session;
 
     /**
      * Empty constructor.
      */
     public UserBean() {
-        // the emptiness inside
+        logger.trace("User bean instatiated: {}", this);
         this.authenticationProvider = getLocalAuthenticationProvider();
+        this.session = BeanUtils.getSession();
     }
 
     /**
@@ -325,7 +327,7 @@ public class UserBean implements Serializable {
         if ("#".equals(this.redirectUrl)) {
             this.redirectUrl = buildRedirectUrl();
         }
-        logger.trace("login: {}", Thread.currentThread().threadId());
+        logger.trace("login: {}", this);
         if (provider != null) {
             try {
                 // Set provider so it can be accessed from outsde
@@ -358,11 +360,11 @@ public class UserBean implements Serializable {
      * @throws IllegalStateException
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
-        logger.debug("completeLogin: {}", Thread.currentThread().threadId());
+        logger.debug("completeLogin: {}", this);
         // Results from a redirection endpoint will contain the wrong request/response objects
         HttpServletResponse response = provider instanceof HttpAuthenticationProvider ? BeanUtils.getResponse() : result.getResponse();
         HttpServletRequest request = provider instanceof HttpAuthenticationProvider ? BeanUtils.getRequest() : result.getRequest();
-        HttpSession session = request != null ? request.getSession(false) : null;
+        // HttpSession session = request != null ? request.getSession(false) : null;
         try {
             Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
             if (result.isRefused()) {
@@ -395,7 +397,6 @@ public class UserBean implements Serializable {
                     }
 
                     BeanUtils.wipeSessionAttributes(session);
-
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
                     u.setLastLogin(LocalDateTime.now());
@@ -490,12 +491,13 @@ public class UserBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
+     * @throws IOException
      */
-    public String logout() throws AuthenticationProviderException {
+    public String logout() throws AuthenticationProviderException, IOException {
         logger.trace("logout");
 
         HttpServletRequest request = BeanUtils.getRequest();
-        String url = redirect(request);
+        String url = getRedirectUrl(request); // do this before resetting session
 
         if (user != null) {
             user.setTranskribusSession(null);
@@ -519,8 +521,16 @@ public class UserBean implements Serializable {
         } catch (ServletException e) {
             logger.error(e.getMessage(), e);
         }
-        HttpSession session = request.getSession(false);
-        session.invalidate();
+        session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        // Actively redirect to outcome URL, because the loaded record is unloaded at this point
+        if (StringUtils.isNotEmpty(url)) {
+            doRedirect(BeanUtils.getResponse(), url);
+        }
+
         return url;
     }
 
@@ -528,7 +538,7 @@ public class UserBean implements Serializable {
      * @param request
      * @return Redirect outcome
      */
-    private String redirect(HttpServletRequest request) {
+    private String getRedirectUrl(HttpServletRequest request) {
         Optional<ViewerPath> oCurrentPath = ViewHistory.getCurrentView(request);
         if (StringUtils.isNotEmpty(redirectUrl)) {
             if ("#".equals(redirectUrl)) {
@@ -550,7 +560,7 @@ public class UserBean implements Serializable {
                 return "pretty:index";
             }
             logger.trace("Redirecting to current url {}", currentPath.getCombinedPrettyfiedUrl());
-            return currentPath.getCombinedPrettyfiedUrl();
+            return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + currentPath.getCombinedPrettyfiedUrl();
         } else {
             // IF ViewerPath is unavailable, extract URI via PrettyContext
             PrettyContext prettyContext = PrettyContext.getCurrentInstance(request);
@@ -1341,8 +1351,9 @@ public class UserBean implements Serializable {
      *
      * @param messageKey a {@link java.lang.String} object
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
+     * @throws IOException
      */
-    public void logoutWithMessage(String messageKey) throws AuthenticationProviderException {
+    public void logoutWithMessage(String messageKey) throws AuthenticationProviderException, IOException {
         this.logout();
         Messages.info(messageKey);
 

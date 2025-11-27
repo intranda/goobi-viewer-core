@@ -257,6 +257,35 @@ public final class SearchHelper {
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
             boolean keepSolrDoc, int proximitySearchDistance) throws PresentationException, IndexUnreachableException, DAOException {
+        return searchWithFulltext(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, keepSolrDoc,
+                proximitySearchDistance, null);
+    }
+
+    /**
+     * Main search method for flat search.
+     *
+     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
+     * @param first {@link java.lang.Integer} von
+     * @param rows {@link java.lang.Integer} bis
+     * @param sortFields a {@link java.util.List} object.
+     * @param resultFields a {@link java.util.List} object.
+     * @param filterQueries a {@link java.util.List} object.
+     * @param params a {@link java.util.Map} object.
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param exportFields a {@link java.util.List} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @param keepSolrDoc
+     * @param proximitySearchDistance
+     * @param user The user performing the search. Used for calculating thumbnail access conditions. If null, it is fetched from the jsfContext if one
+     *            exists
+     * @return List of <code>StructElement</code>s containing the search hits.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
+            boolean keepSolrDoc, int proximitySearchDistance, User user) throws PresentationException, IndexUnreachableException, DAOException {
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
@@ -271,7 +300,7 @@ public final class SearchHelper {
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         int count = first;
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
-        SearchHitFactory factory = new SearchHitFactory(searchTerms, sortFields, exportFields, proximitySearchDistance, thumbs, locale);
+        SearchHitFactory factory = new SearchHitFactory(searchTerms, sortFields, exportFields, proximitySearchDistance, thumbs, locale).setUser(user);
         for (SolrDocument doc : resp.getResults()) {
             logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
             String fulltext = null;
@@ -361,6 +390,39 @@ public final class SearchHelper {
             List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
             List<String> exportFields, String additionalMetadataListType, Locale locale, boolean keepSolrDoc, int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        return searchWithAggregation(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields,
+                additionalMetadataListType, locale, keepSolrDoc, proximitySearchDistance, null);
+    }
+
+    /**
+     * Main search method for aggregated search.
+     *
+     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
+     * @param first {@link java.lang.Integer} First hit index
+     * @param rows {@link java.lang.Integer} Number of hits to return
+     * @param sortFields a {@link java.util.List} object.
+     * @param resultFields a {@link java.util.List} object.
+     * @param filterQueries a {@link java.util.List} object.
+     * @param params a {@link java.util.Map} object.
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param exportFields a {@link java.util.List} object.
+     * @param additionalMetadataListType Optional addtional metadata list type, to be used on alternative search hit views, etc.
+     * @param locale a {@link java.util.Locale} object.
+     * @param keepSolrDoc
+     * @param proximitySearchDistance
+     * @param user The user performing the search. Used for calculating thumbnail access conditions. If null, it is fetched from the jsfContext if one
+     *            exists
+     * @return List of <code>StructElement</code>s containing the search hits.
+     * @should return all hits
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields,
+            List<String> resultFields, List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms,
+            List<String> exportFields, String additionalMetadataListType, Locale locale, boolean keepSolrDoc, int proximitySearchDistance, User user)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (query != null) {
             String s = query.replaceAll("[\n\r]", "_");
             logger.trace("searchWithAggregation: {}", s);
@@ -378,6 +440,9 @@ public final class SearchHelper {
         SearchHitFactory factory = new SearchHitFactory(searchTerms, sortFields, exportFields, proximitySearchDistance, thumbs, locale);
         if (StringUtils.isNotBlank(additionalMetadataListType)) {
             factory.setAdditionalMetadataListType(additionalMetadataListType);
+        }
+        if (user != null) {
+            factory.setUser(user);
         }
 
         int count = first;
@@ -751,7 +816,7 @@ public final class SearchHelper {
                 sbQuery.append(filterQuery);
             }
             if (filterForWhitelist) {
-                if (sbQuery.length() > 0) {
+                if (!sbQuery.isEmpty()) {
                     sbQuery.append(SolrConstants.SOLR_QUERY_AND);
                 }
                 sbQuery.append("+(").append(getDocstrctWhitelistFilterQuery()).append(')');
@@ -767,14 +832,15 @@ public final class SearchHelper {
             FacetField facetResults = null;
             FacetField groupResults = null;
             List<String> facetFields = new ArrayList<>();
-            facetFields.add(luceneField);
+            String facetField = facetifyField(luceneField);
+            facetFields.add(facetField);
             if (StringUtils.isNotBlank(groupingField)) {
                 facetFields.add(groupingField);
             }
             QueryResponse response = DataManager.getInstance()
                     .getSearchIndex()
                     .searchFacetsAndStatistics(sbQuery.toString(), null, facetFields, 1, false);
-            facetResults = response.getFacetField(luceneField);
+            facetResults = response.getFacetField(facetField);
             groupResults = response.getFacetField(groupingField);
 
             Map<String, CollectionResult> ret = createCollectionResults(facetResults, splittingChar);
@@ -801,6 +867,9 @@ public final class SearchHelper {
         Map<String, CollectionResult> ret = new HashMap<>();
 
         Set<String> counted = new HashSet<>();
+        if (facetResults == null) {
+            return ret;
+        }
         for (Count count : facetResults.getValues()) {
             String dc = count.getName();
             // Skip inverted values

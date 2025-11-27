@@ -237,6 +237,18 @@
     }
 }
 
+.hierarchy-separator {
+	display: inline-block;
+	width: 1.2rem;
+	height: 1.2rem;
+	vertical-align: middle;
+	margin: 0 0.5rem;
+	background-color: currentColor;
+	transform: translateY(-0.05em);
+	mask: url("../../icons/outline/chevron-right.svg") center/100% 100% no-repeat;
+	-webkit-mask: url("../../icons/outline/chevron-right.svg") center/100% 100% no-repeat;
+}
+
 /* DOWNLOADS */
 #viewMetadataDownloads {
     margin-bottom: 1.3125rem;
@@ -307,6 +319,11 @@
 			&.level-2 {
 			}
 		}
+	}
+
+	.hierarchy-separator {
+		mask: url("../../icons/outline/chevron-left.svg") center/100% 100% no-repeat;
+		-webkit-mask: url("../../icons/outline/chevron-left.svg") center/100% 100% no-repeat;
 	}
 }
 
