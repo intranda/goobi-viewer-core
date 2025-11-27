@@ -96,12 +96,6 @@ public class CollectionViewBean implements Serializable {
         return getCollection(content, content.getCollectionName());
     }
 
-    @Deprecated(since = "24.08")
-    public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
-            boolean ignoreHierarchy) throws PresentationException, IndexUnreachableException, IllegalRequestException {
-        return getCollection(content);
-    }
-
     /**
      * <p>
      * getCollection.
@@ -138,12 +132,6 @@ public class CollectionViewBean implements Serializable {
 
         }
         return collection;
-    }
-
-    @Deprecated(since = "24.08")
-    public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
-            boolean ignoreHierarchy, String topVisibleElement) throws PresentationException, IndexUnreachableException, IllegalRequestException {
-        return getCollection(content, topVisibleElement);
     }
 
     /**
@@ -195,12 +183,6 @@ public class CollectionViewBean implements Serializable {
     private boolean removeCollection(String myId) {
         this.collectionStatistics.remove(myId);
         return collections.remove(myId) != null;
-    }
-
-    @Deprecated(since = "24.08")
-    public CollectionView initializeCollection(CMSCollectionContent content, int numBaseLevels, boolean openExpanded, boolean displayParents,
-            boolean ignoreHierarchy, String topVisibleElement) throws PresentationException, IllegalRequestException, IndexUnreachableException {
-        return initializeCollection(content, topVisibleElement);
     }
 
     /**
@@ -259,7 +241,7 @@ public class CollectionViewBean implements Serializable {
                         .findFirst();
                 searchPage.ifPresent(p -> collection.setSearchUrl(p.getPageUrl()));
             } catch (DAOException e) {
-                logger.debug("Error getting subtheme search page: " + e.toString());
+                logger.debug("Error getting subtheme search page: {}", e.toString());
             }
         }
         return collection;
