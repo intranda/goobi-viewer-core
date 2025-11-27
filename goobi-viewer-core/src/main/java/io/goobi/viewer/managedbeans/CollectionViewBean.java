@@ -378,7 +378,7 @@ public class CollectionViewBean implements Serializable {
 
     /**
      * get a list of all {@link io.goobi.viewer.model.viewer.collections.CollectionView}s with the given solr field which are already loaded via
-     * {@link #getCollection(CMSCollectionContent, int, boolean, boolean, boolean)}.
+     * {@link #getCollection(CMSCollectionContent)}.
      *
      * @param field The solr field the collection is based on
      * @return a {@link java.util.List} object.
