@@ -81,7 +81,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(CMSSidebarWidgetsBean.class);
 
-    public static final int MAX_DESCRIPTION_LENGTH = 40;
+    public static final int MAX_DESCRIPTION_LENGTH = Integer.MAX_VALUE;
 
     @Inject
     private CmsBean cmsBean;
