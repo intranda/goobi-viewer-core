@@ -84,11 +84,26 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         {
             SearchQueryItem item = new SearchQueryItem();
             item.setField("DOCSTRCT"); // selected field must be configured in a way that will return SolrQueryItem.isDisplaySelectItems() == true
-            item.getValues().add("foo bar");
-            item.getValues().add("lorem ipsum");
+            item.getLines().get(0).getValues().add("foo bar");
+            item.getLines().get(0).getValues().add("lorem ipsum");
             Set<String> searchTerms = new HashSet<>(0);
             Assertions.assertEquals("+(DOCSTRCT:\"foo bar\" DOCSTRCT:\"lorem ipsum\")", item.generateQuery(searchTerms, true, false));
             Assertions.assertTrue(searchTerms.isEmpty());
+        }
+        // Multiple lines
+        {
+            SearchQueryItem item = new SearchQueryItem();
+            Assertions.assertTrue(item.addNewLine(0));
+            item.setField("MD_FOO"); // selected field must be configured in a way that will return SolrQueryItem.isDisplaySelectItems() == true
+            item.getLines().get(0).getValues().add("foo bar");
+            item.getLines().get(1).getValues().add("lorem ipsum");
+            Set<String> searchTerms = new HashSet<>(0);
+            Assertions.assertEquals("+((MD_FOO:(foo AND bar)) (MD_FOO:(lorem AND ipsum)))", item.generateQuery(searchTerms, true, false));
+            Assertions.assertTrue(searchTerms.isEmpty());
+            
+            item.getLines().get(0).setOperator(SearchItemOperator.AND);
+            item.getLines().get(1).setOperator(SearchItemOperator.AND);
+            Assertions.assertEquals("+(+(MD_FOO:(foo AND bar)) +(MD_FOO:(lorem AND ipsum)))", item.generateQuery(searchTerms, true, false));
         }
     }
 
@@ -196,7 +211,7 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.setValue(" 1900 ");
         item.setValue2(" 2020 ");
         Assertions.assertEquals("+(MD_YEARPUBLISH:([1900 TO 2020]))", item.generateQuery(new HashSet<>(), true, false));
-        
+
         item = new SearchQueryItem();
         item.setField("MD_YEARPUBLISH");
         item.setValue(" -1500 ");
