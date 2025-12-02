@@ -162,6 +162,7 @@
 			border: none;
 			box-shadow: none;
 			transition: transform .18s ease, filter .18s ease, color .18s ease;
+
 			&:hover,
 			&:focus {
 				color: var(--search-option-color);
@@ -170,7 +171,12 @@
 					filter: drop-shadow(0 3px 8px fade(@black, 18%));
 				}
 			}
-			
+
+			&:focus-visible {
+				outline: 2px solid var(--search-option-outline);
+				outline-offset: 2px;
+			}
+
 			.icon-wrapper {
 				line-height: 0;
 				display: inline-flex;
@@ -179,6 +185,7 @@
 				width: var(--search-option-icon-size);
 				height: var(--search-option-icon-size);
 				transition: transform .18s ease, filter .18s ease;
+
 				svg {
 					display: block;
 					width: 100%;
@@ -186,62 +193,37 @@
 					stroke-width: 1.6;
 					transition: transform .18s ease;
 				}
-				
+			}
+
+			&.active,
+			&.-active,
+			&.is-modal-trigger-open {
+				background-color: var(--search-option-bg-active);
+				color: var(--search-option-color-active);
+				box-shadow: var(--search-option-shadow-active, none);
+				transform: none;
+
+				.icon-wrapper {
+					transform: none;
+					filter: none;
+
+					svg {
+						stroke: currentColor;
+					}
+				}
+
+				&:hover,
+				&:focus {
+					background-color: var(--search-option-bg-active);
+					color: var(--search-option-color-active);
+				}
 			}
 		}
-	}
 
-	&__views .btn.btn--icon.active,
-	&__toggle-thumbs .btn.btn--icon.-active,
-	&__help .btn.btn--icon.is-modal-trigger-open,
-	&__save-search .btn.btn--icon.is-modal-trigger-open {
-		background-color: var(--search-option-bg-active);
-		color: var(--search-option-color-active);
-		box-shadow: var(--search-option-shadow-active, none);
-		transform: none;
-	}
-
-	&__views .btn.btn--icon.active .icon-wrapper svg,
-	&__toggle-thumbs .btn.btn--icon.-active .icon-wrapper svg,
-	&__help .btn.btn--icon.is-modal-trigger-open .icon-wrapper svg,
-	&__save-search .btn.btn--icon.is-modal-trigger-open .icon-wrapper svg {
-		stroke: currentColor;
-	}
-	&__views .btn.btn--icon.active .icon-wrapper,
-	&__toggle-thumbs .btn.btn--icon.-active .icon-wrapper,
-	&__help .btn.btn--icon.is-modal-trigger-open .icon-wrapper,
-	&__save-search .btn.btn--icon.is-modal-trigger-open .icon-wrapper {
-		transform: none;
-		filter: none;
-	}
-
-	&__views .btn.btn--icon.active:hover,
-	&__views .btn.btn--icon.active:focus,
-	&__toggle-thumbs .btn.btn--icon.-active:hover,
-	&__toggle-thumbs .btn.btn--icon.-active:focus,
-	&__help .btn.btn--icon.is-modal-trigger-open:hover,
-	&__help .btn.btn--icon.is-modal-trigger-open:focus,
-	&__save-search .btn.btn--icon.is-modal-trigger-open:hover,
-	&__save-search .btn.btn--icon.is-modal-trigger-open:focus {
-		background-color: var(--search-option-bg-active);
-		color: var(--search-option-color-active);
-	}
-
-	&__views .btn.btn--icon:focus-visible,
-	&__toggle-thumbs .btn.btn--icon:focus-visible,
-	&__excel-export .btn.btn--icon:focus-visible,
-	&__ris-export .btn.btn--icon:focus-visible,
-	&__rss .btn.btn--icon:focus-visible,
-	&__save-search .btn.btn--icon:focus-visible,
-	&__help .btn.btn--icon:focus-visible {
-		outline: 2px solid var(--search-option-outline);
-		outline-offset: 2px;
-	}
-
-	&__help span[data-toggle="tooltip"],
-	&__save-search span[data-toggle="tooltip"] {
-		display: inline-flex;
-		align-items: center;
+		span[data-toggle="tooltip"] {
+			display: inline-flex;
+			align-items: center;
+		}
 	}
 	/* CURRENT SEARCH */
 	&__label {
