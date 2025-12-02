@@ -96,14 +96,16 @@
 // STYLEGUIDE
 
 /* LOGIN NAV (e.g. in /archives) */
-@loginNavBG: #444;
-@loginNavBGHover: #5e5e5e;
-@loginNavFG: #fff;
-@loginNavFGHover: #fff;
-@loginNavBookmarksBG: #3a3a3a;
-@loginNavBookmarksFG: #fff;
-@loginNavBookmarksFGHover: #ffd65b;
-@loginNavBookmarksCounterBG: #3365a9;
+@loginNavBG: var(--login-nav-bg, #444);
+@loginNavBGHover: var(--login-nav-bg-hover, #5e5e5e);
+@loginNavFG: var(--login-nav-fg, #fff);
+@loginNavFGHover: var(--login-nav-fg-hover, #fff);
+@loginNavIcon: var(--login-nav-icon, #fff);
+@loginNavIconHover: var(--login-nav-icon-hover, #fff);
+@loginNavBookmarksBG: var(--login-nav-bookmarks-bg, #3a3a3a);
+@loginNavBookmarksFG: var(--login-nav-bookmarks-fg, #fff);
+@loginNavBookmarksFGHover: var(--login-nav-bookmarks-fg-hover, #ffd65b);
+@loginNavBookmarksCounterBG: var(--login-nav-bookmarks-counter-bg, #3365a9);
 
 /* LABELS */
 @labelGray: #444;
