@@ -363,16 +363,21 @@
 																	</h:panelGroup>
 																	<h:panelGroup rendered="#{configurationBean.generatePdfInMessageQueue}">
 																		<li>
-																			<a
-																				href="#"
-																				class="download-modal"
-																				data-type="pdf"
-																				data-title="#{tocElement.label}"
-																				data-id="#{tocElement.logId}"
-																				data-pi="#{tocElement.topStructPi}"
-																				title="#{msg.label__pdf_download}">
-																				<util:icon icon="file-type-pdf" />
-																			</a>
+								                                          <button
+								                                            type="button"
+								                                            data-toggle="modal"
+								                                            data-target="#downloadModal"
+								                                          >
+								                                            <util:icon-text
+								                                              icon="file-type-pdf"
+								                                              text="#{msg.label__pdf_download}"
+								                                            />
+								                                          </button>
+								                                          <viewerComponent:modalDownload
+								                                            logId="#{tocElement.logId}"
+								                                            title="#{tocElement.label}"
+								                                            fileSize="#{activeDocumentBean.getPdfSize(tocElement.logId)}"
+								                                          />
 																		</li>
 																	</h:panelGroup>
 																</h:panelGroup>
