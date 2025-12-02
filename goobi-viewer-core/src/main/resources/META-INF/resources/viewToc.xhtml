@@ -364,20 +364,14 @@
 																	<h:panelGroup rendered="#{configurationBean.generatePdfInMessageQueue}">
 																		<li>
 								                                          <button
-								                                            type="button"
-								                                            data-toggle="modal"
-								                                            data-target="#downloadModal"
-								                                          >
-								                                            <util:icon-text
-								                                              icon="file-type-pdf"
-								                                              text="#{msg.label__pdf_download}"
-								                                            />
-								                                          </button>
-								                                          <viewerComponent:modalDownload
-								                                            logId="#{tocElement.logId}"
-								                                            title="#{tocElement.label}"
-								                                            fileSize="#{activeDocumentBean.getPdfSize(tocElement.logId)}"
-								                                          />
+									                                            jsf:action="#{viewBean.put('title', tocElement.label).put('logId', tocElement.logId).put('fileSize', activeDocumentBean.getPdfSize(tocElement.logId))}"
+									                                          >
+									                                            <util:icon-text
+									                                              icon="file-type-pdf"
+									                                              text="#{msg.label__pdf_download}"
+									                                            />
+									                                            <f:ajax render="modalDownloadWrapper" onevent="data => {if(data.status == 'success') $('#downloadModal').modal()}"/>
+									                                      </button>
 																		</li>
 																	</h:panelGroup>
 																</h:panelGroup>
