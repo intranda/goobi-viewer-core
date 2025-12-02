@@ -631,7 +631,6 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should not add more facets if field value combo already in current facets
      * @should not replace obsolete facets with duplicates
      * @should remove facets that are not matched among query items
-     * @should put item sequences with the same field into common parentheses
      */
     String generateAdvancedSearchMainQuery() {
         logger.trace("generateAdvancedSearchMainQuery");
@@ -818,38 +817,12 @@ public class SearchBean implements SearchInterface, Serializable {
                     sbInfo.append(')');
                 }
 
-                // Add item query part to the group query
-                //                if (item.isSameFieldGroupStart() || item.isSameFieldGroupCopy()) {
-                //                    // Put a group of same-field items into a single query
-                //                    if (item.isSameFieldGroupStart()) {
-                //                        sbSameFieldGroup.append("+(");
-                //                    }
-                //                    if (!itemQuery.isEmpty()) {
-                //                        if (sbSameFieldGroup.length() > 2) {
-                //                            sbSameFieldGroup.append(' ');
-                //                        }
-                //                        // Hack for allowing OR-searches if AND is configured as the item's operator
-                //                        // (fields won't work properly if OR is configured and only one item exists)
-                //                        sbSameFieldGroup.append(itemQuery.startsWith("+") ? itemQuery.substring(1) : itemQuery);
-                //                    }
-                //                    if (item.isSameFieldGroupEnd()) {
-                //                        sbSameFieldGroup.append(")");
-                //                        if (sb.length() > 1) {
-                //                            sb.append(' ');
-                //                        }
-                //                        logger.debug("Query item group query: {}", sbSameFieldGroup);
-                //                        sb.append(sbSameFieldGroup);
-                //                        sbSameFieldGroup = new StringBuilder();
-                //                    }
-                //                } else {
-                // Single item query
                 if (!itemQuery.isEmpty()) {
                     if (sb.length() > 1) {
                         sb.append(' ');
                     }
                     sb.append(itemQuery);
                 }
-                //                }
             }
         }
 
