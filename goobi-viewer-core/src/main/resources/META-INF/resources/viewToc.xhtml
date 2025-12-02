@@ -36,6 +36,9 @@
                 <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
             </h:panelGroup>
             
+            <!-- TODO: use appropriate class and maybe styling -->
+            <div id="AJAXLoader" class="archives-tree__loader"></div>
+            
             <!-- No access ticket required or already unlocked -->
             <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
 			<div id="viewToc" class="view-toc">
@@ -291,21 +294,18 @@
 										                                        rendered="#{configurationBean.generatePdfInMessageQueue}"
 										                                      >
 										                                        <li>
+										                                        
+										                                        
 										                                          <button
-										                                            type="button"
-										                                            data-toggle="modal"
-										                                            data-target="#downloadModal"
+										                                            jsf:action="#{viewBean.put('title', tocElement.label).put('logId', tocElement.logId).put('fileSize', activeDocumentBean.getPdfSize(tocElement.logId))}"
 										                                          >
 										                                            <util:icon-text
 										                                              icon="file-type-pdf"
 										                                              text="#{msg.label__pdf_download}"
 										                                            />
+										                                            <f:ajax render="modalDownloadWrapper" onevent="data => {if(data.status == 'success') $('#downloadModal').modal()}"/>
 										                                          </button>
-										                                          <viewerComponent:modalDownload
-										                                            logId="#{tocElement.logId}"
-										                                            title="#{tocElement.label}"
-										                                            fileSize="#{activeDocumentBean.getPdfSize(tocElement.logId)}"
-										                                          />
+										                                          
 										                                        </li>
 										                                      </h:panelGroup>
 																	</h:panelGroup>
@@ -391,6 +391,14 @@
 			</div>
 			</ui:fragment>
 			
+			<h:panelGroup id="modalDownloadWrapper">
+				<viewerComponent:modalDownload
+	              logId="#{viewBean.get('logId')}"
+	              title="#{viewBean.get('title')}"
+	              fileSize="#{viewBean.get('fileSize')}"
+	            />
+			</h:panelGroup>
+			
             <!-- Access ticket required -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
             	<div class="access-ticket-info">
@@ -443,6 +451,8 @@
                 };
 
                 viewerJS.normdata.init( normdataConfig );
+                
+                
             </script>
 		</f:view>
 	</ui:define>

@@ -48,8 +48,9 @@ public abstract class StorageBean implements DataStorage, Serializable {
         return objects.get(key);
     }
 
-    public void put(String key, Object object) {
+    public StorageBean put(String key, Object object) {
         this.objects.put(key, object);
+        return this;
     }
 
     public boolean containsKey(String key) {

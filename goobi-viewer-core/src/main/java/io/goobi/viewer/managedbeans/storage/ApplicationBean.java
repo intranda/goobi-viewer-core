@@ -29,12 +29,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.omnifaces.cdi.Eager;
 
@@ -45,6 +39,11 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.update.DatabaseUpdater;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * Used for application wide storage of objects accessible to other managed objects
@@ -90,9 +89,10 @@ public class ApplicationBean implements DataStorage, Serializable {
         }
     }
 
-    public void put(String key, Object object) {
+    public ApplicationBean put(String key, Object object) {
         synchronized (map) {
             map.put(key, Pair.of(object, Instant.now()));
+            return this;
         }
     }
 
