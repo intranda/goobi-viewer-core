@@ -55,7 +55,7 @@
 	                            <!-- METS -->
 	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
 	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
+	                                    href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
 	                                    id="lidomets" 
 	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
 	                                    title="#{msg.metadata_dl_mets}"
@@ -85,7 +85,7 @@
 	                            <!-- LIDO -->
 	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[LIDO]}')}">
 	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
+	                                    href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
 	                                    id="lidomets" 
 	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
 	                                    title="#{msg.metadata_dl_lido}"
@@ -101,7 +101,7 @@
 	                            <!-- DENKXWEB -->
 	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DENKXWEB]}')}">
 	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.denkxwebResolverUrl}"
+	                                    href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
 	                                    id="denkxweb"
 	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
 	                                    title="#{msg.metadata_dl_denkxweb}"
@@ -117,7 +117,7 @@
 	                            <!-- DUBLINCORE -->
 	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DUBLINCORE]}')}">
 	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
+	                                    href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
 	                                    id="dublincorexml"
 	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
 	                                    title="#{msg.metadata_dl_dublincore}"

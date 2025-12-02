@@ -2,6 +2,11 @@
    Disclaimer Modal (sweet alerts)
    ==============================================================*/
 
+// Ensure SweetAlert2 container is above all other modals and elements
+.swal2-container {
+	z-index: 100000;
+}
+
 .swal2-popup.disclaimer-modal__alert {
 	width: 550px;
 	border-radius: .48rem;

@@ -81,6 +81,7 @@ import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
 import io.goobi.viewer.model.viewer.record.views.FileType;
@@ -528,8 +529,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @throws IndexUnreachableException
      */
     public AccessPermission getAccessPermission(String privilegeName) throws IndexUnreachableException, DAOException {
+        return getAccessPermission(privilegeName, null);
+    }
+
+    /**
+     * @param privilegeName
+     * @param user The User requesting access. If null, it is fetched from the jsfContext if one exists
+     * @return the accessPermissionAudio
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public AccessPermission getAccessPermission(String privilegeName, User user) throws IndexUnreachableException, DAOException {
         if (accessPermissionMap.get(privilegeName) == null) {
-            AccessPermission accessPermission = AccessConditionUtils.getAccessPermission(pi, fileName, privilegeName);
+            AccessPermission accessPermission = AccessConditionUtils.getAccessPermission(pi, fileName, privilegeName, user);
             if (accessPermission != null) {
                 accessPermissionMap.put(privilegeName, accessPermission);
             }

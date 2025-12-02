@@ -172,19 +172,6 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
-     * getTreeViewSidebar.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @Deprecated(since = "24.10")
-    public List<TOCElement> getTreeViewSidebar() {
-        // logger.trace("getTreeViewSidebar"); //NOSONAR Debug
-        return getTreeView();
-    }
-
-    /**
      *
      * @param group
      * @param visibleLevel

@@ -240,6 +240,7 @@ function getSequenceSettings(viewMode) {
 function getFittingMode(pageType) {
     switch((pageType || "").toLowerCase()) {
         case "viewfullscreen":
+        case "crowdsourcing":
             return "fixed";
         default:
             return "toWidth";

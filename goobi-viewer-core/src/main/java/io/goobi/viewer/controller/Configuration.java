@@ -4446,7 +4446,9 @@ public class Configuration extends AbstractConfiguration {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BaseHierarchicalConfiguration getZoomImageViewConfig(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("viewer.zoomImageView");
+        List<HierarchicalConfiguration<ImmutableNode>> configs = new ArrayList<>();
+        configs.addAll(getLocalConfigurationsAt("viewer.zoomImageView"));
+        configs.addAll(getConfig().configurationsAt("viewer.zoomImageView"));
 
         for (HierarchicalConfiguration<ImmutableNode> subConfig : configs) {
 
@@ -4466,6 +4468,7 @@ public class Configuration extends AbstractConfiguration {
 
             return (BaseHierarchicalConfiguration) subConfig;
         }
+
         throw new ViewerConfigurationException("Viewer config must define at least a generic <zoomImageView>");
     }
 
@@ -5378,34 +5381,6 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return urlString;
-    }
-
-    /**
-     * <p>
-     * getTaskManagerServiceUrl.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     * @deprecated currently unused since download jobs are handled via message queues
-     */
-    @Deprecated(since = "24.10")
-    public String getTaskManagerServiceUrl() {
-        return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "service";
-    }
-
-    /**
-     * <p>
-     * getTaskManagerRestUrl.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     * @deprecated jobs are no longs handled via TaskManager but via queues
-     */
-    @Deprecated(since = "24.10")
-    public String getTaskManagerRestUrl() {
-        return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "rest";
     }
 
     /**

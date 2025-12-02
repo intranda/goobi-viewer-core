@@ -114,25 +114,6 @@ public class DisclaimerBean implements Serializable {
     }
 
     /**
-     * Get the stored disclaimer to display on a viewer web-page. Do not use for modifications
-     *
-     * @return the cookie banner stored in the DAO
-     * @deprecated not needed if disclaimer is realized as a sweet alert which is created from {@link #getDisclaimerConfig()}
-     */
-    @Deprecated(since = "24.10")
-    public Disclaimer getDisclaimer() {
-        if (dao != null) {
-            try {
-                return Optional.ofNullable(dao.getDisclaimer()).orElse(new Disclaimer());
-            } catch (DAOException e) {
-                logger.error("Error retrieving disclaimer from dao: {}", e.toString());
-                return null;
-            }
-        }
-        return null;
-    }
-
-    /**
      * The configuration object for the disclaimer to be used by the viewerJS.disclaimerModal module
      * 
      * @return a json object

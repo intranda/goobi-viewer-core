@@ -309,18 +309,6 @@ public class CmsBean implements Serializable {
 
     /**
      * <p>
-     * forwardToCMSPage.
-     * </p>
-     *
-     * @deprecated This method only remains to avoid pages failing to load which still call this method
-     */
-    @Deprecated(since = "24.10")
-    public void forwardToCMSPage() {
-        //do nothing
-    }
-
-    /**
-     * <p>
      * getDefaultLocale.
      * </p>
      *

@@ -67,7 +67,6 @@ public final class DataManager {
 
     private static final Object LOCK = new Object();
 
-    private static final int THREAD_POOL_SIZE = 10;
 
     private static DataManager instance = null;
 
@@ -116,12 +115,6 @@ public final class DataManager {
     private UsageStatisticsRecorder usageStatisticsRecorder = null;
 
     private BearerTokenManager bearerTokenManager = null;
-
-    /**
-     * @deprecated apparently shut down but never used
-     */
-    @Deprecated(since = "24.10")
-    private ThreadPoolManager threadPoolManager = null;
 
     /**
      * <p>
@@ -620,17 +613,4 @@ public final class DataManager {
 
         return bearerTokenManager;
     }
-
-    /**
-     * @return {@link ThreadPoolManager}
-     * @deprecated apparently shut down but never used
-     */
-    @Deprecated(since = "24.10")
-    public synchronized ThreadPoolManager getThreadPoolManager() {
-        if (threadPoolManager == null) {
-            this.threadPoolManager = new ThreadPoolManager(THREAD_POOL_SIZE);
-        }
-        return threadPoolManager;
-    }
-
 }

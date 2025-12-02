@@ -647,20 +647,6 @@ public class ViewManager implements Serializable {
      * getCurrentMasterImageUrl.
      * </p>
      *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated(since = "24.10")
-    public String getCurrentMasterImageUrl() throws IndexUnreachableException, DAOException {
-        return getMasterImageUrl(Scale.MAX, getCurrentPage());
-    }
-
-    /**
-     * <p>
-     * getCurrentMasterImageUrl.
-     * </p>
-     *
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
      * @param page
      * @return a {@link java.lang.String} object.
@@ -907,34 +893,6 @@ public class ViewManager implements Serializable {
         }
 
         return format;
-    }
-
-    /**
-     * <p>
-     * getMasterImageUrlForDownload.
-     * </p>
-     *
-     * @param boxSizeInPixel
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated(since = "24.10")
-    public String getMasterImageUrlForDownload(String boxSizeInPixel) throws IndexUnreachableException, DAOException {
-        if (boxSizeInPixel == null) {
-            throw new IllegalArgumentException("boxSizeInPixel may not be null");
-        }
-
-        Scale scale;
-        if (boxSizeInPixel.equalsIgnoreCase(Scale.MAX_SIZE) || boxSizeInPixel.equalsIgnoreCase(Scale.FULL_SIZE)) {
-            scale = Scale.MAX;
-        } else if (boxSizeInPixel.matches("\\d{1,9}")) {
-            scale = new Scale.ScaleToBox(Integer.valueOf(boxSizeInPixel), Integer.valueOf(boxSizeInPixel));
-        } else {
-            throw new IllegalArgumentException("Not a valid size parameter: " + boxSizeInPixel);
-        }
-
-        return getMasterImageUrl(scale, getCurrentPage());
     }
 
     /**
@@ -2017,58 +1975,6 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * <p>
-     * getMetsResolverUrl.
-     * </p>
-     *
-     * @return METS resolver link
-     * @deprecated Use ViewManager.getSourceFileResolverUrl()
-     */
-    @Deprecated(since = "24.08")
-    public String getMetsResolverUrl() {
-        return getSourceFileResolverUrl();
-    }
-
-    /**
-     * <p>
-     * getLidoResolverUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl()
-     */
-    @Deprecated(since = "24.08")
-    public String getLidoResolverUrl() {
-        return getSourceFileResolverUrl();
-    }
-
-    /**
-     * <p>
-     * getDenkxwebResolverUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl()
-     */
-    @Deprecated(since = "24.08")
-    public String getDenkxwebResolverUrl() {
-        return getSourceFileResolverUrl();
-    }
-
-    /**
-     * <p>
-     * getDublinCoreResolverUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl()
-     */
-    @Deprecated(since = "24.08")
-    public String getDublinCoreResolverUrl() {
-        return getSourceFileResolverUrl();
-    }
-
-    /**
      * 
      * @return Source file resolver URL for the current record identifier
      */
@@ -3033,69 +2939,6 @@ public class ViewManager implements Serializable {
                         .append(SolrConstants.FILENAME_ALTO)
                         .append(":*")
                         .toString());
-    }
-
-    /**
-     * Default fulltext getter (with HTML escaping).
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @deprecated Use <code>PhysicalElement.getFullText()</code>
-     */
-    @Deprecated(since = "24.10")
-    public String getFulltext() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return getFulltext(true, null);
-    }
-
-    /**
-     * Returns the full-text for the current page, stripped of any included JavaScript.
-     *
-     * @param escapeHtml If true HTML tags will be escaped to prevent pseudo-HTML from breaking the text.
-     * @param language a {@link java.lang.String} object.
-     * @return Full-text for the current page.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @deprecated Use <code>PhysicalElement.getFullText()</code>
-     */
-    @Deprecated(since = "24.10")
-    public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
-        String currentFulltext = null;
-
-        // Current page fulltext
-
-        if (isDoublePageMode()) {
-            // Double page view
-            StringBuilder sb = new StringBuilder();
-            Optional<PhysicalElement> leftPage = getCurrentLeftPage();
-            if (leftPage.isPresent() && StringUtils.isNotEmpty(leftPage.get().getFullText())) {
-                sb.append(leftPage.get().getFullText());
-            }
-            Optional<PhysicalElement> rightPage = getCurrentRightPage();
-            if (rightPage.isPresent() && StringUtils.isNotEmpty(rightPage.get().getFullText())) {
-                if (sb.length() > 0) {
-                    sb.append("<hr />");
-                }
-                sb.append(rightPage.get().getFullText());
-            }
-            currentFulltext = sb.toString();
-        } else {
-            // Single page view
-            PhysicalElement currentPage = getCurrentPage();
-            if (currentPage == null || StringUtils.isEmpty(currentPage.getFullText())) {
-                return currentFulltext;
-            }
-            currentFulltext = currentPage.getFullText();
-        }
-
-        if (escapeHtml) {
-            currentFulltext = StringTools.escapeHtmlChars(currentFulltext);
-        }
-
-        // logger.trace(currentFulltext); //NOSONAR Debug
-        return currentFulltext;
     }
 
     /**

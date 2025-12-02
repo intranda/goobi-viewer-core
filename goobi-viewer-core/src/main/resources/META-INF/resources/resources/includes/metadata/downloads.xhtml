@@ -27,7 +27,7 @@
             id="metsLink"
             styleClass="btn btn--full"
             rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}"
-            value="#{activeDocumentBean.viewManager.metsResolverUrl}"
+            value="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
             title="#{msg.metadata_dl_mets}"
             target="_blank"
           >
@@ -39,7 +39,7 @@
             id="lidoLink"
             styleClass="btn btn--full"
             rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'LIDO'}"
-            value="#{activeDocumentBean.viewManager.lidoResolverUrl}"
+            value="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
             title="#{msg.metadata_dl_lido}"
             target="_blank"
           >

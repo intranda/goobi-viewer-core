@@ -115,14 +115,6 @@ public class GeoFacetItem implements IFacetItem {
         }
     }
 
-    @Deprecated(since = "24.10")
-    public void setFeatureFromContext() {
-        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-
-        String feat = params.get("feature");
-        setFeature(feat);
-    }
-
     public String getFacetQuery() {
         if (isActive() && feature != null && feature.hasVertices()) {
             return solrField + ":" + getValue();

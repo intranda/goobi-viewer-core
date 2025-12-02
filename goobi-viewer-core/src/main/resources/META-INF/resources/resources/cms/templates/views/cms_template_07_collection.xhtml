@@ -24,7 +24,8 @@
 			</div>
 
 			<div class="tpl-collection__wrapper">
-				<viewerComponent:collectionView id="collection" collection="#{collectionViewBean.getCollection(cc.attrs.component.getContentItem('collection01').content, cc.attrs.collectionBaseLevels, cc.attrs.component.getContentItem('collection01').content.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy)}" />
+				<viewerComponent:collectionView id="collection"
+				    collection="#{collectionViewBean.getCollection(cc.attrs.component.getContentItem('collection01').content)}" />
 			</div>
 		</div>
 	</composite:implementation>

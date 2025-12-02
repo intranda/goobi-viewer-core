@@ -13,7 +13,7 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- VIEW -->
-    <div id="fullscreenView" class="fullscreen__view">
+    <div id="fullscreenView" class="fullscreen__view #{activeDocumentBean.viewManager.cssClass}">
 
         <!-- FULLSCREEN HEADER -->
         <ui:include src="/resources/includes/fullscreen/fs_header.xhtml" />

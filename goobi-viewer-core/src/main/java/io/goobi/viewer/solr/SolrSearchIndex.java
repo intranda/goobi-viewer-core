@@ -1120,50 +1120,6 @@ public class SolrSearchIndex {
      * </p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @param page a int.
-     * @return contents for the given page
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    @Deprecated(since = "24.10")
-    public List<DisplayUserGeneratedContent> getDisplayUserGeneratedContentsForPage(String pi, int page)
-            throws PresentationException, IndexUnreachableException {
-        String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)
-                .append(":")
-                .append(pi)
-                .append(SolrConstants.SOLR_QUERY_AND)
-                .append(SolrConstants.ORDER)
-                .append(":")
-                .append(page)
-                .append(SolrConstants.SOLR_QUERY_AND)
-                .append(SolrConstants.DOCTYPE)
-                .append(":")
-                .append(DocType.UGC.name())
-                .toString();
-
-        SolrDocumentList hits = search(query);
-        if (hits.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<DisplayUserGeneratedContent> ret = new ArrayList<>(hits.size());
-        for (SolrDocument doc : hits) {
-            DisplayUserGeneratedContent ugc = DisplayUserGeneratedContent.buildFromSolrDoc(doc);
-            if (ugc != null) {
-                ret.add(ugc);
-                logger.trace("Loaded UGC: {}", ugc.getLabel());
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * <p>
-     * getDisplayUserGeneratedContentsForPage.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
      * @return contents for the given page
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.

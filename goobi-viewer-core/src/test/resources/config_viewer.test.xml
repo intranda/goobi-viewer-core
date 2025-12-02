@@ -94,9 +94,6 @@
         <!-- workflow: REST service URL of Goobi workflow -->
         <workflow>https://example.com/goobi/api</workflow>
 
-        <!-- taskManager: Url of local taskManager for pdf-download -->
-        <taskManager>taskmanager_url/</taskManager>
-
 		<download>https://viewer.goobi.io/download/</download>
 	</urls>
 

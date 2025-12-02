@@ -403,20 +403,6 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>
-     * isUserOwnsAnyCampaigns.
-     * </p>
-     *
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object
-     * @return true if user owns any existing campaigns; false otherwise
-     * @throws io.goobi.viewer.exceptions.DAOException
-     */
-    @Deprecated(since = "24.10")
-    public boolean isUserOwnsAnyCampaigns(User user) throws DAOException {
-        return CrowdsourcingTools.isUserOwnsAnyCampaigns(user);
-    }
-
-    /**
      * Check if the given user is allowed access to the given campaign from a rights management standpoint alone. If the user is null, access is
      * granted for public campaigns only, otherwise access is granted if the user has the appropriate rights
      *

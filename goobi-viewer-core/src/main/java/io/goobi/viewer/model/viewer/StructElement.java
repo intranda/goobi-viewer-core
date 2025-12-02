@@ -762,22 +762,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * <p>
-     * getTitle.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated(since = "24.10")
-    public String getTitle() {
-        String answer = getLabel();
-        if (StringUtils.isEmpty(answer)) {
-            return "-";
-        }
-        return answer;
-    }
-
-    /**
      * 
      * @param language
      * @return true if a TEI file name is indexed for the given language; false otherwise

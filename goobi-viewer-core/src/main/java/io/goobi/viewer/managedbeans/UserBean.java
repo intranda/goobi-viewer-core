@@ -491,12 +491,13 @@ public class UserBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
+     * @throws IOException
      */
-    public String logout() throws AuthenticationProviderException {
+    public String logout() throws AuthenticationProviderException, IOException {
         logger.trace("logout");
 
         HttpServletRequest request = BeanUtils.getRequest();
-        String url = redirect(request);
+        String url = getRedirectUrl(request); // do this before resetting session
 
         if (user != null) {
             user.setTranskribusSession(null);
@@ -520,8 +521,16 @@ public class UserBean implements Serializable {
         } catch (ServletException e) {
             logger.error(e.getMessage(), e);
         }
-        HttpSession session = request.getSession(false);
-        session.invalidate();
+        session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        // Actively redirect to outcome URL, because the loaded record is unloaded at this point
+        if (StringUtils.isNotEmpty(url)) {
+            doRedirect(BeanUtils.getResponse(), url);
+        }
+
         return url;
     }
 
@@ -529,7 +538,7 @@ public class UserBean implements Serializable {
      * @param request
      * @return Redirect outcome
      */
-    private String redirect(HttpServletRequest request) {
+    private String getRedirectUrl(HttpServletRequest request) {
         Optional<ViewerPath> oCurrentPath = ViewHistory.getCurrentView(request);
         if (StringUtils.isNotEmpty(redirectUrl)) {
             if ("#".equals(redirectUrl)) {
@@ -551,7 +560,7 @@ public class UserBean implements Serializable {
                 return "pretty:index";
             }
             logger.trace("Redirecting to current url {}", currentPath.getCombinedPrettyfiedUrl());
-            return currentPath.getCombinedPrettyfiedUrl();
+            return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + currentPath.getCombinedPrettyfiedUrl();
         } else {
             // IF ViewerPath is unavailable, extract URI via PrettyContext
             PrettyContext prettyContext = PrettyContext.getCurrentInstance(request);
@@ -1342,8 +1351,9 @@ public class UserBean implements Serializable {
      *
      * @param messageKey a {@link java.lang.String} object
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
+     * @throws IOException
      */
-    public void logoutWithMessage(String messageKey) throws AuthenticationProviderException {
+    public void logoutWithMessage(String messageKey) throws AuthenticationProviderException, IOException {
         this.logout();
         Messages.info(messageKey);
 

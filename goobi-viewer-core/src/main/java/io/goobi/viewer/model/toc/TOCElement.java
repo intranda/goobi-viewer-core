@@ -398,18 +398,6 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
 
     /**
      * <p>
-     * getSubLabel.
-     * </p>
-     *
-     * @return the subLabel
-     */
-    @Deprecated(since = "24.10")
-    public String getSubLabel() {
-        return label.getValue().orElse("");
-    }
-
-    /**
-     * <p>
      * getUrl.
      * </p>
      *
@@ -464,19 +452,6 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
      */
     public String getFullscreenUrl() {
         return getUrl(PageType.viewFullscreen.name());
-    }
-
-    /**
-     * <p>
-     * getReadingModeUrl.
-     * </p>
-     *
-     * @return the fullscreenUrl
-     * @deprecated renamed to fullscreen
-     */
-    @Deprecated(since = "24.10")
-    public String getReadingModeUrl() {
-        return getFullscreenUrl();
     }
 
     /**
