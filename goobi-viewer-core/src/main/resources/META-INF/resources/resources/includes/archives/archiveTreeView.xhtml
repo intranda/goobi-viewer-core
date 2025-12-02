@@ -12,7 +12,7 @@
 	<!-- Changed render @all to archivesForm to avoid reloads of surrounding layout elements + performance advantage  -->
 	<c:set var="formId" value="#{formId != null ? formId : 'archivesForm'}" scope="request" />
 	<c:set var="render" value="#{render != null ? render : formId}" scope="request"></c:set>
-	<c:set var="renderOnExpand" value="#{renderOnExpand != null ? renderOnExpand : formId}}" scope="request"></c:set>
+	<c:set var="renderOnExpand" value="#{renderOnExpand != null ? renderOnExpand : formId}" scope="request"></c:set>
 
 	<c:set var="archiveTree" value="#{archiveTree != null ? archiveTree : archiveBean.archiveTree}" scope="request" />
 	
