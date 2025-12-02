@@ -234,7 +234,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * 
      * @param line
-     * @return
+     * @return a boolean
      */
     public boolean isDisplayAddNewItemButton(SearchQueryItemLine line) {
         return isAllowMultipleItems() && isLastLine(line);
@@ -261,6 +261,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * 
      * @param afterIndex
+     * @return true if new line successfully added; false otherwise
      */
     public boolean addNewLine(int afterIndex) {
         if (afterIndex >= 0) {
