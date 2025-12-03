@@ -194,37 +194,31 @@
 							<!-- EXPANDABLE TREEVIEW -->
 							<h:panelGroup rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
 								<!-- EXPAND ALL -->
-								<div class="toc__list-expandable-all clearfix">
-									<ul>
-										<li>
-											<button
-												type="button"
-												class="btn btn--link"
-												jsf:action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
-												<util:icon icon="square-rounded-minus" />
-												<f:passThroughAttribute name="data-toggle" value="tooltip" />
-												<f:passThroughAttribute name="data-placement" value="top" />
-												<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
-												<f:ajax render="tocForm" />
-											</button>
-										</li>
-										<li>
-											<button
-												type="button"
-												class="btn btn--link"
-												jsf:action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
-												<util:icon icon="square-rounded-plus" />
-												<f:passThroughAttribute name="data-toggle" value="tooltip" />
-												<f:passThroughAttribute name="data-placement" value="top" />
-												<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
-												<f:ajax render="tocForm" />
-											</button>
-										</li>
-									</ul>
+								<div class="toc__list-expandable-all">
+									<button
+										type="button"
+										class="btn btn--link"
+										jsf:action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
+										<util:icon icon="square-rounded-minus" />
+										<f:passThroughAttribute name="data-toggle" value="tooltip" />
+										<f:passThroughAttribute name="data-placement" value="top" />
+										<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
+										<f:ajax render="tocForm" />
+									</button>
+									<button
+										type="button"
+										class="btn btn--link"
+										jsf:action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
+										<util:icon icon="square-rounded-plus" />
+										<f:passThroughAttribute name="data-toggle" value="tooltip" />
+										<f:passThroughAttribute name="data-placement" value="top" />
+										<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
+										<f:ajax render="tocForm" />
+									</button>
 								</div>
 
-								<nav class="toc__list-expandable clearfix">
-									<ul>
+								<nav class="toc__list-expandable">
+									<ul class="toc__list-outer-list">
 										<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.treeView}">
 											<h:panelGroup rendered="#{tocElement.visible}">
 												<li class="toc__list-expandable-elem #{tocElement.hasChild == true ? 'parent' : 'child' }" data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
@@ -235,7 +229,7 @@
 																<div class="toc__list-expandable-expand">
 																	<button
 																		type="button"
-																		class="btn btn--link"
+																		class="btn btn--link toc__list-expandable-expand-button"
 																		jsf:action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{!tocElement.expanded}">
 																		<util:icon icon="square-rounded-plus" />
 																		<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
@@ -243,7 +237,7 @@
 																	</button>
 																	<button
 																		type="button"
-																		class="btn btn--link"
+																		class="btn btn--link toc__list-expandable-expand-button"
 																		jsf:action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.expanded}">
 																		<util:icon icon="square-rounded-minus" />
 																		<f:passThroughAttribute name="aria-label" value="#{msg.all}" />
@@ -252,7 +246,7 @@
 																</div>
 															</h:panelGroup>
 														</div>
-														<div class="col-12 col-sm-8 col-md-9">
+														<div class="col-12 col-sm-8 col-md-9 toc__list-expandable-title-wrapper">
 															<!-- TITLE -->
 															<div class="toc__list-expandable-title">
 																<h:outputLink rendered="#{tocElement.pageNo == null}" title="#{tocElement.label}" value="#{tocElement.url}">
@@ -265,15 +259,12 @@
 														</div>
 														<div class="col-12 col-sm-3 col-md-2">
 															<!-- NUMBER -->
-															<div class="toc__list-expandable-number text-right">
-																<ul>
+															<div class="toc__list-expandable-number">
 																	<h:panelGroup rendered="#{tocElement.label != null}">
-																		<li>
 																			<a href="#{tocElement.url}" title="#{tocElement.label}" aria-label="#{tocElement.label}">#{tocElement.pageNoLabel}</a>
-																		</li>
 																	</h:panelGroup>
 																	<h:panelGroup rendered="#{tocElement.pageNo == null}">
-																		<li>#{tocElement.pageNoLabel}</li>
+																		<span>#{tocElement.pageNoLabel}</span>
 																	</h:panelGroup>
 
 																	<!-- PDF DOWNLOAD -->
@@ -281,35 +272,28 @@
 																	                          tocElement.pageNo != null and tocElement.accessPermissionPdf}">
 																		<h:panelGroup rendered="#{!configurationBean.generatePdfInMessageQueue}"
 										                                      >
-										                                        <li>
 										                                          <a
 										                                            href="#{tocElement.contentServerPdfUrl}"
 										                                            title="#{msg.label__pdf_download}"
 										                                          >
 										                                            <util:icon icon="file-type-pdf" />
 										                                          </a>
-										                                        </li>
 										                                      </h:panelGroup>
 										                                      <h:panelGroup
 										                                        rendered="#{configurationBean.generatePdfInMessageQueue}"
 										                                      >
-										                                        <li>
 										                                        
 										                                        
-										                                          <button
+										                                          <button class="btn btn--link toc__list-expandable-download-button" aria-label="#{msg.label__pdf_download}"
 										                                            jsf:action="#{viewBean.put('title', tocElement.label).put('logId', tocElement.logId).put('fileSize', activeDocumentBean.getPdfSize(tocElement.logId))}"
 										                                          >
-										                                            <util:icon-text
+										                                            <util:icon
 										                                              icon="file-type-pdf"
-										                                              text="#{msg.label__pdf_download}"
 										                                            />
 										                                            <f:ajax render="modalDownloadWrapper" onevent="data => {if(data.status == 'success') $('#downloadModal').modal()}"/>
 										                                          </button>
-										                                          
-										                                        </li>
 										                                      </h:panelGroup>
 																	</h:panelGroup>
-																</ul>
 															</div>
 														</div>
 													</div>
@@ -322,12 +306,12 @@
 
 							<!-- FULL TREEVIEW -->
 							<h:panelGroup rendered="#{!configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
-								<nav class="toc__list-full clearfix">
-									<ul>
+								<nav class="toc__list-full">
+									<ul class="toc__list-outer-list">
 										<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.treeView}">
-											<li data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
+											<li class="toc__list-full-item" data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
 												<div class="row">
-													<div class="col-12 col-sm-8 col-md-9">
+													<div class="col-12 col-sm-8 col-md-9 toc__list-full-title-wrapper">
 														<!-- TITLE -->
 														<div class="toc__list-full-title">
 															<h:outputLink rendered="#{tocElement.pageNo == null}" title="#{tocElement.label}" value="#{tocElement.url}">
@@ -340,42 +324,33 @@
 													</div>
 													<div class="col-12 col-sm-4 col-md-3">
 														<!-- NUMBER -->
-														<div class="toc__list-full-number text-right">
-															<ul>
+														<div class="toc__list-full-number">
 																<h:panelGroup rendered="#{tocElement.label != null}">
-																	<li>
-																		<a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.pageNoLabel}</a>
-																	</li>
+																	<a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.pageNoLabel}</a>
 																</h:panelGroup>
 																<h:panelGroup rendered="#{tocElement.pageNo == null}">
-																	<li>#{tocElement.pageNoLabel}</li>
+																	<span>#{tocElement.pageNoLabel}</span>
 																</h:panelGroup>
 
 																<!-- PDF DOWNLOAD -->
 																<h:panelGroup rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
 																                          tocElement.pageNo != null and tocElement.accessPermissionPdf}">
 																	<h:panelGroup rendered="#{!configurationBean.generatePdfInMessageQueue}">
-																		<li>
 																			<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}">
 																				<util:icon icon="file-type-pdf" />
 																			</a>
-																		</li>
 																	</h:panelGroup>
 																	<h:panelGroup rendered="#{configurationBean.generatePdfInMessageQueue}">
-																		<li>
-								                                          <button
+								                                          <button class="btn btn--link toc__list-full-download-button" aria-label="#{msg.label__pdf_download}"
 									                                            jsf:action="#{viewBean.put('title', tocElement.label).put('logId', tocElement.logId).put('fileSize', activeDocumentBean.getPdfSize(tocElement.logId))}"
 									                                          >
-									                                            <util:icon-text
+									                                            <util:icon
 									                                              icon="file-type-pdf"
-									                                              text="#{msg.label__pdf_download}"
 									                                            />
 									                                            <f:ajax render="modalDownloadWrapper" onevent="data => {if(data.status == 'success') $('#downloadModal').modal()}"/>
 									                                      </button>
-																		</li>
 																	</h:panelGroup>
 																</h:panelGroup>
-															</ul>
 														</div>
 													</div>
 												</div>
