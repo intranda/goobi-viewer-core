@@ -233,29 +233,29 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * 
-     * @param line
+     * @param lineIndex
      * @return a boolean
      */
-    public boolean isDisplayAddNewItemButton(SearchQueryItemLine line) {
-        return isAllowMultipleItems() && isLastLine(line);
+    public boolean isDisplayAddNewItemButton(int lineIndex) {
+        return isAllowMultipleItems() && isLastLine(lineIndex);
     }
 
     /**
      * 
-     * @param line
+     * @param lineIndex
      * @return true if given line is first in list; false otherwise
      */
-    public boolean isFirstLine(SearchQueryItemLine line) {
-        return line != null && lines.indexOf(line) == 0;
+    public boolean isFirstLine(int lineIndex) {
+        return lineIndex == 0;
     }
 
     /**
      * 
-     * @param line
+     * @param lineIndex
      * @return true if given line is last in list; false otherwise
      */
-    public boolean isLastLine(SearchQueryItemLine line) {
-        return line != null && lines.indexOf(line) == lines.size() - 1;
+    public boolean isLastLine(int lineIndex) {
+        return lineIndex == lines.size() - 1;
     }
 
     /**
