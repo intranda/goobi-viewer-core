@@ -106,6 +106,9 @@ public class DefaultQueueListener {
                 waitForMessage(sess, consumer);
                 if (Thread.interrupted()) {
                     log.info("Queue listener for queue {} interrupted: Resuming loop", queueType);
+                    //The interrupted state should probably not simply be cleared here. 
+                    //This was introduced to enable restarting the queue, but looks like it could lead to zombie threads
+                    //We should test if restarting can be done while closing these threads
                 }
             }
         }
