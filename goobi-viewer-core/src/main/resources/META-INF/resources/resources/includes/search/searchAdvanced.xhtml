@@ -102,6 +102,7 @@
                     <div class="search-advanced__loader"></div>
                         
                     <!-- SEARCH ADVANCED INPUT GROUP -->
+                    <!-- TODO: Loops will need to be replaced with ui:repeat when enabling multiple lines per query item -->
                     <c:forEach var="queryItem" items="#{searchBean.advancedSearchQueryGroup.queryItems}" varStatus="status">
                         <c:forEach var="line" items="#{queryItem.lines}" varStatus="lineStatus">
                             <div id="searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index}" class="search-advanced__input-group">
