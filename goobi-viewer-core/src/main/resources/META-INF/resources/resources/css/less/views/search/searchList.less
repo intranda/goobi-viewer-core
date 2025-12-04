@@ -59,9 +59,11 @@
 					--search-option-icon-size: 18px;
 					--search-option-border-radius: var(--gv-search-option-border-radius, var(--border-radius, 0));
 					--search-option-icon-color: var(--gv-search-option-icon-color, var(--fg-general, #1f2933));
+					--search-option-icon-color-hover: var(--gv-search-option-icon-color-hover, var(--search-option-icon-color));
 					--search-option-color: var(--gv-search-option-color, var(--fg-general, #1f2933));
 					--search-option-bg-active: var(--gv-search-option-bg-active, var(--ci-color1, #015999));
 					--search-option-color-active: var(--gv-search-option-color-active, #ffffff);
+					--search-option-icon-color-active: var(--gv-search-option-icon-color-active, var(--search-option-color-active));
 					--search-option-shadow-active: var(--gv-search-option-shadow-active, none);
 					--search-option-outline: var(--gv-search-option-outline, var(--outline-color, #035999));
 
@@ -169,6 +171,12 @@
 				.icon-wrapper {
 					transform: scale(1.08) translateY(-1px);
 					filter: drop-shadow(0 3px 8px fade(@black, 18%));
+
+					svg {
+						color: var(--search-option-icon-color-hover);
+						stroke: var(--search-option-icon-color-hover);
+						fill: var(--search-option-icon-color-hover);
+					}
 				}
 			}
 
@@ -208,7 +216,9 @@
 					filter: none;
 
 					svg {
-						stroke: currentColor;
+						color: var(--search-option-icon-color-active);
+						stroke: var(--search-option-icon-color-active);
+						fill: var(--search-option-icon-color-active);
 					}
 				}
 
@@ -787,19 +797,6 @@
 	display: block;
 }
 
-
-.mx-theme-dark .search-list__options,
-.color-theme-dark .search-list__options {
-	--search-divider-color: var(--gv-search-divider-color-dark, rgba(255, 255, 255, 0.2));
-	--search-option-border-radius: var(--gv-search-option-border-radius-dark, var(--border-radius, 0));
-	--search-option-icon-color: var(--gv-search-option-icon-color-dark, rgba(243, 244, 246, 0.92));
-	--search-option-color: var(--gv-search-option-color-dark, rgba(243, 244, 246, 0.92));
-	// Unused bg/border vars omitted in dark mode as well
-	--search-option-bg-active: var(--gv-search-option-bg-active-dark, var(--ci-color1, #49a5ff));
-	--search-option-color-active: var(--gv-search-option-color-active-dark, #ffffff);
-	--search-option-shadow-active: var(--gv-search-option-shadow-active-dark, none);
-	--search-option-outline: var(--gv-search-option-outline-dark, var(--outline-color, #49a5ff));
-}
 
 @{RTL} .search-list {
 	&__hit-thumbnail {
