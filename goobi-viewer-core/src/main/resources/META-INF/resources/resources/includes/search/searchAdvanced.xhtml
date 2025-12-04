@@ -102,12 +102,11 @@
                     <div class="search-advanced__loader"></div>
                         
                     <!-- SEARCH ADVANCED INPUT GROUP -->
-                    <c:forEach var="queryItem" items="#{searchBean.advancedSearchQueryGroup.queryItems}" varStatus="status">
-                        <c:forEach var="line" items="#{queryItem.lines}" varStatus="lineStatus">
+                    <ui:fragment var="queryItem" items="#{searchBean.advancedSearchQueryGroup.queryItems}" varStatus="status">
+                        <ui:fragment var="line" items="#{queryItem.lines}" varStatus="lineStatus">
                             <div id="searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index}" class="search-advanced__input-group">
                                     
-                                <c:choose>
-                                    <c:when test="#{status.index == 0}">
+                                    <ui:fragment rendered="#{status.index == 0}">
                                         <!-- FIELD SELECT -->
                                         <div class="search-advanced__input-col">
                                             <div class="search-advanced__select custom-control custom-control--select">
@@ -124,9 +123,9 @@
                                                 </h:selectOneMenu>
                                             </div>
                                         </div>
-                                    </c:when>
+                                    </ui:fragment>
                                     
-                                    <c:otherwise>
+                                    <ui:fragment rendered="#{status.index != 0}">
                                         <div class="search-advanced__operator-field-pair-wrapper">
                                     
 	                                        <!-- OPERATOR SELECT -->
@@ -161,8 +160,7 @@
 	                                        </div>
                                         
                                         </div>
-                                    </c:otherwise>
-                                </c:choose>
+                                    </ui:fragment>
                                     
                                 <!-- INPUT FIELD -->
                                 <h:panelGroup layout="block" id="advsearch_value_group_0-#{status.index}-#{lineStatus.index}"
@@ -269,8 +267,8 @@
                                     </div>
                                 </h:panelGroup>
                             </div>
-                        </c:forEach>
-                    </c:forEach>
+                        </ui:fragment>
+                    </ui:fragment>
                          
                     <!-- FUZZY SEARCH OPTION -->
                     <div class="search-advanced__fuzzy-search-option-wrapper">
