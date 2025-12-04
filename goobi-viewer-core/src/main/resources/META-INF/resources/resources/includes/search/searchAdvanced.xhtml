@@ -102,8 +102,8 @@
                     <div class="search-advanced__loader"></div>
                         
                     <!-- SEARCH ADVANCED INPUT GROUP -->
-                    <ui:fragment var="queryItem" items="#{searchBean.advancedSearchQueryGroup.queryItems}" varStatus="status">
-                        <ui:fragment var="line" items="#{queryItem.lines}" varStatus="lineStatus">
+                    <ui:fragment var="queryItem" value="#{searchBean.advancedSearchQueryGroup.queryItems}" varStatus="status">
+                        <ui:fragment var="line" value="#{queryItem.lines}" varStatus="lineStatus">
                             <div id="searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index}" class="search-advanced__input-group">
                                     
                                     <ui:fragment rendered="#{status.index == 0}">
