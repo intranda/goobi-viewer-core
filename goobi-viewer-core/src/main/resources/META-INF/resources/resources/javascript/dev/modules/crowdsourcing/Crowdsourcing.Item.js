@@ -385,7 +385,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
                page.annotations = []; 
             });
         })
-        return save;onpopstate
+        return save;
 
     }
     

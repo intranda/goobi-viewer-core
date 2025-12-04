@@ -547,7 +547,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             }
         }
 
-        return accessPermissionMap.get(privilegeName);
+        return accessPermissionMap.getOrDefault(privilegeName, AccessPermission.denied());
     }
 
     /**

@@ -309,7 +309,9 @@ var viewerJS = (function () {
 		viewer.initialized.complete();
 		viewer.setCheckedStatus();
 		viewer.slider.init();
-    viewer.accessibility.init();
+        viewer.accessibility.init();
+        viewer.initWebsocketClose();
+
 	// EOL viewerJS function
     };
 
@@ -326,6 +328,24 @@ var viewerJS = (function () {
 				viewer.toggledCollapsible.next(e);
 		    })
 		})
+    }
+
+    viewer.initWebsocketClose = function() {
+        window.addEventListener("beforeunload", () => {
+            viewer.closeWebSocketChannel("tocUpdateChannel");
+            viewer.closeWebSocketChannel("downloadContext");
+            viewer.closeWebSocketChannel("pullThemeContext");
+            viewer.closeWebSocketChannel("backgroundTasksState");
+            viewer.closeWebSocketChannel("sessionTimeoutCounter");
+        });
+    }
+
+    viewer.closeWebSocketChannel = function(channel) {
+        try {
+            OmniFaces?.Push?.close(channel);
+        } catch(e) {
+            //ignore
+        }
     }
    
     viewer.initTinyMCE  = function(event) {
