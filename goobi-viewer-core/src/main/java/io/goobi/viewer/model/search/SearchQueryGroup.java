@@ -101,7 +101,6 @@ public class SearchQueryGroup implements Serializable {
                     SearchQueryItem item = new SearchQueryItem(template)
                             .setLabel(fieldConfig.getLabel());
                     item.setField(fieldConfig.getField());
-                    item.setDisplayAddNewItemButton(fieldConfig.isAllowMultipleItems());
                     // Add configured preselectValue to set values for this item
                     // displaySelectItems should be set correctly after calling item.setField()
                     if (StringUtils.isNotEmpty(fieldConfig.getPreselectValue())) {
@@ -189,28 +188,13 @@ public class SearchQueryGroup implements Serializable {
      * @param afterIndex Item index after which to place new new item
      * @return true if operation successful; false otherwise
      * @should add item correctly
-     * @should set group statuses correctly
      */
     public boolean addNewQueryItem(String field, int afterIndex) {
         logger.trace("addNewQueryItem: {}", afterIndex);
         if (afterIndex >= 0) {
             SearchQueryItem newItem = new SearchQueryItem(template);
             newItem.setField(field);
-            newItem.setOperator(SearchItemOperator.OR);
-            if (newItem.isAllowMultipleItems()) {
-                newItem.setDisplayAddNewItemButton(true).setSameFieldGroupCopy(true).setSameFieldGroupEnd(true);
-                // Update preceding item
-                SearchQueryItem precedingItem = queryItems.get(afterIndex);
-                precedingItem.setSameFieldGroupStart(!precedingItem.isSameFieldGroupCopy())
-                        .setSameFieldGroupEnd(false)
-                        .setDisplayAddNewItemButton(false);
-                if (afterIndex == 0) {
-                    // Set operator to OR because it's usually not selectable in the first row
-                    precedingItem.setOperator(SearchItemOperator.OR);
-                }
-            }
             queryItems.add(afterIndex + 1, newItem);
-
             return true;
         }
 
@@ -229,7 +213,6 @@ public class SearchQueryGroup implements Serializable {
      */
     public boolean removeQueryItem(SearchQueryItem item) {
         if (queryItems.size() > 1) {
-            // TODO set same field group status on remaining items (when this method is actually in use)
             return queryItems.remove(item);
         }
 
