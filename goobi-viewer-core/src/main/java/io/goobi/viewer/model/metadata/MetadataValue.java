@@ -46,7 +46,6 @@ import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -71,7 +70,8 @@ public class MetadataValue implements Serializable {
     private final List<String> paramUrls = new ArrayList<>();
     private final Map<String, String> normDataUrls = new HashMap<>();
     private final Map<String, List<String>> citationValues = new HashMap<>();
-    private final List<MetadataValue> childValues = new ArrayList<>();
+    /** Local copies of child metadata configurations containing only values for this particular instance. */
+    private final List<Metadata> childMetadata = new ArrayList<>();
     private final Set<String> accessConditions = new HashSet<>();
     /** Unique ID for citation item generation */
     private String id;
@@ -351,10 +351,10 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @return the childValues
+     * @return the childMetadata
      */
-    public List<MetadataValue> getChildValues() {
-        return childValues;
+    public List<Metadata> getChildMetadata() {
+        return childMetadata;
     }
 
     /**
@@ -366,7 +366,7 @@ public class MetadataValue implements Serializable {
      * @should return true if metadata access restricted condition contained
      */
     public boolean isAccessRestricted() {
-        logger.trace("access conditions for {}: {}", label, !this.accessConditions.isEmpty());
+        // logger.trace("access conditions for {}: {}", label, !this.accessConditions.isEmpty());
         return this.accessConditions.contains(StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED);
     }
 

@@ -140,8 +140,8 @@ public class Metadata implements Serializable {
         this.citationProcessorWrapper = orig.citationProcessorWrapper;
         this.indentation = orig.indentation;
         this.values.addAll(orig.values.stream().map(v -> new MetadataValue(v.getIddoc(), v.getMasterValue(), v.getLabel())).toList());
-        this.params.addAll(orig.params.stream().map(p -> new MetadataParameter(p)).toList());
-        this.childMetadata.addAll(orig.childMetadata.stream().map(c -> new Metadata(c)).toList());
+        this.params.addAll(orig.params.stream().map(MetadataParameter::new).toList());
+        this.childMetadata.addAll(orig.childMetadata.stream().map(Metadata::new).toList());
         this.parentMetadata = orig.parentMetadata;
     }
 
@@ -1159,7 +1159,10 @@ public class Metadata implements Serializable {
                     if (!getChildMetadata().isEmpty()) {
                         for (Metadata child : getChildMetadata()) {
                             // logger.trace("populating child metadata: {}", child.getLabel()); //NOSONAR Debug
-                            child.populate(se, metadataDocIddoc, sortFields, locale);
+                            // Create a copy that only contains values relevant to this parent
+                            Metadata childCopy = new Metadata(child);
+                            childCopy.populate(se, metadataDocIddoc, sortFields, locale);
+                            val.getChildMetadata().add(childCopy);
                         }
                     }
                 }
