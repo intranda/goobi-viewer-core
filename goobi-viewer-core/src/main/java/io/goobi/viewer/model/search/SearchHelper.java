@@ -2673,7 +2673,7 @@ public final class SearchHelper {
                     && fieldNames.contains(SolrConstants.NORMDATATERMS) && fieldNames.contains(SolrConstants.UGCTERMS)
                     && fieldNames.contains(SolrConstants.SEARCHTERMS_ARCHIVE) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {
                 // All fields
-                item.setOperator(operator);
+                item.getLines().get(0).setOperator(operator);
                 item.setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
                 item.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
                 item.setValue(pairs.get(0).getTwo());
@@ -2687,7 +2687,7 @@ public final class SearchHelper {
                         case SolrConstants.SUPERSEARCHTERMS_ARCHIVE:
                             break;
                         default:
-                            item.setOperator(operator);
+                            item.getLines().get(0).setOperator(operator);
                             item.setField(pair.getOne());
                             if (DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(pair.getOne(), template, true)) {
                                 String[] valueSplit = pair.getTwo().split(" TO ");
@@ -3102,7 +3102,7 @@ public final class SearchHelper {
             }
         }
 
-        StringBuilder sbSameFieldGroup = new StringBuilder();
+        //        StringBuilder sbSameFieldGroup = new StringBuilder();
         for (SearchQueryItem item : group.getQueryItems()) {
             if (item.getField() == null) {
                 continue;
@@ -3122,39 +3122,39 @@ public final class SearchHelper {
                     }
             }
             String itemQuery = item.generateQuery(new HashSet<>(), false, allowFuzzySearch);
-            if (item.isSameFieldGroupStart() || item.isSameFieldGroupCopy()) {
-                // Put a group of same-field items into a single query
-                if (item.isSameFieldGroupStart()) {
-                    sbSameFieldGroup.append(orMode ? "-" : "+").append('(');
+            //            if (item.isSameFieldGroupStart() || item.isSameFieldGroupCopy()) {
+            //                // Put a group of same-field items into a single query
+            //                if (item.isSameFieldGroupStart()) {
+            //                    sbSameFieldGroup.append(orMode ? "-" : "+").append('(');
+            //                }
+            //                if (StringUtils.isNotEmpty(itemQuery)) {
+            //                    if (sbSameFieldGroup.length() > 2) {
+            //                        sbSameFieldGroup.append(' ');
+            //                    }
+            //                    // Hack for allowing OR-searches if AND is configured as the item's operator
+            //                    // (fields won't work properly if OR is configured and only one item exists)
+            //                    sbSameFieldGroup.append(itemQuery.startsWith("+") ? itemQuery.substring(1) : itemQuery);
+            //                }
+            //                if (item.isSameFieldGroupEnd()) {
+            //                    sbSameFieldGroup.append(")");
+            //                    if (!sbGroup.isEmpty()) {
+            //                        sbGroup.append(' ');
+            //                    }
+            //                    sbGroup.append(sbSameFieldGroup);
+            //                    sbSameFieldGroup = new StringBuilder();
+            //                }
+            //            } else {
+            // Single item query
+            if (StringUtils.isNotEmpty(itemQuery)) {
+                if (orMode && itemQuery.charAt(0) == '+') {
+                    itemQuery = itemQuery.substring(1);
                 }
-                if (StringUtils.isNotEmpty(itemQuery)) {
-                    if (sbSameFieldGroup.length() > 2) {
-                        sbSameFieldGroup.append(' ');
-                    }
-                    // Hack for allowing OR-searches if AND is configured as the item's operator
-                    // (fields won't work properly if OR is configured and only one item exists)
-                    sbSameFieldGroup.append(itemQuery.startsWith("+") ? itemQuery.substring(1) : itemQuery);
+                if (!sbGroup.isEmpty()) {
+                    sbGroup.append(' ');
                 }
-                if (item.isSameFieldGroupEnd()) {
-                    sbSameFieldGroup.append(")");
-                    if (!sbGroup.isEmpty()) {
-                        sbGroup.append(' ');
-                    }
-                    sbGroup.append(sbSameFieldGroup);
-                    sbSameFieldGroup = new StringBuilder();
-                }
-            } else {
-                // Single item query
-                if (StringUtils.isNotEmpty(itemQuery)) {
-                    if (orMode && itemQuery.charAt(0) == '+') {
-                        itemQuery = itemQuery.substring(1);
-                    }
-                    if (!sbGroup.isEmpty()) {
-                        sbGroup.append(' ');
-                    }
-                    sbGroup.append(itemQuery);
-                }
+                sbGroup.append(itemQuery);
             }
+            //            }
         }
 
         if (!sbGroup.isEmpty())
