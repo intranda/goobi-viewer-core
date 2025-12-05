@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
@@ -36,7 +37,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
-import software.amazon.awssdk.utils.StringUtils;
 
 public class PdfGenerator {
 
