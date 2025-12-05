@@ -58,7 +58,7 @@
             </div>
 
             <!-- FORM -->
-            <h:form
+            <h:form target="_blank"
               id="download-modal__emailFormRequest"
               styleClass="form-horizontal"
               prependId="false"
@@ -153,11 +153,12 @@
                   </button>
 
                   <h:commandButton
-                    action="#{downloadBean.createPDFDownloadJob(activeDocumentBean.persistentIdentifier, cc.attrs.logId, true)}"
+                    action="#{downloadBean.createPDFDownloadJob(activeDocumentBean.persistentIdentifier, cc.attrs.logId, false, '')}"
                     styleClass="btn btn--full"
                     value="#{msg.submit}"
                     pt:data-target="buttonLoaderClickEvent"
                     id="downloadSubmitButton"
+                    onclick="$('#downloadModal').modal('hide')"
                   >
                   </h:commandButton>
                 </div>

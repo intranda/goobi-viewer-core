@@ -23,26 +23,15 @@
 package io.goobi.viewer.model.job.mq;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
 
-import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -50,15 +39,13 @@ import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.job.download.DownloadJob;
-import io.goobi.viewer.model.job.download.DownloadJobTools;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.download.PdfGenerator;
 import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
 
@@ -71,122 +58,48 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
     @Override
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
 
-        String pi = message.getProperties().get("pi");
+        PdfGenerator job = new PdfGenerator(message);
 
-        String logId = message.getProperties().get("logId");
-
-        boolean usPdfSource = Boolean.parseBoolean(message.getProperties().getOrDefault("usePdfSource", "false"));
-        DownloadJob downloadJob = null;
         try {
             File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
             if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
                 throw new IOException("Download folder " + targetFolder + " not found");
             }
 
-            String cleanedPi = StringTools.cleanUserGeneratedData(pi);
-            String id = DownloadJob.generateDownloadJobId("pdf", pi, logId);
-            downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(id);
-            // save pdf file
+            String cleanedPi = StringTools.cleanUserGeneratedData(job.getPi());
             Dataset work = DataFileTools.getDataset(cleanedPi);
 
-            Path pdfFile = DownloadJobTools.getDownloadFileStatic(downloadJob.getIdentifier(), downloadJob.getType(), downloadJob.getFileExtension())
-                    .toPath();
+            Path pdfFile = job.getPath();
 
             //if file is currently being created, wait 5 min and try again
-            if (isLocked(pdfFile)) {
+            if (job.isLocked()) {
                 message.setDelay(DELAY_IF_PDF_IS_BEING_CREATED_MILLIS);
                 message.setRetryCount(message.getRetryCount() - 1);
-                return MessageStatus.ERROR;
-            }
-
-            //if job is in error state of file doesn't exist, update job status
-            if (JobStatus.ERROR == downloadJob.getStatus() || (JobStatus.READY == downloadJob.getStatus() && !Files.exists(pdfFile))) {
-                downloadJob.setStatus(JobStatus.WAITING);
-                DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
+                return MessageStatus.WAIT;
             }
 
             //if the file does not exist, create it
             if (!Files.exists(pdfFile)) {
-                createPdf(work, Optional.ofNullable(logId).filter(StringUtils::isNotBlank).filter(div -> !"-".equals(div)), pdfFile,
-                        message.getMessageId(), usPdfSource);
+                job.createPdf(work);
             }
-            downloadJob.setStatus(JobStatus.READY);
             try {
-                downloadJob.notifyObservers(JobStatus.READY, message.getMessageId(), "");
+                job.notifyObserver(message.getProperties().get("email"), JobStatus.READY, message.getMessageId(), "");
             } catch (MessagingException e) {
                 logger.error("Error notifying observers: {}", e.toString());
             }
-            DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
-        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException
+        } catch (RecordNotFoundException | ContentLibException e) {
+            message.getProperties().put("message", "Error creating PDF: " + e.getMessage());
+            message.setDoNotRetry();
+            return MessageStatus.ERROR;
+        } catch (PresentationException | IndexUnreachableException | IOException
                 | URISyntaxException e) {
-            if (downloadJob != null && message.getRetryCount() > MAX_RETRIES) {
-                downloadJob.setStatus(JobStatus.ERROR);
-                downloadJob.setMessage("Error creating PDF. Please contact support if the problem persists");
+            if (message.getRetryCount() > MAX_RETRIES) {
                 message.getProperties().put("message", "Error creating PDF: " + e.toString());
-                try {
-                    DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
-                } catch (DAOException e1) {
-                    logger.error("Error updating pdf download job in database after it reached an error status");
-                }
             }
             return MessageStatus.ERROR;
         }
 
         return MessageStatus.FINISH;
-    }
-
-    private static void createPdf(Dataset work, Optional<String> divId, Path pdfFile, String taskId, boolean usePdfSource)
-            throws IOException, ContentLibException, URISyntaxException {
-        createLock(pdfFile);
-        try (FileOutputStream fos = new FileOutputStream(pdfFile.toFile())) {
-            MetsPdfRequest request = createPdfRequest(work, divId, usePdfSource);
-            GetMetsPdfAction action = new GetMetsPdfAction(ContentServerCacheManager.getInstance());
-            action.writePdf(request, ContentServerConfiguration.getInstance(), fos, p -> {
-            });
-        } catch (IOException | ContentLibException | URISyntaxException e) {
-            Files.deleteIfExists(pdfFile);
-            throw e;
-        } finally {
-            releaseLock(pdfFile);
-        }
-    }
-
-    public static boolean createLock(Path pdfFile) throws IOException {
-        try {
-            Path lockFile = pdfFile.getParent().resolve(FilenameUtils.getBaseName(pdfFile.getFileName().toString()) + ".creating.lock");
-            Files.createFile(lockFile);
-            return true;
-        } catch (FileAlreadyExistsException e) {
-            return false;
-        }
-    }
-
-    public static boolean releaseLock(Path pdfFile) throws IOException {
-        Path lockFile = pdfFile.getParent().resolve(FilenameUtils.getBaseName(pdfFile.getFileName().toString()) + ".creating.lock");
-        return Files.deleteIfExists(lockFile);
-    }
-
-    public static boolean isLocked(Path pdfFile) throws IOException {
-        Path lockFile = pdfFile.getParent().resolve(FilenameUtils.getBaseName(pdfFile.getFileName().toString()) + ".creating.lock");
-        return Files.exists(lockFile);
-    }
-
-    public static MetsPdfRequest createPdfRequest(Dataset work, Optional<String> divId, boolean usePdfSource) throws URISyntaxException {
-        Map<String, String> params = new HashMap<>();
-        params.put("metsFile", work.getMetadataFilePath().toString());
-        params.put("imageSource", work.getMediaFolderPath().getParent().toUri().toString());
-        divId.ifPresent(id -> params.put("divID", id));
-
-        if (usePdfSource && work.getPdfFolderPath() != null) {
-            params.put("pdfSource", work.getPdfFolderPath().getParent().toUri().toString());
-        }
-        if (work.getAltoFolderPath() != null) {
-            params.put("altoSource", work.getAltoFolderPath().getParent().toUri().toString());
-        }
-        params.put("metsFileGroup", "PRESENTATION");
-        params.put("goobiMetsFile", "false");
-        MetsPdfRequest request = new MetsPdfRequest(params);
-        return request;
     }
 
     @Override

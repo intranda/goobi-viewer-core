@@ -25,7 +25,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +55,6 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.DownloadBean;
-import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
@@ -164,57 +162,48 @@ public class DownloadResource {
             description = "Returns a json object with properties 'url', containing the URL to the download page,"
                     + " and 'job' containing job information")
     @DownloadBinding
-    public String putPDFDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+    public void putPDFDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId,
+            @Parameter(
+                    description = "'variant' attribute of a pdf/pdfConfig element in the contentserver config to use for "
+                            + "the pdf generation; optional") @QueryParam("config") String configVariant,
             @Parameter(
                     description = "whether to use prerendered single page pdf"
                             + " files for pdf creation") @QueryParam("usePdfSource") String usePdfSource,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email)
             throws DAOException, URISyntaxException, JsonProcessingException {
 
-        logger.error("trigger PDF generation, PI={}, logId={}, usePdfSource={}, email={}", pi, logId, usePdfSource, email);
+        logger.debug("trigger PDF generation, PI={}, logId={}, usePdfSource={}, email={}", pi, logId, usePdfSource, email);
 
         ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
         // create new downloadjob
 
-        DownloadJob job = new PDFDownloadJob(pi, logId, LocalDateTime.now(), DownloadBean.getTimeToLive());
-        logger.error("create PDF DownloadJob {}", job);
         if (StringUtils.isNotBlank(email)) {
-            job.getObservers().add(email.toLowerCase());
             message.getProperties().put("email", email.toLowerCase());
         }
         message.getProperties().put("pi", pi);
         if (StringUtils.isNotBlank(logId)) {
             message.getProperties().put("logId", logId);
-        } else {
-            message.getProperties().put("logId", "-");
         }
         if (StringUtils.isNotBlank(usePdfSource)) {
             message.getProperties().put("usePdfSource", usePdfSource);
         }
+        if (StringUtils.isNotBlank(configVariant)) {
+            message.getProperties().put("configVariant", configVariant);
+        }
 
-        logger.error("create PDF mq message {}", message);
-
-        job.setStatus(JobStatus.WAITING);
-        DataManager.getInstance().getDao().addDownloadJob(job);
+        logger.trace("create PDF mq message {}", message);
 
         // create new activemq message
         String messageId = message.getMessageId();
-        logger.error("messageId = {}", messageId);
-        logger.error("add to queue with messageBroker {}", this.messageBroker);
+        logger.trace("messageId = {}", messageId);
+        logger.trace("add to queue with messageBroker {}", this.messageBroker);
         try {
             messageId = this.messageBroker.addToQueue(message);
             messageId = URLEncoder.encode(messageId, Charset.defaultCharset());
         } catch (MessageQueueException e) {
             throw new WebApplicationException(e);
         }
-
-        // forward to download page
-        DownloadJob.generateDownloadJobId(PDFDownloadJob.LOCAL_TYPE, pi, logId);
-        logger.error("generated download job");
-        URI downloadPageUrl = getDownloadPageUrl(messageId);
-        logger.error("forward to url {}", downloadPageUrl);
-        return getForwardToDownloadPageResponse(downloadPageUrl, job);
     }
 
     /**
@@ -271,13 +260,16 @@ public class DownloadResource {
             description = "Returns a json object with properties 'url', containing the URL to the download page,"
                     + " and 'job' containing job information")
     @DownloadBinding
-    public String putPDFDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+    public void putPDFDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(
                     description = "whether to use prerendered single"
                             + " page pdf files for pdf creation") @QueryParam("usePdfSource") String usePdfSource,
+            @Parameter(
+                    description = "'variant' attribute of a pdf/pdfConfig element in the contentserver config to use for "
+                            + "the pdf generation; optional") @QueryParam("config") String configVariant,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email)
             throws JsonProcessingException, DAOException, URISyntaxException {
-        return putPDFDownloadJob(pi, null, usePdfSource, email);
+        putPDFDownloadJob(pi, null, configVariant, usePdfSource, email);
 
     }
 

@@ -712,7 +712,14 @@
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 
+
+
 	<!-- DOWNLOAD -->
+	<url-mapping id="download">
+		<pattern value="/download/" />
+		<view-id value="/viewDownload.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
 	<url-mapping id="download1">
 		<pattern value="/download/#{identifier:downloadBean.downloadIdentifier}/" />
 		<view-id value="/viewDownload.xhtml" />

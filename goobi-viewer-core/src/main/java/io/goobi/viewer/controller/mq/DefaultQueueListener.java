@@ -194,7 +194,7 @@ public class DefaultQueueListener {
         try {
             MessageStatus result = messageBroker.handle(ticket);
 
-            if (result != MessageStatus.ERROR) {
+            if (result != MessageStatus.ERROR && result != MessageStatus.WAIT) {
                 //acknowledge message, it is done
                 message.acknowledge();
             } else if (ticket.shouldRetry()) {
