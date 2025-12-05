@@ -663,9 +663,9 @@ public final class MetadataTools {
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append('+')
                 .append(SolrConstants.IDDOC_OWNER)
-                .append(':')
+                .append(":\"")
                 .append(ownerIddoc)
-                .append(" +")
+                .append("\" +")
                 .append(SolrConstants.DOCTYPE)
                 .append(':')
                 .append(DocType.METADATA.name());
