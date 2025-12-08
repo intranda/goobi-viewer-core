@@ -218,15 +218,12 @@ public final class AccessConditionUtils {
                 sbQuery.append(ClientUtils.escapeQueryChars(baseFileName)).append(".*");
                 break;
             case "txt":
-                sbQuery.append(" +(")
+                sbQuery.append(" +")
                         .append(SolrConstants.FILENAME_FULLTEXT)
                         .append(':')
                         .append("\"")
                         .append(fileName)
-                        .append("\" ")
-                        .append("FILENAME_PLAIN:\"")
-                        .append(simpleFileName)
-                        .append("\")");
+                        .append("\"");
                 break;
             case "xml":
                 String altoFileName = "\"" + fileName + "\"";
@@ -1017,7 +1014,7 @@ public final class AccessConditionUtils {
         }
         // If no access condition given, allow immediately (though this should never be the case)
         if (requiredAccessConditions.isEmpty()) {
-            logger.trace("No required access conditions given, access granted.");
+            // logger.trace("No required access conditions given, access granted.");
             return AccessPermission.granted();
         }
         // If OPENACCESS is the only condition, allow immediately

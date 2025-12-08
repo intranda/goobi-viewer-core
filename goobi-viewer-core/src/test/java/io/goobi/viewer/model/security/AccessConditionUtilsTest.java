@@ -254,7 +254,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies use correct field name for AV files
      */
     @Test
-    void generateAccessCheckQuery_shouldUseCorrectFieldNameForAVFiles() throws Exception {
+    void generateAccessCheckQuery_shouldUseCorrectFieldNameForAVFiles() {
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.tif");
             Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.tif\" "
@@ -283,12 +283,11 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies use correct file name for text files
      */
     @Test
-    void generateAccessCheckQuery_shouldUseCorrectFileNameForTextFiles() throws Exception {
+    void generateAccessCheckQuery_shouldUseCorrectFileNameForTextFiles() {
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "alto/PPN123456789/00000001.txt");
             Assertions.assertEquals(
-                    "+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME_FULLTEXT
-                            + ":\"alto/PPN123456789/00000001.txt\" FILENAME_PLAIN:\"00000001.txt\")",
+                    "+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME_FULLTEXT + ":\"alto/PPN123456789/00000001.txt\"",
                     result);
         }
         {
@@ -305,7 +304,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies use correct file name for pdf files
      */
     @Test
-    void generateAccessCheckQuery_shouldUseCorrectFileNameForPdfFiles() throws Exception {
+    void generateAccessCheckQuery_shouldUseCorrectFileNameForPdfFiles() {
         String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "12345.pdf");
         Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"12345.pdf\"", result);
     }
@@ -315,7 +314,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies adapt basic alto file name
      */
     @Test
-    void generateAccessCheckQuery_shouldAdaptBasicAltoFileName() throws Exception {
+    void generateAccessCheckQuery_shouldAdaptBasicAltoFileName() {
         String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.xml");
         Assertions.assertEquals(
                 "+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME_ALTO
@@ -328,13 +327,13 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies escape file name for wildcard search correctly
      */
     @Test
-    void generateAccessCheckQuery_shouldEscapeFileNameForWildcardSearchCorrectly() throws Exception {
+    void generateAccessCheckQuery_shouldEscapeFileNameForWildcardSearchCorrectly() {
         String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1)");
         Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result);
     }
 
     @Test
-    void generateAccessCheckQuery_shouldUseFullNameForImageFormats() throws Exception {
+    void generateAccessCheckQuery_shouldUseFullNameForImageFormats() {
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.tif");
             Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME + ":\"00000001.tif\" "
@@ -363,7 +362,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    void generateAccessCheckQuery_shouldUseFullNameFor3dObjectFormats() throws Exception {
+    void generateAccessCheckQuery_shouldUseFullNameFor3dObjectFormats() {
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.gltf");
             Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.gltf\"", result);
@@ -379,7 +378,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    void generateAccessCheckQuery_shouldUseBaseNameForFormatlessFiles() throws Exception {
+    void generateAccessCheckQuery_shouldUseBaseNameForFormatlessFiles() {
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001");
             Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result);
@@ -395,7 +394,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies work correctly with urls
      */
     @Test
-    void generateAccessCheckQuery_shouldWorkCorrectlyWithUrls() throws Exception {
+    void generateAccessCheckQuery_shouldWorkCorrectlyWithUrls() {
         String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "file:///opt/digiverso/viewer/cms_media/bild4.png");
         Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"bild4.png\"", result);
     }
@@ -405,7 +404,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies throw RecordNotFoundException if record not found
      */
     @Test
-    void getPdfDownloadQuotaForRecord_shouldThrowRecordNotFoundExceptionIfRecordNotFound() throws Exception {
+    void getPdfDownloadQuotaForRecord_shouldThrowRecordNotFoundExceptionIfRecordNotFound() {
         Assertions.assertThrows(RecordNotFoundException.class, () -> AccessConditionUtils.getPdfDownloadQuotaForRecord("notfound"));
     }
 
