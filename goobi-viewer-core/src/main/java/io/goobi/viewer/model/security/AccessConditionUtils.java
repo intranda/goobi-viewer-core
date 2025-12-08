@@ -220,11 +220,11 @@ public final class AccessConditionUtils {
             case "txt":
                 sbQuery.append(" +(")
                         .append(SolrConstants.FILENAME_FULLTEXT)
-                        .append(':')
-                        .append("\"")
+                        .append(":\"")
                         .append(fileName)
                         .append("\" ")
-                        .append("FILENAME_PLAIN:\"")
+                        .append(SolrConstants.FILENAME_FULLTEXT_SHORT)
+                        .append(":\"")
                         .append(simpleFileName)
                         .append("\")");
                 break;
@@ -239,7 +239,8 @@ public final class AccessConditionUtils {
                         .append(':')
                         .append(altoFileName)
                         .append(" ")
-                        .append("FILENAME_XML:\"")
+                        .append(SolrConstants.FILENAME_ALTO_SHORT)
+                        .append(":\"")
                         .append(simpleFileName)
                         .append("\")");
                 break;
