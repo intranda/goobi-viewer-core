@@ -55,13 +55,13 @@
 			width: 260px;
 			padding: 0.35rem 0;
 			font-size: @fontMedium;
-			background: @loginNavBG;
-			border: 1px solid var(--login-nav-dropdown-border, rgba(255, 255, 255, 0.1));
+			background: @login-nav-background;
+			border: 1px solid @login-nav-dropdown-border-color;
 			box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
 			border-radius: 0.85rem;
 			overflow: hidden;
 			z-index: 2020;
-			color: @loginNavFG;
+			color: @login-nav-text-color;
 			li {
 				margin: 0;
 			}
@@ -69,7 +69,7 @@
 		&__user-dropdown-item {
 			font-size: @fontMedium;
 			&:hover {
-				background-color: @loginNavBGHover;
+				background-color: @login-nav-background-hover;
 			}
 		}
 		&__user-dropdown-item-link {
@@ -80,31 +80,31 @@
 			padding: 0.7rem 1.2rem 0.7rem 1.5rem;
 			line-height: 1;
 			text-decoration: none;
-			color: @loginNavFG;
+			color: @login-nav-text-color;
 			transition: color 0.2s ease, padding-left 0.18s ease, background-color 0.2s ease;
 		}
 		&__user-dropdown-item-link:hover {
-			color: @loginNavFGHover;
+			color: @login-nav-text-color-hover;
 			padding-left: 1.8rem;
-			background-color: @loginNavBGHover;
+			background-color: @login-nav-background-hover;
 		}
 		&__user-dropdown-item-text {
 			white-space: nowrap;
-			color: @loginNavFG;
+			color: @login-nav-text-color;
 			transition: color 0.2s ease;
 		}
 		&__user-dropdown-item-icon-text {
 			svg {
-				color: @loginNavIcon;
+				color: @login-nav-icon-color;
 				transition: color 0.2s ease;
 			}
 		}
 		&__user-dropdown-item-link:hover &__user-dropdown-item-icon-text svg {
-			color: @loginNavIconHover;
+			color: @login-nav-icon-color-hover;
 		}
 		&__user-dropdown-item-caret {
 			margin-left: auto;
-			color: @loginNavIcon;
+			color: @login-nav-icon-color;
 		}
 			/* BOOKMARK DROPDOWN */
 			&__bookmarks-dropdown {
@@ -114,7 +114,7 @@
 			&__bookmarks-small-list {
 				display: none;
 				padding: 0.5rem 1rem 0.5rem 1.5rem;
-				background-color: @loginNavBookmarksBG;
+				background-color: @login-nav-bookmarks-background;
 			}
 			&__bookmarks-entry {
 				display: flex;
@@ -136,13 +136,13 @@
 			&__bookmarks-icon-list .fa, 
 			&__bookmarks-icon-list svg,
 			&__bookmarks-icon-list {
-				color: @loginNavBookmarksFG;
+				color: @login-nav-bookmarks-text-color;
 				a {
 					margin-right: 0;
-					color: @loginNavBookmarksFG;
+					color: @login-nav-bookmarks-text-color;
 				}
 				&:hover {
-					color: @loginNavBookmarksFGHover;
+					color: @login-nav-bookmarks-text-color-hover;
 				}
 			}
 			&__bookmarks-icon-list,
@@ -169,14 +169,14 @@
 				font-size: 1.2rem;
 				color: #fff;
 				border-radius: 2px;
-				background-color: @loginNavBookmarksCounterBG;
+				background-color: @login-nav-bookmarks-counter-background;
 				align-self: center;
 			}
 			&__bookmarks-overview-link {
 				margin-left: auto;
-				color: @loginNavBookmarksFG;
+				color: @login-nav-bookmarks-text-color;
 				&:hover {
-					color: @loginNavBookmarksFGHover;
+					color: @login-nav-bookmarks-text-color-hover;
 				}
 			}
 			&__bookmarks-trigger {

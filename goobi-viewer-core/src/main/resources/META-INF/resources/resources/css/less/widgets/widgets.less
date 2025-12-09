@@ -7,8 +7,19 @@
 .widget {
     margin-bottom: 20px;
     width: 100%;
-    .icon-wrapper { color: @white; }
-    .icon-wrapper svg { color: currentColor; }
+
+    .icon-wrapper svg {
+        color: @widget-icon-color-body;
+    }
+
+    &__topbar .icon-wrapper svg,
+    .input-group-addon .icon-wrapper svg {
+        color: @widget-icon-color-topbar;
+    }
+
+    [class*="__collapse"] .icon-wrapper svg {
+        color: @widget-icon-color-expand;
+    }
     &__topbar {
         display: flex;
         justify-content: space-between;
