@@ -3231,7 +3231,15 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return Navigation outcome
      */
     public String searchInRecord(String queryField, String queryValue) {
-        this.advancedSearchQueryGroup.resetItems(); // reset all items first
+        logger.trace("searchInRecord: {}:{}", queryField, queryValue);
+        // reset all items except the one containing the value from the search input field
+        int index = 0;
+        for (SearchQueryItem item : this.advancedSearchQueryGroup.getQueryItems()) {
+            if (index != 1) {
+                item.reset();
+            }
+            index++;
+        }
         this.advancedSearchQueryGroup.getQueryItems().get(0).setField(queryField);
         if (StringUtils.isNotBlank(queryValue)) {
             this.advancedSearchQueryGroup.getQueryItems().get(0).setValue(queryValue);
@@ -3241,6 +3249,7 @@ public class SearchBean implements SearchInterface, Serializable {
         this.advancedSearchQueryGroup.getQueryItems().get(1).setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
         this.advancedSearchQueryGroup.getQueryItems().get(1).getLines().get(0).setOperator(SearchItemOperator.AND);
         this.setActiveSearchType(1);
+        logger.trace("Searching for: {}", this.advancedSearchQueryGroup.getQueryItems().get(1).getValue());
 
         return this.searchAdvanced();
     }
