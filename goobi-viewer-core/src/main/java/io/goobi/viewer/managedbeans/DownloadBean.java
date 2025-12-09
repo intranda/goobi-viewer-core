@@ -74,8 +74,6 @@ public class DownloadBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(DownloadBean.class);
 
-    private static long ttl = 1209600000;
-
     @Inject
     private transient MessageQueueManager messageBroker;
 
@@ -95,17 +93,6 @@ public class DownloadBean implements Serializable {
             logger.debug("reset (thread {})", Thread.currentThread().threadId());
             downloadIdentifier = null;
         }
-    }
-
-    /**
-     * <p>
-     * getTimeToLive.
-     * </p>
-     *
-     * @return a long.
-     */
-    public static long getTimeToLive() {
-        return ttl;
     }
 
     /**
@@ -248,6 +235,11 @@ public class DownloadBean implements Serializable {
 
     public void createPDFDownloadJob(String pi, String logId, String usePdfSource, String configVariant)
             throws DAOException, URISyntaxException, JsonProcessingException {
+
+        if (this.messageBroker == null) {
+            logger.error("No message broker avaible. Aborting task");
+            return;
+        }
 
         ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
 

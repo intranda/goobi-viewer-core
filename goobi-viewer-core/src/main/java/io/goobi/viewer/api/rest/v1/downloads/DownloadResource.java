@@ -54,7 +54,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.DownloadBean;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
@@ -584,7 +583,8 @@ public class DownloadResource {
             email = StringEscapeUtils.unescapeHtml4(email);
             String id = DownloadJob.generateDownloadJobId(type, pi, logId);
             try {
-                DownloadJob job = DownloadJob.checkDownload(type, email, pi, logId, id, DownloadBean.getTimeToLive());
+                DownloadJob job = DownloadJob.checkDownload(type, email, pi, logId, id,
+                        DataManager.getInstance().getConfiguration().getDownloadPdfTimeToLive().toMillis());
                 URI downloadPageUrl = getDownloadPageUrl(id);
                 return getForwardToDownloadPageResponse(downloadPageUrl, job);
             } catch (PresentationException e) {

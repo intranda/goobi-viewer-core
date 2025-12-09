@@ -33,7 +33,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +57,6 @@ import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
-import io.goobi.viewer.managedbeans.DownloadBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.viewer.Dataset;
@@ -72,7 +71,6 @@ public class PdfGenerator {
     private final String configVariant;
     private final boolean usePdfSource;
     private final Path path;
-    private final long timeToLive = DownloadBean.getTimeToLive();
 
     public PdfGenerator(ViewerMessage pdfMessage) {
         this.pi = pdfMessage.getProperties().get("pi");
@@ -278,8 +276,8 @@ public class PdfGenerator {
     public LocalDateTime getExirationTime() throws IOException {
         if (Files.exists(getPath())) {
             FileTime lastAccessed = FileTools.getDateModified(getPath());
-            Instant expirationTime = lastAccessed.toInstant().plus(this.timeToLive, ChronoUnit.MILLIS);
-            return LocalDateTime.from(expirationTime);
+            Instant expirationTime = lastAccessed.toInstant().plus(DataManager.getInstance().getConfiguration().getDownloadPdfTimeToLive());
+            return LocalDateTime.ofInstant(expirationTime, ZoneId.systemDefault());
         } else {
             throw new FileNotFoundException();
         }
@@ -293,7 +291,7 @@ public class PdfGenerator {
      * @return a {@link java.lang.String} object.
      */
     public String getTimeToLive() {
-        Duration d = Duration.ofMillis(this.timeToLive);
+        Duration d = DataManager.getInstance().getConfiguration().getDownloadPdfTimeToLive();
         return String.format("%dd %d:%02d:%02d", d.toDays(), d.toHours() % 24, d.toMinutes() % 60, d.getSeconds() % 60);
     }
 

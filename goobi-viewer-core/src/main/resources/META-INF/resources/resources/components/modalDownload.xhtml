@@ -153,7 +153,7 @@
                   </button>
 
                   <h:commandButton
-                    action="#{downloadBean.createPDFDownloadJob(activeDocumentBean.persistentIdentifier, cc.attrs.logId, false, '')}"
+                    action="#{downloadBean.createPDFDownloadJob(activeDocumentBean.persistentIdentifier, cc.attrs.logId, true, '')}"
                     styleClass="btn btn--full"
                     value="#{msg.submit}"
                     pt:data-target="buttonLoaderClickEvent"

@@ -50,6 +50,7 @@ public class PurgeExpiredDownloadPdfsMessageHandler implements MessageHandler<Me
         Path targetFolder = Path.of(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
         List<Path> pdfs = getDownloadPdfFiles(targetFolder);
 
+        int filesDeleted = 0;
         for (Path pdfPath : pdfs) {
             try {
                 if (Files.exists(pdfPath)) {
@@ -57,12 +58,15 @@ public class PurgeExpiredDownloadPdfsMessageHandler implements MessageHandler<Me
                     if (!job.isLocked() && job.isExpired()) {
                         logger.debug("Deleting expired pdf download file {}", pdfPath);
                         Files.delete(pdfPath);
+                        ++filesDeleted;
                     }
                 }
             } catch (IOException e) {
                 logger.error("Failed to delete expired pdf download file {}", pdfPath);
             }
         }
+
+        message.getProperties().put("result", "Deleted %s PDFs in %s".formatted(filesDeleted, targetFolder));
 
         return MessageStatus.FINISH;
     }
