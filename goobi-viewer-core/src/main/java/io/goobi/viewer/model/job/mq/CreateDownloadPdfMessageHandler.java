@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,11 +51,11 @@ import io.goobi.viewer.model.job.download.PdfGenerator;
 import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
 
-public class PdfMessageHandler implements MessageHandler<MessageStatus> {
+public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageStatus> {
 
     private static final int DELAY_IF_PDF_IS_BEING_CREATED_MILLIS = 300_000;
     private static final int MAX_RETRIES = 2;
-    private static final Logger logger = LogManager.getLogger(PdfMessageHandler.class);
+    private static final Logger logger = LogManager.getLogger(CreateDownloadPdfMessageHandler.class);
 
     @Override
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
@@ -80,8 +82,11 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
             //if the file does not exist, create it
             if (!Files.exists(pdfFile)) {
-                job.createPdf(work);
+                job.createPdf(work); //this takes time...
             }
+
+            //set last modified time to reflect the last time the file was downloaded
+            Files.setLastModifiedTime(job.getPath(), FileTime.from(Instant.now()));
             try {
                 job.notifyObserver(message.getProperties().get("email"), JobStatus.READY, message.getMessageId(), "");
             } catch (MessagingException e) {

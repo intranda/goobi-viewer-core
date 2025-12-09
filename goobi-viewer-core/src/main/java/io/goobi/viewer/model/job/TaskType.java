@@ -54,7 +54,9 @@ public enum TaskType implements ITaskType {
     /** Pull the git repository of the viewer theme if it exists in the configured location */
     PULL_THEME("0 */1 * * * ?"),
     /** Unload archive trees if any associated records have been reindexed. */
-    REFRESH_ARCHIVE_TREE("");
+    REFRESH_ARCHIVE_TREE(""),
+    /** Check the pdf-download folder and delete all pdf files which are not locked and last accessed 15 days ago */
+    PURGE_EXPIRED_DOWNLOAD_PDFS("0 0 3 * * ?");
 
     private final String defaultCronExpression;
 

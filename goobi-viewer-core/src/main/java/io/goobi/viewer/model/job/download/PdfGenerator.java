@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.job.download;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -28,7 +29,9 @@ import java.net.URISyntaxException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -47,6 +50,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.ViewerMessage;
@@ -69,7 +73,6 @@ public class PdfGenerator {
     private final boolean usePdfSource;
     private final Path path;
     private final long timeToLive = DownloadBean.getTimeToLive();
-    private final LocalDateTime lastRequested = LocalDateTime.now();
 
     public PdfGenerator(ViewerMessage pdfMessage) {
         this.pi = pdfMessage.getProperties().get("pi");
@@ -243,10 +246,14 @@ public class PdfGenerator {
                     body = body.replace("{0}", pi);
                     body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + messageId + "/");
                     body = body.replace("{4}", TYPE.toUpperCase());
-                    LocalDateTime exirationDate = lastRequested;
-                    exirationDate = exirationDate.plus(this.timeToLive, ChronoUnit.MILLIS);
-                    body = body.replace("{2}", DateTools.format(exirationDate, DateTools.FORMATTERISO8601DATE, false));
-                    body = body.replace("{3}", DateTools.format(exirationDate, DateTools.FORMATTERISO8601DATE, false));
+                    try {
+                        body = body.replace("{2}", DateTools.format(getExirationTime(), DateTools.FORMATTERISO8601DATE, false));
+                        body = body.replace("{3}", DateTools.format(getExirationTime(), DateTools.FORMATTERISO8601DATE, false));
+                    } catch (IOException e) {
+                        //cannot replace expiration date since file time could not be accessed
+                        body = body.replace("{2}", "?");
+                        body = body.replace("{3}", "?");
+                    }
                 }
                 break;
             case ERROR:
@@ -266,6 +273,16 @@ public class PdfGenerator {
         }
 
         return NetTools.postMail(List.of(email), null, null, subject, body);
+    }
+
+    public LocalDateTime getExirationTime() throws IOException {
+        if (Files.exists(getPath())) {
+            FileTime lastAccessed = FileTools.getDateModified(getPath());
+            Instant expirationTime = lastAccessed.toInstant().plus(this.timeToLive, ChronoUnit.MILLIS);
+            return LocalDateTime.from(expirationTime);
+        } else {
+            throw new FileNotFoundException();
+        }
     }
 
     /**
@@ -289,10 +306,11 @@ public class PdfGenerator {
      * @return a boolean.
      */
     public boolean isExpired() {
-        if (lastRequested == null) {
-            return false;
-        }
 
-        return System.currentTimeMillis() > DateTools.getMillisFromLocalDateTime(lastRequested, false) + this.timeToLive;
+        try {
+            return System.currentTimeMillis() > DateTools.getMillisFromLocalDateTime(getExirationTime(), false);
+        } catch (IOException e) {
+            return true;
+        }
     }
 }
