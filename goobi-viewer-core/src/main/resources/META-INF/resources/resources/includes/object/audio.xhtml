@@ -41,10 +41,6 @@
 			            <ui:repeat var="format" value="#{activeDocumentBean.viewManager.currentPage.getMediaFormats('audio')}">
 			               <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl(format)}" type="audio/#{format}" />
 			            </ui:repeat>
-			            <object type="application/x-shockwave-flash" data="#{navigationHelper.applicationUrl}resources/components/player_mp3.swf" width="200" height="20">
-			                <param name="movie" value="#{navigationHelper.applicationUrl}resources/components/player_mp3.swf" />
-			                <param name="flashvars" value="mp3=#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}&amp;autoplay=1" />
-			            </object>
 			        </audio>
 			    </div>
 		    </div>
