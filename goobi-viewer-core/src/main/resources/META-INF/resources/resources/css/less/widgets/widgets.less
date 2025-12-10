@@ -20,6 +20,11 @@
     [class*="__collapse"] .icon-wrapper svg {
         color: @widget-icon-color-expand;
     }
+
+    .badge .icon-wrapper svg,
+    .icon-wrapper.icon-badge svg {
+        color: currentColor;
+    }
     &__topbar {
         display: flex;
         justify-content: space-between;
