@@ -101,7 +101,6 @@ public class SearchQueryGroup implements Serializable {
                     SearchQueryItem item = new SearchQueryItem(template)
                             .setLabel(fieldConfig.getLabel());
                     item.setField(fieldConfig.getField());
-                    item.setDisplayAddNewItemButton(fieldConfig.isAllowMultipleItems());
                     // Add configured preselectValue to set values for this item
                     // displaySelectItems should be set correctly after calling item.setField()
                     if (StringUtils.isNotEmpty(fieldConfig.getPreselectValue())) {
@@ -131,6 +130,15 @@ public class SearchQueryGroup implements Serializable {
     public void injectItems(List<SearchQueryItem> items) {
         queryItems.clear();
         queryItems.addAll(items);
+    }
+
+    /**
+     * Resets all items.
+     */
+    public void resetItems() {
+        for (SearchQueryItem item : queryItems) {
+            item.reset();
+        }
     }
 
     /**
@@ -186,16 +194,7 @@ public class SearchQueryGroup implements Serializable {
         if (afterIndex >= 0) {
             SearchQueryItem newItem = new SearchQueryItem(template);
             newItem.setField(field);
-            newItem.setOperator(SearchItemOperator.OR);
-            if (newItem.isAllowMultipleItems()) {
-                newItem.setDisplayAddNewItemButton(true).setAdditionalCopy(true);
-                queryItems.get(afterIndex).setDisplayAddNewItemButton(false);
-                if (afterIndex == 0) {
-                    queryItems.get(afterIndex).setOperator(SearchItemOperator.OR);
-                }
-            }
             queryItems.add(afterIndex + 1, newItem);
-
             return true;
         }
 

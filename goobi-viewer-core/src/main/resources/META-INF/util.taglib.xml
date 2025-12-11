@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<facelet-taglib
+    version="2.2"
+    xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facelettaglibrary_2_2.xsd">
+    <namespace>http://goobi.io/util</namespace>
+
+    <tag>
+        <tag-name>icon</tag-name>
+        <source>resources/resources/includes/util/icon.xhtml</source>
+        <attribute>
+            <description>CSS classes applied to the outer wrapper element.</description>
+            <name>styleClass</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>Tabler icon name (e.g. "trash", "user").</description>
+            <name>icon</name>
+            <required>true</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>Inline color for the icon wrapper; forwarded as style=\"color:…\".</description>
+            <name>color</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>Set to "true" to render the filled variant; otherwise outline.</description>
+            <name>filled</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>CSS classes applied to the inner &lt;svg&gt; element (e.g., Tabler icon utilities like 'icon', 'icon-pulse').</description>
+            <name>svgClass</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>Accessible label announced to assistive technologies.</description>
+            <name>ariaLabel</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>Inline color for the wrapper; forwarded as style=\"color:…\" so currentColor picks it up.</description>
+            <name>color</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+    </tag>
+    <tag>
+        <tag-name>icon-text</tag-name>
+        <source>resources/resources/includes/util/icon-text.xhtml</source>
+        <attribute>
+            <description>CSS classes applied to the combined wrapper (icon and text).</description>
+            <name>styleClass</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>CSS classes applied to the icon element.</description>
+            <name>iconClass</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>CSS classes applied to the text element.</description>
+            <name>textClass</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>Accessible label for the icon (forwarded to util:icon as ariaLabel).</description>
+            <name>iconAriaLabel</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>Tabler icon name (e.g. "trash", "user").</description>
+            <name>icon</name>
+            <required>true</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>Set to "true" to render the filled variant; otherwise outline.</description>
+            <name>filled</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>Text label rendered next to the icon.</description>
+            <name>text</name>
+            <required>true</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>CSS classes applied to the inner &lt;svg&gt; element (forwarded to util:icon as svgClass).</description>
+            <name>iconSvgClass</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <description>Text position relative to the icon: 'left' or 'right' (default: 'right').</description>
+            <name>textPosition</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+    </tag>
+</facelet-taglib>

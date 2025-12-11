@@ -65,29 +65,30 @@
 			max-width: 100%;
 		}
 	}
+	&__list-outer-list {
+		display: flex;
+		flex-direction: column;
+	}
 	/* TOC TREEVIEW */
 	/* ELEMENT */
 	&__list-expandable,
 	&__list-full {
+		padding: 10px 15px;
 		border-top: 1px solid @middlegray;
 		li {
-			padding: 0 10px;
 			&:first-child {
-				padding-left: 5px !important;
+//				padding-left: 5px !important;
 			}
 			&:hover {
 				background-color: @lightgray;
-				a, button {
-					color: @darkgray;
-				}
 			}
 		}
 	}
 	&__list-expandable-title,
 	&__list-full-title {
 		a, button {
-			display: block;
-			padding: 5px 0;
+//			display: block;
+//			padding: 5px 0;
 			&:hover,
 			&:focus,
 			&:active {
@@ -96,13 +97,16 @@
 	}
 	&__list-expandable-number,
 	&__list-full-number {
+		display: flex;
+		justify-content: flex-end;
+		gap: 8px;
+		flex-wrap: wrap;
+		align-items: center;
 		li {
 			display: inline-block;
 			border: none;
 		}
 		a {
-			display: block;
-			padding: 5px 3px;
 			text-decoration: none;
 			&:hover,
 			&:focus,
@@ -111,47 +115,43 @@
 			}
 		}
 	}
+	&__list-expandable-download-button,
+	&__list-full-download-button {
+		display: flex;
+	}
 	/* EXPAND ALL */
 	&__list-expandable-all {
-		margin-top: 15px;
-		padding: 0 15px;
+		margin: 15px 0;
 		display: flex;
 		justify-content: flex-end;
-		ul {
-			margin: 0;
-			padding: 0;
-			list-style: none;
-		}
-		li {
-			display: inline-block;
-		}
-		a, button {
-			display: block;
-			padding: 5px;
-
-			&:focus,
-			&:hover,
-			&:active {
-				color: inherit;
-			}
-		}
+		gap: 10px;
+//		a, button {
+//			display: block;
+//			padding: 5px;
+//
+//			&:focus,
+//			&:hover,
+//			&:active {
+//				color: inherit;
+//			}
+//		}
 	}
 	/* TOC EXPANDABLE */
 	&__list-expandable {}
-	&__list-expandable-elem {
+	&__list-expandable-elem,
+	&__list-full-item {
+		padding: 4px 0px;
 		&.parent {}
 		&.child {}
 	}
-	&__list-expandable-expand {
-		a, button {
-			display: block;
-			padding: 5px 0;
-			&:focus,
-			&:hover,
-			&:active {
-				color: inherit;
-			}
-		}
+	&__list-expandable-title-wrapper,
+	&__list-full-title-wrapper {
+		display: flex;
+		align-items: center;
+	}
+	&__list-expandable-expand {}
+	&__list-expandable-expand-button {
+		display: flex;
 	}
 	&__list-expandable-title {
 		a {

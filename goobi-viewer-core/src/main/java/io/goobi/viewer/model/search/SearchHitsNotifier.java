@@ -128,6 +128,8 @@ public class SearchHitsNotifier {
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         //clone the search so any alterations are discarded later
         Search tempSearch = new Search(search);
+        //Set owner to null so no access condition check is performed for thumbnail display. This is not needed here and saves time
+        tempSearch.setOwner(null);
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString(tempSearch.getFacetString());
         tempSearch.execute(facets, null, 0, null);

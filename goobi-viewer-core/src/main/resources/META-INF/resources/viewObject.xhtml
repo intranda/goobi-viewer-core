@@ -89,10 +89,10 @@
 
 
                 <!-- IMAGE CONTROLS -->
-	                <h:panelGroup
-	                    rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'video' and activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'audio'}">
-	                    <viewerComponent:imageControls id="imageControls" />
-	                </h:panelGroup>
+                <h:panelGroup
+                    rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'video' and activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'audio' and activeDocumentBean.viewManager.currentPage.accessPermissionObject}">
+                    <viewerComponent:imageControls id="imageControls" />
+                </h:panelGroup>
 
                 <!-- VIEW IMAGE -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">
@@ -129,7 +129,7 @@
                         <ui:include src="/resources/includes/object/text.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
-                
+
                 <!-- PAGINATOR -->
                 <h:panelGroup id="paginatorGroup">
 	                    <div id="simplePaginator"/>
@@ -247,46 +247,19 @@
                 <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
             </h:panelGroup>
 
-            <script type="text/javascript">
-            	var downloadModalConfig = {
-                	downloadBtn: ".download-modal",
-                    path: "#{navigationHelper.applicationUrl}",
-                    iiifPath: "#{configurationBean.iiifApiUrl}",
-                    userEmail: $( "#userEmail" ).val(),
-                    useReCaptcha: #{configurationBean.useReCaptcha},
-                    reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
-                    messages: {
-                        downloadInfo: {
-                            text: "#{msg.downloadInfoText}",
-                            title: "#{msg.downloadInfoTitle}",
-                            part: "#{msg.downloadInfoPart}",
-                            fileSize: "#{msg.downloadInfoFileSize}"
-                        },
-                        reCaptchaText: "#{msg.downloadReCaptchaText}",
-                        rcInvalid: "#{msg.downloadRcInvalid}",
-                        rcValid: "#{msg.downloadRcValid}",
-                        eMailText: "#{msg.downloadEMailText}",
-                        eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
-                        eMail: "#{msg.downloadEmail}",
-                        closeBtn: "#{msg.downloadCloseModal}",
-                        saveBtn: "#{msg.downloadGenerateFile}",
-                    }
-                };
-				$(document).ready(() => {
-					viewerJS.downloadModal.init( downloadModalConfig );
-				});
-
-                // viewerJS.clipboard.init( '[data-copy]' );
-            </script>
 		</f:view>
     </ui:define>
 
-    <ui:define name="sidebar">
 
-		<h:panelGroup layout="block" id="sidebarGroup">
-	        <viewerComponent:record_sidebar id="sidebar"/>
-		</h:panelGroup>
+	<ui:define name="sidebar">
+		<!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
+		<ui:fragment
+			rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
+			<h:panelGroup layout="block" id="sidebarGroup">
+				<viewerComponent:record_sidebar id="sidebar" />
+			</h:panelGroup>
+		</ui:fragment>
+	</ui:define>
 
-    </ui:define>
 
 </ui:composition>

@@ -841,10 +841,4 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
 
         return accessGranted;
     }
-
-    @Deprecated(since = "24.10")
-    public boolean isEnabled() {
-        return true;
-    }
-
 }

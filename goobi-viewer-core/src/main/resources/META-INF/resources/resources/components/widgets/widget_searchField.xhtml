@@ -1,5 +1,6 @@
 <ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util" 
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components" 
@@ -44,7 +45,7 @@
 			                        <div class="input-group-addon">
 				                        <button class="btn widget-searchfield__submit" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimple()}">
 					                        <f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
-												<i class="fa fa-search"/>
+												<util:icon icon="search" />
 				                        </button>
 			                        </div>
 								</ui:fragment>

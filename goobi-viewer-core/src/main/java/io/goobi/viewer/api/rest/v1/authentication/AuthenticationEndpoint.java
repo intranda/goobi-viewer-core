@@ -345,11 +345,11 @@ public class AuthenticationEndpoint {
             String idTokenEncoded = accessToken;
             if (idTokenEncoded == null) {
                 // Fetch token from token endpoint
-                Map<String, String> headers = new HashMap<>(2);
+                Map<String, String> headers = HashMap.newHashMap(2);
                 headers.put("Accept-Charset", "utf-8");
                 headers.put("Content-Type", "application/x-www-form-urlencoded");
 
-                Map<String, String> params = new HashMap<>(5);
+                Map<String, String> params = HashMap.newHashMap(5);
                 params.put("grant_type", "authorization_code");
                 params.put("code", authCode);
                 params.put("client_id", provider.getClientId());
@@ -404,6 +404,13 @@ public class AuthenticationEndpoint {
                     logger.error("Unexpected error while waiting for redirect", e);
                 }
             }
+
+            // Redirect to original URL, if not yet happened
+            if (!servletResponse.isCommitted()) {
+                logger.debug("Provider did not commit redirect; performing fallback redirect.");
+                return Response.seeOther(URI.create(provider.getRedirectUrl())).build();
+            }
+
             return Response.ok("").build();
         } finally {
             if (provider != null) {

@@ -1,9 +1,11 @@
 <!-- progress-bar.tag -->
 <external-resource-download>
 <div class="download-external-resource__list">
-	<div class="download-external-resource__item" each="{url in urls}">
-		<div class="download-external-resource__error_wrapper {isError(url) ? '-active' : ''}">
-			<i class="fa fa-exclamation-triangle"/>
+		<div class="download-external-resource__item" each="{url in urls}">
+			<div class="download-external-resource__error_wrapper {isError(url) ? '-active' : ''}">
+				<svg class="download-external-resource__error_icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+					<use riot-href="{getIconHref('alert-triangle')}"></use>
+				</svg>
 			<label class="download-external-resource__error">{getErrorMessage(url)}</label>
 		</div>
 		<div class="download-external-resource__inner-wrapper {isFinished(url) ? '' : '-active'}">
@@ -58,6 +60,10 @@
 </div>
 
 <script>
+      const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+      const viewerConfig = window.viewerConfig || {};
+      this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+      this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
       this.urls = [];
       this.downloads = new Map();
       this.updateListeners = new Map();
@@ -104,7 +110,7 @@
 
 
       initWebSocket() {
-        // Ändern Sie die WebSocket-URL entsprechend Ihrer Konfiguration
+        // ï¿½ndern Sie die WebSocket-URL entsprechend Ihrer Konfiguration
         const socket = new viewerJS.WebSocket(window.location.host, this.contextPath, viewerJS.WebSocket.PATH_DOWNLOAD_TASK);
         console.log("created web socket ", socket.socket.url);
         socket.onMessage.subscribe( (event) => {

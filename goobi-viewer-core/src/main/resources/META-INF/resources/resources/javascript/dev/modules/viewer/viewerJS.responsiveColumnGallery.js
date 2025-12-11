@@ -220,14 +220,18 @@ var viewerJS = ( function( viewer ) {
                     image += '<img src="' + _defaults.themePath + _defaults.imagePath + n.name + '" alt="' + n.alt + '" />';
                     if ( _defaults.lightbox.active ) {
                         image += '<div class="lightbox-toggle" title="' + _defaults.lang.showLightbox + '">';
-                        image += '<i class="fa fa-arrows-alt" aria-hidden="true"></i>';
+                        image += '<span class="icon-wrapper lightbox-toggle__icon" aria-hidden="true">';
+                        image += '<svg class="icon" focusable="false"><use href="' + _defaults.themePath + 'resources/icons/outline/arrow-move.svg#icon"></use></svg>';
+                        image += '</span>';
                         image += '</div>';
                     }
                     image += '</div>';
                     if ( _defaults.caption ) {
                         image += '<div class="rcg-image-footer">';
                         image += '<p>' + n.caption + '<a href="' + n.url + '" title="' + n.title + '">';
-                        image += _defaults.lang.goToWork + ' <i class="fa fa-picture-o" aria-hidden="true"></i></a></p>';
+                        image += _defaults.lang.goToWork + ' <span class="icon-wrapper rcg-image-footer__icon" aria-hidden="true">';
+                        image += '<svg class="icon" focusable="false"><use href="' + _defaults.themePath + 'resources/icons/outline/photo.svg#icon"></use></svg>';
+                        image += '</span></a></p>';
                         image += '</div>';
                     }
                     image += '</div>';
@@ -309,7 +313,9 @@ var viewerJS = ( function( viewer ) {
             
             lightbox += '<div class="rcg-lightbox-overlay">';
             lightbox += '<div class="rcg-lightbox-body">';
-            lightbox += '<div class="rcg-lightbox-close" title="' + _defaults.lang.close + '"><i class="fa fa-times" aria-hidden="true"></i></div>';
+            lightbox += '<div class="rcg-lightbox-close" title="' + _defaults.lang.close + '"><span class="icon-wrapper rcg-lightbox-close__icon" aria-hidden="true">';
+            lightbox += '<svg class="icon" focusable="false"><use href="' + _defaults.themePath + 'resources/icons/outline/x.svg#icon"></use></svg>';
+            lightbox += '</span></div>';
             lightbox += '<div class="rcg-lightbox-image">';
             lightbox += '<img src="' + data.src + '" alt="' + data.alt + '" />';
             lightbox += '</div>'; // .rcg-lightbox-image

@@ -3,7 +3,8 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:util="http://goobi.io/util">
 
     <composite:interface />
 
@@ -11,7 +12,7 @@
         <div class="search-list__save-search">
 			<span data-toggle="tooltip" data-placement="top" title="#{msg.saveSearch}">
 				<button type="button" class="btn btn--icon" data-toggle="modal" data-target="#saveSearchModal" data-backdrop="false" aria-label="#{msg.saveSearch}">
-					<i class="fa fa-floppy-o" aria-hidden="true"></i>
+					<util:icon icon="device-floppy" svgClass="icon" />
 				</button>
 			</span>
 

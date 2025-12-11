@@ -102,19 +102,6 @@ public class ArchiveResource implements Serializable {
         return accessConditions;
     }
 
-    /**
-     * @return Combination of databaseName and resourceName
-     */
-    @Deprecated(since = "24.10")
-    public String getCombinedName() {
-        return resourceName.replaceAll("(?i)\\.xml", "");
-    }
-
-    @Deprecated(since = "24.10")
-    public String getCombinedId() {
-        return getResourceId();
-    }
-
     @Override
     public String toString() {
         return resourceName.replaceAll("(?i)\\.xml", "");

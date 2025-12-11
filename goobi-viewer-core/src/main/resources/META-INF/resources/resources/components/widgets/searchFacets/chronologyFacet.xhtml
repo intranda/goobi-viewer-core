@@ -6,7 +6,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:util="http://goobi.io/util">
 
     <!-- INTERFACE OPTIONS -->
     <composite:interface />
@@ -34,7 +35,7 @@
 	                                    data-placement="top" data-reset="chrono-slider"
 	                                    jsf:action="#{searchBean.removeRangeFacetAction(field)}"
 	                                    aria-label="Reset">
-	                                    <i class="fa fa-times" aria-hidden="true"></i>
+	                                    <util:icon icon="x" />
 	                                </button>
                                 </h:form>
                             </div>

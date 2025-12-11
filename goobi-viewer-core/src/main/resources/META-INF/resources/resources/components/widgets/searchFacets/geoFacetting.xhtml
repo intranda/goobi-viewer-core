@@ -1,5 +1,6 @@
 <ui:composition 
     xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:util="http://goobi.io/util"
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
@@ -21,10 +22,10 @@
 					<h2 class="widget__title widget-geofacetting__title">#{msg.widget_geofacetting__label}</h2> 
 					<div class="widget-geofacetting__item widget-geofacetting__actions">
 			            <button type="button" id="toggleMarkers" data-toggle="tooltip" data-geofacet="toggleMarkers" title="#{msg.action__toggle_map_markers}" class="widget-geofacetting__action-toggle-markers" aria-label="#{msg.action__toggle_map_markers}">
-			            	<i class="fa fa-map-marker"/>
+							<util:icon icon="map-pin" styleClass="icon icon--pad-bottom"/>
 			            </button>
 						<button type="button" id="resetFacetMap" data-toggle="tooltip" data-geofacet="reset" title="#{msg.removeFacet}" class="widget-geofacetting__action-reset" aria-label="#{msg.fullscreen_enter}">
-			            	<i class="fa fa-times"/>
+							<util:icon icon="x" styleClass="icon icon--pad-bottom"/>
 			            </button>
 		            </div>
 				</div>
@@ -52,7 +53,7 @@
 					</div>
 					<div class="widget-geofacetting__overlay-buttons-wrapper">
 						<button  type="button" data-geofacet="toggleMarkersFullscreen" data-placement="right" data-toggle="tooltip" title="#{msg.action__toggle_map_markers}" class="btn btn--icon geo-map__toggle-markers" aria-label="#{msg.action__toggle_map_markers}">
-	           				<i class="fa fa-map-marker"/>
+	           				<util:icon icon="map-pin" />
 	        			</button>
 						<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="cancel">#{msg.cancel}</button>
 						<button class="btn btn--full widget-geofacetting__overlay-submit-search" data-geofacet="trigger-execute">#{msg.widget_geofacetting__area_facetting}</button>

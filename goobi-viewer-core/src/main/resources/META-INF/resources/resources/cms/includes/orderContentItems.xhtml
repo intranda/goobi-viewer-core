@@ -7,7 +7,8 @@
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"   
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:util="http://goobi.io/util">
 
 	<ui:define name="metadata">
 		<f:metadata />
@@ -24,7 +25,7 @@
 	
 				<!-- UP IN ORDER BUTTON -->
 				<button jsf:disabled="#{!cmsComponent.isPageScope() || page.isFirstComponent(cmsComponent)}" class="admin__content-component-order-arrow-up" jsf:action="#{page.decrementOrder(cmsComponent)}" data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_up}">
-					<i class="fa fa-chevron-up" aria-hidden="true"></i>
+					<util:icon icon="chevron-up" />
 					<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
 				</button>
 	
@@ -32,7 +33,7 @@
 	
 			    <!-- DOWN IN ORDER BUTTON -->
 				<button jsf:disabled="#{!cmsComponent.isPageScope() || page.isLastComponent(cmsComponent)}" class="admin__content-component-order-arrow-down" jsf:action="#{page.incrementOrder(cmsComponent)}" data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_down}">
-					<i class="fa fa-chevron-down" aria-hidden="true"></i>
+					<util:icon icon="chevron-down" />
 					<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
 				</button>
 

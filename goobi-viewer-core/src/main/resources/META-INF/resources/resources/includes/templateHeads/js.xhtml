@@ -109,12 +109,8 @@
         'resources/javascript/libs/mirador/mirador.min.js'
       ],
       ['openSeadragon',
-        ['template', 'templateAdmin', 'templateBlank', 'templateBlankUnstyled', 'templateFullscreen'],
+        ['templateAdmin', 'templateBlank', 'templateBlankUnstyled'],
         'resources/javascript/libs/openseadragon/openseadragon.min.js'
-      ],
-      ['openSeadragonHook',
-        ['template', 'templateAdmin', 'templateBlank', 'templateBlankUnstyled', 'templateFullscreen'],
-        'resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js'
       ],
       ['chartjs',
         ['templateBlankUnstyled'],
@@ -203,7 +199,7 @@
       ],
       ['imageView',
         ['template', 'templateAdmin', 'templateBlank', 'templateFullscreen'],
-        'resources/javascript/dist/imageView.min.js'
+        'resources/js/dist/imageView.min.js'
       ],
       ['riotTags',
         ['templateBlankUnstyled'],
@@ -223,6 +219,26 @@
 		</c:if>
 	</c:forEach>
 
+	<script type="text/javascript">
+		(function assignViewerConfigBasePath() {
+			var contextPath = '#{request.contextPath}';
+			if (!contextPath || contextPath.length === 0) {
+				contextPath = '/';
+			}
+			if (contextPath.charAt(contextPath.length - 1) !== '/') {
+				contextPath += '/';
+			}
+
+			window.viewerConfig = window.viewerConfig || {};
+			if (!window.viewerConfig.iconBasePath) {
+				window.viewerConfig.iconBasePath = contextPath;
+			}
+			if (!window.viewerConfig.contextPath) {
+				window.viewerConfig.contextPath = contextPath;
+			}
+		})();
+	</script>
+
 	<!-- SHOW AVAILABLE LIBS AND SCRIPTS IN CONSOLE -->
 	<!-- an easy way to log library names to the console, just pass `showCSS` to the excludeCSS variable in a template file -->
 	<c:if test="#{excludeJS.contains('showJS')}">
@@ -236,4 +252,3 @@
 	</c:if>
 
 </ui:composition>
-

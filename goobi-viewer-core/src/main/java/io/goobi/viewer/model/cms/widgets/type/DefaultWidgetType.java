@@ -37,44 +37,44 @@ public enum DefaultWidgetType implements WidgetContentType {
     /**
      * Browsing or "Stöbern" widget, containing all browse terms which are configured in the viewer-config
      */
-    WIDGET_BROWSING("browseTitle", "cms_widget__browse__description", "fa fa-list-alt", "widget_browsing.xhtml"),
+    WIDGET_BROWSING("browseTitle", "cms_widget__browse__description", "news", "widget_browsing.xhtml"),
     /**
      * Displays search facetting for a page with search functionality. Always displays the facet fields configured in viewer-config Also includes
      * chronology-facetting (by year) and geospatial facetting (on a map) which are displayed as independent widgets in the GUI
      */
-    WIDGET_FACETTING("faceting", "cms_widget__faceting__description", "fa fa-list-ul", "widget_searchFacets.xhtml", CMSPage::hasSearchFunctionality),
+    WIDGET_FACETTING("faceting", "cms_widget__faceting__description", "list", "widget_searchFacets.xhtml", CMSPage::hasSearchFunctionality),
     /**
      * Displays a search input field and link to advanced search
      */
-    WIDGET_SEARCH("navigationSearch", "cms_widget__search__description", "fa fa-search", "widget_searchField.xhtml"),
+    WIDGET_SEARCH("navigationSearch", "cms_widget__search__description", "search", "widget_searchField.xhtml"),
     /**
      * Display the total number of records available in the viewer
      */
-    WIDGET_WORKCOUNT("totalNumberOfVolumes", "cms_widget__total_number_of_volumes__description", "fa fa-circle-o", "widget_workCount.xhtml"),
+    WIDGET_WORKCOUNT("totalNumberOfVolumes", "cms_widget__total_number_of_volumes__description", "circle", "widget_workCount.xhtml"),
 
-    WIDGET_HIGHLIGHT("cms_widget__highlight__label", "cms_widget__highlight__description", "fa fa-star", "widget_highlight.xhtml");
+    WIDGET_HIGHLIGHT("cms_widget__highlight__label", "cms_widget__highlight__description", "star", "widget_highlight.xhtml");
 
     private final String label;
     private final String description;
     private final String filename;
-    private final String iconClass;
+    private final String iconName;
     private final Predicate<CMSPage> allowedForPage;
 
-    private DefaultWidgetType(String label, String description, String iconClass, String filename) {
-        this(label, description, iconClass, filename, p -> true);
+    private DefaultWidgetType(String label, String description, String iconName, String filename) {
+        this(label, description, iconName, filename, p -> true);
     }
 
-    private DefaultWidgetType(String label, String description, String iconClass, String filename, Predicate<CMSPage> allowedForPage) {
+    private DefaultWidgetType(String label, String description, String iconName, String filename, Predicate<CMSPage> allowedForPage) {
         this.label = label;
         this.description = description;
         this.filename = filename;
-        this.iconClass = iconClass;
+        this.iconName = iconName;
         this.allowedForPage = allowedForPage;
     }
 
     @Override
-    public String getIconClass() {
-        return this.iconClass;
+    public String getIconName() {
+        return this.iconName;
     }
 
     public String getLabel() {

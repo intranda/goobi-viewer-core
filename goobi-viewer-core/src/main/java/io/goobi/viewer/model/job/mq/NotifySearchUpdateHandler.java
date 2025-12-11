@@ -35,6 +35,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
+import jakarta.enterprise.context.ContextNotActiveException;
 
 public class NotifySearchUpdateHandler implements MessageHandler<MessageStatus> {
 
@@ -44,10 +45,9 @@ public class NotifySearchUpdateHandler implements MessageHandler<MessageStatus> 
     public MessageStatus call(ViewerMessage ticket, MessageQueueManager queueManager) {
         try {
             new SearchHitsNotifier().sendNewHitsNotifications();
-        } catch (DAOException | PresentationException | IndexUnreachableException | ViewerConfigurationException e) {
+        } catch (DAOException | PresentationException | IndexUnreachableException | ViewerConfigurationException | ContextNotActiveException e) {
             logger.error("Error in job {}: {}", ticket.getMessageId(), e.toString());
             return MessageStatus.ERROR;
-
         }
         return MessageStatus.FINISH;
     }

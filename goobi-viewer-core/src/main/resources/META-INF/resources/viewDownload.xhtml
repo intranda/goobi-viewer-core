@@ -33,7 +33,7 @@
 
             	<div class="download__status">
 	                <h1 >#{msg.downloadHeading}</h1>
-
+					<h2>Status: #{downloadBean.message.messageStatus.name()}</h2>
 	                <h:inputHidden id="jobStatusField" value="#{downloadBean.message.messageStatus.name()}" />
 	                <h:panelGroup rendered="#{downloadBean.message != null}">
 	                    <!-- ERROR MESSAGE -->

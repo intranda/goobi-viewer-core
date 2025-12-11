@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -81,8 +83,9 @@
 									aria-hidden="true">#{ticket.requestMessage} extra spacer
 								</div>
 								<span
-									class="admin__tickets-pending-ticket-unfold-button"><i
-									class="fa fa-caret-right"></i></span>
+									class="admin__tickets-pending-ticket-unfold-button">
+									<util:icon icon="caret-right" />
+								</span>
 							</div>
 						</div>
 						</ui:fragment>
@@ -300,8 +303,9 @@
 											class="admin__tickets-pending-ticket-value-invis-message"
 											aria-hidden="true">#{ticket.requestMessage}</div>
 										<span
-											class="admin__tickets-pending-ticket-unfold-button"><i
-											class="fa fa-caret-right"></i></span>
+											class="admin__tickets-pending-ticket-unfold-button">
+											<util:icon icon="caret-right" />
+										</span>
 									</div>
 								</div>
 

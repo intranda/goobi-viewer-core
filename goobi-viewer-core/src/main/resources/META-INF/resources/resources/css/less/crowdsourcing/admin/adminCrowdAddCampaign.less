@@ -73,12 +73,17 @@
 			padding: 0.2rem 2.2rem 0.2rem 0.4rem;
 		}
 		&::after {
-			content: "\f133";
-			font-family: FontAwesome;
+			content: "";
 			position: absolute;
 			right: 0.7rem;
 			top: 50%;
-			transform: translate(0%, -52%);
+			transform: translate(0%, -50%);
+			width: 1.75rem;
+			height: 1.75rem;
+			background-color: currentColor;
+			mask: url("../../icons/outline/calendar.svg") center/100% 100% no-repeat;
+			-webkit-mask: url("../../icons/outline/calendar.svg") center/100% 100% no-repeat;
+			pointer-events: none;
 		}
 	}
 }

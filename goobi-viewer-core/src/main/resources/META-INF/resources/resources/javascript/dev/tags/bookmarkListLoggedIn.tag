@@ -10,10 +10,14 @@
 			<a href="{searchListUrl(bookmarkList)}"
 				data-toggle="tooltip" data-placement="top" data-original-title=""
 				title="{msg('action__search_in_bookmarks')}"> 
-				<i class="fa fa-search" aria-hidden="true"></i>
+				<svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                    <use riot-href="{getIconHref('search')}"></use>
+                </svg>
 			</a>
 			<a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg('viewMiradorComparison')}"> 
-				<i class="fa fa-th" aria-hidden="true"></i>
+				<svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                    <use riot-href="{getIconHref('grid-dots')}"></use>
+                </svg>
 			</a>
 			<span title="{msg('admin__crowdsourcing_campaign_statistics_numRecords')}" class="{mainClass}-counter">{bookmarkList.numItems}</span>
 		</div>
@@ -27,6 +31,11 @@
 </ul>
 
 <script> 
+
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 this.pi = this.opts.data.pi;
 this.logid = this.opts.data.logid;
@@ -132,4 +141,3 @@ msg(key) {
 </script> 
 
 </bookmarkListLoggedIn>
-

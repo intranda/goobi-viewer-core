@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
@@ -544,6 +545,8 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void generateNotificationFragment_shouldGenerateFragmentCorrectly() throws Exception {
+        TestUtils.mockFacesContext();
+        
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + AbstractSolrEnabledTest.PI_KLEIUNIV, null);
         Assertions.assertNotNull(doc);
         String title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);

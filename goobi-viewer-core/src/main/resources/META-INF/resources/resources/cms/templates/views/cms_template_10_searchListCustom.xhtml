@@ -25,7 +25,8 @@
 								<div class="tpl-search-list-custom__list-image">
 									<img src="#{hit.browseElement.getThumbnailUrl(50, 150)}"
 										alt="#{hit.browseElement.label}"
-										data-viewer-thumbnail="thumbnail" />
+										data-viewer-thumbnail="thumbnail"
+										data-viewer-access-denied-url="#{hit.browseElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
 								</div>
 							</div>
 							<div class="col-8 col-sm-10">

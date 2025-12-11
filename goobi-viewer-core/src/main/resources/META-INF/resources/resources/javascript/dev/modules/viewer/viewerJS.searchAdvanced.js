@@ -121,9 +121,9 @@ var viewerJS = ( function( viewer ) {
         }
         
         var values = JSON.parse( sessionStorage.getItem( 'advSearchValues' ) );
-        
+
         $.each( values, function( id, value ) {
-            $( '#' + id ).val( value );
+            $( '#' + CSS.escape(id) ).val( value );
         } );
     }
     

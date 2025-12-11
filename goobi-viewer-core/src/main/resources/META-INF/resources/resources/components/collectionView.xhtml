@@ -1,5 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
@@ -29,10 +30,10 @@
                                                     jsf:action="#{cc.attrs.collection.toggleChildren(browseDcElement)}">
                                                 	<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__show_details}"/>
                                                     <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
-                                                        <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+                                                        <util:icon icon="square-rounded-plus" />
                                                     </h:panelGroup>
                                                     <h:panelGroup rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
-                                                        <i class="fa fa-minus-square-o" aria-hidden="true"></i>
+                                                        <util:icon icon="square-rounded-minus" />
                                                     </h:panelGroup>
                                                     <f:ajax render="@form" />
                                                 </button>
@@ -62,11 +63,11 @@
 													jsf:styleClass="btn btn-link"
 													title="#{msg[browseDcElement.label]}">
 													<h:panelGroup rendered="#{not browseDcElement.showDescription}">
-														<i class="fa fa-angle-down" aria-hidden="true"></i>
+														<util:icon icon="chevron-down" />
 													</h:panelGroup>
 
 													<h:panelGroup rendered="#{browseDcElement.showDescription}">
-														<i class="fa fa-angle-up" aria-hidden="true"></i>
+														<util:icon icon="chevron-up" />
 													</h:panelGroup>
 
 													<f:setPropertyActionListener target="#{browseDcElement.showDescription}" value="#{not browseDcElement.showDescription}" />
@@ -79,7 +80,7 @@
 										<h:panelGroup rendered="#{configurationBean.displaySearchRssLinks}">
 											<div class="collection__rss">
 												<a href="#{browseDcElement.rssUrl}" title="#{msg[browseDcElement.label]}: #{msg.rssSubscribe}" target="_blank">
-													<i class="fa fa-rss" aria-hidden="true"></i>
+													<util:icon icon="rss"/>
 												</a>
 											</div>
 										</h:panelGroup>
@@ -94,7 +95,8 @@
                                             </div>
                                             <h:panelGroup rendered="#{browseDcElement.hasIcon()}">
                                                 <img src="#{browseDcElement.icon}" alt="" class="img-fluid"
-                                                data-viewer-thumbnail="thumbnail"/>
+                                                data-viewer-thumbnail="thumbnail"
+                                                data-viewer-access-denied-url="#{browseDcElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}"/>
                                             </h:panelGroup>
                                         </div>
                                     </h:panelGroup>

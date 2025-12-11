@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.archives;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * @author florian
@@ -31,19 +32,61 @@ public class NodeType implements Serializable {
 
     private static final long serialVersionUID = 3716038748824985126L;
 
-    private final String name;
-    private final String iconClass;
+    private static final Map<String, String> LEGACY_ICON_MAP = Map.ofEntries(
+            Map.entry("fa fa-folder-open-o", "folder-open"),
+            Map.entry("fa fa-folder", "folder"),
+            Map.entry("fa fa-files-o", "folder"),
+            Map.entry("fa fa-file-text-o", "file"),
+            Map.entry("fa fa-file-image-o", "photo"),
+            Map.entry("fa fa-file-audio-o", "music"),
+            Map.entry("fa fa-file-video-o", "video"),
+            Map.entry("fa fa-file-o", "file"));
+    private static final String DEFAULT_ICON = "folder-open";
 
-    public NodeType(String name, String iconClass) {
+    private final String name;
+    private final String icon;
+
+    public NodeType(String name, String icon) {
         this.name = name;
-        this.iconClass = iconClass;
+        this.icon = sanitizeIcon(icon);
     }
 
     public String getName() {
         return name;
     }
 
+    public String getIcon() {
+        return this.icon;
+    }
+
+    /**
+     * @deprecated use {@link #getIcon()}.
+     * @return icon name defined for this node type
+     */
+    @Deprecated
     public String getIconClass() {
-        return this.iconClass;
+        return this.icon;
+    }
+
+    private static String sanitizeIcon(String icon) {
+        if (icon == null) {
+            return DEFAULT_ICON;
+        }
+
+        String trimmed = icon.trim();
+        if (trimmed.isEmpty()) {
+            return DEFAULT_ICON;
+        }
+
+        String mapped = LEGACY_ICON_MAP.get(trimmed);
+        if (mapped != null) {
+            return mapped;
+        }
+
+        if (trimmed.contains(" ")) {
+            return DEFAULT_ICON;
+        }
+
+        return trimmed;
     }
 }

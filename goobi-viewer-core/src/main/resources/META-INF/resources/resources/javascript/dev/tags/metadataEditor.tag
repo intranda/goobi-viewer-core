@@ -17,7 +17,7 @@
 	deleteLabel: a label for the delete button
  -->
 <metadataEditor> 
-	<div if="{this.metadataList}">
+	<div >
 	<h2>Pin content</h2>
 	<div class="admin__language-tabs">
 		<ul class="nav nav-tabs">
@@ -48,10 +48,12 @@
 								value="{getValue(metadata)}"
 								oninput="{this.updateMetadata}"/>
 						</div>
-						<div if="{metadata.helptext}" class="input_form__option_help">
+						<div>
 							<button type="button" class="btn btn--clean"
 								data-toggle="helptext" for="help_{metadata.property}">
-								<i class="fa fa-question-circle" aria-hidden="true"></i>
+								<svg class="admin-cms-media__upload-icon" viewBox="0 0 24 24" width="200" height="200" aria-hidden="true">
+									<use riot-href="{getIconHref('help')}"></use>
+								</svg>
 							</button>
 						</div>
 						<div if="{metadata.helptext}" id="help_{metadata.property}"
@@ -65,6 +67,10 @@
 		</div>
 	</div>
  <script>
+    const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+    const viewerConfig = window.viewerConfig || {};
+    this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+    this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
     
  	this.on("mount", () => {
  	    this.currentLanguage = this.opts.currentLanguage;

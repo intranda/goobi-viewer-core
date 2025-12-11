@@ -407,7 +407,7 @@ public class AdminBean implements Serializable {
                 logger.trace("User self-deletion: {}", user.getId());
                 try {
                     userBean.logout();
-                } catch (AuthenticationProviderException e) {
+                } catch (AuthenticationProviderException | IOException e) {
                     logger.error(e.getMessage());
                 }
                 return "pretty:index";

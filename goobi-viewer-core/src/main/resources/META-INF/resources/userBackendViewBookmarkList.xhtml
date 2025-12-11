@@ -1,5 +1,7 @@
+
 <ui:composition
 	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -41,9 +43,7 @@
                                 <h:commandLink rendered="#{bookmarkBean.currentBookmarkList.isMayEdit(userBean.user)}"
                                     title="#{msg.edit}"
                                     action="#{bookmarkBean.editBookmarkListAction(bookmarkBean.currentBookmarkList)}">
-                                    <i
-                                        class="fa fa-pencil"
-                                        aria-hidden="true"></i>
+                                    <util:icon icon="edit"/>
                                     <f:passThroughAttribute
                                         name="data-toggle"
                                         value="tooltip" />
@@ -58,9 +58,7 @@
                                 <h:commandLink rendered="#{bookmarkBean.currentBookmarkList.isMayEdit(userBean.user)}"
                                     title="#{msg.bookmarkList_delete}"
                                     action="#{bookmarkBean.deleteCurrentBookmarkListAction}">
-                                    <i
-                                        class="fa fa-trash-o"
-                                        aria-hidden="true"></i>
+                                    <util:icon icon="trash"/>
                                     <f:passThroughAttribute
                                         name="data-toggle"
                                         value="tooltip" />

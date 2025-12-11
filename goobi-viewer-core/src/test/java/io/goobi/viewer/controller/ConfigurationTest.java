@@ -1803,7 +1803,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getAdvancedSearchFieldDefaultOperator_shouldReturnCorrectValue() {
-        assertEquals("OR", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDefaultOperator("MD_NAME", "person", false));
+        assertEquals("AND", DataManager.getInstance().getConfiguration().getAdvancedSearchFieldDefaultOperator("MD_NAME", "person", false));
     }
 
     /**
@@ -2982,24 +2982,6 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getWorkflowRestUrl_shouldReturnCorrectValue() {
         assertEquals("https://example.com/goobi/api/", DataManager.getInstance().getConfiguration().getWorkflowRestUrl());
-    }
-
-    /**
-     * @see Configuration#getTaskManagerRestUrl()
-     * @verifies return correct value
-     */
-    @Test
-    void getTaskManagerRestUrl_shouldReturnCorrectValue() {
-        assertEquals("taskmanager_url/rest", DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
-    }
-
-    /**
-     * @see Configuration#getTaskManagerServiceUrl()
-     * @verifies return correct value
-     */
-    @Test
-    void getTaskManagerServiceUrl_shouldReturnCorrectValue() {
-        assertEquals("taskmanager_url/service", DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl());
     }
 
     /**

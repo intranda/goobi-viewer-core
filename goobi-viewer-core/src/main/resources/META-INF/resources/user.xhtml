@@ -64,18 +64,19 @@
 
 
 	<ui:define name="sidebar">
-		<!-- USER AVATAR -->
-		<facelet:userAvatar user="#{userBean.user.copy}" />
-		
-		<!-- CROWDSOURCING USER SETTINGS (E-MAIL NOTIFICATIONS) -->
-		<div class="user-settings__crowdsourcing-box">
+		<ui:fragment rendered="#{userBean.loggedIn}">
+			<!-- USER AVATAR -->
+			<facelet:userAvatar user="#{userBean.user.copy}" />
+
+			<!-- CROWDSOURCING USER SETTINGS (E-MAIL NOTIFICATIONS) -->
 			<c:forEach var="module" items="#{configurationBean.modules}">
-			    <c:forEach var="contribution" items="#{module.getWidgets('userSettings')}">
-			        <ui:include src="/#{contribution}" />
-			    </c:forEach>
+				<div class="user-settings__crowdsourcing-box">
+					<c:forEach var="contribution" items="#{module.getWidgets('userSettings')}">
+						<ui:include src="/#{contribution}" />
+					</c:forEach>
+				</div>
 			</c:forEach>
-		</div>
-		
+		</ui:fragment>
 	</ui:define>
 
 </ui:composition>

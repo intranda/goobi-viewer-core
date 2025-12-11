@@ -151,7 +151,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
     		this.statusMapUpdates.next(this.pageStatusMap);
     	} else {
     		let targetIndex = this.getNextAccessibleIndex(this.currentCanvasIndex);
-    		console.log("handle locks", targetIndex);
     		if(targetIndex == undefined) {
     			this.setShowThumbs.next(true);
     		} else {
@@ -387,6 +386,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
             });
         })
         return save;
+
     }
     
     /**

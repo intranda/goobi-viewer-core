@@ -91,14 +91,21 @@
                 margin-left: -.1rem;
                 color: @white;
                 &::before {
-                	content:"\f105";
-                	font-family: "FontAwesome";
+	                	content:"";
 					position: relative;
+					display: block;
+					width: 1.2rem;
+					height: 1.2rem;
+					margin: 0 auto;
+					background-color: currentColor;
+					mask: url("../../icons/outline/chevron-right.svg") center/contain no-repeat;
+					-webkit-mask: url("../../icons/outline/chevron-right.svg") center/contain no-repeat;
                 }
                 &:last-child {
                 	margin-left: -1.9rem;
                 	&::before {
-	                	content:"\f104";
+	                	mask: url("../../icons/outline/chevron-left.svg") center/contain no-repeat;
+	                	-webkit-mask: url("../../icons/outline/chevron-left.svg") center/contain no-repeat;
                 	}
                 }
             }
@@ -260,10 +267,14 @@
 		margin-right: 15px;
 	}
 	.timematrix__selection #slider-range .ui-slider-handle:last-child::before {
-	    content: "\f105";
+	    content: "";
+	    mask: url("../../icons/outline/chevron-right.svg") center/contain no-repeat;
+	    -webkit-mask: url("../../icons/outline/chevron-right.svg") center/contain no-repeat;
 	}
 	.timematrix__selection #slider-range .ui-slider-handle::before {
-	    content: "\f104";
+	    content: "";
+	    mask: url("../../icons/outline/chevron-left.svg") center/contain no-repeat;
+	    -webkit-mask: url("../../icons/outline/chevron-left.svg") center/contain no-repeat;
 	}
 	.timematrix__loader {
 		justify-content: left;

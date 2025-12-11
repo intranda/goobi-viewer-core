@@ -6,12 +6,20 @@
             <ul>
                 <li if="{this.currentItem > this.opts.firstItem}" class="numeric-paginator__navigate navigate_prev">
                     <a if="{isRenderLinks()}" href="{getItemUrl(currentItem-1)}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}">
-                        <i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i>
-                        <i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i>
+                        <svg if="{!opts.rtl}" class="numeric-paginator__icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                            <use riot-href="{prevIconHref}"></use>
+                        </svg>
+                        <svg if="{opts.rtl}" class="numeric-paginator__icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                            <use riot-href="{nextIconHref}"></use>
+                        </svg>
                     </a>
                     <button if="{isRenderButtons()}" onclick="{navigateToPrevItem}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}">
-                        <i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i>
-                        <i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i>
+                        <svg if="{!opts.rtl}" class="numeric-paginator__icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                            <use riot-href="{prevIconHref}"></use>
+                        </svg>
+                        <svg if="{opts.rtl}" class="numeric-paginator__icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                            <use riot-href="{nextIconHref}"></use>
+                        </svg>
                     </button>
                 </li>
                 <li each="{item in getFirstItems()}" class="numeric-paginator__navigate">
@@ -43,12 +51,20 @@
                 </li>
                 <li if="{this.currentItem < this.opts.lastItem}" class="numeric-paginator__navigate navigate_next">
                     <a if="{isRenderLinks()}" href="{getItemUrl(currentItem+1)}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}">
-                        <i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i>
-                        <i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i>
+                        <svg if="{!opts.rtl}" class="numeric-paginator__icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                            <use riot-href="{nextIconHref}"></use>
+                        </svg>
+                        <svg if="{opts.rtl}" class="numeric-paginator__icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                            <use riot-href="{prevIconHref}"></use>
+                        </svg>
                     </a>
                     <button if="{isRenderButtons()}" onclick="{navigateToNextItem}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}">
-                        <i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i>
-                        <i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i>
+                        <svg if="{!opts.rtl}" class="numeric-paginator__icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                            <use riot-href="{nextIconHref}"></use>
+                        </svg>
+                        <svg if="{opts.rtl}" class="numeric-paginator__icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                            <use riot-href="{prevIconHref}"></use>
+                        </svg>
                     </button>
                 </li>
             </ul>
@@ -57,12 +73,40 @@
 
     <script>
 
+const ensureTrailingSlash = value => {
+    if (!value) {
+        return '/';
+    }
+    return value.endsWith('/') ? value : `${value}/`;
+};
+const viewerConfig = window.viewerConfig || {};
+const iconVariant = viewerConfig.iconVariant || 'outline';
+const iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+const toIconHref = iconName => {
+    const trimmed = (iconName || '').trim();
+    if (!trimmed) {
+        return null;
+    }
+    if (trimmed.includes('/') || trimmed.startsWith('#')) {
+        return trimmed;
+    }
+    return `${iconBasePath}resources/icons/${iconVariant}/${trimmed}.svg#icon`;
+};
+
+this.refreshIconHrefs = () => {
+    const prevIconName = (this.msg && this.msg.numericPaginator_prev) || 'chevron-left';
+    const nextIconName = (this.msg && this.msg.numericPaginator_next) || 'chevron-right';
+    this.prevIconHref = toIconHref(prevIconName) || toIconHref('chevron-left');
+    this.nextIconHref = toIconHref(nextIconName) || toIconHref('chevron-right');
+};
+
         this.currentItem = 0;
         this.msg = {};
         this.range = 2;
 
         this.on("mount", () => {
-            this.msg = opts.msg;
+            this.msg = opts.msg || {};
+            this.refreshIconHrefs();
             this.currentItem = opts.itemActive;
             if(this.opts.range) {
                 this.range = this.opts.range;
@@ -77,6 +121,8 @@
         });
 
         this.on("update", () => {
+            this.msg = this.opts.msg || this.msg;
+            this.refreshIconHrefs();
             //hide all tooltips. Otherwise if elements are replaced after the update, old tooltips may be shown indefinitely
             $("[data-toggle='tooltip']").tooltip('hide');
             if(this.refs.dropdown) {

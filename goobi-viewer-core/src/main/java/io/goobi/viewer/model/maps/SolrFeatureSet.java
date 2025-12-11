@@ -398,12 +398,13 @@ public class SolrFeatureSet extends FeatureSet {
         this.markerGeneration = markerGeneration;
     }
 
+    @Override
     public boolean isUseHeatmap() {
         return this.markerGeneration == MarkerGenerationType.HEATMAP;
     }
 
-    public void setUseHeatmap(boolean use) {
-        this.markerGeneration = use ? MarkerGenerationType.HEATMAP : MarkerGenerationType.FEATURELIST;
+    @Override
+    public void setUseHeatmap(boolean useHeatmap) {
+        this.markerGeneration = useHeatmap ? MarkerGenerationType.HEATMAP : MarkerGenerationType.FEATURELIST;
     }
-
 }

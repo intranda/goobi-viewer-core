@@ -2,7 +2,8 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:util="http://goobi.io/util">
 
 	<composite:interface>
     	<composite:attribute name="widget" type="io.goobi.viewer.model.cms.widget.CustomSidebarWidget" required="true" />
@@ -29,7 +30,7 @@
 	                        <button type="button" class="btn btn--clean" href="#customCollapse-#{cc.attrs.widget.id}" data-toggle="collapse" aria-expanded="false" aria-controls="customCollapse">
 	                            #{cc.attrs.widget.title.textOrDefault}
 	
-	                            <i class="fa fa-arrow-down" aria-hidden="true"></i>
+	                            <util:icon icon="arrow-down" />
 	                        </button>
 	                    </h2>
                     </div>

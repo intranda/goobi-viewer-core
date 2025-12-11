@@ -1,4 +1,5 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:util="http://goobi.io/util"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:jsf="http://xmlns.jcp.org/jsf"
@@ -55,20 +56,30 @@
 	                                        <!-- NAME -->
 	                                        <div class="row">
 	                                            <ui:fragment rendered="#{license.user != null}">
-	                                                <h2 class="col-12"><i class="fa fa-user" aria-hidden="true"></i> <h:outputText value="#{license.user.displayName}" /></h2>
+	                                                <h2 class="col-12">
+														<util:icon-text icon="user" text="#{license.user.displayName}" iconSvgClass="icon icon-xxl" />
+													</h2>
 	                                            </ui:fragment>
 	                                            <ui:fragment rendered="#{license.userGroup != null}">
-	                                                <h2 class="col-12"><i class="fa fa-users" aria-hidden="true"></i> #{license.userGroup.name}</h2>
+	                                                <h2 class="col-12">
+														<util:icon-text icon="users" text="#{license.userGroup.name}" iconSvgClass="icon icon-xxl" />
+													</h2>
 	                                            </ui:fragment>
 	                                            <ui:fragment rendered="#{license.ipRange != null}">
-	                                                <h2 class="col-12"><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h2>
+	                                                <h2 class="col-12">
+														<util:icon-text icon="bolt" text="#{license.ipRange.name} (#{license.ipRange.subnetMask})" iconSvgClass="icon icon-xxl" />
+													</h2>
 	                                            </ui:fragment>
 	                                            <ui:fragment rendered="#{license.client != null}">
 	                                            	<ui:fragment rendered="#{license.client == adminClientsBean.allClients}">
-	                                            		<h2 class="col-12"><i class="fa fa-desktop" aria-hidden="true"></i> #{msg.admin__right_all_clients}</h2>
+	                                            		<h2 class="col-12">
+															<util:icon-text icon="device-desktop" text="#{msg.admin__right_all_clients}" iconSvgClass="icon icon-xxl" />
+														</h2>
 	                                            	</ui:fragment>
 	                                            	<ui:fragment rendered="#{license.client != adminClientsBean.allClients}">
-		                                                <h2 class="col-12"><i class="fa fa-desktop" aria-hidden="true"></i> #{license.client.name} (#{license.client.clientIdentifier})</h2>
+		                                                <h2 class="col-12">
+															<util:icon-text icon="device-desktop" text="#{license.client.name} (#{license.client.clientIdentifier})" iconSvgClass="icon icon-xxl" />
+														</h2>
 	                                            	</ui:fragment>
 	                                            </ui:fragment>
 	                                        </div>

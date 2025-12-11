@@ -116,13 +116,17 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             String value = Metadata.buildHierarchicalValue("DC", "a.b", null, "http://localhost:8080/");
             assertEquals(
-                    "<a href=\"http://localhost:8080/browse/-/1/-/DC:a/\">a</a> > <a href=\"http://localhost:8080/browse/-/1/-/DC:a.b/\">a.b</a>",
+                    "<a href=\"http://localhost:8080/browse/-/1/-/DC:a/\">a</a> <span class=\"hierarchy-separator\" aria-hidden=\"true\"></span>"
+                            + " <a href=\"http://localhost:8080/browse/-/1/-/DC:a.b/\">a.b</a>",
                     value);
         }
         {
             // No root URL
             String value = Metadata.buildHierarchicalValue("DC", "a.b.c.d", null, null);
-            assertEquals("a > a.b > a.b.c > a.b.c.d", value);
+            assertEquals(
+                    "a <span class=\"hierarchy-separator\" aria-hidden=\"true\"></span> a.b <span class=\"hierarchy-separator\" aria-hidden=\"true\"></span>"
+                            + " a.b.c <span class=\"hierarchy-separator\" aria-hidden=\"true\"></span> a.b.c.d",
+                    value);
         }
     }
 

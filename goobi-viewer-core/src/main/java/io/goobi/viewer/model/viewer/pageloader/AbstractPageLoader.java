@@ -269,12 +269,12 @@ public abstract class AbstractPageLoader implements IPageLoader {
                 .setDataRepository(dataRepository)
                 .build();
 
-        //        if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
-        //            pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
-        //        }
-        //        if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
-        //            pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
-        //        }
+        if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
+            pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
+        }
+        if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
+            pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
+        }
 
         // Full-text filename
         pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
@@ -295,11 +295,19 @@ public abstract class AbstractPageLoader implements IPageLoader {
             }
         }
 
+        // If page is primarily A/V, add main file name to the file name map
+        if (mimeType != null && mimeType.contains("/")) {
+            String[] mimeTypeSplit = mimeType.split("/");
+            if (("audio".equals(mimeTypeSplit[0]) || "video".equals(mimeTypeSplit[0])) && StringUtils.isNotEmpty(mimeTypeSplit[1])) {
+                pe.getFileNames().put(mimeTypeSplit[1].trim().toLowerCase(), fileName);
+            }
+        }
+
         // File names for different formats (required for A/V)
         String filenameRoot = new StringBuilder(SolrConstants.FILENAME).append('_').toString();
         for (String fieldName : doc.getFieldNames()) {
             if (fieldName.startsWith(filenameRoot)) {
-                // logger.trace("Format: {}", fieldName); //NOSONAR Debug
+                logger.trace("Format: {}", fieldName); //NOSONAR Debug
                 String format = fieldName.split("_")[1].toLowerCase();
                 String value = (String) doc.getFieldValue(fieldName);
                 pe.getFileNames().put(format, value);

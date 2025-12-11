@@ -1,5 +1,6 @@
 <ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util" 
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
     xmlns:h="http://xmlns.jcp.org/jsf/html" 
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -32,7 +33,7 @@
 					</ui:fragment>
 	               	<ui:fragment rendered="#{cc.attrs.allowFullscreen}">
 	               		<button id="expandMap_#{cc.attrs.geoMap.id}" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geomap__expand" aria-label="#{msg.fullscreen_enter}">
-	                      	<i class="fa fa-expand"/>
+							<util:icon icon="arrows-maximize" />
 	                     </button>
                     </ui:fragment>
 	            </div>

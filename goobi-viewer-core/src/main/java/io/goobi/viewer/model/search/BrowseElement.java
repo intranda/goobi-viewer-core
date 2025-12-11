@@ -63,9 +63,15 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.StructElementStub;
@@ -76,7 +82,7 @@ import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 /**
  * Representation of a search hit.
  */
-public class BrowseElement implements Serializable {
+public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable {
 
     private static final long serialVersionUID = 6621169815560734613L;
 
@@ -152,6 +158,8 @@ public class BrowseElement implements Serializable {
     private final Locale locale;
     @JsonIgnore
     private final String dataRepository;
+    @JsonIgnore
+    private AccessPermission accessPermissionThumbnail = null;
 
     private List<String> recordLanguages;
 
@@ -198,7 +206,28 @@ public class BrowseElement implements Serializable {
      * @throws ViewerConfigurationException
      */
     BrowseElement(StructElement structElement, Map<String, List<Metadata>> metadataListMap, Locale locale, String fulltext,
-            Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException {
+            Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException, DAOException {
+        this(structElement, metadataListMap, locale, fulltext, searchTerms, thumbs, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param structElement {@link StructElement}
+     * @param metadataListMap
+     * @param locale
+     * @param fulltext
+     * @param searchTerms
+     * @param thumbs
+     * @param user The user for whom the thumbnail accessCondition is calculated. If null, it is fetched from the jsfContext if one exists
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    BrowseElement(StructElement structElement, Map<String, List<Metadata>> metadataListMap, Locale locale, String fulltext,
+            Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs, User user)
+            throws PresentationException, IndexUnreachableException, DAOException {
         if (structElement == null) {
             throw new IllegalArgumentException("structElement may not be null");
         }
@@ -245,11 +274,11 @@ public class BrowseElement implements Serializable {
 
         // Populate metadata
         int length = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueLength();
-        int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
+        // int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
         for (Entry<String, List<Metadata>> entry : this.metadataListMap.entrySet()) {
             if (!entry.getValue().isEmpty()) {
                 // logger.trace("populating metadata list {}", entry.getKey()); //NOSONAR Debug
-                populateMetadataList(entry.getValue(), structElement, topStructElement, anchorStructElement, searchTerms, length, number, locale);
+                populateMetadataList(entry.getValue(), structElement, anchorStructElement, searchTerms, length, locale);
             }
         }
 
@@ -346,6 +375,23 @@ public class BrowseElement implements Serializable {
             if (sbThumbnailUrl != null && !sbThumbnailUrl.isEmpty()) {
                 thumbnailUrl = StringTools.intern(sbThumbnailUrl);
             }
+
+            // Check thumbnail access so that a custom access denied image can be used
+            String thumbnailPi = pi;
+            if (isAnchor() && StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME
+                    .equals(DataManager.getInstance().getConfiguration().getAnchorThumbnailMode())) {
+                StructElement firstVolume = structElement.getFirstVolume(new ArrayList<>(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
+                if (firstVolume != null) {
+                    thumbnailPi = firstVolume.getPi();
+                    logger.trace("Using first volume for thumbnail: {}", thumbnailPi);
+                    String thumbPageNo = firstVolume.getMetadataValue(SolrConstants.THUMBPAGENO);
+                    imageNo = StringUtils.isNotBlank(thumbPageNo) ? Integer.parseInt(thumbPageNo) : 1;
+                }
+            }
+            PhysicalElement pe = ThumbnailHandler.getPage(thumbnailPi, imageNo);
+            if (pe != null) {
+                accessPermissionThumbnail = pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, user);
+            }
         }
 
         BaseMimeType baseMimeType = BaseMimeType.getByName(this.mimeType);
@@ -373,18 +419,15 @@ public class BrowseElement implements Serializable {
      * 
      * @param metadataList
      * @param structElement
-     * @param topStructElement
      * @param anchorStructElement
      * @param searchTerms
      * @param length
-     * @param number
      * @param locale
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    void populateMetadataList(List<Metadata> metadataList, StructElement structElement, StructElement topStructElement,
-            StructElement anchorStructElement, Map<String, Set<String>> searchTerms, int length, int number, Locale locale)
-            throws IndexUnreachableException, PresentationException {
+    void populateMetadataList(List<Metadata> metadataList, StructElement structElement, StructElement anchorStructElement,
+            Map<String, Set<String>> searchTerms, int length, Locale locale) throws IndexUnreachableException, PresentationException {
         if (metadataList == null) {
             throw new IllegalArgumentException("metadataList may not be null");
         }
@@ -781,6 +824,20 @@ public class BrowseElement implements Serializable {
         }
     }
 
+    @Override
+    public String getAccessDeniedThumbnailUrl(Locale locale) {
+        logger.trace("getAccessDeniedThumbnailUrl: locale: {}, PI: {}", locale, pi);
+        if (accessPermissionThumbnail != null && accessPermissionThumbnail.getAccessDeniedPlaceholderInfo() != null) {
+            AccessDeniedInfoConfig placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
+                logger.trace("returning custom image: {}", placeholderInfo.getImageUri());
+                return placeholderInfo.getImageUri();
+            }
+        }
+
+        return null;
+    }
+
     /**
      * <p>
      * Getter for the field <code>imageNo</code>.
@@ -894,7 +951,7 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * Checks whether the search hit should identify itself as a group document when being displayed. 
+     * Checks whether the search hit should identify itself as a group document when being displayed.
      * 
      * @return true if group and not newspaper; false otherwise
      */
@@ -1368,6 +1425,20 @@ public class BrowseElement implements Serializable {
      */
     public String getDataRepository() {
         return dataRepository;
+    }
+
+    /**
+     * @return the accessPermissionThumbnail
+     */
+    public AccessPermission getAccessPermissionThumbnail() {
+        return accessPermissionThumbnail;
+    }
+
+    /**
+     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
+     */
+    public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
+        this.accessPermissionThumbnail = accessPermissionThumbnail;
     }
 
     /**

@@ -10,39 +10,40 @@
 		align-items: center;
 	}
 	&__icon-client {
-		font-size: 16px;
+		display: inline-flex;
+		color: inherit;
+		svg {
+			width: 20px;
+			height: 20px;
+			stroke: currentColor;
+		}
 	}
 	&__icon-status {
 		position: absolute;
-		right: -8px;
-		top: -6px;
+		right: -6px;
+		top: -5px;
 		z-index: 1111;
-		border-radius: 20px;
-		padding: 3px;
-		display: inline-block;
-		font: normal normal normal 9px/1 FontAwesome;
-		text-rendering: auto;
-		color: white;
-		line-height: 7px;
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		color: @white;
+		background-color: @redBar;
+		.icon {
+			width: 8px;
+			height: 8px;
+			stroke: currentColor;
+		}
 		&.-accepted {
 			background-color: @greenBar;
-			&::before {
-				content: "\f1e6";
-			}
 		}
 		&.-wrongNetwork {
-			line-height: 8px;
-			font-size: 8px;
 			background-color: @yellowBar;
-			&::before {
-				content: "\f071";
-			}
 		}
 		&.-rejected {
 			background-color: @redBar;
-			&::before {
-				content: "\f00d";
-			}
 		}
 	}
 }

@@ -8,7 +8,7 @@
 		margin-bottom: 3rem;
 		&.-padding-left {
 			padding-left: 15px;
-		}
+ }
 	}
 
 	&__small-info {
@@ -624,12 +624,6 @@
 			.admin__table-sorting-arrow-hidden {
 				opacity: 1;
 			}
-
-			.admin__table-sorting-arrow-up,
-			.admin__table-sorting-arrow-down {
-				transform: rotate(180deg);
-				transform-origin: 50% 58%;
-			}
 		}
 	}
 
@@ -647,6 +641,13 @@
 	&__table-sorting-arrow-down {
 		color: @black;
 		margin-left: 0.6rem;
+	}
+
+	&__table-sorting-arrow-hidden svg,
+	&__table-sorting-arrow-up svg,
+	&__table-sorting-arrow-down svg {
+		transform-origin: 50% 50%;
+		transition: transform 0.2s ease;
 	}
 
 	&__table-sorting-heading {}
@@ -1020,7 +1021,7 @@
 		}
 	}
 
-	// FONT AWESOME CHECKBOXES
+	// ICON CHECKBOXES
 	&__fancy-checkbox {
 		display: none;
 
@@ -1032,14 +1033,20 @@
 
 		&+label::before {
 			display: inline-block;
-			content: "\f096";
-			font: normal normal normal 17px/1 FontAwesome;
+			content: "";
+			width: 22px;
+			height: 22px;
+			margin-right: 8px;
+			background-color: currentColor;
+			mask: url("../../icons/outline/square.svg") center/100% 100% no-repeat;
+			-webkit-mask: url("../../icons/outline/square.svg") center/100% 100% no-repeat;
+			vertical-align: middle;
 		}
 
 		&:checked+label::before {
 			animation: fadeIn 0.15s ease-in 0s 1 forwards;
-			content: "\f046";
-			font: normal normal normal 17px/1 FontAwesome;
+			mask: url("../../icons/outline/square-check.svg") center/100% 100% no-repeat;
+			-webkit-mask: url("../../icons/outline/square-check.svg") center/100% 100% no-repeat;
 		}
 	}
 
@@ -1066,6 +1073,18 @@
 		&.-showExportOptions {
 			display: flex;
 			animation: slideInUp 0.25s ease 0s 1 forwards;
+		}
+	}
+
+	&__overlay-bar-action,
+	&__annotations-download-all-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+
+		.icon-wrapper {
+			display: inline-flex;
 		}
 	}
 
@@ -1218,28 +1237,33 @@
 		}
 	}
 
-	&__topbar-backend-language {
-		position: relative;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		padding: 0 20px;
-		transition: all 0.2s ease;
-		gap: 0.9rem;
-		position: relative;
-		cursor: default;
+		&__topbar-backend-language {
+			position: relative;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 0 20px;
+			transition: all 0.2s ease;
+			gap: 0.9rem;
+			position: relative;
+			cursor: default;
 
-		.activeLang {
-			font-weight: 700;
-			background: @adminBackend-active-state;
+			.activeLang {
+				font-weight: 700;
+				background: @adminBackend-active-state;
 
-			a {
-				&:after {
-					font: normal normal normal 14px/1 FontAwesome;
-					content: "\f00c";
-					margin-left: .7rem;
+				a {
+					&:after {
+						content: "";
+						display: inline-block;
+						width: 1.2rem;
+						height: 1.2rem;
+						margin-left: .7rem;
+						background-color: currentColor;
+						mask: url("../../icons/outline/check.svg") center/100% 100% no-repeat;
+						-webkit-mask: url("../../icons/outline/check.svg") center/100% 100% no-repeat;
+					}
 				}
-			}
 
 			&:hover {
 				background: @adminBackend-active-state;
@@ -1730,11 +1754,26 @@
 	}
 
 	&__topbar-queue-info-icon {
-
-		// color: @adminBackend-bg;
-		.fa-spinner {
+		color: @adminBackend-menu-text;
+		.icon-wrapper {
+			display: flex;
+			width: 14px;
+			height: 14px;
+			justify-content: center;
+			align-items: center;
+			color: inherit;
+			svg {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+		}
+		&--spinner {
 			color: #ffe34c;
-			font-size: 1.6rem;
+			.icon-wrapper {
+				width: 18px;
+				height: 18px;
+			}
 		}
 	}
 
@@ -1768,7 +1807,19 @@
 
 	&__topbar-queue-warning-icon {
 		color: @adminBackend-menu-text;
-		font-size: 12px;
+		.icon-wrapper {
+			display: flex;
+			width: 14px;
+			height: 14px;
+			justify-content: center;
+			align-items: center;
+			color: inherit;
+			svg {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+		}
 	}
 
 	&__topbar-queue-warning-text {}
@@ -2658,19 +2709,22 @@
 		width: 100%;
 		position: relative;
 
-		input {
-			//			width: 100%;
-			//			border: 1px solid #ced4da;
-			//			padding: 0.2rem 2.2rem 0.2rem 0.4rem;
-		}
-
 		&::after {
-			content: "\f133";
-			font-family: FontAwesome;
+			content: "";
 			position: absolute;
 			right: 0.7rem;
 			top: 50%;
-			transform: translate(0%, -52%);
+			transform: translateY(-50%);
+			width: 1.75rem;
+			height: 1.75rem;
+			background-color: currentColor;
+			mask: url("../../icons/outline/calendar.svg") center/100% 100% no-repeat;
+			-webkit-mask: url("../../icons/outline/calendar.svg") center/100% 100% no-repeat;
+			pointer-events: none;
+		}
+
+		&.admin__highlighted-objects-date-picker::after {
+			display: none;
 		}
 	}
 
@@ -2836,17 +2890,42 @@ input[type="radio"]:checked+label {
 		// margin-left: 10px;
 	}
 
-	.admin__form-input {
-		padding-left: 20px;
+.admin__form-input {
+    padding-left: 20px;
 
 		input {
 			min-width: 400px;
 		}
-	}
+}
 
-	.input_form__option-message-mark {
-		top: -8px !important;
-	}
+.input_form__option-message-mark {
+    position: absolute;
+    top: -8px !important;
+    right: -8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    .mark-icon { display: none; }
+    &.success  { background-color: @validSuccess; }
+    &.warning  { background-color: @validWarning; }
+    &.danger   { background-color: @validDanger; }
+    &.success .mark-icon--check,
+    &.warning .mark-icon--check { display: inline-block; }
+    &.danger  .mark-icon--exclamation { display: inline-block; }
+
+    &.-md {
+        width: 20px; height: 20px; line-height: 20px;
+        .icon { width: 16px; height: 16px; stroke-width: 2.2; }
+    }
+    &.-lg {
+        width: 24px; height: 24px; line-height: 24px;
+        .icon { width: 18px; height: 18px; stroke-width: 2.4; }
+    }
+}
 }
 
 // BACKEND STYLES FOR DEVS

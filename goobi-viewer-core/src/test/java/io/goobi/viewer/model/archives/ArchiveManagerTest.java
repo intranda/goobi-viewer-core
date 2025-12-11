@@ -95,8 +95,8 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         assertEquals("folder", archiveManager.getNodeType("notmapped").getName());
         assertEquals("folder", archiveManager.getNodeType("").getName());
         assertEquals("folder", archiveManager.getNodeType(null).getName());
-        assertEquals("fa fa-folder-open-o", archiveManager.getNodeType(null).getIconClass());
-        assertEquals("fa fa-file-video-o", archiveManager.getNodeType("video").getIconClass());
+        assertEquals("folder-open", archiveManager.getNodeType(null).getIcon());
+        assertEquals("video", archiveManager.getNodeType("video").getIcon());
         assertEquals("video", archiveManager.getNodeType("video").getName());
     }
 
@@ -162,5 +162,12 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         assertNotNull(entry);
         ArchiveTree tree = ArchiveManager.loadTree(entry);
         assertNotNull(tree);
+    }
+
+    @Test
+    void testLegacyIconMapping() {
+        NodeType nodeType = new NodeType("legacy", "fa fa-file-video-o");
+        assertEquals("video", nodeType.getIcon());
+        assertEquals("video", nodeType.getIconClass());
     }
 }

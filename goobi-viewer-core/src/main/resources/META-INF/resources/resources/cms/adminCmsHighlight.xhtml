@@ -259,7 +259,8 @@
 		                                    </ui:fragment>
 		                                    <ui:fragment rendered="#{!highlight.hasMediaItem()}">
 		                                        <img src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
-		                                        data-viewer-thumbnail="thumbnail"
+		                                            data-viewer-thumbnail="thumbnail"
+		                                            data-viewer-access-denied-url="#{image.getAccessDeniedThumbnailUrl(navigationHelper.locale)}"
 		                                            class="img-fluid" alt="" />
 		                                    </ui:fragment>
 		                                </div>

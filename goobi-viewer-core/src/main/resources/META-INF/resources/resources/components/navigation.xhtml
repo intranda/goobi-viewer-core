@@ -6,7 +6,8 @@
     
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:component="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:util="http://goobi.io/util">
 
     <composite:interface>
 	    <!-- activates a megamenu which takes the fullwidth of the page -->
@@ -181,7 +182,7 @@
 	                                            <!-- CLOSE -->
 	                                            <button type="button" class="navigation__megamenu-close btn btn--clean"
 	                                                data-toggle="close" title="#{msg.close}">
-	                                                <i class="fa fa-times" aria-hidden="true"></i>
+	                                                <util:icon icon="x" />
 	                                            </button>
 	
 	                                            <!-- LEVEL 1 -->
@@ -225,9 +226,9 @@
 	    <script type="text/javascript">
 	        var navigationConfig = {
 	        		navigationSelector: ".navigation",
-	                subMenuSelector: "##{cc.clientId} [data-toggle='submenu']",
-	                megaMenuSelector: "##{cc.clientId}  [data-toggle='megamenu']",
-	                closeMegaMenuSelector: "##{cc.clientId} [data-toggle='close']",
+	                subMenuSelector: "#" + CSS.escape("#{cc.clientId}") + " [data-toggle='submenu']",
+	                megaMenuSelector: "#" + CSS.escape("#{cc.clientId}") + " [data-toggle='megamenu']",
+	                closeMegaMenuSelector: "#" + CSS.escape("#{cc.clientId}") + " [data-toggle='close']",
 	        };
 	        viewerJS.navigation.init(navigationConfig);
 	    </script>

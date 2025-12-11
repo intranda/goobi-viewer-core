@@ -1,4 +1,5 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:util="http://goobi.io/util"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
 				xmlns:jsf="http://xmlns.jcp.org/jsf"
@@ -40,7 +41,9 @@
                             <div class="admin__table-filter admin__annotations-filter-wrapper">
                             <div class="admin__annotations-download-all-butto0n-wrapper">
                                 <button data-toggle="tooltip" data-placement="top" data-trigger="hover" title="#{msg.admin__crowdsourcing_annotations_export_all_excel_file}" class="admin__overlay-bar-action admin__annotations-download-all-button"
-                                     jsf:action="#{annotationBean.downloadAllAnnotations()}" ><i class="fa fa-download" aria-hidden="true"></i></button>
+                                     jsf:action="#{annotationBean.downloadAllAnnotations()}" >
+                                     <util:icon icon="download" />
+                                    </button>
                             </div>
                             
                                 <!-- TODO: ADD FILTER FOR targetPI, TOO -->

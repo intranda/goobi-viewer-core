@@ -1,10 +1,11 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
-
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -28,7 +29,7 @@
 					class="sort admin__table-sorting"
 					jsf:action="#{cc.attrs.list.sortBy(cc.attrs.filterType, 'ASCENDING')}">
 					<span class="admin__table-sorting__heading">#{cc.attrs.colHeading}</span>
-					<i class="fa fa-caret-up admin__table-sorting-arrow-hidden" aria-hidden="true"></i>
+					<util:icon icon="caret-down" styleClass="admin__table-sorting-arrow-hidden" />
 		      <f:ajax execute="@form" render="@form" />
 				</button>
 			</div>
@@ -41,7 +42,7 @@
 					class="sort admin__table-sorting"
 					jsf:action="#{cc.attrs.list.sortBy(cc.attrs.filterType, 'DESCENDING')}">
 					<span class="admin__table-sorting__heading" >#{cc.attrs.colHeading}</span>
-					<i class="fa fa-caret-up admin__table-sorting-arrow-up" aria-hidden="true"></i>
+					<util:icon icon="caret-up" styleClass="admin__table-sorting-arrow-up" />
 		      <f:ajax execute="@form" render="@form" />
 				</button>
 			</div>
@@ -54,7 +55,7 @@
 					class="sort admin__table-sorting"
 					jsf:action="#{cc.attrs.list.sortBy(cc.attrs.filterType, 'ASCENDING')}">
 					<span class="admin__table-sorting__heading" >#{cc.attrs.colHeading}</span>
-					<i class="fa fa-caret-down admin__table-sorting-arrow-down" aria-hidden="true"></i>
+					<util:icon icon="caret-down" styleClass="admin__table-sorting-arrow-down" />
 		      <f:ajax execute="@form" render="@form" />
 				</button>
 			</div>

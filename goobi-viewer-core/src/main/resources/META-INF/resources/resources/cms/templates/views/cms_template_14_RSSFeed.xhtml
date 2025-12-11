@@ -30,7 +30,9 @@
                                 <ui:fragment rendered="#{item.description.image != null}">
                                     <div class="tpl-rss__item-image">
                                         <a href="#{item.link}">
-                                            <image class="mg-fluid" src="#{item.description.image}" alt="#{item.title}" />
+                                            <image class="mg-fluid" src="#{item.description.image}" alt="#{item.title}"
+                                                data-viewer-thumbnail="thumbnail"
+                                                data-viewer-access-denied-url="#{item.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
                                         </a>
                                     </div>
                                 </ui:fragment>

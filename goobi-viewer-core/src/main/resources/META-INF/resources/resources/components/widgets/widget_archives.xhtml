@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
@@ -36,7 +38,7 @@
 	                        aria-label="#{msg.previousHit}"
 			                href="#{neighbours.left != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left).concat('/')) : '#'}"
 			             >
-	                     	<i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+						 	<util:icon icon="circle-arrow-left" />
 	                     </a>
 		                <a 
 		                	class="widget-archives__next #{neighbours.right != null ? '':'-disabled'}"
@@ -46,7 +48,7 @@
 	                        aria-label="#{msg.nextHit}"                           
 		                	href="#{neighbours.right != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right).concat('/')) : '#'}"
 		                >
-	                    	<i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+						 	<util:icon icon="circle-arrow-right" />
 	                    </a>
             		</div>
             	</div>

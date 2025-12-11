@@ -5,7 +5,8 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+                xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+                xmlns:util="http://goobi.io/util">
 	
 
 	<ui:define name="metadata">
@@ -44,10 +45,10 @@
                     <li class="numeric-paginator__navigate navigate_prev">
                         <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}" data-target="paginatorPrevPage" aria-label="#{msg.aria_label__pagination_previous}">
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
-                                <i class="fa #{msg.numericPaginator_prev}" aria-hidden="true"></i>
+                                <util:icon icon="#{msg.numericPaginator_prev}" styleClass="numeric-paginator__icon" svgClass="numeric-paginator__icon-svg" />
                             </ui:fragment>
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
-                                <i class="fa #{msg.numericPaginator_next}" aria-hidden="true"></i>
+                                <util:icon icon="#{msg.numericPaginator_next}" styleClass="numeric-paginator__icon" svgClass="numeric-paginator__icon-svg" />
                             </ui:fragment>
                         </a>
                     </li>
@@ -127,10 +128,10 @@
                     <li class="numeric-paginator__navigate navigate_next">
                         <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}" data-target="paginatorNextPage" aria-label="#{msg.aria_label__pagination_next}">
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
-                                <i class="fa #{msg.numericPaginator_next}" aria-hidden="true"></i>
+                                <util:icon icon="#{msg.numericPaginator_next}" styleClass="numeric-paginator__icon" svgClass="numeric-paginator__icon-svg" />
                             </ui:fragment>
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
-                                <i class="fa #{msg.numericPaginator_prev}" aria-hidden="true"></i>
+                                <util:icon icon="#{msg.numericPaginator_prev}" styleClass="numeric-paginator__icon" svgClass="numeric-paginator__icon-svg" />
                             </ui:fragment>
                         </a>
                     </li>

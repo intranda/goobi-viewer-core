@@ -11,7 +11,8 @@
 			<span class="error_message">{this.error.message}</span>
 		</span>
 		<imageControls if="{this.image}" 
-			image="{this.image}" 
+			image="{this.image}"
+			rotate="{this.rotate}"
 			imageindex="{this.opts.item.currentCanvasIndex}"
 			imagecount="{this.opts.item.canvases.length}"
 			actionlistener="{this.actionListener}" 
@@ -44,6 +45,8 @@
 	
 
 	<script>
+	
+	this.actionListener = new rxjs.Subject();
 
 	// INIT TOOLTIPS'TIPS
 	this.on("updated", function() {
@@ -54,31 +57,26 @@
 	this.on("mount", function() {
 		this.showThumbs = this.isShowThumbs();
 		this.initFilters();
-		//console.log("mount image view ", this.opts.item);
 		$("#controls_" + opts.id + " .draw_overlay").on("click", () => this.drawing = true);
 		try{		    
-			imageViewConfig.image.tileSource = this.getImageInfo(opts.source);
 			this.image = new ImageView.Image(imageViewConfig);
-			this.image.load()
-			.then( (image) => {
-				if(this.opts.item) {
-					this.opts.item.image = this.image;
-					//image load notifications
-				    var now = rxjs.of(image);
-					this.opts.item.setImageSource = function(source) {
-					    this.image.setTileSource(this.getImageInfo(source));
-					}.bind(this);
-				    this.opts.item.notifyImageOpened(image.observables.viewerOpen.pipe(rxjs.operators.map( () => image),rxjs.operators.merge(now)));
-				}
-				return image;
-			})
+			this.zoom = new ImageView.Controls.Zoom(this.image);
+			this.rotate = new ImageView.Controls.Rotation(this.image);
+			if(this.opts.item) {
+				this.opts.item.image = this.image;
+		    	this.opts.item.notifyImageOpened(this.image.onOpened.pipe(rxjs.operators.map( () => this.image)));
+				//image load notifications
+				this.opts.item.setImageSource = function(source) {
+				    this.update();
+				    this.image.load(this.getImageInfo(source))
+				    .then(e => this.zoom.goHome());
+				}.bind(this);
+			}
 		} catch(error) {
 		    console.error("ERROR ", error);
 	    	this.error = error;
 	    	this.update();
 		}
-		
-		this.actionListener = new rxjs.Subject();
 		this.actionListener.subscribe((event) => this.handleImageControlAction(event));
 		if(this.opts.item.setShowThumbs) {
 		    this.opts.item.setShowThumbs.subscribe(show => {
@@ -86,6 +84,11 @@
 		        this.update();
 		    });
 		}
+		//if no thumbs are showm init first image
+		if(!this.showThumbs) {
+			this.opts.item.loadImage(0);
+		}
+		this.update();
 	})
 
 	// TOOLTIPS FOR PAGE STATUS	
@@ -159,7 +162,7 @@
 	}
 	
 	handleImageControlAction(event) {
-		//console.log("event", event);
+		console.log("image action ", event.action);
 		switch(event.action) {
 			case "toggleThumbs":
 				this.showThumbs = event.value;
@@ -209,16 +212,8 @@
 	}
 	
 	const imageViewConfig = {
-			global : {
-				divId : "image_" + opts.id,
-				fitToContainer: true,
-				adaptContainerWidth: false,
-				adaptContainerHeight: false,
-				footerHeight: 00,
-				zoomSpeed: 1.3,
-				allowPanning : true,
-			},
-			image : {}
+			element: "#image_" + opts.id,
+			fittingMode: "fixed"
 	};
 	
 	const drawStyle = {
@@ -231,7 +226,7 @@
 			lineColor : "#EEC83B"
 	}
 	
-	const pointStyle = ImageView.DataPoint.getPointStyle(20, "#EEC83B");
+	const pointStyle = ImageView.DataPoint.Point.getPointStyle(20, "#EEC83B");
 
 	</script>
 

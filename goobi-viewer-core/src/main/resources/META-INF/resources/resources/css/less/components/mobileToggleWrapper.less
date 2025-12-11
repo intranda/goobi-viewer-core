@@ -34,6 +34,12 @@
         	outline: none;
         }
     }
+    .btn-toggle.sidebar .icon-wrapper svg {
+        transition: transform .2s ease;
+    }
+    .btn-toggle.sidebar.in .icon-wrapper svg {
+        transform: rotate(90deg);
+    }
     .sidebar {
         margin: 0;
         &.pull-left {

@@ -22,10 +22,18 @@
 package io.goobi.viewer.model.rss;
 
 import java.util.Date;
+import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 
 /**
  * Represents a single object within an RSS feed
@@ -34,7 +42,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RssItem implements Comparable<RssItem> {
+public class RssItem implements Comparable<RssItem>, IAccessDeniedThumbnailOutput {
 
     private String title;
     private String link;
@@ -42,6 +50,21 @@ public class RssItem implements Comparable<RssItem> {
     private Date pubDate;
     private String creator;
     private String docType;
+
+    @JsonIgnore
+    private AccessPermission accessPermissionThumbnail = null;
+
+    @Override
+    public String getAccessDeniedThumbnailUrl(Locale locale) {
+        if (accessPermissionThumbnail != null && accessPermissionThumbnail.getAccessDeniedPlaceholderInfo() != null) {
+            AccessDeniedInfoConfig placeholderInfo = accessPermissionThumbnail.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
+                return placeholderInfo.getImageUri();
+            }
+        }
+
+        return null;
+    }
 
     /**
      * <p>
@@ -173,6 +196,13 @@ public class RssItem implements Comparable<RssItem> {
      */
     public String getDocType() {
         return docType;
+    }
+
+    /**
+     * @param accessPermissionThumbnail the accessPermissionThumbnail to set
+     */
+    public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
+        this.accessPermissionThumbnail = accessPermissionThumbnail;
     }
 
     /**

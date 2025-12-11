@@ -13,20 +13,26 @@
 			<h3 class="card-title">
 				<a href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a>
 				<a if="{hasChildren(collection)}" class="collapsed card-title-collapse" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false">
-					<i class="fa fa-angle-flip" aria-hidden="true"></i>
+					<svg class="tpl-stacked-collection__icon tpl-stacked-collection__icon--collapse" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+						<use riot-href="{getIconHref('chevron-down')}"></use>
+					</svg>
 				</a>
 			</h3>
 			
 			<div class="tpl-stacked-collection__actions">
 				<div class="tpl-stacked-collection__info-toggle">
 					<a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false">
-						<i class="fa fa-info-circle" aria-hidden="true"></i>
+						<svg class="tpl-stacked-collection__icon tpl-stacked-collection__icon--info" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+							<use riot-href="{getIconHref('info-circle')}"></use>
+						</svg>
 					</a>
 				</div>
 					
 				<div class="card-rss">
 					<a href="{viewerJS.iiif.getRelated(collection, 'Rss feed')['@id']}">
-						<i class="fa fa-rss" aria-hidden="true"/>
+						<svg class="tpl-stacked-collection__icon tpl-stacked-collection__icon--rss" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+							<use riot-href="{getIconHref('rss')}"></use>
+						</svg>
 					</a>
 				</div>
 			</div>
@@ -52,6 +58,10 @@
 
 
 <script>
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
 
 riot.tag('raw', '', function(opts) {
     this.root.innerHTML = opts.html;
@@ -135,4 +145,3 @@ getId(element) {
 </script>
 
 </collectionList>
-

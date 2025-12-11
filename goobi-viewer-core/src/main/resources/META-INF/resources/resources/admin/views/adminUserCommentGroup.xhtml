@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -66,7 +68,8 @@
 												    <div class="col-1 admin__form-help-icon">
 													   <button type="button" class="btn btn--clean"
 														  data-toggle="helptext" aria-label="inline help icon">
-														  <i class="fa fa-question-circle" aria-hidden="true"></i>
+														  <util:icon
+                          									icon="help" />
 													   </button>
 												    </div>
                                                 </div>
@@ -92,8 +95,8 @@
 																errorClass="cms-module__option-message-status danger" />
 					
 															<div class="cms-module__option-message-mark">
-																<i class="fa fa-check" aria-hidden="true"></i> <i
-																	class="fa fa-exclamation" aria-hidden="true"></i>
+																<util:icon icon="check" />
+																<util:icon icon="exclamation" />
 															</div>
 														</div>
 														<h:inputText id="solrQueryInput" required="#{!adminCommentBean.currentCommentGroup.coreType}"
@@ -109,7 +112,7 @@
 												<div class="col-1 admin__form-help-icon">
 													<button type="button" class="btn btn--clean"
 														data-toggle="helptext" aria-label="inline help icon">
-														<i class="fa fa-question-circle" aria-hidden="true"></i>
+														<util:icon icon="help" />
 													</button>
 												</div>
 											
@@ -132,7 +135,7 @@
                                                 <div class="col-1 admin__form-help-icon">
                                                     <button type="button" class="btn btn--clean"
                                                         data-toggle="helptext" aria-label="inline help icon">
-                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                        <util:icon icon="help" />
                                                     </button>
                                                 </div>
                                                 </div>
@@ -156,7 +159,7 @@
                                                 <div class="col-1 admin__form-help-icon">
                                                     <button type="button" class="btn btn--clean"
                                                         data-toggle="helptext" aria-label="inline help icon">
-                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                        <util:icon icon="help" />
                                                     </button>
                                                 </div>
                                                 </div>
@@ -194,7 +197,7 @@
 										        <div class="col-1 admin__form-help-icon">
 											        <button type="button" class="btn btn--clean"
 												        data-toggle="helptext" aria-label="inline help icon">
-												        <i class="fa fa-question-circle" aria-hidden="true"></i>
+												        <util:icon icon="help" />
 											        </button>
 										        </div>
 
@@ -236,7 +239,7 @@
 											    <div class="col-1 admin__form-help-icon">
 												    <button type="button" class="btn btn--clean"
 													   data-toggle="helptext" aria-label="inline help icon">
-													   <i class="fa fa-question-circle" aria-hidden="true"></i>
+													   <util:icon icon="help" />
 												    </button>
 											    </div>
 											
@@ -272,7 +275,7 @@
 											<div class="col-1 admin__form-help-icon">
 												<button type="button" class="btn btn--clean"
 													data-toggle="helptext" aria-label="inline help icon">
-													<i class="fa fa-question-circle" aria-hidden="true"></i>
+													<util:icon icon="help" />
 												</button>
 											</div>
 											
@@ -310,7 +313,7 @@
 											<div class="col-1 admin__form-help-icon">
 												<button type="button" class="btn btn--clean"
 													data-toggle="helptext" aria-label="inline help icon">
-													<i class="fa fa-question-circle" aria-hidden="true"></i>
+													<util:icon icon="help" />
 												</button>
 											</div>
 											

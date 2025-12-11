@@ -77,17 +77,31 @@ var viewerJS = (function(viewer) {
 				console.log(authorityDataUri);
 			}
 
+			// prepare base path for icons
+			var iconBasePath = '';
+			if (_defaults.normdataConfig && _defaults.normdataConfig.path) {
+				iconBasePath = _defaults.normdataConfig.path;
+				if (iconBasePath.slice(-1) !== '/') {
+					iconBasePath += '/';
+				}
+			}
+
 			// THE POPOVER HTML ELEMENT
 			var popOverActionsElement = `<div class="hidden entity-popover-element">
 	  			<div class="popover-heading">${actionsPopoverHeadingMsg}</div>
 	  			
 	  			<div class="popover-body"> 
 	  				<div class="d-flex flex-column">
-	  					<button class="view-fulltext__popover-button" type="button" data-remotecontent="${authorityDataUri}">
-	  						<i class="fa fa-list-ul" aria-hidden="true"></i><span>${authorityDataMsg}</span>
+	  						<button class="view-fulltext__popover-button" type="button" data-remotecontent="${authorityDataUri}">
+	  						<span class="icon-wrapper view-fulltext__popover-icon" aria-hidden="true">
+	  							<svg class="icon" focusable="false"><use href="${iconBasePath}resources/icons/outline/list-details.svg#icon"></use></svg>
+	  						</span><span>${authorityDataMsg}</span>
 	  					</button>
-	  					<a class="view-fulltext__popover-button" href="${searchLink}"><i class="fa fa-search" aria-hidden="true"></i><span>${triggerSearchMsg}</span></a>
-	  					</div>
+	  					<a class="view-fulltext__popover-button" href="${searchLink}">
+	  						<span class="icon-wrapper view-fulltext__popover-icon" aria-hidden="true">
+	  							<svg class="icon" focusable="false"><use href="${iconBasePath}resources/icons/outline/search.svg#icon"></use></svg>
+	  						</span><span>${triggerSearchMsg}</span></a>
+	  				</div>
 	  			</div>
 	  		</div>`
 

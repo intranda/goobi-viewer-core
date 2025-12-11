@@ -82,36 +82,24 @@ public class PDFDownloadJob extends DownloadJob {
         generateDownloadIdentifier();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.DownloadJob#generateDownloadIdentifier()
-     */
     /** {@inheritDoc} */
     @Override
     public final void generateDownloadIdentifier() {
         this.identifier = generateDownloadJobId(LOCAL_TYPE, pi, logId);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.DownloadJob#getMimeType()
-     */
     /** {@inheritDoc} */
     @Override
     public String getMimeType() {
         return "application/pdf";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.misc.DownloadJob#getFileExtension()
-     */
     /** {@inheritDoc} */
     @Override
     public String getFileExtension() {
         return ".pdf";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#getDisplayName()
-     */
     /** {@inheritDoc} */
     @Override
     public String getDisplayName() {
@@ -131,9 +119,7 @@ public class PDFDownloadJob extends DownloadJob {
         return 1;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#getRestApiPath()
-     */
+    /** {@inheritDoc} */
     @Override
     protected String getRestApiPath() {
         return "/viewerpdf";

@@ -93,6 +93,7 @@
 		<class>io.goobi.viewer.model.search.Search</class>
 		<class>io.goobi.viewer.model.security.License</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
+        <class>io.goobi.viewer.model.security.LicenseTypePlaceholderInfo</class>
 		<class>io.goobi.viewer.model.security.Role</class>
         <class>io.goobi.viewer.model.security.clients.ClientApplication</class>
         <class>io.goobi.viewer.model.security.tickets.AccessTicket</class>
@@ -220,6 +221,7 @@
 		<class>io.goobi.viewer.model.search.Search</class>
 		<class>io.goobi.viewer.model.security.License</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
+        <class>io.goobi.viewer.model.security.LicenseTypePlaceholderInfo</class>
 		<class>io.goobi.viewer.model.security.Role</class>
         <class>io.goobi.viewer.model.security.clients.ClientApplication</class>
 		<class>io.goobi.viewer.model.security.user.IpRange</class>

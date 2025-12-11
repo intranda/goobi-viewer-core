@@ -4,6 +4,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:util="http://goobi.io/util"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
 	<composite:interface>
@@ -73,15 +74,15 @@
 				<div class="copyright-indicator__traffic-light-style-circle-wrapper">
 					<div
 						class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'OPEN' ? '-green' : ''}">
-						<i class="fa fa-check" aria-hidden="true"></i>
+						<util:icon icon="circle-check" />
 					</div>
 					<div
 						class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'PARTIAL' ? '-yellow' : ''}">
-						<i class="fa fa-info" aria-hidden="true"></i>
+						<util:icon icon="info-circle" />
 					</div>
-					<div
-						class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'LOCKED' ? '-red' : ''}">
-						<i class="fa fa-times" aria-hidden="true"></i>
+						<div
+							class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'LOCKED' ? '-red' : ''}">
+							<util:icon icon="circle-x" />
 					</div>
 				</div>
 				<div class="copyright-indicator__traffic-light-style-icon-wrapper">

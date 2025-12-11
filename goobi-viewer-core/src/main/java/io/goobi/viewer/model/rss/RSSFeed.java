@@ -53,12 +53,17 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -85,10 +90,8 @@ public final class RSSFeed {
     private static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.FILENAME, SolrConstants.FULLTEXT,
             SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.IDDOC_PARENT,
             SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.NUMVOLUMES,
-            SolrConstants.PERSON_ONEFIELD,
-            SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER, SolrConstants.THUMBNAIL,
-            SolrConstants.THUMBPAGENO,
-            SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
+            SolrConstants.PERSON_ONEFIELD, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER,
+            SolrConstants.THUMBNAIL, SolrConstants.THUMBPAGENO, SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
 
     private static final String HTML_STRONG_PUBLISHED = "<strong>Published: </strong>";
 
@@ -111,9 +114,10 @@ public final class RSSFeed {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws DAOException
      */
     public static SyndFeed createRss(String rootPath, String query, int maxItems)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         return createRss(rootPath, query, null, null, maxItems, null, true);
     }
 
@@ -135,9 +139,7 @@ public final class RSSFeed {
     }
 
     /**
-     * <p>
-     * createRss.
-     * </p>
+     * Creates RSS feed for the RSS REST API endpoint.
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -150,10 +152,12 @@ public final class RSSFeed {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws DAOException
      * @should produce feed correctly
      */
     public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language, int maxItems,
-            final String sortField, boolean sortDescending) throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            final String sortField, boolean sortDescending)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         String feedType = "rss_2.0";
 
         Locale locale = null;
@@ -193,6 +197,7 @@ public final class RSSFeed {
             return feed;
         }
 
+        logger.trace("Found {} RSS hits.", docs.size());
         for (SolrDocument doc : docs) {
             String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
             boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
@@ -239,6 +244,7 @@ public final class RSSFeed {
             String thumbnail = "";
             String urn = "";
             String bookSeries = "";
+            List<String> accessConditions = new ArrayList<>();
             int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
             int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
             boolean hasImages = SolrTools.isHasImages(doc);
@@ -327,8 +333,7 @@ public final class RSSFeed {
                             label = (String) value;
                         }
                         break;
-                    case SolrConstants.FILENAME:
-                    case SolrConstants.THUMBNAIL:
+                    case SolrConstants.FILENAME, SolrConstants.THUMBNAIL:
                         if (StringUtils.isEmpty(thumbnail)) {
                             thumbnail = (String) value;
                         }
@@ -338,6 +343,9 @@ public final class RSSFeed {
                             label = (String) value;
                             label = ViewerResourceBundle.getTranslation(label, locale);
                         }
+                        break;
+                    case SolrConstants.ACCESSCONDITION:
+                        accessConditions.addAll(SolrTools.getMetadataValues(doc, field));
                         break;
                     default: // nothing
                 }
@@ -351,6 +359,32 @@ public final class RSSFeed {
             String recordUrl = DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, pageNo, null, pageType, true);
 
             String imageUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight);
+
+            // Set access denied image
+            if (!accessConditions.isEmpty() && !(accessConditions.size() == 1 && SolrConstants.OPEN_ACCESS_VALUE.equals(accessConditions.get(0)))) {
+                AccessPermission accessPermission = AccessConditionUtils.getAccessPermission(pi, thumbnail, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
+                if (accessPermission != null && !accessPermission.isGranted()) {
+                    logger.trace("{} does not allow thumbnail display.", pi);
+                    imageUrl = null;
+                    // Custom access denied image
+                    if (accessPermission.getAccessDeniedPlaceholderInfo() != null) {
+                        AccessDeniedInfoConfig placeholderInfo = accessPermission.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+                        if (placeholderInfo != null && StringUtils.isNotEmpty(placeholderInfo.getImageUri())) {
+                            imageUrl = placeholderInfo.getImageUri();
+                            logger.trace("{} has custom access denied image: {}", pi, imageUrl);
+                        }
+                    }
+
+                    // Default access denied image
+                    if (StringUtils.isEmpty(imageUrl)) {
+                        NavigationHelper nh = BeanUtils.getNavigationHelper();
+                        if (nh == null) {
+                            nh = new NavigationHelper();
+                        }
+                        imageUrl = nh.getApplicationUrl() + "resources/images/access_denied.png";
+                    }
+                }
+            }
 
             String imageHtmlElement = null;
             if (StringUtils.isNotEmpty(pi) && StringUtils.isNotEmpty(imageUrl)) {
@@ -375,7 +409,7 @@ public final class RSSFeed {
                     logger.error(e.getMessage());
                 }
             }
-            description.setType(StringConstants.MIMETYPE_TEXT_HTML);
+            //            description.setType(StringConstants.MIMETYPE_TEXT_HTML);
             descValue = new StringBuilder(imageHtmlElement != null
                     ? new StringBuilder(imageHtmlElement).append("<div style=\"display:block;margin-left:5px;\">").toString() : "").append("<p>")
                             .append(bookSeries)
@@ -387,6 +421,7 @@ public final class RSSFeed {
                             .toString();
             description.setValue(descValue);
             entry.setDescription(description);
+
             entries.add(entry);
         }
         feed.setEntries(entries);
@@ -396,7 +431,7 @@ public final class RSSFeed {
 
     /**
      * @param doc
-     * @return Representatiove page number, if found in doc; otherwise 1
+     * @return Representative page number, if found in doc; otherwise 1
      */
     private static int getRepresentativePageNumber(SolrDocument doc) {
         if (doc.containsKey(SolrConstants.THUMBPAGENO)) {
@@ -421,9 +456,10 @@ public final class RSSFeed {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws DAOException
      */
     public static Channel createRssFeed(String rootPath, String query, int rssFeedItems)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         return createRssFeed(rootPath, query, null, rssFeedItems, null, null, true);
     }
 
@@ -443,10 +479,12 @@ public final class RSSFeed {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws DAOException
      * @should produce feed correctly
      */
     public static Channel createRssFeed(String rootPath, String query, List<String> filterQueries, int rssFeedItems, String language,
-            final String sortField, boolean sortDescending) throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            final String sortField, boolean sortDescending)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
         Locale locale = null;
         if (StringUtils.isNotBlank(language)) {
             locale = Locale.forLanguageTag(language);
@@ -477,7 +515,6 @@ public final class RSSFeed {
         }
 
         for (SolrDocument doc : docs) {
-            Long dateCreated = (Long) doc.getFieldValue(SolrConstants.DATECREATED);
             String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
             boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
             boolean child = !anchor
@@ -524,6 +561,7 @@ public final class RSSFeed {
             String urnLink = "";
             String bookSeries = "";
             String shelfmark = "";
+            List<String> accessConditions = new ArrayList<>();
 
             int pageNo = getRepresentativePageNumber(doc);
             int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
@@ -612,6 +650,9 @@ public final class RSSFeed {
                         case "MD_SHELFMARK":
                             shelfmark = value.toString();
                             break;
+                        case SolrConstants.ACCESSCONDITION:
+                            accessConditions.addAll(SolrTools.getMetadataValues(doc, field));
+                            break;
                         default: // nothing
                     }
                 }
@@ -627,7 +668,7 @@ public final class RSSFeed {
                 description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("DATECREATED", locale), imported));
             }
 
-            if (sbPlaceAndTime.length() > 0) {
+            if (!sbPlaceAndTime.isEmpty()) {
                 description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("rss_published", locale), sbPlaceAndTime.toString()));
             }
             if (StringUtils.isNotBlank(bookSeries)) {
@@ -658,6 +699,11 @@ public final class RSSFeed {
                 } catch (NumberFormatException e) {
                     logger.error(e.getMessage());
                 }
+            }
+
+            if (!accessConditions.isEmpty() && !(accessConditions.size() == 1 && SolrConstants.OPEN_ACCESS_VALUE.equals(accessConditions.get(0)))) {
+                AccessPermission accessPermission = AccessConditionUtils.getAccessPermission(pi, thumbnail, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
+                entry.setAccessPermissionThumbnail(accessPermission);
             }
 
             feed.addItem(entry);

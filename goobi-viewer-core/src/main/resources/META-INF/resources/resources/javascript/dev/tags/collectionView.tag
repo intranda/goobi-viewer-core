@@ -14,8 +14,8 @@ this.on("mount", () => {
     this.fetchCollections()
     .then( () => {
         let keys = this.collectionSets.map(set => set[0]);
-        this.translator = new viewerJS.translator(this.opts.restapi.replace("/rest", "/api/v1"), this.opts.language);
-        return this.translator.init(keys);
+        this.translator = viewerJS.translator;
+        return this.translator.addTranslations(keys);
     })
     .then( () => {
         this.update();

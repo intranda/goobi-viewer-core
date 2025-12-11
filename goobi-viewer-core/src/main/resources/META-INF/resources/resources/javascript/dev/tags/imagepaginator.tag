@@ -36,8 +36,8 @@
         </li>
 
 		<!-- PREV PAGE -->
-        <li each="{step in opts.navigationSteps.slice().reverse()}" class="image-controls__action page-browse prev {getPageNumberMinus(step) < opts.firstPageNumber ? 'inactive' : ''}">
-            <virtual if="{opts.numPages > step}">
+        <virtual each="{step in opts.navigationSteps.slice().reverse()}" if="{opts.numPages > step}">
+        	<li class="image-controls__action page-browse prev {getPageNumberMinus(step) < opts.firstPageNumber ? 'inactive' : ''}">
             	<!-- NOT SEQUENCE MODE -->
                 <a if="{getPageNumberMinus(step) >= opts.firstPageNumber && !isSequenceMode()}" data-target="paginatorPrevPage" href="{getPageUrl(getPageNumberMinus(step))}" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
 	                <virtual if="{!opts.rtl && step == 1}">
@@ -73,14 +73,9 @@
                      <virtual if="{!opts.rtl && step > 1}">-{step}</virtual>
                      <virtual if="{opts.rtl && step > 1}">+{step}</virtual>
                 </span>
-            </virtual>
-            
-            
-            
-            
-            
-        </li>
-
+        	</li>
+		</virtual>
+		
         <li if="{opts.showDropdown}" class="image-controls__action select">
             <div class="custom-control custom-control--select">
                 <select ref="dropdown" id="pageDropdown" aria-label="{msg.aria_label__select_page}" onchange="{changeDropdownValue}">
@@ -90,8 +85,8 @@
         </li>
 
 		<!-- NEXT PAGE -->
-        <li each="{step in opts.navigationSteps}" class="image-controls__action page-browse next {getPageNumberPlus(step) > opts.lastPageNumber ? 'inactive' : ''}">
-            	<virtual if="{opts.numPages > step}">
+		<virtual each="{step in opts.navigationSteps}" if="{opts.numPages > step}">
+        	<li class="image-controls__action page-browse next {getPageNumberPlus(step) > opts.lastPageNumber ? 'inactive' : ''}">
                 <!-- NOT SEQUENCE MODE -->
                 <a if="{getPageNumberPlus(step) <= opts.lastPageNumber && !isSequenceMode()}" data-target="paginatorNextPage" href="{getPageUrl(getPageNumberPlus(step))}" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
 	                <virtual if="{!opts.rtl && step == 1}">
@@ -127,8 +122,8 @@
                     <virtual if="{!opts.rtl && step > 1}">+{step}</virtual>
                     <virtual if="{opts.rtl && step > 1}">-{step}</virtual>
                 </span>
-            </virtual>
-        </li>
+        	</li>
+		</virtual>
 
         <!-- LAST PAGE -->
         <li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? 'start' : 'end'} {isLastPage() ? 'inactive' : ''}">

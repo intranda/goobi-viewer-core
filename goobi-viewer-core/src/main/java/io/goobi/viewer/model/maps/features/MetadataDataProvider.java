@@ -51,10 +51,11 @@ public class MetadataDataProvider extends AbstractFeatureDataProvider {
         }
 
         String metadataQuery = "+(%s) +DOCTYPE:METADATA".formatted(query);
-        String filteredQuery = SearchHelper.buildFinalQuery(query, false, SearchAggregationType.NO_AGGREGATION);
-        String topDocQuery = SearchHelper.AGGREGATION_QUERY_PREFIX + filteredQuery;
+        String filterQuery = SearchHelper.buildFinalQuery("*:*", false, SearchAggregationType.NO_AGGREGATION);
+        String topDocQuery = SearchHelper.AGGREGATION_QUERY_PREFIX + metadataQuery;
 
         Map<String, String> paramMap = SearchHelper.getExpandQueryParams(metadataQuery, MAX_METATA_PER_RECORD);
+        paramMap.put("fq", filterQuery);
 
         return search(maxResults, topDocQuery, paramMap);
 

@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
@@ -47,7 +49,10 @@
 							<h:panelGroup id="configEditorActualFile" layout="block" class="admin__config-editor-current-file-wrapper">
 								<h2>#{msg.admin__config_editor__actual_file}: #{adminConfigEditorBean.currentFileName}
 									<ui:fragment rendered="#{adminConfigEditorBean.currentFileRecord.writable == false}">
-									<i class="fa fa-exclamation-circle" aria-hidden="true" data-toggle="tooltip" title="#{msg.admin__config_editor__not_writable}"></i></ui:fragment>
+									<span data-toggle="tooltip" title="#{msg.admin__config_editor__not_writable}">
+										<util:icon icon="exclamation-circle"/>
+									</span>
+								</ui:fragment>
 								</h2>
 							</h:panelGroup>
 						<div>
@@ -168,7 +173,9 @@
 														</button>
 														<div class="admin__config-editor-file-selection-single-entry-actions-wrapper">
 															<div class="admin__config-editor-file-selection-single-entry-action-upload">
-																<label jsf:for="file" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.button__upload}"><i class="fa fa-upload" ></i></label>
+																<label jsf:for="file" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.button__upload}">
+																	<util:icon icon="upload" />
+																</label>
 																<input jsf:id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" jsf:value="#{adminConfigEditorBean.fileUploader.file}">
 																	<f:ajax listener="#{adminConfigEditorBean.upload(record.file)}" render="editor-form file-form backup-form configEditorActualFile"/>
 																</input>
@@ -176,7 +183,8 @@
 															
 															<div class="admin__config-editor-file-selection-single-entry-action-download">
 															    <!-- TODO This seems to cause an IllegalStateException in OmniFaces when used with JSF4 -->
-																<button jsf:action="#{adminConfigEditorBean.download(record.file)}" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadHeading}"><i class="fa fa-download"></i>
+																<button jsf:action="#{adminConfigEditorBean.download(record.file)}" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadHeading}">
+																	<util:icon icon="download" />
 																</button>
 															</div>
 														</div>
@@ -217,8 +225,8 @@
 														<h:commandLink
 															styleClass="btn btn--clean admin__config-editor-backup-single-entry"
 															action="#{adminConfigEditorBean.downloadFile(record)}">
-															<span class="admin__config-editor-backup-single-entry-icon">
-																<i class="fa fa-download" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadButton}"></i>
+															 <span class="admin__config-editor-backup-single-entry-icon" data-toggle="tooltip" 		data-trigger="hover" data-placement="top" title="#{msg.downloadButton}">
+																<util:icon icon="download" />
 															</span>
 														</h:commandLink>
 													</div>

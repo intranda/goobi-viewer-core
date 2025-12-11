@@ -237,14 +237,13 @@ var viewerJS = ( function( viewer ) {
             var popover = $( '<div />' );
             var popoverText = $( '<p />' );
             var popoverButton = $( '<button />' );
-            var popoverButtonIcon = $( '<i aria-hidden="true" />' );
+            var popoverButtonIcon = $( '<span aria-hidden="true">×</span>' );
             
             popover.addClass( 'warning-popover' );
             
             // build button
             popoverButton.addClass( 'btn btn--clean' );
             popoverButton.attr( 'data-toggle', 'warning-popover' );
-            popoverButtonIcon.addClass( 'fa fa-times' );
             popoverButton.append( popoverButtonIcon );
             popover.append( popoverButton );
             

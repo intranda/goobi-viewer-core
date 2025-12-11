@@ -32,7 +32,7 @@ var viewerJS = ( function( viewer ) {
                 $("[data-overlay='content']").each( (index, overlay) => {
                     let $overlay = $(overlay);
                     let $node = $overlay.children();
-                    let $trigger = $("#" + $overlay.attr("data-overlay-trigger"));
+                    let $trigger = $("#" + CSS.escape($overlay.attr("data-overlay-trigger")));
                     let type = $overlay.attr("data-overlay-type");
                     if(!type) {
                         type = "default";

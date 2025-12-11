@@ -1,4 +1,6 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -71,7 +73,7 @@
 									data-toggle="tooltip"
 									data-placement="bottom"
 									title="#{msg.widgetNerFacetting_tagAll}">
-                                    <i class="fa fa-times-circle" aria-hidden="true"></i>
+                                    <util:icon icon="circle-x"/>
                                 </a>
                             </li>
                             <li>
@@ -82,7 +84,7 @@
 									data-toggle="tooltip"
 									data-placement="bottom"
 									title="#{msg.widgetNerFacetting_tagPerson}">
-                                    <i class="fa fa-male" aria-hidden="true"></i>
+                                    <util:icon icon="man"/>
                                 </a>
                             </li>
                             <li>
@@ -93,12 +95,12 @@
 									data-toggle="tooltip"
 									data-placement="bottom"
 									title="#{msg.widgetNerFacetting_tagLocation}">
-                                    <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                    <util:icon icon="map-pin"/>
                                 </a>
                             </li>
                             <li>
                                 <a href="#widgetNerFacettingTop" class="facetting-trigger active" data-type="corporation" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagCorporation}">
-                                    <i class="fa fa-building-o" aria-hidden="true"></i>
+                                    <util:icon icon="building"/>
                                 </a>
                             </li>
                         </ul>
@@ -139,22 +141,22 @@
                         <ul class="filter-tags pull-right">
                             <li class="reset-filter">
                                 <a href="#widgetNerFacettingTop" class="facetting-trigger" data-type="-" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagAll}">
-                                    <i class="fa fa-times-circle" aria-hidden="true"></i>
+                                    <util:icon icon="circle-x"/>
                                 </a>
                             </li>
                             <li>
                                 <a href="#widgetNerFacettingTop" class="facetting-trigger active" data-type="person" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagPerson}">
-                                    <i class="fa fa-male" aria-hidden="true"></i>
+                                    <util:icon icon="man"/>
                                 </a>
                             </li>
                             <li>
                                 <a href="#widgetNerFacettingTop" class="facetting-trigger active" data-type="location" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagLocation}">
-                                    <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                    <util:icon icon="map-pin"/>
                                 </a>
                             </li>
                             <li>
                                 <a href="#widgetNerFacettingTop" class="facetting-trigger active" data-type="corporation" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagCorporation}">
-                                    <i class="fa fa-building-o" aria-hidden="true"></i>
+                                    <util:icon icon="building"/>
                                 </a>
                             </li>
                         </ul>

@@ -110,6 +110,7 @@ public class MediaResource {
 
     private String serveMediaContent(String type, String format, String identifier, String filename)
             throws PresentationException, IndexUnreachableException, WebApplicationException {
+        logger.trace("serveMediaContent: {}/{}/{}/{}", type, format, identifier, filename);
         String mimeType = type + "/" + format;
 
         checkAccess(type, identifier, filename);
@@ -117,7 +118,7 @@ public class MediaResource {
         java.nio.file.Path file =
                 DataFileTools.getDataFilePath(identifier, DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
         if (Files.isRegularFile(file)) {
-            logger.debug("Video file: {} ({} bytes)", file.toAbsolutePath(), file.toFile().length());
+            logger.debug("Media file: {} ({} bytes)", file.toAbsolutePath(), file.toFile().length());
             try {
                 new MediaDeliveryService().processRequest(request, response, file.toAbsolutePath().toString(), mimeType);
             } catch (IOException e) {

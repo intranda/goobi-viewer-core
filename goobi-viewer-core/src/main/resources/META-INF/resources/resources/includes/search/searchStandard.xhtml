@@ -53,7 +53,7 @@
                 	<viewerComponent:autocomplete value="#{search.searchString}" items="#{search.autocomplete}" placeholder="#{msg.search}">
                 	</viewerComponent:autocomplete>
                 </div>
-               	<h:commandButton id="submitSearch" type="submit" styleClass="btn btn--full" action="#{search.searchSimple}" value="#{msg.search}">
+               	<h:commandButton id="submitSearch" type="submit" styleClass="btn btn--full search-standard__submit-button" action="#{search.searchSimple}" value="#{msg.search}">
                    	<f:setPropertyActionListener target="#{search.activeSearchType}" value="0" />
                	</h:commandButton>
 			</div>

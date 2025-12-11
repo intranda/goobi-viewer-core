@@ -1,0 +1,235 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:util="http://goobi.io/util"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:jsf="http://xmlns.jcp.org/jsf"
+  xmlns:o="http://omnifaces.org/ui"
+  xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+  xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+  xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+>
+  <composite:interface>
+    <composite:attribute name="fileSize" required="true" />
+    <composite:attribute name="logId" required="false" default="" />
+    <composite:attribute name="title" required="true" />
+  </composite:interface>
+
+  <composite:implementation>
+    <!-- Modal -->
+    <div
+      class="modal fade download-modal"
+      id="downloadModal"
+      tabindex="-1"
+      aria-labelledby="abc"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title">#{cc.attrs.title}</h1>
+            <button
+              type="button"
+              class="fancy-close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">x</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <!-- PDF-DOWNLOAD DESCRIPTION -->
+            <div>
+              <!--TODO MK-->
+              <h2>#{msg.downloadHeading}</h2>
+
+              <dl class="row">
+                <dt class="col-sm-3">#{msg.downloadInfoTitle}:</dt>
+                <dd class="col-sm-9">#{cc.attrs.title}</dd>
+
+                <dt class="col-sm-3">#{msg.downloadInfoFileSize}:</dt>
+                <dd class="col-sm-9">~ #{cc.attrs.fileSize}</dd>
+              </dl>
+
+              <p class="mt-4 mb-4">#{msg.downloadEMailText}</p>
+            </div>
+
+            <!-- FORM -->
+            <h:form target="_blank"
+              id="download-modal__emailFormRequest"
+              styleClass="form-horizontal"
+              prependId="false"
+            >
+              <!-- E-MAIL -->
+              <div class="form-group form-row">
+                <label
+                  for="download-modal__email"
+                  class="col-lg-3 control-label"
+                >
+                  #{msg.email}
+                </label>
+
+                <div class="col-12 col-lg-9">
+                  <h:inputText
+                    id="download-modal__email"
+                    label="downloadEmail"
+                    required="false"
+                    value="#{downloadBean.email}"
+                    styleClass="form-control"
+                    pt:data-require-input-text="emailRequired"
+                    pt:data-target="emailValidatorCheck"
+                    pt:aria-labelledby="download-modal__labelEmail"
+                    pt:type="email"
+                    allowEmptyString="true"
+                  >
+                    <f:validator
+                      validatorId="emailValidator"
+                      for="download-modal__email"
+                    />
+                  </h:inputText>
+                </div>
+              </div>
+
+              <!-- ACCEPT TERMS -->
+              <div class="download-modal__required-checkbox-wrapper">
+                <div class="form-row">
+                  <p class="col-12">
+                    <h:outputText escape="false" />
+                  </p>
+
+                  <div
+                    id="downloadAcceptTerms"
+                    class="form-group form-row col-12"
+                  >
+                    <p class="mb-4">#{msg.feedbackAcceptingTerms}</p>
+                    <label class="col-lg-3 control-label">
+                      #{msg.admin__terms_of_use__accept}:
+                    </label>
+
+                    <div class="col-12 col-lg-9 admin__radio-switch">
+                      <h:selectOneRadio
+                        group="downloadTerms"
+                        value="false"
+                        immediate="true"
+                        checked="false"
+                        pt:data-require-input-checkbox="uncheckedChecker"
+                      >
+                        <f:selectItem
+                          itemValue="#{false}"
+                          itemLabel="#{msg.no}"
+                        />
+                      </h:selectOneRadio>
+
+                      <h:selectOneRadio
+                        group="downloadTerms"
+                        value="true"
+                        immediate="true"
+                        checked="true"
+                        pt:data-require-input-checkbox="ticketRequired"
+                      >
+                        <f:selectItem itemLabel="#{msg.yes}" />
+                      </h:selectOneRadio>
+
+                      <span class="toggle-outside">
+                        <span class="toggle-inside"></span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SUBMIT EMAIL ADRESS -->
+              <div class="form-row">
+                <div class="col-sm-12 d-flex justify-content-end">
+                  <button
+                    type="button"
+                    data-dismiss="modal"
+                    class="btn btn--clean mr-4"
+                  >
+                    #{msg.cancel}
+                  </button>
+
+                  <h:commandButton
+                    action="#{downloadBean.createPDFDownloadJob(activeDocumentBean.persistentIdentifier, cc.attrs.logId, false, '')}"
+                    styleClass="btn btn--full"
+                    value="#{msg.submit}"
+                    pt:data-target="buttonLoaderClickEvent"
+                    id="downloadSubmitButton"
+                    onclick="$('#downloadModal').modal('hide')"
+                  >
+                  </h:commandButton>
+                </div>
+              </div>
+
+              <!-- SHOW LOADER AFTER BUTTON CLICK FOR REQUESTING TICKET -->
+              <script>
+                $.fn.isValid = function () {
+                  return this[0].checkValidity();
+                };
+
+                $('[data-target="buttonLoaderClickEvent"]').on(
+                  "click",
+                  function (e) {
+                    if ($('[data-target="mailValidatorCheck"]').isValid()) {
+                      $('[data-target="buttonLoader"]').fadeIn("fast");
+                      $('[data-target="buttonLoaderClickEvent').css(
+                        "opacity",
+                        "0.5"
+                      );
+                    }
+                  }
+                );
+              </script>
+
+              <!--VALIDATION-->
+              <script type="text/javascript">
+                //<![CDATA[
+                $(document).ready(function () {
+                  const $emailInput = $("input[id$='download-modal__email']");
+                  const $radiosWrapper = $("#downloadAcceptTerms");
+                  const $radios = $("#downloadAcceptTerms").find(
+                    "input[type='radio']"
+                  );
+                  const $submitBtn = $("input[id$='downloadSubmitButton']");
+
+                  $radiosWrapper.hide();
+                  $submitBtn.prop("disabled", true);
+
+                  function updateFormState() {
+                    const emailVal = $emailInput.val().trim();
+                    const isEmailValid = $emailInput[0].checkValidity();
+
+                    const acceptTermsVal = $radios.filter(":checked").val();
+                    const isTermsAccepted = acceptTermsVal
+                      ? acceptTermsVal?.split(":")?.pop() !== "false"
+                      : false;
+
+                    if (emailVal.length && isEmailValid) {
+                      $radiosWrapper.show();
+                      $submitBtn.prop("disabled", true);
+
+                      if (isTermsAccepted) $submitBtn.prop("disabled", false);
+                      else $submitBtn.prop("disabled", true);
+                    } else {
+                      $radiosWrapper.hide();
+                      $submitBtn.prop("disabled", false);
+                    }
+                  }
+
+                  $emailInput.on("input change", updateFormState);
+                  $radios.on("change", updateFormState);
+
+                  updateFormState();
+                });
+                //]]>
+              </script>
+            </h:form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </composite:implementation>
+</ui:composition>

@@ -74,6 +74,98 @@ var viewerJS = ( function( viewer ) {
             $( _defaults.saveSearchModalSelector ).on( 'shown.bs.modal', function() {
                 $( _defaults.saveSearchInputSelector ).focus();
             } );
+
+            /**
+             * Keep trigger buttons for modal dialogs in sync with the modal state.
+             * Applies a dedicated modifier class instead of Bootstrap's `.active`
+             * to avoid conflicting styles and ensures the focus outline/hover
+             * feedback resets correctly after the modal closes.
+             *
+             * @param {string} triggerSelector  Button selector used to open the modal
+             * @param {string} modalSelector    CSS selector of the modal element
+             */
+            function bindModalTriggerState(triggerSelector, modalSelector) {
+                var $modal = $(modalSelector);
+                if ($modal.length === 0) {
+                    return;
+                }
+
+                var $triggers = $(triggerSelector)
+                    .attr('aria-pressed', false);
+
+                function setTriggerState(isOpen) {
+                    $triggers = $(triggerSelector);
+                    if ($triggers.length === 0) {
+                        return;
+                    }
+                    $triggers
+                        .toggleClass('is-modal-trigger-open', isOpen)
+                        .attr('aria-pressed', isOpen);
+
+                    if (!isOpen) {
+                        $triggers.removeClass('suppress-hover no-hover');
+                        setTimeout(function() {
+                            $triggers.each(function() {
+                                this.blur();
+                            });
+                        }, 0);
+                    } else {
+                        $triggers.each(function() {
+                            var $trigger = $(this);
+                            $trigger.closest('[data-toggle="tooltip"]').tooltip('hide');
+                            $trigger.find('[data-toggle="tooltip"]').tooltip('hide');
+                        });
+                    }
+                }
+
+                $modal.on('show.bs.modal', function() {
+                    setTriggerState(true);
+                }).on('hidden.bs.modal', function() {
+                    setTriggerState(false);
+                });
+
+                $(document).on('click', triggerSelector, function() {
+                    var $btn = $(this);
+                    var btnEl = this;
+                    $btn.addClass('suppress-hover');
+                    setTimeout(function() {
+                        $btn.removeClass('suppress-hover');
+                    }, 200);
+                    setTimeout(function() {
+                        if (btnEl && typeof btnEl.blur === 'function') {
+                            btnEl.blur();
+                        }
+                    }, 40);
+                });
+            }
+
+            bindModalTriggerState('.search-list__help .btn.btn--icon', '#searchHelpModal');
+            bindModalTriggerState('.search-list__save-search .btn.btn--icon', _defaults.saveSearchModalSelector);
+
+            /**
+             * Blur icon buttons that act as external links after pointer activation.
+             * Prevents sticky hover/focus styles when a new browser tab/window opens.
+             *
+             * Keyboard activation keeps focus for accessibility.
+             *
+             * @param {string} selector
+             */
+            function blurOnPointerClick(selector) {
+                $(document).on('click', selector, function(event) {
+                    if (event && typeof event.detail === 'number' && event.detail === 0) {
+                        return;
+                    }
+
+                    var el = this;
+                    $(el).closest('[data-toggle="tooltip"]').tooltip('hide');
+
+                    window.requestAnimationFrame(function() {
+                        el.blur();
+                    });
+                });
+            }
+
+            blurOnPointerClick('.search-list__rss .btn.btn--icon');
             
             // set focus class if searchfield is focused
             $( '#currentSearchInput' ).on( {
@@ -148,8 +240,10 @@ var viewerJS = ( function( viewer ) {
             //** DEFINE DIFFERENT LIST STYLES FUNCTIONS */      
                        
             function setListViewDetails() {
-            	$( '.search-list__views button' ).removeClass( 'active' );
-            	$('[data-view="search-list-default"]').addClass( 'active' );
+            	var $views = $( '.search-list__views button' );
+            	$views.removeClass( 'active' ).attr('aria-pressed','false');
+            	var $active = $('[data-view="search-list-default"]').addClass( 'active' );
+            	$active.attr('aria-pressed','true');
             	$( '[data-toggle="hit-content"]' ).show();
 				$( '.search-list__hit-thumbnail' ).css({'height': 'auto'});
             	$( '.search-list__hits' ).css( "opacity", 0 ).removeClass( 'grid' ).removeClass( 'list-view' );
@@ -164,8 +258,10 @@ var viewerJS = ( function( viewer ) {
 			}
 			
             function setListViewGrid() {
-                $( '.search-list__views button' ).removeClass( 'active' );
-                $('[data-view="search-list-grid"]').addClass( 'active' );
+                var $views = $( '.search-list__views button' );
+                $views.removeClass( 'active' ).attr('aria-pressed','false');
+                var $active = $('[data-view="search-list-grid"]').addClass( 'active' );
+                $active.attr('aria-pressed','true');
                 $( '[data-toggle="hit-content"]' ).hide();
 				$( '.search-list__hit-thumbnail' ).css({'height': 'auto'});
                 $( '.search-list__hits' ).css( "opacity", 0 ).removeClass( 'list-view' ).addClass( 'grid' );
@@ -193,9 +289,11 @@ var viewerJS = ( function( viewer ) {
                 $( '.search-list__hits' ).fadeTo(300,1);
 			}
 			
-			function setListViewList() {
-                $( '.search-list__views button' ).removeClass( 'active' );
-                $('[data-view="search-list-list"]').addClass( 'active' );
+            function setListViewList() {
+                var $views = $( '.search-list__views button' );
+                $views.removeClass( 'active' ).attr('aria-pressed','false');
+                var $active = $('[data-view="search-list-list"]').addClass( 'active' );
+                $active.attr('aria-pressed','true');
                 $( '[data-toggle="hit-content"]' ).hide();
 				$( '.search-list__hit-thumbnail' ).css({'height': '0'});
                 $( '.search-list__hits' ).css( "opacity", 0 ).removeClass( 'grid' ).addClass( 'list-view' );

@@ -22,6 +22,8 @@
 package io.goobi.viewer.model.security;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -50,6 +52,7 @@ public class AccessPermission implements Serializable {
     private boolean downloadTicketRequired = false;
     private boolean redirect = false;
     private String redirectUrl;
+    private Map<String, AccessDeniedInfoConfig> accessDeniedPlaceholderInfo = new HashMap<>();
     /** If a license has more than one licensees attached to it, this variable is used to communicate an additional check requirement. */
     private AbstractLicensee addionalCheckRequired = null;
 
@@ -188,6 +191,22 @@ public class AccessPermission implements Serializable {
      */
     public AccessPermission setRedirectUrl(String redirectUrl) {
         this.redirectUrl = redirectUrl;
+        return this;
+    }
+
+    /**
+     * @return the accessDeniedPlaceholderInfo
+     */
+    public Map<String, AccessDeniedInfoConfig> getAccessDeniedPlaceholderInfo() {
+        return accessDeniedPlaceholderInfo;
+    }
+
+    /**
+     * @param accessDeniedPlaceholderInfo the accessDeniedPlaceholderInfo to set
+     * @return this
+     */
+    public AccessPermission setAccessDeniedPlaceholderInfo(Map<String, AccessDeniedInfoConfig> accessDeniedPlaceholderInfo) {
+        this.accessDeniedPlaceholderInfo = accessDeniedPlaceholderInfo;
         return this;
     }
 

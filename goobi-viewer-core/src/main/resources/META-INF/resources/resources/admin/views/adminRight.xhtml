@@ -1,5 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
@@ -405,7 +406,7 @@
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            <util:icon icon="help" />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -473,7 +474,7 @@
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            <util:icon icon="help" />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -538,7 +539,7 @@
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            <util:icon icon="help" />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -601,7 +602,7 @@
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            <util:icon icon="help" />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -625,7 +626,7 @@
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            <util:icon icon="help" />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -649,7 +650,7 @@
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            <util:icon icon="help" />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -673,7 +674,7 @@
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            <util:icon icon="help" />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -708,13 +709,13 @@
                                                                 class="btn btn--link admin__badge admin__badge-dark admin__license-action" 
                                                                 jsf:action="#{adminLicenseBean.currentLicense.removePrivilege(priv)}" title="#{msg.remove}">
                                                                     <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
-                                                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                                    <util:icon icon="trash" />
                                                             </button>
                                                         </ui:repeat>
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
-                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                            <util:icon icon="help" />
                                                         </button>
                                                     </div>
 
@@ -728,7 +729,7 @@
                                                     class="btn btn--link admin__badge admin__badge-dark admin__license-action" 
 	                                                        jsf:action="#{adminLicenseBean.currentLicense.addPrivilege(priv)}" title="#{msg.add}">
 	                                                            #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
-	                                                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+	                                                            <util:icon icon="plus" />
 	                                                    </button>
 	                                                </ui:repeat>
 		                                        </div>

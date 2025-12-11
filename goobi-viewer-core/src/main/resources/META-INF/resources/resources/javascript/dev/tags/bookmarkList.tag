@@ -6,8 +6,10 @@
 
 		<button if="{pi}" class="btn btn--clean" type="button"
 			onclick="{inList(bookmarkList, this.pi, this.page, this.logid) ? remove : add}">
-			<i if="{inList(bookmarkList, this.pi, this.page, this.logid)}"
-				class="fa fa-check" aria-hidden="true"></i> {bookmarkList.name} <span>{bookmarkList.numItems}</span>
+			<svg if="{inList(bookmarkList, this.pi, this.page, this.logid)}"
+				class="bookmark-popup__check-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+				<use riot-href="{getIconHref('check')}"></use>
+			</svg> {bookmarkList.name} <span>{bookmarkList.numItems}</span>
 		</button>
 
 		<div if="{!pi}" class="row no-margin">
@@ -17,15 +19,21 @@
 			</div>
 			<div class="col-2 no-padding icon-list">
 				<a if="{maySendList(bookmarkList)}" href="{sendListUrl(bookmarkList)}" title="{msg('bookmarkList_session_mail_sendList')}"> 
-					<i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+					<svg class="bookmark-popup__action-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+						<use riot-href="{getIconHref('send')}"></use>
+					</svg>
 				</a>
 				<a href="{searchListUrl(bookmarkList)}"
 					data-toggle="tooltip" data-placement="top" data-original-title=""
 					title="{msg('action__search_in_bookmarks')}"> 
-					<i class="fa fa-search" aria-hidden="true"></i>
+					<svg class="bookmark-popup__action-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+						<use riot-href="{getIconHref('search')}"></use>
+					</svg>
 				</a>
 				<a href="{miradorUrl(bookmarkList)}" target="_blank" title="{msg('viewMiradorComparison')}"> 
-					<i class="fa fa-th" aria-hidden="true"></i>
+					<svg class="bookmark-popup__action-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+						<use riot-href="{getIconHref('grid-dots')}"></use>
+					</svg>
 				</a>
 			</div>
 			<div class="col-1 no-padding">
@@ -37,7 +45,11 @@
 
 </ul>
 
-<script> 
+<script>
+const ensureTrailingSlash = value => value.endsWith('/') ? value : `${value}/`;
+const viewerConfig = window.viewerConfig || {};
+this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
+this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;  
 
 this.pi = this.opts.data.pi;
 this.logid = this.opts.data.logid;
@@ -142,4 +154,3 @@ msg(key) {
 </script> 
 
 </bookmarkList>
-

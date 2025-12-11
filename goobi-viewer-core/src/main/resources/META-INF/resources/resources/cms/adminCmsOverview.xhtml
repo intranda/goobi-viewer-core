@@ -1,4 +1,5 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:util="http://goobi.io/util"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
    				xmlns:jsf="http://xmlns.jcp.org/jsf"
@@ -91,7 +92,7 @@
 	                                            <span class="admin__table-name #{page.published == true ? '' : '-unpublished'}">#{page.title}</span>
 	                                            <ui:fragment rendered="#{page.accessCondition != null}">
 	                                            	<span class="cms-pages-overview__access-condition-wrapper">
-		                                            	<span class="cms-pages-overview__access-condition" data-toggle="tooltip" title="#{page.accessCondition}"><i class="fa fa-key cms-pages-overview__access-condition-icon" aria-hidden="true"></i></span> 
+		                                            	<span class="cms-pages-overview__access-condition" data-toggle="tooltip" title="#{page.accessCondition}"><util:icon icon="key" /></span> 
 	                                        		</span> 
 	                                        	</ui:fragment>
                                         	</div>

@@ -78,7 +78,7 @@ public class ViewerMessage {
     @CollectionTable(name = "mq_message_properties",
             joinColumns = @JoinColumn(name = "message_id"))
     @MapKeyColumn(name = "property_name")
-    @Column(name = "property_value", nullable = true)
+    @Column(name = "property_value", nullable = true, columnDefinition = "TEXT")
     @PrivateOwned
     private Map<String, String> properties = new HashMap<>();
 

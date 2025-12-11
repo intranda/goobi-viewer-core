@@ -136,7 +136,7 @@ var Crowdsourcing = ( function(crowdsourcing) {
                     this.areaSelector.reset();
                     this.setDrawingPermission();
                     this.annotations
-                    .forEach(anno => this.areaSelector.addOverlay(anno, this.item.image.viewer));
+                    .forEach(anno => this.areaSelector.addOverlay(anno, this.item.image));
                     this.areaSelector.setDrawingStyle(this.areaSelector.getStyle());
                 }
                 break;

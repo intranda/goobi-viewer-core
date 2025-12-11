@@ -25,24 +25,33 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
+import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
-import io.goobi.viewer.model.job.download.DownloadJob;
-import io.goobi.viewer.model.job.download.EPUBDownloadJob;
-import io.goobi.viewer.model.job.download.PDFDownloadJob;
+import io.goobi.viewer.exceptions.MessageQueueException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.model.job.download.PdfGenerator;
 import io.goobi.viewer.model.statistics.usage.RequestType;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
@@ -50,6 +59,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.WebApplicationException;
 
 /**
  * <p>
@@ -72,6 +82,8 @@ public class DownloadBean implements Serializable {
     private String downloadIdentifier;
     //    private DownloadJob downloadJob;
     private ViewerMessage message;
+
+    private String email = BeanUtils.getUserBean().getEmail();
 
     /**
      * <p>
@@ -107,6 +119,15 @@ public class DownloadBean implements Serializable {
      */
     public String openDownloadAction() throws DAOException, DownloadException {
         message = DataManager.getInstance().getDao().getViewerMessageByMessageID(downloadIdentifier);
+        if (message == null) {
+            String filename = downloadIdentifier + ".pdf";
+            Path filePath = Path.of(DataManager.getInstance().getConfiguration().getDownloadFolder(PdfGenerator.TYPE)).resolve(filename);
+            if (Files.exists(filePath)) {
+                message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
+                message.setMessageStatus(MessageStatus.FINISH);
+                message.getProperties().put("path", filePath.toString());
+            }
+        }
         if (message == null) {
             message = messageBroker.getMessageById(downloadIdentifier).orElse(null);
         }
@@ -152,33 +173,16 @@ public class DownloadBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     public void downloadFileAction() throws IOException, DownloadException {
-        PDFDownloadJob downloadJob =
-                new PDFDownloadJob(this.message.getProperties().get("pi"), this.message.getProperties().get("logId"), LocalDateTime.now(), 0L);
-        Path file = downloadJob.getFile();
-        if (file == null) {
-            logger.error("File not found for job ID '{}'.", downloadJob.getIdentifier());
-            throw new DownloadException("downloadErrorNotFound");
-        }
-        String fileName;
-        switch (downloadJob.getType()) {
-            case PDFDownloadJob.LOCAL_TYPE:
-                fileName = downloadJob.getPi() + (StringUtils.isNotEmpty(downloadJob.getLogId()) ? ("_" + downloadJob.getLogId()) : "") + ".pdf";
-                break;
-            case EPUBDownloadJob.LOCAL_TYPE:
-                fileName = downloadJob.getPi() + (StringUtils.isNotEmpty(downloadJob.getLogId()) ? ("_" + downloadJob.getLogId()) : "") + ".epub";
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported job type: " + downloadJob.getType());
-        }
-
+        Path file = new PdfGenerator(message).getPath();
         FacesContext fc = FacesContext.getCurrentInstance();
         ExternalContext ec = fc.getExternalContext();
         // Some JSF component library or some Filter might have set some headers in the buffer beforehand.
         // We want to get rid of them, else it may collide.
         ec.responseReset();
-        ec.setResponseContentType(downloadJob.getMimeType());
+        ec.setResponseContentType("application/pdf");
         ec.setResponseHeader("Content-Length", String.valueOf(Files.size(file)));
-        ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
+        ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
+                NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + file.getFileName().toString() + "\"");
         OutputStream os = ec.getResponseOutputStream();
         try (FileInputStream fis = new FileInputStream(file.toFile())) {
             byte[] buffer = new byte[1024];
@@ -188,7 +192,7 @@ public class DownloadBean implements Serializable {
             }
         } catch (IOException e) {
             if (GetAction.isClientAbort(e)) {
-                logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage());
+                logger.trace("Download of '{}' aborted: {}", file.getFileName(), e.getMessage());
                 return;
             }
             throw e;
@@ -217,22 +221,18 @@ public class DownloadBean implements Serializable {
      * Getter for the field <code>downloadIdentifier</code>.
      * </p>
      *
-     * @param criteria a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getDownloadIdentifier(String... criteria) {
-        return DownloadJob.generateDownloadJobId(criteria);
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>downloadIdentifier</code>.
-     * </p>
-     *
      * @return the downloadIdentifier
      */
     public String getDownloadIdentifier() {
         return downloadIdentifier;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /**
@@ -244,6 +244,69 @@ public class DownloadBean implements Serializable {
      */
     public void setDownloadIdentifier(String downloadIdentifier) {
         this.downloadIdentifier = downloadIdentifier;
+    }
+
+    public void createPDFDownloadJob(String pi, String logId, String usePdfSource, String configVariant)
+            throws DAOException, URISyntaxException, JsonProcessingException {
+
+        ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
+
+        if (StringUtils.isNotBlank(email)) {
+            message.getProperties().put("email", email.toLowerCase());
+        }
+        message.getProperties().put("pi", pi);
+        if (StringUtils.isNotBlank(logId)) {
+            message.getProperties().put("logId", logId);
+        }
+        if (StringUtils.isNotBlank(usePdfSource)) {
+            message.getProperties().put("usePdfSource", usePdfSource);
+        }
+        if (StringUtils.isNotBlank(configVariant)) {
+            message.getProperties().put("configVariant", configVariant);
+        }
+
+        PdfGenerator job = new PdfGenerator(message);
+        try {
+            if (Files.exists(job.getPath()) && !job.isLocked()) {
+                //pdf already created
+                this.message = message;
+                this.message.setMessageStatus(MessageStatus.FINISH);
+                String fileId = URLEncoder.encode(FilenameUtils.getBaseName(job.getFilename()), Charset.defaultCharset());
+                URI downloadPageUrl = getDownloadPageUrl(fileId);
+                PrettyUrlTools.redirectToUrl(downloadPageUrl.toString());
+                return;
+            }
+        } catch (IOException e) {
+            logger.warn("Unable to check existence of pdf file {}. Generating pdf in message queue");
+        }
+
+        // create new activemq message
+        String messageId = message.getMessageId();
+        try {
+            messageId = this.messageBroker.addToQueue(message);
+            messageId = URLEncoder.encode(messageId, Charset.defaultCharset());
+        } catch (MessageQueueException e) {
+            throw new WebApplicationException(e);
+        }
+
+        // forward to download page
+        URI downloadPageUrl = getDownloadPageUrl(messageId);
+        PrettyUrlTools.redirectToUrl(downloadPageUrl.toString());
+    }
+
+    /**
+     * 
+     * @param id
+     * @return {@link URI}
+     * @throws URISyntaxException
+     */
+    private URI getDownloadPageUrl(String id) throws URISyntaxException {
+        if (StringUtils.isNotBlank(id)) {
+            return new URI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/download/" + id + "/");
+        } else {
+            return new URI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/download/");
+        }
+
     }
 
 }

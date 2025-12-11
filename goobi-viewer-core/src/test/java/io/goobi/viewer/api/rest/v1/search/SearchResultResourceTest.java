@@ -24,17 +24,17 @@ package io.goobi.viewer.api.rest.v1.search;
 import java.util.List;
 import java.util.Locale;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.TestUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 class SearchResultResourceTest extends AbstractDatabaseEnabledTest {
 
@@ -42,7 +42,7 @@ class SearchResultResourceTest extends AbstractDatabaseEnabledTest {
     private HttpServletResponse servletResponse;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         super.setUp();
         this.servletRequest = Mockito.mock(HttpServletRequest.class);
         this.servletResponse = Mockito.mock(HttpServletResponse.class);
@@ -54,6 +54,8 @@ class SearchResultResourceTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getSearchHitChildren_shouldReturnNullIfSearchHitsNull() throws Exception {
+        TestUtils.mockFacesContext();
+        
         SearchResultResource resource = new SearchResultResource(this.servletRequest, this.servletResponse);
         Response response = resource.getRISAsFile("PI:AC13451894", "", "", 0);
         Assertions.assertEquals(Status.OK.getStatusCode(), response.getStatus());

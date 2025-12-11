@@ -1,5 +1,7 @@
 
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -43,13 +45,13 @@
 				<button id="prev" class="btn btn--default view-epub__controls-button" title="#{msg.prev_page}" data-toggle="tooltip"
 					data-placement="top" aria-label="#{msg.prev_page}"
 					onclick="rendition.prev()">
-					<i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+					<util:icon icon="circle-arrow-left" />
 				</button>
 				<!-- NEXT BUTTON - WITH LTR/RTL SCRIPT -->
 				<button id="next" class="btn btn--default view-epub__controls-button" title="#{msg.next_page}" data-toggle="tooltip"
 					data-placement="top" aria-label="#{msg.next_page}"
 					onclick="rendition.next()">
-					<i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+					<util:icon icon="circle-arrow-right" />
 				</button>
 			</div>
 
