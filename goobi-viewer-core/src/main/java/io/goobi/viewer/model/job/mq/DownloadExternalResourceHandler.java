@@ -52,8 +52,8 @@ import io.goobi.viewer.managedbeans.storage.ApplicationBean;
 import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
 import io.goobi.viewer.model.files.external.Progress;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
+import io.goobi.viewer.model.resources.download.ResourceDownload;
 import jakarta.inject.Inject;
 
 public class DownloadExternalResourceHandler implements MessageHandler<MessageStatus> {
@@ -88,7 +88,7 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
                 return MessageStatus.ERROR;
             }
 
-            String downloadId = getDownloadId(pi, url);
+            String downloadId = ResourceDownload.getExternalResourceId(pi, url);
 
             URI uri = new URI(url);
             if (!uri.isAbsolute()) {
@@ -174,11 +174,6 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         } else {
             return Collections.emptyList();
         }
-    }
-
-    private String getDownloadId(String pi, String downloadUrl) {
-        return DownloadJob.generateDownloadJobId(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), pi,
-                downloadUrl);
     }
 
     @Override

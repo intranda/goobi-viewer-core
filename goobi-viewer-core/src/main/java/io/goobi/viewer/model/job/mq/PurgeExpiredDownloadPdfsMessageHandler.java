@@ -37,8 +37,7 @@ import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.job.download.PDFDownloadJob;
-import io.goobi.viewer.model.job.download.PdfGenerator;
+import io.goobi.viewer.model.job.download.PdfDownloadJob;
 
 public class PurgeExpiredDownloadPdfsMessageHandler implements MessageHandler<MessageStatus> {
 
@@ -47,14 +46,14 @@ public class PurgeExpiredDownloadPdfsMessageHandler implements MessageHandler<Me
     @Override
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
 
-        Path targetFolder = Path.of(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
+        Path targetFolder = Path.of(DataManager.getInstance().getConfiguration().getDownloadFolder(PdfDownloadJob.TYPE));
         List<Path> pdfs = getDownloadPdfFiles(targetFolder);
 
         int filesDeleted = 0;
         for (Path pdfPath : pdfs) {
             try {
                 if (Files.exists(pdfPath)) {
-                    PdfGenerator job = new PdfGenerator(pdfPath);
+                    PdfDownloadJob job = new PdfDownloadJob(pdfPath);
                     if (!job.isLocked() && job.isExpired()) {
                         logger.debug("Deleting expired pdf download file {}", pdfPath);
                         Files.delete(pdfPath);

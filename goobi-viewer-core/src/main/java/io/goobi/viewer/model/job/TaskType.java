@@ -43,6 +43,8 @@ public enum TaskType implements ITaskType {
     INDEX_USAGE_STATISTICS("0 45 0 * * ?"),
     /** Create a PDF for a record or part of record to be offered as download **/
     DOWNLOAD_PDF(""),
+    /** Create a EPUB for a record or part of record to be offered as download **/
+    DOWNLOAD_EPUB(""),
     /** Write single page pdfs to storage to be used when creating a full record pdf **/
     PRERENDER_PDF("0 35 0 * * ?"),
     /** Fill all CMS-Geomaps with features from SOLR to avoid loading that data during page load */

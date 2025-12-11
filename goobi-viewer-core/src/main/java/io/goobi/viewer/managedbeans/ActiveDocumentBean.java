@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -90,10 +91,9 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
-import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.DownloadOption;
-import io.goobi.viewer.model.job.download.EPUBDownloadJob;
-import io.goobi.viewer.model.job.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.download.EpubDownloadJob;
+import io.goobi.viewer.model.job.download.PdfDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
@@ -2134,17 +2134,29 @@ public class ActiveDocumentBean implements Serializable {
     public boolean isAccessPermissionEpub() {
         synchronized (this) {
             try {
-                if ((navigationHelper != null && !isEnabled(EPUBDownloadJob.LOCAL_TYPE, navigationHelper.getCurrentPage())) || viewManager == null
-                        || !DownloadJob.ocrFolderExists(viewManager.getPi())) {
+                if ((navigationHelper != null && !isEnabled(EpubDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null
+                        || !ocrFolderExists(viewManager.getPi())) {
                     return false;
                 }
-            } catch (PresentationException | IndexUnreachableException e) {
+            } catch (IndexUnreachableException e) {
                 logger.error("Error checking EPUB resources: {}", e.getMessage());
                 return false;
             }
 
             // TODO EPUB privilege type
             return viewManager.isAccessPermissionPdf();
+        }
+    }
+
+    private boolean ocrFolderExists(String pi) {
+        try {
+            String cleanedPi = StringTools.cleanUserGeneratedData(pi);
+            Dataset work = DataFileTools.getDataset(cleanedPi);
+            Path altoFolder = work.getAltoFolderPath();
+            return altoFolder != null && Files.isDirectory(altoFolder);
+        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException e) {
+            logger.error("Error finding alto folder for {}", pi, e);
+            return false;
         }
     }
 
@@ -2157,7 +2169,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public boolean isAccessPermissionPdf() {
         synchronized (this) {
-            if ((navigationHelper != null && !isEnabled(PDFDownloadJob.LOCAL_TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
+            if ((navigationHelper != null && !isEnabled(PdfDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
                 return false;
             }
 
@@ -2171,11 +2183,11 @@ public class ActiveDocumentBean implements Serializable {
      * @return true if download of the given type is enabled for the given page type; false otherwise
      */
     private static boolean isEnabled(String downloadType, String pageTypeName) {
-        if (downloadType.equals(EPUBDownloadJob.LOCAL_TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue()) {
+        if (downloadType.equals(EpubDownloadJob.TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue()) {
             return false;
         }
         PageType pageType = PageType.getByName(pageTypeName);
-        boolean pdf = PDFDownloadJob.LOCAL_TYPE.equals(downloadType);
+        boolean pdf = PdfDownloadJob.TYPE.equals(downloadType);
         if (pageType != null) {
             switch (pageType) {
                 case viewToc:

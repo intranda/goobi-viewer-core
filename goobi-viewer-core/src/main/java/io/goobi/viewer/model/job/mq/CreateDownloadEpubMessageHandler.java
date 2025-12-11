@@ -32,7 +32,6 @@ import java.time.Instant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -45,23 +44,23 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.job.download.PdfDownloadJob;
+import io.goobi.viewer.model.job.download.EpubDownloadJob;
 import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
 
-public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageStatus> {
+public class CreateDownloadEpubMessageHandler implements MessageHandler<MessageStatus> {
 
-    private static final int DELAY_IF_PDF_IS_BEING_CREATED_MILLIS = 300_000;
+    private static final int DELAY_IF_EPUB_IS_BEING_CREATED_MILLIS = 300_000;
     private static final int MAX_RETRIES = 2;
-    private static final Logger logger = LogManager.getLogger(CreateDownloadPdfMessageHandler.class);
+    private static final Logger logger = LogManager.getLogger(CreateDownloadEpubMessageHandler.class);
 
     @Override
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
 
-        PdfDownloadJob job = new PdfDownloadJob(message);
+        EpubDownloadJob job = new EpubDownloadJob(message);
 
         try {
-            File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PdfDownloadJob.TYPE));
+            File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(EpubDownloadJob.TYPE));
             if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
                 throw new IOException("Download folder " + targetFolder + " not found");
             }
@@ -69,21 +68,22 @@ public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageSt
             String cleanedPi = StringTools.cleanUserGeneratedData(job.getPi());
             Dataset work = DataFileTools.getDataset(cleanedPi);
 
-            Path pdfFile = job.getPath();
+            Path epubFile = job.getPath();
 
             //if file is currently being created, wait 5 min and try again
             if (job.isLocked()) {
-                message.setDelay(DELAY_IF_PDF_IS_BEING_CREATED_MILLIS);
+                message.setDelay(DELAY_IF_EPUB_IS_BEING_CREATED_MILLIS);
                 message.setRetryCount(message.getRetryCount() - 1);
                 return MessageStatus.WAIT;
             }
 
             //if the file does not exist, create it
-            if (!Files.exists(pdfFile)) {
+            if (!Files.exists(epubFile)) {
                 try {
-                    job.create(work); //this takes time...                    
-                } catch (ContentLibException | PresentationException | IOException e) {
-                    Files.deleteIfExists(pdfFile);
+
+                    job.create(work); //this takes time...
+                } catch (PresentationException | IOException e) {
+                    Files.deleteIfExists(epubFile);
                     throw e;
                 }
             }
@@ -95,12 +95,14 @@ public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageSt
             } catch (MessagingException e) {
                 logger.error("Error notifying observers: {}", e.toString());
             }
-        } catch (RecordNotFoundException | ContentLibException e) {
-            message.getProperties().put("message", "Error creating PDF: " + e.getMessage());
+        } catch (RecordNotFoundException e) {
+            message.getProperties().put("message", "Error creating Epub: " + e.getMessage());
             message.setDoNotRetry();
             return MessageStatus.ERROR;
         } catch (PresentationException | IndexUnreachableException | IOException e) {
-            message.getProperties().put("message", "Error creating PDF: " + e.toString());
+            if (message.getRetryCount() > MAX_RETRIES) {
+                message.getProperties().put("message", "Error creating Epub: " + e.toString());
+            }
             return MessageStatus.ERROR;
         }
 
@@ -109,7 +111,7 @@ public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageSt
 
     @Override
     public String getMessageHandlerName() {
-        return TaskType.DOWNLOAD_PDF.name();
+        return TaskType.DOWNLOAD_EPUB.name();
     }
 
 }
