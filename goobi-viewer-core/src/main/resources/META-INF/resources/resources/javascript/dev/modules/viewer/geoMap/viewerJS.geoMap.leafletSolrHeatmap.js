@@ -201,13 +201,13 @@ if (typeof L !== 'undefined') {
 	  initialize: function(heatmapUrl, featureUrl, featureGroup, options) {
 	    var _this = this;
 	    L.setOptions(_this, options);
-		console.log("init solrHeatmap ", this.options);
+		// console.log("init solrHeatmap ", this.options);
 	    _this.featureGroup = featureGroup;
 	    _this.queryAdapter = new L.SolrHeatmapQueryAdapters[this.options.queryAdapter](this.options, _this);
 	    _this._heatmapUrl = heatmapUrl;
 	    _this.featureUrl = featureUrl;
 	    _this._layers = {};
-	  },
+	  }, 
 	
 	  onAdd: function (map) {
 	    // Call the parent function
@@ -435,7 +435,7 @@ if (typeof L !== 'undefined') {
 				clusterOptions.disableClusteringAtZoom = config?.maxClusteringZoom;
 				clusterOptions.spiderfyOnMaxZoom = false;
 			}
-			console.log("_createClusters", clusterOptions);
+			// console.log("_createClusters", clusterOptions);
 			_this.clusterMarkers = new L.MarkerClusterGroup(clusterOptions);
 		_this.featureGroup.removeAllMarkers();
 	

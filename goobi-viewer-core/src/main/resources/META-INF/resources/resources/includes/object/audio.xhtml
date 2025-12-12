@@ -38,13 +38,9 @@
 			            id="audio_container" 
 			            controls="controls"
 			            controlsList="nodownload">
-			            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('ogg')}" type="audio/ogg" />
-			            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}" type="audio/mpeg" />
-			            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}" type="audio/mp3" />
-			            <object type="application/x-shockwave-flash" data="#{navigationHelper.applicationUrl}resources/components/player_mp3.swf" width="200" height="20">
-			                <param name="movie" value="#{navigationHelper.applicationUrl}resources/components/player_mp3.swf" />
-			                <param name="flashvars" value="mp3=#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}&amp;autoplay=1" />
-			            </object>
+			            <ui:repeat var="format" value="#{activeDocumentBean.viewManager.currentPage.getMediaFormats('audio')}">
+			               <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl(format)}" type="audio/#{format}" />
+			            </ui:repeat>
 			        </audio>
 			    </div>
 		    </div>
