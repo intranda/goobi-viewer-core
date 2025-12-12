@@ -21,12 +21,17 @@
  */
 package io.goobi.viewer.model.security;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.goobi.viewer.model.security.License.AccessType;
+import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -190,5 +195,61 @@ class LicenseTest {
         lic.setUser(new User());
         lic.setLicenseType(new LicenseType());
         Assertions.assertNull(lic.getDisabledStatus());
+    }
+
+    /**
+     * @see License#applySecondarySelection()
+     * @verifies throw IllegalStateException if primaryType not set
+     */
+    @Test
+    void applySecondarySelection_shouldThrowIllegalStateExceptionIfPrimaryTypeNotSet() {
+        License lic = new License();
+        Exception e = Assertions.assertThrows(IllegalStateException.class, lic::applySecondarySelection);
+        assertEquals("primaryType not set", e.getMessage());
+    }
+
+    /**
+     * @see License#applySecondarySelection()
+     * @verifies throw IllegalStateException if primary and secondary type same
+     */
+    @Test
+    void applySecondarySelection_shouldThrowIllegalStateExceptionIfPrimaryAndSecondaryTypeSame() {
+        License lic = new License();
+
+        lic.setPrimaryType(AccessType.USER);
+        lic.setUser2(new User());
+        Exception e = Assertions.assertThrows(IllegalStateException.class, lic::applySecondarySelection);
+        assertEquals("Same type not allowed", e.getMessage());
+
+        lic.setPrimaryType(AccessType.USER_GROUP);
+        lic.setUserGroup2(new UserGroup());
+        e = Assertions.assertThrows(IllegalStateException.class, lic::applySecondarySelection);
+        assertEquals("Same type not allowed", e.getMessage());
+
+        lic.setPrimaryType(AccessType.IP_RANGE);
+        lic.setIpRange2(new IpRange());
+        e = Assertions.assertThrows(IllegalStateException.class, lic::applySecondarySelection);
+        assertEquals("Same type not allowed", e.getMessage());
+
+        lic.setPrimaryType(AccessType.CLIENT);
+        lic.setClient2(new ClientApplication());
+        e = Assertions.assertThrows(IllegalStateException.class, lic::applySecondarySelection);
+        assertEquals("Same type not allowed", e.getMessage());
+    }
+
+    /**
+     * @see License#applySecondarySelection()
+     * @verifies apply secondary selection correctly
+     */
+    @Test
+    void applySecondarySelection_shouldapplySecondarySelectionCorrectly() {
+        License lic = new License();
+        lic.setPrimaryType(AccessType.USER);
+        IpRange secondary = new IpRange();
+        lic.setIpRange2(secondary);
+        Assertions.assertNull(lic.getIpRange());
+
+        lic.applySecondarySelection();
+        assertEquals(secondary, lic.getIpRange());
     }
 }

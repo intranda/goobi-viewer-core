@@ -1190,6 +1190,9 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      * Sets the selected secondary licensee to the appropriate member.
+     * @should throw IllegalStateException if primaryType not set
+     * @should throw IllegalStateException if primary and secondary type same
+     * @should apply secondary selection correctly
      */
     public void applySecondarySelection() {
         if (primaryType == null) {
