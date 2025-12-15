@@ -41,6 +41,7 @@ var adminJS = ( function( admin ) {
 		function elementLicenceTogglerFunction() {
 		
 			// WATCH CHANGES
+			// console.log('activated element licence toggler function script');
 			
 			var $watchedElements = $("[data-watched-element]");
 			
