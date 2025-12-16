@@ -37,13 +37,15 @@
                             <h2>#{msg.condition}</h2>
                             <div id="licenseesGroup" class="admin__default-block">
                             <h:panelGroup id="licenseesGroupInner" layout="block">
+                            
+                            <ui:repeat var="licensee" value=#{adminLicenseBean.currentLIcense.licensees}">
                                 <div class="form-group form-row">
                                     <div class="col-sm-4">
-                                        <label for="currentLicense.type" class="control-label">#{msg.admin__license_licensee_type_select_label}:</label>
+                                        <label for="licensee.type" class="control-label">#{msg.admin__license_licensee_type_select_label}:</label>
                                     </div>
                                     <div class="col-sm-8">
                                         <h:selectOneMenu
-                                            value="#{adminLicenseBean.currentLicense.type}"
+                                            value="#{licensee.type}"
                                             styleClass="form-control"
                                             immediate="true"
                                             disabled="#{adminLicenseBean.currentLicense.id != null}" >
@@ -57,16 +59,10 @@
                                             <f:selectItem itemLabel="#{msg.admin__clients}" itemValue="client" />
                                             <f:ajax render="licenseeGroup licenseeGroup2 licenseeTypeGroup2 infoGroup licenseTypeGroup saveButtonGroup" />
                                             <!-- Reset all set licensee values so that the lower menus are reset as well -->
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setUser(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setUserGroup(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setIpRange(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setClient(null)}" />
-                                            <!-- Reset all set secondary licensee values so that the lower menus are reset as well -->
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setType2(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setSecondUser(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setSecondUserGroup(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setSecondIpRange(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setSecondClient(null)}" />
+                                            <f:ajax listener="#{licensee.setUser(null)}" />
+                                            <f:ajax listener="#{licensee.setUserGroup(null)}" />
+                                            <f:ajax listener="#{licensee.setIpRange(null)}" />
+                                            <f:ajax listener="#{licensee.setClient(null)}" />
                                         </h:selectOneMenu>
                                     </div>
                                 </div>
@@ -78,8 +74,8 @@
                                      </div>
                                      <div class="col-sm-8">
                                          <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.type == 'user' or adminLicenseBean.currentLicense.user != null}"
-                                             value="#{adminLicenseBean.currentLicense.user}"
+                                             rendered="#{licensee.type.name() == 'USER'}"
+                                             value="#{licensee.user}"
                                              styleClass="form-control"
                                              immediate="true"
                                              converter="userConverter"
@@ -90,8 +86,8 @@
                                              <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.type == 'group' or adminLicenseBean.currentLicense.userGroup != null}"
-                                             value="#{adminLicenseBean.currentLicense.userGroup}"
+                                             rendered="#{licensee.type.name() == 'USER_GROUP'}"
+                                             value="#{licensee.userGroup}"
                                              styleClass="form-control"
                                              immediate="true"
                                              converter="userGroupConverter"
@@ -102,8 +98,8 @@
                                              <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.type == 'iprange' or adminLicenseBean.currentLicense.ipRange != null}"
-                                             value="#{adminLicenseBean.currentLicense.ipRange}"
+                                             rendered="#{licensee.type.name() == 'IP_RANGE'}"
+                                             value="#{licensee.ipRange}"
                                              styleClass="form-control"
                                              immediate="true"
                                              converter="ipRangeConverter"
@@ -114,8 +110,8 @@
                                              <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.type == 'client' or adminLicenseBean.currentLicense.client != null}"
-                                             value="#{adminLicenseBean.currentLicense.clientId}"
+                                             rendered="#{licensee.type.name() == 'CLIENT'}"
+                                             value="#{licensee.clientId}"
                                              styleClass="form-control"
                                              immediate="true"
                                              disabled="#{adminLicenseBean.currentLicense.id != null}">
@@ -128,108 +124,21 @@
                                      </div>
                                 </h:panelGroup>
                                 
-                                <ui:fragment rendered="#{!adminLicenseBean.currentLicense.multiLicenseeMode}">
-                                    <h:commandLink action="#{adminLicenseBean.currentLicense.toggleMultiLicenseeMode}" immediate="true">
+                                </ui:repeat>
+                                
+                                <ui:fragment rendered="#{fn:length(adminLicenseBean.currentLicense.licensees) == 1}">
+                                    <h:commandLink action="#{adminLicenseBean.currentLicense.addLicensee}" immediate="true">
                                         #{msg.add}
                                         <f:ajax render="licenseesGroupInner" />
-                                    </h:commandLink>
-                                </ui:fragment>
+                                    </h:commandLink> 
+                                </ui:fragment>  
                                 
-                                <!-- LICENSEE SELECTION 2 -->
-                                <h:panelGroup id="licenseeSelectionGroup2" rendered="#{adminLicenseBean.currentLicense.multiLicenseeMode}">
-                                <div class="form-group form-row">
-                                    <div class="col-sm-4">
-                                        <label for="currentLicense.type2" class="control-label">#{msg.admin__license_licensee_type_select_label}:</label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <h:selectOneMenu
-                                            value="#{adminLicenseBean.currentLicense.type2}"
-                                            styleClass="form-control"
-                                            immediate="true"
-                                            disabled="#{!adminLicenseBean.currentLicense.multiLicenseeMode}" >
-
-                                            <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_type_select_label}" />
-
-                                            <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
-                                            <f:selectItem itemLabel="#{msg.admin__users}" itemValue="user"
-                                                itemDisabled="#{adminLicenseBean.currentLicense.type == 'user'}" />
-                                            <f:selectItem itemLabel="#{msg.admin__groups}" itemValue="group"
-                                                itemDisabled="#{adminLicenseBean.currentLicense.type == 'group'}" />
-                                            <f:selectItem itemLabel="#{msg.admin__ip_ranges}" itemValue="iprange"
-                                                itemDisabled="#{adminLicenseBean.currentLicense.type == 'iprange'}" />
-                                            <f:selectItem itemLabel="#{msg.admin__clients}" itemValue="client"
-                                                itemDisabled="#{adminLicenseBean.currentLicense.type == 'client'}" />
-                                            <f:ajax render="licenseeGroup2 infoGroup licenseTypeGroup saveButtonGroup" />
-                                            <!-- Reset all set licensee values so that the lower menus are reset as well -->
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setUser2(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setUserGroup2(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setIpRange2(null)}" />
-                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setClient2(null)}" />
-                                        </h:selectOneMenu>
-                                    </div>
-                                </div>
-                                
-                                <h:panelGroup id="licenseeGroup2" layout="block" styleClass="form-group form-row">
-                                     <div class="col-sm-4">
-                                         <label for="currentLicense.licensee" class="control-label">#{msg.admin__license_licensee_select_label}:</label>
-                                     </div>
-                                     <div class="col-sm-8">
-                                         <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.type2 == 'user' or adminLicenseBean.currentLicense.user2 != null}"
-                                             value="#{adminLicenseBean.currentLicense.user2}"
-                                             styleClass="form-control"
-                                             immediate="true"
-                                             converter="userConverter"
-                                             disabled="#{!adminLicenseBean.currentLicense.multiLicenseeMode}">
-                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
-                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                             <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
-                                             <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
-                                         </h:selectOneMenu>
-                                         <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.type2 == 'group' or adminLicenseBean.currentLicense.userGroup2 != null}"
-                                             value="#{adminLicenseBean.currentLicense.userGroup2}"
-                                             styleClass="form-control"
-                                             immediate="true"
-                                             converter="userGroupConverter"
-                                             disabled="#{!adminLicenseBean.currentLicense.multiLicenseeMode}">
-                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
-                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                             <f:selectItems value="#{adminBean.allUserGroups}" />
-                                             <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
-                                         </h:selectOneMenu>
-                                         <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.type2 == 'iprange' or adminLicenseBean.currentLicense.ipRange2 != null}"
-                                             value="#{adminLicenseBean.currentLicense.ipRange2}"
-                                             styleClass="form-control"
-                                             immediate="true"
-                                             converter="ipRangeConverter"
-                                             disabled="#{!adminLicenseBean.currentLicense.multiLicenseeMode}">
-                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
-                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                             <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
-                                             <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
-                                         </h:selectOneMenu>
-                                         <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.type2 == 'client' or adminLicenseBean.currentLicense.client2 != null}"
-                                             value="#{adminLicenseBean.currentLicense.clientId2}"
-                                             styleClass="form-control"
-                                             immediate="true"
-                                             disabled="#{adminLicenseBean.currentLicense.id != null}">
-                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
-                                             <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                             <f:selectItem itemLabel="#{msg.admin__right_all_clients}" itemValue="#{adminClientsBean.allClients.id}"/>
-                                             <f:selectItems var="client" value="#{adminClientsBean.allAcceptedClients}" itemLabel="#{client.name} (#{client.clientIdentifier})" itemValue="#{client.id}" />
-                                             <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
-                                         </h:selectOneMenu>
-                                    </div>
-                                </h:panelGroup>
-                                
-                                    <h:commandLink action="#{adminLicenseBean.currentLicense.toggleMultiLicenseeMode}" immediate="true">
+                                <ui:fragment rendered="#{fn:length(adminLicenseBean.currentLicense.licensees) gt 1}">
+                                    <h:commandLink action="#{adminLicenseBean.currentLicense.removeLicensee(licensee)}" immediate="true">
                                         #{msg.remove}
                                         <f:ajax render="licenseesGroupInner" />
                                     </h:commandLink>
-                                </h:panelGroup>
+                                </ui:fragment>
                                 
                             </h:panelGroup>
                             </div>

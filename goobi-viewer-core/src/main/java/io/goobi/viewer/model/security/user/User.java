@@ -67,12 +67,11 @@ import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
-import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.License.AccessType;
+import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.solr.SolrConstants;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -85,7 +84,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.servlet.http.HttpServletRequest;
@@ -190,10 +188,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     @PrivateOwned
     private Map<String, String> userProperties = new HashMap<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
-    @PrivateOwned
-    private List<License> licenses = new ArrayList<>();
-
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
     private Map<String, AccessPermission> recordsForWhichUserMaySetRepresentativeImage = new HashMap<>();
@@ -254,10 +248,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         setAgreedToTermsOfUse(blueprint.agreedToTermsOfUse);
         setAvatarType(blueprint.avatarType);
         setLocalAvatarUpdated(blueprint.localAvatarUpdated);
-        // TODO clone licenses?
-        for (License license : blueprint.getLicenses()) {
-            getLicenses().add(license);
-        }
         // Clone OpenID identifiers
         for (String openIdAccount : blueprint.getOpenIdAccounts()) {
             getOpenIdAccounts().add(openIdAccount);
@@ -484,31 +474,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         return getAccessPermissionFromMap(permissionMap);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean addLicense(License license) {
-        if (licenses == null) {
-            licenses = new ArrayList<>();
-        }
-        if (!licenses.contains(license)) {
-            licenses.add(license);
-            license.setUser(this);
-            return true;
-        }
-
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean removeLicense(License license) {
-        if (license != null && licenses != null) {
-            return licenses.remove(license);
-        }
-
-        return false;
-    }
-
     /**
      * <p>
      * isHasCmsPrivilege.
@@ -723,7 +688,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
             return true;
         }
 
-        List<License> allLicenses = new ArrayList<>(licenses);
+        List<License> allLicenses = new ArrayList<>(getLicenses());
         try {
             allLicenses.addAll(getUserGroupsWithMembership().stream().flatMap(g -> g.getLicenses().stream()).toList());
         } catch (DAOException e) {
@@ -758,7 +723,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
 
         // Check user licenses
-        for (License license : licenses) {
+        for (License license : getLicenses()) {
             if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                 continue;
             }
@@ -806,9 +771,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
             return allTemplates;
         }
 
-        Set<CMSPageTemplate> allowedTemplates = new HashSet<>(allTemplates.size());
+        Set<CMSPageTemplate> allowedTemplates = HashSet.newHashSet(allTemplates.size());
         // Check user licenses
-        for (License license : licenses) {
+        for (License license : getLicenses()) {
             if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                 continue;
             }
@@ -873,7 +838,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
             return true;
         }
 
-        List<License> allLicenses = new ArrayList<>(licenses);
+        List<License> allLicenses = new ArrayList<>(getLicenses());
         try {
             allLicenses.addAll(getUserGroupsWithMembership().stream().flatMap(g -> g.getLicenses().stream()).toList());
         } catch (DAOException e) {
@@ -907,7 +872,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
         List<CMSCategory> ret = new ArrayList<>(allCategories.size());
         // Check user licenses
-        for (License license : licenses) {
+        for (License license : getLicenses()) {
             if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                 continue;
             }
@@ -960,7 +925,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
             return true;
         }
 
-        List<License> allLicenses = new ArrayList<>(licenses);
+        List<License> allLicenses = new ArrayList<>(getLicenses());
         try {
             allLicenses.addAll(getUserGroupsWithMembership().stream().flatMap(g -> g.getLicenses().stream()).toList());
         } catch (DAOException e) {
@@ -994,7 +959,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
         List<String> ret = new ArrayList<>(rawValues.size());
         // Check user licenses
-        for (License license : licenses) {
+        for (License license : getLicenses()) {
             if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                 continue;
             }
@@ -1355,23 +1320,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
 
         return 3;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<License> getLicenses() {
-        return licenses;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>licenses</code>.
-     * </p>
-     *
-     * @param licenses the licenses to set
-     */
-    public void setLicenses(List<License> licenses) {
-        this.licenses = licenses;
     }
 
     /**

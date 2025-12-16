@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.security;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,6 +43,7 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
     ClientApplication allClients;
     Set<String> recordAccessConditions = new HashSet<>();
 
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -60,7 +60,7 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
         recordAccessConditions.add(lt.getName());
 
         allClients = new ClientApplication(ClientApplicationManager.GENERAL_CLIENT_IDENTIFIER);
-        new ArrayList<>(allClients.getLicenses()).forEach(l -> allClients.removeLicense(l));
+        // new ArrayList<>(allClients.getLicenses()).forEach(l -> allClients.removeLicense(l));
         ClientApplicationManager manager = new ClientApplicationManager(DataManager.getInstance().getDao()) {
             public ClientApplication getAllClientsFromDatabase() {
                 return allClients;
@@ -78,29 +78,33 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void checkAccessPermission_shouldReturnTrueIfClientContainsLicense() throws Exception {
-
-        client.addLicense(license);
-
+        license.getLicensees().get(0).setClient(client);
+        DataManager.getInstance().getDao().addLicense(license);
         Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
     @Test
     void checkAccessPermission_shouldReturnTrueIfAllClientsContainsLicense() throws Exception {
-
-        allClients.addLicense(license);
-
-        Set<String> recordAccessConditions = new HashSet<>();
-        recordAccessConditions.add(lt.getName());
-        Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
+        license.getLicensees().get(0).setClient(client);
+        DataManager.getInstance().getDao().addLicense(license);
+        Set<String> conditions = new HashSet<>();
+        conditions.add(lt.getName());
+        Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), conditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
 
     @Test
     void checkAccessPermission_shouldReturnFalseIfClientIsOutsiteIpRange() throws Exception {
+        license.getLicensees().get(0).setClient(client);
+        DataManager.getInstance().getDao().addLicense(license);
+        
+        License license2 = new License();
+        license2.setLicenseType(lt);
+        license2.setPrivileges(Collections.singleton(IPrivilegeHolder.PRIV_LIST));
+        license2.getLicensees().get(0).setClient(allClients);
+        DataManager.getInstance().getDao().addLicense(license2);
 
-        client.addLicense(license);
-        allClients.addLicense(license);
         client.setSubnetMask("11.22.33.45/32");
 
         Assertions.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
@@ -109,9 +113,15 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void checkAccessPermission_shouldReturnTrueIfClientIsInsideIpRange() throws Exception {
-
-        client.addLicense(license);
-        allClients.addLicense(license);
+        license.getLicensees().get(0).setClient(client);
+        DataManager.getInstance().getDao().addLicense(license);
+        
+        License license2 = new License();
+        license2.setLicenseType(lt);
+        license2.setPrivileges(Collections.singleton(IPrivilegeHolder.PRIV_LIST));
+        license2.getLicensees().get(0).setClient(allClients);
+        DataManager.getInstance().getDao().addLicense(license2);
+        
         client.setSubnetMask("11.22.33.45/31");
 
         Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,

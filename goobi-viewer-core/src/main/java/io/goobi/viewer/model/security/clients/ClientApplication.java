@@ -17,10 +17,8 @@ package io.goobi.viewer.model.security.clients;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -28,7 +26,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
-import org.eclipse.persistence.annotations.PrivateOwned;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -45,16 +42,13 @@ import io.goobi.viewer.model.security.License.AccessType;
 import io.goobi.viewer.model.security.user.AbstractLicensee;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 /**
@@ -146,14 +140,6 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     private AccessStatus accessStatus;
 
     /**
-     * List of {@link License Licenses} this client is privileged to
-     */
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
-    @PrivateOwned
-    @JsonIgnore
-    private List<License> licenses = new ArrayList<>();
-
-    /**
      * Status describing if the client is eligible to receive viewing privileges
      * 
      * @author florian
@@ -200,7 +186,6 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
         this.name = source.getName();
         this.description = source.getDescription();
         this.subnetMask = source.getSubnetMask();
-        this.licenses = new ArrayList<>(source.getLicenses());
     }
 
     /**
@@ -415,33 +400,6 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
         }
 
         return false;
-    }
-
-    /**
-     * Get the {@link License}s this client is privileged to
-     * 
-     * @return the licenses
-     */
-    public List<License> getLicenses() {
-        return Collections.unmodifiableList(this.licenses);
-    }
-
-    /**
-     * Add a {@link License} to the {@link #licenses}
-     * 
-     * @param license
-     * @return true if added successfully; false otherwise
-     */
-    public boolean addLicense(License license) {
-        return this.licenses.add(license);
-    }
-
-    /**
-     * Remove {@link License} from the {@link #licenses}
-     */
-    @Override
-    public boolean removeLicense(License license) {
-        return this.licenses.remove(license);
     }
 
     /**

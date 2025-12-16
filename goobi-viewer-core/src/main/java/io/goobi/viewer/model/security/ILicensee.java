@@ -23,6 +23,7 @@ package io.goobi.viewer.model.security;
 
 import java.util.List;
 
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.License.AccessType;
@@ -66,24 +67,10 @@ public interface ILicensee {
      * @param privilegeName Required privilege (optional).
      * @param pi Checks the privilege in connection with a specific record identifier (optional).
      * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws DAOException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException;
-
-    /**
-     * Adds the given license to this ILicensee.
-     *
-     * @param license a {@link io.goobi.viewer.model.security.License} object.
-     * @return a boolean.
-     */
-    public boolean addLicense(License license);
-
-    /**
-     * Removes the given license from this ILicensee.
-     *
-     * @param license a {@link io.goobi.viewer.model.security.License} object.
-     * @return a boolean.
-     */
-    public boolean removeLicense(License license);
+    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi)
+            throws DAOException, IndexUnreachableException, PresentationException;
 }

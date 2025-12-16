@@ -58,7 +58,6 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
-import io.goobi.viewer.model.security.License.AccessType;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.LicenseTypePlaceholderInfo;
 import io.goobi.viewer.model.security.Role;
@@ -495,77 +494,23 @@ public class AdminLicenseBean implements Serializable {
         }
 
         boolean error = false;
-        if (currentLicense.getUser() != null) {
-            // User
-            currentLicense.getUser().addLicense(currentLicense);
-            currentLicense.setPrimaryType(AccessType.USER);
-            try {
-                currentLicense.applySecondarySelection();
-            } catch (IllegalStateException e) {
-                logger.trace(e.getMessage());
-                Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
-            }
-            if (DataManager.getInstance().getDao().updateUser(currentLicense.getUser())) {
-                Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
-            } else {
-                Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
-                error = true;
-            }
-        } else if (currentLicense.getUserGroup() != null) {
-            // UserGroup
-            currentLicense.getUserGroup().addLicense(currentLicense);
-            currentLicense.setPrimaryType(AccessType.USER_GROUP);
-            try {
-                currentLicense.applySecondarySelection();
-            } catch (IllegalStateException e) {
-                logger.trace(e.getMessage());
-                Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
-            }
-            if (DataManager.getInstance().getDao().updateUserGroup(currentLicense.getUserGroup())) {
-                Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
-            } else {
-                Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
-                error = true;
-            }
-        } else if (currentLicense.getIpRange() != null) {
-            // IpRange
-            logger.trace("ip range id:{} ", currentLicense.getIpRange().getId());
-            currentLicense.getIpRange().addLicense(currentLicense);
-            currentLicense.setPrimaryType(AccessType.IP_RANGE);
-            try {
-                currentLicense.applySecondarySelection();
-            } catch (IllegalStateException e) {
-                logger.trace(e.getMessage());
-                Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
-            }
-            if (DataManager.getInstance().getDao().updateIpRange(currentLicense.getIpRange())) {
-                Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
-            } else {
-                Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
-                error = true;
-            }
-        } else if (currentLicense.getClient() != null) {
-            // IpRange
-            logger.trace("client id:{} ", currentLicense.getClientId());
-            currentLicense.getClient().addLicense(currentLicense);
-            currentLicense.setPrimaryType(AccessType.CLIENT);
-            try {
-                currentLicense.applySecondarySelection();
-            } catch (IllegalStateException e) {
-                logger.trace(e.getMessage());
-                Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
-            }
-            if (DataManager.getInstance().getDao().saveClientApplication(currentLicense.getClient())) {
+        if (currentLicense.getId() != null) {
+            if (DataManager.getInstance().getDao().updateLicense(currentLicense)) {
+                logger.trace("License type '{}' updated successfully", currentLicenseType.getName());
                 Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
             } else {
                 Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
                 error = true;
             }
         } else {
-            Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
-            error = true;
+            if (DataManager.getInstance().getDao().addLicenseType(currentLicenseType)) {
+                Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
+            } else {
+                Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
+                error = true;
+            }
         }
-
+        
         if (error) {
             if (currentLicense.getId() != null) {
                 return "pretty:adminRightsEdit";
@@ -590,23 +535,8 @@ public class AdminLicenseBean implements Serializable {
             throw new IllegalArgumentException("license may not be null");
         }
 
-        boolean success = false;
         logger.debug("removing license: {}", license.getLicenseType().getName());
-        if (license.getUser() != null) {
-            license.getUser().removeLicense(license);
-            success = DataManager.getInstance().getDao().updateUser(license.getUser());
-        } else if (license.getUserGroup() != null) {
-            license.getUserGroup().removeLicense(license);
-            success = DataManager.getInstance().getDao().updateUserGroup(license.getUserGroup());
-        } else if (license.getIpRange() != null) {
-            license.getIpRange().removeLicense(license);
-            success = DataManager.getInstance().getDao().updateIpRange(license.getIpRange());
-        } else if (license.getClient() != null) {
-            license.getClient().removeLicense(license);
-            success = DataManager.getInstance().getDao().saveClientApplication(license.getClient());
-        }
-
-        if (success) {
+        if (DataManager.getInstance().getDao().deleteLicense(license)) {
             Messages.info("license_deleteSuccess");
         } else {
             Messages.error("license_deleteFailure");

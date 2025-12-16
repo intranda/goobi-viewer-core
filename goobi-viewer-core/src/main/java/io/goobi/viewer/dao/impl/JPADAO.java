@@ -92,6 +92,7 @@ import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -1592,6 +1593,58 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * {@inheritDoc}
+     * 
+     * @should return correct values
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<License> getLicenses(ILicensee licensee) throws DAOException {
+        if (licensee == null) {
+            throw new IllegalArgumentException("licensee may not be null");
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        String query = switch (licensee) {
+            case User u -> """
+                    SELECT DISTINCT l
+                    FROM License l
+                    JOIN l.licensees lh
+                    WHERE lh.user = :licensee
+                    """;
+            case UserGroup g -> """
+                    SELECT DISTINCT l
+                    FROM License l
+                    JOIN l.licensees lh
+                    WHERE lh.userGroup = :licensee
+                    """;
+            case IpRange r -> """
+                    SELECT DISTINCT l
+                    FROM License l
+                    JOIN l.licensees lh
+                    WHERE lh.ipRange = :licensee
+                    """;
+            case ClientApplication c -> """
+                    SELECT DISTINCT l
+                    FROM License l
+                    JOIN l.licensees lh
+                    WHERE lh.client = :licensee
+                    """;
+            default -> throw new IllegalArgumentException(
+                    "Unsupported licensee type: " + licensee.getClass().getName());
+        };
+
+        try {
+            Query q = em.createQuery(query);
+            q.setParameter("licensee", licensee);
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
      * @see io.goobi.viewer.dao.IDAO#getLicenseCount(io.goobi.viewer.model.security.LicenseType)
      * @should return correct value
      */
@@ -1615,6 +1668,61 @@ public class JPADAO implements IDAO {
             }
             // H2
             return (long) q.getResultList().get(0);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addLicense(License license) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(license);
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+        return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateLicense(License license) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(license);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteLicense(License license) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            License o = em.getReference(License.class, license.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
             close(em);
         }

@@ -274,25 +274,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             assertEquals(1, user2.getLicenses().size());
         }
 
-        // Adding a new license should update the attached object with ID
-        {
-            License license = new License();
-            license.setLicenseType(user.getLicenses().get(0).getLicenseType());
-            user.addLicense(license);
-            assertTrue(DataManager.getInstance().getDao().updateUser(user));
-            User user2 = DataManager.getInstance().getDao().getUser(user.getId());
-            assertNotNull(user2);
-            assertEquals(2, user2.getLicenses().size());
-            assertNotNull(user2.getLicenses().get(0).getId());
-            assertNotNull(user2.getLicenses().get(1).getId());
-        }
-
-        // Orphaned licenses should be deleted properly
-        user.removeLicense(user.getLicenses().get(0));
-        assertTrue(DataManager.getInstance().getDao().updateUser(user));
-        User user3 = DataManager.getInstance().getDao().getUser(user.getId());
-        assertNotNull(user3);
-        assertEquals(1, user3.getLicenses().size());
+        // Deleting a license should not delete the user
+        License license = DataManager.getInstance().getDao().getLicense(1L);
+        assertNotNull(license);
+        assertNotNull(license.getLicensees().get(0).getUser());
+        assertEquals(2L, license.getLicensees().get(0).getUser().getId());
+        assertTrue(DataManager.getInstance().getDao().deleteLicense(license));
+        assertNull(DataManager.getInstance().getDao().getLicense(1L));
+        assertNotNull(DataManager.getInstance().getDao().getUser(2L));
 
     }
 
@@ -466,27 +455,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             assertEquals(2, userGroup2.getLicenses().size());
         }
 
-        // Adding a new license should update the attached object with ID
-        {
-            License license = new License();
-            license.setLicenseType(userGroup.getLicenses().get(0).getLicenseType());
-            userGroup.addLicense(license);
-            assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
-            UserGroup userGroup2 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
-            assertNotNull(userGroup2);
-            assertEquals(3, userGroup2.getLicenses().size());
-            assertNotNull(userGroup2.getLicenses().get(0).getId());
-            assertNotNull(userGroup2.getLicenses().get(1).getId());
-        }
-
-        // Orphaned licenses should be deleted properly
-        {
-            userGroup.removeLicense(userGroup.getLicenses().get(0));
-            assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
-            UserGroup userGroup3 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
-            assertNotNull(userGroup3);
-            assertEquals(2, userGroup3.getLicenses().size());
-        }
+        // Deleting a license should not delete the user group
+        License license = DataManager.getInstance().getDao().getLicense(2L);
+        assertNotNull(license);
+        assertNotNull(license.getLicensees().get(0).getUserGroup());
+        assertEquals(1L, license.getLicensees().get(0).getUserGroup().getId());
+        assertTrue(DataManager.getInstance().getDao().deleteLicense(license));
+        assertNull(DataManager.getInstance().getDao().getLicense(2L));
+        assertNotNull(DataManager.getInstance().getDao().getUserGroup(1L));
     }
 
     @Test
@@ -619,7 +595,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
         assertNotNull(ipRange);
-        assertTrue(DataManager.getInstance().getDao().deleteIpRange(ipRange));
+        assertTrue(DataManager.getInstance().getDao().deleteIpRange(ipRange)); // TODO make sure licenses containing this are deleted/altered first
         assertNull(DataManager.getInstance().getDao().getIpRange(1));
         assertEquals(1, DataManager.getInstance().getDao().getAllIpRanges().size());
     }
@@ -640,12 +616,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(ipRange2);
         assertEquals(1, ipRange2.getLicenses().size());
 
-        // Orphaned licenses should be deleted properly
-        ipRange.removeLicense(ipRange.getLicenses().get(0));
-        assertTrue(DataManager.getInstance().getDao().updateIpRange(ipRange));
-        IpRange ipRange3 = DataManager.getInstance().getDao().getIpRange(ipRange.getId());
-        assertNotNull(ipRange3);
-        assertEquals(0, ipRange3.getLicenses().size());
+        // Deleting a license should not delete the user
+        License license = DataManager.getInstance().getDao().getLicense(3L);
+        assertNotNull(license);
+        assertNotNull(license.getLicensees().get(0).getIpRange());
+        assertEquals(1L, license.getLicensees().get(0).getIpRange().getId());
+        assertTrue(DataManager.getInstance().getDao().deleteLicense(license));
+        assertNull(DataManager.getInstance().getDao().getLicense(3L));
+        assertNotNull(DataManager.getInstance().getDao().getIpRange(1L));
     }
 
     // CommentGroups

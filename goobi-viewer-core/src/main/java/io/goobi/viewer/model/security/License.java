@@ -28,13 +28,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.annotations.PrivateOwned;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.converter.ConsentScopeConverter;
@@ -51,13 +50,12 @@ import io.goobi.viewer.model.security.user.AbstractLicensee;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -66,6 +64,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -130,25 +129,29 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     @JoinColumn(name = "license_type_id") // TODO nullable = false?
     private LicenseType licenseType;
 
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+    @PrivateOwned
+    private List<LicenseRightsHolder> licensees = new ArrayList<>();
+
+    @Deprecated(since = "2025.12")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Deprecated(since = "2025.12")
     @ManyToOne
     @JoinColumn(name = "user_group_id")
     private UserGroup userGroup;
 
+    @Deprecated(since = "2025.12")
     @ManyToOne
     @JoinColumn(name = "ip_range_id")
     private IpRange ipRange;
 
+    @Deprecated(since = "2025.12")
     @ManyToOne
     @JoinColumn(name = "client_id")
     private ClientApplication client;
-
-    @Column(name = "primary_type")
-    @Enumerated(EnumType.STRING)
-    private AccessType primaryType;
 
     @Column(name = "date_start")
     private LocalDateTime start;
@@ -199,12 +202,6 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     private ConsentScope disclaimerScope = new ConsentScope();
 
     @Transient
-    private String type;
-
-    @Transient
-    private String type2;
-
-    @Transient
     private Set<String> privilegesCopy = new HashSet<>();
 
     @Transient
@@ -216,21 +213,14 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     @Transient
     private transient List<Selectable<CMSPageTemplate>> selectableTemplates = null;
 
-    /** Multi-licensee edit mode. */
-    @Transient
-    private boolean multiLicenseeMode = false;
-
-    @Transient
-    private User user2;
-
-    @Transient
-    private UserGroup userGroup2;
-
-    @Transient
-    private IpRange ipRange2;
-
-    @Transient
-    private ClientApplication client2;
+    /**
+     * Zero-arg constructor.
+     */
+    public License() {
+        if (licensees.isEmpty()) {
+            licensees.add(new LicenseRightsHolder(this));
+        }
+    }
 
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
@@ -242,12 +232,6 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     public boolean isValid() {
         LocalDateTime now = LocalDateTime.now();
         return (start == null || start.isBefore(now)) && (end == null || end.isAfter(now));
-    }
-
-    public boolean isMultipleLicenseesSelected() {
-        return Stream.of(user, userGroup, ipRange, client)
-                .filter(Objects::nonNull)
-                .count() >= 2;
     }
 
     /**
@@ -652,12 +636,27 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
+     * @return the licensees
+     */
+    public List<LicenseRightsHolder> getLicensees() {
+        return licensees;
+    }
+
+    /**
+     * @param licensees the licensees to set
+     */
+    public void setLicensees(List<LicenseRightsHolder> licensees) {
+        this.licensees = licensees;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>user</code>.
      * </p>
      *
      * @return the user
      */
+    @Deprecated(since = "2025.12")
     public User getUser() {
         return user;
     }
@@ -671,6 +670,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @should set userGroup and ipRange to null if user not null
      * @should not set userGroup and ipRange to null if user null
      */
+    @Deprecated(since = "2025.12")
     public void setUser(User user) {
         this.user = user;
         if (user != null) {
@@ -686,6 +686,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      *
      * @return the userGroup
      */
+    @Deprecated(since = "2025.12")
     public UserGroup getUserGroup() {
         return userGroup;
     }
@@ -699,6 +700,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @should set user and ipRange to null if userGroup not null
      * @should not set user and ipRange to null if userGroup null
      */
+    @Deprecated(since = "2025.12")
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
         if (userGroup != null) {
@@ -714,6 +716,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      *
      * @return the ipRange
      */
+    @Deprecated(since = "2025.12")
     public IpRange getIpRange() {
         return ipRange;
     }
@@ -727,6 +730,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @should set user and userGroup to null if ipRange not null
      * @should not set user and userGroup to null if ipRange null
      */
+    @Deprecated(since = "2025.12")
     public void setIpRange(IpRange ipRange) {
         this.ipRange = ipRange;
         if (ipRange != null) {
@@ -956,43 +960,6 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * @return the type
-     */
-    public String getType() {
-        if (type == null) {
-            if (user != null) {
-                type = "user";
-            } else if (userGroup != null) {
-                type = "group";
-            } else if (ipRange != null) {
-                type = "iprange";
-            }
-        }
-        return type;
-    }
-
-    /**
-     * @return the type2
-     */
-    public String getType2() {
-        return type2;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    /**
-     * @param type2 the type2 to set
-     */
-    public void setType2(String type2) {
-        this.type2 = type2;
-    }
-
-    /**
      * @return the privilegesCopy
      */
     public Set<String> getPrivilegesCopy() {
@@ -1013,10 +980,12 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * @return the client
      */
+    @Deprecated
     public Long getClientId() {
         return Optional.ofNullable(client).map(ClientApplication::getId).orElse(null);
     }
 
+    @Deprecated
     public ClientApplication getClient() {
         return this.client;
     }
@@ -1024,122 +993,17 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * @param client the client to set
      */
+    @Deprecated
     public void setClient(ClientApplication client) {
         this.client = client;
     }
 
-    /**
-     * @param clientId the clientId to set
-     * @throws DAOException
-     */
-    public void setClientId(Long clientId) throws DAOException {
-        if (clientId != null) {
-            this.client = DataManager.getInstance().getDao().getClientApplication(clientId);
-        }
+    public void addLicensee() {
+        licensees.add(new LicenseRightsHolder());
     }
 
-    /**
-     * @return the primaryType
-     */
-    public AccessType getPrimaryType() {
-        return primaryType;
-    }
-
-    /**
-     * @param primaryType the primaryType to set
-     */
-    public void setPrimaryType(AccessType primaryType) {
-        this.primaryType = primaryType;
-    }
-
-    /**
-     * Convenience method for disabling the save button.
-     * 
-     * @return "disabled" if any required values are missing; null otherwise
-     * @should return null if all relevant fields filled
-     */
-    public String getDisabledStatus() {
-        return (this.getType() == null
-                || (this.getUser() == null && this.getUserGroup() == null && this.getIpRange() == null && this.getClient() == null)
-                || this.getLicenseType() == null) ? "disabled" : null;
-    }
-
-    /**
-     * @return the multiLicenseeMode
-     */
-    public boolean isMultiLicenseeMode() {
-        return multiLicenseeMode;
-    }
-
-    public void toggleMultiLicenseeMode() {
-        logger.trace("toggleMultiLicenseeMode");
-        multiLicenseeMode = !multiLicenseeMode;
-    }
-
-    /**
-     * @return the user2
-     */
-    public User getUser2() {
-        return user2;
-    }
-
-    /**
-     * @param user2 the user2 to set
-     */
-    public void setUser2(User user2) {
-        this.user2 = user2;
-    }
-
-    /**
-     * @return the userGroup2
-     */
-    public UserGroup getUserGroup2() {
-        return userGroup2;
-    }
-
-    /**
-     * @param userGroup2 the userGroup2 to set
-     */
-    public void setUserGroup2(UserGroup userGroup2) {
-        this.userGroup2 = userGroup2;
-    }
-
-    /**
-     * @return the ipRange2
-     */
-    public IpRange getIpRange2() {
-        return ipRange2;
-    }
-
-    /**
-     * @param ipRange2 the ipRange2 to set
-     */
-    public void setIpRange2(IpRange ipRange2) {
-        this.ipRange2 = ipRange2;
-    }
-
-    /**
-     * @return the client2
-     */
-    public ClientApplication getClient2() {
-        return client2;
-    }
-
-    /**
-     * @param client2 the client2 to set
-     */
-    public void setClient2(ClientApplication client2) {
-        this.client2 = client2;
-    }
-
-    /**
-     * @param clientId2 the clientId2 to set
-     * @throws DAOException
-     */
-    public void setClientId2(Long clientId2) throws DAOException {
-        if (clientId2 != null) {
-            this.client = DataManager.getInstance().getDao().getClientApplication(clientId2);
-        }
+    public void removeLicensee(LicenseRightsHolder licensee) {
+        licensees.remove(licensee);
     }
 
     /**
@@ -1147,9 +1011,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @return true if at least two of user/userGroup/ipRange/client are non-null; false otherwise
      */
     public boolean isHasMultipleLicensees() {
-        return Stream.of(user, userGroup, ipRange, client)
-                .filter(Objects::nonNull)
-                .count() >= 2;
+        return licensees.size() > 1;
     }
 
     /**
@@ -1186,71 +1048,5 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         }
 
         return null;
-    }
-
-    /**
-     * Sets the selected secondary licensee to the appropriate member.
-     * @should throw IllegalStateException if primaryType not set
-     * @should throw IllegalStateException if primary and secondary type same
-     * @should apply secondary selection correctly
-     */
-    public void applySecondarySelection() {
-        if (primaryType == null) {
-            throw new IllegalStateException("primaryType not set");
-        }
-
-        switch (primaryType) {
-            case USER:
-                if (user2 != null) {
-                    throw new IllegalStateException("Same type not allowed");
-                }
-                if (userGroup2 != null) {
-                    this.userGroup = userGroup2;
-                } else if (ipRange2 != null) {
-                    this.ipRange = ipRange2;
-                } else if (client2 != null) {
-                    this.client = client2;
-                }
-                break;
-            case USER_GROUP:
-                if (userGroup2 != null) {
-                    throw new IllegalStateException("Same type not allowed");
-                }
-                if (user2 != null) {
-                    this.user = user2;
-                } else if (ipRange2 != null) {
-                    this.ipRange = ipRange2;
-                } else if (client2 != null) {
-                    this.client = client2;
-                }
-                break;
-            case IP_RANGE:
-                if (ipRange2 != null) {
-                    throw new IllegalStateException("Same type not allowed");
-                }
-                if (user2 != null) {
-                    this.user = user2;
-                } else if (userGroup2 != null) {
-                    this.userGroup = userGroup2;
-                } else if (client2 != null) {
-                    this.client = client2;
-                }
-                break;
-            case CLIENT:
-                if (client2 != null) {
-                    throw new IllegalStateException("Same type not allowed");
-                }
-                if (user2 != null) {
-                    this.user = user2;
-                } else if (userGroup2 != null) {
-                    this.userGroup = userGroup2;
-                } else if (ipRange2 != null) {
-                    this.ipRange = ipRange2;
-                }
-                break;
-            default:
-                logger.warn("Usupported primary type: {}", primaryType);
-                break;
-        }
     }
 }

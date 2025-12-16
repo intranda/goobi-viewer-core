@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.security.user;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -30,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.AccessPermission;
@@ -41,10 +43,20 @@ public abstract class AbstractLicensee implements ILicensee {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(AbstractLicensee.class);
+    
+    /** {@inheritDoc} */
+    public List<License> getLicenses() {
+        try {
+            return DataManager.getInstance().getDao().getLicenses(this);
+        } catch (DAOException e) {
+            logger.error(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
 
     /** {@inheritDoc} */
     @Override
-    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
+    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi); //NOSONAR Debug
 
         // No privilege name given
@@ -52,7 +64,7 @@ public abstract class AbstractLicensee implements ILicensee {
             return AccessPermission.granted();
         }
 
-        for (License license : getLicenses()) {
+        for (License license :  DataManager.getInstance().getDao().getLicenses(this)) {
             if (license.isValid() && license.getLicenseType().getName().equals(licenseName)) {
                 // LicenseType grants privilege
                 if (license.getLicenseType().getPrivileges().contains(privilegeName)) {
