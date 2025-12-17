@@ -27,14 +27,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
-
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -50,8 +48,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.files.ZipUnpacker;
 import io.goobi.viewer.exceptions.ArchiveSizeExceededException;
+import io.goobi.viewer.model.security.encryption.Decrypter;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.Response.Status;
 
 public class ExternalFilesDownloader {
 
@@ -72,27 +74,38 @@ public class ExternalFilesDownloader {
         this.progressMonitor = progressMonitor;
     }
 
-    public Path downloadExternalFiles(URI downloadUri) throws IOException {
+    public Path downloadExternalFiles(URI downloadUri, String urlTemplate) throws IOException {
+        return downloadExternalFiles(downloadUri, getHeader(urlTemplate));
+    }
 
-        return downloadFromUrl(downloadUri);
+    public Path downloadExternalFiles(URI uri, Map<String, String> httpHeader) throws IOException {
+        logger.trace("download from url {}", uri);
+        switch (uri.getScheme()) {
+            case "http", "https":
+                return downloadHttpResource(uri, httpHeader);
+            case "file":
+                return downloadFileResource(uri);
+            default:
+                throw new IllegalArgumentException("Cannot download from " + uri + ": No download implementation for scheme " + uri.getScheme());
+        }
 
     }
 
-    public static boolean resourceExists(String url) {
+    public static boolean resourceExists(String url, String urlTemplate) {
         try {
-            return resourceExists(new URI(url));
+            return resourceExists(new URI(url), getHeader(urlTemplate));
         } catch (URISyntaxException e) {
             logger.error("Error checking resource at {}. Not a valid url", url);
             return false;
         }
     }
 
-    public static boolean resourceExists(URI uri) {
+    public static boolean resourceExists(URI uri, Map<String, String> httpHeader) {
         logger.trace("checking url {}", uri);
         switch (uri.getScheme()) {
             case "http", "https":
                 try {
-                    return checkHttpResource(uri);
+                    return checkHttpResource(uri, httpHeader);
                 } catch (IOException e) {
                     logger.debug("Checking http resource {} resulted in IOException {}", uri, e.toString());
                     return false;
@@ -104,9 +117,15 @@ public class ExternalFilesDownloader {
         }
     }
 
-    private static boolean checkHttpResource(URI uri) throws IOException {
+    private static Map<String, String> getHeader(String urlTemplate) {
+        Map<String, String> header = DataManager.getInstance().getConfiguration().getDownloadHeader(urlTemplate);
+        header.entrySet().forEach(e -> e.setValue(Decrypter.decrypt(e.getValue())));
+        return header;
+    }
+
+    private static boolean checkHttpResource(URI uri, Map<String, String> httpHeader) throws IOException {
         try (final CloseableHttpClient client = createHttpClient()) {
-            try (final CloseableHttpResponse response = createHttpHeadResponse(client, uri)) {
+            try (final CloseableHttpResponse response = createHttpHeadResponse(client, uri, httpHeader)) {
                 return Status.OK.getStatusCode() == response.getStatusLine().getStatusCode();
             }
         }
@@ -115,19 +134,6 @@ public class ExternalFilesDownloader {
     private static boolean checkFileResource(URI uri) {
         Path sourcePath = PathConverter.getPath(uri);
         return Files.exists(sourcePath);
-    }
-
-    private Path downloadFromUrl(URI uri) throws IOException {
-        logger.trace("download from url {}", uri);
-        switch (uri.getScheme()) {
-            case "http", "https":
-                return downloadHttpResource(uri);
-            case "file":
-                return downloadFileResource(uri);
-            default:
-                throw new IllegalArgumentException("Cannot download from " + uri + ": No download implementation for scheme " + uri.getScheme());
-        }
-
     }
 
     private Path downloadFileResource(URI uri) throws IOException {
@@ -144,9 +150,9 @@ public class ExternalFilesDownloader {
         throw new IOException("No file resource found at " + uri);
     }
 
-    public Path downloadHttpResource(URI uri) throws IOException {
+    public Path downloadHttpResource(URI uri, Map<String, String> httpHeader) throws IOException {
         final CloseableHttpClient client = createHttpClient();
-        final CloseableHttpResponse response = createHttpGetResponse(client, uri);
+        final CloseableHttpResponse response = createHttpGetResponse(client, uri, httpHeader);
         final int statusCode = response.getStatusLine().getStatusCode();
         switch (statusCode) {
             case HttpServletResponse.SC_OK:
@@ -218,8 +224,12 @@ public class ExternalFilesDownloader {
         return HttpClients.custom().build();
     }
 
-    private static CloseableHttpResponse createHttpHeadResponse(CloseableHttpClient client, URI uri) throws IOException {
+    private static CloseableHttpResponse createHttpHeadResponse(CloseableHttpClient client, URI uri, Map<String, String> httpHeader)
+            throws IOException {
         HttpHead request = new HttpHead(uri);
+        httpHeader.entrySet().forEach(entry -> {
+            request.addHeader(entry.getKey(), entry.getValue());
+        });
         RequestConfig config = RequestConfig.custom()
                 .setConnectionRequestTimeout(HEAD_REQUEST_TIMEOUT_MILLIS)
                 .setSocketTimeout(HEAD_SOCKET_TIMEOUT_MILLIS)
@@ -229,8 +239,12 @@ public class ExternalFilesDownloader {
         return client.execute(request);
     }
 
-    private static CloseableHttpResponse createHttpGetResponse(CloseableHttpClient client, URI uri) throws IOException {
+    private static CloseableHttpResponse createHttpGetResponse(CloseableHttpClient client, URI uri, Map<String, String> httpHeader)
+            throws IOException {
         HttpGet request = new HttpGet(uri);
+        httpHeader.entrySet().forEach(entry -> {
+            request.addHeader(entry.getKey(), entry.getValue());
+        });
         RequestConfig config = RequestConfig.custom()
                 .setConnectionRequestTimeout(REQUEST_TIMEOUT_MILLIS)
                 .setSocketTimeout(SOCKET_TIMEOUT_MILLIS)

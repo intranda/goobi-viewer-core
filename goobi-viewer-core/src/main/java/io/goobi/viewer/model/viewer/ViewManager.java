@@ -71,6 +71,7 @@ import org.json.JSONObject;
 import org.omnifaces.util.Faces;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.api.iiif.image.ImageInformation;
 import de.undercouch.citeproc.CSL;
@@ -218,7 +219,7 @@ public class ViewManager implements Serializable {
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
     private Map<CitationLinkLevel, CitationList> citationLinks = new HashMap<>();
-    private List<String> externalResourceUrls = null;
+    private Map<String, String> externalResourceUrls = null;
     private List<PhysicalResource> downloadResources = null;
 
     private PageNavigation pageNavigation = PageNavigation.SINGLE;
@@ -4284,20 +4285,30 @@ public class ViewManager implements Serializable {
                 .toList();
     }
 
-    public List<String> getExternalResourceUrls() throws IndexUnreachableException {
+    public Map<String, String> getExternalResourceUrls() throws IndexUnreachableException {
         if (this.externalResourceUrls == null) {
             this.externalResourceUrls = loadExternalResourceUrls();
         }
         return this.externalResourceUrls;
     }
 
-    private List<String> loadExternalResourceUrls() throws IndexUnreachableException {
-        List<String> urlTemplates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
+    public String getExternalResourceUrlsAsJson() {
+        try {
+            return new ObjectMapper().writeValueAsString(getExternalResourceUrls());
+        } catch (Exception e) {
+            logger.error("Cannot map external resource urls map to json", e);
+            return "{}";
+        }
+    }
+
+    private Map<String, String> loadExternalResourceUrls() throws IndexUnreachableException {
+        List<String> urlTemplates =
+                DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
         VariableReplacer vr = new VariableReplacer(this);
         return urlTemplates.stream()
-                .flatMap(templ -> vr.replace(templ).stream())
-                .filter(ExternalFilesDownloader::resourceExists)
-                .toList();
+                .flatMap(templ -> vr.replace(templ).stream().map(url -> new StringPair(url, templ)))
+                .filter(pair -> ExternalFilesDownloader.resourceExists(pair.getOne(), pair.getTwo()))
+                .collect(Collectors.toMap(StringPair::getOne, StringPair::getTwo));
     }
 
     public StructElement getAnchorStructElement() {

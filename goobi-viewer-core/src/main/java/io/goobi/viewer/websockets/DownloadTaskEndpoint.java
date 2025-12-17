@@ -143,7 +143,7 @@ public class DownloadTaskEndpoint {
     }
 
     public void startDownload(SocketMessage message) throws JsonProcessingException {
-        ViewerMessage mqMessage = DownloadExternalResourceHandler.createMessage(message.pi, message.url);
+        ViewerMessage mqMessage = DownloadExternalResourceHandler.createMessage(message.pi, message.url, message.urlTemplate);
         try {
             String messageId = queueManager.addToQueue(mqMessage);
             SocketMessage answer = SocketMessage.buildAnswer(message, Status.WAITING);
@@ -436,6 +436,17 @@ public class DownloadTaskEndpoint {
 
     public static class SocketMessage {
 
+        private Action action;
+        private Status status;
+        private String pi;
+        private String url;
+        private String urlTemplate;
+        private long progress;
+        private long resourceSize;
+        private String messageQueueId;
+        private String errorMessage;
+        private List<ResourceFile> files;
+
         public SocketMessage() {
         }
 
@@ -444,6 +455,7 @@ public class DownloadTaskEndpoint {
             this.status = status;
             this.pi = pi;
             this.url = url;
+
         }
 
         public static SocketMessage buildAnswer(SocketMessage message, Status status) {
@@ -451,16 +463,6 @@ public class DownloadTaskEndpoint {
             answer.messageQueueId = message.messageQueueId;
             return answer;
         }
-
-        private Action action;
-        private Status status;
-        private String pi;
-        private String url;
-        private long progress;
-        private long resourceSize;
-        private String messageQueueId;
-        private String errorMessage;
-        private List<ResourceFile> files;
 
         public Map<String, String> getJsonSignature() {
             return JsonObjectSignatureBuilder.listProperties(getClass());
@@ -536,6 +538,14 @@ public class DownloadTaskEndpoint {
 
         public void setFiles(List<ResourceFile> files) {
             this.files = files;
+        }
+
+        public String getUrlTemplate() {
+            return urlTemplate;
+        }
+
+        public void setUrlTemplate(String urlTemplate) {
+            this.urlTemplate = urlTemplate;
         }
 
         @Override
