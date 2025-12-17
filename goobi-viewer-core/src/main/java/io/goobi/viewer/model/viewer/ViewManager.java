@@ -4295,7 +4295,7 @@ public class ViewManager implements Serializable {
     public String getExternalResourceUrlsAsJson() {
         try {
             return new ObjectMapper().writeValueAsString(getExternalResourceUrls());
-        } catch (Exception e) {
+        } catch (IndexUnreachableException | JsonProcessingException e) {
             logger.error("Cannot map external resource urls map to json", e);
             return "{}";
         }
