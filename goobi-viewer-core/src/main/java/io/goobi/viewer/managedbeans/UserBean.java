@@ -475,6 +475,7 @@ public class UserBean implements Serializable {
      * @throws IOException
      */
     private static void doRedirect(HttpServletResponse response, String url) throws IOException {
+        logger.trace("doRedirect: {}", url);
         if (response.equals(BeanUtils.getResponse())) {
             // Local authentication: use Faces external context for redirection to avoid an IllegalStateException 
             FacesContext.getCurrentInstance()
@@ -557,7 +558,7 @@ public class UserBean implements Serializable {
             ViewerPath currentPath = oCurrentPath.get();
             if (LoginFilter.isRestrictedUri(currentPath.getCombinedUrl())) {
                 logger.trace("Redirecting to start page");
-                return "pretty:index";
+                return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/";
             }
             logger.trace("Redirecting to current url {}", currentPath.getCombinedPrettyfiedUrl());
             return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + currentPath.getCombinedPrettyfiedUrl();
@@ -566,7 +567,7 @@ public class UserBean implements Serializable {
             PrettyContext prettyContext = PrettyContext.getCurrentInstance(request);
             if (prettyContext != null && LoginFilter.isRestrictedUri(prettyContext.getRequestURL().toURL())) {
                 logger.trace("Redirecting to start page");
-                return "pretty:index";
+                return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/";
             }
         }
 
