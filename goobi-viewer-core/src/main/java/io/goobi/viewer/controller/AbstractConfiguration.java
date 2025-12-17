@@ -294,6 +294,22 @@ public abstract class AbstractConfiguration {
     }
 
     /**
+     * Gathers all configuration nodes from both the local and global config, local first
+     * 
+     * @param inPath the configuration path
+     * @return A list of all found configurations ath 'inPath'
+     */
+    protected List<HierarchicalConfiguration<ImmutableNode>> getAllConfigurationsAt(String inPath) {
+        List<HierarchicalConfiguration<ImmutableNode>> localConfigs = getLocalConfigurationsAt(getConfigLocal(), null, inPath);
+        List<HierarchicalConfiguration<ImmutableNode>> globalConfigs = getLocalConfigurationsAt(getConfig(), null, inPath);
+        List<HierarchicalConfiguration<ImmutableNode>> allConfigs =
+                new ArrayList<HierarchicalConfiguration<ImmutableNode>>(localConfigs.size() + globalConfigs.size());
+        allConfigs.addAll(localConfigs);
+        allConfigs.addAll(globalConfigs);
+        return allConfigs;
+    }
+
+    /**
      * <p>
      * getLocalConfigurationAt.
      * </p>

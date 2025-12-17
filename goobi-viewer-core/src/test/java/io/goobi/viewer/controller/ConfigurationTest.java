@@ -3751,4 +3751,28 @@ class ConfigurationTest extends AbstractTest {
                 sortOrders.entrySet().stream().filter(e -> "jahrbuecher.andere".matches(e.getKey())).map(Entry::getValue).findAny().orElse(""));
 
     }
+
+    @Test
+    void test_getExternalResourceUrlTemplates() {
+        List<String> templates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
+        assertEquals(2, templates.size());
+        assertEquals("https://devel.dnb.de/npregional-bereitstellung/objekte?iln=63&idn={MD_FILEURL}", templates.get(1));
+        assertEquals("http://d-nb.info/{MD_DOWNLOAD_IDENTIFIER}/34", templates.get(0));
+    }
+
+    @Test
+    void test_getExternalResourceUrlHeader() {
+        Map<String, String> url1Header = DataManager.getInstance()
+                .getConfiguration()
+                .getDownloadHeader("https://devel.dnb.de/npregional-bereitstellung/objekte?iln=63&idn={MD_FILEURL}");
+        assertEquals(0, url1Header.size());
+
+        Map<String, String> url0Header = DataManager.getInstance()
+                .getConfiguration()
+                .getDownloadHeader("http://d-nb.info/{MD_DOWNLOAD_IDENTIFIER}/34");
+        assertEquals(3, url0Header.size());
+        assertEquals("testinsitution", url0Header.get("accountId"));
+        assertEquals("Wobblewock", url0Header.get("x-api-key"));
+        assertEquals("Bearer $SYS(DNB_DOWNLOAD_KEY)", url0Header.get("Authorization"));
+    }
 }

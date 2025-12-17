@@ -4122,8 +4122,47 @@ public class Configuration extends AbstractConfiguration {
         }
     }
 
+    public Map<String, String> getDownloadHeader(String externalResourceUrl) {
+
+        if (StringUtils.isBlank(externalResourceUrl)) {
+            return Collections.emptyMap();
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
+
+        for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
+            String templateUrl = templateConfig.getString("url", "");
+            if (externalResourceUrl.equals(templateUrl)) {
+                Map<String, String> headerMap = new HashMap<>();
+                List<HierarchicalConfiguration<ImmutableNode>> headerConfigs = templateConfig.configurationsAt("httpHeader");
+                for (HierarchicalConfiguration<ImmutableNode> headerConfig : headerConfigs) {
+                    String key = headerConfig.getString("[@key]", "");
+                    String value = headerConfig.getString("[@value]", "");
+                    if (StringUtils.isNoneBlank(key, value)) {
+                        headerMap.put(key, value);
+                    }
+                }
+                return headerMap;
+            }
+        }
+        return Collections.emptyMap();
+    }
+
     public List<String> getExternalResourceUrlTemplates() {
-        return getLocalList("externalResource.urls.template", Collections.emptyList());
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
+        List<String> templates = new ArrayList<>();
+        for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
+            String url = templateConfig.getString(".", "");
+            if (StringUtils.isNotBlank(url)) {
+                templates.add(url);
+            } else {
+                url = templateConfig.getString("url", "");
+                if (StringUtils.isNotBlank(url)) {
+                    templates.add(url);
+                }
+            }
+        }
+        return templates.stream().distinct().toList();
     }
 
     public Duration getExternalResourceTimeBeforeDeletion() {
