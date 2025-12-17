@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  * </p>
  * 
  */
-public class Decrypter {
+public final class Decrypter {
 
     private static final String REGEX_SYSENV = "\\$SYS\\((\\w+)\\)";
 
@@ -45,7 +45,7 @@ public class Decrypter {
 
     }
 
-    private String replaceEnvironmentVariables(String string) {
+    private static String replaceEnvironmentVariables(String string) {
         Matcher matcher = Pattern.compile(REGEX_SYSENV).matcher(string);
         StringBuffer result = new StringBuffer();
         while (matcher.find()) {
@@ -56,7 +56,7 @@ public class Decrypter {
         return result.toString();
     }
 
-    private String getEnvironmentVariable(String variable) {
+    private static String getEnvironmentVariable(String variable) {
         String value = System.getenv(variable);
         if (value == null) {
             value = System.getProperty(variable);
@@ -71,7 +71,7 @@ public class Decrypter {
      * @return the input string with replacements
      */
     public static String decrypt(String string) {
-        return new Decrypter().replaceEnvironmentVariables(string);
+        return Decrypter.replaceEnvironmentVariables(string);
     }
 
 }
