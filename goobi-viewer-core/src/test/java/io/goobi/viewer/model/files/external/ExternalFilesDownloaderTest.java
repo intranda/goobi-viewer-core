@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
@@ -50,7 +51,7 @@ class ExternalFilesDownloaderTest {
 
         byte[] body = Files.readAllBytes(testZipFile);
         server.getServerClient()
-                .when(HttpRequest.request().withPath("/exteral/files/1287088031.zip"))
+                .when(HttpRequest.request().withHeader("Authorization", "Bearer api-key").withPath("/exteral/files/1287088031.zip"))
                 .respond(HttpResponse.response().withHeader(new Header("Content-Type", "application/zip")).withBody(body));
 
         assertTrue(Files.isDirectory(downloadFolder) || Files.createDirectory(downloadFolder) != null);
@@ -58,7 +59,7 @@ class ExternalFilesDownloaderTest {
         Consumer<Progress> consumer = (Consumer<Progress>) Mockito.spy(Consumer.class);
         URI uri = URI.create("http://127.0.0.1:9191/exteral/files/1287088031.zip");
         ExternalFilesDownloader download = new ExternalFilesDownloader(downloadFolder, consumer);
-        Path downloadPath = download.downloadExternalFiles(uri);
+        Path downloadPath = download.downloadExternalFiles(uri, Map.of("Authorization", "Bearer api-key"));
         Mockito.verify(consumer, Mockito.atLeast(2)).accept(Mockito.any(Progress.class));
         assertTrue(Files.exists(downloadPath));
     }

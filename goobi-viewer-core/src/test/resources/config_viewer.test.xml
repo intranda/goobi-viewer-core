@@ -1531,5 +1531,18 @@
         </scripts>
     </developer>
 
+	<externalResource>
+	    <urls>
+	        <template>
+	            <url>http://d-nb.info/{MD_DOWNLOAD_IDENTIFIER}/34</url>
+	            <httpHeader key="accountId" value="testinsitution" />
+	            <httpHeader key="x-api-key" value="Wobblewock" />
+	            <httpHeader key="Authorization" value="Bearer $SYS(DNB_DOWNLOAD_KEY)" />
+	        </template>
+	        <template>https://devel.dnb.de/npregional-bereitstellung/objekte?iln=63&amp;idn={MD_FILEURL}</template>
+	    </urls>
+	</externalResource>
+
+
 </config>
 
