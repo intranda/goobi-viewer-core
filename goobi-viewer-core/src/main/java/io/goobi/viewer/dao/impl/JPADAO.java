@@ -220,7 +220,7 @@ public class JPADAO implements IDAO {
             factory.createEntityManager();
             preQuery();
             return true;
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             logger.error(e.getMessage());
         }
 

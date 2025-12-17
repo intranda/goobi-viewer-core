@@ -60,6 +60,7 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
 
     private static final String PARAMETER_PI = "pi";
     private static final String PARAMETER_URL = "url";
+    private static final String PARAMETER_URL_TEMPLATE = "urlTemplate";
 
     public static final String[] ALLOWED_FILE_EXTENSIONS =
             new String[] { "xml", "html", "pdf", "epub", "jpg", "jpeg", "png", "mp3", "mp4", "zip", "xlsx", "doc", "docx", "gs" };
@@ -75,6 +76,8 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         String pi = message.getProperties().get(PARAMETER_PI);
 
         String url = message.getProperties().get(PARAMETER_URL);
+
+        String urlTemplate = message.getProperties().get(PARAMETER_URL_TEMPLATE);
 
         String messageId = message.getMessageId();
 
@@ -99,7 +102,7 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
 
             if (!isFilesExist(pi, url, downloadId)) {
 
-                extractedFolder = downloadAndExtractFiles(uri, targetFolder.resolve(downloadId), messageId);
+                extractedFolder = downloadAndExtractFiles(uri, urlTemplate, targetFolder.resolve(downloadId), messageId);
 
                 removeProgress(url);
 
@@ -129,10 +132,10 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         queueManager.addToQueue(message);
     }
 
-    private Path downloadAndExtractFiles(URI url, Path targetFolder, String messageId) throws IOException {
+    private Path downloadAndExtractFiles(URI url, String urlTemplate, Path targetFolder, String messageId) throws IOException {
         ExternalFilesDownloader downloader = new ExternalFilesDownloader(targetFolder,
                 p -> storeProgress(p, url.toString(), Paths.get(""), messageId));
-        return downloader.downloadExternalFiles(url);
+        return downloader.downloadExternalFiles(url, urlTemplate);
     }
 
     private void storeProgress(Progress progress, String identifier, Path path, String messageId) {
@@ -186,9 +189,9 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         return TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name();
     }
 
-    public static ViewerMessage createMessage(String pi, String url) {
+    public static ViewerMessage createMessage(String pi, String url, String urlTemplate) {
         ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name());
-        message.setProperties(Map.of(PARAMETER_PI, pi, PARAMETER_URL, url));
+        message.setProperties(Map.of(PARAMETER_PI, pi, PARAMETER_URL, url, PARAMETER_URL_TEMPLATE, urlTemplate));
         return message;
     }
 

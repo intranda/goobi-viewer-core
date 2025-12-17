@@ -36,11 +36,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.servlet.http.Part;
-
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -67,7 +62,11 @@ import io.goobi.viewer.model.cms.TranslatedSelectable;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 import io.goobi.viewer.model.security.user.User;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.persistence.RollbackException;
+import jakarta.servlet.http.Part;
 
 /**
  * <p>
@@ -89,7 +88,7 @@ public class CmsMediaBean implements Serializable {
     private static final String AUDIO_FILE_TYPE_VALIDATION_REGEX = "mp3|mpeg|wav|ogg|wma";
     private static final String[] DOCUMENT_FILE_TYPES = { "pdf" };
     private static final String DOCUMENT_FILE_TYPE_VALIDATION_REGEX = "pdf";
-    private static final String FILE_TYPE_REGEX_TEMPLATE = "(?i).*\\.(%s)";
+    private static final String FILE_TYPE_REGEX_TEMPLATE = "(?i).*\\.(%s)$";
 
     private static final int ENTRIES_PER_PAGE = 40;
 
