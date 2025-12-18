@@ -65,7 +65,7 @@ import jakarta.persistence.Table;
 public class ClientApplication extends AbstractLicensee implements Serializable {
 
     private static final long serialVersionUID = -6806071337346935488L;
-    
+
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(ClientApplication.class);
 
@@ -426,7 +426,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Check if this client has the privilege of the given privilegeName via its {@link #licenses}
+     * Check if this client has the privilege of the given privilegeName via its licenses.
      * 
      * @param requiredAccessConditions List of access condition names to satisfy
      * @param privilegeName The privilege to check for
@@ -438,7 +438,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
      */
     public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
-         logger.trace("canSatisfyAllAccessConditions: {}, {}", privilegeName, pi);
+        logger.trace("canSatisfyAllAccessConditions: {}, {}", privilegeName, pi);
         // always allow access if the only condition is open access and there is no special license configured for it
         if (requiredAccessConditions.size() == 1 && requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE)
                 && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
