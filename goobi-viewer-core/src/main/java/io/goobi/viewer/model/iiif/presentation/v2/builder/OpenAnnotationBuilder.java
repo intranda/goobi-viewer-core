@@ -60,7 +60,7 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
-import software.amazon.awssdk.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author florian
