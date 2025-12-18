@@ -33,8 +33,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONException;
@@ -61,12 +59,16 @@ import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
+import software.amazon.awssdk.utils.StringUtils;
 
 /**
  * @author florian
  *
  */
 public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
+
+    private static final String OA_MOTAVATION_REGEX = "(sc|oa):\\w+";
 
     /**
      * @param apiUrlManager
@@ -118,6 +120,11 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
         Map<Integer, List<OpenAnnotation>> annoMap = new HashMap<>();
         if (pAnnos != null) {
             for (CrowdsourcingAnnotation pAnno : pAnnos) {
+                if (StringUtils.isBlank(pAnno.getMotivation())) {
+                    pAnno.setMotivation(Motivation.DESCRIBING);
+                } else if (!pAnno.getMotivation().matches(OA_MOTAVATION_REGEX)) {
+                    pAnno.setMotivation(Motivation.convertFromWebAnnotationMotivation(pAnno.getMotivation()));
+                }
                 OpenAnnotation anno = new AnnotationConverter().getAsOpenAnnotation(pAnno);
                 Integer page = Optional.ofNullable(pAnno).map(CrowdsourcingAnnotation::getTargetPageOrder).orElse(null);
                 List<OpenAnnotation> annoList = annoMap.computeIfAbsent(page, k -> new ArrayList<>());
