@@ -36,7 +36,7 @@ public class LicenseRightsHolder {
     @JoinColumn(name = "license_id", nullable = false)
     private License owner;
 
-    @Column(name = "licensee_type", nullable = false)
+    @Column(name = "licensee_type")
     @Enumerated(EnumType.STRING)
     private AccessType type;
 
