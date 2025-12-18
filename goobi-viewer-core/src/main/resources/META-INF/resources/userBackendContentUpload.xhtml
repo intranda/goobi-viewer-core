@@ -234,8 +234,10 @@
     <ui:define name="sidebar">
         <ui:fragment rendered="#{userBean.loggedIn and configurationBean.contentUploadEnabled}">
             <div id="widgetSidebar" class="widget widget-user-content-upload">
-                <h2>#{msg.user__upload_content__sidebar_label}</h2>
-                <div class="widget__body">
+                <div class="widget__topbar widget-user-content-upload__topbar">
+                    <h2 class="widget__title widget-user-content-upload__title">#{msg.user__upload_content__sidebar_label}</h2>
+                </div>
+                <div class="widget__body widget-user-content-upload__body">
                     <h:outputText value="#{msg.user__upload_content__sidebar_desc}" />
                     <!-- TODO Call #{uploadBean.newUploadJobAction} when opening modal -->
                     <div class="d-flex justify-content-center mt-3">

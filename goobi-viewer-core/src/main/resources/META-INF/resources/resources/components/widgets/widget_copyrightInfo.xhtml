@@ -19,14 +19,14 @@
 			layout="block" id="copyrightIndicator"
 			styleClass="widget widget-copyright"
 			pt:data-target="triggerCopyrightInfo"
-			pt:aria-label="#{msg.copyright__information}" pt:tabindex="0"
+			pt:aria-label="#{msg.copyright__information}" pt:tabindex="0" 
 			pt:role="button"
 			pt:data-toggle="tooltip"
 			pt:data-placement="top"
 			pt:title="#{msg.copyright__toggle_tooltip}">
 
 			<div class="widget__body widget-copyright__body">
-				<div 
+				<div  
 					class="widget-copyright__container
 					#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'OPEN' ? '-green' : ''}
 					#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'PARTIAL' ? '-yellow' : ''}
@@ -35,7 +35,7 @@
 					<div class="widget-copyright__lock">
 						<div class="widget-copyright__dot">
 							<!-- PSEUDO FA ELEMENT GETS REPLACED DEPENDING ON GREEN/YELLOW/RED STATE -->
-							<i class="fa widget-copyright__status-icon" aria-hidden="true"></i>
+							<span class="widget-copyright__status-icon" aria-hidden="true"></span>
 						</div>
 					</div>
 	

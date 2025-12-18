@@ -46,6 +46,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.goobi.presentation.contentServlet.controller.GetMetsPageCountAction;
+import org.jboss.weld.contexts.ContextNotActiveException;
 import org.json.JSONObject;
 import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
@@ -287,7 +288,11 @@ public class ActiveDocumentBean implements Serializable {
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
-                module.augmentResetRecord();
+                try {
+                    module.augmentResetRecord();
+                } catch (ContextNotActiveException | IllegalStateException e) {
+                    logger.warn("Session context not active while resetting module; skipping that cleanup: {}", e.toString());
+                }
             }
 
             // Remove record lock for this record and session

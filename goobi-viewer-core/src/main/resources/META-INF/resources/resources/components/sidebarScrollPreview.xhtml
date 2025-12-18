@@ -19,7 +19,7 @@
 								
 								<!-- NON SEQUENCE MODE LINKS -->
 								<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() != 'SEQUENCE'}">
-									<h:outputLink styleClass="sidebar-scroll-preview__link" value="#{activeDocumentBean.getPageUrl(page.order)}">
+									<h:outputLink styleClass="sidebar-scroll-preview__link" value="#{activeDocumentBean.getPageUrl(page.order)}#topDocAnchor">
 										<span class="sidebar-scroll-preview__image-wrapper">
 											<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image"
 											    data-viewer-thumbnail="thumbnail" src="#{imageDelivery.thumbs.getThumbnailUrl(page, 400, 400)}"

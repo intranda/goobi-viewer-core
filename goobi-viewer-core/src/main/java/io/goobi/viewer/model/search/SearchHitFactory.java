@@ -52,6 +52,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataWrapper;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
@@ -77,6 +78,7 @@ public class SearchHitFactory {
     private Set<String> additionalMetadataNoHighlightFields =
             new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataNoHighlightFields());
     private int proximitySearchDistance;
+    private User user;
 
     private ThumbnailHandler thumbnailHandler;
     private Locale locale;
@@ -112,7 +114,7 @@ public class SearchHitFactory {
      * @return a {@link io.goobi.viewer.model.search.SearchHit} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException 
+     * @throws DAOException
      * @should add export fields correctly
      */
     public SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, String fulltext, HitType overrideType)
@@ -148,7 +150,7 @@ public class SearchHitFactory {
         Map<String, Set<String>> cleanedUpSearchTerms = getActualSearchTerms(searchTerms, searchedFields);
         BrowseElement browseElement = new BrowseElement(se, metadataListMap, locale,
                 (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, cleanedUpSearchTerms,
-                thumbnailHandler);
+                thumbnailHandler, this.user);
         // Add additional metadata fields that aren't configured for search hits but contain search term values
         if (DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled()) {
             Optional<String> labelValue = browseElement.getLabelAsMetadataValue().getValue();
@@ -259,6 +261,17 @@ public class SearchHitFactory {
      */
     public SearchHitFactory setAdditionalMetadataListType(String additionalMetadataListType) {
         this.additionalMetadataListType = additionalMetadataListType;
+        return this;
+    }
+
+    /**
+     * 
+     * @param user the user for whom access conditions of the search hits should be calculated. If ommitted, the user is fetched from the jsfContext
+     *            if one exists
+     * @return this
+     */
+    public SearchHitFactory setUser(User user) {
+        this.user = user;
         return this;
     }
 

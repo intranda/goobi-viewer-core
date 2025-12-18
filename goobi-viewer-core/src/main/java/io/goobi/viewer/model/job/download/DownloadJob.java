@@ -33,16 +33,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.ws.rs.ProcessingException;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.glassfish.jersey.client.ClientProperties;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -717,28 +710,6 @@ public abstract class DownloadJob implements Serializable {
      */
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    /**
-     * 
-     * @param url
-     * @param body
-     * @return a response
-     * @throws IOException
-     * @deprecated jobs are now handled via queues
-     */
-    @Deprecated(since = "24.10")
-    public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
-        try (Client client = ClientBuilder.newClient()) {
-            client.property(ClientProperties.CONNECT_TIMEOUT, 12000);
-            client.property(ClientProperties.READ_TIMEOUT, 30000);
-            return client
-                    .target(url)
-                    .request(MediaType.APPLICATION_JSON)
-                    .post(jakarta.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
-        } catch (IllegalArgumentException | NullPointerException | ProcessingException e) {
-            throw new IOException("Error connecting to " + url, e);
-        }
     }
 
     /**

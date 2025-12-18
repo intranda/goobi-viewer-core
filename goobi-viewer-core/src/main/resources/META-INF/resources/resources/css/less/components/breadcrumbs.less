@@ -5,18 +5,16 @@
 /* BREADCRUMBS */
 /* BLOCK */
 .breadcrumbs {
-	&__wrapper {
+	&__wrapper { 
 		margin-top: 2rem;
 		font-size: @fontSmall;
 	}
     /* ELEMENTS */
     ul {}
-    li {
-        display: inline-block;
-    }
+    li {}
     a, span {
         display: inline-block;
-        padding: 5px 5px 5px 10px;
+        padding: 5px;
 		max-width: 220px;
 		white-space: nowrap;
 		overflow: hidden;
@@ -34,12 +32,18 @@
             padding-left: 5px;
         }
     }
+	&__crumb {
+		display: inline-flex;
+		align-items: center;
+	}
     &__crumb + li:before {
-        content:"\203A";
-        display: block;
-        float: left;
-        clear: left;
-        padding: 5px 0;
+        content: "";
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        background-color: currentColor;
+        mask: url("../../icons/outline/chevron-right.svg") center/100% 100% no-repeat;
+        -webkit-mask: url("../../icons/outline/chevron-right.svg") center/100% 100% no-repeat;
     }
 	&__first-crumb-icon {
 		&:before {
@@ -52,11 +56,15 @@
 		display: none;
 	}
 	&__crumb + li:after {
-		content:"\203A";
-        display: block;
-        float: right;
-        clear: left;
-        padding: 5px 0;
+		content: "";
+		display: inline-block;
+		width: 1.2rem;
+		height: 1.2rem;
+		vertical-align: middle;
+		margin: 0 0.5rem;
+		background-color: currentColor;
+		mask: url("../../icons/outline/chevron-left.svg") center/100% 100% no-repeat;
+		-webkit-mask: url("../../icons/outline/chevron-left.svg") center/100% 100% no-repeat;
 	}
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */

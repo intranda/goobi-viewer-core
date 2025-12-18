@@ -1,116 +1,122 @@
- <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-	template="/resources/themes/#{navigationHelper.theme}/templateFullscreen.html">
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+  xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+  xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+  xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+  template="/resources/themes/#{navigationHelper.theme}/templateFullscreen.html"
+>
+  <ui:define name="metadata">
+    <f:metadata>
+      <f:event
+        type="preRenderView"
+        listener="#{navigationHelper.setCurrentView('fullscreen')}"
+      />
+      <f:event
+        type="preRenderView"
+        listener="#{activeDocumentBean.updatePageNavigation(navigationHelper.currentPageType)}"
+      />
+    </f:metadata>
+  </ui:define>
 
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('fullscreen')}" />
-            <f:event type="preRenderView" listener="#{activeDocumentBean.updatePageNavigation(navigationHelper.currentPageType)}"/>
-        </f:metadata>
-    </ui:define>
+  <ui:define name="head">
+    <f:view contentType="text/html" encoding="utf-8">
+      <h:outputText
+        escape="false"
+        value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"
+      />
+      <h:outputText
+        escape="false"
+        value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
+      />
+    </f:view>
+  </ui:define>
 
-    <ui:define name="head">
-        <f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" />
-        </f:view>
-    </ui:define>
+  <ui:define name="content-fullscreen">
+    <f:view contentType="text/html" encoding="utf-8">
+      <!-- COinS -->
+      <span
+        class="Z3988"
+        title="#{activeDocumentBean.viewManager.contextObject}"
+      ></span>
 
-    <ui:define name="content-fullscreen">
-        <f:view contentType="text/html" encoding="utf-8">
-            <!-- COinS -->
-            <span class="Z3988" title="#{activeDocumentBean.viewManager.contextObject}"></span>
+      <!-- MESSAGES -->
+      <div class="messages">
+        <h:messages
+          infoClass="alert alert-success"
+          errorClass="alert alert-danger"
+        />
+      </div>
 
-            <!-- MESSAGES -->
-            <div class="messages">
-                <h:messages infoClass="alert alert-success" errorClass="alert alert-danger" />
-            </div>
+      <!-- VIEW -->
 
-            <!-- VIEW -->
-            
-            <!-- No access ticket required or already unlocked -->
-            <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-                <div class="fullscreen">
-                    <!-- LAYOUT -->
-                    <ui:include src="/resources/includes/fullscreen/fs_layout.xhtml" />
-                
-			 <viewerComponent:modalFeedbackForm id="feedbackModal" />
+      <!-- No access ticket required or already unlocked -->
+      <ui:fragment
+        rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}"
+      >
+        <div class="fullscreen">
+          <!-- LAYOUT -->
+          <ui:include src="/resources/includes/fullscreen/fs_layout.xhtml" />
 
-                </div>
-            </ui:fragment> 
-            
-            <!-- Access ticket required -->
-            <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
-            	<div class="access-ticket-info">
-            		<div class="access-ticket-info__inner">
-            			<h1><span class="access-ticket-info__object-title">#{activeDocumentBean.titleBarLabel}</span></h1>
-		                <p>#{msg.access_tickets__record_access_ticket_required}</p>
-		                <button class="btn btn--full" data-toggle="modal"
-		                    data-target="#accessTicketModal">#{msg.action__born_digital__unlock}</button>
-		                <viewerComponent:modalAccessTicket />
-	                </div>
-                </div>
-            </ui:fragment>
+          <viewerComponent:modalFeedbackForm id="feedbackModal" />
+        </div>
+      </ui:fragment>
 
-            <script>
-                // mount riot tags
-	            var fsConfig = {
-                	thumbnailUrl: "#{request.contextPath}" + "/api/v1/records/#{activeDocumentBean.persistentIdentifier}/pages/sequence/base/?mode=thumbnails&amp;preferedView=fullscreen",
-                	msg: {
-                		showThumbs: "#{msg.fullscreen_showThumbs}",
-                		hideThumbs: "#{msg.fullscreen_hideThumbs}"
-                	}
-                };
-                riot.mount( 'fsThumbnails, fsThumbnailImage', fsConfig );
+      <!-- Access ticket required -->
+      <ui:fragment
+        rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}"
+      >
+        <div class="access-ticket-info">
+          <div class="access-ticket-info__inner">
+            <h1>
+              <span class="access-ticket-info__object-title"
+                >#{activeDocumentBean.titleBarLabel}</span
+              >
+            </h1>
+            <p>#{msg.access_tickets__record_access_ticket_required}</p>
+            <button
+              class="btn btn--full"
+              data-toggle="modal"
+              data-target="#accessTicketModal"
+            >
+              #{msg.action__born_digital__unlock}
+            </button>
+            <viewerComponent:modalAccessTicket />
+          </div>
+        </div>
+      </ui:fragment>
 
-                var normdataConfig = {
-                        path: "#{request.contextPath}",
-                        lang: {
-                            popoverTitle: "#{msg.normdataPopoverTitle}",
-                            popoverClose: "#{msg.normdataPopoverClose}",
-                            showNormdata: "#{msg.normdataExpand}"
-                        },
-                        elemWrapper: $( "#metadataElementWrapper" )
-                    };
+      <script>
+        // mount riot tags
+        var fsConfig = {
+          thumbnailUrl:
+            "#{request.contextPath}" +
+            "/api/v1/records/#{activeDocumentBean.persistentIdentifier}/pages/sequence/base/?mode=thumbnails&amp;preferedView=fullscreen",
+          msg: {
+            showThumbs: "#{msg.fullscreen_showThumbs}",
+            hideThumbs: "#{msg.fullscreen_hideThumbs}",
+          },
+        };
+        riot.mount("fsThumbnails, fsThumbnailImage", fsConfig);
 
-                    viewerJS.normdata.init( normdataConfig );
-                    
-        			<!-- Set up download modal for work and struct PDF -->
-              	var downloadModalConfig = {
-                      downloadBtn: $( ".download-modal-widget" ),
-                      path: "#{navigationHelper.applicationUrl}",
-                      iiifPath: "#{configurationBean.iiifApiUrl}",
-                      userEmail: $( "#userEmail" ).val(),
-                      useReCaptcha: #{configurationBean.useReCaptcha},
-                      reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
-                      messages: {
-                          downloadInfo: {
-                              text: "#{msg.downloadInfoText}",
-                              title: "#{msg.downloadInfoTitle}",
-                              part: "#{msg.downloadInfoPart}",
-                              fileSize: "#{msg.downloadInfoFileSize}"
-                          },
-                          reCaptchaText: "#{msg.downloadReCaptchaText}",
-                          rcInvalid: "#{msg.downloadRcInvalid}",
-                          rcValid: "#{msg.downloadRcValid}",
-                          eMailText: "#{msg.downloadEMailText}",
-                          eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
-                          eMail: "#{msg.downloadEmail}",
-                          closeBtn: "#{msg.downloadCloseModal}",
-                          saveBtn: "#{msg.downloadGenerateFile}",
-                      }
-                  };
+        var normdataConfig = {
+          path: "#{request.contextPath}",
+          lang: {
+            popoverTitle: "#{msg.normdataPopoverTitle}",
+            popoverClose: "#{msg.normdataPopoverClose}",
+            showNormdata: "#{msg.normdataExpand}",
+          },
+          elemWrapper: $("#metadataElementWrapper"),
+        };
 
-                  viewerJS.downloadModal.init( downloadModalConfig );
-                  viewerJS.clipboard.init();
-            </script>
-        </f:view>
-    </ui:define>
+        viewerJS.normdata.init(normdataConfig);
+
+        viewerJS.clipboard.init();
+      </script>
+    </f:view>
+  </ui:define>
 </ui:composition>

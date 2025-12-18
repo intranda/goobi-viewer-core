@@ -67,6 +67,7 @@ import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.PageType;
@@ -206,6 +207,27 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      */
     BrowseElement(StructElement structElement, Map<String, List<Metadata>> metadataListMap, Locale locale, String fulltext,
             Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException, DAOException {
+        this(structElement, metadataListMap, locale, fulltext, searchTerms, thumbs, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param structElement {@link StructElement}
+     * @param metadataListMap
+     * @param locale
+     * @param fulltext
+     * @param searchTerms
+     * @param thumbs
+     * @param user The user for whom the thumbnail accessCondition is calculated. If null, it is fetched from the jsfContext if one exists
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    BrowseElement(StructElement structElement, Map<String, List<Metadata>> metadataListMap, Locale locale, String fulltext,
+            Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs, User user)
+            throws PresentationException, IndexUnreachableException, DAOException {
         if (structElement == null) {
             throw new IllegalArgumentException("structElement may not be null");
         }
@@ -368,7 +390,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
             }
             PhysicalElement pe = ThumbnailHandler.getPage(thumbnailPi, imageNo);
             if (pe != null) {
-                accessPermissionThumbnail = pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
+                accessPermissionThumbnail = pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, user);
             }
         }
 

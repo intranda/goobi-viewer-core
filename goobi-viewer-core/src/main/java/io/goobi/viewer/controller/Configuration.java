@@ -872,6 +872,23 @@ public class Configuration extends AbstractConfiguration {
         return getMetadataForTemplate(template, templateList, true, false);
     }
 
+    public float getGeomapClusterDistanceMultiplier() {
+        return getLocalFloat("maps.cluster.distanceMultiplier", 1.0f);
+    }
+
+    public int getGeomapClusterRadius() {
+        return getLocalInt("maps.cluster.radius", 80);
+    }
+
+    public Integer getGeomapDisableClusteringAtZoom() {
+        String value = getLocalString("maps.cluster.disableAtZoom", "");
+        if (StringTools.isInteger(value)) {
+            return Integer.parseInt(value);
+        } else {
+            return null;
+        }
+    }
+
     public Metadata getGeoMapFeatureConfiguration(String option, String template) {
         return getGeomapFeatureConfigurations(option).getOrDefault(template, new Metadata());
     }
@@ -2109,7 +2126,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isAdvancedSearchFieldAllowMultipleItems(String field, String template, boolean fallbackToDefaultTemplate) {
-        logger.trace("isAdvancedSearchFieldAllowMultipleItems: {}/{}/{}", field, template, fallbackToDefaultTemplate);
+        // logger.trace("isAdvancedSearchFieldAllowMultipleItems: {}/{}/{}", field, template, fallbackToDefaultTemplate);
         return isAdvancedSearchFieldHasAttribute(field, "allowMultipleItems", template, fallbackToDefaultTemplate);
     }
 
@@ -4105,8 +4122,47 @@ public class Configuration extends AbstractConfiguration {
         }
     }
 
+    public Map<String, String> getDownloadHeader(String externalResourceUrl) {
+
+        if (StringUtils.isBlank(externalResourceUrl)) {
+            return Collections.emptyMap();
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
+
+        for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
+            String templateUrl = templateConfig.getString("url", "");
+            if (externalResourceUrl.equals(templateUrl)) {
+                Map<String, String> headerMap = new HashMap<>();
+                List<HierarchicalConfiguration<ImmutableNode>> headerConfigs = templateConfig.configurationsAt("httpHeader");
+                for (HierarchicalConfiguration<ImmutableNode> headerConfig : headerConfigs) {
+                    String key = headerConfig.getString("[@key]", "");
+                    String value = headerConfig.getString("[@value]", "");
+                    if (StringUtils.isNoneBlank(key, value)) {
+                        headerMap.put(key, value);
+                    }
+                }
+                return headerMap;
+            }
+        }
+        return Collections.emptyMap();
+    }
+
     public List<String> getExternalResourceUrlTemplates() {
-        return getLocalList("externalResource.urls.template", Collections.emptyList());
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
+        List<String> templates = new ArrayList<>();
+        for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
+            String url = templateConfig.getString(".", "");
+            if (StringUtils.isNotBlank(url)) {
+                templates.add(url);
+            } else {
+                url = templateConfig.getString("url", "");
+                if (StringUtils.isNotBlank(url)) {
+                    templates.add(url);
+                }
+            }
+        }
+        return templates.stream().distinct().toList();
     }
 
     public Duration getExternalResourceTimeBeforeDeletion() {
@@ -4429,7 +4485,9 @@ public class Configuration extends AbstractConfiguration {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BaseHierarchicalConfiguration getZoomImageViewConfig(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("viewer.zoomImageView");
+        List<HierarchicalConfiguration<ImmutableNode>> configs = new ArrayList<>();
+        configs.addAll(getLocalConfigurationsAt("viewer.zoomImageView"));
+        configs.addAll(getConfig().configurationsAt("viewer.zoomImageView"));
 
         for (HierarchicalConfiguration<ImmutableNode> subConfig : configs) {
 
@@ -4449,6 +4507,7 @@ public class Configuration extends AbstractConfiguration {
 
             return (BaseHierarchicalConfiguration) subConfig;
         }
+
         throw new ViewerConfigurationException("Viewer config must define at least a generic <zoomImageView>");
     }
 
@@ -5361,34 +5420,6 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return urlString;
-    }
-
-    /**
-     * <p>
-     * getTaskManagerServiceUrl.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     * @deprecated currently unused since download jobs are handled via message queues
-     */
-    @Deprecated(since = "24.10")
-    public String getTaskManagerServiceUrl() {
-        return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "service";
-    }
-
-    /**
-     * <p>
-     * getTaskManagerRestUrl.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     * @deprecated jobs are no longs handled via TaskManager but via queues
-     */
-    @Deprecated(since = "24.10")
-    public String getTaskManagerRestUrl() {
-        return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "rest";
     }
 
     /**

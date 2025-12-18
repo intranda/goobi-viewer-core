@@ -21,7 +21,7 @@
 	&__inner {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 4px; // slightly more compact
+		gap: 4px;
 	}
 	// GRID/GAP SIZING FOR THE IMAGE ACTIONS/CONTROLS + (DOC) OPTIONS
     &__actions,
@@ -389,11 +389,6 @@
     color: @gray;
 }
 
-.mx-theme-dark .image-controls .image-controls__icon,
-.color-theme-dark .image-controls .image-controls__icon {
-    color: #f1f2f3;
-}
-
 .image-controls__icon {
     display: inline-flex;
     align-items: center;
@@ -419,6 +414,10 @@
 }
 
 .image-controls {
+    .icon-wrapper {
+        color: currentColor;
+    }
+
     .icon-wrapper svg {
         color: inherit;
         stroke: currentColor;

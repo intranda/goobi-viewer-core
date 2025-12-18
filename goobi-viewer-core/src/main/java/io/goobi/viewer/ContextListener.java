@@ -39,9 +39,6 @@ import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.security.LicenseType;
-import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.user.UserTools;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
@@ -125,7 +122,6 @@ public class ContextListener implements ServletContextListener {
         try {
             DataManager.getInstance().getDao().shutdown();
             ContentServerCacheManager.getInstance().close();
-            DataManager.getInstance().getThreadPoolManager().shutdown();
             logger.info("Successfully stopped DAO");
         } catch (DAOException e) {
             logger.error("Error stopping DAO", e);

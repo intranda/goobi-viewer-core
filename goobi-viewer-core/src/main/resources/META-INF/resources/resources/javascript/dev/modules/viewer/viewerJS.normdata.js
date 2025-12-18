@@ -266,7 +266,7 @@ var viewerJS = ( function( viewer ) {
         }
         
         var _bodyWidth = $( 'body' ).outerWidth();
-        var _popoverWidth = $( '#normdataPopover-' + id ).outerWidth();
+        var _popoverWidth = $( '#' + CSS.escape('normdataPopover-' + id) ).outerWidth();
         var _popoverRight = pos.left + _popoverWidth;
         
         if ( _debug ) {

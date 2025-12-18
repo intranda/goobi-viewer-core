@@ -1114,18 +1114,27 @@ public class CollectionView implements Serializable {
         return DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1;
     }
 
-    public String getFirstRecordUrl(HierarchicalBrowseDcElement collection, String field) {
+   
+    /**
+     * 
+     * @param collection
+     * @param field
+     * @return URL of the first record in the given collection field/name combo
+     * @should escape url encode collection name
+     */
+    public static String getFirstRecordUrl(HierarchicalBrowseDcElement collection, String field) {
 
         // Link directly to single record, if record PI known
         if (collection.getSingleRecordUrl() != null) {
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + collection.getSingleRecordUrl();
         }
-        
+
+        String escapedCollectionName = StringTools.encodeUrl(collection.getLuceneName(), true);
         return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                 .append("/browse/")
                 .append(field)
                 .append("/")
-                .append(collection.getLuceneName())
+                .append(escapedCollectionName)
                 .append("/record/")
                 .toString();
     }
@@ -1141,18 +1150,18 @@ public class CollectionView implements Serializable {
             logger.trace("COLLECTION static url: {}", ret);
             return ret;
         }
-        
+
         return "";
     }
 
     public String getSearchUrl(HierarchicalBrowseDcElement collection, String field, final String baseSearchUrl) {
-        String searchUrl = baseSearchUrl;
-        if (StringUtils.isBlank(searchUrl)) {
-            searchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/";
+        String useSearchUrl = baseSearchUrl;
+        if (StringUtils.isBlank(useSearchUrl)) {
+            useSearchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/";
         }
         String facetString = field + ":" + collection.getLuceneName();
         String encFacetString = StringTools.encodeUrl(facetString, true);
-        return new StringBuilder(searchUrl)
+        return new StringBuilder(useSearchUrl)
                 .append("-/-/1/")
                 .append(collection.getSortField())
                 .append('/')

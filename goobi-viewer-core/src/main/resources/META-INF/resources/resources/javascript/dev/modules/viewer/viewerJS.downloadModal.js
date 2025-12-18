@@ -185,10 +185,10 @@ var viewerJS = ( function( viewer ) {
             $( '#submitModal' ).attr( 'disabled', 'disabled' );
             
             // show modal
-            $( '#' + params.modal.id ).modal( 'show' );
+            $( '#' + CSS.escape(params.modal.id) ).modal( 'show' );
             
             // render reCAPTCHA to modal
-            $( '#' + params.modal.id ).on( 'shown.bs.modal', function( e ) {
+            $( '#' + CSS.escape(params.modal.id) ).on( 'shown.bs.modal', function( e ) {
                 if ( _defaults.useReCaptcha ) {
                     var rcWidget = grecaptcha.render( 'reCaptchaWrapper', {
                         sitekey: _defaults.reCaptchaSiteKey,
@@ -235,7 +235,7 @@ var viewerJS = ( function( viewer ) {
             } );
             
             // remove modal from DOM after closing
-            $( '#' + params.modal.id ).on( 'hidden.bs.modal', function( e ) {
+            $( '#' + CSS.escape(params.modal.id) ).on( 'hidden.bs.modal', function( e ) {
                 $( this ).remove();
             } );
         },

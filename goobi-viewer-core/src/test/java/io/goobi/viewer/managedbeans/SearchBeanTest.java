@@ -539,31 +539,6 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
-     * @verifies put item sequences with the same field into common parentheses
-     */
-    @Test
-    void generateAdvancedSearchMainQuery_shouldPutItemSequencesWithSameFieldIntoCommonParentheses() throws Exception {
-        searchBean.resetAdvancedSearchParameters();
-
-        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance()
-                .getConfiguration()
-                .getAdvancedSearchFields("person", false, BeanUtils.getLocale().getLanguage()), "person");
-        searchBean.setAdvancedSearchQueryGroup(group);
-        Assertions.assertTrue(group.addNewQueryItem(group.getQueryItems().get(0).getField(), 0));
-        group.getQueryItems().get(0).setValue("person1");
-        group.getQueryItems().get(0).setDisplaySelectItems(false);
-        group.getQueryItems().get(1).setValue("person2");
-        group.getQueryItems().get(1).setDisplaySelectItems(false);
-
-        assertEquals("(+((MD_NAME:(person1)) (MD_NAME:(person2))))", searchBean.generateAdvancedSearchMainQuery());
-
-        // Removing the value from one of the group items should trigger the finalization of the group query correctly
-        group.getQueryItems().get(1).setValue("");
-        assertEquals("(+((MD_NAME:(person1))))", searchBean.generateAdvancedSearchMainQuery());
-    }
-
-    /**
      * @see SearchBean#getSearchUrl()
      * @verifies return correct url
      */

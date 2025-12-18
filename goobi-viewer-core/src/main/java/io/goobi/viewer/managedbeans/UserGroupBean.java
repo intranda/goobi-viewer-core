@@ -150,30 +150,6 @@ public class UserGroupBean implements Serializable {
     }
 
     /**
-     * Add currentMember to the member list of currentOwnUserGroup.
-     *
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated(since = "24.10")
-    public void saveMembershipAction() throws DAOException {
-        currentRole = new Role();
-        UserBean ub = BeanUtils.getUserBean();
-        if (ub != null && ub.getUser() != null && currentOwnUserGroup != null && currentMember != null) {
-            try {
-                if (currentOwnUserGroup.addMember(currentMember, currentRole)) {
-                    Messages.info("userGroup_memberAddSuccess");
-                    logger.debug("'{}' added to user group '{}'.", currentMember.getEmail(), currentOwnUserGroup.getName());
-                } else {
-                    Messages.error("userGroup_memberAddFailure");
-                }
-            } catch (PresentationException e) {
-                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-                Messages.error("userGroup_memberAddFailure");
-            }
-        }
-    }
-
-    /**
      * Removes currentMember from the member list of currentUserGroup.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.

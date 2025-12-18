@@ -132,15 +132,6 @@ public class BrowseBean implements Serializable {
         this.breadcrumbBean = breadcrumbBean;
     }
 
-    //    /**
-    //     * Required setter for ManagedProperty injection
-    //     *
-    //     * @param searchBean the searchBean to set
-    //     */
-    //    public void setSearchBean(SearchBean searchBean) {
-    //        this.searchBean = searchBean;
-    //    }
-
     /**
      * Resets all lists for term browsing.
      */
@@ -326,16 +317,6 @@ public class BrowseBean implements Serializable {
      */
     public void expandCollection() throws IndexUnreachableException, IllegalRequestException {
         expandCollection(SolrConstants.DC, null);
-    }
-
-    @Deprecated(since = "24.08")
-    public void expandCollection(int levels) throws IndexUnreachableException, IllegalRequestException {
-        expandCollection();
-    }
-
-    @Deprecated(since = "24.08")
-    public void expandCollection(String collectionField, String facetField, int levels) throws IndexUnreachableException, IllegalRequestException {
-        expandCollection(collectionField, facetField);
     }
 
     /**

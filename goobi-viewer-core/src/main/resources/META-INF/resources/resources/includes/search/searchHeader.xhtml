@@ -41,7 +41,7 @@
 	
 	            <!-- ADVANCED SEARCH -->
 	            <div class="search-list__adv-search-info-back text-right">
-                    <h:outputLink value="#{navigationHelper.applicationUrl}searchadvanced/">
+                    <h:outputLink value="#{navigationHelper.applicationUrl}searchadvanced/#{searchBean.activeContext}/#{searchBean.facets.activeFacetString}/">
                         #{msg.searchAdvancedBack}
                     </h:outputLink>
 	            </div>

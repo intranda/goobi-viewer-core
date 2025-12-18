@@ -81,6 +81,7 @@ import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
 import io.goobi.viewer.model.viewer.record.views.FileType;
@@ -528,14 +529,25 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @throws IndexUnreachableException
      */
     public AccessPermission getAccessPermission(String privilegeName) throws IndexUnreachableException, DAOException {
+        return getAccessPermission(privilegeName, null);
+    }
+
+    /**
+     * @param privilegeName
+     * @param user The User requesting access. If null, it is fetched from the jsfContext if one exists
+     * @return the accessPermissionAudio
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public AccessPermission getAccessPermission(String privilegeName, User user) throws IndexUnreachableException, DAOException {
         if (accessPermissionMap.get(privilegeName) == null) {
-            AccessPermission accessPermission = AccessConditionUtils.getAccessPermission(pi, fileName, privilegeName);
+            AccessPermission accessPermission = AccessConditionUtils.getAccessPermission(pi, fileName, privilegeName, user);
             if (accessPermission != null) {
                 accessPermissionMap.put(privilegeName, accessPermission);
             }
         }
 
-        return accessPermissionMap.get(privilegeName);
+        return accessPermissionMap.getOrDefault(privilegeName, AccessPermission.denied());
     }
 
     /**
@@ -1335,6 +1347,47 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
         logger.trace("currentMediaUrl: {}", url);
         return url;
+    }
+
+    /**
+     * Returns a list of media formats available for this element.
+     * 
+     * @param type audio or video
+     * @return List of supported formats for the given type
+     */
+    public List<String> getMediaFormats(String type) {
+        logger.trace("getMediaFormats: {}", type);
+        if (type == null) {
+            return Collections.emptyList();
+        }
+
+        List<String> ret = new ArrayList<>();
+        switch (type.toLowerCase()) {
+            case "audio":
+                if (fileNames.get("ogg") != null) {
+                    ret.add("ogg");
+                }
+                if (fileNames.get("mpeg") != null || fileNames.get("mp3") != null) {
+                    ret.add("mpeg");
+                    ret.add("mp3");
+                }
+                break;
+            case "video":
+                if (fileNames.get("webm") != null) {
+                    ret.add("webm");
+                }
+                if (fileNames.get("mp4") != null) {
+                    ret.add("mp4");
+                }
+                if (fileNames.get("ogg") != null) {
+                    ret.add("ogg");
+                }
+                break;
+            default:
+                logger.warn("Unsupported type: {}", type);
+        }
+
+        return ret;
     }
 
     /**

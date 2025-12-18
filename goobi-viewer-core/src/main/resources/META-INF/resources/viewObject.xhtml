@@ -247,37 +247,6 @@
                 <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
             </h:panelGroup>
 
-            <script type="text/javascript">
-            	var downloadModalConfig = {
-                	downloadBtn: ".download-modal",
-                    path: "#{navigationHelper.applicationUrl}",
-                    iiifPath: "#{configurationBean.iiifApiUrl}",
-                    userEmail: $( "#userEmail" ).val(),
-                    useReCaptcha: #{configurationBean.useReCaptcha},
-                    reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
-                    messages: {
-                        downloadInfo: {
-                            text: "#{msg.downloadInfoText}",
-                            title: "#{msg.downloadInfoTitle}",
-                            part: "#{msg.downloadInfoPart}",
-                            fileSize: "#{msg.downloadInfoFileSize}"
-                        },
-                        reCaptchaText: "#{msg.downloadReCaptchaText}",
-                        rcInvalid: "#{msg.downloadRcInvalid}",
-                        rcValid: "#{msg.downloadRcValid}",
-                        eMailText: "#{msg.downloadEMailText}",
-                        eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
-                        eMail: "#{msg.downloadEmail}",
-                        closeBtn: "#{msg.downloadCloseModal}",
-                        saveBtn: "#{msg.downloadGenerateFile}",
-                    }
-                };
-				$(document).ready(() => {
-					viewerJS.downloadModal.init( downloadModalConfig );
-				});
-
-                // viewerJS.clipboard.init( '[data-copy]' );
-            </script>
 		</f:view>
     </ui:define>
 

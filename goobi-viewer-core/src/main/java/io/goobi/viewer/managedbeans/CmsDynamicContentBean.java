@@ -56,18 +56,6 @@ public class CmsDynamicContentBean implements Serializable {
 
     /**
      * <p>
-     * Setter for the field <code>cmsPage</code>.
-     * </p>
-     *
-     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
-     */
-    @Deprecated(since = "24.10")
-    public void setCmsPage(CMSPage page) {
-        this.cmsPage = page;
-    }
-
-    /**
-     * <p>
      * getTopBarContent.
      * </p>
      *

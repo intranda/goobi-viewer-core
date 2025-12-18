@@ -164,8 +164,12 @@ public final class SolrConstants {
     public static final String FILENAME = "FILENAME";
     /** Constant <code>FILENAME_ALTO="FILENAME_ALTO"</code> */
     public static final String FILENAME_ALTO = "FILENAME_ALTO";
+    /** Constant <code>FILENAME_ALTO_SHORT="FILENAME_ALTO_SHORT"</code> */
+    public static final String FILENAME_ALTO_SHORT = "FILENAME_ALTO_SHORT";
     /** Constant <code>FILENAME_FULLTEXT="FILENAME_FULLTEXT"</code> */
     public static final String FILENAME_FULLTEXT = "FILENAME_FULLTEXT";
+    /** Constant <code>FILENAME_FULLTEXT_SHORT="FILENAME_FULLTEXT_SHORT"</code> */
+    public static final String FILENAME_FULLTEXT_SHORT = "FILENAME_FULLTEXT_SHORT";
     /** Constant <code>FILENAME_HTML_SANDBOXED="FILENAME_HTML-SANDBOXED"</code> */
     public static final String FILENAME_HTML_SANDBOXED = "FILENAME_HTML-SANDBOXED";
     /** Constant <code>FILENAME_MPEG="FILENAME_MPEG"</code> */
