@@ -38,7 +38,7 @@
                             <div id="licenseesGroup" class="admin__default-block">
                             <h:panelGroup id="licenseesGroupInner" layout="block">
                             
-                            <ui:repeat var="licensee" value=#{adminLicenseBean.currentLIcense.licensees}">
+                            <ui:repeat var="licensee" value="#{adminLicenseBean.currentLicense.licensees}">
                                 <div class="form-group form-row">
                                     <div class="col-sm-4">
                                         <label for="licensee.type" class="control-label">#{msg.admin__license_licensee_type_select_label}:</label>
@@ -688,7 +688,8 @@
                             </h:panelGroup>
                             <div
 								class="admin__final-actions">
-                                <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
+                                <h:commandLink action="pretty:adminRights" value="#{msg.cancel}"
+                                    styleClass="btn admin__cancel-button" immediate="true" />
                                 <h:panelGroup id="saveButtonGroup">
                                     <button 
                                         jsf:action="#{adminLicenseBean.saveCurrentLicenseAction}" value="" 

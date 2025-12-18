@@ -64,15 +64,9 @@ public class LicenseRightsHolder {
         this.owner = owner;
     }
 
-    /**
-     * Convenience method for disabling the save button.
-     * 
-     * @return "disabled" if any required values are missing; null otherwise
-     * @should return null if all relevant fields filled
-     */
-    public String getDisabledStatus() {
+    public boolean isDisabled() {
         return (getType() == null || (getUser() == null && getUserGroup() == null && getIpRange() == null && getClient() == null)
-                || owner.getLicenseType() == null) ? "disabled" : null;
+                || owner.getLicenseType() == null);
     }
 
     /**

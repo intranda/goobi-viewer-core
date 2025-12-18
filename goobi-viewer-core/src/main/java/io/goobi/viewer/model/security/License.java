@@ -1049,4 +1049,20 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
         return null;
     }
+
+    /**
+     * Convenience method for disabling the save button.
+     * 
+     * @return "disabled" if any required values are missing; null otherwise
+     * @should return null if all relevant fields filled
+     */
+    public String getDisabledStatus() {
+        for (LicenseRightsHolder licensee : licensees) {
+            if (licensee.isDisabled()) {
+                return "disabled";
+            }
+        }
+
+        return null;
+    }
 }
