@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -63,6 +65,9 @@ import jakarta.persistence.Table;
 public class ClientApplication extends AbstractLicensee implements Serializable {
 
     private static final long serialVersionUID = -6806071337346935488L;
+    
+    /** Logger for this class. */
+    private static final Logger logger = LogManager.getLogger(ClientApplication.class);
 
     /** Unique database ID. */
     @Id
@@ -433,13 +438,14 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
      */
     public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
+         logger.trace("canSatisfyAllAccessConditions: {}, {}", privilegeName, pi);
         // always allow access if the only condition is open access and there is no special license configured for it
         if (requiredAccessConditions.size() == 1 && requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE)
                 && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
             return AccessPermission.granted();
         }
 
-        Map<String, AccessPermission> permissionMap = new HashMap<>(requiredAccessConditions.size());
+        Map<String, AccessPermission> permissionMap = HashMap.newHashMap(requiredAccessConditions.size());
         for (String accessCondition : requiredAccessConditions) {
             AccessPermission access = hasLicense(accessCondition, privilegeName, pi);
             if (access.isGranted()) {

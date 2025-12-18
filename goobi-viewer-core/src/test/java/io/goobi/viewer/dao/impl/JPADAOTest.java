@@ -593,10 +593,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void deleteIpRangeTest() throws DAOException {
         assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
-        IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
+        IpRange ipRange = DataManager.getInstance().getDao().getIpRange(2);
         assertNotNull(ipRange);
         assertTrue(DataManager.getInstance().getDao().deleteIpRange(ipRange)); // TODO make sure licenses containing this are deleted/altered first
-        assertNull(DataManager.getInstance().getDao().getIpRange(1));
+        assertNull(DataManager.getInstance().getDao().getIpRange(2));
         assertEquals(1, DataManager.getInstance().getDao().getAllIpRanges().size());
     }
 

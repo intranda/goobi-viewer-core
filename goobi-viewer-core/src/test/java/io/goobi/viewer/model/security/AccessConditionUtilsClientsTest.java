@@ -21,12 +21,16 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
@@ -36,6 +40,9 @@ import io.goobi.viewer.model.security.clients.ClientApplicationManager;
  *
  */
 class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
+
+    /** Logger for this class. */
+    private static final Logger logger = LogManager.getLogger(AccessConditionUtilsClientsTest.class);
 
     LicenseType lt;
     License license;
@@ -49,25 +56,50 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
         super.setUp();
         lt = new LicenseType();
         lt.setName("license type 1 name");
+        if (!DataManager.getInstance().getDao().addLicenseType(lt)) {
+            logger.error("LicenseType could not be added to the DB.");
+        }
 
         license = new License();
         license.setLicenseType(lt);
         license.setPrivileges(Collections.singleton(IPrivilegeHolder.PRIV_LIST));
+        if (!DataManager.getInstance().getDao().addLicense(license)) {
+            logger.error("License could not be added to the DB.");
+        }
 
         client = new ClientApplication("12345");
         client.setAccessStatus(AccessStatus.GRANTED);
+        if (!DataManager.getInstance().getDao().saveClientApplication(client)) {
+            logger.error("ClientApplication could not be added to the DB.");
+        }
 
         recordAccessConditions.add(lt.getName());
 
         allClients = new ClientApplication(ClientApplicationManager.GENERAL_CLIENT_IDENTIFIER);
         // new ArrayList<>(allClients.getLicenses()).forEach(l -> allClients.removeLicense(l));
         ClientApplicationManager manager = new ClientApplicationManager(DataManager.getInstance().getDao()) {
+            @Override
             public ClientApplication getAllClientsFromDatabase() {
                 return allClients;
-            };
+            }
         };
         manager.setAllClients(allClients);
         DataManager.getInstance().setClientManager(manager);
+    }
+
+    @Override
+    @AfterEach
+    public void tearDown() throws Exception {
+        if (license != null && !DataManager.getInstance().getDao().deleteLicense(license)) {
+            logger.error("License could not be cleaned up from DB.");
+        }
+        if (client != null && !DataManager.getInstance().getDao().deleteClientApplication(client.getId())) {
+            logger.error("ClientApplication could not be cleaned up from DB.");
+        }
+        if (lt != null && !DataManager.getInstance().getDao().deleteLicenseType(lt)) {
+            logger.error("LicenseType could not be cleaned up from DB.");
+        }
+        super.tearDown();
     }
 
     @Test
@@ -79,7 +111,7 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
     @Test
     void checkAccessPermission_shouldReturnTrueIfClientContainsLicense() throws Exception {
         license.getLicensees().get(0).setClient(client);
-        DataManager.getInstance().getDao().addLicense(license);
+        Assertions.assertTrue(DataManager.getInstance().getDao().updateLicense(license));
         Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
@@ -87,7 +119,8 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
     @Test
     void checkAccessPermission_shouldReturnTrueIfAllClientsContainsLicense() throws Exception {
         license.getLicensees().get(0).setClient(client);
-        DataManager.getInstance().getDao().addLicense(license);
+        Assertions.assertTrue(DataManager.getInstance().getDao().updateLicense(license));
+
         Set<String> conditions = new HashSet<>();
         conditions.add(lt.getName());
         Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), conditions, IPrivilegeHolder.PRIV_LIST, null,
@@ -95,10 +128,10 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    void checkAccessPermission_shouldReturnFalseIfClientIsOutsiteIpRange() throws Exception {
+    void checkAccessPermission_shouldReturnFalseIfClientIsOutsideIpRange() throws Exception {
         license.getLicensees().get(0).setClient(client);
-        DataManager.getInstance().getDao().addLicense(license);
-        
+        Assertions.assertTrue(DataManager.getInstance().getDao().updateLicense(license));
+
         License license2 = new License();
         license2.setLicenseType(lt);
         license2.setPrivileges(Collections.singleton(IPrivilegeHolder.PRIV_LIST));
@@ -114,14 +147,14 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
     @Test
     void checkAccessPermission_shouldReturnTrueIfClientIsInsideIpRange() throws Exception {
         license.getLicensees().get(0).setClient(client);
-        DataManager.getInstance().getDao().addLicense(license);
-        
+        Assertions.assertTrue(DataManager.getInstance().getDao().updateLicense(license));
+
         License license2 = new License();
         license2.setLicenseType(lt);
         license2.setPrivileges(Collections.singleton(IPrivilegeHolder.PRIV_LIST));
         license2.getLicensees().get(0).setClient(allClients);
         DataManager.getInstance().getDao().addLicense(license2);
-        
+
         client.setSubnetMask("11.22.33.45/31");
 
         Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
