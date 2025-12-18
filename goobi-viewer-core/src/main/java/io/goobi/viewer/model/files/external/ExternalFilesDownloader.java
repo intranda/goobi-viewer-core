@@ -47,6 +47,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.unigoettingen.sub.commons.util.MimeType;
+import de.unigoettingen.sub.commons.util.MimeType.UnknownMimeTypeException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.files.ZipUnpacker;
@@ -200,15 +202,32 @@ public class ExternalFilesDownloader {
     }
 
     private static String getFilename(URI uri, CloseableHttpResponse response) {
-        String header = Optional.ofNullable(response).map(r -> r.getFirstHeader("content-disposition")).map(Header::getValue).orElse("");
-        if (StringUtils.isNotBlank(header) && header.contains("filename=")) {
-            Matcher matcher = Pattern.compile("filename=(.+?)(;|$)").matcher(header);
+        String dispositionHeader = Optional.ofNullable(response).map(r -> r.getFirstHeader("content-disposition")).map(Header::getValue).orElse("");
+        String filename = Path.of(uri.getPath()).getFileName().toString();
+        if (StringUtils.isNotBlank(dispositionHeader) && dispositionHeader.contains("filename=")) {
+            Matcher matcher = Pattern.compile("filename=(.+?)(;|$)").matcher(dispositionHeader);
             if (matcher.find() && StringUtils.isNotBlank(matcher.group(1))) {
-                return matcher.group(1);
+                filename = matcher.group(1);
             }
         }
-        return Path.of(uri.getPath()).getFileName().toString();
+        if (FilenameUtils.indexOfExtension(filename) < filename.length() - 6) {
+            //if extension does not exist or is longer than 5 characters, in which case it is probably no extension
+            String extension = getFileExtension(response);
+            return filename + FilenameUtils.EXTENSION_SEPARATOR + extension;
+        } else {
+            return filename;
+        }
 
+    }
+
+    static String getFileExtension(CloseableHttpResponse response) {
+        String typeHeader = Optional.ofNullable(response).map(r -> r.getFirstHeader("content-type")).map(Header::getValue).orElse("");
+        try {
+            return MimeType.getExtensionFromMimeType(typeHeader.toLowerCase().split(";", 2)[0].trim());
+        } catch (UnknownMimeTypeException e) {
+            logger.error("No extension found for mimetype {}: {}", typeHeader, e.toString());
+            return "";
+        }
     }
 
     private static Path prepareNewFolder(Path destination) throws IOException {
