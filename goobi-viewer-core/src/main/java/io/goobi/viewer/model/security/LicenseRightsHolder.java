@@ -31,12 +31,12 @@ public class LicenseRightsHolder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "license_rights_holder_id")
     private Long id;
-    
+
     @ManyToOne
-    @JoinColumn(name = "license_id")
+    @JoinColumn(name = "license_id", nullable = false)
     private License owner;
 
-    @Column(name = "licensee_type")
+    @Column(name = "licensee_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private AccessType type;
 

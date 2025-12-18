@@ -37,7 +37,7 @@ public class LicenseUpdate implements IModelUpdate {
 
     private static final Logger logger = LogManager.getLogger(LicenseUpdate.class);
 
-    private static final String LICENSE_TYPE_CAMPAIGNS = "licenseType_crowdsourcing_campaigns";
+    private static final String TABLE_NAME_LICENSES = "licenses";
 
     /** {@inheritDoc} */
     @Override
@@ -62,36 +62,33 @@ public class LicenseUpdate implements IModelUpdate {
             if (license.getLicensees().isEmpty()) {
                 license.addLicensee();
             }
+            boolean update = false;
             LicenseRightsHolder lrh = license.getLicensees().get(0);
             if (license.getUser() != null) {
                 lrh.setType(AccessType.USER);
                 lrh.setUser(license.getUser());
                 license.setUser(null);
-                if (dao.updateUser(lrh.getUser())) {
-                    count++;
-                }
+                update = true;
             } else if (license.getUserGroup() != null) {
                 lrh.setType(AccessType.USER_GROUP);
                 lrh.setUserGroup(license.getUserGroup());
                 license.setUserGroup(null);
-                if (dao.updateUserGroup(lrh.getUserGroup())) {
-                    count++;
-                }
+                update = true;
             } else if (license.getIpRange() != null) {
                 lrh.setType(AccessType.IP_RANGE);
                 lrh.setIpRange(license.getIpRange());
                 license.setIpRange(null);
-                if (dao.updateIpRange(lrh.getIpRange())) {
-                    count++;
-                }
+                update = true;
             } else if (license.getClient() != null) {
                 lrh.setType(AccessType.CLIENT);
                 lrh.setClient(license.getClient());
                 license.setClient(null);
-                if (dao.saveClientApplication(lrh.getClient())) {
-                    count++;
-                }
+                update = true;
             }
+            if (update && dao.updateLicense(license)) {
+                count++;
+            }
+                
         }
         if (count > 0) {
             logger.info("Updated {} licenses.", count);
@@ -99,20 +96,28 @@ public class LicenseUpdate implements IModelUpdate {
         }
 
         // Remove obsolete cols
-        if (dao.columnsExists("licenses", "user_id")) {
-            dao.executeUpdate("ALTER TABLE `licenses` DROP COLUMN `user_id`;");
+        if (dao.columnsExists(TABLE_NAME_LICENSES, "user_id")) {
+            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `user_id`;");
             ret = true;
         }
-        if (dao.columnsExists("licenses", "user_group_id")) {
-            dao.executeUpdate("ALTER TABLE `licenses` DROP COLUMN `user_group_id`;");
+        if (dao.columnsExists(TABLE_NAME_LICENSES, "user_group_id")) {
+            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `user_group_id`;");
             ret = true;
         }
-        if (dao.columnsExists("licenses", "ip_range_id")) {
-            dao.executeUpdate("ALTER TABLE `licenses` DROP COLUMN `ip_range_id`;");
+        if (dao.columnsExists(TABLE_NAME_LICENSES, "ip_range_id")) {
+            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `ip_range_id`;");
             ret = true;
         }
-        if (dao.columnsExists("licenses", "client_id")) {
-            dao.executeUpdate("ALTER TABLE `licenses` DROP COLUMN `client_id`;");
+        if (dao.columnsExists(TABLE_NAME_LICENSES, "client_id")) {
+            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `client_id`;");
+            ret = true;
+        }
+        if (dao.columnsExists(TABLE_NAME_LICENSES, "primary_type")) {
+            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `primary_type`;");
+            ret = true;
+        }
+        if (dao.columnsExists(TABLE_NAME_LICENSES, "secondary_type")) {
+            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `secondary_type`;");
             ret = true;
         }
 
