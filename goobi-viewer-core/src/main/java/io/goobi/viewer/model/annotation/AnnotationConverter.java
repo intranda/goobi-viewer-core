@@ -201,7 +201,17 @@ public class AnnotationConverter {
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
             mapper.registerModule(new JavaTimeModule());
-            return mapper.readValue(anno.getBody(), de.intranda.api.annotation.oa.TextualResource.class);
+            try {
+                TextualResource body =
+                        mapper.readValue(anno.getBody(), TextualResource.class);
+                de.intranda.api.annotation.oa.TextualResource oaBody = new de.intranda.api.annotation.oa.TextualResource(body.getText());
+                return oaBody;
+            } catch (ClassCastException e) {
+                //in case the annotation is already an oa resource
+                de.intranda.api.annotation.oa.TextualResource body =
+                        mapper.readValue(anno.getBody(), de.intranda.api.annotation.oa.TextualResource.class);
+                return body;
+            }
         } else if (StringUtils.isNotBlank(anno.getBody())) {
             return new TextualResource(anno.getBody());
         }
