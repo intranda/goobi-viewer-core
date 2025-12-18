@@ -28,6 +28,9 @@ import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.goobi.viewer.model.security.License.AccessType;
+import io.goobi.viewer.model.security.user.User;
+
 class LicenseTest {
 
     /**
@@ -42,5 +45,18 @@ class LicenseTest {
         List<String> result = lic.getAvailablePrivileges(Collections.emptySet());
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
+    }
+    
+    /**
+     * @see License#getDisabledStatus()
+     * @verifies return null if all relevant fields filled
+     */
+    @Test
+    void getDisabledStatus_shouldOnlyReturnNullIfAllRelevantFieldsFilled() {
+        License lic = new License();
+        lic.getLicensees().get(0).setType(AccessType.USER);
+        lic.getLicensees().get(0).setUser(new User());
+        lic.setLicenseType(new LicenseType());
+        Assertions.assertNull(lic.getDisabledStatus());
     }
 }

@@ -180,17 +180,4 @@ class LicenseRightsHolderTest {
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
     }
-
-    /**
-     * @see License#getDisabledStatus()
-     * @verifies return null if all relevant fields filled
-     */
-    @Test
-    void getDisabledStatus_shouldOnlyReturnNullIfAllRelevantFieldsFilled() {
-        License lic = new License();
-        lic.getLicensees().get(0).setType(AccessType.USER);
-        lic.getLicensees().get(0).setUser(new User());
-        lic.setLicenseType(new LicenseType());
-        Assertions.assertNull(lic.getLicensees().get(0).getDisabledStatus());
-    }
 }
