@@ -88,7 +88,7 @@ public class LicenseUpdate implements IModelUpdate {
             if (update && dao.updateLicense(license)) {
                 count++;
             }
-                
+
         }
         if (count > 0) {
             logger.info("Updated {} licenses.", count);
@@ -96,22 +96,22 @@ public class LicenseUpdate implements IModelUpdate {
         }
 
         // Remove obsolete cols
-        if (dao.columnsExists(TABLE_NAME_LICENSES, "user_id")) {
-            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `user_id`;");
-            ret = true;
-        }
-        if (dao.columnsExists(TABLE_NAME_LICENSES, "user_group_id")) {
-            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `user_group_id`;");
-            ret = true;
-        }
-        if (dao.columnsExists(TABLE_NAME_LICENSES, "ip_range_id")) {
-            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `ip_range_id`;");
-            ret = true;
-        }
-        if (dao.columnsExists(TABLE_NAME_LICENSES, "client_id")) {
-            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `client_id`;");
-            ret = true;
-        }
+        //        if (dao.columnsExists(TABLE_NAME_LICENSES, "user_id")) {
+        //            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `user_id`;");
+        //            ret = true;
+        //        }
+        //        if (dao.columnsExists(TABLE_NAME_LICENSES, "user_group_id")) {
+        //            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `user_group_id`;");
+        //            ret = true;
+        //        }
+        //        if (dao.columnsExists(TABLE_NAME_LICENSES, "ip_range_id")) {
+        //            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `ip_range_id`;");
+        //            ret = true;
+        //        }
+        //        if (dao.columnsExists(TABLE_NAME_LICENSES, "client_id")) {
+        //            dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `client_id`;");
+        //            ret = true;
+        //        }
         if (dao.columnsExists(TABLE_NAME_LICENSES, "primary_type")) {
             dao.executeUpdate("ALTER TABLE `" + TABLE_NAME_LICENSES + "` DROP COLUMN `primary_type`;");
             ret = true;
