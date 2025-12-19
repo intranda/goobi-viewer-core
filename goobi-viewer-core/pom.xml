@@ -70,7 +70,7 @@
 		<sonar.java.target>21</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>12</checkstyle.max.violations>
+		<checkstyle.max.violations>7</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 		<!-- Manifest information -->
@@ -1235,8 +1235,8 @@
 							<violationSeverity>warning</violationSeverity>
 							<configLocation>checkstyle.xml</configLocation>
 							<inputEncoding>UTF-8</inputEncoding>
-							<!--suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
-							<suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression-->
+							<suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+							<suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
 						</configuration>
 						<goals>
 							<goal>check</goal>
