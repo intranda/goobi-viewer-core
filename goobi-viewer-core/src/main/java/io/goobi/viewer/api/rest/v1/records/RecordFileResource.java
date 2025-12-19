@@ -133,7 +133,7 @@ public class RecordFileResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        StringPair ret = builder.getAltoDocument(pi, filename);
+        StringPair ret = builder.getAltoDocument(pi, Path.of(filename).getFileName().toString());
         return ret.getOne();
     }
 
