@@ -78,10 +78,27 @@ import jakarta.persistence.Transient;
 public class License extends AbstractPrivilegeHolder implements Serializable {
 
     public enum AccessType {
-        USER,
-        USER_GROUP,
-        IP_RANGE,
-        CLIENT;
+        USER("admin__users"),
+        USER_GROUP("admin__groups"),
+        IP_RANGE("admin__ip_ranges"),
+        CLIENT("admin__clients");
+
+        private final String label;
+
+        /**
+         * 
+         * @param label
+         */
+        private AccessType(String label) {
+            this.label = label;
+        }
+
+        /**
+         * @return the label
+         */
+        public String getLabel() {
+            return label;
+        }
     }
 
     private static final long serialVersionUID = 1363557138283960150L;
@@ -999,7 +1016,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     public void addLicensee() {
-        licensees.add(new LicenseRightsHolder());
+        licensees.add(new LicenseRightsHolder(this));
     }
 
     public void removeLicensee(LicenseRightsHolder licensee) {
@@ -1057,6 +1074,10 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @should return null if all relevant fields filled
      */
     public String getDisabledStatus() {
+        if (getLicenseType() == null) {
+            return "disabled";
+        }
+        
         for (LicenseRightsHolder licensee : licensees) {
             if (licensee.isDisabled()) {
                 return "disabled";

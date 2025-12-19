@@ -1500,6 +1500,10 @@ public class NavigationHelper implements Serializable {
     private static void resetCurrentDocument() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null) {
+            if (!adb.isRecordLoaded()) {
+                logger.trace("No record loaded, no need to reset.");
+                return;
+            }
             try {
                 adb.reset();
             } catch (IndexUnreachableException e) {

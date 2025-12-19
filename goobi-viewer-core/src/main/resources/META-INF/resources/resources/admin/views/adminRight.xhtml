@@ -47,16 +47,17 @@
                                         <h:selectOneMenu
                                             value="#{licensee.type}"
                                             styleClass="form-control"
-                                            immediate="true"
-                                            disabled="#{adminLicenseBean.currentLicense.id != null}" >
+                                            immediate="true">
 
                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_type_select_label}" />
 
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
-                                            <f:selectItem itemLabel="#{msg.admin__users}" itemValue="user" />
-                                            <f:selectItem itemLabel="#{msg.admin__groups}" itemValue="group" />
-                                            <f:selectItem itemLabel="#{msg.admin__ip_ranges}" itemValue="iprange" />
-                                            <f:selectItem itemLabel="#{msg.admin__clients}" itemValue="client" />
+                                            <f:selectItems var="item" value="#{adminLicenseBean.accessTypeValues}"
+                                                itemLabel="#{msg[item.label]}" />
+<!--                                             <f:selectItem itemLabel="#{msg.admin__users}" itemValue="user" /> -->
+<!--                                             <f:selectItem itemLabel="#{msg.admin__groups}" itemValue="group" /> -->
+<!--                                             <f:selectItem itemLabel="#{msg.admin__ip_ranges}" itemValue="iprange" /> -->
+<!--                                             <f:selectItem itemLabel="#{msg.admin__clients}" itemValue="client" /> -->
                                             <f:ajax render="licenseeGroup licenseeGroup2 licenseeTypeGroup2 infoGroup licenseTypeGroup saveButtonGroup" />
                                             <!-- Reset all set licensee values so that the lower menus are reset as well -->
                                             <f:ajax listener="#{licensee.setUser(null)}" />
@@ -78,8 +79,7 @@
                                              value="#{licensee.user}"
                                              styleClass="form-control"
                                              immediate="true"
-                                             converter="userConverter"
-                                             disabled="#{adminLicenseBean.currentLicense.id != null}">
+                                             converter="userConverter">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
@@ -90,8 +90,7 @@
                                              value="#{licensee.userGroup}"
                                              styleClass="form-control"
                                              immediate="true"
-                                             converter="userGroupConverter"
-                                             disabled="#{adminLicenseBean.currentLicense.id != null}">
+                                             converter="userGroupConverter">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems value="#{adminBean.allUserGroups}" />
@@ -102,8 +101,7 @@
                                              value="#{licensee.ipRange}"
                                              styleClass="form-control"
                                              immediate="true"
-                                             converter="ipRangeConverter"
-                                             disabled="#{adminLicenseBean.currentLicense.id != null}">
+                                             converter="ipRangeConverter">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
@@ -113,8 +111,7 @@
                                              rendered="#{licensee.type.name() == 'CLIENT'}"
                                              value="#{licensee.clientId}"
                                              styleClass="form-control"
-                                             immediate="true"
-                                             disabled="#{adminLicenseBean.currentLicense.id != null}">
+                                             immediate="true">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItem itemLabel="#{msg.admin__right_all_clients}" itemValue="#{adminClientsBean.allClients.id}"/>

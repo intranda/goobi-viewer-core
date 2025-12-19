@@ -55,34 +55,48 @@
                                     	<div class="overflow-hidden">
 	                                        <!-- NAME -->
 	                                        <div class="row">
-	                                            <ui:fragment rendered="#{license.user != null}">
-	                                                <h2 class="col-12">
-														<util:icon-text icon="user" text="#{license.user.displayName}" iconSvgClass="icon icon-xxl" />
-													</h2>
-	                                            </ui:fragment>
-	                                            <ui:fragment rendered="#{license.userGroup != null}">
-	                                                <h2 class="col-12">
-														<util:icon-text icon="users" text="#{license.userGroup.name}" iconSvgClass="icon icon-xxl" />
-													</h2>
-	                                            </ui:fragment>
-	                                            <ui:fragment rendered="#{license.ipRange != null}">
-	                                                <h2 class="col-12">
-														<util:icon-text icon="bolt" text="#{license.ipRange.name} (#{license.ipRange.subnetMask})" iconSvgClass="icon icon-xxl" />
-													</h2>
-	                                            </ui:fragment>
-	                                            <ui:fragment rendered="#{license.client != null}">
-	                                            	<ui:fragment rendered="#{license.client == adminClientsBean.allClients}">
-	                                            		<h2 class="col-12">
-															<util:icon-text icon="device-desktop" text="#{msg.admin__right_all_clients}" iconSvgClass="icon icon-xxl" />
+												<ui:repeat var="licensee" value="#{license.licensees}">
+													<ui:fragment rendered="#{licensee.user != null}">
+														<h2 class="col-12">
+															<util:icon-text icon="user"
+																text="#{licensee.user.displayName}"
+																iconSvgClass="icon icon-xxl" />
 														</h2>
-	                                            	</ui:fragment>
-	                                            	<ui:fragment rendered="#{license.client != adminClientsBean.allClients}">
-		                                                <h2 class="col-12">
-															<util:icon-text icon="device-desktop" text="#{license.client.name} (#{license.client.clientIdentifier})" iconSvgClass="icon icon-xxl" />
+													</ui:fragment>
+													<ui:fragment rendered="#{licensee.userGroup != null}">
+														<h2 class="col-12">
+															<util:icon-text icon="users"
+																text="#{licensee.userGroup.name}"
+																iconSvgClass="icon icon-xxl" />
 														</h2>
-	                                            	</ui:fragment>
-	                                            </ui:fragment>
-	                                        </div>
+													</ui:fragment>
+													<ui:fragment rendered="#{licensee.ipRange != null}">
+														<h2 class="col-12">
+															<util:icon-text icon="bolt"
+																text="#{licensee.ipRange.name} (#{licensee.ipRange.subnetMask})"
+																iconSvgClass="icon icon-xxl" />
+														</h2>
+													</ui:fragment>
+													<ui:fragment rendered="#{licensee.client != null}">
+														<ui:fragment
+															rendered="#{licensee.client == adminClientsBean.allClients}">
+															<h2 class="col-12">
+																<util:icon-text icon="device-desktop"
+																	text="#{msg.admin__right_all_clients}"
+																	iconSvgClass="icon icon-xxl" />
+															</h2>
+														</ui:fragment>
+														<ui:fragment
+															rendered="#{licensee.client != adminClientsBean.allClients}">
+															<h2 class="col-12">
+																<util:icon-text icon="device-desktop"
+																	text="#{license.client.name} (#{license.client.clientIdentifier})"
+																	iconSvgClass="icon icon-xxl" />
+															</h2>
+														</ui:fragment>
+													</ui:fragment>
+												</ui:repeat>
+											</div>
 	                                        <!-- DATA -->
 	                                        <dl class="row">
 	                                            <dt class="col-sm-4">#{msg.admin__right_license_type}:</dt>

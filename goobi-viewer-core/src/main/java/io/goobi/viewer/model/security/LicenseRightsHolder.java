@@ -2,10 +2,14 @@ package io.goobi.viewer.model.security;
 
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.License.AccessType;
 import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.user.AbstractLicensee;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -26,6 +30,9 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "license_rights_holders")
 public class LicenseRightsHolder {
+
+    /** Logger for this class. */
+    private static final Logger logger = LogManager.getLogger(LicenseRightsHolder.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,8 +72,7 @@ public class LicenseRightsHolder {
     }
 
     public boolean isDisabled() {
-        return (getType() == null || (getUser() == null && getUserGroup() == null && getIpRange() == null && getClient() == null)
-                || owner.getLicenseType() == null);
+        return getType() == null || (getUser() == null && getUserGroup() == null && getIpRange() == null && getClient() == null);
     }
 
     /**
@@ -108,6 +114,7 @@ public class LicenseRightsHolder {
      * @param type the type to set
      */
     public void setType(AccessType type) {
+        logger.trace("setType: {}", type);
         this.type = type;
     }
 

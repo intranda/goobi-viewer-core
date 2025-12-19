@@ -58,6 +58,7 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.License;
+import io.goobi.viewer.model.security.License.AccessType;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.LicenseTypePlaceholderInfo;
 import io.goobi.viewer.model.security.Role;
@@ -496,21 +497,21 @@ public class AdminLicenseBean implements Serializable {
         boolean error = false;
         if (currentLicense.getId() != null) {
             if (DataManager.getInstance().getDao().updateLicense(currentLicense)) {
-                logger.trace("License type '{}' updated successfully", currentLicenseType.getName());
+                logger.trace("License '{}' updated successfully", currentLicense.getId());
                 Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
             } else {
                 Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
                 error = true;
             }
         } else {
-            if (DataManager.getInstance().getDao().addLicenseType(currentLicenseType)) {
+            if (DataManager.getInstance().getDao().addLicense(currentLicense)) {
                 Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
             } else {
                 Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
                 error = true;
             }
         }
-        
+
         if (error) {
             if (currentLicense.getId() != null) {
                 return "pretty:adminRightsEdit";
@@ -1062,5 +1063,14 @@ public class AdminLicenseBean implements Serializable {
      */
     public String getMessageKeyForPrivilege(String privilege) {
         return "license_priv_" + privilege.toLowerCase();
+    }
+
+    public Object[] getAccessTypeValues() {
+        SelectItem[] items = new SelectItem[AccessType.values().length];
+        for (int i = 0; i < AccessType.values().length; i++) {
+            items[i] = new SelectItem(AccessType.values()[i], AccessType.values()[i].getLabel());
+        }
+        
+        return items;
     }
 }
