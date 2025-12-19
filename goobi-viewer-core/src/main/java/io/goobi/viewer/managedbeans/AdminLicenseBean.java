@@ -1065,12 +1065,7 @@ public class AdminLicenseBean implements Serializable {
         return "license_priv_" + privilege.toLowerCase();
     }
 
-    public Object[] getAccessTypeValues() {
-        SelectItem[] items = new SelectItem[AccessType.values().length];
-        for (int i = 0; i < AccessType.values().length; i++) {
-            items[i] = new SelectItem(AccessType.values()[i], AccessType.values()[i].getLabel());
-        }
-        
-        return items;
+    public AccessType[] getAccessTypeValues() {
+        return AccessType.values();
     }
 }

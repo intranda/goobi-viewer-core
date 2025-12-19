@@ -53,11 +53,7 @@
 
                                             <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
                                             <f:selectItems var="item" value="#{adminLicenseBean.accessTypeValues}"
-                                                itemLabel="#{msg[item.label]}" />
-<!--                                             <f:selectItem itemLabel="#{msg.admin__users}" itemValue="user" /> -->
-<!--                                             <f:selectItem itemLabel="#{msg.admin__groups}" itemValue="group" /> -->
-<!--                                             <f:selectItem itemLabel="#{msg.admin__ip_ranges}" itemValue="iprange" /> -->
-<!--                                             <f:selectItem itemLabel="#{msg.admin__clients}" itemValue="client" /> -->
+                                                itemValue="#{item}" itemLabel="#{msg[item.labelKey]}" />
                                             <f:ajax render="licenseeGroup licenseeGroup2 licenseeTypeGroup2 infoGroup licenseTypeGroup saveButtonGroup" />
                                             <!-- Reset all set licensee values so that the lower menus are reset as well -->
                                             <f:ajax listener="#{licensee.setUser(null)}" />

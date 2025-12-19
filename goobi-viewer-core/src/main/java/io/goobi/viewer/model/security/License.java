@@ -83,21 +83,21 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         IP_RANGE("admin__ip_ranges"),
         CLIENT("admin__clients");
 
-        private final String label;
+        private final String labelKey;
 
         /**
          * 
-         * @param label
+         * @param labelKey
          */
-        private AccessType(String label) {
-            this.label = label;
+        private AccessType(String labelKey) {
+            this.labelKey = labelKey;
         }
 
         /**
-         * @return the label
+         * @return the labelKey
          */
-        public String getLabel() {
-            return label;
+        public String getLabelKey() {
+            return labelKey;
         }
     }
 
