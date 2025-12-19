@@ -43,7 +43,7 @@ public abstract class AbstractLicensee implements ILicensee {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(AbstractLicensee.class);
-    
+
     /** {@inheritDoc} */
     public List<License> getLicenses() {
         try {
@@ -56,7 +56,8 @@ public abstract class AbstractLicensee implements ILicensee {
 
     /** {@inheritDoc} */
     @Override
-    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException, DAOException {
+    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi)
+            throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi); //NOSONAR Debug
 
         // No privilege name given
@@ -64,7 +65,7 @@ public abstract class AbstractLicensee implements ILicensee {
             return AccessPermission.granted();
         }
 
-        for (License license :  DataManager.getInstance().getDao().getLicenses(this)) {
+        for (License license : DataManager.getInstance().getDao().getLicenses(this)) {
             if (license.isValid() && license.getLicenseType().getName().equals(licenseName)) {
                 // LicenseType grants privilege
                 if (license.getLicenseType().getPrivileges().contains(privilegeName)) {
