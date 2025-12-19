@@ -34,21 +34,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
+import de.intranda.api.annotation.wa.Motivation;
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -76,6 +67,15 @@ import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the
@@ -203,8 +203,8 @@ public class CampaignItemResource {
     }
 
     /**
-     * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} for the given campaign and work and
-     * records the {@link io.goobi.viewer.model.security.user.User} who made the change.
+     * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} for the given campaign and work and records the
+     * {@link io.goobi.viewer.model.security.user.User} who made the change.
      *
      * @param item a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} object.
      * @param persistentIdentifier a {@link java.lang.String} object.
@@ -408,6 +408,7 @@ public class CampaignItemResource {
             //add new annotation and update existing ones
             for (CrowdsourcingAnnotation anno : newAnnotations) {
                 anno.setAccessCondition(CrowdsourcingStatus.ANNOTATE.name());
+                anno.setMotivation(Motivation.DESCRIBING);
                 try {
                     if (anno.getId() == null) {
                         dao.addAnnotation(anno);

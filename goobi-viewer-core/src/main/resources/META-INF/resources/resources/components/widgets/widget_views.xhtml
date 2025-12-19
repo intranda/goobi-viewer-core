@@ -68,7 +68,7 @@
 			
 			<div class="widget__body widget-views__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'views')  ? '-collapsed' : ''}">
 				<h:form prependId="false" id="widgetViewsForm" styleClass="widget-views__form">
-				<ul class="#{cc.attrs.collapsible ? 'collapsible' : ''}">
+				<ul class="widget-views__list #{cc.attrs.collapsible ? 'collapsible' : ''}">
 
 					<!-- Object --> 
 					<h:panelGroup  visibility-class="widget-element"

@@ -66,6 +66,11 @@
                             <div class="admin__default-block">
                                 <ui:param name="language" value="de"></ui:param>
                                 <div id="nameLanguage-#{adminLicenseBean.currentLicenseType.selectedLocale}">
+                                
+<!--                                 <div class="form-group form-row"> -->
+<!--                                     #{msg.admin__license_placeholder_image_desc} -->
+<!--                                 </div> -->
+                                
 
                                     <!-- IMAGE SELECTION -->
                                     <div class="form-group form-row">
@@ -155,7 +160,7 @@
                                                 <button type="button" class="btn btn--clean"
                                                     data-toggle="helptext" 
                                                     aria-label="inline help icon">
-                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+													<util:icon icon="help" />
                                                 </button>
                                             </div>
                                         </div>
