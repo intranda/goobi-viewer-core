@@ -500,7 +500,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     @Override
     public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
-        logger.trace("getAccessDeniedThumbnailUrl: locale: {}, page: {}", locale, order);
+        // logger.trace("getAccessDeniedThumbnailUrl: locale: {}, page: {}", locale, order); //NOSONAR Debug
         return getAccessDeniedUrl(getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS), locale);
     }
 

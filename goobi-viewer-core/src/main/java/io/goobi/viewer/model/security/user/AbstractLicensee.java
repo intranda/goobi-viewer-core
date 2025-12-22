@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.security.user;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +35,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
@@ -83,7 +85,7 @@ public abstract class AbstractLicensee implements ILicensee {
                                 .setDownloadTicketRequired(license.isTicketRequired())
                                 .setRedirect(license.getLicenseType().isRedirect())
                                 .setRedirectUrl(license.getLicenseType().getRedirectUrl())
-                                .setAddionalCheckRequired(license.getSecondaryAccessRequirement(this));
+                                .setAddionalCheckRequired(license.getSecondaryAccessRequirement());
                     } else if (StringUtils.isNotEmpty(pi)) {
                         // If PI and Solr condition subquery are present, check via Solr
                         String query = SolrConstants.PI + ":" + pi + " AND (" + license.getConditions() + ")";
@@ -96,7 +98,7 @@ public abstract class AbstractLicensee implements ILicensee {
                                     .setDownloadTicketRequired(license.isTicketRequired())
                                     .setRedirect(license.getLicenseType().isRedirect())
                                     .setRedirectUrl(license.getLicenseType().getRedirectUrl())
-                                    .setAddionalCheckRequired(license.getSecondaryAccessRequirement(this));
+                                    .setAddionalCheckRequired(license.getSecondaryAccessRequirement());
                         }
                     }
                 }
@@ -115,6 +117,8 @@ public abstract class AbstractLicensee implements ILicensee {
      * @should preserve accessTicketRequired
      * @should preserve downloadTicketRequired
      * @should preserve redirect metadata
+     * @should preserve access denied placeholder info
+     * @should preserve additional licensee
      */
     public static AccessPermission getAccessPermissionFromMap(Map<String, AccessPermission> permissionMap) {
         // It should be sufficient if the user can satisfy one required license
@@ -123,6 +127,8 @@ public abstract class AbstractLicensee implements ILicensee {
         boolean downloadTicketRequired = false;
         boolean redirect = false;
         String redirectUrl = null;
+        ILicensee additional = null;
+        Map<String, AccessDeniedInfoConfig> accessDeniedPlaceholderInfo = new HashMap<>();
         for (Entry<String, AccessPermission> entry : permissionMap.entrySet()) {
             if (entry.getValue().isGranted()) {
                 granted = true;
@@ -139,13 +145,19 @@ public abstract class AbstractLicensee implements ILicensee {
             if (StringUtils.isNotEmpty(entry.getValue().getRedirectUrl())) {
                 redirectUrl = entry.getValue().getRedirectUrl();
             }
+            for (Entry<String, AccessDeniedInfoConfig> e : entry.getValue().getAccessDeniedPlaceholderInfo().entrySet()) {
+                accessDeniedPlaceholderInfo.put(e.getKey(), e.getValue().copy());
+            }
+            additional = entry.getValue().getAddionalCheckRequired();
         }
         if (granted) {
             return AccessPermission.granted()
                     .setAccessTicketRequired(accessTicketRequired)
                     .setDownloadTicketRequired(downloadTicketRequired)
                     .setRedirect(redirect)
-                    .setRedirectUrl(redirectUrl);
+                    .setRedirectUrl(redirectUrl)
+                    .setAccessDeniedPlaceholderInfo(accessDeniedPlaceholderInfo)
+                    .setAddionalCheckRequired(additional);
         }
 
         return AccessPermission.denied();

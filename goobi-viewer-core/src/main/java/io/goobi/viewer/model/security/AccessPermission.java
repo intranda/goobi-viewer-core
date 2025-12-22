@@ -33,7 +33,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.clients.ClientApplication;
-import io.goobi.viewer.model.security.user.AbstractLicensee;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 
@@ -54,7 +53,7 @@ public class AccessPermission implements Serializable {
     private String redirectUrl;
     private Map<String, AccessDeniedInfoConfig> accessDeniedPlaceholderInfo = new HashMap<>();
     /** If a license has more than one licensees attached to it, this variable is used to communicate an additional check requirement. */
-    private AbstractLicensee addionalCheckRequired = null;
+    private ILicensee addionalCheckRequired = null;
 
     /**
      * @return {@link AccessPermission} with denied status
@@ -72,7 +71,9 @@ public class AccessPermission implements Serializable {
 
     public void checkSecondaryAccessRequirement(Set<String> useAccessConditions, String privilegeName, User sessionUser, IpRange sessionIpRange,
             ClientApplication client) throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("checkSecondaryAccessRequirement: {} ({})", privilegeName, this.hashCode());
         if (addionalCheckRequired == null) {
+            logger.trace("No secondary requirement found.");
             return;
         }
 
@@ -94,7 +95,7 @@ public class AccessPermission implements Serializable {
                                 .isGranted()) {
                     setAddionalCheckRequired(null);
                 } else {
-                    logger.debug("IP range  mismatch or range has no permission; access denied");
+                    logger.debug("IP range mismatch or range has no permission; access denied");
                     granted = false;
                 }
                 break;
@@ -104,7 +105,7 @@ public class AccessPermission implements Serializable {
                                 .isGranted()) {
                     setAddionalCheckRequired(null);
                 } else {
-                    logger.debug("IP range  mismatch or range has no permission; access denied");
+                    logger.debug("Client mismatch or client has no permission; access denied");
                     granted = false;
                 }
                 break;
@@ -213,7 +214,7 @@ public class AccessPermission implements Serializable {
     /**
      * @return the addionalCheckRequired
      */
-    public AbstractLicensee getAddionalCheckRequired() {
+    public ILicensee getAddionalCheckRequired() {
         return addionalCheckRequired;
     }
 
@@ -221,7 +222,8 @@ public class AccessPermission implements Serializable {
      * @param addionalCheckRequired the addionalCheckRequired to set
      * @return this
      */
-    public AccessPermission setAddionalCheckRequired(AbstractLicensee addionalCheckRequired) {
+    public AccessPermission setAddionalCheckRequired(ILicensee addionalCheckRequired) {
+        logger.trace("setAddionalCheckRequired: {} ({})", addionalCheckRequired, this.hashCode());
         this.addionalCheckRequired = addionalCheckRequired;
         return this;
     }

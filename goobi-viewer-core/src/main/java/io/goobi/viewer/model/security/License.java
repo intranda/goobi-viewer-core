@@ -46,7 +46,6 @@ import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.clients.ClientApplication;
-import io.goobi.viewer.model.security.user.AbstractLicensee;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -997,12 +996,12 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * @return the client
      */
-    @Deprecated
+    @Deprecated(since = "2025.12")
     public Long getClientId() {
         return Optional.ofNullable(client).map(ClientApplication::getId).orElse(null);
     }
 
-    @Deprecated
+    @Deprecated(since = "2025.12")
     public ClientApplication getClient() {
         return this.client;
     }
@@ -1010,7 +1009,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * @param client the client to set
      */
-    @Deprecated
+    @Deprecated(since = "2025.12")
     public void setClient(ClientApplication client) {
         this.client = client;
     }
@@ -1032,36 +1031,15 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
+     * a
      * 
-     * @param primaryLicensee User/UserGroup/IpRange/ClientApplication via which this license has been checked. This can theoretically be different
-     *            from primaryType, depending on the check order.
      * @return The other non-null member of user/userGroup/ipRange/client
      * @should return correct object
      */
-    public AbstractLicensee getSecondaryAccessRequirement(AbstractLicensee primaryLicensee) {
-        if (primaryLicensee == null) {
-            throw new IllegalArgumentException("primaryLicensee may not be null");
-        }
-
-        // Determine the AccessType of the provided licensee
-        AccessType givenType = switch (primaryLicensee) {
-            case User u -> AccessType.USER;
-            case UserGroup g -> AccessType.USER_GROUP;
-            case IpRange r -> AccessType.IP_RANGE;
-            case ClientApplication c -> AccessType.CLIENT;
-            default -> throw new IllegalArgumentException(
-                    "Unsupported licensee type: " + primaryLicensee.getClass().getName());
-        };
-
-        // Now find the other non-null member whose type differs from the primary
-        if (user != null && givenType != AccessType.USER) {
-            return user;
-        } else if (userGroup != null && givenType != AccessType.USER_GROUP) {
-            return userGroup;
-        } else if (ipRange != null && givenType != AccessType.IP_RANGE) {
-            return ipRange;
-        } else if (client != null && givenType != AccessType.CLIENT) {
-            return client;
+    public ILicensee getSecondaryAccessRequirement() {
+        if (licensees.size() > 1) {
+            logger.trace("Secondary access requirement found: {}",  licensees.get(1).getLicensee().getName());
+            return licensees.get(1).getLicensee();
         }
 
         return null;
@@ -1077,7 +1055,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         if (getLicenseType() == null) {
             return "disabled";
         }
-        
+
         for (LicenseRightsHolder licensee : licensees) {
             if (licensee.isDisabled()) {
                 return "disabled";

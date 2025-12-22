@@ -430,7 +430,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      */
     public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
-        // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi); //NOSONAR Debug
+        // logger.trace("canSatisfyAllAccessConditions({},{},{})", requiredAccessConditions, privilegeName, pi); //NOSONAR Debug
         if (isSuperuser()) {
             // logger.trace("User '{}' is superuser, access granted.", getDisplayName()); //NOSONAR Debug
             return AccessPermission.granted();
@@ -440,11 +440,11 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
         // always allow access if the only condition is open access and there is no special license configured for it
         if (requiredAccessConditions.size() == 1 && requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE)
-                && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
-            return AccessPermission.granted();
-        }
+                    && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
+                return AccessPermission.granted();
+            }
 
-        Map<String, AccessPermission> permissionMap = new HashMap<>(requiredAccessConditions.size());
+        Map<String, AccessPermission> permissionMap = HashMap.newHashMap(requiredAccessConditions.size());
         for (String accessCondition : requiredAccessConditions) {
             // Check individual licenses
             AccessPermission access = hasLicense(accessCondition, privilegeName, pi);

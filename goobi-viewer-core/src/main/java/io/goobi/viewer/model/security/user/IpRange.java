@@ -290,4 +290,9 @@ public class IpRange extends AbstractLicensee implements Serializable {
             logger.error("Invalid subnet mask", e);
         }
     }
+
+    @Override
+    public String toString() {
+        return this.name + " (" + this.subnetMask + ")";
+    }
 }

@@ -1051,7 +1051,7 @@ public final class AccessConditionUtils {
             useAccessConditions.add(licenseType.getName());
             if (licenseType.isHasCustomPlaceholderInfo()) {
                 licenseTypesWithCustomAccessDeniedInfo.add(licenseType);
-                logger.trace("Considering access denied image URI map from LicenseType '{}'.", licenseType.getName());
+                // logger.trace("Considering access denied image URI map from LicenseType '{}'.", licenseType.getName());
             }
             if (licenseType.isRedirect()) {
                 redirect = true;
