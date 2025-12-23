@@ -168,13 +168,10 @@
 
 	<dependencies>
 	
-		<!-- temporary local dependencies -->
 		<dependency>
 		    <groupId>de.intranda.digiverso.convert</groupId>
-			<artifactId>epubconvert</artifactId>
-			<version>1.1.0</version>
-		    <scope>system</scope>
-		    <systemPath>/home/florian/git/epubconvert/epubconvert/target/epubconvert-1.1.0.jar</systemPath>
+                    <artifactId>epubconvert</artifactId>
+                    <version>1.1.0</version>
 		</dependency>
 	
 		<!-- intranda libraries -->
