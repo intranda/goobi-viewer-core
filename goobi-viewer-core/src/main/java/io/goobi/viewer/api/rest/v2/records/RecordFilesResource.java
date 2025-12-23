@@ -35,18 +35,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.StreamingOutput;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -78,6 +66,17 @@ import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
@@ -114,11 +113,12 @@ public class RecordFilesResource {
             @Parameter(description = "Filename of the alto document") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException,
             ServiceNotAllowedException {
-        checkFulltextAccessConditions(pi, filename);
+        String cleanedFilename = Path.of(filename).getFileName().toString();
+        checkFulltextAccessConditions(pi, cleanedFilename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        StringPair ret = builder.getAltoDocument(pi, filename);
+        StringPair ret = builder.getAltoDocument(pi, cleanedFilename);
         return ret.getOne();
     }
 
@@ -129,11 +129,12 @@ public class RecordFilesResource {
     public String getPlaintext(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, ServiceNotAllowedException {
-        checkFulltextAccessConditions(pi, filename);
+        String cleanedFilename = Path.of(filename).getFileName().toString();
+        checkFulltextAccessConditions(pi, cleanedFilename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        return builder.getFulltext(pi, filename);
+        return builder.getFulltext(pi, cleanedFilename);
     }
 
     @GET
@@ -143,11 +144,12 @@ public class RecordFilesResource {
     public String getTEI(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentLibException {
-        checkFulltextAccessConditions(pi, filename);
+        String cleanedFilename = Path.of(filename).getFileName().toString();
+        checkFulltextAccessConditions(pi, cleanedFilename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        return builder.getFulltextAsTEI(pi, filename);
+        return builder.getFulltextAsTEI(pi, cleanedFilename);
     }
 
     @GET
@@ -190,7 +192,8 @@ public class RecordFilesResource {
             @Parameter(description = "Image file name for cmdi") @PathParam("filename") String filename,
             @Parameter(description = "Language for CMDI") @QueryParam("lang") final String lang)
             throws ContentLibException, PresentationException, IndexUnreachableException, IOException {
-        checkFulltextAccessConditions(pi, filename);
+        String cleanedFilename = Path.of(filename).getFileName().toString();
+        checkFulltextAccessConditions(pi, cleanedFilename);
 
         final Language language =
                 DataManager.getInstance().getLanguageHelper().getLanguage(lang == null ? BeanUtils.getLocale().getLanguage() : lang);
