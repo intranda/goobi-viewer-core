@@ -27,17 +27,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.jboss.weld.contexts.ContextNotActiveException;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
@@ -59,6 +52,12 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Servlet implementation class MetsResolver
@@ -173,14 +172,15 @@ public class MetsResolver extends HttpServlet {
 
         User user = BeanUtils.getUserFromSession(request.getSession());
         if (user == null) {
-            UserBean userBean = BeanUtils.getUserBean();
-            if (userBean != null) {
-                try {
+            try {
+                UserBean userBean = BeanUtils.getUserBean();
+                if (userBean != null) {
                     user = userBean.getUser();
-                } catch (ContextNotActiveException e) {
-                    logger.trace("Cannot access bean method from different thread: UserBean.getUser()");
                 }
+            } catch (ContextNotActiveException e) {
+                logger.trace("Cannot access bean method from different thread: UserBean.getUser()");
             }
+
         }
         boolean superuserAccess = user != null && user.isSuperuser();
 

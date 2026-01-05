@@ -3,7 +3,8 @@
      "https://checkstyle.org/dtds/suppressions_1_0.dtd">
  
 <suppressions>
-	<!--suppress checks="ModifiedControlVariable"
-		  files="ALTOTools.java"
-		  lines="50-9999"/-->
+	<!-- The Apache lib used is throwing the general Exception... -->
+	<suppress checks="IllegalCatch"
+		  files="MessageQueueManager.java"
+		  lines="250-650"/>
 </suppressions>
