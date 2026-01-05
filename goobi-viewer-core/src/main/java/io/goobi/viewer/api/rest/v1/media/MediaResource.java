@@ -109,7 +109,7 @@ public class MediaResource {
 
     private String serveMediaContent(String type, String format, String identifier, String filepath)
             throws PresentationException, IndexUnreachableException, WebApplicationException {
-        logger.trace("serveMediaContent: {}/{}/{}/{}", type, format, identifier, filename);
+        logger.trace("serveMediaContent: {}/{}/{}/{}", type, format, identifier, filepath);
         String mimeType = type + "/" + format;
 
         String filename = java.nio.file.Path.of(filepath).getFileName().toString();
