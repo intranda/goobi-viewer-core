@@ -37,11 +37,12 @@ import io.goobi.viewer.controller.PrettyUrlTools;
 
 public class NamedEntityEnricher implements TextEnricher {
 
-    private final static int MAX_ENRICHMENTS = 1;
+    private static final int MAX_ENRICHMENTS = 1;
 
-    private final static String CONTENT_TEMPLATE =
-            "<button class=\"view-fulltext__entity-action-button\" type=\"button\" data-entity-id=\"{tagRef}\" data-entity-type=\"{tagType}\" data-entity-authority-data-uri=\"{tagRestUri}\" data-entity-authority-data-search=\"{tagSearchUri}\">{tagLabel}</button>";
-    private final static String TAG_RESTURI_TEMPATE = "{restUri}authority/resolver?id={tagUri}&amp;=de";
+    private static final String CONTENT_TEMPLATE =
+            "<button class=\"view-fulltext__entity-action-button\" type=\"button\" data-entity-id=\"{tagRef}\" data-entity-type=\"{tagType}\""
+                    + " data-entity-authority-data-uri=\"{tagRestUri}\" data-entity-authority-data-search=\"{tagSearchUri}\">{tagLabel}</button>";
+    private static final String TAG_RESTURI_TEMPATE = "{restUri}authority/resolver?id={tagUri}&amp;=de";
 
     private final String restUri = DataManager.getInstance().getConfiguration().getRestApiUrl();
 
