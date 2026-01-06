@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -39,8 +41,6 @@ import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * <p>
@@ -407,6 +407,11 @@ public class ConvertAbbyyToAlto {
         }
 
         for (int c = 0; c < charCount; c++) {
+            // if the character at index c is a whitechar, ignore and continue to the next char. 
+            //the last word was already added to the line in the previous iteration
+            if (abbyyCharParams.get(c).getValue().equals(" ")) {
+                continue;
+            }
             if (sb.length() == 0) {
                 // if first character of a new string, set hpos and vpos
                 l = Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("l"));
@@ -448,7 +453,6 @@ public class ConvertAbbyyToAlto {
                     r = 0;
                     b = 0;
                     sb = new StringBuilder();
-                    c++;
 
                 }
             } catch (IndexOutOfBoundsException e) {
