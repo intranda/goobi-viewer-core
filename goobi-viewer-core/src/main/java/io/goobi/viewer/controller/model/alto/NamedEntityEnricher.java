@@ -23,6 +23,7 @@
 package io.goobi.viewer.controller.model.alto;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -57,10 +58,10 @@ public class NamedEntityEnricher implements TextEnricher {
             if (!referencingTags.isEmpty()) {
                 StringBuilder sb = new StringBuilder();
                 for (Tag tag : referencingTags) {
-                    String tagRef = tag.getId();
-                    String tagType = tag.getType().toLowerCase();
+                    String tagRef = Optional.ofNullable(tag.getId()).orElse("");
+                    String tagType = Optional.ofNullable(tag.getType()).map(String::toLowerCase).orElse("");
                     String tagLabel = StringUtils.isNotBlank(tag.getLabel()) ? tag.getLabel() : content;
-                    String tagUri = tag.getUri();
+                    String tagUri = Optional.ofNullable(tag.getUri()).orElse("");
 
                     String tagRestUri = TAG_RESTURI_TEMPATE.replace("{restUri}", this.restUri).replace("{tagUri}", tagUri);
                     String searchString = "%s:%%22%s%%22".formatted(NormDataImporter.FIELD_IDENTIFIER,
