@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
@@ -41,7 +42,6 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocumen
 import de.intranda.digiverso.ocr.alto.utils.HyphenationLinker;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.StringTools;
-import software.amazon.awssdk.utils.StringUtils;
 
 /**
  * Detect word coordinates in alto document
