@@ -138,7 +138,12 @@ public class CoordinateFinder {
 
         List<String> results = new ArrayList<>();
 
+        int nextIndex = -1;
         for (int index = 0; index < words.size(); index++) {
+            //if nextIndex is set, skip until index == nextIndex+1, i.e. to one word after the last match
+            if (index <= nextIndex) {
+                continue;
+            }
             MatchResult matchResult = tryMatchFromIndex(
                     words,
                     index,
@@ -149,7 +154,7 @@ public class CoordinateFinder {
 
             if (matchResult.isMatch()) {
                 results.addAll(matchResult.getCoordinates());
-                index = matchResult.getLastIndex(); // skip consumed words
+                nextIndex = matchResult.getLastIndex(); // skip consumed words
             }
         }
 
@@ -193,8 +198,8 @@ public class CoordinateFinder {
 
     private MatchResult continueProximityMatch(
             List<Word> words,
-            int index,
-            int totalHits,
+            int initialIndex,
+            int previousHits,
             String[] searchWords,
             int proximitySearchDistance,
             int rotation,
@@ -202,9 +207,15 @@ public class CoordinateFinder {
             List<String> coords) {
 
         int remainingReach = proximitySearchDistance;
+        int index = initialIndex;
+        int totalHits = previousHits;
 
+        int nextIndex = -1;
         while (totalHits < searchWords.length && index + 1 < words.size()) {
             index++;
+            if (index <= nextIndex) {
+                continue;
+            }
             Word nextWord = words.get(index);
 
             int hits = ALTOTools.getMatchALTOWord(
@@ -220,7 +231,7 @@ public class CoordinateFinder {
             }
 
             totalHits += hits;
-            index = addWordAndHyphenation(nextWord, index, rotation, pageSize, coords, words);
+            nextIndex = addWordAndHyphenation(nextWord, index, rotation, pageSize, coords, words);
         }
 
         return totalHits == searchWords.length
@@ -275,7 +286,7 @@ public class CoordinateFinder {
         return coords;
     }
 
-    private static class MatchResult {
+    private static final class MatchResult {
         private final boolean match;
         private final List<String> coordinates;
         private final int lastIndex;
