@@ -251,6 +251,33 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
+     * @verifies change nothing if facet already exists in query items
+     */
+    @Test
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldChangeNothingIfFacetAlreadyExistsInQueryItems() {
+        searchBean.resetAdvancedSearchParameters();
+        SearchQueryItem item1 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+
+        // DC value in the first item
+        item1.setField(SolrConstants.DC);
+        item1.setValue("foo");
+        searchBean.getFacets().setActiveFacetString("DC:foo");
+        searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
+
+        // The other DC item should not have the value set
+        SearchQueryItem dcItem = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        for (SearchQueryItem item : searchBean.getAdvancedSearchQueryGroup().getQueryItems()) {
+            if (SolrConstants.DC.equals(item.getField()) && !item.equals(item1)) {
+                dcItem = item;
+                break;
+            }
+        }
+        Assertions.assertNotNull(dcItem);
+        assertTrue(StringUtils.isEmpty(dcItem.getValue()));
+    }
+
+    /**
      * @see SearchBean#generateSimpleSearchString(String)
      * @verifies generate phrase search query without filter correctly
      */

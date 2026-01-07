@@ -1783,6 +1783,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should add extra search query item if all items full
      * @should not replace query items already in use
      * @should not add identical hierarchical query items
+     * @should change nothing if facet already exists in query items
+     * 
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
