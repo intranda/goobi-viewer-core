@@ -1787,6 +1787,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
         if (facets.getActiveFacets().isEmpty()) {
+            // Reset hierarchical query items if no active facets selected
             List<SearchQueryItem> queryItems = new ArrayList<>(advancedSearchQueryGroup.getQueryItems());
             for (SearchQueryItem item : queryItems) {
                 if (item.isHierarchical()) {
@@ -1804,33 +1805,56 @@ public class SearchBean implements SearchInterface, Serializable {
                 continue;
             }
             // logger.trace("facet item: {}", facetItem); //NOSONAR Debug
-            // Look up and re-purpose existing query items with the same field first
-            boolean matched = false;
+
+            SearchQueryItem match = null;
+            
+            // First try to match item with exact field
             for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
-                // field:value pair already exists
-                if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || StringUtils.isEmpty(queryItem.getValue()))) {
-                    // Override existing items without a field or with the same field with current facet value
-                    // logger.trace("updating query item: {}", queryItem); //NOSONAR Debug
-                    queryItem.setField(facetItem.getField());
-                    queryItem.setValue(facetItem.getValue());
-                    // logger.trace("updated query item: {}", queryItem); //NOSONAR Debug
-                    populatedQueryItems.add(queryItem);
-                    matched = true;
+                if (!populatedQueryItems.contains(queryItem)
+                        && (facetItem.getField().equals(queryItem.getField()) && facetItem.getValue().equals(queryItem.getValue()))) {
+                    match = queryItem;
+                    logger.trace("Found query item with same field+value: {}:{}", match.getField(), match.getValue());
                     break;
                 }
             }
-            if (!matched) {
-                // If no search field is set up for collection search, add new field containing the currently selected collection
-                SearchQueryItem item = new SearchQueryItem();
-                item.setField(facetItem.getField());
-                item.setValue(facetItem.getValue());
-                // ...but only if there is no exact field:value pair already among the query items
-                if (!populatedQueryItems.contains(item)) {
-                    advancedSearchQueryGroup.getQueryItems().add(item);
-                    // logger.trace("added new item: {}", item); //NOSONAR Debug
-                    populatedQueryItems.add(item);
+            
+            // Match same field with no value selected
+            if (match == null) {
+                for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+                    if (!populatedQueryItems.contains(queryItem)
+                            && facetItem.getField().equals(queryItem.getField())
+                            && StringUtils.isEmpty(queryItem.getValue())) {
+
+                        match = queryItem;
+                        logger.trace("Found same field with empty value: {}", queryItem.getField());
+                        break;
+                    }
                 }
             }
+
+            // If no exact field match found, try to re-purpose an unused item
+            if (match == null) {
+                for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+                    // field:value pair already exists
+                    if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || StringUtils.isEmpty(queryItem.getValue()))) {
+                        match = queryItem;
+                        logger.trace("updating query item: {}:{}", match.getField(), match.getValue());
+                        break;
+                    }
+                }
+            }
+
+            if (match == null) {
+                // If no search field is set up for collection search, add new field containing the currently selected collection
+                match = new SearchQueryItem();
+                if (!populatedQueryItems.contains(match)) {
+                    advancedSearchQueryGroup.getQueryItems().add(match);
+                }
+            }
+
+            match.setField(facetItem.getField());
+            match.setValue(facetItem.getValue());
+            populatedQueryItems.add(match);
         }
     }
 
