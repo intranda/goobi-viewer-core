@@ -1813,7 +1813,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 if (!populatedQueryItems.contains(queryItem)
                         && (facetItem.getField().equals(queryItem.getField()) && facetItem.getValue().equals(queryItem.getValue()))) {
                     match = queryItem;
-                    logger.trace("Found query item with same field+value: {}:{}", match.getField(), match.getValue());
+                    logger.error("Found query item with same field+value: {}:{}", match.getField(), match.getValue());
                     break;
                 }
             }
@@ -1826,7 +1826,7 @@ public class SearchBean implements SearchInterface, Serializable {
                             && StringUtils.isEmpty(queryItem.getValue())) {
 
                         match = queryItem;
-                        logger.trace("Found same field with empty value: {}", queryItem.getField());
+                        logger.error("Found same field with empty value: {}", queryItem.getField());
                         break;
                     }
                 }
@@ -1838,7 +1838,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     // field:value pair already exists
                     if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || StringUtils.isEmpty(queryItem.getValue()))) {
                         match = queryItem;
-                        logger.trace("updating query item: {}:{}", match.getField(), match.getValue());
+                        logger.error("updating query item: {}:{}", match.getField(), match.getValue());
                         break;
                     }
                 }
