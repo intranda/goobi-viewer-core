@@ -2034,24 +2034,11 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Simply returns the given string to redirect to a page via jsf
-     * 
-     * @param page the string to return
-     * @return the passed string 'page'
-     * @deprecated Apparently not used. And should be easily replacable by just entering the 'page' string in the action attribute
-     */
-    @Deprecated(forRemoval = true)
-    public String returnTo(String page) {
-        return page;
-    }
-
-    /**
      * 
      * @param keys
      * @return JSON with translations for the given message keys
      */
     public String getTranslationsAsJson(List<String> keys) {
-        Locale locale = getLocale();
         JSONObject json = new JSONObject();
         for (String key : keys) {
             String translation = ViewerResourceBundle.getTranslation(key, locale);
