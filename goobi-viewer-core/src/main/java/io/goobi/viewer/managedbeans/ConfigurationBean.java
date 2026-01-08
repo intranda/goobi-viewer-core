@@ -1206,16 +1206,6 @@ public class ConfigurationBean implements Serializable {
     /**
      * 
      * @return Configured value
-     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
-     */
-    @Deprecated(since = "25.06")
-    public boolean isCopyrightIndicatorEnabled() {
-        return true;
-    }
-
-    /**
-     * 
-     * @return Configured value
      */
     public String getCopyrightIndicatorStyle() {
         return DataManager.getInstance().getConfiguration().getCopyrightIndicatorStyle();
