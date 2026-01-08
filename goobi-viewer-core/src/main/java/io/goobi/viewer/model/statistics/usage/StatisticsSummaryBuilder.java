@@ -38,8 +38,6 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.dao.IDAO;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
@@ -63,17 +61,14 @@ public class StatisticsSummaryBuilder {
 
     /**
      * Constructor using instances from {@link DataManager}
-     * 
-     * @throws DAOException
      */
-    public StatisticsSummaryBuilder() throws DAOException {
+    public StatisticsSummaryBuilder() {
         this(DataManager.getInstance().getSearchIndex());
     }
 
     /**
      * Default constructor
      * 
-     * @param dao the {@link IDAO} to set. May be null since it isn't used
      * @param searchIndex the {@link SolrSearchIndex} to set
      */
     public StatisticsSummaryBuilder(SolrSearchIndex searchIndex) {
@@ -85,7 +80,6 @@ public class StatisticsSummaryBuilder {
      * 
      * @param filter a {@link StatisticsSummaryFilter} to filter results
      * @return a {@link StatisticsSummary}
-     * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -222,10 +216,5 @@ public class StatisticsSummaryBuilder {
             }
         }
         return identifiersToInclude;
-    }
-
-    private static StatisticsSummary add(StatisticsSummary summary, DailySessionUsageStatistics dailyStats, List<String> identifiersToInclude) {
-        StatisticsSummary dailyStatsSummary = new StatisticsSummary(dailyStats, identifiersToInclude);
-        return summary.add(dailyStatsSummary);
     }
 }
