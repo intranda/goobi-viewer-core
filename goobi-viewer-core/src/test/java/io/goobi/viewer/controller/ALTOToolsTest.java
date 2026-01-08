@@ -32,8 +32,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -47,6 +45,7 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import jakarta.servlet.http.HttpServletRequest;
 
 class ALTOToolsTest extends AbstractTest {
 

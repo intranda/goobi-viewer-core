@@ -104,6 +104,8 @@ import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.search.SearchQueryItemLine;
 import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.search.SearchSortingOption;
+import io.goobi.viewer.model.search.query.QueryResult;
+import io.goobi.viewer.model.search.query.SimpleQueryBuilder;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -1217,6 +1219,30 @@ public class SearchBean implements SearchInterface, Serializable {
         generateSimpleSearchString(this.searchString);
     }
 
+    void generateSimpleSearchString(final String inSearchString) {
+        logger.trace("generateSimpleSearchString: {}", inSearchString);
+        logger.trace("currentSearchFilter: {}", currentSearchFilter.getLabel());
+
+        SimpleQueryBuilder builder = SimpleQueryBuilder.builder()
+                .withSearchFilter(currentSearchFilter)
+                .withFuzzySearchEnabled(fuzzySearchEnabled)
+                .withSearchTerms(searchTerms)
+                .build();
+
+        QueryResult result = builder.build(inSearchString);
+
+        searchString = result.getDisplaySearchString();
+        searchStringInternal = result.getInternalQuery();
+        proximitySearchDistance = result.getProximityDistance();
+        this.searchTerms = result.getSearchTerms();
+
+        if (StringUtils.isBlank(searchStringInternal) || "*".equals(searchStringInternal)) {
+            setExactSearchString("");
+        }
+
+        logger.trace("search string: {}", searchStringInternal);
+    }
+
     /**
      * @param inSearchString the searchString to set
      * @should generate phrase search query without filter correctly
@@ -1226,7 +1252,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should add proximity search token correctly
      * @should reset exactSearchString if input empty
      */
-    void generateSimpleSearchString(final String inSearchString) {
+    void generateSimpleSearchString_alt(final String inSearchString) {
         logger.trace("generateSimpleSearchString: {}", inSearchString);
         logger.trace("currentSearchFilter: {}", currentSearchFilter.getLabel());
         String tempSearchString = inSearchString;
