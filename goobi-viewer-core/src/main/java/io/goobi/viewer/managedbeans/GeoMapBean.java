@@ -32,7 +32,6 @@ import java.util.Locale;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.omnifaces.util.Faces;
-import org.quartz.SchedulerException;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -46,7 +45,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.job.mq.GeoMapUpdateHandler;
-import io.goobi.viewer.model.job.quartz.QuartzListener;
 import io.goobi.viewer.model.maps.FeatureSet;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
@@ -56,7 +54,6 @@ import io.goobi.viewer.model.maps.SearchResultFeatureSet;
 import io.goobi.viewer.model.maps.SolrFeatureSet;
 import io.goobi.viewer.model.translations.IPolyglott;
 import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
@@ -79,9 +76,6 @@ public class GeoMapBean implements Serializable, IPolyglott {
     private Locale selectedLanguage;
 
     private List<GeoMap> loadedMaps = null;
-
-    @Inject
-    private QuartzBean quartzBean;
 
     /**
      * <p>
@@ -184,21 +178,6 @@ public class GeoMapBean implements Serializable, IPolyglott {
         }
     }
 
-    @Deprecated(forRemoval = true)
-    private void updateGeoMapUpdateTask() {
-        Object o = BeanUtils.getServletContext().getAttribute(QuartzListener.QUARTZ_LISTENER_CONTEXT_ATTRIBUTE);
-        if (o instanceof QuartzListener quartzListener) {
-            try {
-                quartzListener.restartTimedJobs();
-                if (this.quartzBean != null) {
-                    this.quartzBean.reset();
-                }
-            } catch (SchedulerException e) {
-                logger.error("Error updating quartz listeners after geomap update", e);
-            }
-        }
-    }
-
     /**
      * <p>
      * deleteMap.
@@ -209,7 +188,6 @@ public class GeoMapBean implements Serializable, IPolyglott {
      */
     public void deleteMap(GeoMap map) throws DAOException {
         DataManager.getInstance().getDao().deleteGeoMap(map);
-        updateGeoMapUpdateTask();
         this.loadedMaps = null;
     }
 
