@@ -223,24 +223,6 @@ public class AdminBean implements Serializable {
 
     /**
      * <p>
-     * saveCurrentUserAction.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated Seems to be unused
-     */
-    @Deprecated(since = "24.12")
-    public String saveCurrentUserAction() throws DAOException {
-        if (this.saveUser(getCurrentUser(), true)) {
-            return "pretty:adminUsers";
-        }
-
-        return "";
-    }
-
-    /**
-     * <p>
      * saveUserAction.
      * </p>
      *
