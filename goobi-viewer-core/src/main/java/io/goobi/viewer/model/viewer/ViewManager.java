@@ -1221,9 +1221,7 @@ public class ViewManager implements Serializable {
      * @return true if record is born digital material (no scanned images); false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated replc
      */
-    @Deprecated(since = "25.02")
     public boolean isBornDigital() throws IndexUnreachableException, DAOException {
         return isHasPages() && isFilesOnly();
     }
