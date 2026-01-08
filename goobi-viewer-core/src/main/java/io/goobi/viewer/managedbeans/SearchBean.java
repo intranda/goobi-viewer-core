@@ -865,23 +865,6 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * <p>
-     * hitsPerPageListener.
-     * </p>
-     *
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    @Deprecated(since = "25.05")
-    public void hitsPerPageListener()
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        logger.trace("hitsPerPageListener");
-        executeSearch();
-    }
-
-    /**
-     * <p>
      * executeSearch.
      * </p>
      *
@@ -1809,7 +1792,7 @@ public class SearchBean implements SearchInterface, Serializable {
             // logger.trace("facet item: {}", facetItem); //NOSONAR Debug
 
             SearchQueryItem match = null;
-            
+
             // First try to match item with exact field
             for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
                 if (!populatedQueryItems.contains(queryItem)
@@ -1819,7 +1802,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     break;
                 }
             }
-            
+
             // Match same field with no value selected
             if (match == null) {
                 for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
