@@ -874,15 +874,6 @@ public class DisplayUserGeneratedContent {
         }
     }
 
-    /**
-     * @deprecated use {@link #getIconName()} and Tabler icons instead of Font Awesome.
-     * @return {@link String}
-     */
-    @Deprecated(since = "25.10")
-    public String getIconClass() {
-        return getIconName();
-    }
-
     public String getPageUrl() {
         return getPageUrl(BeanUtils.getNavigationHelper().getCurrentPageType());
     }
