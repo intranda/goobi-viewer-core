@@ -307,7 +307,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
         String filenameRoot = new StringBuilder(SolrConstants.FILENAME).append('_').toString();
         for (String fieldName : doc.getFieldNames()) {
             if (fieldName.startsWith(filenameRoot)) {
-                logger.trace("Format: {}", fieldName); //NOSONAR Debug
+                // logger.trace("Format: {}", fieldName); //NOSONAR Debug
                 String format = fieldName.split("_")[1].toLowerCase();
                 String value = (String) doc.getFieldValue(fieldName);
                 pe.getFileNames().put(format, value);
