@@ -229,8 +229,6 @@
     <download_jobs download_job_id="2" type="epub" identifier="4b689c5bd24d94ef88bedfd39d8819f8ef3a3676c52dc4f6acb50c7e8f3aab04" pi="PI_1" logid="LOG_0001"
         status="READY" last_requested="2016-06-06 12:00:00" ttl="3600" />
     
-    <download_job_observers download_job_id="1" observer="viewer@intranda.com" />
-    
     <upload_jobs upload_job_id="1" process_id="1001" pi="PI_1" title="foo" description="the foo"
         status="WAITING" creator_id="1" date_created="2022-04-20 00:00:00" email="1@users.org" />
     <upload_jobs upload_job_id="2" process_id="1002" pi="PI_2" title="bar" description="the bar"
