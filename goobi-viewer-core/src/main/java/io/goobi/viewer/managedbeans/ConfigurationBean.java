@@ -465,19 +465,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isSidebarTocWidgetVisible.
-     * </p>
-     *
-     * @return a boolean.
-     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
-     */
-    @Deprecated(since = "25.06")
-    public boolean isSidebarTocWidgetVisible() {
-        return true;
-    }
-
-    /**
-     * <p>
      * isSidebarTocWidgetVisibleInFullscreen.
      * </p>
      *
@@ -953,19 +940,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isShowSearchInItem.
-     * </p>
-     *
-     * @return a boolean.
-     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
-     */
-    @Deprecated(since = "25.06")
-    public boolean isShowSearchInItem() {
-        return true;
-    }
-
-    /**
-     * <p>
      * isShowSearchInItemOnlyIfFullTextAvailable.
      * </p>
      *
@@ -1067,42 +1041,6 @@ public class ConfigurationBean implements Serializable {
      */
     public String getRestApiUrlV1() {
         return DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/rest", "/api/v1");
-    }
-
-    /**
-     * <p>
-     * getIso6391.
-     * </p>
-     *
-     * @param language a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated(since = "25.04")
-    public String getIso6391(String language) {
-        Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
-        if (lang != null) {
-            return lang.getIsoCodeOld();
-        }
-
-        return language;
-    }
-
-    /**
-     * <p>
-     * getIso6392B.
-     * </p>
-     *
-     * @param language a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated(since = "25.04")
-    public String getIso6392B(String language) {
-        Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
-        if (lang != null) {
-            return lang.getIsoCode();
-        }
-
-        return language;
     }
 
     /**
@@ -1263,16 +1201,6 @@ public class ConfigurationBean implements Serializable {
      */
     public String getTwitterName() {
         return DataManager.getInstance().getConfiguration().getTwitterUserName();
-    }
-
-    /**
-     * 
-     * @return Configured value
-     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
-     */
-    @Deprecated(since = "25.06")
-    public boolean isCopyrightIndicatorEnabled() {
-        return true;
     }
 
     /**

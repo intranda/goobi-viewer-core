@@ -395,16 +395,6 @@ public class ArchiveBean implements Serializable {
 
     /**
      * 
-     * @return List<ArchiveResource>
-     * @deprecated Use getFilteredDatabases()
-     */
-    @Deprecated(since = "2024.06")
-    public List<ArchiveResource> getDatabases() {
-        return archiveManager.getDatabases();
-    }
-
-    /**
-     * 
      * @return Available databases, filtered by user access
      */
     public List<ArchiveResource> getFilteredDatabases() {
@@ -437,25 +427,6 @@ public class ArchiveBean implements Serializable {
 
     public String getArchiveId() {
         return Optional.ofNullable(getCurrentArchive()).map(ArchiveResource::getResourceId).orElse("");
-    }
-
-    /**
-     * Called when selecting an archive in the drop-down.
-     * 
-     * @param archiveName
-     * @throws ArchiveException
-     * @deprecated Redundant resolving of archive ID via the name + duplicate call to initializeArchiveTree(); use setCurrentResource()
-     */
-    @Deprecated(since = "2024.10")
-    public void setArchiveId(String archiveName) throws ArchiveException {
-        logger.trace("setArchiveId: {}", archiveName);
-        ArchiveResource database = this.archiveManager.getArchiveResource(archiveName);
-        if (database != null) {
-            this.currentResource = database.getResourceId();
-            this.initializeArchiveTree();
-        } else {
-            this.reset();
-        }
     }
 
     public void loadDatabaseResource(String resourceId) throws ArchiveException {

@@ -106,12 +106,10 @@
 		
     <bookshelf_items bookshelf_item_id="1" bookshelf_id="1"
         name="bookmark 1 name" description="bookmark 1 desc"
-        pi="PPN123456789" logid="LOG_0000" urn="urn:nbn:bookmark1"
-        main_title="bookmark 1 main title" />
+        pi="PPN123456789" logid="LOG_0000" urn="urn:nbn:bookmark1" />
     <bookshelf_items bookshelf_item_id="2" bookshelf_id="1"
         name="bookmark 2 name" description="bookmark 2 desc"
-        pi="AC123456789" logid="LOG_1111" urn="urn:nbn:bookmark2"
-        main_title="bookmark 2 main title"/>
+        pi="AC123456789" logid="LOG_1111" urn="urn:nbn:bookmark2" />
 
     <annotations_comments annotation_id="1" target_pi="PI_1" target_page="1" body="comment 1 text" date_created="2013-07-15 00:00:00.000000000" creator_id="1"/>
     <annotations_comments annotation_id="2" target_pi="PI_1" target_page="1" body="comment 2 text" date_created="2013-07-15 00:02:00.000000000" creator_id="2"/>

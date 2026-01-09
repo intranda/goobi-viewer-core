@@ -23,50 +23,39 @@ package io.goobi.viewer.controller;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.UnsupportedCharsetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
-import com.ctc.wstx.exc.WstxIOException;
-
-import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.Utils;
-import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
-import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
-import de.intranda.digiverso.ocr.alto.utils.HyphenationLinker;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.controller.model.alto.AltoTextReader;
+import io.goobi.viewer.controller.model.alto.CoordinateFinder;
+import io.goobi.viewer.controller.model.alto.NamedEntityEnricher;
+import io.goobi.viewer.controller.model.alto.TextEnricher;
 import io.goobi.viewer.model.search.FuzzySearchTerm;
-import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * <p>
@@ -76,17 +65,6 @@ import io.goobi.viewer.model.viewer.PageType;
 public final class ALTOTools {
 
     private static final Logger logger = LogManager.getLogger(ALTOTools.class);
-
-    private static final String STRING = "String";
-    private static final String CONTENT = "CONTENT";
-    private static final String SUBS_CONTENT = "SUBS_CONTENT";
-    private static final String ID = "ID";
-    private static final String TEXTLINE = "TextLine";
-    private static final String TAGREFS = "TAGREFS";
-    private static final String NETAG = "NamedEntityTag";
-    private static final String TYPE = "TYPE";
-    private static final String URI = "URI";
-    private static final String LABEL = "LABEL";
 
     /** Constant <code>TAG_LABEL_IGNORE_REGEX</code>. */
     public static final String TAG_LABEL_IGNORE_REGEX =
@@ -128,7 +106,7 @@ public final class ALTOTools {
     public static String getFulltext(String alto, String charset, boolean mergeLineBreakWords) {
         try {
             return alto2Txt(alto, charset, mergeLineBreakWords);
-        } catch (IOException | XMLStreamException | JDOMException e) {
+        } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
         }
 
@@ -237,171 +215,17 @@ public final class ALTOTools {
      * @should add uris correctly
      */
     protected static String alto2Txt(String alto, String charset, boolean mergeLineBreakWords)
-            throws IOException, XMLStreamException, JDOMException {
+            throws IOException, JDOMException {
         if (alto == null) {
             throw new IllegalArgumentException("alto may not be null");
         }
 
-        String useAlto = alto;
-        String useCharset = charset != null ? charset : StringTools.DEFAULT_ENCODING;
+        TextEnricher charCleanupEnricher = (string, element) -> string.replaceAll(ALTO_PROBLEMATIC_CHARS, " ");
+        TextEnricher nerEnricher = new NamedEntityEnricher();
+        AltoTextReader reader =
+                new AltoTextReader(alto, charset != null ? charset : StringTools.DEFAULT_ENCODING, charCleanupEnricher, nerEnricher);
 
-        // Link hyphenated words before parsing the document
-        if (mergeLineBreakWords) {
-            AltoDocument altoDoc = AltoDocument.getDocumentFromString(alto, charset);
-            new HyphenationLinker().linkWords(altoDoc);
-            Document doc = new Document(altoDoc.writeToDom());
-            useAlto = XmlTools.getXMLOutputter().outputString(doc);
-        }
-
-        // Remove problematic chars prior to parsing
-        useAlto = useAlto.replaceAll(ALTO_PROBLEMATIC_CHARS, " ");
-
-        Map<String, String> neTypeMap = new HashMap<>();
-        Map<String, String> neLabelMap = new HashMap<>();
-        Map<String, String> neUriMap = new HashMap<>();
-        Set<String> usedTags = new HashSet<>();
-        StringBuilder strings = new StringBuilder(500);
-        XMLStreamReader parser = null;
-        try (InputStream is = new ByteArrayInputStream(useAlto.getBytes(useCharset))) {
-            parser = createXmlParser(is);
-
-            String prevSubsContent = null;
-            while (parser.hasNext()) {
-                switch (parser.getEventType()) {
-                    case XMLStreamConstants.START_DOCUMENT:
-                        break;
-
-                    case XMLStreamConstants.END_DOCUMENT:
-                        parser.close();
-                        break;
-
-                    case XMLStreamConstants.NAMESPACE:
-                        break;
-
-                    case XMLStreamConstants.START_ELEMENT:
-                        if (STRING.equals(parser.getLocalName())) {
-                            String content = null;
-                            String subsContent = null;
-                            String tagref = null;
-                            for (int i = 0; i < parser.getAttributeCount(); i++) {
-                                switch (parser.getAttributeLocalName(i)) {
-                                    case CONTENT:
-                                        content = parser.getAttributeValue(i);
-                                        break;
-                                    case SUBS_CONTENT:
-                                        if (mergeLineBreakWords) {
-                                            subsContent = parser.getAttributeValue(i);
-                                        }
-                                        break;
-                                    case TAGREFS:
-                                        tagref = parser.getAttributeValue(i);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                            if (tagref != null && neTypeMap.get(tagref) != null) {
-                                // NE tag found
-                                if (!usedTags.contains(tagref)) {
-                                    // Tag ID
-                                    strings.append("<button class=\"view-fulltext__entity-action-button\" type=\"button\" data-entity-id=\"")
-                                            .append(tagref)
-                                            .append('"');
-                                    // Tag type
-                                    strings.append(" data-entity-type=\"")
-                                            .append(neTypeMap.get(tagref).toLowerCase())
-                                            .append('"');
-                                    if (neUriMap.get(tagref) != null) {
-                                        // Authority data URI
-                                        strings.append(" data-entity-authority-data-uri=\"")
-                                                .append(DataManager.getInstance().getConfiguration().getRestApiUrl())
-                                                .append("authority/resolver?id=")
-                                                .append(neUriMap.get(tagref))
-                                                .append("&amp;lang=de\"");
-                                        // Authority data search URL
-                                        String identifier = neUriMap.get(tagref).replaceAll("^https?:\\/\\/d-nb.info\\/gnd\\/([\\d-]+)\\/?$", "$1");
-                                        strings.append(" data-entity-authority-data-search=\"")
-                                                .append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
-                                                .append('/')
-                                                .append(PageType.search.getName())
-                                                .append("/-/")
-                                                .append(NormDataImporter.FIELD_IDENTIFIER)
-                                                .append(":%22")
-                                                .append(identifier)
-                                                .append("%22/1/-/-/-/\"");
-                                    }
-                                    strings.append('>')
-                                            .append(neLabelMap.get(tagref))
-                                            .append("</button> ");
-                                    usedTags.add(tagref);
-                                }
-                            } else {
-                                // No NE tag
-                                if (subsContent != null) {
-                                    subsContent = StringTools.escapeHtmlLtGt(subsContent);
-                                    // Add concatenated SUBS_CONTENT word, if found, but only once
-                                    if (!subsContent.equals(prevSubsContent)) {
-                                        strings.append(subsContent);
-                                        prevSubsContent = subsContent;
-                                    }
-                                    subsContent = null;
-                                } else {
-                                    content = StringTools.escapeHtmlLtGt(content);
-                                    strings.append(content);
-                                }
-                                strings.append(' ');
-                            }
-                        } else if (NETAG.equals(parser.getLocalName())) {
-                            String id = null;
-                            String type = null;
-                            String label = null;
-                            String uri = null;
-                            for (int i = 0; i < parser.getAttributeCount(); i++) {
-                                switch (parser.getAttributeLocalName(i)) {
-                                    case ID:
-                                        id = parser.getAttributeValue(i);
-                                        break;
-                                    case TYPE:
-                                        type = parser.getAttributeValue(i);
-                                        break;
-                                    case URI:
-                                        uri = parser.getAttributeValue(i);
-                                        break;
-                                    case LABEL:
-                                        label = parser.getAttributeValue(i);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                            neTypeMap.put(id, type);
-                            neLabelMap.put(id, label);
-                            neUriMap.put(id, uri);
-                        } else if (TEXTLINE.equals(parser.getLocalName())) {
-                            strings.append("\n");
-                        }
-                        break;
-
-                    default:
-                        break;
-
-                }
-                parser.next();
-            }
-        } catch (UnsupportedCharsetException | WstxIOException e) {
-            // Wrong charset can result in an exception being thrown by the underlying parser implementation
-            logger.warn(e.getMessage());
-            strings.append("\n\n[COULD NOT PARSE THE REST OF THE ALTO DOCUMENT, PLEASE CHECK FILE ENCODING] ");
-        } finally {
-            if (parser != null) {
-                parser.close();
-            }
-        }
-        if (strings.length() > 0) {
-            strings.deleteCharAt(strings.length() - 1);
-        }
-
-        return strings.toString();
+        return reader.extractText();
     }
 
     public static XMLStreamReader createXmlParser(InputStream is) throws FactoryConfigurationError, XMLStreamException {
@@ -468,110 +292,13 @@ public final class ALTOTools {
     }
 
     public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms, int proximitySearchDistance, int rotation) {
-        if (altoString == null) {
-            throw new IllegalArgumentException("altoDoc may not be null");
-        }
-        List<Word> words = new ArrayList<>();
-        Dimension pageSize = new Dimension(0, 0);
         try {
-            AltoDocument document = AltoDocument.getDocumentFromString(altoString, charset);
-            HyphenationLinker linker = new HyphenationLinker();
-            linker.linkWords(document);
-
-            Page page = document.getFirstPage();
-            List<Line> lines = page.getAllLinesAsList();
-            for (Line line : lines) {
-                words.addAll(line.getWords());
-            }
-            pageSize = new Dimension((int) page.getWidth(), (int) page.getHeight());
-        } catch (NullPointerException e) {
-            logger.error("Could not parse ALTO: No width or height specified in 'page' element.");
-        } catch (NumberFormatException e) {
-            logger.error("Could not parse ALTO: Could not parse page width or height.");
+            return new CoordinateFinder(altoString, charset).getWordCoords(searchTerms, proximitySearchDistance, rotation);
+            //            return new WordCoordinateService(altoString, charset).getWordCoords(searchTerms, proximitySearchDistance, rotation);
         } catch (IOException | JDOMException e) {
-            logger.error("Could not parse ALTO: ", e);
+            logger.error("Could not parse alto: {}", e.toString());
+            return Collections.emptyList();
         }
-        logger.trace("{} ALTO words found for this page.", words.size());
-        List<String> coordList = new ArrayList<>();
-        for (String s : searchTerms) {
-            s = StringTools.removeQuotations(s); // Remove quotation marks from phrase searches
-            String[] searchWords = s.split("\\s+");
-            if (searchWords == null || searchWords.length == 0 || StringUtils.isBlank(searchWords[0])) {
-                continue;
-            }
-            for (int wordIndex = 0; wordIndex < words.size(); wordIndex++) {
-                List<String> tempList = new ArrayList<>();
-                Word eleWord = words.get(wordIndex);
-                int totalHits = ALTOTools.getMatchALTOWord(eleWord, searchWords);
-                if (totalHits > 0) {
-                    boolean match = true;
-                    addWordCoords(rotation, pageSize, eleWord, tempList);
-                    if (eleWord.getHyphenationPartNext() != null && eleWord.getHyphenationPartNext().getContent().matches("\\S+")) {
-                        wordIndex++;
-                        addWordCoords(rotation, pageSize, eleWord.getHyphenationPartNext(), tempList);
-                    }
-                    // Match next words if search term has more than one word
-                    if (totalHits < searchWords.length) {
-                        int remainingProximityReach = proximitySearchDistance;
-                        while (totalHits < searchWords.length && words.size() > wordIndex + 1) {
-                            wordIndex++;
-                            Word nextWord = words.get(wordIndex);
-                            int hits = ALTOTools.getMatchALTOWord(nextWord, Arrays.copyOfRange(searchWords, totalHits, searchWords.length));
-                            if (hits == 0) {
-                                if (remainingProximityReach < 1) {
-                                    wordIndex--;
-                                    match = false;
-                                    break;
-                                }
-                                remainingProximityReach--;
-                            } else {
-                                remainingProximityReach = proximitySearchDistance;
-                            }
-                            totalHits += hits;
-                            addWordCoords(rotation, pageSize, nextWord, tempList);
-                            if (nextWord.getHyphenationPartNext() != null) {
-                                wordIndex++;
-                                addWordCoords(rotation, pageSize, nextWord.getHyphenationPartNext(), tempList);
-                            }
-                        }
-                    }
-                    if (match) {
-                        coordList.addAll(tempList);
-                    }
-                }
-            }
-        }
-
-        return coordList;
-    }
-
-    /**
-     * 
-     * @param rotation
-     * @param pageSize
-     * @param eleWord
-     * @param tempList
-     * @return ALTO word coordinates as a {@link String}
-     */
-    private static String addWordCoords(int rotation, Dimension pageSize, Word eleWord, List<String> tempList) {
-        String coords = ALTOTools.getALTOCoords(eleWord);
-        if (coords != null && rotation != 0) {
-            try {
-                Rectangle wordRect = getRectangle(coords);
-                wordRect = rotate(wordRect, rotation, pageSize);
-                coords = getString(wordRect);
-            } catch (NumberFormatException e) {
-                logger.error("Cannot rotate coords {}: {}", coords, e.getMessage());
-            }
-        }
-        if (coords != null) {
-            tempList.add(coords);
-            if (logger.isTraceEnabled()) {
-                logger.trace("ALTO word found: {} ({})", eleWord.getAttributeValue(CONTENT), coords);
-            }
-        }
-
-        return coords;
     }
 
     /**
@@ -635,30 +362,6 @@ public final class ALTOTools {
 
         return new Rectangle((int) x1r, (int) y1r, (int) (x2r - x1r), (int) (y2r - y1r));
 
-        // if(rotation%360 == 0) {
-        // return rect;
-        // }
-        // if(imageSize.height*imageSize.width == 0) {
-        // logger.error("Cannot rotate in page with no extent");
-        // return rect;
-        // }
-        //
-        // Point center = new Point(imageSize.width/2, imageSize.height/2);
-        //
-        // double scale = imageSize.width/(double)imageSize.height;
-        //
-        // AffineTransform transform = new AffineTransform();
-        // transform.translate(center.x, center.y);
-        // transform.rotate(Math.toRadians(rotation));
-        // transform.scale(scale, scale);
-        // transform.translate(-center.x, -center.y);
-        //
-        // Path2D.Double path = new Path2D.Double();
-        // path.append(rect, false);
-        // path.transform(transform);
-        // Rectangle rotatedRect = path.getBounds();
-        //
-        // return rotatedRect;
     }
 
     /**

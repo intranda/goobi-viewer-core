@@ -86,7 +86,6 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     private static final Logger logger = LogManager.getLogger(CMSCollection.class);
 
-    @Deprecated(since = "24.10")
     private static final String LABEL_TAG = "label";
     private static final String DESCRIPTION_TAG = "description";
 
