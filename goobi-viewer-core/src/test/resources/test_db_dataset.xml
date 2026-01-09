@@ -223,11 +223,6 @@
     	date_start="2023-02-01 00:00:00.000000000" date_end="2023-03-01 00:00:00.000000000" image_mode="RECORD_REPRESENTATIVE"/>
     <cms_highlights highlight_id="3" enabled="true" name="Deaktiviertes Objekt" target_type="URL" target_url="viewer/cms/99/" 
     	date_start="2023-03-01 00:00:00.000000000" date_end="2023-04-01 00:00:00.000000000" image_mode="NO_IMAGE"/>
-    	
-    <download_jobs download_job_id="1" type="pdf" identifier="187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a" pi="PI_1"
-        status="WAITING" last_requested="2016-06-01 00:00:00" ttl="3600" />
-    <download_jobs download_job_id="2" type="epub" identifier="4b689c5bd24d94ef88bedfd39d8819f8ef3a3676c52dc4f6acb50c7e8f3aab04" pi="PI_1" logid="LOG_0001"
-        status="READY" last_requested="2016-06-06 12:00:00" ttl="3600" />
     
     <upload_jobs upload_job_id="1" process_id="1001" pi="PI_1" title="foo" description="the foo"
         status="WAITING" creator_id="1" date_created="2022-04-20 00:00:00" email="1@users.org" />
