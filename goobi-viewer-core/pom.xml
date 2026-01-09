@@ -170,8 +170,8 @@
 	
 		<dependency>
 		    <groupId>de.intranda.digiverso.convert</groupId>
-                    <artifactId>epubconvert</artifactId>
-                    <version>1.1.0</version>
+			<artifactId>epubconvert</artifactId>
+			<version>1.1.0</version>
 		</dependency>
 	
 		<!-- intranda libraries -->
