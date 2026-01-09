@@ -68,7 +68,7 @@ public class CollectionLabeledLink extends CompoundLabeledLink {
             return Collections.emptyList();
         }
 
-        List<LabeledLink> links = collection.getAncestors(collection.getTopVisibleElement(), true)
+        List<LabeledLink> links = collection.getAncestors(collection.getBaseElementName(), true)
                 .stream()
                 .map(element -> new LabeledLink(element.getName(), collection.getCollectionUrl(element), 0))
                 .collect(Collectors.toList());

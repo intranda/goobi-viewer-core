@@ -274,7 +274,6 @@ public class CMSCollectionContent extends CMSContent {
      */
     @Override
     public String handlePageLoad(boolean resetResults, CMSComponent component) {
-        BeanUtils.getCollectionViewBean().getCollectionIfStored(this).ifPresent(c -> c.reset(true));
         return "";
     }
 
