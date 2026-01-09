@@ -266,8 +266,6 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * call {@link CollectionView#reset(boolean) CollectionView#reset(true)} on the CollectionView stored in the cmsBean for this item, if any
-     * 
      * @param resetResults
      * @param component
      * @return {@link String}
