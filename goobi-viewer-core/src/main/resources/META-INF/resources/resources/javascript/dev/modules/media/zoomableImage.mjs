@@ -1,7 +1,7 @@
 import ZoomableImageOverlayGroup from "./zoomableImageOverlayGroup.mjs";
 import PageAreas from "./pageAreas.mjs";
 
-const _debug = false;
+const _debug = true;
 
 const _config = {
     elementSelectors: {
@@ -70,6 +70,7 @@ export default class ZoomableImage {
 
             this.tileSources = createTileSource();
             if(_debug)console.log("use TileSources ", this.tileSources);
+            
             this.tileSourceIdToOrder = Object.fromEntries(
                 Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
             );
