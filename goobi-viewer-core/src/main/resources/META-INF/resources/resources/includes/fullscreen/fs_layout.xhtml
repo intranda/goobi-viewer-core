@@ -445,6 +445,7 @@
 
         //init imageFilters
 		zoomableImageLoaded.subscribe(image => {
+				image.updateMargins();
        	 	    let originClean = image.viewer.isOriginClean();
        	 	    if(originClean) {
        	 	    	$(".fullscreen__view-sidebar-accordeon-panel.fs-imagefilters .fullscreen__view-sidebar-accordeon-panel-error").hide();
