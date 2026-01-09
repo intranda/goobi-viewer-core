@@ -86,7 +86,7 @@ public class NamedEntityEnricher implements TextEnricher {
 
     String getSearchPageUrl(String searchString) {
         try {
-            String tagSearchUri = PrettyUrlTools.getAbsolutePageUrl("search6", "-", searchString, "1", "-", "-", "-");
+            String tagSearchUri = PrettyUrlTools.getAbsolutePageUrl("search6", "-", searchString, "1", "-", "-");
             return tagSearchUri;
         } catch (IllegalStateException e) {
             return "";
