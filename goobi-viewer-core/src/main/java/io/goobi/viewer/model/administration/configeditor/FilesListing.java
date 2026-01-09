@@ -75,12 +75,19 @@ public class FilesListing implements Serializable {
                     files = Stream.concat(Arrays.stream(files), Arrays.stream(dirFiles)).toArray(File[]::new);
                 }
             }
-
         }
 
         Arrays.sort(files, (a, b) -> a.getName().compareTo(b.getName()));
         for (int i = 0; i < files.length; ++i) {
             fileRecords.add(new FileRecord(files[i].toPath(), i));
+        }
+
+        // Default config_viewer.xml
+        File defaultViewerConfigFile = DataManager.getInstance().getConfiguration().getDefaultConfigFile();
+        if (defaultViewerConfigFile != null) {
+            fileRecords.add(
+                    new ReadOnlyFileRecord(defaultViewerConfigFile.toPath(), fileRecords.size(), defaultViewerConfigFile.getName() + " (default)"));
+            logger.trace("Found default config_viewer.xml at: {}", defaultViewerConfigFile.getAbsolutePath());
         }
 
         fileRecordsModel = new ListDataModel<>(fileRecords);
