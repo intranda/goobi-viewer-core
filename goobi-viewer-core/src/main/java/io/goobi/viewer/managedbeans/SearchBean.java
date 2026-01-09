@@ -37,7 +37,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -59,7 +58,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -640,7 +638,6 @@ public class SearchBean implements SearchInterface, Serializable {
         StringBuilder sbInfo = new StringBuilder();
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
-        StringBuilder sbSameFieldGroup = new StringBuilder();
         Set<String> usedHierarchicalFields = new HashSet<>();
         Set<String> usedFieldValuePairs = new HashSet<>();
         this.proximitySearchDistance = 0;
@@ -1241,244 +1238,6 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         logger.trace("search string: {}", searchStringInternal);
-    }
-
-    /**
-     * @param inSearchString the searchString to set
-     * @should generate phrase search query without filter correctly
-     * @should generate phrase search query with specific filter correctly
-     * @should generate non-phrase search query without filter correctly
-     * @should generate non-phrase search query with specific filter correctly
-     * @should add proximity search token correctly
-     * @should reset exactSearchString if input empty
-     */
-    void generateSimpleSearchString_alt(final String inSearchString) {
-        logger.trace("generateSimpleSearchString: {}", inSearchString);
-        logger.trace("currentSearchFilter: {}", currentSearchFilter.getLabel());
-        String tempSearchString = inSearchString;
-        if (tempSearchString == null) {
-            tempSearchString = "";
-        }
-        try {
-            tempSearchString = URLDecoder.decode(tempSearchString, URL_ENCODING);
-        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
-            logger.warn(e.getMessage());
-        }
-        if ("-".equals(tempSearchString)) {
-            searchString = "";
-        }
-
-        searchString = StringTools.stripJS(tempSearchString).trim();
-        if (StringUtils.isEmpty(tempSearchString)) {
-            searchString = "";
-            setExactSearchString("");
-            return;
-        }
-
-        // Reset internal query etc. only after confirming the given search string is not empty
-        searchStringInternal = "";
-        searchTerms.clear();
-
-        if ("*".equals(tempSearchString)) {
-            searchStringInternal = SearchHelper.prepareQuery("");
-            setExactSearchString("");
-            return;
-        }
-
-        tempSearchString = tempSearchString.replace(SolrConstants.SOLR_QUERY_OR, " || ");
-        tempSearchString = tempSearchString.replace(SolrConstants.SOLR_QUERY_AND, " && ");
-        tempSearchString = tempSearchString.toLowerCase(); // Regular tokens are lowercase
-
-        if (tempSearchString.contains("\"")) {
-            // Phrase search
-            // Determine proximity search distance if token present, then remove it from the term
-            proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(tempSearchString);
-            if (proximitySearchDistance > 0) {
-                tempSearchString = SearchHelper.removeProximitySearchToken(tempSearchString);
-            }
-            String[] toSearch = tempSearchString.split("\"");
-            StringBuilder sb = new StringBuilder();
-            for (String p : toSearch) {
-                String phrase = p.replace("\"", "");
-                if (!phrase.isEmpty()) {
-                    if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
-                        // For aggregated searches include both SUPER and regular DEFAULT/FULLTEXT fields
-                        sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append('"');
-                        if (proximitySearchDistance > 0) {
-                            // Proximity search term augmentation
-                            sb.append('~').append(proximitySearchDistance);
-                        }
-                        sb.append(')').append(SolrConstants.SOLR_QUERY_OR);
-                        sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append('"');
-                        if (proximitySearchDistance > 0) {
-                            // Proximity search term augmentation
-                            sb.append('~').append(proximitySearchDistance);
-                        }
-                        sb.append(')').append(SolrConstants.SOLR_QUERY_OR);
-                        sb.append(SolrConstants.NORMDATATERMS).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.CMS_TEXT_ALL).append(":(\"").append(phrase).append("\")");
-                    } else {
-                        // Specific filter selected
-                        switch (currentSearchFilter.getField()) {
-                            case SolrConstants.DEFAULT:
-                                sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                                sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\")");
-                                break;
-                            case SolrConstants.FULLTEXT:
-                                sb.append(SolrConstants.SUPERFULLTEXT)
-                                        .append(":(\"")
-                                        .append(phrase)
-                                        .append('"');
-                                if (proximitySearchDistance > 0) {
-                                    // Proximity search term augmentation
-                                    sb.append('~').append(proximitySearchDistance);
-                                }
-                                sb.append(')')
-                                        .append(SolrConstants.SOLR_QUERY_OR)
-                                        .append(SolrConstants.FULLTEXT)
-                                        .append(":(\"")
-                                        .append(phrase)
-                                        .append('"');
-                                if (proximitySearchDistance > 0) {
-                                    // Proximity search term augmentation
-                                    sb.append('~').append(proximitySearchDistance);
-                                }
-                                sb.append(')');
-                                break;
-                            case SolrConstants.UGCTERMS:
-                                sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
-                                sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\")");
-                                break;
-                            case SolrConstants.SEARCHTERMS_ARCHIVE:
-                                sb.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\") OR ");
-                                sb.append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\")");
-                                break;
-                            default:
-                                sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
-                                break;
-                        }
-                    }
-                    sb.append(SolrConstants.SOLR_QUERY_AND);
-                }
-            }
-            searchStringInternal = sb.toString();
-        } else {
-            // Non-phrase search
-            tempSearchString = tempSearchString.replace(" &&", "");
-            String[] termsSplit = tempSearchString.split(SearchHelper.SEARCH_TERM_SPLIT_REGEX);
-
-            // Clean up terms and create OR-connected groups
-            List<String> preparedTerms = new ArrayList<>(termsSplit.length);
-            for (int i = 0; i < termsSplit.length; ++i) {
-                String term = termsSplit[i].trim();
-                term = SearchHelper.cleanUpSearchTerm(term);
-                String unescapedTerm = term;
-                term = term.replace("\\*", "*"); // unescape falsely escaped truncation
-                if (!term.isEmpty() && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
-                    if (fuzzySearchEnabled) {
-                        // Fuzzy search term augmentation
-                        String[] wildcards = SearchHelper.getWildcardsTokens(term);
-                        term = SearchHelper.addFuzzySearchToken(wildcards[1], wildcards[0], wildcards[2]);
-                    }
-                    logger.trace("term: {}", term);
-                    if (!"\\|\\|".equals(term)) {
-                        // Avoid duplicate terms
-                        if (!preparedTerms.contains(term)) {
-                            preparedTerms.add(term);
-                        }
-                        for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
-                            entry.getValue().add(unescapedTerm);
-                        }
-                    } else if (i > 0 && i < termsSplit.length - 1) {
-                        // Two terms separated by OR: remove previous term and add it together with the next term as a group
-                        int previousIndex = preparedTerms.size() - 1;
-                        String prevTerm = preparedTerms.get(previousIndex);
-                        String unescapedNextTerm = SearchHelper.cleanUpSearchTerm(termsSplit[i + 1]);
-                        String nextTerm = ClientUtils.escapeQueryChars(unescapedNextTerm);
-                        nextTerm = nextTerm.replace("\\*", "*"); // unescape falsely escaped truncation
-                        preparedTerms.remove(previousIndex);
-                        preparedTerms.add(prevTerm + " OR " + nextTerm);
-                        for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
-                            entry.getValue().add(unescapedNextTerm);
-                        }
-                        i++;
-                    }
-                }
-            }
-            // Construct inner query part
-            String innerQuery = SearchHelper.buildTermQuery(preparedTerms);
-            if (!innerQuery.isEmpty()) {
-                StringBuilder sbOuter = new StringBuilder();
-                if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
-                    // No filters defined or ALL
-                    sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.DEFAULT).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.FULLTEXT).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.NORMDATATERMS).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.UGCTERMS).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.CMS_TEXT_ALL).append(":(").append(innerQuery).append(')');
-                } else {
-                    // Specific filter selected
-                    switch (currentSearchFilter.getField()) {
-                        case SolrConstants.DEFAULT:
-                            sbOuter.append(SolrConstants.SUPERDEFAULT)
-                                    .append(":(")
-                                    .append(innerQuery)
-                                    .append(')')
-                                    .append(SolrConstants.SOLR_QUERY_OR);
-                            sbOuter.append(SolrConstants.DEFAULT).append(":(").append(innerQuery).append(')');
-                            break;
-                        case SolrConstants.FULLTEXT:
-                            sbOuter.append(SolrConstants.SUPERFULLTEXT)
-                                    .append(":(")
-                                    .append(innerQuery)
-                                    .append(')')
-                                    .append(SolrConstants.SOLR_QUERY_OR);
-                            sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(innerQuery).append(')');
-                            break;
-                        case SolrConstants.UGCTERMS:
-                            sbOuter.append(SolrConstants.SUPERUGCTERMS)
-                                    .append(":(")
-                                    .append(innerQuery)
-                                    .append(')')
-                                    .append(SolrConstants.SOLR_QUERY_OR);
-                            sbOuter.append(SolrConstants.UGCTERMS).append(":(").append(innerQuery).append(')');
-                            break;
-                        case SolrConstants.SEARCHTERMS_ARCHIVE:
-                            sbOuter.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE)
-                                    .append(":(")
-                                    .append(innerQuery)
-                                    .append(')')
-                                    .append(SolrConstants.SOLR_QUERY_OR);
-                            sbOuter.append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(").append(innerQuery).append(')');
-                            break;
-                        default:
-                            sbOuter.append(currentSearchFilter.getField()).append(":(").append(innerQuery).append(')');
-                            break;
-                    }
-                }
-                searchStringInternal += sbOuter.toString();
-            }
-
-        }
-        if (searchStringInternal.endsWith(SolrConstants.SOLR_QUERY_OR)) {
-            searchStringInternal = searchStringInternal.substring(0, searchStringInternal.length() - 4);
-        } else if (searchStringInternal.endsWith(SolrConstants.SOLR_QUERY_AND)) {
-            searchStringInternal = searchStringInternal.substring(0, searchStringInternal.length() - 5);
-        }
-
-        logger.trace("search string: {}", searchStringInternal);
-        // logger.trace("search terms: {}", searchTerms.toString()); //NOSONAR Debug
     }
 
     /**

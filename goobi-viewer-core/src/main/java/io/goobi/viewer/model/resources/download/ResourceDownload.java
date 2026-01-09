@@ -28,10 +28,13 @@ import io.goobi.viewer.model.job.TaskType;
 /**
  * Manages record resources that are made available to users for download, like pdf files or other media not displayed directly in the viewer
  */
-public class ResourceDownload {
+public final class ResourceDownload {
 
     private static final String ID_WORD_SEPARATOR = "_";
     private static final int MAX_ID_PART_LENGTH = 100;
+
+    private ResourceDownload() {
+    }
 
     /**
      * Create an identifier for a resource accessible through an external url
@@ -45,7 +48,5 @@ public class ResourceDownload {
 
         return "%s_%s_%s".formatted(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), pi,
                 urlId);
-
     }
-
 }
