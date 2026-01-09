@@ -105,13 +105,6 @@ public class Bookmark implements Serializable {
     @Column(name = "urn")
     private String urn;
 
-    /**
-     * @deprecated TODO Remove column in the DB update so that this field can be removed
-     */
-    @Deprecated(since = "24.10")
-    @Column(name = "main_title")
-    private String mainTitle = null;
-
     @Column(name = "date_added")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")

@@ -104,6 +104,8 @@ import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.search.SearchQueryItemLine;
 import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.search.SearchSortingOption;
+import io.goobi.viewer.model.search.query.QueryResult;
+import io.goobi.viewer.model.search.query.SimpleQueryBuilder;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -865,23 +867,6 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * <p>
-     * hitsPerPageListener.
-     * </p>
-     *
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    @Deprecated(since = "25.05")
-    public void hitsPerPageListener()
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        logger.trace("hitsPerPageListener");
-        executeSearch();
-    }
-
-    /**
-     * <p>
      * executeSearch.
      * </p>
      *
@@ -1234,6 +1219,30 @@ public class SearchBean implements SearchInterface, Serializable {
         generateSimpleSearchString(this.searchString);
     }
 
+    void generateSimpleSearchString(final String inSearchString) {
+        logger.trace("generateSimpleSearchString: {}", inSearchString);
+        logger.trace("currentSearchFilter: {}", currentSearchFilter.getLabel());
+
+        SimpleQueryBuilder builder = SimpleQueryBuilder.builder()
+                .withSearchFilter(currentSearchFilter)
+                .withFuzzySearchEnabled(fuzzySearchEnabled)
+                .withSearchTerms(searchTerms)
+                .build();
+
+        QueryResult result = builder.build(inSearchString);
+
+        searchString = result.getDisplaySearchString();
+        searchStringInternal = result.getInternalQuery();
+        proximitySearchDistance = result.getProximityDistance();
+        this.searchTerms = result.getSearchTerms();
+
+        if (StringUtils.isBlank(searchStringInternal) || "*".equals(searchStringInternal)) {
+            setExactSearchString("");
+        }
+
+        logger.trace("search string: {}", searchStringInternal);
+    }
+
     /**
      * @param inSearchString the searchString to set
      * @should generate phrase search query without filter correctly
@@ -1243,7 +1252,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should add proximity search token correctly
      * @should reset exactSearchString if input empty
      */
-    void generateSimpleSearchString(final String inSearchString) {
+    void generateSimpleSearchString_alt(final String inSearchString) {
         logger.trace("generateSimpleSearchString: {}", inSearchString);
         logger.trace("currentSearchFilter: {}", currentSearchFilter.getLabel());
         String tempSearchString = inSearchString;
@@ -1783,10 +1792,13 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should add extra search query item if all items full
      * @should not replace query items already in use
      * @should not add identical hierarchical query items
+     * @should change nothing if facet already exists in query items
+     * 
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
         if (facets.getActiveFacets().isEmpty()) {
+            // Reset hierarchical query items if no active facets selected
             List<SearchQueryItem> queryItems = new ArrayList<>(advancedSearchQueryGroup.getQueryItems());
             for (SearchQueryItem item : queryItems) {
                 if (item.isHierarchical()) {
@@ -1804,33 +1816,56 @@ public class SearchBean implements SearchInterface, Serializable {
                 continue;
             }
             // logger.trace("facet item: {}", facetItem); //NOSONAR Debug
-            // Look up and re-purpose existing query items with the same field first
-            boolean matched = false;
+
+            SearchQueryItem match = null;
+
+            // First try to match item with exact field
             for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
-                // field:value pair already exists
-                if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || StringUtils.isEmpty(queryItem.getValue()))) {
-                    // Override existing items without a field or with the same field with current facet value
-                    // logger.trace("updating query item: {}", queryItem); //NOSONAR Debug
-                    queryItem.setField(facetItem.getField());
-                    queryItem.setValue(facetItem.getValue());
-                    // logger.trace("updated query item: {}", queryItem); //NOSONAR Debug
-                    populatedQueryItems.add(queryItem);
-                    matched = true;
+                if (!populatedQueryItems.contains(queryItem)
+                        && (facetItem.getField().equals(queryItem.getField()) && facetItem.getValue().equals(queryItem.getValue()))) {
+                    match = queryItem;
+                    logger.error("Found query item with same field+value: {}:{}", match.getField(), match.getValue());
                     break;
                 }
             }
-            if (!matched) {
-                // If no search field is set up for collection search, add new field containing the currently selected collection
-                SearchQueryItem item = new SearchQueryItem();
-                item.setField(facetItem.getField());
-                item.setValue(facetItem.getValue());
-                // ...but only if there is no exact field:value pair already among the query items
-                if (!populatedQueryItems.contains(item)) {
-                    advancedSearchQueryGroup.getQueryItems().add(item);
-                    // logger.trace("added new item: {}", item); //NOSONAR Debug
-                    populatedQueryItems.add(item);
+
+            // Match same field with no value selected
+            if (match == null) {
+                for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+                    if (!populatedQueryItems.contains(queryItem)
+                            && facetItem.getField().equals(queryItem.getField())
+                            && StringUtils.isEmpty(queryItem.getValue())) {
+
+                        match = queryItem;
+                        logger.error("Found same field with empty value: {}", queryItem.getField());
+                        break;
+                    }
                 }
             }
+
+            // If no exact field match found, try to re-purpose an unused item
+            if (match == null) {
+                for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+                    // field:value pair already exists
+                    if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || StringUtils.isEmpty(queryItem.getValue()))) {
+                        match = queryItem;
+                        logger.error("updating query item: {}:{}", match.getField(), match.getValue());
+                        break;
+                    }
+                }
+            }
+
+            if (match == null) {
+                // If no search field is set up for collection search, add new field containing the currently selected collection
+                match = new SearchQueryItem();
+                if (!populatedQueryItems.contains(match)) {
+                    advancedSearchQueryGroup.getQueryItems().add(match);
+                }
+            }
+
+            match.setField(facetItem.getField());
+            match.setValue(facetItem.getValue());
+            populatedQueryItems.add(match);
         }
     }
 
