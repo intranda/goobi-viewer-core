@@ -106,6 +106,8 @@ var viewerJS = ( function( viewer ) {
             _getSidebarScrollPosition();
             _hideEmptyPanels();
 
+            window.image?.updateMargins();
+
             // toggle sidebar
             $( '[data-close="fs-sidebar"]' ).on( 'click', function() {
             	// set global variables
@@ -150,6 +152,7 @@ var viewerJS = ( function( viewer ) {
 
             		// save sidebar status
             		sessionStorage.setItem( 'fsSidebarStatus', false );
+                    window.image?.updateMargins();
             	} );
 
             	
@@ -199,8 +202,12 @@ var viewerJS = ( function( viewer ) {
             		
             		// save sidebar status
             		sessionStorage.setItem( 'fsSidebarStatus', true );
+                                   
+                    window.image?.updateMargins();
+
 
             	} );
+
             	
             	if ( $( '.fullscreen__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
             		$( '.fullscreen__view-image-thumbs-wrapper' ).animate( {
