@@ -14,7 +14,10 @@ const _config = {
             page: '[data-image="zoomable"] [data-image-data="pageNumber"]',
             footer: '[data-image="zoomable"] [data-image-data="footer"]',
             pageAreas: '[data-image="zoomable"] [data-image-data="pageAreas"]',
-            overlays: '[data-image="zoomable"] [data-image-data="overlays"]',
+            overlays: '[data-image="zoomable"] [data-image-data="overlays"]', 
+            topMarginElement: '[data-image="zoomable"] [data-image-data="topMarginElement"]',
+            leftMarginElement: '[data-image="zoomable"] [data-image-data="leftMarginElement"]',
+            rightMarginElement: '[data-image="zoomable"] [data-image-data="rightMarginElement"]',
         },
         controls: { 
             rotateLeft: '.rotate-left',
@@ -51,6 +54,10 @@ export default class ZoomableImage {
             this.pageType = document.querySelector(_config.elementSelectors.data.pageType).textContent;
             this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
             
+            this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
+            this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
+            this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
+
             const imageViewConfig = createZoomableImageConfig(imageElement);
             if(_debug)console.log("create image view with config ", imageViewConfig);
             this.viewer = new ImageView.Image(imageViewConfig);
@@ -96,6 +103,19 @@ export default class ZoomableImage {
 
             this.pageAreaGroup = _drawPageAreas(this);
 
+        }
+    }
+
+    updateMargins() {
+        if(this.viewer?.openseadragon?.viewport) {
+            const viewerRight = (this.viewer.element.offsetLeft + this.viewer.element.offsetWidth);
+            const sidebarRightLeft = document.querySelector(this.rightMarginElement)?.offsetLeft;
+            const margins = {
+                left: (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) + (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
+                right: sidebarRightLeft ? (viewerRight - sidebarRightLeft) : 0,
+                top: document.querySelector(this.topMarginElement)?.offsetHeight ?? 0,
+            };
+            this.viewer.setMargins(margins);
         }
     }
  
@@ -145,7 +165,7 @@ export default class ZoomableImage {
     getTileSourceOrderFromId(id) {
         return this.tileSourceIdToOrder[id];
     }
-  
+
 }
 
 function _drawPageAreas(image) {
@@ -211,7 +231,9 @@ function createZoomableImageConfig(imageElement) {
     return  {
         element: imageElement,
         fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
-        margins: getMargins(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight], document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
+        margins:{
+            bottom: Number(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight])
+        }, 
         zoom:  {
             enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== "false"
         },
@@ -244,11 +266,5 @@ function getFittingMode(pageType) {
             return "fixed";
         default:
             return "toWidth";
-    }
-}
-
-function getMargins(footerHeight, pageType) {
-    return {
-        bottom: Number(footerHeight)
     }
 }
