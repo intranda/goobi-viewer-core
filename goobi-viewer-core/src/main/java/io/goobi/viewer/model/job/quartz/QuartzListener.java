@@ -178,6 +178,7 @@ public class QuartzListener implements ServletContextListener {
         addTrigger(storedTriggers, triggers, TaskType.PURGE_EXPIRED_DOWNLOAD_TICKETS, TaskTriggerStatus.RUNNING);
         addTrigger(storedTriggers, triggers, TaskType.UPDATE_SITEMAP, TaskTriggerStatus.RUNNING);
         addTrigger(storedTriggers, triggers, TaskType.UPDATE_UPLOAD_JOBS, TaskTriggerStatus.RUNNING);
+        addTrigger(storedTriggers, triggers, TaskType.PURGE_EXPIRED_DOWNLOAD_PDFS, TaskTriggerStatus.RUNNING);
         if (GeoMapUpdateHandler.shouldUpdateGeomaps()) {
             addTrigger(storedTriggers, triggers, TaskType.CACHE_GEOMAPS, TaskTriggerStatus.RUNNING);
         } else if (storedTriggers.containsKey(TaskType.CACHE_GEOMAPS.name())) {

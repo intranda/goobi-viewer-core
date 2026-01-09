@@ -167,6 +167,13 @@
 
 
 	<dependencies>
+	
+		<dependency>
+		    <groupId>de.intranda.digiverso.convert</groupId>
+			<artifactId>epubconvert</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+	
 		<!-- intranda libraries -->
 		 <dependency>
 		      <groupId>de.intranda.js.content-view</groupId>
@@ -926,6 +933,8 @@
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-models</ignoredUsedUndeclaredDependency>
 
 								<ignoredUsedUndeclaredDependency>org.glassfish.hk2.external:jakarta.inject</ignoredUsedUndeclaredDependency>
+								
+								<ignoredUsedUndeclaredDependency>de.intranda.digiverso.convert:epubconvert:jar:1.1.0-SNAPSHOT</ignoredUsedUndeclaredDependency>
 								
 							</ignoredUsedUndeclaredDependencies>
 
