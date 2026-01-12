@@ -1,0 +1,15 @@
+/bin/
+/build/
+/deploy/
+/node_modules/
+.DS_Store
+**/.DS_Store
+/config_viewer.xml
+/.tern-project
+/.project
+/target/
+/.project
+/src/META-INF/resources/resources/css/styleguide/
+/package-lock.json
+/.classpath
+/.settings
