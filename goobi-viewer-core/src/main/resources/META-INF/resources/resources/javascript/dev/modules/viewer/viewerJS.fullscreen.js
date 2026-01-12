@@ -86,16 +86,16 @@ var viewerJS = ( function( viewer ) {
                     
                     // check if sidebar is resizing
                     if ( e.target[ 'id' ] != _sidebarId ) {
-                        $( 'body' ).hide();
-                        window.location.href = window.location.href;                    
+                        window.image?.updateMargins();       
+                        setTimeout(() => window.image?.zoom?.goHome(), 100);         
                     }
                 } );
             } 
             else {
                 // set position on resize/orientationchange
                 $( window ).on( 'orientationchange', function(e) {
-                    $( 'body' ).hide();                    
-                    window.location.href = window.location.href;                    
+                    window.image?.updateMargins();   
+                   setTimeout(() => window.image?.zoom?.goHome(), 100);     
                 } );   
             }
             
