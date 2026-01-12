@@ -90,6 +90,19 @@ public class FilesListing implements Serializable {
             logger.trace("Found default config_viewer.xml at: {}", defaultViewerConfigFile.getAbsolutePath());
         }
 
+        // Default config_oai.xml
+        File defaultOaiConfigFile =
+                new File(DataManager.getInstance()
+                        .getConfiguration()
+                        .getDefaultConfigFile()
+                        .getAbsolutePath()
+                        .replace("config_viewer.xml", "config_oai.xml"));
+        if (defaultOaiConfigFile != null) {
+            fileRecords.add(
+                    new ReadOnlyFileRecord(defaultOaiConfigFile.toPath(), fileRecords.size(), defaultOaiConfigFile.getName() + " (default)"));
+            logger.trace("Found default config_oai.xml at: {}", defaultViewerConfigFile.getAbsolutePath());
+        }
+
         fileRecordsModel = new ListDataModel<>(fileRecords);
     }
 
