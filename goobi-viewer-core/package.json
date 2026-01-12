@@ -56,7 +56,7 @@
     "codemirror": "^5.0.0",
     "epubjs": "~0.3.93",
     "font-awesome": "~4.7.0",
-    "@tabler/icons": "^3.31.0",
+    "@tabler/icons": "^3",
     "hc-sticky": "~2.2.7",
     "jqplot": "~1.0.9",
     "jquery": "~3.7.1",
