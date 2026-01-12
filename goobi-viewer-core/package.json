@@ -103,11 +103,12 @@
     "not dead"
   ],
   "lint-staged": {
-    "**/*.{js,ts,jsx,tsx}": [
-      "prettier --write"
+    "*.{js,ts,jsx,tsx}": [
+      "prettier --write",
+      "eslint --fix"
     ],
-    "**/*.{json,md,css,less,html,xhtml}": [
-      "prettier --write --log-level warn"
+    "*.{json,md,css,scss,html,xhtml}": [
+      "prettier --write"
     ]
   }
 }

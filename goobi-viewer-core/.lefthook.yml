@@ -4,5 +4,5 @@
 pre-commit:
   parallel: false
   commands:
-    format-staged:
+    format-and-lint-staged:
       run: npx lint-staged
