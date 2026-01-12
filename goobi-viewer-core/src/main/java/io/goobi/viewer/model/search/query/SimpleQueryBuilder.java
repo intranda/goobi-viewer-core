@@ -45,7 +45,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public final class SimpleQueryBuilder {
 
-    private static final Logger logger = LogManager.getLogger(SearchBean.class);
+    private static final Logger logger = LogManager.getLogger(SimpleQueryBuilder.class);
 
     public static final String URL_ENCODING = "UTF8";
 
@@ -81,16 +81,17 @@ public final class SimpleQueryBuilder {
         return buildTermQuery(display, normalizedQuery);
     }
 
-    private QueryResult buildPhraseQuery(String display, String query) {
+    private QueryResult buildPhraseQuery(String display, final String query) {
         int proximity =
                 SearchHelper.extractProximitySearchDistanceFromQuery(query);
 
+        String q = query;
         if (proximity > 0) {
-            query = SearchHelper.removeProximitySearchToken(query);
+            q = SearchHelper.removeProximitySearchToken(q);
         }
 
         StringBuilder sb = new StringBuilder();
-        extractPhrases(query).forEach(
+        extractPhrases(q).forEach(
                 phrase -> appendPhrase(sb, phrase, proximity));
 
         return new QueryResult(
@@ -99,7 +100,7 @@ public final class SimpleQueryBuilder {
                 proximity);
     }
 
-    private List<String> extractPhrases(String query) {
+    private static List<String> extractPhrases(String query) {
         if (query == null || query.isEmpty()) {
             return List.of();
         }
@@ -116,7 +117,7 @@ public final class SimpleQueryBuilder {
         return phrases;
     }
 
-    private String trimTrailingOperator(String query) {
+    private static String trimTrailingOperator(String query) {
         if (query.endsWith(SolrConstants.SOLR_QUERY_OR)) {
             return query.substring(0, query.length() - 4);
         }
@@ -225,7 +226,7 @@ public final class SimpleQueryBuilder {
         return sbOuter.toString();
     }
 
-    private String normalizeInput(String input) {
+    private static String normalizeInput(String input) {
         if (input == null || "-".equals(input)) {
             return "";
         }
@@ -236,7 +237,7 @@ public final class SimpleQueryBuilder {
         }
     }
 
-    private String normalizeOperators(String input) {
+    private static String normalizeOperators(String input) {
         return input.replace(SolrConstants.SOLR_QUERY_OR, " || ")
                 .replace(SolrConstants.SOLR_QUERY_AND, " && ")
                 .toLowerCase();
@@ -247,7 +248,7 @@ public final class SimpleQueryBuilder {
                 || searchFilter.equals(SearchHelper.SEARCH_FILTER_ALL);
     }
 
-    private void appendAllFieldPhrase(StringBuilder sb,
+    private static void appendAllFieldPhrase(StringBuilder sb,
             String phrase,
             int proximityDistance) {
 
@@ -281,7 +282,7 @@ public final class SimpleQueryBuilder {
         appendPhraseField(sb, SolrConstants.CMS_TEXT_ALL, phrase, 0);
     }
 
-    private void appendPhraseField(StringBuilder sb,
+    private static void appendPhraseField(StringBuilder sb,
             String field,
             String phrase,
             int proximityDistance) {
