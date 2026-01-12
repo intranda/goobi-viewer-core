@@ -33,6 +33,9 @@
 				<div data-image-data="pageAreas">#{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson}</div>
 				<div data-image-data="overlays" data-styleclass="coords-highlighting" data-show-tooltip="false">#{activeDocumentBean.viewManager.currentSearchResultCoords}</div>
 				<div data-image-data="overlays" data-styleclass="ugcBox" data-show-tooltip="true">#{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}</div>
+				<div data-image-data="rightMarginElement">#fullscreenViewSidebar</div>
+<!-- 				<div data-image-data="leftMarginElement">#fullscreenView #sidebarScrollPreview</div> -->
+<!-- 				<div data-image-data="topMarginElement">#fullscreenHeader</div> -->
 			</div>
 		</div>
 		<div jsf:id="mainImageForbidden" class="view-object__image-map" rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
@@ -139,33 +142,6 @@
 	            clearAll: "#{msg.action__reset_all_image_filters}"
 	        }
         };
-        
-        // check for fullscreen and change container height 
-        if ( $( '#fullscreen' ).length > 0 ) {
-        	const topMargin = () => {
-        	    var $header = $('#fullscreenHeader');
-        	    if($header.is(":visible")) {
-        	        return $header.outerHeight();
-        	    } else {
-        	        return 0;
-        	    }
-        	}
-        	const rightMargin = () => {
-        	    var $sidebar = $('#fullscreenViewSidebar');
-//         	    var $scrollPreview = $('#sidebarScrollPreview');
-//         	    leftMargin = $scrollPreview.width() == undefined ? 0 : $scrollPreview.width();
-				rightMargin = 0;
-				
-			    if (window.matchMedia('(min-width: 968px)').matches) {
-	        		rightMargin = ($sidebar.width() == undefined) ? 0 : $sidebar.width();
-			    }
-
-//         	    element.css('right') !== '0px'
-
-        	    return rightMargin;
-        	    // + leftMargin;
-        	}
-        }
         
 	    function setBrowserLocation(pi, pageNo) {
 	    	const url = new URL(window.location.href);
@@ -290,7 +266,7 @@
         	 } 
        		window.shareImageFragment = new window.ShareImageFragment(image);
        		window.shareImageFragment.initImageFragmentLinks();
-
+       		
    	 	    let originClean = image.viewer.isOriginClean();
    	 	    if(originClean) {
    	 	        $(".image-controls__option.image-filter button").prop('disabled', false);

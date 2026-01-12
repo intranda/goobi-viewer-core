@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.configuration2.BaseHierarchicalConfiguration;
@@ -4122,8 +4123,47 @@ public class Configuration extends AbstractConfiguration {
         }
     }
 
+    public Map<String, String> getDownloadHeader(String externalResourceUrl) {
+
+        if (StringUtils.isBlank(externalResourceUrl)) {
+            return Collections.emptyMap();
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
+
+        for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
+            String templateUrl = templateConfig.getString("url", "");
+            if (externalResourceUrl.equals(templateUrl)) {
+                Map<String, String> headerMap = new HashMap<>();
+                List<HierarchicalConfiguration<ImmutableNode>> headerConfigs = templateConfig.configurationsAt("httpHeader");
+                for (HierarchicalConfiguration<ImmutableNode> headerConfig : headerConfigs) {
+                    String key = headerConfig.getString("[@key]", "");
+                    String value = headerConfig.getString("[@value]", "");
+                    if (StringUtils.isNoneBlank(key, value)) {
+                        headerMap.put(key, value);
+                    }
+                }
+                return headerMap;
+            }
+        }
+        return Collections.emptyMap();
+    }
+
     public List<String> getExternalResourceUrlTemplates() {
-        return getLocalList("externalResource.urls.template", Collections.emptyList());
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
+        List<String> templates = new ArrayList<>();
+        for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
+            String url = templateConfig.getString(".", "");
+            if (StringUtils.isNotBlank(url)) {
+                templates.add(url);
+            } else {
+                url = templateConfig.getString("url", "");
+                if (StringUtils.isNotBlank(url)) {
+                    templates.add(url);
+                }
+            }
+        }
+        return templates.stream().distinct().toList();
     }
 
     public Duration getExternalResourceTimeBeforeDeletion() {
@@ -6649,6 +6689,19 @@ public class Configuration extends AbstractConfiguration {
 
     public String getRecordViewStyleClass() {
         return getLocalString("viewer.viewStyleClass", "docstructtype__{record.DOCSTRCT}");
+    }
+
+    public Duration getDownloadPdfTimeToLive() {
+        int num = getLocalInt("pdf.expireAfter", 14);
+        String unitString = getLocalString("pdf.expireAfter[@unit]", "DAYS");
+        TimeUnit unit = TimeUnit.DAYS;
+        try {
+            unit = TimeUnit.valueOf(unitString);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid value in configuration pdf.expireAfter[@unit]: {}", unitString);
+        }
+        return Duration.of((long) num, unit.toChronoUnit());
+
     }
 
 }

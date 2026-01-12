@@ -261,14 +261,21 @@
 					<!-- EPUB -->
 					<ui:fragment visibility-class="widget-element"
 						rendered="#{activeDocumentBean.accessPermissionEpub}">
-						<a href="#"
-							class="badge badge-dark widget-downloads__work-download-epub download-modal-widget"
-							data-type="epub" data-title="#{activeDocumentBean.titleBarLabel}"
-							data-id="" data-pi="#{activeDocumentBean.viewManager.pi}"
-							title="#{msg.epubDownload}" data-toggle="tooltip"
-							data-placement="top" data-trigger="hover"
-							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.epub}">
-							#{msg.epub} </a>
+						
+						<div id="epubWork" title="#{msg.epubDownload}"
+								data-toggle="tooltip" data-placement="top" data-trigger="hover">
+								<button
+									class="badge badge-dark widget-downloads__work-download-epub download-modal-widget"
+									data-toggle="modal" data-target="#downloadModalEpub">
+									#{msg.epub}
+								</button>
+								<viewerComponent:modalDownload
+									downloadType="epub"
+									modalId="downloadModalEpub"
+									title="#{activeDocumentBean.titleBarLabel}"
+									fileSize="" />
+							</div>
+						
 					</ui:fragment>
 
 					<!-- TOC -->

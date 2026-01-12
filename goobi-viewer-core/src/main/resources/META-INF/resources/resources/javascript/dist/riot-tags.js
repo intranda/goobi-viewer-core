@@ -1337,6 +1337,7 @@ riot.tag2('external-resource-download', '<div class="download-external-resource_
       this.iconBasePath = ensureTrailingSlash(viewerConfig.iconBasePath || viewerConfig.contextPath || '/');
       this.getIconHref = iconName => `${this.iconBasePath}resources/icons/outline/${iconName}.svg#icon`;
       this.urls = [];
+      this.urlTemplates = {};
       this.downloads = new Map();
       this.updateListeners = new Map();
       this.updateDelay = 1000;
@@ -1357,7 +1358,8 @@ riot.tag2('external-resource-download', '<div class="download-external-resource_
 
       this.on("mount", () => {
     	  console.log("mounting external resource download", this, this.opts);
-      	this.urls = this.opts.urls;
+      	this.urls = Object.keys(this.opts.urls);
+      	this.urlTemplates = this.opts.urls;
       	this.pi = this.opts.pi;
       	this.msg = this.opts.msg;
       	this.contextPath = this.opts.contextPath ? this.opts.contextPath : this.contextPath;
@@ -1409,7 +1411,7 @@ riot.tag2('external-resource-download', '<div class="download-external-resource_
     		if(this.updateListeners.has(urlToDownload)) {
     			this.updateListeners.get(urlToDownload).cancel();
     		}
-	      	this.sendMessage({pi: this.pi, url: urlToDownload, action: 'startdownload'})
+	      	this.sendMessage({pi: this.pi, url: urlToDownload, urlTemplate: this.urlTemplates[urlToDownload],  action: 'startdownload'})
 	        const listener = viewerJS.helper.repeatPromise(() => this.sendMessage(this.createSocketMessage(this.pi, urlToDownload, "update")), this.updateDelay);
 	        this.updateListeners.set(urlToDownload, listener);
 	        listener.then(() => {});

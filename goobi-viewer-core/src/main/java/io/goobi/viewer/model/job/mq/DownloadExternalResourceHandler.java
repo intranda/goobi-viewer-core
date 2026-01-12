@@ -52,14 +52,15 @@ import io.goobi.viewer.managedbeans.storage.ApplicationBean;
 import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
 import io.goobi.viewer.model.files.external.Progress;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
+import io.goobi.viewer.model.resources.download.ResourceDownload;
 import jakarta.inject.Inject;
 
 public class DownloadExternalResourceHandler implements MessageHandler<MessageStatus> {
 
     private static final String PARAMETER_PI = "pi";
     private static final String PARAMETER_URL = "url";
+    private static final String PARAMETER_URL_TEMPLATE = "urlTemplate";
 
     public static final String[] ALLOWED_FILE_EXTENSIONS =
             new String[] { "xml", "html", "pdf", "epub", "jpg", "jpeg", "png", "mp3", "mp4", "zip", "xlsx", "doc", "docx", "gs" };
@@ -76,6 +77,8 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
 
         String url = message.getProperties().get(PARAMETER_URL);
 
+        String urlTemplate = message.getProperties().get(PARAMETER_URL_TEMPLATE);
+
         String messageId = message.getMessageId();
 
         Path extractedFolder = Paths.get("");
@@ -88,7 +91,7 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
                 return MessageStatus.ERROR;
             }
 
-            String downloadId = getDownloadId(pi, url);
+            String downloadId = ResourceDownload.getExternalResourceId(pi, url);
 
             URI uri = new URI(url);
             if (!uri.isAbsolute()) {
@@ -99,7 +102,7 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
 
             if (!isFilesExist(pi, url, downloadId)) {
 
-                extractedFolder = downloadAndExtractFiles(uri, targetFolder.resolve(downloadId), messageId);
+                extractedFolder = downloadAndExtractFiles(uri, urlTemplate, targetFolder.resolve(downloadId), messageId);
 
                 removeProgress(url);
 
@@ -129,10 +132,10 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         queueManager.addToQueue(message);
     }
 
-    private Path downloadAndExtractFiles(URI url, Path targetFolder, String messageId) throws IOException {
+    private Path downloadAndExtractFiles(URI url, String urlTemplate, Path targetFolder, String messageId) throws IOException {
         ExternalFilesDownloader downloader = new ExternalFilesDownloader(targetFolder,
                 p -> storeProgress(p, url.toString(), Paths.get(""), messageId));
-        return downloader.downloadExternalFiles(url);
+        return downloader.downloadExternalFiles(url, urlTemplate);
     }
 
     private void storeProgress(Progress progress, String identifier, Path path, String messageId) {
@@ -176,19 +179,14 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         }
     }
 
-    private String getDownloadId(String pi, String downloadUrl) {
-        return DownloadJob.generateDownloadJobId(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), pi,
-                downloadUrl);
-    }
-
     @Override
     public String getMessageHandlerName() {
         return TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name();
     }
 
-    public static ViewerMessage createMessage(String pi, String url) {
+    public static ViewerMessage createMessage(String pi, String url, String urlTemplate) {
         ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name());
-        message.setProperties(Map.of(PARAMETER_PI, pi, PARAMETER_URL, url));
+        message.setProperties(Map.of(PARAMETER_PI, pi, PARAMETER_URL, url, PARAMETER_URL_TEMPLATE, urlTemplate));
         return message;
     }
 

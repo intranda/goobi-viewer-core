@@ -295,6 +295,14 @@ public abstract class AbstractPageLoader implements IPageLoader {
             }
         }
 
+        // If page is primarily A/V, add main file name to the file name map
+        if (mimeType != null && mimeType.contains("/")) {
+            String[] mimeTypeSplit = mimeType.split("/");
+            if (("audio".equals(mimeTypeSplit[0]) || "video".equals(mimeTypeSplit[0])) && StringUtils.isNotEmpty(mimeTypeSplit[1])) {
+                pe.getFileNames().put(mimeTypeSplit[1].trim().toLowerCase(), fileName);
+            }
+        }
+
         // File names for different formats (required for A/V)
         String filenameRoot = new StringBuilder(SolrConstants.FILENAME).append('_').toString();
         for (String fieldName : doc.getFieldNames()) {

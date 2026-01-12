@@ -88,8 +88,7 @@
 														<div class="collection__title">
 															<!-- TITLE -->
 															<h:outputLink
-																value="#{navigationHelper.applicationUrl}admin/cms/collections/edit/#{browseDcElement.name}/"
-																styleClass="#{browseBean.dcCollection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
+																value="#{navigationHelper.applicationUrl}admin/cms/collections/edit/#{browseDcElement.name}/">
 																<h:outputText
 																	rendered="#{browseDcElement.displayNumberOfVolumes}"
 																	value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)} (#{browseDcElement.numberOfVolumes})" />

@@ -5,15 +5,13 @@
 /* BREADCRUMBS */
 /* BLOCK */
 .breadcrumbs {
-	&__wrapper {
+	&__wrapper { 
 		margin-top: 2rem;
 		font-size: @fontSmall;
 	}
     /* ELEMENTS */
     ul {}
-    li {
-        display: inline-block;
-    }
+    li {}
     a, span {
         display: inline-block;
         padding: 5px;
@@ -34,13 +32,15 @@
             padding-left: 5px;
         }
     }
+	&__crumb {
+		display: inline-flex;
+		align-items: center;
+	}
     &__crumb + li:before {
         content: "";
         display: inline-block;
-        width: 0.8rem;
-        height: 0.8rem;
-        vertical-align: middle;
-        transform: translateY(-0.85em);
+        width: 1rem;
+        height: 1rem;
         background-color: currentColor;
         mask: url("../../icons/outline/chevron-right.svg") center/100% 100% no-repeat;
         -webkit-mask: url("../../icons/outline/chevron-right.svg") center/100% 100% no-repeat;

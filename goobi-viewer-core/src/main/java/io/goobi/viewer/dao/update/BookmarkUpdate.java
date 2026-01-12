@@ -19,28 +19,28 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.controller;
+package io.goobi.viewer.dao.update;
 
-import org.junit.jupiter.api.BeforeEach;
+import java.sql.SQLException;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
-class GeoCoordinateConverterTest extends AbstractTest {
+public class BookmarkUpdate implements IModelUpdate {
 
-    @BeforeEach
-    public void setUp() throws Exception {
-        super.setUp();
+    /** {@inheritDoc} */
+    @Override
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
+        return removeMainTitleCol(dao);
     }
 
-    //@Test
-    //    void test_createTitle() {
-    //        Metadata md = DataManager.getInstance().getConfiguration().getRecordGeomapFeatureConfiguration("MD_BIOGRAPHY_JOURNEY");
-    //        Map<String, List<IMetadataValue>> mdMap = Map.of(
-    //                "MD_LOCATION", List.of(new SimpleMetadataValue("Mexico"))
-    //                );
-    //                
-    //        IMetadataValue value = GeoCoordinateConverter.createTitle(md, mdMap);
-    //        assertEquals("Journey to Mexico", value.getValueOrFallback(Locale.ENGLISH));
-    //    }
+    private static boolean removeMainTitleCol(IDAO dao) throws DAOException, SQLException {
+        if (dao.columnsExists("bookshelf_items", "main_title")) {
+            dao.executeUpdate("ALTER TABLE bookshelf_items DROP COLUMN main_title");
+            return true;
+        }
 
+        return false;
+    }
 }

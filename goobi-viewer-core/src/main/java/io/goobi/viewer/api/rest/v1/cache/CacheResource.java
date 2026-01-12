@@ -41,8 +41,7 @@ import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.model.IResponseMessage;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.job.download.DownloadJobTools;
+import io.goobi.viewer.model.job.download.PdfDownloadJob;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -159,13 +158,9 @@ public class CacheResource {
 
         // Delete download jobs/files
         if (pdf) {
-            try {
-                int count = DownloadJobTools.removeJobsForRecord(pi);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Removed {} download jobs for '{}'", count, pi.replaceAll("[\n\r\t]", "_"));
-                }
-            } catch (DAOException e) {
-                logger.error(e.getMessage(), e);
+            int count = PdfDownloadJob.removeFilesForRecord(pi);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Removed {} download jobs for '{}'", count, pi.replaceAll("[\n\r\t]", "_"));
             }
         }
 

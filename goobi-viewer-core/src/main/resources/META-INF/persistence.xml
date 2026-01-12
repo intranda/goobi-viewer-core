@@ -78,9 +78,6 @@
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.questions.Question</class>
-		<class>io.goobi.viewer.model.job.download.DownloadJob</class>
-		<class>io.goobi.viewer.model.job.download.EPUBDownloadJob</class>
-		<class>io.goobi.viewer.model.job.download.PDFDownloadJob</class>
         <class>io.goobi.viewer.model.job.quartz.RecurringTaskTrigger</class>
         <class>io.goobi.viewer.model.job.upload.UploadJob</class>
         <class>io.goobi.viewer.model.log.LogMessage</class>

@@ -43,6 +43,8 @@ public enum TaskType implements ITaskType {
     INDEX_USAGE_STATISTICS("0 45 0 * * ?"),
     /** Create a PDF for a record or part of record to be offered as download **/
     DOWNLOAD_PDF(""),
+    /** Create a EPUB for a record or part of record to be offered as download **/
+    DOWNLOAD_EPUB(""),
     /** Write single page pdfs to storage to be used when creating a full record pdf **/
     PRERENDER_PDF("0 35 0 * * ?"),
     /** Fill all CMS-Geomaps with features from SOLR to avoid loading that data during page load */
@@ -54,7 +56,9 @@ public enum TaskType implements ITaskType {
     /** Pull the git repository of the viewer theme if it exists in the configured location */
     PULL_THEME("0 */1 * * * ?"),
     /** Unload archive trees if any associated records have been reindexed. */
-    REFRESH_ARCHIVE_TREE("");
+    REFRESH_ARCHIVE_TREE(""),
+    /** Check the pdf-download folder and delete all pdf files which are not locked and last accessed 15 days ago */
+    PURGE_EXPIRED_DOWNLOAD_PDFS("0 0 3 * * ?");
 
     private final String defaultCronExpression;
 

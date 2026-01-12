@@ -66,6 +66,11 @@
                             <div class="admin__default-block">
                                 <ui:param name="language" value="de"></ui:param>
                                 <div id="nameLanguage-#{adminLicenseBean.currentLicenseType.selectedLocale}">
+                                
+<!--                                 <div class="form-group form-row"> -->
+<!--                                     #{msg.admin__license_placeholder_image_desc} -->
+<!--                                 </div> -->
+                                
 
                                     <!-- IMAGE SELECTION -->
                                     <div class="form-group form-row">
@@ -155,7 +160,7 @@
                                                 <button type="button" class="btn btn--clean"
                                                     data-toggle="helptext" 
                                                     aria-label="inline help icon">
-                                                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+													<util:icon icon="help" />
                                                 </button>
                                             </div>
                                         </div>
@@ -259,8 +264,9 @@
                                 
                                 <div class="#{!adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-target-redirect="input">
 	                                <div class="form-group form-row admin__license-selectable-block">
-	                                
-	                                	<div class="col-2"></div>
+	                                    <div class="col-2 control-label admin__form-label">
+                                            <label for="placeholderDesc">#{msg.admin__highlights__target_type_url}:</label>
+                                        </div>
 		                                <div class="col-9 admin__form-input cms-module__option-control mt-2 mb-3">
 		                                	<!-- VALIDATOR HAS TO BE REWORKED/EXTENDED TO CHECK FOR VALID URL PATTERNS -->
 		                                    
@@ -474,7 +480,7 @@
                         </div>
                         
 		            <script>
-// 		           	adminJS.licenceToggle.init();
+ 		           	adminJS.licenceToggle.init(); 
 		            </script>
 		            
 		            <h:panelGroup id="mediaSelectPanel">

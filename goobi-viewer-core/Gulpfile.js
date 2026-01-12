@@ -304,7 +304,7 @@ function createIconStreams(onCopy) {
                                 if (!svg.attr('id')) svg.attr('id', 'icon');
                                 svg.removeAttr('width');
                                 svg.removeAttr('height');
-                                svg.removeAttr('stroke-width');
+                                svg.attr('stroke-width', '');
                                 file.contents = Buffer.from($.xml());
                             }
                         }

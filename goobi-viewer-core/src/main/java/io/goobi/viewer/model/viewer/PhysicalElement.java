@@ -1350,6 +1350,47 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
+     * Returns a list of media formats available for this element.
+     * 
+     * @param type audio or video
+     * @return List of supported formats for the given type
+     */
+    public List<String> getMediaFormats(String type) {
+        logger.trace("getMediaFormats: {}", type);
+        if (type == null) {
+            return Collections.emptyList();
+        }
+
+        List<String> ret = new ArrayList<>();
+        switch (type.toLowerCase()) {
+            case "audio":
+                if (fileNames.get("ogg") != null) {
+                    ret.add("ogg");
+                }
+                if (fileNames.get("mpeg") != null || fileNames.get("mp3") != null) {
+                    ret.add("mpeg");
+                    ret.add("mp3");
+                }
+                break;
+            case "video":
+                if (fileNames.get("webm") != null) {
+                    ret.add("webm");
+                }
+                if (fileNames.get("mp4") != null) {
+                    ret.add("mp4");
+                }
+                if (fileNames.get("ogg") != null) {
+                    ret.add("ogg");
+                }
+                break;
+            default:
+                logger.warn("Unsupported type: {}", type);
+        }
+
+        return ret;
+    }
+
+    /**
      * <p>
      * getVideoWidth.
      * </p>

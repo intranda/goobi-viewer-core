@@ -715,18 +715,13 @@
 
 
 	<!-- DOWNLOAD -->
-	<url-mapping id="download">
-		<pattern value="/download/" />
-		<view-id value="/viewDownload.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
 	<url-mapping id="download1">
 		<pattern value="/download/#{identifier:downloadBean.downloadIdentifier}/" />
 		<view-id value="/viewDownload.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{downloadBean.openDownloadAction()}</action>
 	</url-mapping>
-    
+	
 	<!-- BOOKMARKS -->
     <url-mapping id="bookmarkLists">
         <pattern value="/bookmarks/" />
@@ -1212,19 +1207,6 @@
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
-	</url-mapping>
-	<!-- Deprecated. Keep for backward compatibility -->
-	<url-mapping id="cmsOpenPageWithCollection">
-		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action onPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<!-- Deprecated. Keep for backward compatibility -->
-	<url-mapping id="cmsOpenPagePreviewWithCollection">
-		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 
 	<url-mapping id="cmsBrowse3">

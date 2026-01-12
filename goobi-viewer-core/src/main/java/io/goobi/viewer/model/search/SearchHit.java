@@ -695,15 +695,6 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * @deprecated use {@link #getIconName()} instead.
-     * @return {@link String}
-     */
-    @Deprecated(since = "25.10")
-    public String getIconClassForType() {
-        return getIconNameForType(this.type);
-    }
-
-    /**
      * <p>
      * Getter for the field <code>browseElement</code>.
      * </p>

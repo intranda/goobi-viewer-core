@@ -133,7 +133,7 @@ public class RecordFileResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        StringPair ret = builder.getAltoDocument(pi, filename);
+        StringPair ret = builder.getAltoDocument(pi, Path.of(filename).getFileName().toString());
         return ret.getOne();
     }
 
@@ -144,11 +144,12 @@ public class RecordFileResource {
     public String getPlaintext(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, ServiceNotAllowedException {
+        logger.trace("getPlaintext: {}", filename);
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        return builder.getFulltext(pi, filename);
+        return builder.getFulltext(pi, Path.of(filename).getFileName().toString());
     }
 
     @GET
@@ -162,7 +163,7 @@ public class RecordFileResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        return builder.getFulltextAsTEI(pi, filename);
+        return builder.getFulltextAsTEI(pi, Path.of(filename).getFileName().toString());
     }
 
     @GET
