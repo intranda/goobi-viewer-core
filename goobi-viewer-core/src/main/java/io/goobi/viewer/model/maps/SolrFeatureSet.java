@@ -79,7 +79,6 @@ public class SolrFeatureSet extends FeatureSet {
     /**
      * SOLR-Field to create the marker title from if the features are generated from a SOLR query
      */
-    @Deprecated
     @Column(name = "marker_title_field")
     private String markerTitleField = "MD_VALUE";
 
@@ -292,12 +291,10 @@ public class SolrFeatureSet extends FeatureSet {
         return StringUtils.isNotBlank(this.solrQuery);
     }
 
-    @Deprecated
     public String getMarkerTitleField() {
         return markerTitleField;
     }
 
-    @Deprecated
     public void setMarkerTitleField(String markerTitleField) {
         this.markerTitleField = markerTitleField;
         this.markerMetadataList = null;

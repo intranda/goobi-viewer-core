@@ -26,7 +26,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,14 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -55,10 +48,11 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.cms.pages.CMSPage;
-import io.goobi.viewer.model.job.JobStatus;
-import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.misc.Harvestable;
-import jakarta.mail.MessagingException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Servlet for harvesting crowdsourcing data and overview pages.
@@ -363,96 +357,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     }
                     return;
                 case "dl_update":
-                    // http://localhost:8080/viewer/harvest?&action=dl_update&identifier=7062b2225caf97a5e80f91f647f66b95&status=READY
-                    if (StringUtils.isEmpty(identifier)) {
-                        try {
-                            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "identifier required");
-                        } catch (IOException e1) {
-                            logger.error(e1.getMessage());
-                        }
-                        return;
-                    }
-                    if (StringUtils.isEmpty(status)) {
-                        try {
-                            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "status required");
-                        } catch (IOException e1) {
-                            logger.error(e1.getMessage());
-                        }
-                        return;
-                    }
-                    try {
-                        // Find job in the DB
-                        DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByIdentifier(identifier);
-                        if (job == null) {
-                            try {
-                                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Job not found");
-                            } catch (IOException e) {
-                                logger.error(e.getMessage());
-                            }
-                            return;
-                        }
-                        JobStatus oldStatus = job.getStatus();
-                        JobStatus djStatus = JobStatus.getByName(status);
-                        if (djStatus == null) {
-                            try {
-                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown status: " + status);
-                            } catch (IOException e) {
-                                logger.error(e.getMessage());
-                            }
-                            return;
-                        }
-                        logger.trace("Update for {} job {}: Changing status from {} to {}", job.getType(), job.getIdentifier(), oldStatus, djStatus);
-                        //only do something if job status has actually changed
-                        if (!djStatus.equals(oldStatus)) {
-                            // Update and save job
-                            synchronized (job) {
-                                try {
-                                    job.setStatus(djStatus);
-                                    if (StringUtils.isNotBlank(message)) {
-                                        job.setMessage(message);
-                                    }
-                                    job.setLastRequested(LocalDateTime.now());
-                                    if (JobStatus.ERROR.equals(djStatus) || JobStatus.READY.equals(djStatus)) {
-                                        // Send out the word
-                                        try {
-                                            job.notifyObservers(djStatus, job.getIdentifier(), message);
-                                            job.resetObservers();
-                                        } catch (UnsupportedEncodingException e) {
-                                            logger.error(e.getMessage());
-                                        }
-                                    }
-                                } catch (MessagingException e) {
-                                    logger.error(e.getMessage(), e);
-                                } finally {
-                                    try {
-                                        if (!DataManager.getInstance().getDao().updateDownloadJob(job)) {
-                                            try {
-                                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                                            } catch (IOException e) {
-                                                logger.error(e.getMessage());
-                                            }
-                                        } else {
-                                            logger.trace("Downloadjob {} updated in database with status {}", job, job.getStatus());
-                                        }
-                                    } catch (DAOException e) {
-                                        logger.error(e.getMessage(), e);
-                                        try {
-                                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ERROR_DB);
-                                        } catch (IOException e1) {
-                                            logger.error(e1.getMessage());
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
-                        try {
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ERROR_DB);
-                        } catch (IOException e1) {
-                            logger.error(e1.getMessage());
-                        }
-                    }
+                    notifyDownloadObservers(response, identifier, status, message);
                     return;
                 // Redirect crowdsourcing requests to
                 case "getlist_crowdsourcing":
@@ -488,6 +393,102 @@ public class HarvestServlet extends HttpServlet implements Serializable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    //TODO: this sends emails to observers of pdf download jobs in error and ready state. 
+    //Those observers should have already been emailed after the task completion
+    //so why is this here?
+    void notifyDownloadObservers(HttpServletResponse response, String identifier, String status, String message) {
+        // http://localhost:8080/viewer/harvest?&action=dl_update&identifier=7062b2225caf97a5e80f91f647f66b95&status=READY
+        //        if (StringUtils.isEmpty(identifier)) {
+        //            try {
+        //                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "identifier required");
+        //            } catch (IOException e1) {
+        //                logger.error(e1.getMessage());
+        //            }
+        //            return;
+        //        }
+        //        if (StringUtils.isEmpty(status)) {
+        //            try {
+        //                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "status required");
+        //            } catch (IOException e1) {
+        //                logger.error(e1.getMessage());
+        //            }
+        //            return;
+        //        }
+        //        try {
+        //            // Find job in the DB
+        //            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByIdentifier(identifier);
+        //            if (job == null) {
+        //                try {
+        //                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Job not found");
+        //                } catch (IOException e) {
+        //                    logger.error(e.getMessage());
+        //                }
+        //                return;
+        //            }
+        //            JobStatus oldStatus = job.getStatus();
+        //            JobStatus djStatus = JobStatus.getByName(status);
+        //            if (djStatus == null) {
+        //                try {
+        //                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown status: " + status);
+        //                } catch (IOException e) {
+        //                    logger.error(e.getMessage());
+        //                }
+        //                return;
+        //            }
+        //            logger.trace("Update for {} job {}: Changing status from {} to {}", job.getType(), job.getIdentifier(), oldStatus, djStatus);
+        //            //only do something if job status has actually changed
+        //            if (!djStatus.equals(oldStatus)) {
+        //                // Update and save job
+        //                synchronized (job) {
+        //                    try {
+        //                        job.setStatus(djStatus);
+        //                        if (StringUtils.isNotBlank(message)) {
+        //                            job.setMessage(message);
+        //                        }
+        //                        job.setLastRequested(LocalDateTime.now());
+        //                        if (JobStatus.ERROR.equals(djStatus) || JobStatus.READY.equals(djStatus)) {
+        //                            // Send out the word
+        //                            try {
+        //                                job.notifyObservers(djStatus, job.getIdentifier(), message);
+        //                                job.resetObservers();
+        //                            } catch (UnsupportedEncodingException e) {
+        //                                logger.error(e.getMessage());
+        //                            }
+        //                        }
+        //                    } catch (MessagingException e) {
+        //                        logger.error(e.getMessage(), e);
+        //                    } finally {
+        //                        try {
+        //                            if (!DataManager.getInstance().getDao().updateDownloadJob(job)) {
+        //                                try {
+        //                                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        //                                } catch (IOException e) {
+        //                                    logger.error(e.getMessage());
+        //                                }
+        //                            } else {
+        //                                logger.trace("Downloadjob {} updated in database with status {}", job, job.getStatus());
+        //                            }
+        //                        } catch (DAOException e) {
+        //                            logger.error(e.getMessage(), e);
+        //                            try {
+        //                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ERROR_DB);
+        //                            } catch (IOException e1) {
+        //                                logger.error(e1.getMessage());
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        } catch (DAOException e) {
+        //            logger.error(e.getMessage(), e);
+        //            try {
+        //                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ERROR_DB);
+        //            } catch (IOException e1) {
+        //                logger.error(e1.getMessage());
+        //            }
+        //        }
     }
 
     /**

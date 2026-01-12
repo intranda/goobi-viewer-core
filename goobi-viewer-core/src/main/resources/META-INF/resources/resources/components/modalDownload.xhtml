@@ -12,6 +12,8 @@
   xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 >
   <composite:interface>
+    <composite:attribute name="modalId" required="false" default="downloadModal"/>
+    <composite:attribute name="downloadType" required="false" default="pdf"/>
     <composite:attribute name="fileSize" required="true" />
     <composite:attribute name="logId" required="false" default="" />
     <composite:attribute name="title" required="true" />
@@ -21,7 +23,7 @@
     <!-- Modal -->
     <div
       class="modal fade download-modal"
-      id="downloadModal"
+      id="#{cc.attrs.modalId}"
       tabindex="-1"
       aria-hidden="true"
     >
@@ -48,9 +50,11 @@
               <dl class="row">
                 <dt class="col-sm-3">#{msg.downloadInfoTitle}:</dt>
                 <dd class="col-sm-9">#{cc.attrs.title}</dd>
-
-                <dt class="col-sm-3">#{msg.downloadInfoFileSize}:</dt>
-                <dd class="col-sm-9">~ #{cc.attrs.fileSize}</dd>
+				
+				<ui:fragment rendered="#{not empty cc.attrs.fileSize}">
+	                <dt class="col-sm-3">#{msg.downloadInfoFileSize}:</dt>
+	                <dd class="col-sm-9">~ #{cc.attrs.fileSize}</dd>
+                </ui:fragment>
               </dl>
 
               <p class="mt-4 mb-4">#{msg.downloadEMailText}</p>
@@ -58,14 +62,14 @@
 
             <!-- FORM -->
             <h:form target="_blank"
-              id="download-modal__emailFormRequest"
+              id="#{cc.attrs.modalId}__download-modal__emailFormRequest"
               styleClass="form-horizontal"
               prependId="false"
             >
               <!-- E-MAIL -->
               <div class="form-group form-row">
                 <label
-                  for="download-modal__email"
+                  for="#{cc.attrs.modalId}__download-modal__email"
                   class="col-lg-3 control-label"
                 >
                   #{msg.email}
@@ -73,20 +77,21 @@
 
                 <div class="col-12 col-lg-9">
                   <h:inputText
-                    id="download-modal__email"
+                    id="#{cc.attrs.modalId}__download-modal__email"
                     label="downloadEmail"
                     required="false"
                     value="#{downloadBean.email}"
                     styleClass="form-control"
                     pt:data-require-input-text="emailRequired"
                     pt:data-target="emailValidatorCheck"
+                    pt:data-reference="download-modal__email"
                     pt:aria-labelledby="download-modal__labelEmail"
                     pt:type="email"
                     allowEmptyString="true"
                   >
                     <f:validator
                       validatorId="emailValidator"
-                      for="download-modal__email"
+                      for="#{cc.attrs.modalId}__download-modal__email"
                     />
                   </h:inputText>
                 </div>
@@ -101,6 +106,7 @@
 
                   <div
                     id="downloadAcceptTerms"
+                    data-reference="downloadAcceptTerms"
                     class="form-group form-row col-12"
                   >
                     <p class="mb-4">#{msg.feedbackAcceptingTerms}</p>
@@ -152,12 +158,12 @@
                   </button>
 
                   <h:commandButton
-                    action="#{downloadBean.createPDFDownloadJob(activeDocumentBean.persistentIdentifier, cc.attrs.logId, false, '')}"
+                    action="#{downloadBean.createDownloadJob(cc.attrs.downloadType, activeDocumentBean.persistentIdentifier, cc.attrs.logId, true, '')}"
                     styleClass="btn btn--full"
                     value="#{msg.submit}"
                     pt:data-target="buttonLoaderClickEvent"
-                    id="downloadSubmitButton"
-                    onclick="$('#downloadModal').modal('hide')"
+                    pt:data-reference="downloadSubmitButton"
+                    onclick="$('##{cc.attrs.modalId}').modal('hide')"
                   >
                   </h:commandButton>
                 </div>
@@ -187,12 +193,12 @@
               <script type="text/javascript">
                 //<![CDATA[
                 $(document).ready(function () {
-                  const $emailInput = $("input[id$='download-modal__email']");
-                  const $radiosWrapper = $("#downloadAcceptTerms");
-                  const $radios = $("#downloadAcceptTerms").find(
+                  const $emailInput = $("##{cc.attrs.modalId} input[data-reference='download-modal__email']");
+                  const $radiosWrapper = $("##{cc.attrs.modalId} [data-reference='downloadAcceptTerms']");
+                  const $radios = $("##{cc.attrs.modalId} [data-reference='downloadAcceptTerms']").find(
                     "input[type='radio']"
                   );
-                  const $submitBtn = $("input[id$='downloadSubmitButton']");
+                  const $submitBtn = $("##{cc.attrs.modalId} input[data-reference='downloadSubmitButton']");
 
                   $radiosWrapper.hide();
                   $submitBtn.prop("disabled", true);

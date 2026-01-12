@@ -28,12 +28,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import jakarta.ws.rs.WebApplicationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -42,12 +38,11 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.dao.IDAO;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import jakarta.ws.rs.WebApplicationException;
 
 /**
  * Class collecting usage statistics data for a number of days to provide an overall summary for output
@@ -60,35 +55,23 @@ public class StatisticsSummaryBuilder {
     private final Logger logger = LogManager.getLogger(StatisticsSummaryBuilder.class);
 
     /**
-     * The DAO from which to query the usage statistics
-     * 
-     * @deprecated statistics are queried from SOLR (via {@link SolrSearchIndex})
-     */
-    @Deprecated(since = "22.08")
-    private final IDAO dao;
-
-    /**
      * The SOLR interface from which to query the usage statistics
      */
     private final SolrSearchIndex searchIndex;
 
     /**
      * Constructor using instances from {@link DataManager}
-     * 
-     * @throws DAOException
      */
-    public StatisticsSummaryBuilder() throws DAOException {
-        this(DataManager.getInstance().getDao(), DataManager.getInstance().getSearchIndex());
+    public StatisticsSummaryBuilder() {
+        this(DataManager.getInstance().getSearchIndex());
     }
 
     /**
      * Default constructor
      * 
-     * @param dao the {@link IDAO} to set. May be null since it isn't used
      * @param searchIndex the {@link SolrSearchIndex} to set
      */
-    public StatisticsSummaryBuilder(IDAO dao, SolrSearchIndex searchIndex) {
-        this.dao = dao;
+    public StatisticsSummaryBuilder(SolrSearchIndex searchIndex) {
         this.searchIndex = searchIndex;
     }
 
@@ -97,7 +80,6 @@ public class StatisticsSummaryBuilder {
      * 
      * @param filter a {@link StatisticsSummaryFilter} to filter results
      * @return a {@link StatisticsSummary}
-     * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -170,38 +152,6 @@ public class StatisticsSummaryBuilder {
         return new StatisticsSummary(map);
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<String, Map<RequestType, RequestTypeSummary>> getRecordStatisticsFromSolrDoc(SolrDocument doc) {
-        Map<String, List<Long>> countsMap = new HashMap<>();
-        for (String fieldName : doc.getFieldNames()) {
-            if (fieldName.startsWith(StatisticsLuceneFields.RECORD_STATISTICS_PREFIX)) {
-                try {
-                    List<Long> values = (List<Long>) doc.getFieldValue(fieldName);
-                    countsMap.put(StatisticsLuceneFields.getPi(fieldName), values);
-                } catch (ClassCastException e) {
-                    logger.warn("Envountered solr doc field of unexcepted type: '{}' : '{}'", fieldName, doc.getFieldValue(fieldName));
-                }
-            }
-        }
-
-        Map<String, Map<RequestType, RequestTypeSummary>> map = new HashMap<>(); // new EnumMap<>(RequestType.class);
-        LocalDate date = getDate(doc);
-
-        for (Entry<String, List<Long>> entry : countsMap.entrySet()) {
-            String pi = entry.getKey();
-            List<Long> counts = entry.getValue();
-            Map<RequestType, RequestTypeSummary> recordMap = new EnumMap<>(RequestType.class);
-            for (int i = 0; i < counts.size(); i += 2) {
-                RequestType type = RequestType.getTypeForTotalCountIndex(i);
-                long total = counts.get(i);
-                long unique = counts.get(i + 1);
-                recordMap.put(type, new RequestTypeSummary(total, unique, date, date));
-            }
-            map.put(pi, recordMap);
-        }
-        return map;
-    }
-
     private static LocalDate getDate(SolrDocument doc) {
         if (doc.containsKey(StatisticsLuceneFields.DATE)) {
             Date date = (Date) doc.getFieldValue(StatisticsLuceneFields.DATE);
@@ -266,10 +216,5 @@ public class StatisticsSummaryBuilder {
             }
         }
         return identifiersToInclude;
-    }
-
-    private static StatisticsSummary add(StatisticsSummary summary, DailySessionUsageStatistics dailyStats, List<String> identifiersToInclude) {
-        StatisticsSummary dailyStatsSummary = new StatisticsSummary(dailyStats, identifiersToInclude);
-        return summary.add(dailyStatsSummary);
     }
 }

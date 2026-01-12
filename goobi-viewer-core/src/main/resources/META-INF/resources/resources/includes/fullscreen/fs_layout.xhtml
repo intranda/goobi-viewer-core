@@ -121,11 +121,11 @@
                			</div>
                     </ui:fragment>
                     
-                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 						<viewerComponent:copyrightIndicator />
 					</ui:fragment>
 					
-			        <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
+			        <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'widget'}">
 			        	<widgetComponent:widget_copyrightInfo />
 			        </ui:fragment>
 					
@@ -445,6 +445,7 @@
 
         //init imageFilters
 		zoomableImageLoaded.subscribe(image => {
+				image.updateMargins();
        	 	    let originClean = image.viewer.isOriginClean();
        	 	    if(originClean) {
        	 	    	$(".fullscreen__view-sidebar-accordeon-panel.fs-imagefilters .fullscreen__view-sidebar-accordeon-panel-error").hide();

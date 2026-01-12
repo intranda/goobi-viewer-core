@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.configuration2.BaseHierarchicalConfiguration;
@@ -6688,6 +6689,19 @@ public class Configuration extends AbstractConfiguration {
 
     public String getRecordViewStyleClass() {
         return getLocalString("viewer.viewStyleClass", "docstructtype__{record.DOCSTRCT}");
+    }
+
+    public Duration getDownloadPdfTimeToLive() {
+        int num = getLocalInt("pdf.expireAfter", 14);
+        String unitString = getLocalString("pdf.expireAfter[@unit]", "DAYS");
+        TimeUnit unit = TimeUnit.DAYS;
+        try {
+            unit = TimeUnit.valueOf(unitString);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid value in configuration pdf.expireAfter[@unit]: {}", unitString);
+        }
+        return Duration.of((long) num, unit.toChronoUnit());
+
     }
 
 }

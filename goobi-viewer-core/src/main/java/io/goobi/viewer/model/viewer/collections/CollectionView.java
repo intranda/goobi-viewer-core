@@ -75,24 +75,9 @@ public class CollectionView implements Serializable {
     private final String field;
     private final String splittingChar;
     private BrowseDataProvider dataProvider;
-    /**
-     * @deprecated Currently collection views always start with the baseElement.
-     */
-    @Deprecated(since = "24.08")
-    private String topVisibleElement = null;
+
     private String baseElementName = null;
-    /**
-     * @deprecated Previously used to reload the same page showing only children of a collection which had a hierarchy level equal or less than
-     *             "baseLevels"
-     */
-    @Deprecated(since = "24.08")
-    private int baseLevels = 0;
     private boolean showAllHierarchyLevels = false;
-    /**
-     * @deprecated Previously used to display parents of the topVisibleElement to navigate backwards
-     */
-    @Deprecated(since = "24.08")
-    private boolean displayParentCollections = false;
     private String searchUrl = "";
     private boolean ignoreHierarchy = false;
     private final int displayNumberOfVolumesLevel;
@@ -204,22 +189,6 @@ public class CollectionView implements Serializable {
      * @return boolean
      */
     private boolean shouldOpenInOwnWindow(String collectionName) {
-        if (StringUtils.isNotBlank(collectionName) && collectionName.equals(getTopVisibleElement())) {
-            //if this is the current top element, open in search
-            return false;
-        } else if (StringUtils.isBlank(getBaseElementName()) && getLevel(collectionName, splittingChar) < getBaseLevels()) {
-            //If we are beneath the base level, open in collection view
-            return true;
-        } else if (collectionName.equals(getBaseElementName())) {
-            //If this is the base element of the entire collection view, open in collection view (TODO: is that correct?)
-            return true;
-        } else if (collectionName.startsWith(getBaseElementName() + splittingChar)
-                && getLevel(collectionName, splittingChar) - getLevel(getBaseElementName(), splittingChar) <= getBaseLevels()) {
-            // If this is a subcollection of the base element and less than base levels beneath the base element,
-            // open in collection view (same as second 'if' but for views with a base element
-            return true;
-        }
-
         return getBaseElementName() != null && getBaseElementName().startsWith(collectionName + splittingChar);
     }
 
@@ -249,13 +218,9 @@ public class CollectionView implements Serializable {
         }
         synchronized (this) {
             List<HierarchicalBrowseDcElement> visibleList = new ArrayList<>();
-            HierarchicalBrowseDcElement topElement = getElement(getTopVisibleElement(), completeCollectionList);
             HierarchicalBrowseDcElement baseElement = getElement(getBaseElementName(), completeCollectionList);
-            if (StringUtils.isNotBlank(getTopVisibleElement()) && topElement == null) {
-                //invalid top element
-                throw new IllegalRequestException("No collection found with name " + getTopVisibleElement());
-            }
-            if (topElement == null) {
+
+            if (baseElement == null) {
                 for (HierarchicalBrowseDcElement element : completeCollectionList) {
                     if (this.ignoreList.contains(element.getName())) {
                         continue;
@@ -274,27 +239,17 @@ public class CollectionView implements Serializable {
                         visibleList.addAll(element.getAllVisibleDescendents(false));
                     }
                 } else {
-                    topElement.setShowSubElements(true);
-                    visibleList.add(topElement);
-                    Collection<? extends HierarchicalBrowseDcElement> descendents = topElement.getAllVisibleDescendents(false);
+                    baseElement.setShowSubElements(true);
+                    visibleList.add(baseElement);
+                    Collection<? extends HierarchicalBrowseDcElement> descendents = baseElement.getAllVisibleDescendents(false);
                     descendents = descendents.stream().filter(c -> !this.ignoreList.contains(c.getName())).collect(Collectors.toList());
                     visibleList.addAll(descendents);
-                    if (isDisplayParentCollections()
-                            && (baseElement == null || topElement.getName().contains(baseElement.getName() + splittingChar))) {
-                        HierarchicalBrowseDcElement parent = topElement.getParent();
-                        while (parent != null) {
-                            visibleList.add(0, parent);
-                            if (parent.equals(baseElement)) {
-                                break;
-                            }
-                            parent = parent.getParent();
-                        }
-                    }
                 }
             }
-            this.visibleCollectionList = sortDcList(visibleList, DataManager.getInstance().getConfiguration().getCollectionSorting(field),
-                    getTopVisibleElement(), splittingChar);
-            if (!isIgnoreHierarchy() && !isDisplayParentCollections() && StringUtils.isNotBlank(getTopVisibleElement())
+            this.visibleCollectionList =
+                    sortDcList(visibleList, DataManager.getInstance().getConfiguration().getCollectionSorting(field), getBaseElementName(),
+                            splittingChar);
+            if (!isIgnoreHierarchy() && StringUtils.isNotBlank(getBaseElementName())
                     && !this.visibleCollectionList.isEmpty()) {
                 //if parent elements should be hidden, remove topElement from the list
                 //This cannot be done earlier because it breaks sortDcList...
@@ -473,59 +428,6 @@ public class CollectionView implements Serializable {
 
     /**
      * <p>
-     * isSubcollection.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isSubcollection() {
-        return StringUtils.isNotBlank(getTopVisibleElement()) && !getTopVisibleElement().equals(getBaseElementName());
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>topVisibleElement</code>.
-     * </p>
-     * 
-     * @deprecated use {@link #getBaseElementName()} instead
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated(since = "24.08")
-    public String getTopVisibleElement() {
-        if (StringUtils.isBlank(topVisibleElement) && StringUtils.isNotBlank(baseElementName)) {
-            return baseElementName;
-        }
-        return topVisibleElement;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>topVisibleElement</code>.
-     * </p>
-     * 
-     * @deprecated use {@link #setBaseElementName(String)} instead
-     * @param topVisibleElement a {@link java.lang.String} object.
-     */
-    @Deprecated(since = "24.08")
-    public void setTopVisibleElement(String topVisibleElement) {
-        this.topVisibleElement = topVisibleElement;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>topVisibleElement</code>.
-     * </p>
-     * 
-     * @deprecated use {@link #setBaseElementName(String)} instead
-     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
-     */
-    @Deprecated(since = "24.08")
-    public void setTopVisibleElement(HierarchicalBrowseDcElement element) {
-        this.topVisibleElement = element.getName();
-    }
-
-    /**
-     * <p>
      * showChildren.
      * </p>
      *
@@ -591,7 +493,7 @@ public class CollectionView implements Serializable {
             } else {
                 showChildren(element);
                 this.visibleCollectionList = sortDcList(visibleCollectionList,
-                        DataManager.getInstance().getConfiguration().getCollectionSorting(field), getTopVisibleElement(), splittingChar);
+                        DataManager.getInstance().getConfiguration().getCollectionSorting(field), getBaseElementName(), splittingChar);
                 associateElementsWithCMSData();
             }
         }
@@ -805,7 +707,7 @@ public class CollectionView implements Serializable {
                 expandAll(collection, depth);
             }
             this.visibleCollectionList = sortDcList(visibleCollectionList, DataManager.getInstance().getConfiguration().getCollectionSorting(field),
-                    getTopVisibleElement(), splittingChar);
+                    getBaseElementName(), splittingChar);
             associateElementsWithCMSData();
         }
     }
@@ -819,40 +721,6 @@ public class CollectionView implements Serializable {
      */
     public List<HierarchicalBrowseDcElement> getCompleteList() {
         return completeCollectionList;
-    }
-
-    /**
-     * <p>
-     * expand.
-     * </p>
-     *
-     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException
-     */
-    public void expand(HierarchicalBrowseDcElement element) throws IndexUnreachableException, IllegalRequestException {
-        setTopVisibleElement(element.getName());
-        populateCollectionList();
-    }
-
-    /**
-     * Resets the top visible element so the topmost hierarchy level is shown
-     *
-     * @reset only actually resets if true
-     * @param reset a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException
-     */
-    public void reset(boolean reset) {
-        if (reset && StringUtils.isNotBlank(getTopVisibleElement()) && !getTopVisibleElement().equals(getBaseElementName())) {
-            setTopVisibleElement((String) null);
-            try {
-                populateCollectionList();
-            } catch (IllegalRequestException | IndexUnreachableException e) {
-                logger.error("Error resetting collection: ", e);
-            }
-        }
     }
 
     /**
@@ -875,45 +743,6 @@ public class CollectionView implements Serializable {
      */
     public void setBaseElementName(String baseElementName) {
         this.baseElementName = baseElementName;
-        setTopVisibleElement(baseElementName);
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>baseLevels</code>.
-     * </p>
-     *
-     * @deprecated should always return 0
-     * @return a int.
-     */
-    @Deprecated(since = "24.08")
-    public int getBaseLevels() {
-        return baseLevels;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>baseLevels</code>.
-     * </p>
-     *
-     * @deprecated should always be 0
-     * @param baseLevels a int.
-     */
-    @Deprecated(since = "24.08")
-    public void setBaseLevels(int baseLevels) {
-        this.baseLevels = baseLevels;
-    }
-
-    /**
-     * <p>
-     * isTopVisibleElement.
-     * </p>
-     *
-     * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
-     * @return a boolean.
-     */
-    public boolean isTopVisibleElement(HierarchicalBrowseDcElement element) {
-        return element.getName().equals(getTopVisibleElement());
     }
 
     /**
@@ -967,20 +796,6 @@ public class CollectionView implements Serializable {
         for (HierarchicalBrowseDcElement child : collection.getChildren()) {
             displayAllDescendents(child);
         }
-    }
-
-    /**
-     * <p>
-     * getTopVisibleElementLevel.
-     * </p>
-     *
-     * @return a int.
-     */
-    public int getTopVisibleElementLevel() {
-        if (StringUtils.isNotBlank(topVisibleElement)) {
-            return getLevel(topVisibleElement, splittingChar);
-        }
-        return getBaseElementLevel();
     }
 
     /**
@@ -1042,7 +857,6 @@ public class CollectionView implements Serializable {
      */
     public String loadCollection(HierarchicalBrowseDcElement element) {
         logger.trace("Set current collection to {}", element);
-        setTopVisibleElement(element);
         String url = getCollectionUrl(element);
         url = url.replace(BeanUtils.getServletPathWithHostAsUrlFromJsfContext(), "");
         return url;
@@ -1114,7 +928,6 @@ public class CollectionView implements Serializable {
         return DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1;
     }
 
-   
     /**
      * 
      * @param collection
@@ -1168,32 +981,6 @@ public class CollectionView implements Serializable {
                 .append(encFacetString)
                 .append('/')
                 .toString();
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>displayParentCollections</code>.
-     * </p>
-     *
-     * @param displayParents a boolean.
-     * @deprecated should always be false
-     */
-    @Deprecated(since = "24.08")
-    public void setDisplayParentCollections(boolean displayParents) {
-        this.displayParentCollections = displayParents;
-    }
-
-    /**
-     * <p>
-     * isDisplayParentCollections.
-     * </p>
-     *
-     * @return the displayParentCollections
-     * @deprecated should always return false
-     */
-    @Deprecated(since = "24.08")
-    public boolean isDisplayParentCollections() {
-        return displayParentCollections;
     }
 
     /**

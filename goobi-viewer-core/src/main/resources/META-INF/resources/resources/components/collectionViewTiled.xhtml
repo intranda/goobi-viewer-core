@@ -20,7 +20,7 @@
                              <div class="collection-tiled__tile">
  	                            <h:panelGroup rendered="#{browseDcElement.opensInNewWindow}">
  	                          	    <div class="collection-tiled__header">
- 										<a href="#{collection.getCollectionUrl(browseDcElement)}" class="#{collection.isTopVisibleElement(browseDcElement) ? 'top-collection-elem' : ''}">
+ 										<a href="#{collection.getCollectionUrl(browseDcElement, !browseDcElement.hasSubelements)}">
  											<h:outputText
  												rendered="#{browseDcElement.displayNumberOfVolumes}"
  												value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})"
@@ -34,7 +34,7 @@
  	                                <div class="collection-tiled__body">
  	                                    <!-- WITH DESCRIPTION -->
  	                                    <ui:fragment rendered="#{browseDcElement.info.hasDescription()}">
-  	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}"
+  	                                    <a href="#{collection.getCollectionUrl(browseDcElement, !browseDcElement.hasSubelements)}"
   	                                    	data-toggle="popover"
   	                                    	data-placement="top"
   	                                    	data-container="body"
@@ -51,7 +51,7 @@
  	                                    
  	                                    <!-- WITHOUT DESCRIPTION -->
  	                                    <ui:fragment rendered="#{!browseDcElement.info.hasDescription()}">
-  	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}" tabindex="-1" aria-hidden="true">
+  	                                    <a href="#{collection.getCollectionUrl(browseDcElement, !browseDcElement.hasSubelements)}" tabindex="-1" aria-hidden="true">
   	                                    	<img src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid"
   	                                    	    data-viewer-thumbnail="thumbnail"
   	                                    	    data-viewer-access-denied-url="#{browseDcElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
@@ -61,7 +61,7 @@
  	                            </h:panelGroup>
  	                            <h:panelGroup rendered="#{!browseDcElement.opensInNewWindow}">
  	                                <div class="collection-tiled__header">
- 	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}" title="#{msg[browseDcElement.label]}">
+ 	                                    <a href="#{collection.getCollectionUrl(browseDcElement, !browseDcElement.hasSubelements)}" title="#{msg[browseDcElement.label]}">
  	                                       <h:outputText
  												rendered="#{browseDcElement.displayNumberOfVolumes}"
  												value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})"
@@ -75,7 +75,7 @@
  	                                <div class="collection-tiled__body">
  	                                    <!-- WITH DESCRIPTION -->
  	                                    <ui:fragment rendered="#{browseDcElement.info.hasDescription()}">
-  	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}"
+  	                                    <a href="#{collection.getCollectionUrl(browseDcElement, !browseDcElement.hasSubelements)}"
   	                                    	data-toggle="popover"
   	                                    	data-placement="top"
   	                                    	data-container="body"
@@ -92,7 +92,7 @@
  	                                    
  	                                    <!-- WITHOUT DESCRIPTION -->
  	                                    <ui:fragment rendered="#{!browseDcElement.info.hasDescription()}">
-  	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}" tabindex="-1" aria-hidden="true">
+  	                                    <a href="#{collection.getCollectionUrl(browseDcElement, !browseDcElement.hasSubelements)}" tabindex="-1" aria-hidden="true">
   	                                    	<img src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid"
   	                                    	    data-viewer-thumbnail="thumbnail"
   	                                    	    data-viewer-access-denied-url="#{browseDcElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />

@@ -70,7 +70,7 @@
 		<sonar.java.target>21</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>7</checkstyle.max.violations>
+		<checkstyle.max.violations>0</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 		<!-- Manifest information -->
@@ -81,7 +81,7 @@
 		<alto.version>1.7.0</alto.version>
 		<ics.version>4.1.1</ics.version>
 		<tei-conversion.version>1.3.4</tei-conversion.version>
-		<intranda-content-view.version>0.2.5</intranda-content-view.version>
+		<intranda-content-view.version>0.3.1</intranda-content-view.version>
 		<iiif-api-model.version>3.2.0</iiif-api-model.version>
 		<normdataimporter.version>2.1.2</normdataimporter.version>
 
@@ -104,7 +104,7 @@
 		<httpclient.version>4.5.14</httpclient.version>
 		<httpcore.version>4.4.16</httpcore.version>
 		<httpmime.version>4.5.14</httpmime.version>
-		<icu.version>78.1</icu.version>
+		<icu.version>78.2</icu.version>
 		<jackson.version>2.20.1</jackson.version>
 		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
@@ -127,9 +127,9 @@
 		<jersey.version>3.1.11</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
-		<json.version>20250517</json.version>
-		<jsoup.version>1.21.2</jsoup.version>
-		<junit.version>6.0.1</junit.version>
+		<json.version>20251224</json.version>
+		<jsoup.version>1.22.1</jsoup.version>
+		<junit.version>6.0.2</junit.version>
 		<log4j.version>2.25.3</log4j.version>
 		<mariadb-java-client.version>3.5.7</mariadb-java-client.version>
 		<mockito.version>5.21.0</mockito.version>
@@ -167,6 +167,13 @@
 
 
 	<dependencies>
+	
+		<dependency>
+		    <groupId>de.intranda.digiverso.convert</groupId>
+			<artifactId>epubconvert</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+	
 		<!-- intranda libraries -->
 		 <dependency>
 		      <groupId>de.intranda.js.content-view</groupId>
@@ -927,6 +934,8 @@
 
 								<ignoredUsedUndeclaredDependency>org.glassfish.hk2.external:jakarta.inject</ignoredUsedUndeclaredDependency>
 								
+								<ignoredUsedUndeclaredDependency>de.intranda.digiverso.convert:epubconvert:jar:1.1.0-SNAPSHOT</ignoredUsedUndeclaredDependency>
+								
 							</ignoredUsedUndeclaredDependencies>
 
 							<ignoredUnusedDeclaredDependencies>
@@ -1181,7 +1190,7 @@
 			<plugin>
 				<groupId>org.owasp</groupId>
 				<artifactId>dependency-check-maven</artifactId>
-				<version>12.1.9</version>
+				<version>12.2.0</version>
 				<configuration>
 					<!--failBuildOnCVSS>5.0</failBuildOnCVSS-->
 					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
@@ -1210,7 +1219,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>12.3.0</version>
+						<version>13.0.0</version>
 					</dependency>
 				</dependencies>
 				<executions>

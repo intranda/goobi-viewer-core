@@ -59,15 +59,6 @@ public class NodeType implements Serializable {
         return this.icon;
     }
 
-    /**
-     * @deprecated use {@link #getIcon()}.
-     * @return icon name defined for this node type
-     */
-    @Deprecated
-    public String getIconClass() {
-        return this.icon;
-    }
-
     private static String sanitizeIcon(String icon) {
         if (icon == null) {
             return DEFAULT_ICON;

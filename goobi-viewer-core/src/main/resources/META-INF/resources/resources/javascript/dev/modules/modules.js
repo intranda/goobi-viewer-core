@@ -206,7 +206,10 @@
                 page: '[data-image="zoomable"] [data-image-data="pageNumber"]',
                 footer: '[data-image="zoomable"] [data-image-data="footer"]',
                 pageAreas: '[data-image="zoomable"] [data-image-data="pageAreas"]',
-                overlays: '[data-image="zoomable"] [data-image-data="overlays"]',
+                overlays: '[data-image="zoomable"] [data-image-data="overlays"]', 
+                topMarginElement: '[data-image="zoomable"] [data-image-data="topMarginElement"]',
+                leftMarginElement: '[data-image="zoomable"] [data-image-data="leftMarginElement"]',
+                rightMarginElement: '[data-image="zoomable"] [data-image-data="rightMarginElement"]',
             },
             controls: { 
                 rotateLeft: '.rotate-left',
@@ -233,6 +236,7 @@
     class ZoomableImage {
 
         constructor() {
+            console.log("init image view", _config);
             const imageElement = document.querySelector(_config.elementSelectors.image);
             if(imageElement) { 
 
@@ -242,7 +246,12 @@
                 this.pageType = document.querySelector(_config.elementSelectors.data.pageType).textContent;
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
                 
+                this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
+                this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
+                this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
+
                 const imageViewConfig = createZoomableImageConfig(imageElement);
+                console.log("create image view with config ", imageViewConfig);
                 this.viewer = new ImageView.Image(imageViewConfig);
                 this.zoom = new ImageView.Controls.Zoom(this.viewer);
                 this.rotation = new ImageView.Controls.Rotation(this.viewer);
@@ -252,12 +261,15 @@
                 this.footer = createFooter(this.viewer);
 
                 this.tileSources = createTileSource();
+                console.log("use TileSources ", this.tileSources);
+                
                 this.tileSourceIdToOrder = Object.fromEntries(
                     Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
                 );
 
 
                 if(this.viewMode == "sequence") {
+                    console.log("initialize sequence mode");
                     this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
                 }
                 
@@ -284,6 +296,19 @@
 
                 this.pageAreaGroup = _drawPageAreas(this);
 
+            }
+        }
+
+        updateMargins() {
+            if(this.viewer?.openseadragon?.viewport) {
+                const viewerRight = (this.viewer.element.offsetLeft + this.viewer.element.offsetWidth);
+                const sidebarRightLeft = document.querySelector(this.rightMarginElement)?.offsetLeft;
+                const margins = {
+                    left: (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) + (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
+                    right: sidebarRightLeft ? (viewerRight - sidebarRightLeft) : 0,
+                    top: document.querySelector(this.topMarginElement)?.offsetHeight ?? 0,
+                };
+                this.viewer.setMargins(margins);
             }
         }
      
@@ -333,7 +358,7 @@
         getTileSourceOrderFromId(id) {
             return this.tileSourceIdToOrder[id];
         }
-      
+
     }
 
     function _drawPageAreas(image) {
@@ -399,7 +424,9 @@
         return  {
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
-            margins: getMargins(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight], document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
+            margins:{
+                bottom: Number(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight])
+            }, 
             zoom:  {
                 enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== "false"
             },
@@ -432,12 +459,6 @@
                 return "fixed";
             default:
                 return "toWidth";
-        }
-    }
-
-    function getMargins(footerHeight, pageType) {
-        return {
-            bottom: Number(footerHeight)
         }
     }
 
