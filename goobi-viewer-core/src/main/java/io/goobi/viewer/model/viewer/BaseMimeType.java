@@ -113,6 +113,10 @@ public enum BaseMimeType {
         }
     }
 
+    public boolean isImage() {
+        return this == BaseMimeType.IMAGE;
+    }
+
     /**
      * 
      * @return true for all types directly visible (or audible) in the viewer object view.
