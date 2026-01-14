@@ -2188,8 +2188,10 @@ riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{
             this.currentPageNumbers = this.parsePageNumbers(this.opts.currentPageNumber);
             this.msg = this.opts.msg;
             if(this.opts.update) {
-                this.opts.update.subscribe(pageNumber => {
+                this.opts.update.subscribe(pageNumberString => {
+                	const pageNumber = parseInt(pageNumberString);
                     this.currentPageNumbers = this.isDoublePageMode() ? [pageNumber, pageNumber+1] : [pageNumber];
+                	console.log("update paginator ", this.currentPageNumbers, this.getPageNumberPlus(1), this.opts.lastPageNumber);
                     this.update();
                 });
             }

@@ -199,7 +199,8 @@ function createTileSource() {
             });
             return tileSources;
         } catch(e) {
-            console.error(`Error parsing tileSource "${tileSourcesString}": ${e}`)
+            //if no image number map is passed, but a simple url string
+            return {1 : tileSourcesString};
         }
     }
 }
