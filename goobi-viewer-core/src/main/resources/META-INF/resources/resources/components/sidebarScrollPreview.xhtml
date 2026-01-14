@@ -16,9 +16,8 @@
 					<ui:repeat var="page" value="#{activeDocumentBean.viewManager.allPages}">
 						<div class="sidebar-scroll-preview__item">
 							<ui:fragment rendered="#{page != null}">
-								
 								<!-- NON SEQUENCE MODE LINKS -->
-								<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() != 'SEQUENCE'}">
+								<ui:fragment rendered="#{!page.baseMimeType.isImage() or activeDocumentBean.viewManager.pageNavigation.name() != 'SEQUENCE'}">
 									<h:outputLink styleClass="sidebar-scroll-preview__link" value="#{activeDocumentBean.getPageUrl(page.order)}#topDocAnchor">
 										<span class="sidebar-scroll-preview__image-wrapper">
 											<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image"
@@ -31,7 +30,7 @@
 								</ui:fragment>	
 				
 								<!-- SEQUENCE MODE BUTTONS -->
-								<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE'}">
+								<ui:fragment rendered="#{page.baseMimeType.isImage() and activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE'}">
 									<button type="button" class="sidebar-scroll-preview__button" data-target="pageNumber-#{page.order}">
 										<span class="sidebar-scroll-preview__image-wrapper">
 										<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image"
