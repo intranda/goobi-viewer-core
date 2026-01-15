@@ -467,8 +467,12 @@ public class ActiveDocumentBean implements Serializable {
                     }
                 }
 
-                viewManager = new ViewManager(topStructElement, AbstractPageLoader.create(topStructElement), topDocumentIddoc,
+                PageType pageType = Optional.ofNullable(this.navigationHelper).map(NavigationHelper::getCurrentPageType).orElse(PageType.other);
+                String mimeType = topStructElement.getMetadataValue(SolrConstants.MIMETYPE);
+                PageNavigation pageNavigation = this.calculateCurrentPageNavigation(pageType, mimeType);
+                viewManager = new ViewManager(topStructElement, AbstractPageLoader.create(topStructElement, pageNavigation), topDocumentIddoc,
                         logid, topStructElement.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
+                viewManager.setPageNavigation(pageNavigation);
                 viewManager.setToc(createTOC());
                 viewManager.setRecordAccessTicketRequired(accessTicketRequired);
 
@@ -525,8 +529,10 @@ public class ActiveDocumentBean implements Serializable {
                     subElementIddoc = (String) docList.get(0).getFieldValue(SolrConstants.IDDOC);
                     // Re-initialize ViewManager with the new current element
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
+                    PageNavigation pageNavigation = viewManager.getPageNavigation();
                     viewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(), subElementIddoc, logid,
                             viewManager.getMimeType(), imageDelivery);
+                    viewManager.setPageNavigation(pageNavigation);
                     viewManager.setFirstPageOrientation(firstPageOrientation);
                     viewManager.setToc(createTOC());
                 } else {
@@ -2824,7 +2830,46 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public void updatePageNavigation(PageType pageType) {
-        Optional.ofNullable(this.viewManager).ifPresent(vm -> vm.updatePageNavigation(pageType));
+        Optional.ofNullable(this.viewManager).ifPresent(vm -> vm.setPageNavigation(calculateCurrentPageNavigation(pageType, vm.getMimeType())));
+    }
+
+    protected PageNavigation calculateCurrentPageNavigation(PageType pageType, String mimeType) {
+        try {
+            PageNavigation defaultPageNavigation = getDefaultPageNavigation(pageType, mimeType);
+            PageNavigation currentPageNavigation =
+                    Optional.ofNullable(this.viewManager).map(ViewManager::getPageNavigation).orElse(PageNavigation.SINGLE);
+            if (currentPageNavigation == defaultPageNavigation) {
+                return currentPageNavigation;
+            } else if (defaultPageNavigation == PageNavigation.SEQUENCE) {
+                return defaultPageNavigation;
+            } else if (currentPageNavigation == PageNavigation.SINGLE) {
+                return currentPageNavigation;
+            } else if (currentPageNavigation == PageNavigation.DOUBLE
+                    && DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(pageType, mimeType)) {
+                return currentPageNavigation;
+            } else {
+                return defaultPageNavigation;
+            }
+
+        } catch (ViewerConfigurationException | NullPointerException | IllegalArgumentException e) {
+            logger.error("Failed to set view mode: {}", e.toString());
+            return PageNavigation.SINGLE;
+        }
+    }
+
+    protected PageNavigation getDefaultPageNavigation(PageType pageType, String mimeType) {
+        try {
+            if (DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(pageType, mimeType)) {
+                return PageNavigation.SEQUENCE;
+            } else if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, mimeType)) {
+                return PageNavigation.DOUBLE;
+            } else {
+                return PageNavigation.SINGLE;
+            }
+        } catch (ViewerConfigurationException e) {
+            logger.error("Error reading default page navigation from config", e);
+            return PageNavigation.SINGLE;
+        }
     }
 
 }
