@@ -137,11 +137,12 @@
 	                    	$(document).ready(() => {
 	                    		riot.mount("#simplePaginator", "simplepaginator", {
 	                    			navigationMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase() == 'sequence' ? 'buttons' : 'links'}",
+	                    			mimeTypes: #{activeDocumentBean.viewManager.mimeTypesForLoadedPagesAsJson},
 	                    			itemCount: #{activeDocumentBean.viewManager.imagesCount},
 	            	                itemActive: #{activeDocumentBean.viewManager.currentImageOrderForPaginator},
 	            	                firstItem: #{activeDocumentBean.viewManager.firstPageOrder},
 	            	                lastItem: #{activeDocumentBean.viewManager.lastPageOrder},
-	            	                urlTemplate: (pageNo) => `#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/\${pageNo}#topDocAnchor`,
+	            	                urlTemplate: (pageNo) => `#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/\${pageNo}/#topDocAnchor`,
 	            	                rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
 	            	                classSuffix: "",
 	            	                positionBottom: false,

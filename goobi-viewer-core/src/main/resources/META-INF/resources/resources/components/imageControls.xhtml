@@ -62,6 +62,7 @@
 										enablePageNavigation: #{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)},
 										showDropdown: #{activeDocumentBean.viewManager.imagesCount ge configurationBean.pageSelectDropdownDisplayMinPages},
 										currentPageNumber: "#{activeDocumentBean.imageToShow}",
+										mimeTypes: #{activeDocumentBean.viewManager.mimeTypesForLoadedPagesAsJson},
 										firstPageNumber: #{activeDocumentBean.viewManager.firstPageOrder},
 										lastPageNumber: #{activeDocumentBean.viewManager.lastPageOrder},
 										numPages: #{activeDocumentBean.viewManager.imagesCount},

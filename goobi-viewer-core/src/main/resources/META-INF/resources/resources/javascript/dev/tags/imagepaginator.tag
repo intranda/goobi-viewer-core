@@ -5,7 +5,7 @@
         <li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? 'end' : 'start'} {isFirstPage() ? 'inactive' : ''}">
            
            	<!-- NOT SEQUENCE MODE -->
-            <a if="{!isFirstPage() && !isSequenceMode()}" data-target="paginatorFirstPage" href="{getPageUrl(opts.firstPageNumber)}" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel">
+            <a if="{!isFirstPage() && !isSequenceMode(opts.firstPageNumber)}" data-target="paginatorFirstPage" href="{getPageUrl(opts.firstPageNumber)}" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel">
                 <virtual if="{!opts.rtl}">
                 	<yield from="first-page"/>
                 </virtual>
@@ -15,7 +15,7 @@
                 <span id="firstImageLabel" class="labeltext">{msg.firstImage}</span>
             </a> 
             <!-- SEQUENCE MODE -->
-            <button if="{!isFirstPage() && isSequenceMode()}" data-target="paginatorFirstPage" onclick="{gotoFirstPage}" type="button" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel">
+            <button if="{!isFirstPage() && isSequenceMode(opts.firstPageNumber)}" data-target="paginatorFirstPage" onclick="{gotoFirstPage}" type="button" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel">
                 <virtual if="{!opts.rtl}">
                 	<yield from="first-page"/>
                 </virtual>
@@ -39,7 +39,7 @@
         <virtual each="{step in opts.navigationSteps.slice().reverse()}" if="{opts.numPages > step}">
         	<li class="image-controls__action page-browse prev {getPageNumberMinus(step) < opts.firstPageNumber ? 'inactive' : ''}">
             	<!-- NOT SEQUENCE MODE -->
-                <a if="{getPageNumberMinus(step) >= opts.firstPageNumber && !isSequenceMode()}" data-target="paginatorPrevPage" href="{getPageUrl(getPageNumberMinus(step))}" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
+                <a if="{getPageNumberMinus(step) >= opts.firstPageNumber && !isSequenceMode(getPageNumberMinus(step))}" data-target="paginatorPrevPage" href="{getPageUrl(getPageNumberMinus(step))}" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
 	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
@@ -51,7 +51,7 @@
                     <span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span>
                 </a>
                 <!-- SEQUENCE MODE -->
-                <button if="{getPageNumberMinus(step) >= opts.firstPageNumber && isSequenceMode()}" data-target="paginatorPrevPage" onclick="{navigateBack}"  type="button" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
+                <button if="{getPageNumberMinus(step) >= opts.firstPageNumber && isSequenceMode(getPageNumberMinus(step))}" data-target="paginatorPrevPage" onclick="{navigateBack}"  type="button" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
 	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
@@ -88,7 +88,7 @@
 		<virtual each="{step in opts.navigationSteps}" if="{opts.numPages > step}">
         	<li class="image-controls__action page-browse next {getPageNumberPlus(step) > opts.lastPageNumber ? 'inactive' : ''}">
                 <!-- NOT SEQUENCE MODE -->
-                <a if="{getPageNumberPlus(step) <= opts.lastPageNumber && !isSequenceMode()}" data-target="paginatorNextPage" href="{getPageUrl(getPageNumberPlus(step))}" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
+                <a if="{getPageNumberPlus(step) <= opts.lastPageNumber && !isSequenceMode(getPageNumberPlus(step))}" data-target="paginatorNextPage" href="{getPageUrl(getPageNumberPlus(step))}" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
 	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual> 
@@ -100,7 +100,7 @@
                     <span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span>
                 </a>
                 <!-- SEQUENCE MODE -->
-                <button if="{getPageNumberPlus(step) <= opts.lastPageNumber && isSequenceMode()}" data-target="paginatorNextPage" onclick="{navigateForward}" type="button" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
+                <button if="{getPageNumberPlus(step) <= opts.lastPageNumber && isSequenceMode(getPageNumberPlus(step))}" data-target="paginatorNextPage" onclick="{navigateForward}" type="button" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
 	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
@@ -128,7 +128,7 @@
         <!-- LAST PAGE -->
         <li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? 'start' : 'end'} {isLastPage() ? 'inactive' : ''}">
             <!-- NOT SEQUENCE MODE -->
-            <a if="{!isLastPage() && !isSequenceMode()}" data-target="paginatorLastPage" href="{getPageUrl(opts.lastPageNumber)}" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel">
+            <a if="{!isLastPage() && !isSequenceMode(opts.lastPageNumber)}" data-target="paginatorLastPage" href="{getPageUrl(opts.lastPageNumber)}" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel">
                 <virtual if="{!opts.rtl}">
                 	<yield from="last-page"/>
                 </virtual>
@@ -138,7 +138,7 @@
                 <span id="lastImageLabel" class="labeltext">{msg.lastImage}</span>
             </a>
             <!-- SEQUENCE MODE -->
-            <button if="{!isLastPage() && isSequenceMode()}" data-target="paginatorLastPage" onclick="{gotoLastPage}" type="button" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel">
+            <button if="{!isLastPage() && isSequenceMode(opts.lastPageNumber)}" data-target="paginatorLastPage" onclick="{gotoLastPage}" type="button" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel">
                 <virtual if="{!opts.rtl}">
                 	<yield from="last-page"/>
                 </virtual>
@@ -263,8 +263,18 @@
             }
         }
 
-        isSequenceMode() {
-            return this.opts.navigationMode.toLowerCase() == 'sequence'
+        isSequenceMode(pageNo) {
+        	
+        	if(!this.isImage(pageNo)) {
+        		return false;
+        	} else {        		
+            	return this.opts.navigationMode.toLowerCase() == 'sequence';
+        	}
+        	
+        }
+        
+        isImage(pageNo) {
+        	return this.opts.mimeTypes[pageNo] === undefined || this.opts.mimeTypes[pageNo].startsWith("image");
         }
 
         isDoublePageMode() {

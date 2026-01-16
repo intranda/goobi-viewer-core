@@ -140,7 +140,9 @@ import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.SelectPageItem;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
@@ -4290,6 +4292,25 @@ public class ViewManager implements Serializable {
         return DataManager.getInstance()
                 .getConfiguration()
                 .showImageThumbnailGallery(pageType, Optional.ofNullable(getCurrentPage()).map(PhysicalElement::getMimeType).orElse(null));
+
+    }
+
+    public String getMimeTypesForLoadedPagesAsJson() throws IndexUnreachableException {
+        return JSONObject.wrap(getMimeTypesForLoadedPages()).toString();
+    }
+
+    public Map<Integer, String> getMimeTypesForLoadedPages() throws IndexUnreachableException {
+        if (this.pageLoader instanceof LeanPageLoader) {
+            return Map.of(currentImageOrder, this.pageLoader.getPage(currentImageOrder).getMimeType());
+        } else if (this.pageLoader instanceof EagerPageLoader) {
+            Map<Integer, String> map = new LinkedHashMap<>();
+            for (int i = this.pageLoader.getFirstPageOrder(); i <= this.pageLoader.getLastPageOrder(); i++) {
+                map.put(i, this.pageLoader.getPage(i).getMimeType());
+            }
+            return map;
+        } else {
+            return Collections.emptyMap();
+        }
 
     }
 }

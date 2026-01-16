@@ -5,7 +5,7 @@
         <nav aria-label="{opts.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
             <ul>
                 <li if="{this.currentItem > this.opts.firstItem}" class="numeric-paginator__navigate navigate_prev">
-                    <a if="{isRenderLinks()}" href="{getItemUrl(currentItem-1)}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}">
+                    <a if="{isRenderAsLink(currentItem-1)}" href="{getItemUrl(currentItem-1)}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}">
                         <svg if="{!opts.rtl}" class="numeric-paginator__icon-svg" viewBox="0 0 24 24" aria-hidden="true">
                             <use riot-href="{prevIconHref}"></use>
                         </svg>
@@ -13,7 +13,7 @@
                             <use riot-href="{nextIconHref}"></use>
                         </svg>
                     </a>
-                    <button if="{isRenderButtons()}" onclick="{navigateToPrevItem}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}">
+                    <button if="{isRenderAsButton(currentItem-1)}" onclick="{navigateToPrevItem}" data-target="paginatorPrevPage" aria-label="{msg.aria_label__pagination_previous}">
                         <svg if="{!opts.rtl}" class="numeric-paginator__icon-svg" viewBox="0 0 24 24" aria-hidden="true">
                             <use riot-href="{prevIconHref}"></use>
                         </svg>
@@ -23,34 +23,34 @@
                     </button>
                 </li>
                 <li each="{item in getFirstItems()}" class="numeric-paginator__navigate">
-                    <a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}">
+                    <a if="{isRenderAsLink(item)}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}">
                         <span>{item}</span>
                     </a>
-                    <button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}">
+                    <button if="{isRenderAsButton(item)}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}">
                         <span>{item}</span>
                     </button>
                 </li>
                 <li class="numeric-paginator__dots" if="{isShowDotsAfterFirstItems()}"><span>...</span></li>
                 <li each="{item in getCenterItems()}" class="numeric-paginator__navigate {item == currentItem ? '-active' : ''}">
-                    <a if="{isRenderLinks() && item != currentItem}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}">
+                    <a if="{isRenderAsLink(item) && item != currentItem}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}">
                         <span>{item}</span>
                     </a>
-                    <button if="{isRenderButtons() && item != currentItem}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}">
+                    <button if="{isRenderAsButton(item) && item != currentItem}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}">
                         <span>{item}</span>
                     </button>
                     <span if="{item == currentItem}">{item}</span>
                 </li>
                 <li class="numeric-paginator__dots" if="{isShowDotsBeforeLastItems()}"><span>...</span></li>
                 <li each="{item in getLastItems()}" class="numeric-paginator__navigate">
-                    <a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}">
+                    <a if="{isRenderAsLink(item)}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}">
                         <span>{item}</span>
                     </a>
-                    <button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}">
+                    <button if="{isRenderAsButton(item)}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}">
                         <span>{item}</span>
                     </button>
                 </li>
                 <li if="{this.currentItem < this.opts.lastItem}" class="numeric-paginator__navigate navigate_next">
-                    <a if="{isRenderLinks()}" href="{getItemUrl(currentItem+1)}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}">
+                    <a if="{isRenderAsLink(currentItem+1)}" href="{getItemUrl(currentItem+1)}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}">
                         <svg if="{!opts.rtl}" class="numeric-paginator__icon-svg" viewBox="0 0 24 24" aria-hidden="true">
                             <use riot-href="{nextIconHref}"></use>
                         </svg>
@@ -58,7 +58,7 @@
                             <use riot-href="{prevIconHref}"></use>
                         </svg>
                     </a>
-                    <button if="{isRenderButtons()}" onclick="{navigateToNextItem}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}">
+                    <button if="{isRenderAsButton(currentItem+1)}" onclick="{navigateToNextItem}" data-target="paginatorNextPage" aria-label="{msg.aria_label__pagination_next}">
                         <svg if="{!opts.rtl}" class="numeric-paginator__icon-svg" viewBox="0 0 24 24" aria-hidden="true">
                             <use riot-href="{nextIconHref}"></use>
                         </svg>
@@ -108,12 +108,15 @@ this.refreshIconHrefs = () => {
             this.msg = opts.msg || {};
             this.refreshIconHrefs();
             this.currentItem = opts.itemActive;
+            if(this.opts.mimeTypes[this.currentItem] !== undefined && !this.opts.mimeTypes[this.currentItem].startsWith("image")) {
+            	this.opts.navigationMode = "links";
+            }
             if(this.opts.range) {
                 this.range = this.opts.range;
             }
             if(this.opts.update) {
                 this.opts.update.subscribe(itemNumber => {
-                    this.currentItem = itemNumber;
+                    this.currentItem = parseInt(itemNumber);
                     this.update();
                 });
             }
@@ -208,6 +211,27 @@ this.refreshIconHrefs = () => {
 
         isRenderButtons() {
             return this.opts.navigationMode == "buttons";
+        }
+        
+        isRenderAsLink(item) {
+        	        	
+        	if(this.isRenderButtons()) {
+        		return !this.isImage(item);
+        	} else {
+        		return true;
+        	}
+        }
+        
+        isRenderAsButton(item) {
+        	if(this.isRenderButtons()) {
+        		return this.isImage(item);
+        	} else {
+        		return false;
+        	}
+        }
+        
+        isImage(pageNo) {
+        	return this.opts.mimeTypes[pageNo] === undefined || this.opts.mimeTypes[pageNo].startsWith("image");
         }
 
 
