@@ -146,7 +146,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
 
     /**
      * 
-     * @param topStructElement
+     * @param struct Top level <code>StructElement</code> of the record
      * @param pageNosToLoad List of page numbers to load; empty list means all pages
      * @return Appropriate page loader implementation for the given record topStructElement
      * @throws IndexUnreachableException
