@@ -139,23 +139,23 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @should return EagerPageLoader if page count below threshold
      * @should return LeanPageLoder if page count at or above threshold
      */
-    public static IPageLoader create(StructElement topDocument, boolean loadPages)
+    public static IPageLoader create(StructElement topStructElement, boolean loadPages)
             throws IndexUnreachableException, PresentationException, DAOException {
-        return create(topDocument, loadPages, PageNavigation.SINGLE);
+        return create(topStructElement, loadPages, PageNavigation.SINGLE);
     }
 
     /**
      * 
-     * @param struct Top level <code>StructElement</code> of the record
+     * @param topStructElement Top level <code>StructElement</code> of the record
      * @param pageNosToLoad List of page numbers to load; empty list means all pages
      * @return Appropriate page loader implementation for the given record topStructElement
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
      */
-    public static IPageLoader create(StructElement struct, List<Integer> pageNosToLoad)
+    public static IPageLoader create(StructElement topStructElement, List<Integer> pageNosToLoad)
             throws IndexUnreachableException, PresentationException, DAOException {
-        return create(struct, pageNosToLoad, PageNavigation.SINGLE);
+        return create(topStructElement, pageNosToLoad, PageNavigation.SINGLE);
     }
 
     /**
