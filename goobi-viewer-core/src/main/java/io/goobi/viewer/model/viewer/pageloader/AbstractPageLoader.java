@@ -93,7 +93,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @param topStructElement the struct element for which to create the loader
      * @param pageNavigation if this is {@link PageNavigation#SEQUENCE}, always return an {@link EagerPageLoader}, since then all pages are loaded at
      *            once
-     * @return
+     * @return Appropriate page loader implementation for the given record topStructElement
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
