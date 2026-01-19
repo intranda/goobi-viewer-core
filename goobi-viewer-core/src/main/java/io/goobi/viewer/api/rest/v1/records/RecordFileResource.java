@@ -26,6 +26,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_CMDI;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_MEDIA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_MEI;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
@@ -45,6 +46,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
@@ -75,6 +77,8 @@ import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.record.views.FileType;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -164,6 +168,36 @@ public class RecordFileResource {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
         return builder.getFulltextAsTEI(pi, Path.of(filename).getFileName().toString());
+    }
+
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_FILES_MEI)
+    @Produces({ MediaType.TEXT_XML })
+    @Operation(tags = { "records" }, summary = "Get MEI document for the record")
+    public String getMEI()
+            throws ContentLibException, IOException, IndexUnreachableException, PresentationException {
+        // TODO: check access conditions
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
+
+        SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+        if (solrDoc == null) {
+            throw new ContentLibException("Record not found: " + pi);
+        }
+
+        String meiFileName = SolrTools.getSingleFieldStringValue(solrDoc, SolrConstants.FILENAME_MEI);
+        if (meiFileName == null) {
+            throw new ContentLibException("No MEI file name indexed for record: " + pi);
+        }
+
+        Path file = DataFileTools.getDataFilePath(pi, "mei", null, meiFileName);
+        logger.trace("MEI file: {}", file.toAbsolutePath());
+        if (!Files.isRegularFile(file)) {
+            throw new ContentLibException("MEI file not found: " + file);
+        }
+
+        return FileTools.getStringFromFile(file.toFile(), null);
     }
 
     @GET

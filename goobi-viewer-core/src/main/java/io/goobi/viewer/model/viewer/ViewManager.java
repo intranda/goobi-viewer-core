@@ -2037,6 +2037,23 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * 
+     * @return MEI file URL for this record
+     * @throws IndexUnreachableException
+     */
+    public String getMeiUrl() throws IndexUnreachableException {
+        String localPi = getPi();
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(RECORDS_FILES, ApiUrls.RECORDS_FILES_MEI)
+                        .params(localPi)
+                        .build())
+                .orElse("");
+
+    }
+
+    /**
      * Return the url to a REST service delivering the fulltext of the current page as TEI
      *
      * @return the TEI REST url
