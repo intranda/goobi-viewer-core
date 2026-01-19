@@ -1,7 +1,7 @@
 import ZoomableImageOverlayGroup from "./zoomableImageOverlayGroup.mjs";
 import PageAreas from "./pageAreas.mjs";
 
-const _debug = true;
+const _debug = false;
 
 const _config = {
     elementSelectors: {
