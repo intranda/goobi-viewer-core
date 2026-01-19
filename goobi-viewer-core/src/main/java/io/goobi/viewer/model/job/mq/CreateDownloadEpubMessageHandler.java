@@ -24,11 +24,13 @@ package io.goobi.viewer.model.job.mq;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,6 +49,7 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.EpubDownloadJob;
 import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
+import jakarta.ws.rs.core.UriBuilder;
 
 public class CreateDownloadEpubMessageHandler implements MessageHandler<MessageStatus> {
 
@@ -91,7 +94,11 @@ public class CreateDownloadEpubMessageHandler implements MessageHandler<MessageS
             //set last modified time to reflect the last time the file was downloaded
             Files.setLastModifiedTime(job.getPath(), FileTime.from(Instant.now()));
             try {
-                job.notifyObserver(message.getProperties().get("email"), JobStatus.READY, message.getMessageId(), "");
+                String viewerUrl = message.getProperties().get("viewerUrl");
+                if (StringUtils.isNotBlank(viewerUrl)) {
+                    URI downloadUri = UriBuilder.fromPath(viewerUrl).path("download").path(message.getMessageId()).path("/").build();
+                    job.notifyObserver(message.getProperties().get("email"), JobStatus.READY, downloadUri);
+                }
             } catch (MessagingException e) {
                 logger.error("Error notifying observers: {}", e.toString());
             }
