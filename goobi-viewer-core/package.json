@@ -19,8 +19,7 @@
     "java": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp java",
     "prepare": "lefthook install",
     "lint": "eslint . --fix",
-    "format": "prettier --write .",
-    "test": "jest"
+    "format": "prettier --write ."
   },
   "engines": {
     "node": ">=18"
@@ -101,14 +100,5 @@
     "last 2 versions",
     "Firefox ESR",
     "not dead"
-  ],
-  "lint-staged": {
-    "*.{js,ts,jsx,tsx}": [
-      "prettier --write",
-      "eslint --fix"
-    ],
-    "*.{json,md,css,scss,html,xhtml}": [
-      "prettier --write"
-    ]
-  }
+  ]
 }

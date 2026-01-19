@@ -4,5 +4,6 @@
 pre-commit:
   parallel: false
   commands:
-    format-and-lint-staged:
-      run: npx lint-staged
+    run-precommit-script:
+      run: node scripts/precommitfunctions.js
+      always_run: true
