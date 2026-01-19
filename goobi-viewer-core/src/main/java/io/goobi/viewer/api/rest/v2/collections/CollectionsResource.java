@@ -24,14 +24,6 @@ package io.goobi.viewer.api.rest.v2.collections;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS_COLLECTION;
 
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-
 import de.intranda.api.iiif.presentation.v3.Collection3;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
@@ -41,6 +33,13 @@ import io.goobi.viewer.model.iiif.presentation.v3.builder.CollectionBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * @author florian
@@ -49,6 +48,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @jakarta.ws.rs.Path(COLLECTIONS)
 @ViewerRestServiceBinding
 public class CollectionsResource {
+
+    @Context
+    private HttpServletRequest servletRequest;
 
     private final String solrField;
 
@@ -66,7 +68,7 @@ public class CollectionsResource {
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 3.0 collection")
     @ApiResponse(responseCode = "400", description = "No collections available for field")
     public Collection3 getAllCollections() throws IndexUnreachableException {
-        return new CollectionBuilder(urls).build(this.solrField);
+        return new CollectionBuilder(urls, this.servletRequest).build(this.solrField);
     }
 
     @GET
@@ -76,9 +78,8 @@ public class CollectionsResource {
     @ApiResponse(responseCode = "400", description = "Invalid collection name or field")
     public Collection3 getCollection(
             @Parameter(
-                    description = "Name of the collection. Must be a value of the SOLR field the collection is based on")
-            @PathParam("collection") String collectionName)
+                    description = "Name of the collection. Must be a value of the SOLR field the collection is based on") @PathParam("collection") String collectionName)
             throws PresentationException, IndexUnreachableException {
-        return new CollectionBuilder(urls).build(this.solrField, collectionName);
+        return new CollectionBuilder(urls, this.servletRequest).build(this.solrField, collectionName);
     }
 }

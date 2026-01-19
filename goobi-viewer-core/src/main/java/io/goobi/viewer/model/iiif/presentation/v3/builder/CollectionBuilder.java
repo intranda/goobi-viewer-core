@@ -50,6 +50,7 @@ import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -75,8 +76,8 @@ public class CollectionBuilder extends AbstractBuilder {
      * 
      * @param apiUrlManager
      */
-    public CollectionBuilder(AbstractApiUrlManager apiUrlManager) {
-        super(apiUrlManager);
+    public CollectionBuilder(AbstractApiUrlManager apiUrlManager, HttpServletRequest request) {
+        super(apiUrlManager, request);
     }
 
     /**

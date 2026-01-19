@@ -37,6 +37,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.StructElement;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author florian
@@ -50,8 +51,8 @@ public class RangeBuilder extends AbstractBuilder {
     /**
      * @param apiUrlManager
      */
-    public RangeBuilder(AbstractApiUrlManager apiUrlManager) {
-        super(apiUrlManager);
+    public RangeBuilder(AbstractApiUrlManager apiUrlManager, HttpServletRequest request) {
+        super(apiUrlManager, request);
     }
 
     public Range3 build(String pi, String logId) throws PresentationException, IndexUnreachableException, ContentNotFoundException {

@@ -104,6 +104,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
@@ -130,6 +131,7 @@ public abstract class AbstractBuilder {
     protected final int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
 
     protected final Configuration config;
+    protected final HttpServletRequest request;
 
     /**
      * <p>
@@ -138,7 +140,8 @@ public abstract class AbstractBuilder {
      *
      * @param apiUrlManager
      */
-    protected AbstractBuilder(final AbstractApiUrlManager apiUrlManager) {
+    protected AbstractBuilder(final AbstractApiUrlManager apiUrlManager, HttpServletRequest request) {
+        this.request = request;
         this.config = DataManager.getInstance().getConfiguration();
         this.urls = apiUrlManager != null ? apiUrlManager : DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v2).orElse(null);
         AbstractApiUrlManager contentUrls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(this.urls);
@@ -954,7 +957,7 @@ public abstract class AbstractBuilder {
         try {
             // logger.trace("Encoding param: {}", replacement); //NOSONAR Debug
             return URLEncoder.encode(uri, StringTools.DEFAULT_ENCODING);
-        } catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException | NullPointerException e) {
             return uri;
         }
     }

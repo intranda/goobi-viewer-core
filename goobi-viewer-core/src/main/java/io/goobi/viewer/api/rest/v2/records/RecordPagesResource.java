@@ -101,7 +101,7 @@ public class RecordPagesResource {
     @IIIFPresentationBinding
     public IPresentationModelElement getCanvas()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
-        return new CanvasBuilder(urls).build(pi, pageNo);
+        return new CanvasBuilder(urls, this.servletRequest).build(pi, pageNo);
     }
 
     @GET
@@ -112,7 +112,7 @@ public class RecordPagesResource {
     public AnnotationPage getMedia()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
         URI itemId = urls.path(RECORDS_PAGES, RECORDS_PAGES_MEDIA).params(pi, pageNo).buildURI();
-        return new CanvasBuilder(urls).build(pi, pageNo)
+        return new CanvasBuilder(urls, this.servletRequest).build(pi, pageNo)
                 .getItems()
                 .stream()
                 .filter(p -> p.getId().equals(itemId))
@@ -129,7 +129,7 @@ public class RecordPagesResource {
             @Parameter(description = "Identifier string of the annotation") @PathParam("itemid") String itemId)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
         URI itemUrl = urls.path(RECORDS_PAGES, RECORDS_PAGES_MEDIA, "/" + itemId).params(pi, pageNo).buildURI();
-        return new CanvasBuilder(urls).build(pi, pageNo)
+        return new CanvasBuilder(urls, this.servletRequest).build(pi, pageNo)
                 .getItems()
                 .stream()
                 .flatMap(p -> p.getItems().stream())
@@ -145,7 +145,7 @@ public class RecordPagesResource {
     @IIIFPresentationBinding
     public AnnotationPage getFulltext()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
-        return new CanvasBuilder(urls).buildFulltextAnnotations(pi, pageNo);
+        return new CanvasBuilder(urls, this.servletRequest).buildFulltextAnnotations(pi, pageNo);
     }
 
     @GET
@@ -187,7 +187,7 @@ public class RecordPagesResource {
                             + " 'thumbs' Does not read width and height of canvas resources and 'iiif_simple'"
                             + " ignores all resources from files") @QueryParam("mode") String mode)
             throws PresentationException, IndexUnreachableException, URISyntaxException, DAOException, ContentLibException {
-        return new ManifestBuilder(urls).build(pi, pageNo, servletRequest);
+        return new ManifestBuilder(urls, servletRequest).build(pi, pageNo);
     }
 
 }

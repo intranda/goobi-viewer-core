@@ -729,7 +729,19 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public boolean isAccessPermissionDownloadMetadata() throws IndexUnreachableException, DAOException {
         // logger.trace("isAccessPermissionDownloadMetadata"); //NOSONAR Debug
-        return isAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
+        return isAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, null);
+    }
+
+    /**
+     * @param request the request for this resource
+     * @return true if permission granted; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws RecordNotFoundException
+     */
+    public boolean isAccessPermissionDownloadMetadata(HttpServletRequest request) throws IndexUnreachableException, DAOException {
+        // logger.trace("isAccessPermissionDownloadMetadata"); //NOSONAR Debug
+        return isAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request);
     }
 
     /**
@@ -741,21 +753,25 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public boolean isAccessPermissionGenerateIiifManifest() throws IndexUnreachableException, DAOException {
         // logger.trace("isAccessPermissionGenerateIiifManifest"); //NOSONAR Debug
-        return isAccessPermission(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
+        return isAccessPermission(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST, null);
     }
 
     /**
      *
      * @param privilege Privilege name to check
+     * @param request the http request for this resource. If null, the request it retrieved from the current {@link FacesContext} if present
      * @return true if current user has the privilege for this record; false otherwise. Also return false if no record was found
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
+    boolean isAccessPermission(String privilege, HttpServletRequest request) throws IndexUnreachableException, DAOException {
         // logger.trace("isAccessPermission: {}", privilege); //NOSONAR Debug
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        HttpServletRequest usedRequest = request;
+        if (request == null) {
+            usedRequest = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        }
         try {
-            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), logid, privilege, request).isGranted();
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), logid, privilege, usedRequest).isGranted();
         } catch (RecordNotFoundException e) {
             return false;
         }
