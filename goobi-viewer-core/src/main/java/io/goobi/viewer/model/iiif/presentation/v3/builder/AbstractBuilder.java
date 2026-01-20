@@ -796,18 +796,19 @@ public abstract class AbstractBuilder {
      */
     protected ImageResource getThumbnail(StructElement ele) {
         try {
+            int imageNo = ele.getImageNumber();
             String thumbUrl = this.thumbs.getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageResource resource = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
                 // Add auth services
-                //                if (true) { // TODO Check access
-                //                    for (ImageInformation ii : resource.getServices()) {
-                //                        logger.trace("adding auth services to thumbnail");
-                // for (Service service : AuthorizationFlowTools.getAuthServices(ele.getPi(), ele.getMetadataValue(SolrConstants.THUMBNAIL))) {
-                //                            ii.addService(service);
-                //                        }
-                //                    }
-                //                }
+                if (true) { // TODO Check access
+                    for (ImageInformation ii : resource.getServices()) {
+                        logger.trace("adding auth services to thumbnail");
+                        for (Service service : AuthorizationFlowTools.getAuthServices(ele.getPi(), ele.getMetadataValue(SolrConstants.THUMBNAIL))) {
+                            ii.addService(service);
+                        }
+                    }
+                }
                 return resource;
             }
         } catch (URISyntaxException e) {
