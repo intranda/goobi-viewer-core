@@ -72,6 +72,7 @@ import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.DownloadBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
@@ -1651,7 +1652,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @deprecated because download uri is now built from request in {@link DownloadBean}
      */
+    @Deprecated(since = "25.11")
     public String getDownloadUrl() {
         String urlString = getLocalString("urls.download", "http://localhost:8080/viewer/download/");
         if (!urlString.endsWith("/")) {

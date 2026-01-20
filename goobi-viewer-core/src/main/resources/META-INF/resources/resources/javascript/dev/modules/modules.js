@@ -295,6 +295,11 @@
             }
         }
 
+        resetSize() {
+            this.viewer?.extent?.setSize(this.viewer.tileSources);
+            this.updateMargins();
+        }
+
         updateMargins() {
             if(this.viewer?.openseadragon?.viewport) {
                 const viewerRight = (this.viewer.element.offsetLeft + this.viewer.element.offsetWidth);
@@ -314,13 +319,18 @@
                 .then(image => {
                     this.sequence?.initialize(this.getCurrentTileSourceId());
                     this.overlayGroups.forEach(group => group.show());
+                    this.initWindowResize();
                     return this;
                 });
             } else {
                 return new Promise( ( resolve, reject ) => {
-                    reject("no image found");
+                    reject("no image found"); 
                 })
             }
+        }
+
+        initWindowResize() { 
+            window.addEventListener("resize", () => this.resetSize());
         }
 
         getCurrentTileSourceIndex() {
