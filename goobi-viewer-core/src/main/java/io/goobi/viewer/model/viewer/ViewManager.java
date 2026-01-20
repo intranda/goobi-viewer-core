@@ -2035,6 +2035,15 @@ public class ViewManager implements Serializable {
                         .build())
                 .orElse("");
     }
+    
+    /**
+     * 
+     * @return true if record has MEI URL; false otherwise
+     * @throws IndexUnreachableException
+     */
+    public boolean isHasMeiDocument() throws IndexUnreachableException {
+        return StringUtils.isNotEmpty(getMeiUrl());
+    }
 
     /**
      * 
@@ -2042,6 +2051,10 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getMeiUrl() throws IndexUnreachableException {
+        if (topStructElement == null || StringUtils.isEmpty(topStructElement.getMetadataValue(SolrConstants.FILENAME_MEI))) {
+            return "";
+        }
+
         String localPi = getPi();
         return DataManager.getInstance()
                 .getRestApiManager()
