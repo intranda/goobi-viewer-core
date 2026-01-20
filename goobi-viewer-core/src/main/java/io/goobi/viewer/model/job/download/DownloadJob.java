@@ -101,8 +101,7 @@ public abstract class DownloadJob {
      * 
      * @param email
      * @param status a {@link io.goobi.viewer.model.job.JobStatus} object.
-     * @param messageId Id of the MQ message to link to
-     * @param message a {@link java.lang.String} object.
+     * @param downloadUri the URI under which the download is made available
      * @return a boolean.
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws jakarta.mail.MessagingException if any.
