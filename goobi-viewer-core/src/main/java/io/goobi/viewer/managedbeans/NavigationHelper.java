@@ -1259,6 +1259,28 @@ public class NavigationHelper implements Serializable {
 
     /**
      * <p>
+     * getMeiActiveUrl.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getMeiActiveUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewMei.getName();
+    }
+    
+    /**
+     * <p>
+     * getMeiUrl.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getMeiUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewMei.getName();
+    }
+
+    /**
+     * <p>
      * getFulltextActiveUrl.
      * </p>
      *
@@ -1267,6 +1289,7 @@ public class NavigationHelper implements Serializable {
     public String getFulltextActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewFulltext.getName();
     }
+
 
     /**
      * 

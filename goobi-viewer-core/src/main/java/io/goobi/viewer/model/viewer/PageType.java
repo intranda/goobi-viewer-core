@@ -50,6 +50,7 @@ public enum PageType {
     viewFullscreen("fullscreen"),
     viewObject("object"),
     viewCalendar("calendar"),
+    viewMei("mei"),
     searchlist("searchlist", "search"),
     searchCalendar("searchcalendar", "searchCalendar"),
     searchGeoMap("searchgeomap", "title__search_geomap"),

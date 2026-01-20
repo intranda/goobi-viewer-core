@@ -98,6 +98,7 @@
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
+					
 					<!-- TOC -->
 					<h:panelGroup visibility-class="widget-element"
 						rendered="#{configurationBean.sidebarTocViewLinkVisible and displayConditions.matchRecord('{tocSize: 2}')}">
@@ -163,7 +164,6 @@
 					</h:panelGroup>
 		
 					<!-- TEI full-text -->
-		
 						<ui:repeat rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchRecord('{contentType:[TEI], accessCondition: VIEW_FULLTEXT}')}"
 						 	var="lang" visibility-class="widget-element"
 							value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
@@ -177,6 +177,20 @@
 								</h:outputLink>
 							</li>
 						</ui:repeat>
+						
+                    <!-- MEI -->
+                    <h:panelGroup visibility-class="widget-element"
+                        rendered="#{activeDocumentBean.viewManager.hasMeiDocument and displayConditions.matchPage('{accessCondition: VIEW_METADATA}')}">
+                        <li
+                            class="#{navigationHelper.currentPage == 'mei' ? 'active' : ''}">
+                            <h:outputLink 
+                                value="#{navigationHelper.meiActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
+                                <h:outputText value="#{msg.MEI}" />
+                                <f:passThroughAttribute name="aria-label"
+                                    value="#{msg.view}: #{msg.MEI}" />
+                            </h:outputLink>
+                        </li>
+                    </h:panelGroup>
 		
 					<!-- External full-text URL -->
 					<h:panelGroup visibility-class="widget-element"
