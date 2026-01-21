@@ -36,7 +36,8 @@
 	        	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image) and cc.attrs.cmsContent.mediaItem.linkURI != null and !cc.attrs.lightbox}">
 					<div class="content-component__image">
 						<a class="content-component__image-link" target="_blank" href="#{cc.attrs.cmsContent.mediaItem.linkURI}">
-							<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid content-component__image-img" alt="#{cc.attrs.image.alternativeText}" />
+							<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid content-component__image-img"
+							    alt="#{cc.attrs.image.altText}" />
 							<span class="content-component__image-text">#{cc.attrs.image.name}</span>
 						</a>
 					</div>
@@ -46,7 +47,8 @@
 	        	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image) and cc.attrs.lightbox}">
 					<div class="content-component__image">
 						<a class="content-component__image-lightbox-link" aria-label="#{msg.open_as_lightbox}: #{cc.attrs.image.name}" data-target="imageLightbox" href="#{cc.attrs.cmsContent.getUrl(1920, null)}">
-							<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid content-component__image-lightbox-img " alt="#{cc.attrs.image.alternativeText}" title="#{cc.attrs.image.name}" />
+							<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid content-component__image-lightbox-img "
+							    alt="#{cc.attrs.image.altText}" title="#{cc.attrs.image.name}" />
 							<span class="content-component__image-text">#{cc.attrs.image.name}</span>
 						</a>
 					</div>
@@ -55,7 +57,8 @@
 	            <!-- SIMPLE IMAGE WITHOUT LINK OR LIGHTBOX -->
 	        	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image) and !cc.attrs.lightbox and cc.attrs.cmsContent.mediaItem.linkURI == null}">
 					<div class="content-component__image">
-						<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid content-component__image-img" alt="#{cc.attrs.image.alternativeText}" />
+						<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid content-component__image-img"
+						    alt="#{cc.attrs.image.altText}" />
 						<span class="content-component__image-text">#{cc.attrs.image.name}</span>
 					</div>
 	            </ui:fragment>
@@ -63,7 +66,9 @@
 				<!-- VIDEO FILE -->
 	            <ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.image)}">
 					<div class="content-component__video">
-						<video controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.image.name}">
+						<video controls="controls" class="video-file-element"
+						    poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}"
+						    title="#{cc.attrs.image.name}">
 							<source src="#{cc.attrs.cmsContent.url}"/>
 						</video>
 					</div>
