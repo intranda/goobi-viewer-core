@@ -73,13 +73,11 @@ import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.metadata.Metadata;
-import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.PageType;
@@ -175,16 +173,37 @@ public class ManifestBuilder extends AbstractBuilder {
         try {
             ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
             URI uri = URI.create(apiPath.build());
+
+            boolean accessGranted = isAccessGranted(pi, IPrivilegeHolder.PRIV_VIEW_UGC);
+
             AnnotationPage crowdAnnos = new AnnotationsResourceBuilder(urls, request).getWebAnnotationCollectionForRecord(pi, uri).getFirst();
             if (crowdAnnos != null && !crowdAnnos.getItems().isEmpty()) {
-                manifest.addAnnotations(new InternalAnnotationPage(crowdAnnos));
+
+                InternalAnnotationPage annoPage = new InternalAnnotationPage(crowdAnnos);
+                if (!accessGranted) {
+                    annoPage.setItems(Collections.emptyList());
+                    for (Service service : AuthorizationFlowTools.getAuthServicesRecord(pi, IPrivilegeHolder.PRIV_VIEW_UGC)) {
+                        annoPage.addService(service);
+                    }
+                }
+                manifest.addAnnotations(annoPage);
             }
             AnnotationPage comments = new AnnotationsResourceBuilder(urls, request).getWebAnnotationCollectionForRecordComments(pi, uri).getFirst();
             if (comments != null && !comments.getItems().isEmpty()) {
-                manifest.addAnnotations(new InternalAnnotationPage(comments));
+
+                InternalAnnotationPage annoPage = new InternalAnnotationPage(comments);
+                if (!accessGranted) {
+                    annoPage.setItems(Collections.emptyList());
+                    for (Service service : AuthorizationFlowTools.getAuthServicesRecord(pi, IPrivilegeHolder.PRIV_VIEW_UGC)) {
+                        annoPage.addService(service);
+                    }
+                }
+                manifest.addAnnotations(annoPage);
             }
         } catch (DAOException e) {
             logger.error("Error adding annotations to manifest: {}", e.toString(), e);
+        } catch (PresentationException e) {
+            logger.error("Error checking access conditions for annotations to manifest: {}", e.toString(), e);
         }
     }
 
@@ -335,8 +354,6 @@ public class ManifestBuilder extends AbstractBuilder {
         getDescription(ele).ifPresent(manifest::setDescription);
 
         manifest.addThumbnail(pageNo.map(p -> getThumbnail(ele, p)).orElse(getThumbnail(ele)));
-        if (isAccessGranted(ele, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS)) {
-        }
 
         de.intranda.metadata.multilanguage.Metadata requiredStatement = variableReplacer.replace(getRequiredStatement());
         if (!requiredStatement.getValue().isEmpty()) {
@@ -375,15 +392,6 @@ public class ManifestBuilder extends AbstractBuilder {
                         () -> addRelatedResources(manifest, ele));
 
         return manifest;
-    }
-
-    private boolean isAccessGranted(StructElement ele, String privilege) throws PresentationException {
-        try {
-            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(ele.getPi(), ele.getLogid(), privilege,
-                    request).isGranted();
-        } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
-            throw new PresentationException("Cannot determine access conditions for metadata", e);
-        }
     }
 
     /**

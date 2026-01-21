@@ -116,7 +116,7 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
                 }
 
             } catch (NumberFormatException | PresentationException | IndexUnreachableException e) {
-                logger.error("Unable to resolve image file for image order {} and pi {}", imageName, pi);
+                logger.error("Unable to resolve resource file for image order {} and pi {}", imageName, pi);
             }
         }
         return false;
@@ -142,7 +142,7 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
         }
 
         if (!access) {
-            throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
+            throw new ServiceNotAllowedException("Serving this resource is restricted due to access conditions");
         }
     }
 

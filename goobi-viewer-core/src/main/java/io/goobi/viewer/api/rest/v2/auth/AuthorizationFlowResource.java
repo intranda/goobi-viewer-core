@@ -27,7 +27,9 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGIN;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGOUT;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE_REQUEST;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE_REQUEST_PDF;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE_REQUEST_RECORD;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE_REQUEST_RESOLVER;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE_REQUEST_SECTION;
 
 import java.io.IOException;
 import java.net.URI;
@@ -431,22 +433,6 @@ public class AuthorizationFlowResource {
     }
 
     /**
-     * Probe pre-flight endpoint (METS resolver).
-     * 
-     * @param pi Record identifier
-     * @param origin Client origin
-     * @return {@link Response}
-     */
-    @OPTIONS
-    @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_RESOLVER)
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
-    public Response handleProbePreflight(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
-            @HeaderParam("Origin") String origin) {
-        return handleProbePreflightCommon(origin, "resolver/" + pi);
-    }
-
-    /**
      * Probe service endpoint (METS resolver). The session will probably be different here from previous login/token queries.
      * 
      * @param pi Record identifier
@@ -476,6 +462,130 @@ public class AuthorizationFlowResource {
                     // Resolver access check
                     access = AccessConditionUtils
                             .checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, servletRequest)
+                            .isGranted();
+                    token.addPermission(key, access);
+                } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+                    logger.error(e.getMessage());
+                    return false;
+                }
+            }
+            return access;
+        });
+    }
+
+    /**
+     * Probe pre-flight endpoint for general record related resources
+     * 
+     * @param pi Record identifier
+     * @param origin Client origin
+     * @return {@link Response}
+     */
+    @OPTIONS
+    @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_RECORD)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "")
+    public Response handleProbePreflightRecordResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
+            @Parameter(description = "Privilege name") @PathParam("privilege") String privilege,
+            @HeaderParam("Origin") String origin) {
+        return handleProbePreflightCommon(origin, pi + "/privilege/" + privilege);
+    }
+
+    /**
+     * Probe service endpoint for general record related resources
+     * 
+     * @param pi Record identifier
+     * @param origin Client origin
+     * @param privilegeName The privilege to check
+     * @return {@link Response}
+     * @throws JsonProcessingException
+     */
+    @GET
+    @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_RECORD)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "")
+    public Response probeRecordResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
+            @Parameter(description = "Privilege name") @PathParam("privilege") String privilege,
+            @HeaderParam("Origin") String origin)
+            throws JsonProcessingException {
+        logger.debug("probeResource: resolver/{}", pi);
+        // debugRequest();
+        if (StringUtils.isEmpty(origin)) {
+            logger.warn("No Origin header found.");
+        }
+
+        // Delegate to common handler
+        String path = "/probe/" + pi + "/privilege/" + privilege + "/"; //NOSONAR URL, not path
+        return handleProbeCommon(origin, path, token -> {
+            String key = pi + "/privilege/" + privilege;
+            Boolean access = token.hasPermission(key);
+            if (access == null) {
+                try {
+                    // Resolver access check
+                    access = AccessConditionUtils
+                            .checkAccessPermissionByIdentifierAndLogId(pi, null, privilege, servletRequest)
+                            .isGranted();
+                    token.addPermission(key, access);
+                } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+                    logger.error(e.getMessage());
+                    return false;
+                }
+            }
+            return access;
+        });
+    }
+
+    /**
+     * Probe pre-flight endpoint for general record related resources
+     * 
+     * @param pi Record identifier
+     * @param origin Client origin
+     * @return {@link Response}
+     */
+    @OPTIONS
+    @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_SECTION)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "")
+    public Response handleProbePreflightStructureResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
+            @Parameter(description = "structure log id") @PathParam("logid") String logId,
+            @Parameter(description = "Privilege name") @PathParam("privilege") String privilege,
+            @HeaderParam("Origin") String origin) {
+        return handleProbePreflightCommon(origin, pi + "/section/" + logId + "/privilege/" + privilege);
+    }
+
+    /**
+     * Probe service endpoint for general record related resources
+     * 
+     * @param pi Record identifier
+     * @param origin Client origin
+     * @param privilege The privilege to check
+     * @return {@link Response}
+     * @throws JsonProcessingException
+     */
+    @GET
+    @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST_SECTION)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "")
+    public Response probeRecordStructureResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
+            @Parameter(description = "structure log id") @PathParam("logid") String logId,
+            @Parameter(description = "Privilege name") @PathParam("privilege") String privilege,
+            @HeaderParam("Origin") String origin)
+            throws JsonProcessingException {
+        logger.debug("probeResource: resolver/{}", pi);
+        // debugRequest();
+        if (StringUtils.isEmpty(origin)) {
+            logger.warn("No Origin header found.");
+        }
+
+        // Delegate to common handler
+        String path = "/probe/" + pi + "/section/" + logId + "/privilege/" + privilege + "/"; //NOSONAR URL, not path
+        return handleProbeCommon(origin, path, token -> {
+            String key = pi + "/section/" + logId + "/privilege/" + privilege;
+            Boolean access = token.hasPermission(key);
+            if (access == null) {
+                try {
+                    // Resolver access check
+                    access = AccessConditionUtils
+                            .checkAccessPermissionByIdentifierAndLogId(pi, logId, privilege, servletRequest)
                             .isGranted();
                     token.addPermission(key, access);
                 } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
