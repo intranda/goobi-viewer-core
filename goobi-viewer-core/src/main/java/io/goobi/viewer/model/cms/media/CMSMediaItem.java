@@ -113,6 +113,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     private Priority priority = Priority.DEFAULT;
 
     @Column(name = "image_alt_text", nullable = true)
+    @Deprecated
     private String alternativeText = "";
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -308,6 +309,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      *
      * @return the alternativeText
      */
+    @Deprecated
     public String getAlternativeText() {
         return alternativeText;
     }
@@ -319,6 +321,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      *
      * @param alternativeText the alternativeText to set
      */
+    @Deprecated
     public void setAlternativeText(String alternativeText) {
         this.alternativeText = alternativeText;
     }
@@ -738,6 +741,20 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         Map<String, String> names = getMetadata().stream()
                 .filter(md -> StringUtils.isNotBlank(md.getDescription()))
                 .collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getDescription));
+        return new MultiLanguageMetadataValue(names);
+    }
+    
+    /**
+     * <p>
+     * getTranslationsForAlternativeText.
+     * </p>
+     *
+     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     */
+    public IMetadataValue getTranslationsForAlternativeText() {
+        Map<String, String> names = getMetadata().stream()
+                .filter(md -> StringUtils.isNotBlank(md.getAlternativeText()))
+                .collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getAlternativeText));
         return new MultiLanguageMetadataValue(names);
     }
 
