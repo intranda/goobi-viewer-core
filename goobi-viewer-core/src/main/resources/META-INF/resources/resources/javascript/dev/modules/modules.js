@@ -236,7 +236,6 @@
     class ZoomableImage {
 
         constructor() {
-            console.log("init image view", _config);
             const imageElement = document.querySelector(_config.elementSelectors.image);
             if(imageElement) { 
 
@@ -251,7 +250,6 @@
                 this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
-                console.log("create image view with config ", imageViewConfig);
                 this.viewer = new ImageView.Image(imageViewConfig);
                 this.zoom = new ImageView.Controls.Zoom(this.viewer);
                 this.rotation = new ImageView.Controls.Rotation(this.viewer);
@@ -261,7 +259,6 @@
                 this.footer = createFooter(this.viewer);
 
                 this.tileSources = createTileSource();
-                console.log("use TileSources ", this.tileSources);
                 
                 this.tileSourceIdToOrder = Object.fromEntries(
                     Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
@@ -269,7 +266,6 @@
 
 
                 if(this.viewMode == "sequence") {
-                    console.log("initialize sequence mode");
                     this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
                 }
                 
@@ -299,6 +295,11 @@
             }
         }
 
+        resetSize() {
+            this.viewer?.extent?.setSize(this.viewer.tileSources);
+            this.updateMargins();
+        }
+
         updateMargins() {
             if(this.viewer?.openseadragon?.viewport) {
                 const viewerRight = (this.viewer.element.offsetLeft + this.viewer.element.offsetWidth);
@@ -318,13 +319,18 @@
                 .then(image => {
                     this.sequence?.initialize(this.getCurrentTileSourceId());
                     this.overlayGroups.forEach(group => group.show());
+                    this.initWindowResize();
                     return this;
                 });
             } else {
                 return new Promise( ( resolve, reject ) => {
-                    reject("no image found");
+                    reject("no image found"); 
                 })
             }
+        }
+
+        initWindowResize() { 
+            window.addEventListener("resize", () => this.resetSize());
         }
 
         getCurrentTileSourceIndex() {
