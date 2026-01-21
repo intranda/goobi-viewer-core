@@ -375,7 +375,9 @@ public class ViewManager implements Serializable {
                 break;
             case SEQUENCE:
                 for (PhysicalElement page : this.getAllPages()) {
-                    infos.put(page.getOrder(), getImageInfo(page, pageType));
+                    if (page.isHasImage()) {
+                        infos.put(page.getOrder(), getImageInfo(page, pageType));
+                    }
                 }
                 break;
             default:
