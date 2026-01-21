@@ -1834,7 +1834,8 @@ public class ActiveDocumentBean implements Serializable {
             MetsPdfRequest request = new MetsPdfRequest(PathConverter.toURI(dataset.getMetadataFilePath()), logId, false, params);
             long size = new GetMetsPageCountAction(ContentServerCacheManager.getInstance()).getPdfInfo(request).getSize();
             return FileSizeCalculator.formatSize(size);
-        } catch (URISyntaxException | ContentLibException | IndexUnreachableException | IOException | RecordNotFoundException e) {
+        } catch (URISyntaxException | ContentLibException | IndexUnreachableException | IOException | RecordNotFoundException
+                | NullPointerException e) {
             logger.error("Error getting pdf file sizes", e.toString());
             return "unknown";
         }
