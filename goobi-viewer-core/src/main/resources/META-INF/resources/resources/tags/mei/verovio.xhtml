@@ -1,0 +1,162 @@
+<ui:composition
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    >
+    <f:subview>
+        <h:inputTextarea
+            id="verovioInput"
+            value="#{content}"
+            styleClass="visually-hidden"
+        />
+        <div class="editor editor-verovio" data-editor="verovio" data-track-progress="false" data-demo="false">
+            <div class="editor-menubar" data-editor="verovio-toolbar">
+                <!-- Zoom controls -->
+                <div class="editor-menu-group">
+                    <button
+                        id="verovioZoomOut"
+                        type="button"
+                        class="btn editor-menuicon"
+                        aria-label="#{msgs.zoomOut}"
+                        title="#{msgs.zoomOut}"
+                        data-bs-toggle="tooltip"
+                        data-command="zoomOut">
+                        <span class="fa fa-search-minus" aria-hidden="true"></span>
+                    </button>
+                    <button
+                        id="verovioZoomIn"
+                        type="button"
+                        class="btn editor-menuicon"
+                        aria-label="#{msgs.zoomIn}"
+                        title="#{msgs.zoomIn}"
+                        data-bs-toggle="tooltip"
+                        data-command="zoomIn">
+                        <span class="fa fa-search-plus" aria-hidden="true"></span>
+                    </button>
+                    <button
+                        id="verovioZoomReset"
+                        type="button"
+                        class="btn editor-menuicon"
+                        aria-label="Reset Zoom"
+                        title="Reset Zoom"
+                        data-bs-toggle="tooltip"
+                        data-command="resetZoom">
+                        <span class="fa fa-expand" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="editor-menu-group">
+                    <button
+                        id="verovioPreviousPage"
+                        type="button"
+                        class="btn editor-menuicon"
+                        aria-label="#{msgs.previous}"
+                        title="#{msgs.previous}"
+                        data-bs-toggle="tooltip"
+                        data-command="previousPage">
+                        <span class="fa fa-chevron-left" aria-hidden="true"></span>
+                    </button>
+                    <div class="editor-info editor-page-indicator">
+                        #{msgs.seite}
+                        <span class="editor-page-current">1</span>
+                        #{msgs.von}
+                        <span class="editor-page-count">1</span>
+                    </div>
+                    <button
+                        id="verovioNextPage"
+                        type="button"
+                        class="btn editor-menuicon"
+                        aria-label="#{msgs.next}"
+                        title="#{msgs.next}"
+                        data-bs-toggle="tooltip"
+                        data-command="nextPage">
+                        <span class="fa fa-chevron-right" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="editor-menu-group">
+                    <button
+                        id="verovioPlayMIDI"
+                        type="button"
+                        class="btn editor-menuicon"
+                        aria-label="#{msgs.play} MIDI"
+                        title="#{msgs.play} MIDI"
+                        data-bs-toggle="tooltip"
+                        data-command="playMidi">
+                        <span class="fa fa-play" aria-hidden="true"></span>
+                    </button>
+                    <button
+                        id="verovioPauseMIDI"
+                        type="button"
+                        class="btn editor-menuicon d-none"
+                        aria-label="#{msgs.pause} MIDI"
+                        title="#{msgs.pause} MIDI"
+                        data-bs-toggle="tooltip"
+                        data-command="pauseMidi">
+                        <span class="fa fa-pause" aria-hidden="true"></span>
+                    </button>
+                    <button
+                        id="verovioStopMIDI"
+                        type="button"
+                        class="btn editor-menuicon disabled"
+                        aria-label="#{msgs.stop} MIDI"
+                        title="#{msgs.stop} MIDI"
+                        data-bs-toggle="tooltip"
+                        data-command="stopMidi">
+                        <span class="fa fa-stop" aria-hidden="true"></span>
+                    </button>
+                    <div class="editor-midi-scrubber">
+                        <div class="scrubber-container">
+                            <div class="current-time">0:00</div>
+                            <div class="scrubber-track">
+                                <div class="scrubber-progress"></div>
+                            </div>
+                            <div class="total-time">0:00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="editor-menu-group">
+                    <div class="dropdown">
+                        <button
+                            class="btn editor-menuicon dropdown-toggle"
+                            type="button"
+                            id="verovioDownloadMenu"
+                            data-bs-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false">
+                            <span class="fa fa-download" aria-hidden="true"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="verovioDownloadMenu">
+                            <li>
+                                <button
+                                    id="verovioDownloadMEI"
+                                    type="button"
+                                    class="dropdown-item"
+                                    aria-label="#{msgs.downloadFile} MEI"
+                                    title="#{msgs.downloadFile} MEI"
+                                    data-command="downloadMEI">
+                                    #{msgs.downloadFile} MEI
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    id="verovioDownloadMIDI"
+                                    type="button"
+                                    class="dropdown-item"
+                                    aria-label="#{msgs.download} MIDI"
+                                    title="#{msgs.downloadFile} MIDI"
+                                    data-command="downloadMIDI">
+                                    #{msgs.downloadFile} MIDI
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <ui:insert />
+            <h:panelGroup id="editor" class="verovio" layout="block">
+            </h:panelGroup>
+        </div>
+    </f:subview>
+    <h:outputScript name="js/verovio.js" library="MEIEditor" target="head" />
+</ui:composition>

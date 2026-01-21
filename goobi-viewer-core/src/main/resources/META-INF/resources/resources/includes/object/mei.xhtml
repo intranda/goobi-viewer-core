@@ -1,19 +1,28 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:jsf="http://xmlns.jcp.org/jsf" 
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:mei="http://goobi.io/mei"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+	
+	<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/dist/verovio.css" />
 
-    <!-- VIEW MEI -->
-    <div id="fulltext-box" class="view-fulltext__box">
-       
-        MEI MEI MEI        
+	<!-- VIEW MEI -->
+	<div id="fulltext-box" class="view-fulltext__box">
+
+		<h:form id="meiForm"
+			styleClass="d-flex flex-column h-100 justify-content-between">
+			<mei:verovio content="#{textBean.getStringFromUrl(activeDocumentBean.viewManager.meiUrl)}" />
+
+		</h:form>
 
 	</div>
+	
+	 <h:outputScript name="resources/javascript/dist/verovio.js" target="head" /> 
+	
 </ui:composition>
