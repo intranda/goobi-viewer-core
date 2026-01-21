@@ -375,7 +375,9 @@ public class ViewManager implements Serializable {
                 break;
             case SEQUENCE:
                 for (PhysicalElement page : this.getAllPages()) {
-                    infos.put(page.getOrder(), getImageInfo(page, pageType));
+                    if (page.isHasImage()) {
+                        infos.put(page.getOrder(), getImageInfo(page, pageType));
+                    }
                 }
                 break;
             default:
@@ -4335,7 +4337,9 @@ public class ViewManager implements Serializable {
         } else if (this.pageLoader instanceof EagerPageLoader) {
             Map<Integer, String> map = new LinkedHashMap<>();
             for (int i = this.pageLoader.getFirstPageOrder(); i <= this.pageLoader.getLastPageOrder(); i++) {
-                map.put(i, this.pageLoader.getPage(i).getMimeType());
+                if (this.pageLoader.getPage(i) != null) {
+                    map.put(i, this.pageLoader.getPage(i).getMimeType());
+                }
             }
             return map;
         } else {
