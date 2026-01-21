@@ -292,17 +292,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         this.lastModifiedTime = null;
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>alternativeText</code>.
-     * </p>
-     *
-     * @return the alternativeText
-     */
-    @Deprecated
-    public String getAlternativeText() {
-        return alternativeText;
-    }
 
     /**
      * <p>
@@ -567,7 +556,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         return getCurrentLanguageMetadata().getName();
     }
 
-    public String getAltText() {
+    public String getAlternativeText() {
         return getCurrentLanguageMetadata().getAlternativeText();
     }
 
