@@ -156,7 +156,7 @@ public final class DataFileTools {
 
         String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
 
-        Map<String, Path> ret = new HashMap<>(dataFolderNames.length);
+        Map<String, Path> ret = HashMap.newHashMap(dataFolderNames.length);
         for (String dataFolderName : dataFolderNames) {
             ret.put(dataFolderName, getDataFolder(pi, dataFolderName, dataRepositoryName));
         }
@@ -247,7 +247,12 @@ public final class DataFileTools {
             return fileName;
         }
 
-        return Paths.get(fileName).getFileName().toString();
+        final String sanitizedFileName = Paths.get(fileName).getFileName().toString();
+        if (sanitizedFileName == null || !sanitizedFileName.matches("[a-zA-Z0-9._-]+")) {
+            throw new org.jboss.weld.exceptions.IllegalArgumentException("Illegal fileName: " + fileName);
+        }
+
+        return sanitizedFileName;
     }
 
     /**
@@ -463,9 +468,10 @@ public final class DataFileTools {
         try {
             String filename = FileTools.getFilenameFromPathString(fulltextFilePath);
             String pi = FileTools.getBottomFolderFromPathString(fulltextFilePath);
-            return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> {
-                return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build();
-            })
+            return DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build())
                     .map(NetTools::callUrlGET)
                     .filter(array -> NetTools.isStatusOk(array[0]))
                     .map(array -> array[1])
