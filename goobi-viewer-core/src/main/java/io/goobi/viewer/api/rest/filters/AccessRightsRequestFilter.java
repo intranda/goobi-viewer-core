@@ -34,14 +34,10 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.DataRetriever;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.model.viewer.PhysicalElement;
-import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import jakarta.annotation.Priority;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -170,9 +166,8 @@ public class AccessRightsRequestFilter implements ContainerRequestFilter {
                     }
                 } else if (pageNo != null) {
                     for (String privilege : privileges) {
-                        PhysicalElement page = getPage(pi, pageNo);
                         access = AccessConditionUtils
-                                .checkAccessPermissionByIdentifierAndPageOrder(page, privilege, request)
+                                .checkAccessPermissionByIdentifierAndPageOrder(pi, pageNo, privilege, request)
                                 .isGranted();
                     }
                 } else {
@@ -181,7 +176,7 @@ public class AccessRightsRequestFilter implements ContainerRequestFilter {
                     }
                 }
             }
-        } catch (IndexUnreachableException | DAOException | PresentationException e) {
+        } catch (IndexUnreachableException | DAOException e) {
             throw new ServiceNotAllowedException("Serving this resource is currently impossible due to " + e.toString());
         } catch (RecordNotFoundException e) {
             throw new ServiceNotAllowedException("Serving this resource is currently impossible because the record could not be found");
@@ -189,12 +184,6 @@ public class AccessRightsRequestFilter implements ContainerRequestFilter {
         if (!access) {
             throw new ServiceNotAllowedException("Serving this resource is restricted due to access conditions");
         }
-    }
-
-    private PhysicalElement getPage(String pi, Integer pageNo) throws PresentationException, IndexUnreachableException {
-        StructElement topStruct = this.dataRetriever.getDocument(pi);
-        PhysicalElement page = AbstractPageLoader.loadPage(topStruct, pageNo);
-        return page;
     }
 
     /**
