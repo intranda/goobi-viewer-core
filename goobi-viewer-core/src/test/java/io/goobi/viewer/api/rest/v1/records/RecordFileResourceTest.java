@@ -35,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
+import io.goobi.viewer.controller.DataManager;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -115,6 +116,8 @@ class RecordFileResourceTest extends AbstractRestApiTest {
 
     @Test
     void testGetSourceFile() {
+        DataManager.getInstance().getConfiguration().overrideValue("viewerHome", "/opt/digiverso/viewer/");
+        
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "text.txt").build();
         try (Response response = target(url)
                 .request()
