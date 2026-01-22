@@ -228,7 +228,7 @@ public final class DataFileTools {
         }
 
         // If selected path doesn't exist in the primary data folder, call again with alternative data folder
-        if (StringUtils.isNotBlank(altDataFolderName) && !Files.exists(dataFolderPath)) {
+        if (StringUtils.isNotBlank(altDataFolderName) && !Files.exists(dataFolderPath)) { //NOSONAR fileName is sanitized at this point
             return getDataFilePath(pi, altDataFolderName, null, useFileName);
         }
 
