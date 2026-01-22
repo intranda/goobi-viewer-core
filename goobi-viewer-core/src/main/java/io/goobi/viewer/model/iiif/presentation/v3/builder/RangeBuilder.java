@@ -49,7 +49,8 @@ public class RangeBuilder extends AbstractBuilder {
     private static final Logger logger = LogManager.getLogger(RangeBuilder.class);
 
     /**
-     * @param apiUrlManager
+     * @param apiUrlManager {@link AbstractApiUrlManager}
+     * @param request {@link HttpServletRequest}
      */
     public RangeBuilder(AbstractApiUrlManager apiUrlManager, HttpServletRequest request) {
         super(apiUrlManager, request);

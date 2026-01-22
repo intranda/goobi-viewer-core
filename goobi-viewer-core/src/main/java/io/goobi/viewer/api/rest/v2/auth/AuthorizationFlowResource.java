@@ -477,6 +477,7 @@ public class AuthorizationFlowResource {
      * Probe pre-flight endpoint for general record related resources
      * 
      * @param pi Record identifier
+     * @param privilege
      * @param origin Client origin
      * @return {@link Response}
      */
@@ -558,8 +559,9 @@ public class AuthorizationFlowResource {
      * Probe service endpoint for general record related resources
      * 
      * @param pi Record identifier
-     * @param origin Client origin
+     * @param logId LOGID
      * @param privilege The privilege to check
+     * @param origin Client origin
      * @return {@link Response}
      * @throws JsonProcessingException
      */

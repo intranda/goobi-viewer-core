@@ -74,7 +74,8 @@ public class CollectionBuilder extends AbstractBuilder {
 
     /**
      * 
-     * @param apiUrlManager
+     * @param apiUrlManager {@link AbstractApiUrlManager}
+     * @param request {@link HttpServletRequest}
      */
     public CollectionBuilder(AbstractApiUrlManager apiUrlManager, HttpServletRequest request) {
         super(apiUrlManager, request);
