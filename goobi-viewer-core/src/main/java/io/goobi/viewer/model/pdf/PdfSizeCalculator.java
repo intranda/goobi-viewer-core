@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.goobi.presentation.contentServlet.controller.GetMetsPageCountAction;
@@ -15,7 +16,6 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.model.viewer.Dataset;
-import software.amazon.awssdk.utils.StringUtils;
 
 /**
  * Calculates and stores estimated pdf file sizes based on image file size
