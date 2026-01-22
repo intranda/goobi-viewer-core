@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
@@ -205,11 +206,12 @@ public class PdfDownloadJob extends DownloadJob {
     private static List<Path> getDownloadPdfFiles(Path targetFolder) {
         try {
             if (Files.isDirectory(targetFolder)) {
-
-                return Files.list(targetFolder)
-                        .filter(Files::isRegularFile)
-                        .filter(p -> p.getFileName().toString().matches("(?i).*\\.pdf$"))
-                        .toList();
+                try (Stream<Path> paths = Files.list(targetFolder)) {
+                    return paths
+                            .filter(Files::isRegularFile)
+                            .filter(p -> p.getFileName().toString().toLowerCase().endsWith(".pdf"))
+                            .toList();
+                }
             }
         } catch (IOException e) {
             //ignore. No pdfs to download

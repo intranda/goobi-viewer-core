@@ -105,7 +105,7 @@ public class RecordResource {
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalPathSyntaxException, ContentLibException {
         try {
-            Optional<URI> forwardURI = new ManifestBuilder(urls).getExternalManifestURI(pi);
+            Optional<URI> forwardURI = new ManifestBuilder(urls, servletRequest).getExternalManifestURI(pi);
             if (forwardURI.isPresent()) {
                 servletResponse.sendRedirect(forwardURI.get().toString());
                 return null;
@@ -113,7 +113,7 @@ public class RecordResource {
         } catch (IOException e) {
             logger.error("Error forwarding manifest url", e);
         }
-        return new ManifestBuilder(urls).build(pi, servletRequest);
+        return new ManifestBuilder(urls, servletRequest).build(pi);
     }
 
     @GET

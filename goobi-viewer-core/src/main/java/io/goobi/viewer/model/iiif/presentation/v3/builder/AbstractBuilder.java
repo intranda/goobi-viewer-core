@@ -93,17 +93,21 @@ import io.goobi.viewer.controller.model.ProviderConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
@@ -130,6 +134,7 @@ public abstract class AbstractBuilder {
     protected final int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
 
     protected final Configuration config;
+    protected final HttpServletRequest request;
 
     /**
      * <p>
@@ -138,7 +143,8 @@ public abstract class AbstractBuilder {
      *
      * @param apiUrlManager
      */
-    protected AbstractBuilder(final AbstractApiUrlManager apiUrlManager) {
+    protected AbstractBuilder(final AbstractApiUrlManager apiUrlManager, HttpServletRequest request) {
+        this.request = request;
         this.config = DataManager.getInstance().getConfiguration();
         this.urls = apiUrlManager != null ? apiUrlManager : DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v2).orElse(null);
         AbstractApiUrlManager contentUrls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(this.urls);
@@ -793,22 +799,25 @@ public abstract class AbstractBuilder {
      */
     protected ImageResource getThumbnail(StructElement ele) {
         try {
+            int imageNo = ele.getImageNumber();
             String thumbUrl = this.thumbs.getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageResource resource = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
                 // Add auth services
-                //                if (true) { // TODO Check access
-                //                    for (ImageInformation ii : resource.getServices()) {
-                //                        logger.trace("adding auth services to thumbnail");
-                // for (Service service : AuthorizationFlowTools.getAuthServices(ele.getPi(), ele.getMetadataValue(SolrConstants.THUMBNAIL))) {
-                //                            ii.addService(service);
-                //                        }
-                //                    }
-                //                }
+                if (!isAccessGranted(ele, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS)) { // TODO Check access
+                    for (ImageInformation ii : resource.getServices()) {
+                        logger.trace("adding auth services to thumbnail");
+                        for (Service service : AuthorizationFlowTools.getAuthServices(ele.getPi(), ele.getMetadataValue(SolrConstants.THUMBNAIL))) {
+                            ii.addService(service);
+                        }
+                    }
+                }
                 return resource;
             }
         } catch (URISyntaxException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
+        } catch (PresentationException e) {
+            logger.warn("Unable to check access for thumbnail", e);
         }
         return null;
     }
@@ -954,8 +963,26 @@ public abstract class AbstractBuilder {
         try {
             // logger.trace("Encoding param: {}", replacement); //NOSONAR Debug
             return URLEncoder.encode(uri, StringTools.DEFAULT_ENCODING);
-        } catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException | NullPointerException e) {
             return uri;
+        }
+    }
+
+    protected boolean isAccessGranted(StructElement ele, String privilege) throws PresentationException {
+        try {
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(ele.getPi(), ele.getLogid(), privilege,
+                    request).isGranted();
+        } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+            throw new PresentationException("Cannot determine access conditions for metadata", e);
+        }
+    }
+
+    protected boolean isAccessGranted(String pi, String privilege) throws PresentationException {
+        try {
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, "", privilege,
+                    request).isGranted();
+        } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+            throw new PresentationException("Cannot determine access conditions for metadata", e);
         }
     }
 

@@ -67,7 +67,7 @@
 								class="badge badge-dark"
 								data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
 								data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
-								aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+								aria-label="#{msg[link.label]}: #{msg.copy_to_clipboard}">
 								#{msg[link.label]}</button>
 						</ui:fragment>
 						<ui:fragment rendered="#{link.action.name() == 'DOWNLOAD'}">
