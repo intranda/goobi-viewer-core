@@ -746,18 +746,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      *
-     * @return true if permission granted; false otherwise
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws RecordNotFoundException
-     */
-    public boolean isAccessPermissionGenerateIiifManifest() throws IndexUnreachableException, DAOException {
-        // logger.trace("isAccessPermissionGenerateIiifManifest"); //NOSONAR Debug
-        return isAccessPermission(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST, null);
-    }
-
-    /**
-     *
      * @param privilege Privilege name to check
      * @param request the http request for this resource. If null, the request it retrieved from the current {@link FacesContext} if present
      * @return true if current user has the privilege for this record; false otherwise. Also return false if no record was found

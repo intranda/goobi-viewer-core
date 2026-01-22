@@ -131,10 +131,7 @@
                                 <!-- PURL -->
 
 							</ui:fragment>
-							
-							                        <!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionGenerateIiifManifest}">   
-                        
+							                        
                             <!-- IIIF MANIFEST -->
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage}">
 	                           <button 
@@ -165,9 +162,7 @@
                                         #{msg.action__view_in_mirador}
                                     </a> 
                             </ui:fragment>
-                        
-                        </ui:fragment>
-							
+                        							
 						</div>
 						
 						<!-- POPOVER FOR IMAGE DOWNLOAD -->
