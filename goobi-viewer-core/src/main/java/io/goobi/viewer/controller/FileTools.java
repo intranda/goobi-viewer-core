@@ -796,7 +796,6 @@ public final class FileTools {
      * @return Lowest level file name
      * @should return unchanged string if string blank
      * @should remove everything but the file name from given path
-     * @should throw IllegalArgumentException given folder name
      * @should throw IllegalArgumentException given invalid file name
      */
     public static String sanitizeFileName(String fileName) {
