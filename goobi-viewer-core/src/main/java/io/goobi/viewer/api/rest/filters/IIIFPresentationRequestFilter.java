@@ -76,9 +76,6 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
             }
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.APPLICATION_JSON;
-            //            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
-            //                mediaType = MediaType.APPLICATION_JSON;
-            //            }
             Response response = Response.status(Status.FORBIDDEN).type(mediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
             request.abortWith(response);
         }
