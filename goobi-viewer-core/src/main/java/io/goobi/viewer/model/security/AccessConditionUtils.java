@@ -399,7 +399,8 @@ public final class AccessConditionUtils {
      * Checks whether the client may access an image (by PI + file name).
      *
      * @param request Calling HttpServiceRequest.
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param pi identifier of the record
+     * @param pageOrder order property of the page
      * @param privilegeName a {@link java.lang.String} object.
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
