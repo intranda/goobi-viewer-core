@@ -24,7 +24,6 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,7 +45,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.goobi.presentation.contentServlet.controller.GetMetsPageCountAction;
 import org.jboss.weld.contexts.ContextNotActiveException;
 import org.json.JSONObject;
 import org.omnifaces.cdi.Push;
@@ -59,13 +57,8 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
-import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
@@ -99,6 +92,7 @@ import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.RecordGeoMap;
 import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
+import io.goobi.viewer.model.pdf.PdfSizeCalculator;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -211,6 +205,9 @@ public class ActiveDocumentBean implements Serializable {
     @Inject
     @Push
     private PushContext tocUpdateChannel;
+
+    private Dataset recordDataset;
+    private PdfSizeCalculator pdfSizes;
 
     /**
      * Empty constructor.
@@ -1825,17 +1822,14 @@ public class ActiveDocumentBean implements Serializable {
         return getPdfSize(null);
     }
 
-    public String getPdfSize(String logId) throws PresentationException {
+    public synchronized String getPdfSize(String logId) throws PresentationException {
+
         try {
-            Dataset dataset = new ProcessDataResolver().getDataset(getPersistentIdentifier());
-            Map<String, String> params = Map.of("imageSource",
-                    dataset.getMediaFolderPath().getParent().toString(), "pdfSource", dataset.getPdfFolderPath().getParent().toString(), "altoSource",
-                    dataset.getAltoFolderPath().getParent().toString());
-            MetsPdfRequest request = new MetsPdfRequest(PathConverter.toURI(dataset.getMetadataFilePath()), logId, false, params);
-            long size = new GetMetsPageCountAction(ContentServerCacheManager.getInstance()).getPdfInfo(request).getSize();
-            return FileSizeCalculator.formatSize(size);
-        } catch (URISyntaxException | ContentLibException | IndexUnreachableException | IOException | RecordNotFoundException
-                | NullPointerException e) {
+            if (this.pdfSizes == null) {
+                this.pdfSizes = new PdfSizeCalculator(getRecordDataset());
+            }
+            return this.pdfSizes.getPdfSize(logId);
+        } catch (PresentationException | IndexUnreachableException | IOException | RecordNotFoundException | NullPointerException e) {
             logger.error("Error getting pdf file sizes", e.toString());
             return "unknown";
         }
@@ -2157,9 +2151,7 @@ public class ActiveDocumentBean implements Serializable {
 
     private boolean ocrFolderExists(String pi) {
         try {
-            String cleanedPi = StringTools.cleanUserGeneratedData(pi);
-            Dataset work = DataFileTools.getDataset(cleanedPi);
-            Path altoFolder = work.getAltoFolderPath();
+            Path altoFolder = getRecordDataset().getAltoFolderPath();
             return altoFolder != null && Files.isDirectory(altoFolder);
         } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException e) {
             logger.error("Error finding alto folder for {}", pi, e);
@@ -2871,6 +2863,14 @@ public class ActiveDocumentBean implements Serializable {
             logger.error("Error reading default page navigation from config", e);
             return PageNavigation.SINGLE;
         }
+    }
+
+    private synchronized Dataset getRecordDataset() throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
+        if (this.recordDataset == null) {
+            String cleanedPi = StringTools.cleanUserGeneratedData(getPersistentIdentifier());
+            this.recordDataset = new ProcessDataResolver().getDataset(cleanedPi);
+        }
+        return this.recordDataset;
     }
 
 }
