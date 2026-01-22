@@ -35,7 +35,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,6 +52,7 @@ import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
@@ -159,20 +159,20 @@ public class RecordFilesResource {
     public Response getSourceFile(
             @Parameter(description = "Source file name") @PathParam("filename") final String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
-        String f = FilenameUtils.getName(filename); // Make sure filename doesn't inject a path traversal
-        Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, f);
-        if (!Files.isRegularFile(path)) {
-            throw new ContentNotFoundException("Source file " + f + " not found");
+        String sanitizedFileName = FileTools.sanitizeFileName(filename); // Make sure filename doesn't inject a path traversal
+        Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, sanitizedFileName);
+        if (!Files.isRegularFile(path)) { //NOSONAR File name is sanitized at this point
+            throw new ContentNotFoundException("Source file " + sanitizedFileName + " not found");
         }
 
         boolean access = AccessConditionUtils.checkContentFileAccessPermission(pi, servletRequest).isGranted();
         if (!access) {
-            throw new ServiceNotAllowedException("Access to source file " + f + " not allowed");
+            throw new ServiceNotAllowedException("Access to source file " + sanitizedFileName + " not allowed");
         }
 
         String mimeType = "appplication/octet-stream";
         try {
-            mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, f, path);
+            mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, sanitizedFileName, path);
         } catch (IOException e) {
             logger.error("Failed to probe file content type");
         }

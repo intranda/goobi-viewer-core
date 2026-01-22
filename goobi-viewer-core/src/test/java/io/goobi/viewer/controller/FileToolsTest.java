@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -182,5 +184,47 @@ class FileToolsTest extends AbstractTest {
         Assertions.assertTrue(FileTools.isYoungerThan(file2, file1));
         Assertions.assertFalse(FileTools.isYoungerThan(file1, file2));
         Assertions.assertFalse(FileTools.isYoungerThan(file1, file1));
+    }
+    
+    /**
+     * @see DataFileTools#sanitizeFileName(String)
+     * @verifies return unchanged string if string blank
+     */
+    @Test
+    void sanitizeFileName_shouldReturnUnchangedStringIfStringBlank() {
+        Assertions.assertEquals("  ", FileTools.sanitizeFileName("  "));
+    }
+
+    /**
+     * @see DataFileTools#sanitizeFileName(String)
+     * @verifies remove everything but the file name from given path
+     */
+    @Test
+    void sanitizeFileName_shouldRemoveEverythingButTheFileNameFromGivenPath() {
+        Assertions.assertEquals("foo.bar", FileTools.sanitizeFileName("/opt/digiverso/foo.bar"));
+        Assertions.assertEquals("foo.bar", FileTools.sanitizeFileName("../../foo.bar"));
+        Assertions.assertEquals("foo.bar", FileTools.sanitizeFileName("/foo.bar"));
+    }
+    
+    /**
+     * @see DataFileTools#sanitizeFileName(String)
+     * @verifies throw IllegalArgumentException given folder name
+     */
+    @Test
+    void sanitizeFileName_shouldThrowIllegalArgumentExceptionGivenFolderName() {
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> FileTools.sanitizeFileName("/opt/digiverso/"));
+        assertEquals("Illegal fileName: /opt/digiverso/", e.getMessage());
+    }
+    
+    /**
+     * @see DataFileTools#sanitizeFileName(String)
+     * @verifies throw IllegalArgumentException given invalid file name
+     */
+    @Test
+    void sanitizeFileName_shouldThrowIllegalArgumentExceptionGivenInvalidFileName() {
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> FileTools.sanitizeFileName("/opt/digiverso/foo&.jpg"));
+        assertEquals("Illegal fileName: /opt/digiverso/foo&.jpg", e.getMessage());
     }
 }

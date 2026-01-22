@@ -220,7 +220,7 @@ public final class DataFileTools {
     public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, final String fileName)
             throws PresentationException, IndexUnreachableException {
         // Make sure fileName is a pure file name and not a path
-        String useFileName = sanitizeFileName(fileName);
+        String useFileName = FileTools.sanitizeFileName(fileName);
 
         java.nio.file.Path dataFolderPath = getDataFolder(pi, dataFolderName);
         if (StringUtils.isNotBlank(useFileName)) {
@@ -233,26 +233,6 @@ public final class DataFileTools {
         }
 
         return dataFolderPath;
-    }
-
-    /**
-     * Removes any path elements from the given file name.
-     *
-     * @param fileName
-     * @return Lowest level file name
-     * @should remove everything but the file name from given path
-     */
-    static String sanitizeFileName(String fileName) {
-        if (StringUtils.isBlank(fileName)) {
-            return fileName;
-        }
-
-        final String sanitizedFileName = Paths.get(fileName).getFileName().toString();
-        if (sanitizedFileName == null || !sanitizedFileName.matches("[a-zA-Z0-9._-]+")) {
-            throw new org.jboss.weld.exceptions.IllegalArgumentException("Illegal fileName: " + fileName);
-        }
-
-        return sanitizedFileName;
     }
 
     /**
