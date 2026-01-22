@@ -70,6 +70,7 @@ import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -175,8 +176,16 @@ public class RecordFileResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get MEI document for the record")
     public String getMEI()
-            throws ContentLibException, IOException, IndexUnreachableException, PresentationException {
-        // TODO: check access conditions
+            throws ContentLibException, DAOException, IOException, IndexUnreachableException, PresentationException {
+        try {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, servletRequest)
+                    .isGranted()) {
+                throw new ServiceNotAllowedException("Access to MEI file for '" + pi + "' not allowed");
+            }
+        } catch (RecordNotFoundException e) {
+            throw new ContentLibException("Record not found: " + pi);
+        }
+
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
