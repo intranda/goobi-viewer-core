@@ -38,7 +38,7 @@
 			<!-- No access ticket required or already unlocked -->
 			<ui:fragment
 				rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-				<div id="view_fulltext" class="view-fulltext">
+				<div id="viewMEI" class="view-mei">
 					<!-- TITLE -->
 					<div id="title" class="title">
 						<!-- TITLE HEADER -->
@@ -58,12 +58,9 @@
 
 					<ui:fragment
 						rendered="#{activeDocumentBean.viewManager.hasMeiDocument}">
-						<h:form id="viewMeiForm" prependId="false">
-							<div id="view_fulltext_wrapp" class="view-fulltext__wrapper">
-								<ui:include src="/resources/includes/object/mei.xhtml" />
-							</div>
-							<div class="clearfix"></div>
-						</h:form>
+						<div id="viewMEIwrapper" class="view-mei__wrapper">
+							<ui:include src="/resources/includes/object/mei.xhtml" />
+						</div>
 					</ui:fragment>
 				</div>
 			</ui:fragment>

@@ -14,13 +14,7 @@
 
 	<!-- VIEW MEI -->
 	<div id="fulltext-box" class="view-fulltext__box">
-
-		<h:form id="meiForm"
-			styleClass="d-flex flex-column h-100 justify-content-between">
-			<mei:verovio content="#{textBean.getStringFromUrl(activeDocumentBean.viewManager.meiUrl)}" />
-
-		</h:form>
-
+		<mei:verovio content="#{textBean.getStringFromUrl(activeDocumentBean.viewManager.meiUrl)}" />
 	</div>
 	
 	 <h:outputScript name="resources/javascript/dist/verovio.js" target="head" /> 
