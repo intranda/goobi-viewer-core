@@ -62,7 +62,7 @@ public class MediaItem {
     private final IMetadataValue label;
     @JsonSerialize(using = WebAnnotationMetadataValueSerializer.class)
     private final IMetadataValue description;
-    private final String altText;
+    private final IMetadataValue altText;
     private final IContent image;
     private final String link;
     private final List<String> tags;
@@ -94,13 +94,13 @@ public class MediaItem {
     public MediaItem(CMSMediaItem source, HttpServletRequest servletRequest) {
         this.label = source.getTranslationsForName();
         this.description = source.getTranslationsForDescription();
+        this.altText = source.getTranslationsForAlternativeText();
         this.image = getMediaResource(source);
         this.link = Optional.ofNullable(source.getLinkURI(servletRequest)).map(URI::toString).orElse("#");
         this.tags = source.getCategories().stream().map(CMSCategory::getName).collect(Collectors.toList());
         this.id = source.getId();
         this.important = source.isImportant();
         this.order = source.getDisplayOrder();
-        this.altText = source.getAlternativeText();
     }
 
     /**
@@ -205,7 +205,7 @@ public class MediaItem {
         return order;
     }
 
-    public String getAltText() {
+    public IMetadataValue getAltText() {
         return altText;
     }
 
