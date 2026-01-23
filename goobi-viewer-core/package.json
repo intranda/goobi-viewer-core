@@ -17,8 +17,7 @@
     "sync": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp sync-all",
     "target": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp target",
     "java": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp java",
-    "prepare": "lefthook install",
-    "lint": "eslint . --fix",
+    "prepare": "cd .. && ./goobi-viewer-core/node_modules/.bin/lefthook install",
     "format": "prettier --write ."
   },
   "engines": {
@@ -30,7 +29,6 @@
     "cheerio": "^1.0.0",
     "cross-env": "^10.0.0",
     "del": "^8.0.0",
-    "eslint": "^9.39.2",
     "fancy-log": "^2.0.0",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
