@@ -223,6 +223,7 @@ public class ViewManager implements Serializable {
     private Map<CitationLinkLevel, CitationList> citationLinks = new HashMap<>();
     private Map<String, String> externalResourceUrls = null;
     private List<PhysicalResource> downloadResources = null;
+    private String meiUrl = null;
 
     private PageNavigation pageNavigation = PageNavigation.SINGLE;
 
@@ -2037,7 +2038,7 @@ public class ViewManager implements Serializable {
                         .build())
                 .orElse("");
     }
-    
+
     /**
      * 
      * @return true if record has MEI URL; false otherwise
@@ -2053,19 +2054,37 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getMeiUrl() throws IndexUnreachableException {
-        if (topStructElement == null || StringUtils.isEmpty(topStructElement.getMetadataValue(SolrConstants.FILENAME_MEI))) {
-            return "";
+        if (meiUrl == null) {
+            if (topStructElement == null || StringUtils.isEmpty(topStructElement.getMetadataValue(SolrConstants.FILENAME_MEI))) {
+                meiUrl = "";
+                return meiUrl;
+            }
+
+            try {
+                if (!AccessConditionUtils
+                        .checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, BeanUtils.getRequest())
+                        .isGranted()) {
+                    logger.trace("User is not allowed MEI access.");
+                    meiUrl = "";
+                    return meiUrl;
+                }
+            } catch (RecordNotFoundException | DAOException e) {
+                logger.error(e.getMessage());
+                meiUrl = "";
+                return meiUrl;
+            }
+
+            String localPi = getPi();
+            meiUrl = DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> urls.path(RECORDS_FILES, ApiUrls.RECORDS_FILES_MEI)
+                            .params(localPi)
+                            .build())
+                    .orElse("");
         }
 
-        String localPi = getPi();
-        return DataManager.getInstance()
-                .getRestApiManager()
-                .getContentApiManager()
-                .map(urls -> urls.path(RECORDS_FILES, ApiUrls.RECORDS_FILES_MEI)
-                        .params(localPi)
-                        .build())
-                .orElse("");
-
+        return meiUrl;
     }
 
     /**
