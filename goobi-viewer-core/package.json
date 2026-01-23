@@ -17,7 +17,7 @@
     "sync": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp sync-all",
     "target": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp target",
     "java": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp java",
-    "prepare": "cd .. && ./goobi-viewer-core/node_modules/.bin/lefthook install",
+    "prepare": "node ../scripts/install-hooks.js",
     "format": "prettier --write ."
   },
   "engines": {
