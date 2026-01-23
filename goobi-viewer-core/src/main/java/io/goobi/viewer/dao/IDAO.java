@@ -1130,6 +1130,17 @@ public interface IDAO {
 
     /**
      * <p>
+     * countCommentsForWork.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @return a long
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    long countCommentsForWork(String pi) throws DAOException;
+
+    /**
+     * <p>
      * getComment.
      * </p>
      *
