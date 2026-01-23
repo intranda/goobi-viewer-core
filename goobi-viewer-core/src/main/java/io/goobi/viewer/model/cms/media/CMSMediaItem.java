@@ -113,7 +113,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     private Priority priority = Priority.DEFAULT;
 
     @Column(name = "image_alt_text", nullable = true)
-    @Deprecated
+    @Deprecated(since = "2026.01")
     private String alternativeText = "";
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -292,7 +292,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         this.lastModifiedTime = null;
     }
 
-
     /**
      * <p>
      * Setter for the field <code>alternativeText</code>.
@@ -300,7 +299,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      *
      * @param alternativeText the alternativeText to set
      */
-    @Deprecated
+    @Deprecated(since = "2026.01")
     public void setAlternativeText(String alternativeText) {
         this.alternativeText = alternativeText;
     }
@@ -558,6 +557,11 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     public String getAlternativeText() {
         return getCurrentLanguageMetadata().getAlternativeText();
+    }
+
+    @Deprecated(since = "2026.01")
+    public String getAlternativeTextOld() {
+        return alternativeText;
     }
 
     /** {@inheritDoc} */
