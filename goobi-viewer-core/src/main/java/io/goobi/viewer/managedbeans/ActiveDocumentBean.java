@@ -467,7 +467,10 @@ public class ActiveDocumentBean implements Serializable {
                 PageType pageType = Optional.ofNullable(this.navigationHelper).map(NavigationHelper::getCurrentPageType).orElse(PageType.other);
                 String mimeType = topStructElement.getMetadataValue(SolrConstants.MIMETYPE);
                 PageNavigation pageNavigation = this.calculateCurrentPageNavigation(pageType, mimeType);
-                viewManager = new ViewManager(topStructElement, AbstractPageLoader.create(topStructElement, pageNavigation), topDocumentIddoc,
+                boolean showThumbnailGallery = DataManager.getInstance().getConfiguration().showImageThumbnailGallery(pageType, mimeType);
+                viewManager = new ViewManager(topStructElement,
+                        AbstractPageLoader.create(topStructElement, true, PageNavigation.SEQUENCE.equals(pageNavigation) || showThumbnailGallery),
+                        topDocumentIddoc,
                         logid, topStructElement.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 viewManager.setPageNavigation(pageNavigation);
                 viewManager.setToc(createTOC());
