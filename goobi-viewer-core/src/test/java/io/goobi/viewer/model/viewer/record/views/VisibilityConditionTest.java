@@ -16,7 +16,6 @@ import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.BaseMimeType;
-import io.goobi.viewer.model.viewer.PageNavigation;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
@@ -92,7 +91,7 @@ class VisibilityConditionTest {
     protected ViewManager createRecord() throws IndexUnreachableException, PresentationException, DAOException {
         StructElement topStruct = new StructElement("id-topstruct", new SolrDocument(Map.of("MIMETYPE", "image/jpeg")));
         StructElement currentStruct = new StructElement("id-current", new SolrDocument(Map.of("MIMETYPE", "image/jpeg")));
-        IPageLoader pageLoader = EagerPageLoader.create(topStruct, false, PageNavigation.SINGLE);
+        IPageLoader pageLoader = EagerPageLoader.create(topStruct, false);
         TOC toc = Mockito.mock(TOC.class);
         Mockito.when(toc.getTocElements()).thenReturn(Collections.emptyList());
 
