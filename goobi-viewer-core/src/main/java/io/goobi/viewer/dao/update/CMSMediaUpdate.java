@@ -103,12 +103,13 @@ public class CMSMediaUpdate implements IModelUpdate {
                     "SELECT cms_media_item_id, image_alt_text FROM cms_media_items WHERE image_alt_text IS NOT NULL AND image_alt_text != ''");
             if (!deprecatedAltTexts.isEmpty()) {
                 logger.warn("{} values found in deprecated column cms_media_items.image_alt_text, cannot drop column.", deprecatedAltTexts.size());
-            } else {
+            }
+                //  else {
                 // TODO Comment in once CMSMediaItem.alternativeText has been removed
                 //            dao.executeUpdate("ALTER TABLE cms_media_items DROP COLUMN image_alt_text");
                 //            logger.info("Dropped column cms_media_items.image_alt_text");
                 //            ret = true;
-            }
+                // }
 
         }
 
