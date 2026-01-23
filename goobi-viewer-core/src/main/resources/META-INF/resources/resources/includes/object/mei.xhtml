@@ -13,10 +13,8 @@
 	<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/dist/verovio.css" />
 
 	<!-- VIEW MEI -->
-	<div id="fulltext-box" class="view-fulltext__box">
-		<mei:verovio content="#{textBean.getStringFromUrl(activeDocumentBean.viewManager.meiUrl)}" />
-	</div>
-	
-	 <h:outputScript name="resources/javascript/dist/verovio.js" target="head" /> 
+	<mei:verovio content="#{textBean.getStringFromUrl(activeDocumentBean.viewManager.meiUrl)}" />
+
+	<h:outputScript name="resources/javascript/dist/verovio.js" target="head" /> 
 	
 </ui:composition>

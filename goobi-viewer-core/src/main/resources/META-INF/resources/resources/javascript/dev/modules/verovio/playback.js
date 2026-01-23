@@ -669,7 +669,7 @@ function applyHighlighting(elementIds) {
     elementIds.forEach(id => {
         const element = currentContainer.querySelector(`#${id}`);
         if (element) {
-            element.classList.add('highlighted-note');
+            element.classList.add('-highlighted-note');
         }
     });
 }
@@ -681,7 +681,7 @@ function clearHighlighting() {
         const element = currentContainer.querySelector(`#${id}`);
         if (element) {
             // Remove all highlighting styles
-            element.classList.remove('highlighted-note');
+            element.classList.remove('-highlighted-note');
         }
     });
 

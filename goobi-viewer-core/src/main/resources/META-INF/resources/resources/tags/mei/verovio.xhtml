@@ -4,21 +4,31 @@
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
-    >
+    xmlns:util="http://goobi.io/util"
+	>
     <f:subview>
         <h:inputTextarea
             id="verovioInput"
             value="#{content}"
-            styleClass="visually-hidden"
-        />
+            styleClass="visually-hidden"/>
+
         <div class="editor editor-verovio" data-editor="verovio" data-track-progress="false" data-demo="false">
             <div class="editor-menubar" data-editor="verovio-toolbar">
+                
+                
+                <util:icon icon="zoom-out"/> 
+                <util:icon icon="zoom-in"/>
+                <util:icon icon="zoom-reset"/>
+                <util:icon icon="caret-left"/>
+                <util:icon icon="caret-right"/>
+                
+                
                 <!-- Zoom controls -->
-                <div class="editor-menu-group">
+                <div class="verovio__toolbar-zoom-controls"> 
                     <button
                         id="verovioZoomOut"
                         type="button"
-                        class="btn editor-menuicon"
+                        class="btn verovio__toolbar-btn verovio__toolbar-zoom-out-button"
                         aria-label="#{msgs.zoomOut}"
                         title="#{msgs.zoomOut}"
                         data-bs-toggle="tooltip"
@@ -28,7 +38,7 @@
                     <button
                         id="verovioZoomIn"
                         type="button"
-                        class="btn editor-menuicon"
+                        class="btn verovio__toolbar-btn verovio__toolbar-zoom-in-button"
                         aria-label="#{msgs.zoomIn}"
                         title="#{msgs.zoomIn}"
                         data-bs-toggle="tooltip"
@@ -38,7 +48,7 @@
                     <button
                         id="verovioZoomReset"
                         type="button"
-                        class="btn editor-menuicon"
+                        class="btn verovio__toolbar-btn verovio__toolbar-zoom-reset-button"
                         aria-label="Reset Zoom"
                         title="Reset Zoom"
                         data-bs-toggle="tooltip"
@@ -46,11 +56,11 @@
                         <span class="fa fa-expand" aria-hidden="true"></span>
                     </button>
                 </div>
-                <div class="editor-menu-group">
+                <div class="editor-menu-group verovio__toolbar-page-controls">
                     <button
                         id="verovioPreviousPage"
                         type="button"
-                        class="btn editor-menuicon"
+                        class="btn verovio__toolbar-btn verovio__toolbar-prev"
                         aria-label="#{msgs.previous}"
                         title="#{msgs.previous}"
                         data-bs-toggle="tooltip"
@@ -66,7 +76,7 @@
                     <button
                         id="verovioNextPage"
                         type="button"
-                        class="btn editor-menuicon"
+                        class="btn verovio__toolbar-btn verovio__toolbar-next-button"
                         aria-label="#{msgs.next}"
                         title="#{msgs.next}"
                         data-bs-toggle="tooltip"
@@ -74,11 +84,11 @@
                         <span class="fa fa-chevron-right" aria-hidden="true"></span>
                     </button>
                 </div>
-                <div class="editor-menu-group">
+                <div class="editor-menu-group editor-menuicon verovio__toolbar-status-controls">
                     <button
                         id="verovioPlayMIDI"
                         type="button"
-                        class="btn editor-menuicon"
+                        class="btn verovio__toolbar-btn verovio__toolbar-play-button"
                         aria-label="#{msgs.play} MIDI"
                         title="#{msgs.play} MIDI"
                         data-bs-toggle="tooltip"
@@ -88,7 +98,7 @@
                     <button
                         id="verovioPauseMIDI"
                         type="button"
-                        class="btn editor-menuicon d-none"
+                        class="btn d-none verovio__toolbar-btn verovio__toolbar-pause-button"
                         aria-label="#{msgs.pause} MIDI"
                         title="#{msgs.pause} MIDI"
                         data-bs-toggle="tooltip"
@@ -98,7 +108,7 @@
                     <button
                         id="verovioStopMIDI"
                         type="button"
-                        class="btn editor-menuicon disabled"
+                        class="btn disabled verovio__toolbar-btn verovio__toolbar-stop-button"
                         aria-label="#{msgs.stop} MIDI"
                         title="#{msgs.stop} MIDI"
                         data-bs-toggle="tooltip"
@@ -106,19 +116,19 @@
                         <span class="fa fa-stop" aria-hidden="true"></span>
                     </button>
                     <div class="editor-midi-scrubber">
-                        <div class="scrubber-container">
+                        <div class="scrubber-container verovio__toolbar-time-container">
                             <div class="current-time">0:00</div>
-                            <div class="scrubber-track">
-                                <div class="scrubber-progress"></div>
+                            <div class="scrubber-track verovio__toolbar-track">
+                                <div class="scrubber-progress verovio__toolbar-track-progress"></div>
                             </div>
                             <div class="total-time">0:00</div>
                         </div>
                     </div>
                 </div>
-                <div class="editor-menu-group">
+                <div class="editor-menu-group verovio__toolbar-download-controls">
                     <div class="dropdown">
                         <button
-                            class="btn editor-menuicon dropdown-toggle"
+                            class="btn editor-menuicon dropdown-toggle verovio__toolbar-download-toggle-button"
                             type="button"
                             id="verovioDownloadMenu"
                             data-bs-toggle="dropdown"
@@ -131,7 +141,7 @@
                                 <button
                                     id="verovioDownloadMEI"
                                     type="button"
-                                    class="dropdown-item"
+                                    class="dropdown-item verovio__toolbar-download-mei-button"
                                     aria-label="#{msgs.downloadFile} MEI"
                                     title="#{msgs.downloadFile} MEI"
                                     data-command="downloadMEI">
@@ -142,7 +152,7 @@
                                 <button
                                     id="verovioDownloadMIDI"
                                     type="button"
-                                    class="dropdown-item"
+                                    class="dropdown-item verovio__toolbar-download-midi-button"
                                     aria-label="#{msgs.download} MIDI"
                                     title="#{msgs.downloadFile} MIDI"
                                     data-command="downloadMIDI">
@@ -158,5 +168,4 @@
             </h:panelGroup>
         </div>
     </f:subview>
-    <h:outputScript name="js/verovio.js" library="MEIEditor" target="head" />
 </ui:composition>
