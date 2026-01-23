@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -386,6 +387,52 @@ public final class AccessConditionUtils {
             }
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
+        } catch (PresentationException e) {
+            logger.debug(e.getMessage());
+        }
+
+        return AccessPermission.denied();
+
+    }
+
+    /**
+     * Checks whether the client may access an image (by PI + file name).
+     *
+     * @param request Calling HttpServiceRequest.
+     * @param pi identifier of the record
+     * @param pageOrder order property of the page
+     * @param privilegeName a {@link java.lang.String} object.
+     * @return {@link AccessPermission}
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public static AccessPermission checkAccessPermissionByIdentifierAndPageOrder(String pi, Integer pageOrder, String privilegeName,
+            HttpServletRequest request) throws IndexUnreachableException, DAOException {
+        if (pageOrder == null) {
+            throw new IllegalArgumentException("page order may not be null");
+        }
+
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.ORDER + ":" + pageOrder;
+
+        try {
+            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
+            if (user == null) {
+                UserBean userBean = BeanUtils.getUserBean();
+                if (userBean != null) {
+                    user = userBean.getUser();
+                }
+            }
+
+            SolrDocumentList results = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, 1, null, Collections.singletonList(SolrConstants.ACCESSCONDITION));
+            if (results.size() > 0) {
+                Set<String> accessConditions =
+                        results.getFirst().getFieldValues(SolrConstants.ACCESSCONDITION).stream().map(Object::toString).collect(Collectors.toSet());
+                return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), accessConditions,
+                        privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
+            }
+
         } catch (PresentationException e) {
             logger.debug(e.getMessage());
         }

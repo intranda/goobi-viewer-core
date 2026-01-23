@@ -36,7 +36,7 @@ public interface IPrivilegeHolder {
     public static final String PREFIX_TICKET = "TICKET_";
     /** Constant <code>PREFIX_PRIV="PRIV_"</code> */
     public static final String PREFIX_PRIV = "PRIV_";
-    
+
     /** Constant <code>PRIV_ARCHIVE_DISPLAY_NODE="PRIV_ARCHIVE_DISPLAY_NODE"</code> */
     public static final String PRIV_ARCHIVE_DISPLAY_NODE = "ARCHIVE_DISPLAY_NODE";
     /** Constant <code>PRIV_LIST="LIST"</code> */
@@ -67,7 +67,12 @@ public interface IPrivilegeHolder {
     public static final String PRIV_DOWNLOAD_METADATA = "DOWNLOAD_METADATA";
     /** Constant <code>PRIV_DOWNLOAD_IMAGES="DOWNLOAD_IMAGES"</code> */
     public static final String PRIV_DOWNLOAD_IMAGES = "DOWNLOAD_IMAGES";
-    /** Constant <code>PRIV_GENERATE_IIIF_MANIFEST="GENERATE_IIIF_MANIFEST"</code> */
+    /**
+     * Constant <code>PRIV_GENERATE_IIIF_MANIFEST="GENERATE_IIIF_MANIFEST"</code>
+     * 
+     * @deprecated iiif manifests are now always allowed, but individual resources therein may not be, depending on specific privileges
+     */
+    @Deprecated(since = "25.11")
     public static final String PRIV_GENERATE_IIIF_MANIFEST = "GENERATE_IIIF_MANIFEST";
     /** Constant <code>PRIV_ZOOM_IMAGES="ZOOM_IMAGES"</code> */
     public static final String PRIV_ZOOM_IMAGES = "ZOOM_IMAGES";

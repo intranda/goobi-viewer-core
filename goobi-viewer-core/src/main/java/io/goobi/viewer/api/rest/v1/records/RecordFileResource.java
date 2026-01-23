@@ -52,6 +52,7 @@ import org.jdom2.JDOMException;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
@@ -70,6 +71,7 @@ import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -175,8 +177,16 @@ public class RecordFileResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get MEI document for the record")
     public String getMEI()
-            throws ContentLibException, IOException, IndexUnreachableException, PresentationException {
-        // TODO: check access conditions
+            throws ContentLibException, DAOException, IOException, IndexUnreachableException, PresentationException {
+        try {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, servletRequest)
+                    .isGranted()) {
+                throw new ServiceNotAllowedException("Access to MEI file for '" + pi + "' not allowed");
+            }
+        } catch (RecordNotFoundException e) {
+            throw new ContentLibException("Record not found: " + pi);
+        }
+
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
@@ -348,18 +358,21 @@ public class RecordFileResource {
 
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
-    @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    @Operation(tags = { "records" }, summary = "Download an external resource previously downloaded to the viewer server")
     @RecordFileDownloadBinding
     public Response getDownloadedResource(
             @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,
             @Parameter(description = "file path relative to the download directory") @PathParam("path") String path)
-            throws PresentationException, IndexUnreachableException, ContentNotFoundException {
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, IllegalRequestException {
 
         //TODO: check access conditions for some download action
 
         Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
         Path taskFolder = downloadFolder.resolve(taskId);
-        Path resourceFile = taskFolder.resolve(Path.of(path));
+        Path resourceFile = taskFolder.resolve(Path.of(path)).normalize();
+        if (!resourceFile.startsWith(taskFolder)) {
+            throw new IllegalRequestException("May not download from path " + path);
+        }
         String mimeType = "application/octet-stream";
         if (Files.isRegularFile(resourceFile)) {
             try {

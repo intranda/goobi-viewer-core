@@ -45,6 +45,14 @@ public final class AuthorizationFlowTools {
         return getAuthServicesEmbedded(PATH_PROBE + pi + "/" + fileName + "/");
     }
 
+    public static List<Service> getAuthServicesRecord(String pi, String privilege) {
+        return Collections.singletonList(getAuthServicesEmbedded(PATH_PROBE + pi + "/privilege/" + privilege));
+    }
+
+    public static List<Service> getAuthServicesStructure(String pi, String logId, String privilege) {
+        return Collections.singletonList(getAuthServicesEmbedded(PATH_PROBE + pi + "/section/" + logId + "/privilege/" + privilege));
+    }
+
     /**
      * 
      * @param path API endpoint path

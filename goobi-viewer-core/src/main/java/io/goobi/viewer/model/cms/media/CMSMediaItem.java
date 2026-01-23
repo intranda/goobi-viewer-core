@@ -113,6 +113,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     private Priority priority = Priority.DEFAULT;
 
     @Column(name = "image_alt_text", nullable = true)
+    @Deprecated(since = "2026.01")
     private String alternativeText = "";
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -159,11 +160,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -173,11 +169,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -303,22 +294,12 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     /**
      * <p>
-     * Getter for the field <code>alternativeText</code>.
-     * </p>
-     *
-     * @return the alternativeText
-     */
-    public String getAlternativeText() {
-        return alternativeText;
-    }
-
-    /**
-     * <p>
      * Setter for the field <code>alternativeText</code>.
      * </p>
      *
      * @param alternativeText the alternativeText to set
      */
+    @Deprecated(since = "2026.01")
     public void setAlternativeText(String alternativeText) {
         this.alternativeText = alternativeText;
     }
@@ -562,12 +543,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         this.link = linkUrl;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#
-     * getDescription()
-     */
     /** {@inheritDoc} */
     @Override
     public String getDescription() {
@@ -580,13 +555,15 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         return getCurrentLanguageMetadata().getName();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * io.goobi.viewer.model.viewer.BrowseElementInfo#getIconURI(
-     * )
-     */
+    public String getAlternativeText() {
+        return getCurrentLanguageMetadata().getAlternativeText();
+    }
+
+    @Deprecated(since = "2026.01")
+    public String getAlternativeTextOld() {
+        return alternativeText;
+    }
+
     /** {@inheritDoc} */
     @Override
     public URI getIconURI() {
@@ -596,12 +573,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         return getIconURI(width, height);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
-     * getIconURI(int, int)
-     */
     /** {@inheritDoc} */
     @Override
     public URI getIconURI(int width, int height) {
@@ -633,23 +604,12 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
         return "ID=" + id + " (FILE=" + fileName + ")";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
-     * getName(java.lang.String)
-     */
     public String getName(String language) {
         if (getMetadataForLanguage(language) != null) {
             return getMetadataForLanguage(language).getName();
@@ -657,12 +617,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
-     * getDescription(java.lang.String)
-     */
     /** {@inheritDoc} */
     public String getDescription(String language) {
         if (getMetadataForLanguage(language) != null) {
@@ -743,6 +697,20 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     /**
      * <p>
+     * getTranslationsForAlternativeText.
+     * </p>
+     *
+     * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
+     */
+    public IMetadataValue getTranslationsForAlternativeText() {
+        Map<String, String> names = getMetadata().stream()
+                .filter(md -> StringUtils.isNotBlank(md.getAlternativeText()))
+                .collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getAlternativeText));
+        return new MultiLanguageMetadataValue(names);
+    }
+
+    /**
+     * <p>
      * isFinished.
      * </p>
      *
@@ -768,11 +736,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 .collect(Collectors.toList());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(CMSMediaItem o) {

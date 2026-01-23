@@ -156,7 +156,7 @@ public final class DataFileTools {
 
         String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
 
-        Map<String, Path> ret = new HashMap<>(dataFolderNames.length);
+        Map<String, Path> ret = HashMap.newHashMap(dataFolderNames.length);
         for (String dataFolderName : dataFolderNames) {
             ret.put(dataFolderName, getDataFolder(pi, dataFolderName, dataRepositoryName));
         }
@@ -220,7 +220,7 @@ public final class DataFileTools {
     public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, final String fileName)
             throws PresentationException, IndexUnreachableException {
         // Make sure fileName is a pure file name and not a path
-        String useFileName = sanitizeFileName(fileName);
+        String useFileName = FileTools.sanitizeFileName(fileName);
 
         java.nio.file.Path dataFolderPath = getDataFolder(pi, dataFolderName);
         if (StringUtils.isNotBlank(useFileName)) {
@@ -228,26 +228,11 @@ public final class DataFileTools {
         }
 
         // If selected path doesn't exist in the primary data folder, call again with alternative data folder
-        if (StringUtils.isNotBlank(altDataFolderName) && !Files.exists(dataFolderPath)) {
+        if (StringUtils.isNotBlank(altDataFolderName) && !Files.exists(dataFolderPath)) { //NOSONAR fileName is sanitized at this point
             return getDataFilePath(pi, altDataFolderName, null, useFileName);
         }
 
         return dataFolderPath;
-    }
-
-    /**
-     * Removes any path elements from the given file name.
-     *
-     * @param fileName
-     * @return Lowest level file name
-     * @should remove everything but the file name from given path
-     */
-    static String sanitizeFileName(String fileName) {
-        if (StringUtils.isBlank(fileName)) {
-            return fileName;
-        }
-
-        return Paths.get(fileName).getFileName().toString();
     }
 
     /**
@@ -463,9 +448,10 @@ public final class DataFileTools {
         try {
             String filename = FileTools.getFilenameFromPathString(fulltextFilePath);
             String pi = FileTools.getBottomFolderFromPathString(fulltextFilePath);
-            return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> {
-                return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build();
-            })
+            return DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build())
                     .map(NetTools::callUrlGET)
                     .filter(array -> NetTools.isStatusOk(array[0]))
                     .map(array -> array[1])
