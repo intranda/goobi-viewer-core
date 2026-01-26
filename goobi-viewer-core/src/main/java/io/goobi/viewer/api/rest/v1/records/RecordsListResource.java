@@ -144,7 +144,9 @@ public class RecordsListResource {
             }
 
             SolrDocumentList docs =
-                    DataManager.getInstance().getSearchIndex().search(SearchHelper.buildFinalQuery(config.getQuery(), false, servletRequest, null), config.getFieldNames());
+                    DataManager.getInstance()
+                            .getSearchIndex()
+                            .search(SearchHelper.buildFinalQuery(config.getQuery(), false, servletRequest, null), config.getFieldNames());
             logger.trace("{} hits.", docs.size());
             for (SolrDocument doc : docs) {
                 JSONObject jsonObj = JsonTools.createJsonObjectFromSolrDoc(doc, config.getFields());
