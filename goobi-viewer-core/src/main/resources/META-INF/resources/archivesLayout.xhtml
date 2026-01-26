@@ -49,7 +49,7 @@
 
 				<!-- EXIT -->
 				<div class="archives__header-exit">
-					<h:outputLink value="#{request.contextPath}/" title="#{msg.returnHome}">
+					<h:outputLink value="#{request.contextPath}#{navigationHelper.previousViewUrl}" title="#{msg.returnHome}">
 						<ui:include src="/resources/images/icons/icon_fs-exit.svg"/>
 		                <f:passThroughAttribute name="data-toggle" value="tooltip" />
 		                <f:passThroughAttribute name="data-placement" value="bottom" />

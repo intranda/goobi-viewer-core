@@ -44,6 +44,9 @@ public class CMSMediaItemMetadata implements Serializable {
 
     @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
+    
+    @Column(name = "image_alt_text", nullable = true)
+    private String alternativeText = "";
 
     /**
      * default constructor
@@ -61,11 +64,9 @@ public class CMSMediaItemMetadata implements Serializable {
         this.language = orig.language;
         this.name = orig.name;
         this.description = orig.description;
+        this.alternativeText = orig.alternativeText;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -75,9 +76,6 @@ public class CMSMediaItemMetadata implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -167,4 +165,17 @@ public class CMSMediaItemMetadata implements Serializable {
         this.description = description;
     }
 
+    /**
+     * @return the alternativeText
+     */
+    public String getAlternativeText() {
+        return alternativeText;
+    }
+
+    /**
+     * @param alternativeText the alternativeText to set
+     */
+    public void setAlternativeText(String alternativeText) {
+        this.alternativeText = alternativeText;
+    }
 }

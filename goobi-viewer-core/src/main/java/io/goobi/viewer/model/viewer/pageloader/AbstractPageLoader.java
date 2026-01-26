@@ -42,7 +42,6 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.Metadata;
-import io.goobi.viewer.model.viewer.PageNavigation;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -83,24 +82,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @throws PresentationException
      */
     public static AbstractPageLoader create(StructElement topStructElement) throws IndexUnreachableException, PresentationException, DAOException {
-        return create(topStructElement, true, PageNavigation.SINGLE);
-    }
-
-    /**
-     * Creates and returns the appropriate loader instance for the given <code>StructElement</code> and {@link PageNavigation}. Only creates loaders
-     * that load pages.
-     *
-     * @param topStructElement the struct element for which to create the loader
-     * @param pageNavigation if this is {@link PageNavigation#SEQUENCE}, always return an {@link EagerPageLoader}, since then all pages are loaded at
-     *            once
-     * @return Appropriate page loader implementation for the given record topStructElement
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
-     */
-    public static IPageLoader create(StructElement topStructElement, PageNavigation pageNavigation)
-            throws IndexUnreachableException, PresentationException, DAOException {
-        return create(topStructElement, true, pageNavigation);
+        return create(topStructElement, true, false);
     }
 
     /**
@@ -108,8 +90,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      *
      * @param topStructElement Top level <code>StructElement</code> of the record
      * @param loadPages If true, created an appropriate page loader; if false (e.g. for TOC building), create a dummy loader
-     * @param pageNavigation if this is {@link PageNavigation#SEQUENCE}, always return an {@link EagerPageLoader}, since then all pages are loaded at
-     *            once
+     * @param forceEagerLoading set to true to ensure an {@link EagerPageLoader} is used
      * @return Appropriate page loader implementation for the given record topStructElement
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -117,14 +98,14 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @should return EagerPageLoader if page count below threshold
      * @should return LeanPageLoder if page count at or above threshold
      */
-    public static AbstractPageLoader create(StructElement topStructElement, boolean loadPages, PageNavigation pageNavigation)
+    public static AbstractPageLoader create(StructElement topStructElement, boolean loadPages, boolean forceEagerLoading)
             throws IndexUnreachableException, PresentationException, DAOException {
         if (!loadPages) {
             // Page loader that skips loading any pages for speed (e.g. TOC creation via REST)
             return new EmptyPageLoader(topStructElement);
         }
 
-        return create(topStructElement, Collections.emptyList(), pageNavigation);
+        return create(topStructElement, Collections.emptyList(), forceEagerLoading);
     }
 
     /**
@@ -141,7 +122,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      */
     public static IPageLoader create(StructElement topStructElement, boolean loadPages)
             throws IndexUnreachableException, PresentationException, DAOException {
-        return create(topStructElement, loadPages, PageNavigation.SINGLE);
+        return create(topStructElement, loadPages, false);
     }
 
     /**
@@ -155,24 +136,23 @@ public abstract class AbstractPageLoader implements IPageLoader {
      */
     public static IPageLoader create(StructElement topStructElement, List<Integer> pageNosToLoad)
             throws IndexUnreachableException, PresentationException, DAOException {
-        return create(topStructElement, pageNosToLoad, PageNavigation.SINGLE);
+        return create(topStructElement, pageNosToLoad, false);
     }
 
     /**
      * 
      * @param topStructElement
      * @param pageNosToLoad List of page numbers to load; empty list means all pages
-     * @param pageNavigation if this is {@link PageNavigation#SEQUENCE}, always return an {@link EagerPageLoader}, since then all pages are loaded at
-     *            once
+     * @param forceEagerLoading set to true to ensure an {@link EagerPageLoader} is used
      * @return Appropriate page loader implementation for the given record topStructElement
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
      */
-    public static AbstractPageLoader create(StructElement topStructElement, List<Integer> pageNosToLoad, PageNavigation pageNavigation)
+    public static AbstractPageLoader create(StructElement topStructElement, List<Integer> pageNosToLoad, boolean forceEagerLoading)
             throws IndexUnreachableException, PresentationException, DAOException {
         int numPages = topStructElement.getNumPages();
-        if (pageNavigation == PageNavigation.SEQUENCE
+        if (forceEagerLoading
                 || (pageNosToLoad.isEmpty() && numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold())) {
             return new EagerPageLoader(topStructElement);
         }
