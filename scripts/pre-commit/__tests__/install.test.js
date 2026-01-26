@@ -1,6 +1,5 @@
 const {
   HOOK_TEMPLATE,
-  HOOK_TEMPLATE_WIN,
   getHookPaths,
   ensureHooksDir,
   writeHook,
@@ -10,44 +9,20 @@ const {
 describe("Hook Installation", () => {
   // ============================================================
   // HOOK TEMPLATE
-  // The Node script that Git executes on commit
-  // Works on all platforms including Windows/JGit
+  // The shell script that Git executes on commit
   // ============================================================
 
-  describe("Hook Template (Unix)", () => {
-    test("is a valid Node script with shebang", () => {
-      expect(HOOK_TEMPLATE).toMatch(/^#!\/usr\/bin\/env node/);
+  describe("Hook Template", () => {
+    test("is a valid shell script", () => {
+      expect(HOOK_TEMPLATE).toMatch(/^#!/);
     });
 
-    test("references the formatter script", () => {
-      expect(HOOK_TEMPLATE).toContain("formatter.js");
-    });
-
-    test("uses path.join for cross-platform compatibility", () => {
-      expect(HOOK_TEMPLATE).toContain("path.join");
-    });
-
-    test("calls runPreCommit function", () => {
-      expect(HOOK_TEMPLATE).toContain("runPreCommit()");
-    });
-  });
-
-  // ============================================================
-  // HOOK TEMPLATE (Windows)
-  // The CMD script for Windows/JGit compatibility
-  // ============================================================
-
-  describe("Hook Template (Windows)", () => {
-    test("is a valid CMD script", () => {
-      expect(HOOK_TEMPLATE_WIN).toMatch(/^@echo off/);
-    });
-
-    test("references the formatter script", () => {
-      expect(HOOK_TEMPLATE_WIN).toContain("formatter.js");
+    test("calls the formatter script", () => {
+      expect(HOOK_TEMPLATE).toContain("scripts/pre-commit/formatter.js");
     });
 
     test("uses node to execute", () => {
-      expect(HOOK_TEMPLATE_WIN).toContain("node");
+      expect(HOOK_TEMPLATE).toContain("node ");
     });
   });
 
@@ -57,13 +32,12 @@ describe("Hook Installation", () => {
   // ============================================================
 
   describe("Path Calculation", () => {
-    test("calculates correct hook locations", () => {
+    test("calculates correct hook location", () => {
       const result = getHookPaths("/project/scripts/pre-commit");
 
       expect(result.hooksDir).toContain(".git");
       expect(result.hooksDir).toContain("hooks");
       expect(result.preCommitHook).toContain("pre-commit");
-      expect(result.preCommitHookWin).toContain("pre-commit.cmd");
     });
   });
 
@@ -123,7 +97,7 @@ describe("Hook Installation", () => {
   // ============================================================
 
   describe("Full Installation", () => {
-    test("installs both Unix and Windows hooks", () => {
+    test("installs hook successfully", () => {
       const mockFs = {
         existsSync: jest.fn().mockReturnValue(true),
         writeFileSync: jest.fn(),
@@ -137,9 +111,6 @@ describe("Hook Installation", () => {
 
       expect(result.success).toBe(true);
       expect(result.hookPath).toContain("pre-commit");
-      expect(result.hookPathWin).toContain("pre-commit.cmd");
-      // Should write both hooks
-      expect(mockFs.writeFileSync).toHaveBeenCalledTimes(2);
     });
 
     test("creates hooks directory if needed", () => {
