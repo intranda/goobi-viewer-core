@@ -247,7 +247,7 @@ export class NavigationController {
             const svg = this.verovio.renderToSVG(this.currentPage);
             if (svg) {
                 this.container.innerHTML = svg;
-                console.log(`Rendered page ${this.currentPage}/${this.pageCount}`);
+                // console.log(`Rendered page ${this.currentPage}/${this.pageCount}`);
             }
         } catch (error) {
             console.error('Error rendering current page:', error);
@@ -306,7 +306,7 @@ export class NavigationController {
         // Bind pagination controls
         this.bindPaginationControls(toolbar);
 
-        console.log('Navigation controls bound to toolbar');
+        // console.log('Navigation controls bound to toolbar');
     }
 
     /**

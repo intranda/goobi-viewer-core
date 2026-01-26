@@ -86,7 +86,7 @@ class VerovioApp {
             // Load MEI from input
             const mei = inputElement.value.trim();
             this.loadData(mei, 'input.mei');
-            console.log('MEI loaded from input element');
+            // console.log('MEI loaded from input element');
         } else {
             // Check if demo mode is enabled
             const editorElement = document.querySelector('[data-editor="verovio"]');
@@ -129,7 +129,7 @@ class VerovioApp {
                 this.navigationController.setContainer(container);
             }
 
-            console.log('Container found and set:', container.id || container.className);
+             // console.log('Container found and set:', container.id || container.className);
 
             // If we have MEI data, render it immediately
             if (this.mei) {
@@ -191,7 +191,7 @@ class VerovioApp {
                 }
             }
 
-            console.log('MEI loaded successfully, pages:', this.verovio.getPageCount());
+            // console.log('MEI loaded successfully, pages:', this.verovio.getPageCount());
             return true;
         } catch (error) {
             console.error('Error loading MEI:', error);
@@ -357,7 +357,7 @@ class VerovioApp {
 
             const scrubberInitialized = playback.initializeScrubber('editor-midi-scrubber');
             if (scrubberInitialized) {
-                console.log('MIDI scrubber initialized successfully');
+                // console.log('MIDI scrubber initialized successfully');
             } else {
                 console.warn('MIDI scrubber initialization failed - element may not exist yet');
                 // Try again after a short delay in case the DOM isn't ready

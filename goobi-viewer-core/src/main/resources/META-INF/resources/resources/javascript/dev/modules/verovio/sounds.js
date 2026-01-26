@@ -230,7 +230,7 @@ function addInstrumentEffects(synth, category) {
  * @returns {Object} Sound mapping with synthesizers for each track
  */
 export function createMIDIBasedSoundMapping(midiData) {
-    console.log('Creating MIDI-based sound mapping...');
+    // console.log('Creating MIDI-based sound mapping...');
 
     const trackMappings = midiData.tracks.map((track, index) => {
         let instrumentType = 'piano'; // Default to piano instead of complex heuristics

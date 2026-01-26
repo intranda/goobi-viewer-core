@@ -215,7 +215,7 @@ export function pauseMidi() {
             autoStopTimeout = null;
         }
 
-        console.log(`Paused playback at ${pausedTime.toFixed(2)}s`);
+        // console.log(`Paused playback at ${pausedTime.toFixed(2)}s`);
     }
     // Keep scrubber visible during pause
 }
