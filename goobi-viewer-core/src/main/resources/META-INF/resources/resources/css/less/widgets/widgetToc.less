@@ -6,14 +6,15 @@
 .widget-toc {
   position: relative;
   /* TITLE */
-  &__topbar {}
+  &__topbar {
+  }
   &__body {
-	ul {
-		gap: 5px;
-	}
+    ul {
+      gap: 5px;
+    }
   }
   &__title {
-	width: 100%;
+    width: 100%;
     display: flex;
     align-items: center;
     h2,
@@ -40,9 +41,16 @@
   }
   &__element {
     display: flex;
+    justify-content: flex-start;
+    align-items: center;
     padding-left: 3px;
     &:hover {
       background-color: @lightgray;
+    }
+    a {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
     }
     &.parent {
     }
@@ -71,9 +79,9 @@
         padding-right: 5px;
       }
     }
-	a {
-		padding: 2px 0;
-	}
+    a {
+      padding: 2px 0;
+    }
     &.active {
       a {
         font-weight: 700;
