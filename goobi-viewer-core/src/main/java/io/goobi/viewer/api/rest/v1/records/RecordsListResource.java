@@ -143,9 +143,8 @@ public class RecordsListResource {
                 return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template configuration not found: " + t).build();
             }
 
-            // TODO reduce number of returned fields
             SolrDocumentList docs =
-                    DataManager.getInstance().getSearchIndex().search(SearchHelper.buildFinalQuery(config.getQuery(), false, servletRequest, null));
+                    DataManager.getInstance().getSearchIndex().search(SearchHelper.buildFinalQuery(config.getQuery(), false, servletRequest, null), config.getFieldNames());
             logger.trace("{} hits.", docs.size());
             for (SolrDocument doc : docs) {
                 JSONObject jsonObj = JsonTools.createJsonObjectFromSolrDoc(doc, config.getFields());
