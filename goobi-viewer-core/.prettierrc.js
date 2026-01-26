@@ -1,6 +1,5 @@
 /**
  * Centralized Prettier configuration with filetype-specific overrides.
- * Comments are allowed because this is a JS config file.
  */
 module.exports = {
     // === Global defaults ===
@@ -23,32 +22,23 @@ module.exports = {
                 jsxSingleQuote: false,
             },
         },
-
-        // CSS / SCSS / LESS
-        {
-            files: ['**/*.{css,scss,less}'],
-            options: {},
-        },
-
         // HTML / XHTML
         {
             files: ['**/*.{html,xhtml}'],
             options: {
                 singleAttributePerLine: true,
                 bracketSameLine: true,
+                htmlWhitespaceSensitivity: 'ignore',
             },
         },
-
         // JSON / YAML
         {
             files: ['**/*.{json,yml,yaml}'],
             options: {
                 trailingComma: 'none',
                 tabWidth: 2,
-                bracketSpacing: false,
             },
         },
-
         // Markdown
         {
             files: ['**/*.md'],

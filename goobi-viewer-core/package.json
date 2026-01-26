@@ -17,8 +17,9 @@
     "sync": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp sync-all",
     "target": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp target",
     "java": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp java",
-    "prepare": "node ../scripts/install-hooks.js",
-    "format": "prettier --write ."
+    "prepare": "node ../scripts/pre-commit/install.js",
+    "format": "prettier --write .",
+    "test:hooks": "jest --passWithNoTests"
   },
   "engines": {
     "node": ">=18"
@@ -92,6 +93,12 @@
     "tinymce": "~5.10.0",
     "tone": "^15.1.22",
     "verovio": "^5.6.0"
+  },
+  "jest": {
+    "rootDir": "..",
+    "testMatch": [
+      "<rootDir>/scripts/pre-commit/__tests__/**/*.test.js"
+    ]
   },
   "browserslist": [
     ">0.5%",
