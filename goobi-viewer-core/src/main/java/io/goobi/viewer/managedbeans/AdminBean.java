@@ -58,7 +58,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.administration.MaintenanceMode;
-import io.goobi.viewer.model.job.download.DownloadJobTools;
+import io.goobi.viewer.model.job.download.PdfDownloadJob;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.user.IpRange;
@@ -219,24 +219,6 @@ public class AdminBean implements Serializable {
         }
 
         return ret;
-    }
-
-    /**
-     * <p>
-     * saveCurrentUserAction.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated Seems to be unused
-     */
-    @Deprecated(since = "24.12")
-    public String saveCurrentUserAction() throws DAOException {
-        if (this.saveUser(getCurrentUser(), true)) {
-            return "pretty:adminUsers";
-        }
-
-        return "";
     }
 
     /**
@@ -1160,7 +1142,7 @@ public class AdminBean implements Serializable {
         // Delete download jobs/files
         if (fromPdfCache) {
             for (String identifier : identifiers) {
-                DownloadJobTools.removeJobsForRecord(identifier);
+                PdfDownloadJob.removeFilesForRecord(identifier);
             }
         }
         return cacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache, fromPdfCache);

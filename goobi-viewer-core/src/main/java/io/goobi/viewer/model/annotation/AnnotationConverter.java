@@ -40,6 +40,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -47,6 +48,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import de.intranda.api.annotation.AgentType;
+import de.intranda.api.annotation.GeoLocation;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.ISelector;
 import de.intranda.api.annotation.SimpleResource;
@@ -201,11 +203,47 @@ public class AnnotationConverter {
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
             mapper.registerModule(new JavaTimeModule());
-            return mapper.readValue(anno.getBody(), de.intranda.api.annotation.oa.TextualResource.class);
+
+            JSONObject json = new JSONObject(anno.getBody());
+            String annoType = Optional.ofNullable(json.getString("type")).orElse("TextualResource");
+
+            switch (annoType) {
+                case "Feature":
+                    return mapper.readValue(anno.getBody(), GeoLocation.class);
+                case "AuthorityResource":
+                    return mapper.readValue(anno.getBody(), TypedResource.class);
+                case "TextualBody":
+                default:
+                    return getBodyAsTextualResource(anno.getBody(), mapper);
+            }
+
         } else if (StringUtils.isNotBlank(anno.getBody())) {
             return new TextualResource(anno.getBody());
         }
         return null;
+    }
+
+    /**
+     * <p>
+     * getBodyAsOAResource.
+     * </p>
+     * 
+     * @param anno
+     * @return a {@link de.intranda.api.annotation.IResource} object.
+     * @throws java.io.IOException if any.
+     */
+    private IResource getBodyAsTextualResource(String bodyString, ObjectMapper mapper) throws IOException {
+        try {
+            TextualResource body =
+                    mapper.readValue(bodyString, TextualResource.class);
+            de.intranda.api.annotation.oa.TextualResource oaBody = new de.intranda.api.annotation.oa.TextualResource(body.getText());
+            return oaBody;
+        } catch (ClassCastException e) {
+            //in case the annotation is already an oa resource
+            de.intranda.api.annotation.oa.TextualResource body =
+                    mapper.readValue(bodyString, de.intranda.api.annotation.oa.TextualResource.class);
+            return body;
+        }
     }
 
     /**

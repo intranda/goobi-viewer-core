@@ -29,12 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,6 +59,11 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Named
 @SessionScoped
@@ -207,8 +206,8 @@ public class BreadcrumbBean implements Serializable {
             List<CollectionView> pageCollections = BeanUtils.getCollectionViewBean().getLoadedCollectionsForPage(cmsPage);
             if (!pageCollections.isEmpty()) {
                 CollectionView firstCollection = pageCollections.get(0);
-                LabeledLink link = new LabeledLink(firstCollection.getTopVisibleElement(),
-                        firstCollection.getCollectionUrl(firstCollection.getTopVisibleElement()), WEIGHT_SEARCH_RESULTS);
+                LabeledLink link = new LabeledLink(firstCollection.getBaseElementName(),
+                        firstCollection.getCollectionUrl(firstCollection.getBaseElementName()), WEIGHT_SEARCH_RESULTS);
                 tempBreadcrumbs.add(0, link);
             }
 

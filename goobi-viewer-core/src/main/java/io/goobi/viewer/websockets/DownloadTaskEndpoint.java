@@ -56,9 +56,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.storage.ApplicationBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
 import io.goobi.viewer.model.job.mq.DownloadExternalResourceHandler;
+import io.goobi.viewer.model.resources.download.ResourceDownload;
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
@@ -143,7 +143,7 @@ public class DownloadTaskEndpoint {
     }
 
     public void startDownload(SocketMessage message) throws JsonProcessingException {
-        ViewerMessage mqMessage = DownloadExternalResourceHandler.createMessage(message.pi, message.url);
+        ViewerMessage mqMessage = DownloadExternalResourceHandler.createMessage(message.pi, message.url, message.urlTemplate);
         try {
             String messageId = queueManager.addToQueue(mqMessage);
             SocketMessage answer = SocketMessage.buildAnswer(message, Status.WAITING);
@@ -159,7 +159,7 @@ public class DownloadTaskEndpoint {
 
     private void listDownloadedFiles(SocketMessage message, List<Path> filePaths)
             throws JsonProcessingException, PresentationException, IndexUnreachableException {
-        String taskId = getDownloadId(message.pi, message.url);
+        String taskId = ResourceDownload.getExternalResourceId(message.pi, message.url);
         SocketMessage answer = SocketMessage.buildAnswer(message, Status.COMPLETE);
         Path downloadFolder = getDownloadFolder(message.pi, message.url);
         if (Files.exists(downloadFolder)) {
@@ -281,7 +281,7 @@ public class DownloadTaskEndpoint {
 
     public Path getDownloadFolder(String pi, String downloadUrl) throws PresentationException, IndexUnreachableException {
         Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
-        return downloadFolder.resolve(getDownloadId(pi, downloadUrl));
+        return downloadFolder.resolve(ResourceDownload.getExternalResourceId(pi, downloadUrl));
     }
 
     private static URI getDownloadUrl(String pi, String taskId, Path p) {
@@ -301,11 +301,6 @@ public class DownloadTaskEndpoint {
             builder.path(p.getName(i).toString());
         }
         return builder.build();
-    }
-
-    private static String getDownloadId(String pi, String downloadUrl) {
-        return DownloadJob.generateDownloadJobId(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name(), pi,
-                downloadUrl);
     }
 
     private synchronized void sendMessage(SocketMessage message) throws JsonProcessingException {
@@ -441,6 +436,17 @@ public class DownloadTaskEndpoint {
 
     public static class SocketMessage {
 
+        private Action action;
+        private Status status;
+        private String pi;
+        private String url;
+        private String urlTemplate;
+        private long progress;
+        private long resourceSize;
+        private String messageQueueId;
+        private String errorMessage;
+        private List<ResourceFile> files;
+
         public SocketMessage() {
         }
 
@@ -449,6 +455,7 @@ public class DownloadTaskEndpoint {
             this.status = status;
             this.pi = pi;
             this.url = url;
+
         }
 
         public static SocketMessage buildAnswer(SocketMessage message, Status status) {
@@ -456,16 +463,6 @@ public class DownloadTaskEndpoint {
             answer.messageQueueId = message.messageQueueId;
             return answer;
         }
-
-        private Action action;
-        private Status status;
-        private String pi;
-        private String url;
-        private long progress;
-        private long resourceSize;
-        private String messageQueueId;
-        private String errorMessage;
-        private List<ResourceFile> files;
 
         public Map<String, String> getJsonSignature() {
             return JsonObjectSignatureBuilder.listProperties(getClass());
@@ -541,6 +538,14 @@ public class DownloadTaskEndpoint {
 
         public void setFiles(List<ResourceFile> files) {
             this.files = files;
+        }
+
+        public String getUrlTemplate() {
+            return urlTemplate;
+        }
+
+        public void setUrlTemplate(String urlTemplate) {
+            this.urlTemplate = urlTemplate;
         }
 
         @Override

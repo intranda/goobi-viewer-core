@@ -333,7 +333,6 @@ public class BrowseBean implements Serializable {
         synchronized (this) {
             initializeCollection(collectionField, facetField);
             collections.get(collectionField).setBaseElementName(getCollectionToExpand());
-            collections.get(collectionField).setTopVisibleElement(getTopVisibleCollection());
             collections.get(collectionField).populateCollectionList();
         }
     }

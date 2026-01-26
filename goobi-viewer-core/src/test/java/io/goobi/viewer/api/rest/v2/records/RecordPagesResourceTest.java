@@ -29,13 +29,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -43,6 +48,8 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -57,6 +64,20 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
     private static final String PI_ANNOTATIONS = "PI_1";
     private static final String PI_SPACE_IN_FILENAME = "4fda256e-70b3-11ea-b891-08606e6a464a";
     private static final String PAGENO_ANNOTATIONS = "1";
+
+    @BeforeEach
+    public void setUp() throws Exception {
+        super.setUp();
+        SolrDocumentList solrDocs = new SolrDocumentList();
+        solrDocs.add(new SolrDocument(Map.of(SolrConstants.ACCESSCONDITION, List.of(SolrConstants.OPEN_ACCESS_VALUE))));
+
+        SolrSearchIndex defaultIndex = DataManager.getInstance().getSearchIndex();
+        SolrSearchIndex mockedIndex = Mockito.spy(defaultIndex);
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + PI_ANNOTATIONS + " +" + SolrConstants.ORDER + ":" + PAGENO_ANNOTATIONS;
+        Mockito.when(mockedIndex.search(query, 1, null, Collections.singletonList(SolrConstants.ACCESSCONDITION))).thenReturn(solrDocs);
+
+        DataManager.getInstance().injectSearchIndex(mockedIndex);
+    }
 
     @Test
     void testGetCanvas() {

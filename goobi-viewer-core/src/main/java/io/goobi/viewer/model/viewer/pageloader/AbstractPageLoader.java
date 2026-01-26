@@ -82,7 +82,30 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @throws PresentationException
      */
     public static AbstractPageLoader create(StructElement topStructElement) throws IndexUnreachableException, PresentationException, DAOException {
-        return create(topStructElement, true);
+        return create(topStructElement, true, false);
+    }
+
+    /**
+     * Creates and returns the appropriate loader instance for the given <code>StructElement</code>.
+     *
+     * @param topStructElement Top level <code>StructElement</code> of the record
+     * @param loadPages If true, created an appropriate page loader; if false (e.g. for TOC building), create a dummy loader
+     * @param forceEagerLoading set to true to ensure an {@link EagerPageLoader} is used
+     * @return Appropriate page loader implementation for the given record topStructElement
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     * @should return EagerPageLoader if page count below threshold
+     * @should return LeanPageLoder if page count at or above threshold
+     */
+    public static AbstractPageLoader create(StructElement topStructElement, boolean loadPages, boolean forceEagerLoading)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        if (!loadPages) {
+            // Page loader that skips loading any pages for speed (e.g. TOC creation via REST)
+            return new EmptyPageLoader(topStructElement);
+        }
+
+        return create(topStructElement, Collections.emptyList(), forceEagerLoading);
     }
 
     /**
@@ -97,29 +120,40 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @should return EagerPageLoader if page count below threshold
      * @should return LeanPageLoder if page count at or above threshold
      */
-    public static AbstractPageLoader create(StructElement topStructElement, boolean loadPages)
+    public static IPageLoader create(StructElement topStructElement, boolean loadPages)
             throws IndexUnreachableException, PresentationException, DAOException {
-        if (!loadPages) {
-            // Page loader that skips loading any pages for speed (e.g. TOC creation via REST)
-            return new EmptyPageLoader(topStructElement);
-        }
-
-        return create(topStructElement, Collections.emptyList());
+        return create(topStructElement, loadPages, false);
     }
 
     /**
      * 
-     * @param topStructElement
+     * @param topStructElement Top level <code>StructElement</code> of the record
      * @param pageNosToLoad List of page numbers to load; empty list means all pages
      * @return Appropriate page loader implementation for the given record topStructElement
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
      */
-    public static AbstractPageLoader create(StructElement topStructElement, List<Integer> pageNosToLoad)
+    public static IPageLoader create(StructElement topStructElement, List<Integer> pageNosToLoad)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        return create(topStructElement, pageNosToLoad, false);
+    }
+
+    /**
+     * 
+     * @param topStructElement
+     * @param pageNosToLoad List of page numbers to load; empty list means all pages
+     * @param forceEagerLoading set to true to ensure an {@link EagerPageLoader} is used
+     * @return Appropriate page loader implementation for the given record topStructElement
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     */
+    public static AbstractPageLoader create(StructElement topStructElement, List<Integer> pageNosToLoad, boolean forceEagerLoading)
             throws IndexUnreachableException, PresentationException, DAOException {
         int numPages = topStructElement.getNumPages();
-        if (pageNosToLoad.isEmpty() && numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
+        if (forceEagerLoading
+                || (pageNosToLoad.isEmpty() && numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold())) {
             return new EagerPageLoader(topStructElement);
         }
         logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);
@@ -307,7 +341,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
         String filenameRoot = new StringBuilder(SolrConstants.FILENAME).append('_').toString();
         for (String fieldName : doc.getFieldNames()) {
             if (fieldName.startsWith(filenameRoot)) {
-                logger.trace("Format: {}", fieldName); //NOSONAR Debug
+                // logger.trace("Format: {}", fieldName); //NOSONAR Debug
                 String format = fieldName.split("_")[1].toLowerCase();
                 String value = (String) doc.getFieldValue(fieldName);
                 pe.getFileNames().put(format, value);
@@ -390,4 +424,5 @@ public abstract class AbstractPageLoader implements IPageLoader {
 
         return si;
     }
+
 }

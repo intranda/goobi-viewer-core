@@ -50,6 +50,7 @@ import org.jdom2.JDOMException;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
@@ -133,7 +134,7 @@ public class RecordFileResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        StringPair ret = builder.getAltoDocument(pi, filename);
+        StringPair ret = builder.getAltoDocument(pi, Path.of(filename).getFileName().toString());
         return ret.getOne();
     }
 
@@ -149,7 +150,7 @@ public class RecordFileResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        return builder.getFulltext(pi, filename);
+        return builder.getFulltext(pi, Path.of(filename).getFileName().toString());
     }
 
     @GET
@@ -163,7 +164,7 @@ public class RecordFileResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        return builder.getFulltextAsTEI(pi, filename);
+        return builder.getFulltextAsTEI(pi, Path.of(filename).getFileName().toString());
     }
 
     @GET
@@ -314,18 +315,21 @@ public class RecordFileResource {
 
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
-    @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    @Operation(tags = { "records" }, summary = "Download an external resource previously downloaded to the viewer server")
     @RecordFileDownloadBinding
     public Response getDownloadedResource(
             @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,
             @Parameter(description = "file path relative to the download directory") @PathParam("path") String path)
-            throws PresentationException, IndexUnreachableException, ContentNotFoundException {
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, IllegalRequestException {
 
         //TODO: check access conditions for some download action
 
         Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
         Path taskFolder = downloadFolder.resolve(taskId);
-        Path resourceFile = taskFolder.resolve(Path.of(path));
+        Path resourceFile = taskFolder.resolve(Path.of(path)).normalize();
+        if (!resourceFile.startsWith(taskFolder)) {
+            throw new IllegalRequestException("May not download from path " + path);
+        }
         String mimeType = "application/octet-stream";
         if (Files.isRegularFile(resourceFile)) {
             try {

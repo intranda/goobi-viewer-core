@@ -29,11 +29,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IAnnotationCollection;
@@ -58,6 +56,7 @@ import io.goobi.viewer.model.iiif.presentation.v3.builder.InternalAnnotationPage
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author florian
@@ -168,6 +167,10 @@ public class AnnotationsResourceBuilder {
         return collection;
     }
 
+    public long countWebAnnotationsForRecord(String pi) throws DAOException {
+        return DataManager.getInstance().getDao().getAnnotationCountForWork(pi);
+    }
+
     /**
      *
      * @param pi
@@ -188,6 +191,10 @@ public class AnnotationsResourceBuilder {
             }
         }
         return collection;
+    }
+
+    public long countWebAnnotationsForPage(String pi, Integer pageNo) throws DAOException {
+        return DataManager.getInstance().getDao().getAnnotationCountForTarget(pi, pageNo);
     }
 
     /**
@@ -282,6 +289,10 @@ public class AnnotationsResourceBuilder {
         return collection;
     }
 
+    public long countWebAnnotationsforRecordComments(String pi) throws DAOException {
+        return DataManager.getInstance().getDao().countCommentsForWork(pi);
+    }
+
     /**
      * @param pi
      * @param pageNo
@@ -345,7 +356,7 @@ public class AnnotationsResourceBuilder {
                         data.stream()
                                 .map(converter::getAsWebAnnotation)
                                 .collect(Collectors.toList()),
-                                collectionPage);
+                        collectionPage);
     }
 
     /**

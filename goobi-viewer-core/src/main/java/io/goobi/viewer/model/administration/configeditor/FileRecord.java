@@ -83,9 +83,9 @@ public class FileRecord {
     public boolean equals(Object obj) {
         if (obj != null && this.getClass().equals(obj.getClass())) {
             return Objects.equals(this.getFile(), ((FileRecord) obj).getFile());
-        } else {
-            return false;
         }
+
+        return false;
     }
 
 }

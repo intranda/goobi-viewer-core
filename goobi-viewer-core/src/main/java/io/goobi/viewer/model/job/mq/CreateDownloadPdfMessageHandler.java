@@ -24,10 +24,13 @@ package io.goobi.viewer.model.job.mq;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,24 +47,24 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.job.download.PDFDownloadJob;
-import io.goobi.viewer.model.job.download.PdfGenerator;
+import io.goobi.viewer.model.job.download.PdfDownloadJob;
 import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
+import jakarta.ws.rs.core.UriBuilder;
 
-public class PdfMessageHandler implements MessageHandler<MessageStatus> {
+public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageStatus> {
 
     private static final int DELAY_IF_PDF_IS_BEING_CREATED_MILLIS = 300_000;
     private static final int MAX_RETRIES = 2;
-    private static final Logger logger = LogManager.getLogger(PdfMessageHandler.class);
+    private static final Logger logger = LogManager.getLogger(CreateDownloadPdfMessageHandler.class);
 
     @Override
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
 
-        PdfGenerator job = new PdfGenerator(message);
+        PdfDownloadJob job = new PdfDownloadJob(message);
 
         try {
-            File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
+            File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PdfDownloadJob.TYPE));
             if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
                 throw new IOException("Download folder " + targetFolder + " not found");
             }
@@ -80,10 +83,22 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
             //if the file does not exist, create it
             if (!Files.exists(pdfFile)) {
-                job.createPdf(work);
+                try {
+                    job.create(work); //this takes time...                    
+                } catch (ContentLibException | PresentationException | IOException e) {
+                    Files.deleteIfExists(pdfFile);
+                    throw e;
+                }
             }
+
+            //set last modified time to reflect the last time the file was downloaded
+            Files.setLastModifiedTime(job.getPath(), FileTime.from(Instant.now()));
             try {
-                job.notifyObserver(message.getProperties().get("email"), JobStatus.READY, message.getMessageId(), "");
+                String viewerUrl = message.getProperties().get("viewerUrl");
+                if (StringUtils.isNotBlank(viewerUrl)) {
+                    URI downloadUri = UriBuilder.fromPath(viewerUrl).path("download").path(message.getMessageId()).path("/").build();
+                    job.notifyObserver(message.getProperties().get("email"), JobStatus.READY, downloadUri);
+                }
             } catch (MessagingException e) {
                 logger.error("Error notifying observers: {}", e.toString());
             }
@@ -91,11 +106,8 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
             message.getProperties().put("message", "Error creating PDF: " + e.getMessage());
             message.setDoNotRetry();
             return MessageStatus.ERROR;
-        } catch (PresentationException | IndexUnreachableException | IOException
-                | URISyntaxException e) {
-            if (message.getRetryCount() > MAX_RETRIES) {
-                message.getProperties().put("message", "Error creating PDF: " + e.toString());
-            }
+        } catch (PresentationException | IndexUnreachableException | IOException e) {
+            message.getProperties().put("message", "Error creating PDF: " + e.toString());
             return MessageStatus.ERROR;
         }
 

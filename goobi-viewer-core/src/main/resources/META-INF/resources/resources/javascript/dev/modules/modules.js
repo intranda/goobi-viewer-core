@@ -206,7 +206,10 @@
                 page: '[data-image="zoomable"] [data-image-data="pageNumber"]',
                 footer: '[data-image="zoomable"] [data-image-data="footer"]',
                 pageAreas: '[data-image="zoomable"] [data-image-data="pageAreas"]',
-                overlays: '[data-image="zoomable"] [data-image-data="overlays"]',
+                overlays: '[data-image="zoomable"] [data-image-data="overlays"]', 
+                topMarginElement: '[data-image="zoomable"] [data-image-data="topMarginElement"]',
+                leftMarginElement: '[data-image="zoomable"] [data-image-data="leftMarginElement"]',
+                rightMarginElement: '[data-image="zoomable"] [data-image-data="rightMarginElement"]',
             },
             controls: { 
                 rotateLeft: '.rotate-left',
@@ -242,6 +245,10 @@
                 this.pageType = document.querySelector(_config.elementSelectors.data.pageType).textContent;
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
                 
+                this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
+                this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
+                this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
+
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 this.viewer = new ImageView.Image(imageViewConfig);
                 this.zoom = new ImageView.Controls.Zoom(this.viewer);
@@ -252,6 +259,7 @@
                 this.footer = createFooter(this.viewer);
 
                 this.tileSources = createTileSource();
+                
                 this.tileSourceIdToOrder = Object.fromEntries(
                     Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
                 );
@@ -286,6 +294,24 @@
 
             }
         }
+
+        resetSize() {
+            this.viewer?.extent?.setSize(this.viewer.tileSources);
+            this.updateMargins();
+        }
+
+        updateMargins() {
+            if(this.viewer?.openseadragon?.viewport) {
+                const viewerRight = (this.viewer.element.offsetLeft + this.viewer.element.offsetWidth);
+                const sidebarRightLeft = document.querySelector(this.rightMarginElement)?.offsetLeft;
+                const margins = {
+                    left: (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) + (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
+                    right: sidebarRightLeft ? (viewerRight - sidebarRightLeft) : 0,
+                    top: document.querySelector(this.topMarginElement)?.offsetHeight ?? 0,
+                };
+                this.viewer.setMargins(margins);
+            }
+        }
      
         load() {
             if(this.viewer) {
@@ -293,13 +319,18 @@
                 .then(image => {
                     this.sequence?.initialize(this.getCurrentTileSourceId());
                     this.overlayGroups.forEach(group => group.show());
+                    this.initWindowResize();
                     return this;
                 });
             } else {
                 return new Promise( ( resolve, reject ) => {
-                    reject("no image found");
+                    reject("no image found"); 
                 })
             }
+        }
+
+        initWindowResize() { 
+            window.addEventListener("resize", () => this.resetSize());
         }
 
         getCurrentTileSourceIndex() {
@@ -333,7 +364,7 @@
         getTileSourceOrderFromId(id) {
             return this.tileSourceIdToOrder[id];
         }
-      
+
     }
 
     function _drawPageAreas(image) {
@@ -366,7 +397,8 @@
                 });
                 return tileSources;
             } catch(e) {
-                console.error(`Error parsing tileSource "${tileSourcesString}": ${e}`);
+                //if no image number map is passed, but a simple url string
+                return {1 : tileSourcesString};
             }
         }
     }
@@ -399,7 +431,9 @@
         return  {
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
-            margins: getMargins(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight], document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
+            margins:{
+                bottom: Number(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight])
+            }, 
             zoom:  {
                 enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== "false"
             },
@@ -432,12 +466,6 @@
                 return "fixed";
             default:
                 return "toWidth";
-        }
-    }
-
-    function getMargins(footerHeight, pageType) {
-        return {
-            bottom: Number(footerHeight)
         }
     }
 

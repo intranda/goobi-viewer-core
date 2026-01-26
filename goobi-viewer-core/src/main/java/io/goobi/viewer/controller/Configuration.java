@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.configuration2.BaseHierarchicalConfiguration;
@@ -71,6 +72,7 @@ import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.DownloadBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
@@ -1650,7 +1652,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @deprecated because download uri is now built from request in {@link DownloadBean}
      */
+    @Deprecated(since = "25.11")
     public String getDownloadUrl() {
         String urlString = getLocalString("urls.download", "http://localhost:8080/viewer/download/");
         if (!urlString.endsWith("/")) {
@@ -4122,8 +4126,47 @@ public class Configuration extends AbstractConfiguration {
         }
     }
 
+    public Map<String, String> getDownloadHeader(String externalResourceUrl) {
+
+        if (StringUtils.isBlank(externalResourceUrl)) {
+            return Collections.emptyMap();
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
+
+        for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
+            String templateUrl = templateConfig.getString("url", "");
+            if (externalResourceUrl.equals(templateUrl)) {
+                Map<String, String> headerMap = new HashMap<>();
+                List<HierarchicalConfiguration<ImmutableNode>> headerConfigs = templateConfig.configurationsAt("httpHeader");
+                for (HierarchicalConfiguration<ImmutableNode> headerConfig : headerConfigs) {
+                    String key = headerConfig.getString("[@key]", "");
+                    String value = headerConfig.getString("[@value]", "");
+                    if (StringUtils.isNoneBlank(key, value)) {
+                        headerMap.put(key, value);
+                    }
+                }
+                return headerMap;
+            }
+        }
+        return Collections.emptyMap();
+    }
+
     public List<String> getExternalResourceUrlTemplates() {
-        return getLocalList("externalResource.urls.template", Collections.emptyList());
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
+        List<String> templates = new ArrayList<>();
+        for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
+            String url = templateConfig.getString(".", "");
+            if (StringUtils.isNotBlank(url)) {
+                templates.add(url);
+            } else {
+                url = templateConfig.getString("url", "");
+                if (StringUtils.isNotBlank(url)) {
+                    templates.add(url);
+                }
+            }
+        }
+        return templates.stream().distinct().toList();
     }
 
     public Duration getExternalResourceTimeBeforeDeletion() {
@@ -6649,6 +6692,19 @@ public class Configuration extends AbstractConfiguration {
 
     public String getRecordViewStyleClass() {
         return getLocalString("viewer.viewStyleClass", "docstructtype__{record.DOCSTRCT}");
+    }
+
+    public Duration getDownloadPdfTimeToLive() {
+        int num = getLocalInt("pdf.expireAfter", 14);
+        String unitString = getLocalString("pdf.expireAfter[@unit]", "DAYS");
+        TimeUnit unit = TimeUnit.DAYS;
+        try {
+            unit = TimeUnit.valueOf(unitString);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid value in configuration pdf.expireAfter[@unit]: {}", unitString);
+        }
+        return Duration.of((long) num, unit.toChronoUnit());
+
     }
 
 }

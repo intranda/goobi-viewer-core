@@ -1,403 +1,118 @@
-/*
- * This file is part of the Goobi viewer - a content presentation and management
- * application for digitized objects.
- *
- * Visit these websites for more information.
- *          - http://www.intranda.com
- *          - http://digiverso.com
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later
- * version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <http://www.gnu.org/licenses/>.
- */
 package io.goobi.viewer.model.job.download;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.time.ZoneId;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-import io.goobi.viewer.api.rest.v1.downloads.DownloadResource;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.DownloadException;
+import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
 
-/**
- * <p>
- * Abstract DownloadJob class.
- * </p>
- */
-@Entity
-@Table(name = "download_jobs")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "type")
-@JsonInclude(Include.NON_NULL)
-public abstract class DownloadJob implements Serializable {
+public abstract class DownloadJob {
 
-    /** Constant <code>DATETIME_FORMAT="yyyy-MM-dd'T'HH:mm:ss'Z'"</code> */
-    protected static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-    /** Constant <code>TTL_FORMAT="dd'T'HH:mm:ss"</code> */
-    protected static final String TTL_FORMAT = "dd'T'HH:mm:ss";
+    private final String pi;
 
-    private static final Logger logger = LogManager.getLogger(DownloadJob.class);
+    public DownloadJob(String pi) {
+        this.pi = pi;
+    }
 
-    private static final long serialVersionUID = -491389510147134159L;
+    public DownloadJob(ViewerMessage message) {
+        this.pi = message.getProperties().get("pi");
+    }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "download_job_id")
-    protected Long id;
+    public abstract String getFilename();
 
-    @Column(name = "type", nullable = false)
-    protected String type;
+    public abstract Path getPath();
 
-    /** Unique identifier for the download (e.g. a combination of PI and LOGID for PDFs). */
-    @Column(name = "identifier", nullable = false, unique = true)
-    protected String identifier;
+    public abstract String getType();
 
-    @Column(name = "pi", nullable = false)
-    protected String pi;
-
-    @Column(name = "logid")
-    protected String logId;
-
-    @Column(name = "message", nullable = true)
-    protected String message;
-
-    /**
-     * Timestamp of the last request for this download. This can be the time of the initial request, the time of generation completion or any
-     * subsequent requests. This + TTL is the time of expiration.
-     */
-    @Column(name = "last_requested", nullable = false)
-    @JsonIgnore
-    protected LocalDateTime lastRequested;
-
-    @Column(name = "ttl", nullable = false)
-    protected long ttl;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    protected JobStatus status = JobStatus.UNDEFINED;
-
-    /** Description field for stack traces, etc. */
-    @Column(name = "description", columnDefinition = "LONGTEXT")
-    protected String description;
-
-    /** E-mail recipients that will be notified once the download generation is complete. */
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "download_job_observers", joinColumns = @JoinColumn(name = "download_job_id"))
-    @Column(name = "observer")
-    @JsonIgnore
-    private List<String> observers = new ArrayList<>();
-
-    /**
-     * <p>
-     * generateDownloadIdentifier.
-     * </p>
-     */
-    public abstract void generateDownloadIdentifier();
-
-    /**
-     * <p>
-     * generateDownloadJobId.
-     * </p>
-     *
-     * @param criteria a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     * @should generate same id from same criteria
-     */
-    public static String generateDownloadJobId(String... criteria) {
-        StringBuilder sbCriteria = new StringBuilder(criteria.length * 10);
-        for (String criterion : criteria) {
-            if (criterion != null) {
-                sbCriteria.append(criterion);
-            }
-        }
-
-        return StringTools.generateHash(sbCriteria.toString());
+    public String getPi() {
+        return pi;
     }
 
     /**
-     * <p>
-     * checkDownload.
-     * </p>
-     *
-     * @param type For now just 'pdf'.
-     * @param email Optional e-mail address to be notified.
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @param downloadIdentifier Identifier has (Construct via DownloadJob.generateDownloadJobId()).
-     * @param ttl Number of ms before the job expires.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @should throw IllegalArgumentException if type or pi or downloadIdentifier null
-     * @should throw IllegalArgumentException if downloadIdentifier mismatches pattern
-     * @should throw IllegalArgumentException if type unknown
-     * @deprecated only used in deprecated method {@link DownloadResource#getOrCreateDownloadJob(String, String, String, String)}
+     * Create path to a temporary file to which the data is written. Only after completion is the file moved to #{@link DownloadJob#getPath()}
+     * 
+     * @return a path
      */
-    @Deprecated(since = "24.10")
-    public static synchronized DownloadJob checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier,
-            long ttl) throws DAOException, PresentationException, IndexUnreachableException {
-        if (type == null) {
-            throw new IllegalArgumentException("type may not be null");
-        }
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-        if (downloadIdentifier == null) {
-            throw new IllegalArgumentException("downloadIdentifier may not be null");
-        }
-        String controlIdentifier = DownloadJob.generateDownloadJobId(type, pi, logId);
-        if (!controlIdentifier.equals(downloadIdentifier)) {
-            throw new IllegalArgumentException("wrong downloadIdentifier");
-        }
+    protected Path getTempPath() {
+        return getPath().getParent().resolve(getPath().getFileName().toString() + ".tmp");
+    }
 
-        logger.debug("Checking download of job {}", controlIdentifier);
+    public void create()
+            throws PresentationException, IOException, IndexUnreachableException, RecordNotFoundException, ContentLibException {
+        String cleanedPi = StringTools.cleanUserGeneratedData(getPi());
+        Dataset work = DataFileTools.getDataset(cleanedPi);
+        create(work);
+    }
 
+    public abstract void create(Dataset work) throws IOException, PresentationException, ContentLibException;
+
+    public boolean createLock() throws IOException {
         try {
-            /*Get or create job*/
-            boolean newJob = false;
-            DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(downloadIdentifier);
-            if (downloadJob == null) {
-                logger.debug("Create new download job");
-                newJob = true;
-                switch (type) {
-                    case PDFDownloadJob.LOCAL_TYPE:
-                        downloadJob = new PDFDownloadJob(pi, logId, LocalDateTime.now(), ttl);
-                        break;
-                    case EPUBDownloadJob.LOCAL_TYPE:
-                        downloadJob = new EPUBDownloadJob(pi, logId, LocalDateTime.now(), ttl);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unknown type: " + type);
-                }
-            } else {
-                // Update latest request timestamp of an existing job
-                logger.debug("Retrieve existing job");
-                downloadJob.setLastRequested(LocalDateTime.now());
-                //                downloadJob.updateStatus();
-            }
-
-            /*set observer email*/
-            String useEmail = null;
-            if (StringUtils.isNotBlank(email)) {
-                useEmail = email.trim().toLowerCase();
-            }
-            if (StringUtils.isNotBlank(useEmail)) {
-                downloadJob.getObservers().add(useEmail);
-            }
-            if (downloadJob.status.equals(JobStatus.WAITING)) {
-                logger.trace("keep waiting");
-                //keep waiting
-            } else if (downloadJob.getFile() != null && downloadJob.getFile().toFile().exists()) {
-                //not waiting and file exists -> file has been created
-                downloadJob.setStatus(JobStatus.READY);
-            } else {
-                //not waiting but file doesn't exist -> trigger creation
-                logger.debug("Triggering {} creation", downloadJob.getType());
-                try {
-                    downloadJob.triggerCreation();
-                    downloadJob.setStatus(JobStatus.WAITING);
-                } catch (DownloadException e) {
-                    downloadJob.setStatus(JobStatus.ERROR);
-                    downloadJob.setMessage(e.getMessage());
-                }
-            }
-
-            /*Add or update job in database*/
-            boolean updated = false;
-            if (newJob) {
-                DataManager.getInstance().getDao().addDownloadJob(downloadJob);
-            }
-            updated = DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
-            if (updated) {
-                return downloadJob;
-            }
-            return null;
-        } finally {
-            // Clean up expired jobs AFTER updating the one in use
-            DownloadJobTools.cleanupExpiredDownloads();
-        }
-    }
-
-    /**
-     * <p>
-     * triggerCreation.
-     * </p>
-     *
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @deprecated Only used in deprecated method {@link #checkDownload(String, String, String, String, String, long)}
-     */
-    @Deprecated(since = "24.10")
-    protected abstract void triggerCreation() throws PresentationException, IndexUnreachableException;
-
-    /**
-     * <p>
-     * ocrFolderExists.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public static boolean ocrFolderExists(String pi) throws PresentationException, IndexUnreachableException {
-        Path abbyyFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAbbyyFolder());
-        Path altoFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getAltoFolder());
-        return Files.isDirectory(abbyyFolder) || Files.isDirectory(altoFolder);
-    }
-
-    /**
-     * <p>
-     * isExpired.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isExpired() {
-        if (lastRequested == null) {
+            Path lockFile = getPath().getParent().resolve(FilenameUtils.getBaseName(getFilename()) + ".creating.lock");
+            Files.createFile(lockFile);
+            return true;
+        } catch (FileAlreadyExistsException e) {
             return false;
         }
-
-        return System.currentTimeMillis() > DateTools.getMillisFromLocalDateTime(lastRequested, false) + ttl;
     }
 
-    /**
-     * Deletes the file associated with this job.
-     * 
-     * @return true if file successfully deleted; false otherwise
-     */
-    public boolean deleteFile() {
-        Path path = DownloadJobTools.getDownloadFileStatic(getIdentifier(), getType(), getFileExtension()).toPath();
-        if (Files.isRegularFile(path)) {
-            try {
-                Files.delete(path);
-                return true;
-            } catch (IOException e) {
-                logger.error(e.getMessage());
-            }
-        }
-
-        return false;
+    public boolean releaseLock() throws IOException {
+        Path lockFile = getPath().getParent().resolve(FilenameUtils.getBaseName(getFilename()) + ".creating.lock");
+        return Files.deleteIfExists(lockFile);
     }
 
-    /**
-     * <p>
-     * getMimeType.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @JsonIgnore
-    public abstract String getMimeType();
-
-    /**
-     * <p>
-     * getFileExtension.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @JsonIgnore
-    public abstract String getFileExtension();
-
-    /**
-     * <p>
-     * getDisplayName.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @JsonIgnore
-    public abstract String getDisplayName();
-
-    /**
-     * <p>
-     * getFile.
-     * </p>
-     *
-     * @return a {@link java.nio.file.Path} object.
-     */
-    @JsonIgnore
-    public Path getFile() {
-        Path path = DownloadJobTools.getDownloadFileStatic(identifier, type, getFileExtension()).toPath();
-        logger.trace("Path: {}", path);
-        if (Files.isRegularFile(path)) {
-            return path;
-        }
-
-        return null;
+    public boolean isLocked() throws IOException {
+        Path lockFile = getPath().getParent().resolve(FilenameUtils.getBaseName(getFilename()) + ".creating.lock");
+        return Files.exists(lockFile);
     }
 
     /**
      * <p>
      * notifyObservers.
      * </p>
-     *
+     * 
+     * @param email
      * @param status a {@link io.goobi.viewer.model.job.JobStatus} object.
-     * @param message a {@link java.lang.String} object.
-     * @param messageId Id of the MQ message to link to
+     * @param downloadUri the URI under which the download is made available
      * @return a boolean.
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws jakarta.mail.MessagingException if any.
      */
-    public boolean notifyObservers(JobStatus status, String messageId, String message) throws UnsupportedEncodingException, MessagingException {
-        if (observers == null || observers.isEmpty()) {
+    public boolean notifyObserver(String email, JobStatus status, URI downloadUri)
+            throws UnsupportedEncodingException, MessagingException {
+
+        if (StringUtils.isBlank(email)) {
             return false;
         }
+
         String subject = "Unknown status";
         String body = "";
         switch (status) {
@@ -406,12 +121,16 @@ public abstract class DownloadJob implements Serializable {
                 body = ViewerResourceBundle.getTranslation("downloadReadyBody", null);
                 if (body != null) {
                     body = body.replace("{0}", pi);
-                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + messageId + "/");
+                    body = body.replace("{1}", downloadUri.toString());
                     body = body.replace("{4}", getType().toUpperCase());
-                    LocalDateTime exirationDate = lastRequested;
-                    exirationDate = exirationDate.plus(ttl, ChronoUnit.MILLIS);
-                    body = body.replace("{2}", DateTools.format(exirationDate, DateTools.FORMATTERISO8601DATE, false));
-                    body = body.replace("{3}", DateTools.format(exirationDate, DateTools.FORMATTERISO8601DATE, false));
+                    try {
+                        body = body.replace("{2}", DateTools.format(getExirationTime(), DateTools.FORMATTERISO8601DATE, false));
+                        body = body.replace("{3}", DateTools.format(getExirationTime(), DateTools.FORMATTERISO8601DATE, false));
+                    } catch (IOException e) {
+                        //cannot replace expiration date since file time could not be accessed
+                        body = body.replace("{2}", "?");
+                        body = body.replace("{3}", "?");
+                    }
                 }
                 break;
             case ERROR:
@@ -430,164 +149,17 @@ public abstract class DownloadJob implements Serializable {
             subject = subject.replace("{0}", pi);
         }
 
-        return NetTools.postMail(observers, null, null, subject, body);
+        return NetTools.postMail(List.of(email), null, null, subject, body);
     }
 
-    /**
-     * <p>
-     * getDownloadFile.
-     * </p>
-     *
-     * @param pi The pi of the work to download.
-     * @param logId the logId of the structure element to download. Is ignored if it is null, empty, blank or equals "-"
-     * @param type either "pdf" or "epub"
-     * @return The Download location file, ending with ".pdf" or ".epub" depending on type
-     * @throws java.lang.IllegalArgumentException If the pi is null, empty or blank, or if the type is not "epub" or "pdf"
-     */
-    public File getDownloadFile(String pi, final String logId, String type) {
-        if (StringUtils.isBlank(pi)) {
-            throw new IllegalArgumentException("Cannot determine download path for empty pi");
+    public LocalDateTime getExirationTime() throws IOException {
+        if (Files.exists(getPath())) {
+            FileTime lastAccessed = FileTools.getDateModified(getPath());
+            Instant expirationTime = lastAccessed.toInstant().plus(DataManager.getInstance().getConfiguration().getDownloadPdfTimeToLive());
+            return LocalDateTime.ofInstant(expirationTime, ZoneId.systemDefault());
+        } else {
+            throw new FileNotFoundException();
         }
-        String useLogId = logId;
-        if (StringUtils.isBlank(useLogId) || "-".equals(useLogId)) {
-            useLogId = "";
-        }
-        String hash = DownloadJob.generateDownloadJobId(type, pi, useLogId);
-        return DownloadJobTools.getDownloadFileStatic(hash, type, getFileExtension());
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>id</code>.
-     * </p>
-     *
-     * @return the id
-     */
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>id</code>.
-     * </p>
-     *
-     * @param id the id to set
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>type</code>.
-     * </p>
-     *
-     * @return the type
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>pi</code>.
-     * </p>
-     *
-     * @return the pi
-     */
-    public String getPi() {
-        return pi;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>pi</code>.
-     * </p>
-     *
-     * @param pi the pi to set
-     */
-    public void setPi(String pi) {
-        this.pi = pi;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>logId</code>.
-     * </p>
-     *
-     * @return the logId
-     */
-    public String getLogId() {
-        return logId;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>logId</code>.
-     * </p>
-     *
-     * @param logId the logId to set
-     */
-    public void setLogId(String logId) {
-        this.logId = logId;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>identifier</code>.
-     * </p>
-     *
-     * @return the identifier
-     */
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>identifier</code>.
-     * </p>
-     *
-     * @param identifier the identifier to set
-     */
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>lastRequested</code>.
-     * </p>
-     *
-     * @return the lastRequested
-     */
-    @JsonFormat(pattern = DATETIME_FORMAT)
-    public LocalDateTime getLastRequested() {
-        return lastRequested;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>lastRequested</code>.
-     * </p>
-     *
-     * @param lastRequested the lastRequested to set
-     */
-    public void setLastRequested(LocalDateTime lastRequested) {
-        this.lastRequested = lastRequested;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>ttl</code>.
-     * </p>
-     *
-     * @return the ttl
-     */
-    @JsonIgnore
-    public long getTtl() {
-        return ttl;
     }
 
     /**
@@ -598,135 +170,41 @@ public abstract class DownloadJob implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getTimeToLive() {
-        Duration d = Duration.ofMillis(ttl);
+        Duration d = DataManager.getInstance().getConfiguration().getDownloadPdfTimeToLive();
         return String.format("%dd %d:%02d:%02d", d.toDays(), d.toHours() % 24, d.toMinutes() % 60, d.getSeconds() % 60);
     }
 
     /**
      * <p>
-     * Setter for the field <code>ttl</code>.
+     * isExpired.
      * </p>
      *
-     * @param ttl the ttl to set
+     * @should return correct value
+     * @return a boolean.
      */
-    public void setTtl(long ttl) {
-        this.ttl = ttl;
-    }
+    public boolean isExpired() {
 
-    /**
-     * <p>
-     * Getter for the field <code>status</code>.
-     * </p>
-     *
-     * @return the status
-     */
-    public JobStatus getStatus() {
-        if (status == null) {
-            status = JobStatus.UNDEFINED;
+        try {
+            return System.currentTimeMillis() > DateTools.getMillisFromLocalDateTime(getExirationTime(), false);
+        } catch (IOException e) {
+            return true;
         }
-        return status;
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>status</code>.
-     * </p>
-     *
-     * @param status the status to set
-     */
-    public void setStatus(JobStatus status) {
-        this.status = status;
+    public static DownloadJob from(ViewerMessage message) throws IllegalArgumentException {
+
+        String taskName = message.getTaskName();
+        TaskType taskType = TaskType.valueOf(taskName);
+        switch (taskType) {
+            case TaskType.DOWNLOAD_PDF:
+                return new PdfDownloadJob(message);
+            case TaskType.DOWNLOAD_EPUB:
+                return new EpubDownloadJob(message);
+            default:
+                throw new IllegalArgumentException(taskName + " is not known download task type");
+        }
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>description</code>.
-     * </p>
-     *
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
+    public abstract String getMimeType();
 
-    /**
-     * <p>
-     * Setter for the field <code>description</code>.
-     * </p>
-     *
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>observers</code>.
-     * </p>
-     *
-     * @return the observers
-     */
-    @JsonIgnore
-    public List<String> getObservers() {
-        return observers;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>observers</code>.
-     * </p>
-     *
-     * @param observers the observers to set
-     */
-    public void setObservers(List<String> observers) {
-        this.observers = observers;
-    }
-
-    /**
-     * Empties the complete observer list. Should be used after observers have been notified to avoid repeat notifications
-     */
-    public void resetObservers() {
-        this.observers = new ArrayList<>();
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>message</code>.
-     * </p>
-     *
-     * @return the message
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>message</code>.
-     * </p>
-     *
-     * @param message the message to set
-     */
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    /**
-     * @return {@link String}
-     */
-    protected abstract String getRestApiPath();
-
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DownloadJob ").append(getIdentifier()).append("; ");
-        sb.append("Type ").append(getType()).append("; ");
-        sb.append("Status ").append(getStatus()).append("; ");
-        sb.append("Expired: ").append(isExpired()).append("; ");
-        sb.append("PI ").append(getPi()).append("; ");
-        sb.append("LOGID ").append(getLogId()).append("; ");
-        return sb.toString();
-    }
 }

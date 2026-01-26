@@ -23,6 +23,9 @@ package io.goobi.viewer.model.search;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -445,9 +448,12 @@ public class SearchHit implements Comparable<SearchHit> {
                         try {
                             fulltext = getFulltext(request, pi, authorityDataIdentifier, childDoc);
                         } catch (AccessDeniedException e) {
+                            logger.trace(e.getMessage());
                             acccessDeniedType = true;
+                            fulltext = ViewerResourceBundle.getTranslation("errDocNotFound", locale);
                         } catch (PresentationException | FileNotFoundException e) {
-                            fulltext = null;
+                            logger.warn("Text not found for {}", pi);
+                            fulltext = ViewerResourceBundle.getTranslation("errDocNotFound", locale);
                         }
                         // Skip page hits without a proper full-text
                         if (StringUtils.isBlank(fulltext)) {
@@ -590,6 +596,12 @@ public class SearchHit implements Comparable<SearchHit> {
         String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
         try {
             if (StringUtils.isNotBlank(plaintextFilename)) {
+                Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder(),
+                        DataManager.getInstance().getConfiguration().getFulltextFolder(), plaintextFilename);
+                if (!Files.isRegularFile(file)) {
+                    throw new FileNotFoundException("File not found: " + file.toAbsolutePath().toAbsolutePath().toString());
+                }
+                
                 boolean access =
                         AccessConditionUtils.checkAccess(request.getSession(), "text", pi, plaintextFilename, NetTools.getIpAddress(request), false)
                                 .isGranted();
@@ -599,6 +611,12 @@ public class SearchHit implements Comparable<SearchHit> {
                     throw new AccessDeniedException("Access denied to resource " + pi + " / " + plaintextFilename);
                 }
             } else if (StringUtils.isNotBlank(altoFilename)) {
+                Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder(),
+                        DataManager.getInstance().getConfiguration().getAltoFolder(), altoFilename);
+                if (!Files.isRegularFile(file)) {
+                    throw new FileNotFoundException("File not found: " + file.toAbsolutePath().toAbsolutePath().toString());
+                }
+                
                 boolean access =
                         AccessConditionUtils.checkAccess(request.getSession(), "text", pi, altoFilename, NetTools.getIpAddress(request), false)
                                 .isGranted();
@@ -631,8 +649,6 @@ public class SearchHit implements Comparable<SearchHit> {
                     throw new AccessDeniedException("Access denied to resource " + pi + " / " + altoFilename);
                 }
             }
-        } catch (FileNotFoundException e) {
-            throw e;
         } catch (IndexUnreachableException | DAOException | IOException e) {
             throw new PresentationException("Error reading fulltext for " + pi + ", page " + childDoc.getFirstValue(SolrConstants.ORDER), e);
         }
@@ -692,15 +708,6 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         return "file-text";
-    }
-
-    /**
-     * @deprecated use {@link #getIconName()} instead.
-     * @return {@link String}
-     */
-    @Deprecated(since = "25.10")
-    public String getIconClassForType() {
-        return getIconNameForType(this.type);
     }
 
     /**

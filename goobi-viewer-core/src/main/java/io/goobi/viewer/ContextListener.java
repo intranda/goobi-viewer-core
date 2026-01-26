@@ -62,17 +62,13 @@ public class ContextListener implements ServletContextListener {
     private volatile String prettyConfigFiles =
             "resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
 
-    //    static {
-    // ImageIO.scanForPlugins();
-    //    }
-
     /** {@inheritDoc} */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        logger.info("Launching {}", Version.asString());
+        logger.info("Launching {}", () -> Version.asString());
         DataManager.getInstance();
         ViewerResourceBundle.init(sce.getServletContext());
-        logger.trace("Temp folder: {}", DataManager.getInstance().getConfiguration().getTempFolder());
+        logger.trace("Temp folder: {}", () -> DataManager.getInstance().getConfiguration().getTempFolder());
         //        createResources();
 
         // Scan for all Pretty config files in module JARs
@@ -103,8 +99,6 @@ public class ContextListener implements ServletContextListener {
                 prettyConfigFiles = sbPrettyConfigFiles.toString();
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
-                //                } catch (URISyntaxException e) {
-                //                    logger.error(e.getMessage(), e);
             } catch (FileSystemNotFoundException | ProviderNotFoundException e) {
                 logger.error("Unable to scan theme-jar for pretty config files. Probably an older tomcat");
             }

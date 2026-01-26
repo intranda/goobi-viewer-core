@@ -209,17 +209,6 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * 
-     * @param value
-     * @return CheckboxSelectable<String>
-     * @deprecated Unused?
-     */
-    @Deprecated(since = "25.11")
-    public CheckboxSelectable<String> getCustomSelectableItem(String value) {
-        return new CheckboxSelectable<>(this.lines.get(0).getValues(), field, s -> value);
-    }
-
-    /**
      * <p>
      * reset.
      * </p>

@@ -647,7 +647,7 @@ public class RecordResource {
         SolrDocumentList docs =
                 DataManager.getInstance()
                         .getSearchIndex()
-                        .search(SearchHelper.buildFinalQuery(query, false, servletRequest, null));
+                        .search(SearchHelper.buildFinalQuery(query, false, servletRequest, null), config.getFieldNames());
         logger.trace("{} hits.", docs.size());
         if (docs.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();

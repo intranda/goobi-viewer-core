@@ -71,6 +71,7 @@ import org.json.JSONObject;
 import org.omnifaces.util.Faces;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.api.iiif.image.ImageInformation;
 import de.undercouch.citeproc.CSL;
@@ -139,7 +140,9 @@ import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.SelectPageItem;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
@@ -218,7 +221,7 @@ public class ViewManager implements Serializable {
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
     private Map<CitationLinkLevel, CitationList> citationLinks = new HashMap<>();
-    private List<String> externalResourceUrls = null;
+    private Map<String, String> externalResourceUrls = null;
     private List<PhysicalResource> downloadResources = null;
 
     private PageNavigation pageNavigation = PageNavigation.SINGLE;
@@ -271,8 +274,6 @@ public class ViewManager implements Serializable {
         this.mimeType = mimeType;
         logger.trace("mimeType: {}", mimeType);
 
-        this.pageNavigation = getDefaultPageNavigation(null);
-
         // Linked archive node
         try {
             String archiveId = getArchiveEntryIdentifier();
@@ -283,21 +284,6 @@ public class ViewManager implements Serializable {
             }
         } catch (ArchiveException e) {
             logger.error("Error creating archive link for {}: {}", this.pi, e.getMessage());
-        }
-    }
-
-    protected PageNavigation getDefaultPageNavigation(PageType pageType) {
-        try {
-            if (DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(pageType, this.mimeType)) {
-                return PageNavigation.SEQUENCE;
-            } else if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, this.mimeType)) {
-                return PageNavigation.DOUBLE;
-            } else {
-                return PageNavigation.SINGLE;
-            }
-        } catch (ViewerConfigurationException e) {
-            logger.error("Error reading default page navigation from config", e);
-            return PageNavigation.SINGLE;
         }
     }
 
@@ -389,7 +375,9 @@ public class ViewManager implements Serializable {
                 break;
             case SEQUENCE:
                 for (PhysicalElement page : this.getAllPages()) {
-                    infos.put(page.getOrder(), getImageInfo(page, pageType));
+                    if (page.isHasImage()) {
+                        infos.put(page.getOrder(), getImageInfo(page, pageType));
+                    }
                 }
                 break;
             default:
@@ -1220,9 +1208,7 @@ public class ViewManager implements Serializable {
      * @return true if record is born digital material (no scanned images); false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated replc
      */
-    @Deprecated(since = "25.02")
     public boolean isBornDigital() throws IndexUnreachableException, DAOException {
         return isHasPages() && isFilesOnly();
     }
@@ -1489,34 +1475,8 @@ public class ViewManager implements Serializable {
         }
     }
 
-    protected void setPageNavigation(PageNavigation navigation) {
+    public void setPageNavigation(PageNavigation navigation) {
         this.pageNavigation = navigation;
-    }
-
-    public void updatePageNavigation(PageType pageType) {
-        this.pageNavigation = calculateCurrentPageNavigation(pageType);
-    }
-
-    protected PageNavigation calculateCurrentPageNavigation(PageType pageType) {
-        try {
-            PageNavigation defaultPageNavigation = getDefaultPageNavigation(pageType);
-            if (this.pageNavigation == defaultPageNavigation) {
-                return this.pageNavigation;
-            } else if (defaultPageNavigation == PageNavigation.SEQUENCE) {
-                return defaultPageNavigation;
-            } else if (this.pageNavigation == PageNavigation.SINGLE) {
-                return this.pageNavigation;
-            } else if (this.pageNavigation == PageNavigation.DOUBLE
-                    && DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(pageType, this.mimeType)) {
-                return this.pageNavigation;
-            } else {
-                return defaultPageNavigation;
-            }
-
-        } catch (ViewerConfigurationException | NullPointerException | IllegalArgumentException e) {
-            logger.error("Failed to set view mode: {}", e.toString());
-            return PageNavigation.SINGLE;
-        }
     }
 
     /**
@@ -4284,20 +4244,30 @@ public class ViewManager implements Serializable {
                 .toList();
     }
 
-    public List<String> getExternalResourceUrls() throws IndexUnreachableException {
+    public Map<String, String> getExternalResourceUrls() throws IndexUnreachableException {
         if (this.externalResourceUrls == null) {
             this.externalResourceUrls = loadExternalResourceUrls();
         }
         return this.externalResourceUrls;
     }
 
-    private List<String> loadExternalResourceUrls() throws IndexUnreachableException {
-        List<String> urlTemplates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
+    public String getExternalResourceUrlsAsJson() {
+        try {
+            return new ObjectMapper().writeValueAsString(getExternalResourceUrls());
+        } catch (IndexUnreachableException | JsonProcessingException e) {
+            logger.error("Cannot map external resource urls map to json", e);
+            return "{}";
+        }
+    }
+
+    private Map<String, String> loadExternalResourceUrls() throws IndexUnreachableException {
+        List<String> urlTemplates =
+                DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
         VariableReplacer vr = new VariableReplacer(this);
         return urlTemplates.stream()
-                .flatMap(templ -> vr.replace(templ).stream())
-                .filter(ExternalFilesDownloader::resourceExists)
-                .toList();
+                .flatMap(templ -> vr.replace(templ).stream().map(url -> new StringPair(url, templ)))
+                .filter(pair -> ExternalFilesDownloader.resourceExists(pair.getOne(), pair.getTwo()))
+                .collect(Collectors.toMap(StringPair::getOne, StringPair::getTwo));
     }
 
     public StructElement getAnchorStructElement() {
@@ -4324,6 +4294,27 @@ public class ViewManager implements Serializable {
         return DataManager.getInstance()
                 .getConfiguration()
                 .showImageThumbnailGallery(pageType, Optional.ofNullable(getCurrentPage()).map(PhysicalElement::getMimeType).orElse(null));
+
+    }
+
+    public String getMimeTypesForLoadedPagesAsJson() throws IndexUnreachableException {
+        return JSONObject.wrap(getMimeTypesForLoadedPages()).toString();
+    }
+
+    public Map<Integer, String> getMimeTypesForLoadedPages() throws IndexUnreachableException {
+        if (this.pageLoader instanceof LeanPageLoader) {
+            return Map.of(currentImageOrder, this.pageLoader.getPage(currentImageOrder).getMimeType());
+        } else if (this.pageLoader instanceof EagerPageLoader) {
+            Map<Integer, String> map = new LinkedHashMap<>();
+            for (int i = this.pageLoader.getFirstPageOrder(); i <= this.pageLoader.getLastPageOrder(); i++) {
+                if (this.pageLoader.getPage(i) != null) {
+                    map.put(i, this.pageLoader.getPage(i).getMimeType());
+                }
+            }
+            return map;
+        } else {
+            return Collections.emptyMap();
+        }
 
     }
 }

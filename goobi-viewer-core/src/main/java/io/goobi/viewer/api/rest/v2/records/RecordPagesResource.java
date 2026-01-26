@@ -42,6 +42,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.bindings.AccessRightsBinding;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.FilterTools;
@@ -52,6 +53,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.CanvasBuilder;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.ManifestBuilder;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.inject.Inject;
@@ -101,7 +103,7 @@ public class RecordPagesResource {
     @IIIFPresentationBinding
     public IPresentationModelElement getCanvas()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
-        return new CanvasBuilder(urls).build(pi, pageNo);
+        return new CanvasBuilder(urls, this.servletRequest).build(pi, pageNo);
     }
 
     @GET
@@ -112,7 +114,7 @@ public class RecordPagesResource {
     public AnnotationPage getMedia()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
         URI itemId = urls.path(RECORDS_PAGES, RECORDS_PAGES_MEDIA).params(pi, pageNo).buildURI();
-        return new CanvasBuilder(urls).build(pi, pageNo)
+        return new CanvasBuilder(urls, this.servletRequest).build(pi, pageNo)
                 .getItems()
                 .stream()
                 .filter(p -> p.getId().equals(itemId))
@@ -129,7 +131,7 @@ public class RecordPagesResource {
             @Parameter(description = "Identifier string of the annotation") @PathParam("itemid") String itemId)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
         URI itemUrl = urls.path(RECORDS_PAGES, RECORDS_PAGES_MEDIA, "/" + itemId).params(pi, pageNo).buildURI();
-        return new CanvasBuilder(urls).build(pi, pageNo)
+        return new CanvasBuilder(urls, this.servletRequest).build(pi, pageNo)
                 .getItems()
                 .stream()
                 .flatMap(p -> p.getItems().stream())
@@ -142,16 +144,17 @@ public class RecordPagesResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_TEXT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get fulltext annotations for page")
-    @IIIFPresentationBinding
+    @AccessRightsBinding({ IPrivilegeHolder.PRIV_VIEW_FULLTEXT })
     public AnnotationPage getFulltext()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
-        return new CanvasBuilder(urls).buildFulltextAnnotations(pi, pageNo);
+        return new CanvasBuilder(urls, this.servletRequest).buildFulltextAnnotations(pi, pageNo);
     }
 
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
+    @AccessRightsBinding({ IPrivilegeHolder.PRIV_VIEW_UGC })
     public AnnotationPage getAnnotationsForRecord() throws DAOException {
 
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
@@ -167,6 +170,7 @@ public class RecordPagesResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
+    @AccessRightsBinding({ IPrivilegeHolder.PRIV_VIEW_UGC })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a page")
     public AnnotationPage getCommentsForPage() throws DAOException {
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(pi, pageNo);
@@ -187,7 +191,7 @@ public class RecordPagesResource {
                             + " 'thumbs' Does not read width and height of canvas resources and 'iiif_simple'"
                             + " ignores all resources from files") @QueryParam("mode") String mode)
             throws PresentationException, IndexUnreachableException, URISyntaxException, DAOException, ContentLibException {
-        return new ManifestBuilder(urls).build(pi, pageNo, servletRequest);
+        return new ManifestBuilder(urls, servletRequest).build(pi, pageNo);
     }
 
 }

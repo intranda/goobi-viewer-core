@@ -48,6 +48,12 @@
                 <ignoreVersion type="regex">7.*</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="org.omnifaces" artifactId="omnifaces">
+            <ignoreVersions>
+                <ignoreVersion type="regex">5.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+
 
         <!-- Other -->
         <rule groupId="xml-apis" artifactId="xml-apis">

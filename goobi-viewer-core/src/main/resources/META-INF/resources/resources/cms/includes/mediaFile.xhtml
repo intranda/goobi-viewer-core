@@ -147,7 +147,8 @@
                                 <label for="editMediaAltText">#{msg.admin__media_alt_text}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputText id="editMediaAltText" value="#{media.alternativeText}" styleClass="form-control">
+                                <h:inputText id="editMediaAltText" value="#{media.getMetadataForLocale(item.locale).alternativeText}"
+                                    styleClass="form-control">
                                 	<f:passThroughAttribute name="aria-label" value="#{msg.admin__media_description}"/>
                                 </h:inputText>
                                 <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_alt_text}</span>

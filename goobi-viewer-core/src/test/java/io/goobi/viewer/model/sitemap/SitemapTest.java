@@ -46,6 +46,19 @@ class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
     private static final Logger logger = LogManager.getLogger(SitemapTest.class);
 
     /**
+     * @see Sitemap#createUrlElement(String,int,String,String,String,String)
+     * @verifies create url correctly
+     */
+    @Test
+    void createUrlElement_shouldCreateUrlCorrectly() throws Exception {
+        Sitemap sitemap = new Sitemap();
+        sitemap.setViewerRootUrl("https://foo.bar");
+        Element eleUrl = sitemap.createUrlElement("PPN123",1, null, "object",    null, null);
+        Assertions.assertNotNull(eleUrl);
+        Assertions.assertEquals("https://foo.bar/object/PPN123/1/", eleUrl.getChildText("loc", Sitemap.NS_SITEMAP));
+    }
+
+    /**
      * @see Sitemap#createUrlElement(String,String,String,String)
      * @verifies create loc element correctly
      */
