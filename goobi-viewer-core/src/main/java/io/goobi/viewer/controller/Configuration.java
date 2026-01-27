@@ -1246,6 +1246,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct values
      */
     public List<String> getSidebarWidgetsForView(String view) {
+        logger.trace("getSidebarWidgetsForView: {}", view);
         List<String> ret = new ArrayList<>();
         if (StringUtils.isEmpty(view)) {
             return ret;
@@ -3110,7 +3111,7 @@ public class Configuration extends AbstractConfiguration {
      * @return Configured values
      */
     private HierarchicalConfiguration<ImmutableNode> getSidebarViewConfiguration(String name) {
-        return getSubConfigurationByNameAttribute("sidebar.views.view", name, false);
+        return getSubConfigurationByNameAttribute("sidebar.views.view", name, true);
     }
 
     /**
