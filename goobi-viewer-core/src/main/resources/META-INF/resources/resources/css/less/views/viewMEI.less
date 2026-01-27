@@ -130,11 +130,8 @@
 			margin: 0;
 			justify-content: center;
 		}
-		&__toolbar-status-controls,
 		&__toolbar-download-controls {
-			width: 100%;
-			display: flex;
-			justify-content: center;
+			order: 2;
 		}
 		&__toolbar-time-wrapper {
 			flex-wrap: wrap;
@@ -149,11 +146,14 @@
 			border: none;
 		}
 		&__toolbar-status-controls {
+			width: 100%;
+			display: flex;
+			justify-content: center;
 			border-right: none;
 			flex-wrap: wrap;
 			border-top: 1px solid #1b1b1b;
-			border-bottom: 1px solid #1b1b1b;
 			padding-bottom: 10px;
+			order: 3;
 		}
 		&__toolbar-track {
 			flex: unset;
