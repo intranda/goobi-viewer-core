@@ -81,15 +81,15 @@
 		<alto.version>1.7.0</alto.version>
 		<ics.version>4.1.1</ics.version>
 		<tei-conversion.version>1.3.4</tei-conversion.version>
-		<intranda-content-view.version>0.3.1</intranda-content-view.version>
+		<intranda-content-view.version>0.3.5</intranda-content-view.version>
 		<iiif-api-model.version>3.2.0</iiif-api-model.version>
 		<normdataimporter.version>2.1.2</normdataimporter.version>
 
 		<!-- other libraries -->
 		<activemq.version>6.2.0</activemq.version>
 		<angus-mail.version>2.0.5</angus-mail.version>
-		<citationstyles.version>25.11</citationstyles.version>
-		<citeproc-java.version>3.4.0</citeproc-java.version>
+		<citationstyles.version>26.1.1</citationstyles.version>
+		<citeproc-java.version>3.4.1</citeproc-java.version>
 		<commons-collections4.version>4.5.0</commons-collections4.version>
 		<commons-configuration2.version>2.13.0</commons-configuration2.version>
 		<commons-io.version>2.21.0</commons-io.version>
@@ -99,17 +99,17 @@
 		<commons-text.version>1.15.0</commons-text.version>
 		<cron-expression-descriptor.version>1.2.10</cron-expression-descriptor.version>
 		<dbunit.version>3.0.0</dbunit.version>
-		<eclipselink.version>4.0.8</eclipselink.version>
+		<eclipselink.version>4.0.9</eclipselink.version>
 		<h2.version>2.4.240</h2.version>
 		<httpclient.version>4.5.14</httpclient.version>
 		<httpcore.version>4.4.16</httpcore.version>
 		<httpmime.version>4.5.14</httpmime.version>
 		<icu.version>78.2</icu.version>
-		<jackson.version>2.20.1</jackson.version>
+		<jackson.version>2.21.0</jackson.version>
 		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
 		<jakarta.enterprise.version>4.1.0</jakarta.enterprise.version>
-		<jakarta.faces.version>4.1.5</jakarta.faces.version>
+		<jakarta.faces.version>4.1.6</jakarta.faces.version>
 		<jakarta.inject.version>2.0.1</jakarta.inject.version>
 		<jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
 		<jakarta.jstl.version>3.0.2</jakarta.jstl.version>
@@ -143,10 +143,10 @@
 		<rome.version>2.1.0</rome.version>
 		<spring.version>6.2.15</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
-		<solr.version>9.9.0</solr.version>
-		<swagger.version>2.2.41</swagger.version>
+		<solr.version>9.10.1</solr.version>
+		<swagger.version>2.2.42</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
-		<weld-servlet-shaded.version>5.1.6.Final</weld-servlet-shaded.version>
+		<weld-servlet-shaded.version>5.1.7.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
 		<sf-geojson.version>3.3.3</sf-geojson.version>
@@ -372,7 +372,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.20</version>
+			<version>2.21</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -1116,7 +1116,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>3.2.1</version>
+				<version>3.3.0</version>
 				<configuration>
 					<shortRevisionLength>7</shortRevisionLength>
 					<doCheck>false</doCheck>
@@ -1182,7 +1182,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.20.1</version>
+				<version>2.21.0</version>
 				<configuration>
 					<rulesUri>file://${basedir}/version-number-rules.xml</rulesUri>
 				</configuration>

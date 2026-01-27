@@ -43,7 +43,6 @@ import org.apache.solr.common.SolrException;
 
 import com.ocpsoft.pretty.PrettyContext;
 
-import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -177,7 +176,7 @@ public class SolrFeatureSet extends FeatureSet {
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
 
         List<MetadataDocument> hits;
-        try (Time t = DataManager.getInstance().getTiming().takeTime("query")) {
+        try {
             IFeatureDataProvider queryGenerator =
                     AbstractFeatureDataProvider.getDataProvider(getSearchScope() == null ? SolrSearchScope.ALL : getSearchScope(),
                             ListUtils.union(coordinateFields, ListUtils.union(markerLabels.getFieldsToQuery(), itemLabels.getFieldsToQuery())));
@@ -185,19 +184,17 @@ public class SolrFeatureSet extends FeatureSet {
         } catch (SolrException e) {
             throw new IndexUnreachableException("SOLR communication failed:" + e.toString());
         }
-        try (Time t = DataManager.getInstance().getTiming().takeTime("features")) {
-            FeatureGenerator featureGenerator = new FeatureGenerator(coordinateFields, getItemFilter().getFields(), markerLabels, itemLabels);
+        FeatureGenerator featureGenerator = new FeatureGenerator(coordinateFields, getItemFilter().getFields(), markerLabels, itemLabels);
 
-            Collection<GeoMapFeature> featuresFromSolr = new ArrayList<>();
-            for (MetadataDocument hit : hits) {
-                Collection<GeoMapFeature> features = featureGenerator.getFeatures(hit, this.getSearchScope());
-                featuresFromSolr.addAll(features);
-            }
-
-            Collection<GeoMapFeature> combinedFeatures = combineFeatures(featuresFromSolr);
-
-            return combinedFeatures;
+        Collection<GeoMapFeature> featuresFromSolr = new ArrayList<>();
+        for (MetadataDocument hit : hits) {
+            Collection<GeoMapFeature> features = featureGenerator.getFeatures(hit, this.getSearchScope());
+            featuresFromSolr.addAll(features);
         }
+
+        Collection<GeoMapFeature> combinedFeatures = combineFeatures(featuresFromSolr);
+
+        return combinedFeatures;
 
     }
 

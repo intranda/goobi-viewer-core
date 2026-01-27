@@ -54,18 +54,14 @@
 					margin-left: auto;
 					font-size: @fontMedium;
 					color: inherit;
-					--search-divider-color: var(--gv-search-divider-color, rgba(31, 41, 55, 0.28));
+					--search-divider-color: @search-toolbar-divider-color;
 					--search-option-button-size: 30px;
 					--search-option-icon-size: 18px;
-					--search-option-border-radius: var(--gv-search-option-border-radius, var(--border-radius, 0));
-					--search-option-icon-color: var(--gv-search-option-icon-color, var(--fg-general, #1f2933));
-					--search-option-icon-color-hover: var(--gv-search-option-icon-color-hover, var(--search-option-icon-color));
-					--search-option-color: var(--gv-search-option-color, var(--fg-general, #1f2933));
-					--search-option-bg-active: var(--gv-search-option-bg-active, var(--ci-color1, #015999));
-					--search-option-color-active: var(--gv-search-option-color-active, #ffffff);
-					--search-option-icon-color-active: var(--gv-search-option-icon-color-active, var(--search-option-color-active));
-					--search-option-shadow-active: var(--gv-search-option-shadow-active, none);
-					--search-option-outline: var(--gv-search-option-outline, var(--outline-color, #035999));
+					--search-option-icon-color: @search-toolbar-icon-color;
+					--search-option-icon-color-hover: @search-toolbar-icon-color-hover;
+					--search-option-bg-active: @search-toolbar-background-active;
+					--search-option-color-active: @search-toolbar-text-color-active;
+					--search-option-icon-color-active: @search-toolbar-icon-color-active;
 
 				> * {
 					position: relative;
@@ -198,7 +194,7 @@
 					display: block;
 					width: 100%;
 					height: 100%;
-					
+					stroke-width: 1.6;
 					transition: transform .18s ease;
 				}
 			}
@@ -484,7 +480,6 @@
 		margin-bottom: 0;
 		display: flex;
 		justify-content: flex-end;
-		z-index: 10;
 		img {
 			display: inline;
 			padding: 0;
@@ -503,7 +498,6 @@
 			right: 5px;
 			color: var(--ci-color1, @blue);
 			background-image: none;
-			z-index: 10;
 			.bookmark-toggle {
 				align-items: center;
 				justify-content: center;
@@ -735,7 +729,6 @@
 	-moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 	background: @white;
-	z-index: 10;
 	position: relative;
 }
  
@@ -745,7 +738,6 @@
 	border: 2px solid @white;
 	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 	background: #eff4de;
-	z-index: 9;
 	transition: transform 0.12s linear, opacity 0.5s linear;
 	&.-shown {
 		opacity: 1;

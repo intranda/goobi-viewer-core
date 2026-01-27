@@ -788,4 +788,26 @@ public final class FileTools {
         BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
         return attr.lastModifiedTime() != null ? attr.lastModifiedTime() : attr.lastAccessTime();
     }
+
+    /**
+     * Removes any path elements from the given file name.
+     *
+     * @param fileName
+     * @return Lowest level file name
+     * @should return unchanged string if string blank
+     * @should remove everything but the file name from given path
+     * @should throw IllegalArgumentException given invalid file name
+     */
+    public static String sanitizeFileName(String fileName) {
+        if (StringUtils.isBlank(fileName)) {
+            return fileName;
+        }
+
+        final String sanitizedFileName = Paths.get(fileName).getFileName().toString();
+        if (sanitizedFileName == null || !sanitizedFileName.matches("[a-zA-Z0-9._-]+")) {
+            throw new IllegalArgumentException("Illegal fileName: " + fileName);
+        }
+
+        return sanitizedFileName;
+    }
 }

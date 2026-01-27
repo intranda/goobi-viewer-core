@@ -2290,6 +2290,23 @@ public class JPADAO implements IDAO {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public long countCommentsForWork(String pi) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder(80);
+            sbQuery.append("SELECT COUNT(o) FROM Comment o WHERE o.targetPI = :pi");
+            Query q = em.createQuery(sbQuery.toString());
+            q.setParameter("pi", pi);
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
     @Override
     public Comment getComment(long id) throws DAOException {
         preQuery();

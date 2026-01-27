@@ -146,7 +146,7 @@
 							#{msg.downloadMetsButtonLabel} </a>
 					</ui:fragment>
 					<ui:fragment visibility-class="widget-element"
-						rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen], docType: [volume]}')}">
+						rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen, viewMetadata], docType: [volume]}')}">
 						<a href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
 							id="metsanchor"
 							class="badge badge-dark widget-format-links__work-download-mets-anchor"

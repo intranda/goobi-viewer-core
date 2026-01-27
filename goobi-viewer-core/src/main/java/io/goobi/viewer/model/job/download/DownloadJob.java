@@ -3,6 +3,7 @@ package io.goobi.viewer.model.job.download;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -100,13 +101,12 @@ public abstract class DownloadJob {
      * 
      * @param email
      * @param status a {@link io.goobi.viewer.model.job.JobStatus} object.
-     * @param messageId Id of the MQ message to link to
-     * @param message a {@link java.lang.String} object.
+     * @param downloadUri the URI under which the download is made available
      * @return a boolean.
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws jakarta.mail.MessagingException if any.
      */
-    public boolean notifyObserver(String email, JobStatus status, String messageId, String message)
+    public boolean notifyObserver(String email, JobStatus status, URI downloadUri)
             throws UnsupportedEncodingException, MessagingException {
 
         if (StringUtils.isBlank(email)) {
@@ -121,7 +121,7 @@ public abstract class DownloadJob {
                 body = ViewerResourceBundle.getTranslation("downloadReadyBody", null);
                 if (body != null) {
                     body = body.replace("{0}", pi);
-                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + messageId + "/");
+                    body = body.replace("{1}", downloadUri.toString());
                     body = body.replace("{4}", getType().toUpperCase());
                     try {
                         body = body.replace("{2}", DateTools.format(getExirationTime(), DateTools.FORMATTERISO8601DATE, false));

@@ -1,7 +1,7 @@
 import ZoomableImageOverlayGroup from "./zoomableImageOverlayGroup.mjs";
 import PageAreas from "./pageAreas.mjs";
 
-const _debug = true;
+const _debug = false;
 
 const _config = {
     elementSelectors: {
@@ -107,6 +107,11 @@ export default class ZoomableImage {
         }
     }
 
+    resetSize() {
+        this.viewer?.extent?.setSize(this.viewer.tileSources);
+        this.updateMargins();
+    }
+
     updateMargins() {
         if(this.viewer?.openseadragon?.viewport) {
             const viewerRight = (this.viewer.element.offsetLeft + this.viewer.element.offsetWidth);
@@ -126,13 +131,18 @@ export default class ZoomableImage {
             .then(image => {
                 this.sequence?.initialize(this.getCurrentTileSourceId());
                 this.overlayGroups.forEach(group => group.show());
+                this.initWindowResize();
                 return this;
             });
         } else {
             return new Promise( ( resolve, reject ) => {
-                reject("no image found");
+                reject("no image found"); 
             })
         }
+    }
+
+    initWindowResize() { 
+        window.addEventListener("resize", () => this.resetSize());
     }
 
     getCurrentTileSourceIndex() {
@@ -199,7 +209,8 @@ function createTileSource() {
             });
             return tileSources;
         } catch(e) {
-            console.error(`Error parsing tileSource "${tileSourcesString}": ${e}`)
+            //if no image number map is passed, but a simple url string
+            return {1 : tileSourcesString};
         }
     }
 }

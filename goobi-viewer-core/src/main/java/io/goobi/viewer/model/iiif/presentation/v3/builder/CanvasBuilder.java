@@ -70,6 +70,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
@@ -85,9 +86,10 @@ public class CanvasBuilder extends AbstractBuilder {
 
     /**
      * @param apiUrlManager
+     * @param request
      */
-    public CanvasBuilder(AbstractApiUrlManager apiUrlManager) {
-        super(apiUrlManager);
+    public CanvasBuilder(AbstractApiUrlManager apiUrlManager, HttpServletRequest request) {
+        super(apiUrlManager, request);
         this.images = new ImageHandler(urls);
     }
 

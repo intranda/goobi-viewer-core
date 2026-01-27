@@ -77,6 +77,9 @@ public class DownloadBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(DownloadBean.class);
 
     @Inject
+    protected HttpServletRequest request;
+
+    @Inject
     private transient MessageQueueManager messageBroker;
 
     private String downloadIdentifier;
@@ -262,6 +265,8 @@ public class DownloadBean implements Serializable {
         }
         message.getProperties().put("pi", pi);
 
+        message.getProperties().put("viewerUrl", BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+
         EpubDownloadJob job = new EpubDownloadJob(message);
         try {
             if (Files.exists(job.getPath()) && !job.isLocked()) {
@@ -302,7 +307,6 @@ public class DownloadBean implements Serializable {
             logger.error("No message broker avaible. Aborting task");
             return;
         }
-
         ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
 
         if (StringUtils.isNotBlank(email)) {
@@ -318,6 +322,8 @@ public class DownloadBean implements Serializable {
         if (StringUtils.isNotBlank(configVariant)) {
             message.getProperties().put("configVariant", configVariant);
         }
+
+        message.getProperties().put("viewerUrl", BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
 
         PdfDownloadJob job = new PdfDownloadJob(message);
         try {
