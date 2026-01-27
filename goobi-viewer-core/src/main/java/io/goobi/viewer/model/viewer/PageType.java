@@ -42,6 +42,9 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
  */
 public enum PageType {
 
+    /**
+     * When adding new types, also update isDocumentPage() and isCmsPage()!
+     */
     viewImage("image"),
     viewToc("toc"),
     viewThumbs("thumbs"),
@@ -252,6 +255,7 @@ public enum PageType {
                 case viewMetadata:
                 case viewThumbs:
                 case viewToc:
+                case viewMei:
                     return true;
                 default:
                     return false;
