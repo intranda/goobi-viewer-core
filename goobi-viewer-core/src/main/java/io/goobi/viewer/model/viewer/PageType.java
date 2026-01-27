@@ -283,6 +283,7 @@ public enum PageType {
                 case viewThumbs:
                 case viewToc:
                 case viewObject:
+                case viewMei:
                     return true;
                 default:
                     return false;
