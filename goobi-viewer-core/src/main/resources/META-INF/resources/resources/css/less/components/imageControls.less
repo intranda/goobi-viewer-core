@@ -11,7 +11,9 @@
 .image-controls {
 	padding: 10px;
 	position: relative;
-	color: @gray;
+	background: @image-controls-background;
+	color: @image-controls-icon-color;
+	border: 1px solid @image-controls-container-border-color;
     &.-ltr, .-ltr {
         direction: ltr;
     }
@@ -48,7 +50,7 @@
 		align-items: center;
 		flex: 0 0 auto;
 		margin: 0;
-		color: @gray;
+		color: @image-controls-icon-color;
 		font-size: inherit;
 		line-height: 1;
 
@@ -79,10 +81,10 @@
 
 		&:hover,
 		&:focus-within {
-			color: darken(@gray, 12%);
+			color: @image-controls-icon-color-hover;
 		}
 		&:active {
-			color: darken(@gray, 18%);
+			color: @image-controls-icon-color-active;
 		}
 
 		&.fulltext {}
@@ -140,6 +142,14 @@
 		align-items: center;
 		justify-content: center;
 		transition: transform .18s ease, filter .18s ease;
+		color: inherit;
+		&:hover,
+		&:focus {
+			color: inherit;
+		}
+		&:active {
+			color: inherit;
+		}
 	}
 	&__option > .btn.btn--icon:focus-visible,
 	&__option > .image-controls__share-image-link:focus-visible,
@@ -198,19 +208,25 @@
 	&__action {
 		width: 36px;
 		height: 36px;
-		border: 1px solid @gray;
+		border: 1px solid @image-controls-border-color;
+		background: @image-controls-action-background;
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		cursor: pointer;
+		color: @image-controls-icon-color;
 		    &:hover,
-		    &:active,
 		    &:focus {
-		    	background-color: @lightgray; 
+		    	background-color: @image-controls-action-background-hover;
+		    	color: @image-controls-icon-color-hover;
+		    }
+		    &:active {
+		    	background-color: @image-controls-action-background-hover;
+		    	color: @image-controls-icon-color-active;
 		    }
 	    /* ELEMENT */
-		a, 
-		span, 
+		a,
+		span,
 		button {
 			background: transparent;
 			display: flex;
@@ -230,6 +246,7 @@
 			&:active,
 			&:focus {
 				text-decoration: none;
+				color: inherit;
 			}
 			img,
 			svg {
@@ -239,7 +256,7 @@
 			}
 		}
     	.custom-control--select::after {
-    		border-top-color: @gray;
+    		border-top-color: @image-controls-icon-color;
     	}
     	button {
 			white-space: nowrap;
@@ -288,11 +305,13 @@
 	        .custom-control--select {
 	        	height: 30px;
 	            border: none;
-	            background: none;
+	            background: inherit;
+	            color: @image-controls-icon-color;
 	            select {
-	                // background: none;
+	                background: inherit;
+	                color: @image-controls-icon-color;
 	            }
-	        	&:after {} 
+	        	&:after {}
 	        }
 	    }
 	    &.forward {}
@@ -319,22 +338,24 @@
 	    &.zoom-slider-wrapper {
 	        width: 100px;
 	        border: none;
+	        background: transparent;
 	        cursor: default;
 	        &:hover,
 	        &:focus,
 	        &:active {
 	        	background-color: transparent;
+	        	color: inherit;
 	        }
 	        .zoom-slider {
 	            height: 10px;
-	            border: 1px solid @gray;
+	            border: 1px solid @image-controls-slider-border-color;
 	            max-width: 100%;
 	            //Firefox
 		        &::-moz-range-thumb {
 		            width: 8px;
 		            height: 26px;
 		            border: none;
-		            background-color: @gray;
+		            background-color: @image-controls-slider-thumb-background;
 		            border-radius: 0;
 		        }
 		        //Chrome
@@ -348,7 +369,7 @@
 	              width: 8px;
 	              height: 26px;
 	              border: none;
-	              background-color: @gray;
+	              background-color: @image-controls-slider-thumb-background;
 	              border-radius: 0;
 				}
 				&::-webkit-slider-runnable-track {
@@ -386,7 +407,7 @@
 
 .image-controls__actions-nav .image-controls__icon,
 .image-controls__actions-additional .image-controls__icon {
-    color: @gray;
+    color: @image-controls-icon-color;
 }
 
 .image-controls__icon {
@@ -415,7 +436,7 @@
 
 .image-controls {
     .icon-wrapper {
-        color: currentColor;
+        color: inherit;
     }
 
     .icon-wrapper svg {

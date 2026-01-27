@@ -25,6 +25,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LIST;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LIST_JSON;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -125,19 +126,33 @@ public class RecordsListResource {
     @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and filed mapping are configured statically.")
     public Response getRecordMetadataAsJson(@PathParam("template") String template) throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}", template);
-        JsonMetadataConfiguration config = DataManager.getInstance().getConfiguration().getWebApiFields(template);
-        if (config == null) {
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template not found: " + template).build();
+        if (template == null) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template name required").build();
         }
 
         JSONArray jsonArray = new JSONArray();
-        SolrDocumentList docs =
-                DataManager.getInstance().getSearchIndex().search(SearchHelper.buildFinalQuery(config.getQuery(), false, servletRequest, null));
-        logger.trace("{} hits.", docs.size());
-        for (SolrDocument doc : docs) {
-            JSONObject jsonObj = JsonTools.createJsonObjectFromSolrDoc(doc, config.getFields());
-            if (!jsonObj.isEmpty()) {
-                jsonArray.put(jsonObj);
+        String[] templateSplit = template.split(",");
+        for (int i = 0; i < templateSplit.length; ++i) {
+            if (templateSplit[i] == null) {
+                logger.warn("Template name is null");
+                continue;
+            }
+            String t = templateSplit[i].trim();
+            JsonMetadataConfiguration config = DataManager.getInstance().getConfiguration().getWebApiFields(t);
+            if (config == null) {
+                return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template configuration not found: " + t).build();
+            }
+
+            SolrDocumentList docs =
+                    DataManager.getInstance()
+                            .getSearchIndex()
+                            .search(SearchHelper.buildFinalQuery(config.getQuery(), false, servletRequest, null), config.getFieldNames());
+            logger.trace("{} hits.", docs.size());
+            for (SolrDocument doc : docs) {
+                JSONObject jsonObj = JsonTools.createJsonObjectFromSolrDoc(doc, config.getFields());
+                if (!jsonObj.isEmpty()) {
+                    jsonArray.put(jsonObj);
+                }
             }
         }
 
