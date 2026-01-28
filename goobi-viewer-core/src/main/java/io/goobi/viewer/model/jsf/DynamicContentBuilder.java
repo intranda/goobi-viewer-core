@@ -22,11 +22,22 @@
 package io.goobi.viewer.model.jsf;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.cms.CMSSlider;
+import io.goobi.viewer.model.maps.GeoMap;
 import jakarta.el.ELException;
 import jakarta.faces.FacesException;
 import jakarta.faces.application.Application;
@@ -39,17 +50,6 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.context.ResponseWriter;
 import jakarta.faces.view.facelets.FaceletContext;
 import jakarta.faces.view.facelets.FaceletException;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.cms.CMSSlider;
-import io.goobi.viewer.model.maps.GeoMap;
 
 /**
  * @author florian
@@ -65,12 +65,7 @@ public class DynamicContentBuilder {
 
     public UIComponent build(JsfComponent jsfComponent, UIComponent parent, Map<String, Object> attributes) throws PresentationException {
         try {
-            UIComponent composite = loadCompositeComponent(parent, jsfComponent.getFilename(), jsfComponent.getLibrary());
-            if (composite != null && attributes != null) {
-                for (Entry<String, Object> entry : attributes.entrySet()) {
-                    composite.getAttributes().put(entry.getKey(), entry.getValue());
-                }
-            }
+            UIComponent composite = loadCompositeComponent(parent, jsfComponent.getFilename(), jsfComponent.getLibrary(), attributes);
             return composite;
         } catch (FaceletException e) {
             throw new PresentationException(
@@ -96,19 +91,20 @@ public class DynamicContentBuilder {
                     if (id != null && id.matches("\\d+")) {
                         GeoMap map = DataManager.getInstance().getDao().getGeoMap(Long.parseLong(id));
                         if (map != null) {
-                            composite = loadCompositeComponent(parent, content.getComponentFilename(), "components");
-                            if (composite != null) {
-                                composite.getAttributes().put("geoMap", map);
-                                //if query param linkTarget is given, open links from map in that target,
-                                //otherwise open them in a new tab
-                                String linkTarget = (String) content.getAttributes().get("linkTarget");
-                                if (StringUtils.isNotBlank(linkTarget)) {
-                                    composite.getAttributes().put("linkTarget", linkTarget);
-                                } else {
-                                    composite.getAttributes().put("linkTarget", "_blank");
-                                }
-                                composite.getAttributes().put("popoverOnHover", map.shouldOpenPopoversOnHover());
+
+                            Map<String, Object> attributes = new HashMap<>();
+                            attributes.put("geoMap", map);
+                            //if query param linkTarget is given, open links from map in that target,
+                            //otherwise open them in a new tab
+                            String linkTarget = (String) content.getAttributes().get("linkTarget");
+                            if (StringUtils.isNotBlank(linkTarget)) {
+                                attributes.put("linkTarget", linkTarget);
+                            } else {
+                                attributes.put("linkTarget", "_blank");
                             }
+                            attributes.put("popoverOnHover", map.shouldOpenPopoversOnHover());
+
+                            composite = loadCompositeComponent(parent, content.getComponentFilename(), "components", attributes);
                         } else {
                             logger.error("Cannot build GeoMap content. No map found with id = {}", id);
                         }
@@ -123,25 +119,22 @@ public class DynamicContentBuilder {
                 String sliderId = (String) content.getAttributes().get("sliderId");
                 try {
                     if (sliderId != null) {
-                        composite = loadCompositeComponent(parent, content.getComponentFilename(), "components");
-                        if (composite != null) {
-                            for (Entry<String, Object> entry : content.getAttributes().entrySet()) {
-                                if (StringUtils.isNotBlank(entry.getKey()) && entry.getValue() != null && !"sliderId".equals(entry.getKey())) {
-                                    composite.getAttributes().put(entry.getKey(), entry.getValue());
-                                } else if ("sliderId".equals(entry.getKey())) {
-                                    CMSSlider slider = DataManager.getInstance().getDao().getSlider(Long.parseLong(sliderId));
-                                    if (slider != null) {
-                                        composite.getAttributes().put("slider", slider);
-                                    }
-                                }
-                                String linkTarget = (String) composite.getAttributes().get("linkTarget");
-                                if (StringUtils.isBlank(linkTarget)) {
-                                    composite.getAttributes().put("linkTarget", "_blank");
+                        Map<String, Object> attributes = new HashMap<>();
+                        for (Entry<String, Object> entry : content.getAttributes().entrySet()) {
+                            if (StringUtils.isNotBlank(entry.getKey()) && entry.getValue() != null && !"sliderId".equals(entry.getKey())) {
+                                attributes.put(entry.getKey(), entry.getValue());
+                            } else if ("sliderId".equals(entry.getKey())) {
+                                CMSSlider slider = DataManager.getInstance().getDao().getSlider(Long.parseLong(sliderId));
+                                if (slider != null) {
+                                    attributes.put("slider", slider);
                                 }
                             }
-                        } else {
-                            logger.error("Cannot build content. No item found with id = {}", sliderId);
+                            String linkTarget = (String) composite.getAttributes().get("linkTarget");
+                            if (StringUtils.isBlank(linkTarget)) {
+                                attributes.put("linkTarget", "_blank");
+                            }
                         }
+                        composite = loadCompositeComponent(parent, content.getComponentFilename(), "components", attributes);
                     } else {
                         logger.error("Cannot build content. Need item id as first attribute");
                     }
@@ -150,12 +143,11 @@ public class DynamicContentBuilder {
                 }
                 break;
             case WIDGET:
-                composite = loadCompositeComponent(parent, content.getComponentFilename(), "components/widgets");
-                if (composite != null) {
-                    for (String attribute : content.getAttributes().keySet()) {
-                        composite.getAttributes().put(attribute, content.getAttributes().get(attribute));
-                    }
+                Map<String, Object> attributes = new HashMap<>();
+                for (String attribute : content.getAttributes().keySet()) {
+                    attributes.put(attribute, content.getAttributes().get(attribute));
                 }
+                composite = loadCompositeComponent(parent, content.getComponentFilename(), "components/widgets", attributes);
                 break;
             default:
                 break;
@@ -172,7 +164,8 @@ public class DynamicContentBuilder {
      * @param library
      * @return {@link UIComponent}
      */
-    private UIComponent loadCompositeComponent(UIComponent parent, String name, String library) throws FacesException {
+    private UIComponent loadCompositeComponent(UIComponent parent, String name, String library, Map<String, Object> attributes)
+            throws FacesException {
         Resource componentResource = context.getApplication().getResourceHandler().createResource(name, library);
         if (componentResource == null) {
             return null;
@@ -185,6 +178,13 @@ public class DynamicContentBuilder {
         composite.getFacets().put(UIComponent.COMPOSITE_FACET_NAME, implementation);
         parent.getChildren().add(composite);
         parent.pushComponentToEL(context, composite); // This makes #{cc} available.
+
+        if (composite != null && attributes != null) {
+            for (Entry<String, Object> entry : attributes.entrySet()) {
+                composite.getAttributes().put(entry.getKey(), entry.getValue());
+            }
+        }
+
         try {
             faceletContext.includeFacelet(implementation, componentResource.getURL());
         } catch (IOException | NullPointerException e) {
