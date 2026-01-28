@@ -180,7 +180,7 @@
 						
                     <!-- MEI -->
                     <h:panelGroup visibility-class="widget-element"
-                        rendered="#{activeDocumentBean.viewManager.hasMeiDocument and displayConditions.matchPage('{accessCondition: VIEW_METADATA}')}">
+                        rendered="#{activeDocumentBean.viewManager.hasMeiDocument and displayConditions.matchRecord('{accessCondition: VIEW_METADATA}')}">
                         <li
                             class="#{navigationHelper.currentPage == 'mei' ? 'active' : ''}">
                             <h:outputLink 

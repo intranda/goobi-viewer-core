@@ -239,9 +239,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -253,9 +250,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -289,11 +283,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(PhysicalElement o) {
