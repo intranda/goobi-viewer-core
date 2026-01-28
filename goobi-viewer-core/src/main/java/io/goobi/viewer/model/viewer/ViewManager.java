@@ -145,6 +145,7 @@ import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.SelectPageItem;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ValueChangeEvent;
@@ -214,6 +215,7 @@ public class ViewManager implements Serializable {
     private Long pagesWithAlto = null;
     private Boolean workHasTEIFiles = null;
     private Boolean metadataViewOnly = null;
+    private Boolean displayArchivesWidget = null;
     private String citationStyle = null;
     private CitationProcessorWrapper citationProcessorWrapper;
     private ArchiveResource archiveResource = null;
@@ -4092,6 +4094,33 @@ public class ViewManager implements Serializable {
         }
 
         return this.citationLinks.get(level).getList();
+    }
+
+    /**
+     * 
+     * @return true if this record has archive node ID and archive node exists in index; false otherwise
+     * @should set displayArchivesWidget to false if no ead node id exists
+     * @should set displayArchivesWidget to false if no archive node with id found in index
+     * @should set displayArchivesWidget to true if both id and archive node exist
+     */
+    public boolean isDisplayArchivesWidget() {
+        if (displayArchivesWidget == null) {
+            if (StringUtils.isEmpty(getArchiveEntryIdentifier())) {
+                displayArchivesWidget = false;
+            } else {
+                try {
+                    displayArchivesWidget = DataManager.getInstance()
+                            .getSearchIndex()
+                            .getHitCount("+" + SolrConstants.EAD_NODE_ID + ":" + getArchiveEntryIdentifier() + " +" + SolrConstants.DOCTYPE + ":"
+                                    + DocType.ARCHIVE.name()) > 0;
+                } catch (IndexUnreachableException | PresentationException e) {
+                   logger.error(e.getMessage());
+                   displayArchivesWidget = false;
+                }
+            }
+        }
+
+        return displayArchivesWidget;
     }
 
     /**
