@@ -1,0 +1,1323 @@
+/*!**********************************************************************************************************************!*\
+  !*** css ../../node_modules/css-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./ui/mini/styles.scss ***!
+  \**********************************************************************************************************************/
+/**
+ * 3D Foundation Project
+ * Copyright 2025 Smithsonian Institution
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * 3D Foundation Project
+ * Copyright 2025 Smithsonian Institution
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * FF Typescript Foundation Library
+ * Copyright 2019 Ralph Wiedemeier, Frame Factory GmbH
+ *
+ * License: MIT
+ */
+/*! normalize.css v8.0.0 | MIT License | github.com/necolas/normalize.css */
+/* Document
+   ========================================================================== */
+/**
+ * 1. Correct the line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ */
+html {
+  line-height: normal; /* was 1.15 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+}
+
+/* Sections
+   ========================================================================== */
+/**
+ * Remove the margin in all browsers.
+ */
+body {
+  margin: 0;
+}
+
+/**
+ * Correct the font size and margin on `h1` elements within `section` and
+ * `article` contexts in Chrome, Firefox, and Safari.
+ */
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+/* Grouping content
+   ========================================================================== */
+/**
+ * 1. Add the correct box sizing in Firefox.
+ * 2. Show the overflow in Edge and IE.
+ */
+hr {
+  box-sizing: content-box; /* 1 */
+  height: 0; /* 1 */
+  overflow: visible; /* 2 */
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+pre {
+  font-family: monospace, monospace; /* 1 */
+  font-size: 1em; /* 2 */
+}
+
+/* Text-level semantics
+   ========================================================================== */
+/**
+ * Remove the gray background on active links in IE 10.
+ */
+a {
+  background-color: transparent;
+}
+
+/**
+ * 1. Remove the bottom border in Chrome 57-
+ * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
+ */
+abbr[title] {
+  border-bottom: none; /* 1 */
+  text-decoration: underline; /* 2 */
+  text-decoration: underline dotted; /* 2 */
+}
+
+/**
+ * Add the correct font weight in Chrome, Edge, and Safari.
+ */
+b,
+strong {
+  font-weight: bolder;
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+code,
+kbd,
+samp {
+  font-family: monospace, monospace; /* 1 */
+  font-size: 1em; /* 2 */
+}
+
+/**
+ * Add the correct font size in all browsers.
+ */
+small {
+  font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` elements from affecting the line height in
+ * all browsers.
+ */
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/* Embedded content
+   ========================================================================== */
+/**
+ * Remove the border on images inside links in IE 10.
+ */
+img {
+  border-style: none;
+}
+
+/* Forms
+   ========================================================================== */
+/**
+ * 1. Change the font styles in all browsers.
+ * 2. Remove the margin in Firefox and Safari.
+ */
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  line-height: 1.15; /* 1 */
+  margin: 0; /* 2 */
+}
+
+/**
+ * Show the overflow in IE.
+ * 1. Show the overflow in Edge.
+ */
+button,
+input { /* 1 */
+  overflow: visible;
+}
+
+/**
+ * Remove the inheritance of text transform in Edge, Firefox, and IE.
+ * 1. Remove the inheritance of text transform in Firefox.
+ */
+button,
+select { /* 1 */
+  text-transform: none;
+}
+
+/**
+ * Correct the inability to style clickable types in iOS and Safari.
+ */
+button,
+[type=button],
+[type=reset],
+[type=submit] {
+  -webkit-appearance: button;
+}
+
+/**
+ * Remove the inner border and padding in Firefox.
+ */
+button::-moz-focus-inner,
+[type=button]::-moz-focus-inner,
+[type=reset]::-moz-focus-inner,
+[type=submit]::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+/**
+ * Restore the focus styles unset by the previous rule.
+ */
+button:-moz-focusring,
+[type=button]:-moz-focusring,
+[type=reset]:-moz-focusring,
+[type=submit]:-moz-focusring {
+  outline: 1px dotted ButtonText;
+}
+
+/**
+ * Correct the padding in Firefox.
+ */
+fieldset {
+  padding: 0.35em 0.75em 0.625em;
+}
+
+/**
+ * 1. Correct the text wrapping in Edge and IE.
+ * 2. Correct the color inheritance from `fieldset` elements in IE.
+ * 3. Remove the padding so developers are not caught out when they zero out
+ *    `fieldset` elements in all browsers.
+ */
+legend {
+  box-sizing: border-box; /* 1 */
+  color: inherit; /* 2 */
+  display: table; /* 1 */
+  max-width: 100%; /* 1 */
+  padding: 0; /* 3 */
+  white-space: normal; /* 1 */
+}
+
+/**
+ * Add the correct vertical alignment in Chrome, Firefox, and Opera.
+ */
+progress {
+  vertical-align: baseline;
+}
+
+/**
+ * Remove the default vertical scrollbar in IE 10+.
+ */
+textarea {
+  overflow: auto;
+}
+
+/**
+ * 1. Add the correct box sizing in IE 10.
+ * 2. Remove the padding in IE 10.
+ */
+[type=checkbox],
+[type=radio] {
+  box-sizing: border-box; /* 1 */
+  padding: 0; /* 2 */
+}
+
+/**
+ * Correct the cursor style of increment and decrement buttons in Chrome.
+ */
+[type=number]::-webkit-inner-spin-button,
+[type=number]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/**
+ * 1. Correct the odd appearance in Chrome and Safari.
+ * 2. Correct the outline style in Safari.
+ */
+[type=search] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/**
+ * Remove the inner padding in Chrome and Safari on macOS.
+ */
+[type=search]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/**
+ * 1. Correct the inability to style clickable types in iOS and Safari.
+ * 2. Change font properties to `inherit` in Safari.
+ */
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/* Interactive
+   ========================================================================== */
+/*
+ * Add the correct display in Edge, IE 10+, and Firefox.
+ */
+details {
+  display: block;
+}
+
+/*
+ * Add the correct display in all browsers.
+ */
+summary {
+  display: list-item;
+}
+
+/* Misc
+   ========================================================================== */
+/**
+ * Add the correct display in IE 10+.
+ */
+template {
+  display: none;
+}
+
+/**
+ * Add the correct display in IE 10.
+ */
+[hidden] {
+  display: none;
+}
+
+.ff-fullsize {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  box-sizing: border-box;
+}
+
+.ff-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.ff-caret-down {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #a0a0a0;
+  transform: rotate(180deg);
+  transition: transform 0.05s;
+}
+
+.ff-caret-up {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #a0a0a0;
+  transform: rotate(0deg);
+  transition: transform 0.05s;
+}
+
+.ff-caret-right {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #a0a0a0;
+  transform: rotate(90deg);
+  transition: transform 0.05s;
+}
+
+.ff-caret-left {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #a0a0a0;
+  transform: rotate(270deg);
+  transition: transform 0.05s;
+}
+
+html {
+  color: #c8c8c8;
+}
+
+button, input {
+  display: block;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background-color: inherit;
+  color: inherit;
+  font-size: inherit;
+  cursor: inherit;
+}
+
+*:focus {
+  outline: 1px solid #1f6699;
+  outline-offset: 0;
+}
+
+*:focus:not(:focus-visible) {
+  outline: 0;
+}
+
+*:focus-visible {
+  outline: 1px solid #1f6699;
+  outline-offset: 0;
+}
+
+.ff-fullscreen {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.ff-noselect {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}
+
+.ff-off {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
+.ff-on {
+  user-select: auto;
+  -webkit-user-select: none;
+  pointer-events: auto;
+}
+
+.ff-focusable {
+  tab-index: 0;
+}
+
+.ff-flex-row {
+  display: flex;
+}
+
+.ff-flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.ff-flex-wrap {
+  flex-wrap: wrap;
+}
+
+.ff-flex-centered {
+  align-items: center;
+}
+
+.ff-flex-item-fixed {
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.ff-flex-item-stretch, .ff-flex-spacer {
+  flex: 1 1 auto;
+  position: relative;
+}
+
+.ff-scroll-y {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.ff-position-above {
+  position: absolute;
+  bottom: 0;
+}
+
+.ff-position-below {
+  position: absolute;
+  top: 100%;
+}
+
+.ff-position-left {
+  position: absolute;
+  right: 0;
+}
+
+.ff-position-right {
+  position: absolute;
+  left: 100%;
+}
+
+.ff-position-above.ff-align-left, .ff-position-below.ff-align-left {
+  left: 0;
+}
+.ff-position-above.ff-align-right, .ff-position-below.ff-align-right {
+  right: 0;
+}
+
+.ff-position-left.ff-align-top, .ff-position-right.ff-align-top {
+  top: 0;
+}
+.ff-position-left.ff-align-bottom, .ff-position-right.ff-align-bottom {
+  bottom: 0;
+}
+
+.ff-ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ff-placeholder {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ff-splitter-section {
+  flex: 1 1 auto;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.ff-splitter[direction=vertical] + .ff-splitter-section {
+  border-top: 2px solid rgb(26.5, 26.5, 26.5);
+}
+
+.ff-splitter:not([direction=vertical]) + .ff-splitter-section {
+  border-left: 2px solid rgb(26.5, 26.5, 26.5);
+}
+
+.ff-frame {
+  padding: 4px;
+}
+.ff-frame .ff-control {
+  margin: 4px;
+}
+
+.ff-icon {
+  display: inline-block;
+  position: relative;
+  height: 1rem;
+  fill: #a0a0a0;
+}
+.ff-icon svg {
+  width: inherit;
+  height: inherit;
+}
+
+.ff-button {
+  cursor: pointer;
+}
+.ff-button[vertical] {
+  flex-direction: column;
+}
+
+.ff-button.ff-inline .ff-icon + .ff-text {
+  padding-left: 0.5em;
+}
+.ff-button.ff-inline .ff-icon {
+  display: inline;
+}
+.ff-button.ff-inline .ff-text {
+  display: inline;
+}
+
+.ff-button.ff-transparent {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  padding: 5px;
+  background: transparent;
+  fill: #a0a0a0;
+  transition: fill 0.2s;
+}
+.ff-button.ff-transparent:hover, .ff-button.ff-transparent:focus {
+  fill: #c8c8c8;
+}
+.ff-button.ff-transparent[selected] {
+  fill: #c8c8c8;
+}
+.ff-button.ff-transparent > .ff-text {
+  margin: 3px;
+  white-space: nowrap;
+}
+.ff-button.ff-transparent > .ff-icon {
+  margin: 3px;
+  height: 1.3em;
+}
+.ff-button.ff-transparent > .ff-caret-down {
+  margin: 3px;
+}
+.ff-button.ff-transparent.ff-disabled {
+  color: #808080;
+  fill: #606060;
+  user-select: none;
+  pointer-events: none;
+}
+
+.ff-button.ff-control {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  padding: 5px;
+  background: rgb(77.5, 77.5, 77.5);
+  transition: background-color 0.2s;
+}
+.ff-button.ff-control:hover, .ff-button.ff-control:focus {
+  background-color: #676767;
+}
+.ff-button.ff-control[selected] {
+  background-color: #1f6699;
+}
+.ff-button.ff-control[selected]:hover, .ff-button.ff-control[selected]:focus {
+  background-color: rgb(37.8739130435, 124.6173913043, 186.9260869565);
+}
+.ff-button.ff-control > .ff-text {
+  margin: 3px;
+  white-space: nowrap;
+}
+.ff-button.ff-control > .ff-icon {
+  margin: 3px;
+  height: 1.3em;
+}
+.ff-button.ff-control > .ff-caret-down {
+  margin: 3px;
+}
+.ff-button.ff-control.ff-disabled {
+  color: #808080;
+  fill: #606060;
+  user-select: none;
+  pointer-events: none;
+}
+.ff-button.ff-control.ff-disabled > .ff-icon {
+  fill: #606060;
+}
+
+.ff-menu {
+  background-color: rgb(77.5, 77.5, 77.5);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+.ff-menu .ff-divider {
+  height: 1px;
+  padding: 0;
+  background: #a0a0a0;
+}
+.ff-menu .ff-button {
+  justify-content: flex-start;
+  margin: 0;
+  padding: 4px 4px;
+}
+.ff-menu .ff-button .ff-icon {
+  height: 1.2em;
+  width: 2.2em;
+  margin-right: 4px;
+}
+
+.ff-dropdown .ff-menu {
+  min-width: 100%;
+  margin-top: 3px;
+}
+
+.ff-modal-plane {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 990;
+  pointer-events: auto;
+}
+.ff-modal-plane.ff-transition {
+  opacity: 1;
+}
+
+ff-dialog {
+  box-sizing: border-box;
+  background: #343434;
+  border: 1px solid rgb(77.5, 77.5, 77.5);
+  box-shadow: 3px 3px 24px rgba(0, 0, 0, 0.4);
+}
+
+ff-title-bar {
+  background: rgb(26.5, 26.5, 26.5);
+  padding: 2px;
+}
+ff-title-bar .ff-text {
+  flex: 1 1 auto;
+  padding-right: 8px;
+}
+ff-title-bar .ff-icon {
+  padding: 2px;
+}
+
+ff-popup-button .ff-content {
+  transition: opacity 0.15s;
+}
+
+.ff-line-edit {
+  display: block;
+  overflow: hidden;
+  background-color: rgb(26.5, 26.5, 26.5);
+  min-height: 1.6em;
+}
+.ff-line-edit input {
+  padding: 2px;
+}
+
+.ff-text-edit {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  display: flex;
+  background-color: rgb(26.5, 26.5, 26.5);
+}
+.ff-text-edit textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 2px;
+  resize: none;
+  background: transparent;
+  color: inherit;
+  border: none;
+}
+
+.ff-color-edit {
+  font-size: 0.8rem;
+}
+.ff-color-edit .ff-control {
+  margin: 0;
+}
+.ff-color-edit .ff-slider-controls {
+  align-items: stretch;
+  flex: 1 1 auto;
+}
+.ff-color-edit .ff-numeric-controls {
+  flex: 0 0 auto;
+  align-items: center;
+  margin-top: 6px;
+}
+.ff-color-edit .ff-text {
+  color: #a0a0a0;
+  margin: 0 3px;
+}
+.ff-color-edit .ff-line-edit {
+  flex: 4 5 auto;
+}
+.ff-color-edit .ff-line-edit.ff-wide {
+  flex: 5 4 auto;
+}
+.ff-color-edit .ff-knob {
+  margin: -2px 0 0 -2px;
+  border: 2px solid white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+.ff-color-edit .ff-vector-slider {
+  flex: 1 0 auto;
+  padding: 0 10px 10px 0;
+  background-image: linear-gradient(to bottom, transparent, black), linear-gradient(to right, white, red);
+}
+.ff-color-edit .ff-vector-slider .ff-knob {
+  width: 10px;
+  height: 10px;
+}
+.ff-color-edit .ff-linear-slider {
+  flex: 0 0 24px;
+  margin-left: 6px;
+  padding-bottom: 10px;
+}
+.ff-color-edit .ff-linear-slider .ff-knob {
+  width: 100%;
+  height: 10px;
+}
+.ff-color-edit .ff-hue-slider {
+  background: linear-gradient(to bottom, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+}
+.ff-color-edit .ff-alpha-slider {
+  color: rgb(77.5, 77.5, 77.5);
+}
+
+.ff-quad-splitter .ff-left {
+  box-sizing: border-box;
+  border-right: 1px solid #343434;
+}
+.ff-quad-splitter .ff-top {
+  box-sizing: border-box;
+  border-bottom: 1px solid #343434;
+}
+
+#ff-notification-stack {
+  position: fixed;
+  z-index: 100;
+  bottom: 0;
+  right: 0;
+  width: 30%;
+  min-width: 250px;
+  max-width: 500px;
+}
+
+.ff-notification {
+  position: relative;
+  left: 0;
+  display: flex;
+  margin: 8px;
+  padding: 4px;
+  background: rgb(77.5, 77.5, 77.5);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.35);
+}
+.ff-notification.ff-info > .ff-icon {
+  fill: #73adff;
+}
+.ff-notification.ff-success > .ff-icon {
+  fill: #8ae65c;
+}
+.ff-notification.ff-warning > .ff-icon {
+  fill: #e6a345;
+}
+.ff-notification.ff-error > .ff-icon {
+  fill: #e64545;
+}
+.ff-notification > .ff-icon {
+  height: 2em;
+  padding: 8px;
+}
+.ff-notification.ff-out {
+  transition: left 0.5s ease-in;
+  left: 100%;
+}
+.ff-notification .ff-text {
+  flex: 1;
+  padding: 8px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.ff-notification .ff-button {
+  flex: 0;
+  padding: 8px;
+}
+
+.ff-message-box {
+  position: relative;
+  min-width: 350px;
+  max-width: 450px;
+  width: 90%;
+  padding: 16px;
+  background: #343434;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.ff-message-box.ff-transition {
+  opacity: 1;
+}
+.ff-message-box .ff-title {
+  align-items: flex-start;
+}
+.ff-message-box .ff-title .ff-type-icon {
+  margin: 0 16px 0 0;
+  height: 2.5em;
+}
+.ff-message-box .ff-title .ff-type-icon[name=prompt] {
+  fill: #e6cf5c;
+}
+.ff-message-box .ff-title .ff-type-icon[name=info] {
+  fill: #73adff;
+}
+.ff-message-box .ff-title .ff-type-icon[name=warning] {
+  fill: #e6a345;
+}
+.ff-message-box .ff-title .ff-type-icon[name=error] {
+  fill: #e64545;
+}
+.ff-message-box .ff-title .ff-content {
+  flex: 1 1 auto;
+  margin: 0 0 2em 0;
+}
+.ff-message-box .ff-title .ff-caption {
+  font-size: 1.5em;
+}
+.ff-message-box .ff-title .ff-text {
+  margin: 2em 0 1em 0;
+}
+.ff-message-box .ff-title .ff-line-edit {
+  margin: 0 0 1em 0;
+}
+.ff-message-box .ff-title .ff-line-edit input {
+  padding: 4px;
+}
+.ff-message-box .ff-title .ff-close-button {
+  margin: 0 0 0 16px;
+  padding: 0;
+}
+.ff-message-box .ff-button + .ff-button {
+  margin-left: 8px;
+}
+
+.ff-popup-options {
+  box-sizing: border-box;
+  background: #343434;
+  border: 1px solid rgb(77.5, 77.5, 77.5);
+  box-shadow: 3px 3px 24px rgba(0, 0, 0, 0.4);
+  min-width: 6rem;
+}
+.ff-popup-options button {
+  padding: 4px 8px;
+  text-align: start;
+  user-select: none;
+}
+.ff-popup-options button + button {
+  margin-top: 1px;
+}
+.ff-popup-options button:hover {
+  background-color: rgb(77.5, 77.5, 77.5);
+}
+.ff-popup-options button:focus {
+  outline: none;
+  background-color: #1f6699;
+}
+
+.ff-list {
+  flex: 1 1 auto;
+  background-color: rgb(39.25, 39.25, 39.25);
+}
+.ff-list .ff-list-item {
+  cursor: pointer;
+  user-select: none;
+  padding: 2px;
+}
+.ff-list .ff-list-item:hover {
+  background-color: #343434;
+}
+.ff-list .ff-list-item[selected] {
+  background-color: #1f6699;
+}
+.ff-list .ff-list-item + .ff-list-item {
+  border-top: 1px solid #343434;
+}
+
+.ff-table {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+}
+.ff-table table {
+  box-sizing: border-box;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+.ff-table tr[selected] {
+  background-color: #1f6699;
+}
+.ff-table th, .ff-table td {
+  padding: 4px;
+}
+.ff-table th {
+  background-color: rgb(26.5, 26.5, 26.5);
+  color: #a0a0a0;
+  text-align: start;
+}
+.ff-table .ff-table-sort-icon {
+  height: 0.8em;
+  margin-left: 4px;
+  color: #a0a0a0;
+}
+
+.ff-tree {
+  position: relative;
+  overflow-y: auto;
+}
+.ff-tree .ff-tree-node-container {
+  margin-left: -501px;
+  border-top: 1px solid rgb(62.2, 62.2, 62.2);
+  border-bottom: 1px solid rgb(62.2, 62.2, 62.2);
+  margin-bottom: -1px;
+}
+.ff-tree .ff-tree-node {
+  margin-left: 500px;
+}
+.ff-tree .ff-tree-node.ff-inner {
+  background-color: rgb(46.9, 46.9, 46.9);
+}
+.ff-tree .ff-tree-node.ff-leaf {
+  background-color: rgb(59.65, 59.65, 59.65);
+}
+.ff-tree .ff-tree-node.ff-root {
+  background-color: rgb(39.25, 39.25, 39.25);
+}
+.ff-tree .ff-tree-node[selected] {
+  background-color: #1f6699;
+}
+.ff-tree .ff-tree-node .ff-header {
+  position: relative;
+  cursor: pointer;
+  padding-left: 14px;
+}
+.ff-tree .ff-tree-node .ff-header .ff-text {
+  user-select: none;
+}
+.ff-tree .ff-tree-node.ff-drop-target > .ff-header {
+  outline: 1px dashed #1f6699;
+}
+.ff-tree .ff-tree-node.ff-inner[expanded] > .ff-header:before {
+  content: "";
+  position: absolute;
+  top: 0.6em;
+  left: 3px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 4px solid #a0a0a0;
+  transform: rotate(180deg);
+  transition: transform 0.05s;
+}
+.ff-tree .ff-tree-node.ff-inner:not([expanded]) > .ff-header:before {
+  content: "";
+  position: absolute;
+  top: 0.6em;
+  left: 3px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 4px solid #a0a0a0;
+  transform: rotate(90deg);
+  transition: transform 0.05s;
+}
+.ff-tree .ff-tree-node.ff-leaf .ff-header {
+  cursor: default;
+}
+.ff-tree .ff-tree-node .ff-content {
+  margin-left: 10px;
+}
+.ff-tree .ff-tree-node:not([expanded]) > .ff-content {
+  display: none;
+}
+
+ff-tab-container {
+  background: #343434;
+}
+
+ff-tab-container, ff-dock-stack {
+  background: rgb(39.25, 39.25, 39.25);
+  border: 1px solid rgb(26.5, 26.5, 26.5);
+}
+ff-tab-container header, ff-dock-stack header {
+  background: rgb(26.5, 26.5, 26.5);
+}
+
+ff-tab-header, ff-dock-panel-header {
+  background: rgb(26.5, 26.5, 26.5);
+  color: #c8c8c8;
+  padding: 1px 3px 2px 2px;
+}
+ff-tab-header[active], ff-dock-panel-header[active] {
+  background: linear-gradient(rgb(97.9, 97.9, 97.9), #343434);
+  color: #c8c8c8;
+}
+ff-tab-header label, ff-dock-panel-header label {
+  pointer-events: none;
+}
+ff-tab-header .ff-text, ff-dock-panel-header .ff-text {
+  padding: 0 1px;
+}
+ff-tab-header .ff-icon, ff-dock-panel-header .ff-icon {
+  top: 1px;
+  height: 0.8rem;
+  padding: 0 1px;
+}
+
+.ff-dock-drop-marker {
+  box-sizing: border-box;
+  background: rgba(31, 102, 153, 0.3);
+  border: 1px solid #1f6699;
+}
+
+/**
+ * 3D Foundation Project
+ * Copyright 2025 Smithsonian Institution
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * FF Typescript Foundation Library
+ * Copyright 2020 Ralph Wiedemeier, Frame Factory GmbH
+ *
+ * License: MIT
+ */
+.ff-viewport-overlay {
+  padding: 6px;
+  font-size: 0.75rem;
+}
+.ff-viewport-overlay .ff-row {
+  display: flex;
+  justify-content: space-between;
+}
+.ff-viewport-overlay .ff-labels {
+  display: flex;
+  flex-direction: column;
+}
+.ff-viewport-overlay .ff-top-left, .ff-viewport-overlay .ff-bottom-left {
+  align-items: flex-start;
+}
+.ff-viewport-overlay .ff-top-center, .ff-viewport-overlay .ff-bottom-center {
+  align-items: center;
+}
+.ff-viewport-overlay .ff-top-right, .ff-viewport-overlay .ff-bottom-right {
+  align-items: flex-end;
+}
+.ff-viewport-overlay .ff-label-box {
+  box-sizing: border-box;
+  padding: 1px 8px 2px 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 2em;
+}
+
+.sv-article h1 {
+  margin: 0.3em 0;
+  font-family: "Amiri", serif;
+  font-size: 2.3em;
+  font-weight: normal;
+  color: #e8e8e8;
+}
+.sv-article h1:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 75px;
+  height: 5px;
+  background-color: #1f6699;
+}
+.sv-article p, .sv-article h2, .sv-article h3, .sv-article h4, .sv-article h5, .sv-article h6, .sv-article ul, .sv-article ol, .sv-article li {
+  font-family: "Hind Siliguri", sans-serif;
+  color: #c8c8c8;
+}
+.sv-article p, .sv-article ul, .sv-article ol {
+  font-size: 1.15em;
+  margin: 0.8em 0;
+}
+.sv-article p {
+  line-height: 1.55em;
+}
+.sv-article ul {
+  padding-inline-start: 2.5em;
+  list-style: disc outside;
+}
+.sv-article ol {
+  padding-inline-start: 2.5em;
+  list-style: decimal outside;
+}
+.sv-article a:link, .sv-article a:visited, .sv-article a:hover, .sv-article a:active {
+  color: #1f6699;
+}
+.sv-article iframe, .sv-article video {
+  max-width: 100%;
+}
+.sv-article img {
+  max-width: 100%;
+  height: auto;
+}
+.sv-article figure {
+  display: table;
+  margin: 1rem auto;
+  font-family: "Hind Siliguri", sans-serif;
+  font-size: 1.15em;
+}
+.sv-article figure.align-left {
+  float: left;
+}
+.sv-article figure.align-right {
+  float: right;
+}
+.sv-article figure.align-center {
+  text-align: center;
+}
+.sv-article figure.image figcaption {
+  color: #999;
+  display: block;
+  margin-top: 0.25rem;
+  text-align: center;
+  -webkit-user-modify: read-only;
+}
+
+.sv-content-view {
+  font-family: "Segoe UI", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 0.85em;
+  line-height: 1.35;
+  color: #c8c8c8;
+  background-color: #343434;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}
+
+.sv-logo {
+  flex: 0 50 180px;
+  min-width: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  overflow: hidden;
+  height: 40px;
+  user-select: none;
+}
+.sv-logo .sv-short {
+  flex-grow: 1;
+  width: 0;
+  max-width: 40px;
+}
+.sv-logo .sv-full {
+  flex: 1 0 180px;
+  display: flex;
+  height: 100%;
+}
+.sv-logo .sv-full .sv-logo-full {
+  flex: auto;
+  height: 100%;
+}
+
+.ff-flex-spacer {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}
+
+.sr-only {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.sv-prompt, .sv-spinner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.sv-spinner-wheel {
+  height: 120px;
+  width: 120px;
+  animation: spin 5s linear infinite;
+}
+
+/*# sourceMappingURL=voyager-mini.dev.css.map*/
