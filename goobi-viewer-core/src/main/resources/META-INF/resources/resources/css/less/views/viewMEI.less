@@ -115,7 +115,7 @@
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {}
@@ -124,4 +124,40 @@
 @media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+	.verovio {
+		&__toolbar-wrapper {
+			margin: 0;
+			justify-content: center;
+		}
+		&__toolbar-download-controls {
+			order: 2;
+		}
+		&__toolbar-time-wrapper {
+			flex-wrap: wrap;
+			width: 100%;
+			margin-inline-end: 0;
+		}
+		&__toolbar-time-inner {
+			flex-direction: column;
+			width: 100%;
+		}
+		&__toolbar-page-controls {
+			border: none;
+		}
+		&__toolbar-status-controls {
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			border-right: none;
+			flex-wrap: wrap;
+			border-top: 1px solid #1b1b1b;
+			padding-bottom: 10px;
+			order: 3;
+		}
+		&__toolbar-track {
+			flex: unset;
+			width: 100%;
+		}
+	}
+}
