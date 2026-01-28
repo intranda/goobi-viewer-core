@@ -1,0 +1,132 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+	<!-- EXPANDABLE TREEVIEW -->
+	<h:panelGroup
+		rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
+		<!-- EXPAND ALL -->
+		<div class="toc__list-expandable-all">
+			<button type="button" class="btn btn--link"
+				jsf:action="#{activeDocumentBean.toc.collapseAll}"
+				title="#{msg.allClose}">
+				<util:icon icon="square-rounded-minus" />
+				<f:passThroughAttribute name="data-toggle" value="tooltip" />
+				<f:passThroughAttribute name="data-placement" value="top" />
+				<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
+				<f:ajax render="tocForm" />
+			</button>
+			<button type="button" class="btn btn--link"
+				jsf:action="#{activeDocumentBean.toc.expandAll}"
+				title="#{msg.allOpen}">
+				<util:icon icon="square-rounded-plus" />
+				<f:passThroughAttribute name="data-toggle" value="tooltip" />
+				<f:passThroughAttribute name="data-placement" value="top" />
+				<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}" />
+				<f:ajax render="tocForm" />
+			</button>
+		</div>
+
+		<nav class="toc__list-expandable">
+			<ul class="toc__list-outer-list">
+				<ui:repeat var="tocElement"
+					value="#{activeDocumentBean.toc.treeView}">
+					<h:panelGroup rendered="#{tocElement.visible}">
+						<li
+							class="toc__list-expandable-elem #{tocElement.hasChild == true ? 'parent' : 'child' }"
+							data-iddoc="iddoc_#{tocElement.iddoc}"
+							style="padding-left: #{tocElement.level * indent}px">
+							<div class="row">
+								<div class="col-12 col-sm-1">
+									<h:panelGroup rendered="#{tocElement.hasChild}">
+										<!-- EXPAND -->
+										<div class="toc__list-expandable-expand">
+											<button type="button"
+												class="btn btn--link toc__list-expandable-expand-button"
+												jsf:action="#{activeDocumentBean.setChildrenVisible(tocElement)}"
+												rendered="#{!tocElement.expanded}">
+												<util:icon icon="square-rounded-plus" />
+												<f:passThroughAttribute name="aria-label"
+													value="#{msg.allOpen}" />
+												<f:ajax render="@form" />
+											</button>
+											<button type="button"
+												class="btn btn--link toc__list-expandable-expand-button"
+												jsf:action="#{activeDocumentBean.setChildrenInvisible(tocElement)}"
+												rendered="#{tocElement.expanded}">
+												<util:icon icon="square-rounded-minus" />
+												<f:passThroughAttribute name="aria-label" value="#{msg.all}" />
+												<f:ajax render="@form" />
+											</button>
+										</div>
+									</h:panelGroup>
+								</div>
+								<div
+									class="col-12 col-sm-8 col-md-9 toc__list-expandable-title-wrapper">
+									<!-- TITLE -->
+									<div class="toc__list-expandable-title">
+										<h:outputLink rendered="#{tocElement.pageNo == null}"
+											title="#{tocElement.label}" value="#{tocElement.url}">
+																		#{tocElement.label}
+																	</h:outputLink>
+										<h:outputLink rendered="#{tocElement.pageNo != null}"
+											title="#{tocElement.label}" value="#{tocElement.url}">
+																		#{tocElement.label}
+																</h:outputLink>
+									</div>
+								</div>
+								<div class="col-12 col-sm-3 col-md-2">
+									<!-- NUMBER -->
+									<div class="toc__list-expandable-number">
+										<h:panelGroup rendered="#{tocElement.label != null}">
+											<a href="#{tocElement.url}" title="#{tocElement.label}"
+												aria-label="#{tocElement.label}">#{tocElement.pageNoLabel}</a>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{tocElement.pageNo == null}">
+											<span>#{tocElement.pageNoLabel}</span>
+										</h:panelGroup>
+
+										<!-- PDF DOWNLOAD -->
+										<h:panelGroup
+											rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
+																	                          tocElement.pageNo != null and tocElement.accessPermissionPdf}">
+											<h:panelGroup
+												rendered="#{!configurationBean.generatePdfInMessageQueue}">
+												<a href="#{tocElement.contentServerPdfUrl}"
+													title="#{msg.label__pdf_download}">
+													<util:icon icon="file-type-pdf" />
+												</a>
+											</h:panelGroup>
+											<h:panelGroup
+												rendered="#{configurationBean.generatePdfInMessageQueue}">
+
+
+												<button
+													class="btn btn--link toc__list-expandable-download-button"
+													aria-label="#{msg.label__pdf_download}"
+													jsf:action="#{viewBean.put('title', tocElement.label).put('logId', tocElement.logId).put('fileSize', activeDocumentBean.getPdfSize(tocElement.logId))}">
+													<util:icon icon="file-type-pdf" />
+													<f:ajax render="modalDownloadWrapper"
+														onevent="data => {if(data.status == 'success') $('#downloadModal').modal()}" />
+												</button>
+											</h:panelGroup>
+										</h:panelGroup>
+									</div>
+								</div>
+							</div>
+						</li>
+					</h:panelGroup>
+				</ui:repeat>
+			</ul>
+		</nav>
+	</h:panelGroup>
+
+</ui:composition>
