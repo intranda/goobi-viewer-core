@@ -180,6 +180,8 @@ public final class SolrConstants {
     public static final String FILENAME_MP4 = "FILENAME_MP4";
     /** Constant <code>FILENAME_OGG="FILENAME_OGG"</code> */
     public static final String FILENAME_OGG = "FILENAME_OGG";
+    /** Constant <code>FILENAME_MEI="FILENAME_MEI"</code> */
+    public static final String FILENAME_MEI = "FILENAME_MEI";
     /** Constant <code>FILENAME_TEI="FILENAME_TEI"</code> */
     public static final String FILENAME_TEI = "FILENAME_TEI";
     /** Constant <code>FILENAME_WEBM="FILENAME_WEBM"</code> */

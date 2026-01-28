@@ -14,33 +14,28 @@
 		<f:metadata />
 	</ui:define>
 
-	<composite:interface />
 
-	<composite:implementation>
+	<!-- CONTENT ITEM ORDER FUNCTIONS: SHOWS POSITION NUMBER AND USER IS ABLE TO MOVE ITEM UP AND DOWN IN LIST -->
+    <div class="admin__content-component-order-wrapper">
+    
+    	<div class="admin__content-component-order-inner-wrapper">
 
-		<!-- CONTENT ITEM ORDER FUNCTIONS: SHOWS POSITION NUMBER AND USER IS ABLE TO MOVE ITEM UP AND DOWN IN LIST -->
-	    <div class="admin__content-component-order-wrapper">
-	    
-	    	<div class="admin__content-component-order-inner-wrapper">
-	
-				<!-- UP IN ORDER BUTTON -->
-				<button jsf:disabled="#{!cmsComponent.isPageScope() || page.isFirstComponent(cmsComponent)}" class="admin__content-component-order-arrow-up" jsf:action="#{page.decrementOrder(cmsComponent)}" data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_up}">
-					<util:icon icon="chevron-up" />
-					<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
-				</button>
-	
-<!-- 			    <div class="admin__content-component-order-number">#{cmsComponent.order}</div> -->
-	
-			    <!-- DOWN IN ORDER BUTTON -->
-				<button jsf:disabled="#{!cmsComponent.isPageScope() || page.isLastComponent(cmsComponent)}" class="admin__content-component-order-arrow-down" jsf:action="#{page.incrementOrder(cmsComponent)}" data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_down}">
-					<util:icon icon="chevron-down" />
-					<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
-				</button>
+			<!-- UP IN ORDER BUTTON -->
+			<button jsf:disabled="#{!cmsComponent.isPageScope() || page.isFirstComponent(cmsComponent)}" class="admin__content-component-order-arrow-up" jsf:action="#{page.decrementOrder(cmsComponent)}" data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_up}">
+				<util:icon icon="chevron-up" />
+				<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+			</button>
 
-			
-			</div>
 
-	    </div>
+		    <!-- DOWN IN ORDER BUTTON -->
+			<button jsf:disabled="#{!cmsComponent.isPageScope() || page.isLastComponent(cmsComponent)}" class="admin__content-component-order-arrow-down" jsf:action="#{page.incrementOrder(cmsComponent)}" data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_down}">
+				<util:icon icon="chevron-down" />
+				<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+			</button>
 
-	</composite:implementation>
+		
+		</div>
+
+    </div>
+
 </ui:composition>
