@@ -634,6 +634,46 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see ViewManager#isDisplayArchivesWidget()
+     * @verifies set displayArchivesWidget to false if no ead node id exists
+     */
+    @Test
+    void isDisplayArchivesWidget_shouldSetDisplayArchivesWidgetToFalseIfNoEadNodeIdExists() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assertions.assertNotNull(se);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        Assertions.assertFalse(viewManager.isDisplayArchivesWidget());
+    }
+
+    /**
+     * @see ViewManager#isDisplayArchivesWidget()
+     * @verifies set displayArchivesWidget to false if no archive node with id found in index
+     */
+    @Test
+    void isDisplayArchivesWidget_shouldSetDisplayArchivesWidgetToFalseIfNoArchiveNodeWithIdFoundInIndex() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assertions.assertNotNull(se);
+        se.metadataFields.put(SolrConstants.EAD_NODE_ID, Collections.singletonList("EAD_123"));
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        Assertions.assertEquals("EAD_123", viewManager.getArchiveEntryIdentifier());
+        Assertions.assertFalse(viewManager.isDisplayArchivesWidget());
+    }
+    
+    /**
+     * @see ViewManager#isDisplayArchivesWidget()
+     * @verifies set displayArchivesWidget to true if both id and archive node exist
+     */
+    @Test
+    void isDisplayArchivesWidget_shouldSetDisplayArchivesWidgetToTrueIfBothIdAndArchiveNodeExist() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assertions.assertNotNull(se);
+        se.metadataFields.put(SolrConstants.EAD_NODE_ID, Collections.singletonList("A91x16199082136154120181205135958491"));
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        Assertions.assertEquals("A91x16199082136154120181205135958491", viewManager.getArchiveEntryIdentifier());
+        Assertions.assertTrue(viewManager.isDisplayArchivesWidget());
+    }
+
+    /**
      * @see ViewManager#getCopyrightIndicatorStatusName()
      * @verifies return locked status if locked most restrictive status found
      */

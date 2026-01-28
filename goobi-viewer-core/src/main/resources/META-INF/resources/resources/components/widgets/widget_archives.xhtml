@@ -20,7 +20,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-	    <c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.archiveEntryIdentifier != null}">
+	    <c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.displayArchivesWidget}">
 	    	<!-- neighbours is a pair of optionals holding the ids of the previous and succeeding archives entry. This format is used to avoid querying solr more than once -->
 	    	<c:set scope="view" var="neighbours" value="#{activeDocumentBean.viewManager.getArchiveTreeNeighbours()}"/>
             <div id="widgetArchives" class="widget widget-archives">
@@ -36,8 +36,7 @@
 	                        data-toggle="tooltip"
 	                        data-placement="top"
 	                        aria-label="#{msg.previousHit}"
-			                href="#{neighbours.left != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left).concat('/')) : '#'}"
-			             >
+			                href="#{neighbours.left != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left).concat('/')) : '#'}">
 						 	<util:icon icon="circle-arrow-left" />
 	                     </a>
 		                <a 
@@ -46,8 +45,7 @@
 	                        data-toggle="tooltip"
 	                        data-placement="top"
 	                        aria-label="#{msg.nextHit}"                           
-		                	href="#{neighbours.right != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right).concat('/')) : '#'}"
-		                >
+		                	href="#{neighbours.right != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right).concat('/')) : '#'}">
 						 	<util:icon icon="circle-arrow-right" />
 	                    </a>
             		</div>
