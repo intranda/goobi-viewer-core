@@ -193,7 +193,7 @@ public class VisibilityCondition {
     }
 
     public boolean checkAccess(ViewManager viewManager, HttpServletRequest request, RecordPropertyCache properties)
-            throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
+            throws IndexUnreachableException, DAOException, RecordNotFoundException {
         if (!this.accessCondition.isEmpty()) {
             AccessPermission accessPermission = properties.getPermissionForRecord(viewManager, this.accessCondition.getValue(), request);
             return this.accessCondition.isMatchIfEqual() ? accessPermission.isGranted() : !accessPermission.isGranted();
@@ -202,8 +202,7 @@ public class VisibilityCondition {
     }
 
     public boolean matchesPage(PageType pageType, PhysicalElement page, HttpServletRequest request, RecordPropertyCache properties)
-            throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
-
+            throws IndexUnreachableException, DAOException, RecordNotFoundException {
         if (page == null) {
             return false;
         }
@@ -217,7 +216,7 @@ public class VisibilityCondition {
     }
 
     public boolean checkAccess(PhysicalElement page, HttpServletRequest request, RecordPropertyCache properties)
-            throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
+            throws IndexUnreachableException, DAOException {
         if (!this.accessCondition.isEmpty()) {
             AccessPermission access = properties.getPermissionForPage(page, this.accessCondition.getValue(), request);
             return this.accessCondition.isMatchIfEqual() ? access.isGranted() : !access.isGranted();
