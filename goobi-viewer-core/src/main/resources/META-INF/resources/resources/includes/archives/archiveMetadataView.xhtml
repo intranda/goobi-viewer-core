@@ -145,5 +145,19 @@
 				source="#{request.contextPath}/api/v2/records/#{archiveEntry.associatedRecordPi}/manifest"></div>
 		</div>
 	</div>
+	
+    <script type="text/javascript">
+      var normdataConfig = {
+        path: "#{request.contextPath}",
+        lang: {
+          popoverTitle: "#{msg.normdataPopoverTitle}",
+          popoverClose: "#{msg.normdataPopoverClose}",
+          showNormdata: "#{msg.normdataExpand}",
+        },
+        elemWrapper: $("#metadataElementWrapper"),
+      };
+
+      viewerJS.normdata.init(normdataConfig);
+    </script>
 
 </ui:composition>
