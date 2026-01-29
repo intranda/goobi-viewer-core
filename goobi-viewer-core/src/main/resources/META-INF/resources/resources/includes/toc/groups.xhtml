@@ -1,0 +1,136 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:util="http://goobi.io/util"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+	<ui:repeat var="group" value="#{activeDocumentBean.toc.groupNames}">
+		<!-- MV GROUP -->
+		<h:panelGroup rendered="#{group != '_DEFAULT'}">
+			<div class="toc__mv-group">
+				<h4>
+					<button type="button" class="btn btn--link"
+						data-toggle="mv-element">
+						<span></span>
+					</button>
+					#{msg[group]}
+				</h4>
+			</div>
+
+			<!-- MV ELEMENT -->
+			<ui:repeat var="tocElement"
+				value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}">
+				<div class="toc__mv-element level-#{tocElement.level}">
+					<h:panelGroup rendered="#{tocElement.pageNo == null}">
+						<h4>#{tocElement.label}</h4>
+					</h:panelGroup>
+
+					<div class="row">
+						<div class="col-12 col-sm-8 col-md-9">
+							<!-- MV TITLE -->
+							<h:panelGroup
+								rendered="#{tocElement.label != null and tocElement.pageNo != null}">
+								<div class="toc__mv-element-title">
+									<a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.label}</a>
+								</div>
+							</h:panelGroup>
+						</div>
+						<div class="col-6 col-sm-2">
+							<!-- MV GROUPLINK -->
+							<h:panelGroup
+								rendered="#{activeDocumentBean.anchor and fn:length(tocElement.groupIds) > 0}">
+								<div class="toc__mv-element-link text-right">
+									<ui:repeat var="groupId" value="#{tocElement.groupIds}">
+										<h:outputLink value="#{navigationHelper.tocUrl}/#{groupId}/1/"
+											target="_blank">
+											<h:outputText value="#{msg.convolutePart}" />
+										</h:outputLink>
+									</ui:repeat>
+								</div>
+							</h:panelGroup>
+						</div>
+						<div class="col-6 col-sm-2 col-md-1">
+							<!-- MV IMAGE -->
+							<div class="toc__mv-element-  text-center">
+								<h:outputLink rendered="#{tocElement.thumbnailUrl != null}"
+									value="#{tocElement.url}">
+									<img src="#{tocElement.thumbnailUrl}" class="img-responsive"
+										alt="#{tocElement.label}" data-viewer-thumbnail="thumbnail"
+										data-viewer-access-denied-url="#{tocElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
+								</h:outputLink>
+							</div>
+						</div>
+					</div>
+				</div>
+			</ui:repeat>
+		</h:panelGroup>
+
+		<!-- MV FLAT -->
+		<h:panelGroup rendered="#{group == '_DEFAULT'}">
+			<!-- MV ELEMENT -->
+			<ui:repeat var="tocElement"
+				value="#{activeDocumentBean.toc.flatView}">
+				<div class="toc__mv-element level-#{tocElement.level}">
+					<h:panelGroup rendered="#{tocElement.pageNo == null}">
+						<h4>#{tocElement.label}</h4>
+					</h:panelGroup>
+
+					<div class="row">
+						<div class="col-6 col-sm-8 col-md-9">
+							<!-- MV TITLE -->
+							<h:panelGroup
+								rendered="#{tocElement.label != null and tocElement.pageNo != null}">
+								<div class="toc__mv-element-title">
+									<a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.label}</a>
+								</div>
+							</h:panelGroup>
+						</div>
+						<div class="col-6 col-sm-2">
+							<!-- MV GROUPLINK -->
+							<h:panelGroup
+								rendered="#{activeDocumentBean.anchor and fn:length(tocElement.groupIds) > 0}">
+								<div class="toc__mv-element-link text-right">
+									<ui:repeat var="groupId" value="#{tocElement.groupIds}">
+										<h:outputLink value="#{navigationHelper.tocUrl}/#{groupId}/1/"
+											target="_blank">
+											<h:outputText value="#{msg.convolutePart}" />
+										</h:outputLink>
+									</ui:repeat>
+								</div>
+							</h:panelGroup>
+						</div>
+						<div class="col-6 col-sm-2 col-md-1">
+							<!-- MV IMAGE -->
+							<div class="toc__mv-element-img text-center">
+								<h:outputLink rendered="#{tocElement.thumbnailUrl != null}"
+									value="#{tocElement.url}">
+									<img src="#{tocElement.thumbnailUrl}" class="img-responsive"
+										alt="#{tocElement.label}" data-viewer-thumbnail="thumbnail"
+										data-viewer-access-denied-url="#{tocElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
+								</h:outputLink>
+							</div>
+						</div>
+					</div>
+				</div>
+			</ui:repeat>
+		</h:panelGroup>
+	</ui:repeat>
+
+	<!-- Render paginator if multiple TOC groups exists or the default group has children -->
+	<ui:fragment
+		rendered="#{fn:length(activeDocumentBean.toc.groupNames) > 1 or activeDocumentBean.toc.hasChildren}">
+		<viewerComponent:simplePaginator
+			itemCount="#{activeDocumentBean.toc.numPages}"
+			itemActive="#{activeDocumentBean.toc.currentPage}"
+			urlPrefix="#{navigationHelper.tocUrl}/#{activeDocumentBean.persistentIdentifier}/"
+			urlSuffix="" />
+	</ui:fragment>
+
+
+</ui:composition>
