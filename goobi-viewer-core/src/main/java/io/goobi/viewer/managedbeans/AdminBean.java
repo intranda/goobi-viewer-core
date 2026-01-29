@@ -1173,8 +1173,9 @@ public class AdminBean implements Serializable {
      * @param fileIdRoot a {@link java.lang.String} object.
      */
     public static void setRepresantativeImageStatic(String pi, String dataRepository, String fileIdRoot) {
-        logger.debug("setRepresantativeImageStatic");
-        if (StringUtils.isEmpty(pi)) {
+        logger.debug("setRepresantativeImageStatic: {}, {}", pi, fileIdRoot);
+        if (StringUtils.isEmpty(pi) || StringUtils.isEmpty(fileIdRoot)) {
+            logger.debug("pi or fileIdRoot empty, cannot set representative image.");
             return;
         }
 

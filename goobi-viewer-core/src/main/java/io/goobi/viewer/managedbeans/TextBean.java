@@ -43,11 +43,13 @@ import de.intranda.digiverso.ocr.tei.convert.wiener.TeiToHtmlConverter;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
@@ -283,5 +285,9 @@ public class TextBean implements Serializable {
         }
 
         return null;
+    }
+
+    public String getStringFromUrl(String url) throws IOException, HTTPException {
+        return NetTools.getWebContentGET(url);
     }
 }

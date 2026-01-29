@@ -7,39 +7,37 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+	
 	<ui:define name="metadata">
 		<f:metadata />
 	</ui:define>
 
-	<composite:interface />
+	<div id="sidebarGroup">
+		<c:if
+			test="#{cmsBean.currentPage.published or userBean.hasAdminBackendAccess}">
 
-	<composite:implementation>
-		<div id="sidebarGroup">
-			<c:if
-				test="#{cmsBean.currentPage.published or userBean.hasAdminBackendAccess}">
-
-				<!-- CUSTOM SIDEBAR -->
-				<c:if test="#{!cmsBean.currentPage.useDefaultSidebar}">
-					<h:panelGroup binding="#{cmsSidebarWidgetsBean.sidebarGroup}">
-					</h:panelGroup>
-				</c:if>
-
-				<!-- DEFAULT SIDEBAR -->
-				<c:if test="#{cmsBean.currentPage.useDefaultSidebar}">
-					<!-- GLOBAL -->
-					<c:if test="#{!cmsBean.relatedWorkLoaded}">
-						<c:if test="#{browseBean.browsingMenuEnabled}">
-							<widgetComponent:widget_browsing />
-						</c:if>
-					</c:if>
-
-					<!-- WORK -->
-					<c:if test="#{cmsBean.relatedWorkLoaded}">
-						<viewerComponent:record_sidebar />
-					</c:if>
-				</c:if>
+			<!-- CUSTOM SIDEBAR -->
+			<c:if test="#{!cmsBean.currentPage.useDefaultSidebar}">
+				<h:panelGroup binding="#{cmsSidebarWidgetsBean.sidebarGroup}">
+				</h:panelGroup>
 			</c:if>
 
-		</div>
-	</composite:implementation>
+			<!-- DEFAULT SIDEBAR -->
+			<c:if test="#{cmsBean.currentPage.useDefaultSidebar}">
+				<!-- GLOBAL -->
+				<c:if test="#{!cmsBean.relatedWorkLoaded}">
+					<c:if test="#{browseBean.browsingMenuEnabled}">
+						<widgetComponent:widget_browsing />
+					</c:if>
+				</c:if>
+
+				<!-- WORK -->
+				<c:if test="#{cmsBean.relatedWorkLoaded}">
+					<viewerComponent:record_sidebar />
+				</c:if>
+			</c:if>
+		</c:if>
+
+	</div>
+		
 </ui:composition>

@@ -16,7 +16,10 @@
     "copyDeps": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp copy-deps",
     "sync": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp sync-all",
     "target": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp target",
-    "java": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp java"
+    "java": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp java",
+    "prepare": "node ../scripts/pre-commit/install.js",
+    "format": "prettier --write .",
+    "test:hooks": "jest --passWithNoTests"
   },
   "engines": {
     "node": ">=18"
@@ -36,19 +39,28 @@
     "gulp-postcss": "^9.0.1",
     "gulp-rename": "^2.1.0",
     "gulp-riot": "^1.1.5",
-    "gulp-terser": "^1.2.0",
-    "rollup": "^4.52.4",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-svgmin": "^4.1.0",
+    "gulp-terser": "^1.2.0",
+    "jest": "^29.0.0",
+    "lefthook": "^2.0.14",
+    "lint-staged": "^15.2.10",
     "merge-stream": "^2.0.0",
     "pixl-xml": "^1.0.13",
     "postcss": "^8.4.47",
     "postcss-reporter": "^7.1.0",
+    "prettier": "^3.7.4",
+    "rollup": "^4.55.3",
     "through2": "^4.0.2"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "~5.0.1",
     "@reactivex/rxjs": "~6.5.5",
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@tabler/icons": "^3",
+    "@tonejs/midi": "^2.0.28",
     "bootstrap": "~4.4.1",
     "chart.js": "~4.5.0",
     "chartjs-adapter-luxon": "~1.3.1",
@@ -56,7 +68,6 @@
     "codemirror": "^5.0.0",
     "epubjs": "~0.3.93",
     "font-awesome": "~4.7.0",
-    "@tabler/icons": "^3",
     "hc-sticky": "~2.2.7",
     "jqplot": "~1.0.9",
     "jquery": "~3.7.1",
@@ -79,7 +90,15 @@
     "sweetalert2": "~11.26.0",
     "swiper": "~12.0.0",
     "three": "~0.132.2",
-    "tinymce": "~5.10.0"
+    "tinymce": "~5.10.0",
+    "tone": "^15.1.22",
+    "verovio": "^5.6.0"
+  },
+  "jest": {
+    "rootDir": "..",
+    "testMatch": [
+      "<rootDir>/scripts/pre-commit/__tests__/**/*.test.js"
+    ]
   },
   "browserslist": [
     ">0.5%",

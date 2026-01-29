@@ -30,6 +30,10 @@ const isWin = process.platform === 'win32';
 const toPosix = (p) => (p ? p.replace(/\\/g, '/') : p);
 const joinPosix = (...segs) => toPosix(path.join(...segs));
 
+const cleanup = require('rollup-plugin-cleanup');
+const nodeResolve = require('@rollup/plugin-node-resolve');
+const commonjs = require('@rollup/plugin-commonjs');
+
 const paths = {
     jsDevRoot: 'src/main/resources/META-INF/resources/resources/javascript/dev/',
     jsModulesRoot: 'src/main/resources/META-INF/resources/resources/javascript/dev/modules/',
@@ -343,6 +347,37 @@ function taskFooter(generated, copied, errors, started) {
         colors.magenta(elapsedMs(started))
     );
 }
+
+const verovio = () => {
+    return rollup({
+            input: `${paths.jsModulesRoot}verovio.js`,
+            plugins: [
+                nodeResolve({
+                    browser: true,
+                    preferBuiltins: false,
+                    exportConditions: ['import', 'module', 'browser', 'default']
+                }),
+                commonjs({
+                    include: ['node_modules/**'],
+                    ignoreDynamicRequires: true
+                }),
+                cleanup(),
+            ],
+        })
+        .then(bundle => {
+            return bundle.write({
+                file: `${paths.jsDistRoot}verovio.js`,
+                format: 'iife',
+                sourcemap: true,
+                plugins: [
+                    terser({
+                        mangle: true,
+                    }),
+                ]
+            });
+        });
+};
+
 
 /**
  * Compact task logger to avoid boilerplate in tasks.
@@ -970,7 +1005,7 @@ function printTargets(cb) {
    ║ Task composition & exports                                           ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
-const buildJS = gulp.series(bundleModules, bundleViewerJS, bundleStatisticsJS, bundleBrowserSupportJS);
+const buildJS = gulp.series(bundleModules, bundleViewerJS, bundleStatisticsJS, bundleBrowserSupportJS, verovio);
 const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags));
 
 exports.build = buildAll;

@@ -145,6 +145,7 @@ import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.SelectPageItem;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ValueChangeEvent;
@@ -214,6 +215,7 @@ public class ViewManager implements Serializable {
     private Long pagesWithAlto = null;
     private Boolean workHasTEIFiles = null;
     private Boolean metadataViewOnly = null;
+    private Boolean displayArchivesWidget = null;
     private String citationStyle = null;
     private CitationProcessorWrapper citationProcessorWrapper;
     private ArchiveResource archiveResource = null;
@@ -223,6 +225,7 @@ public class ViewManager implements Serializable {
     private Map<CitationLinkLevel, CitationList> citationLinks = new HashMap<>();
     private Map<String, String> externalResourceUrls = null;
     private List<PhysicalResource> downloadResources = null;
+    private String meiUrl = null;
 
     private PageNavigation pageNavigation = PageNavigation.SINGLE;
 
@@ -2036,6 +2039,54 @@ public class ViewManager implements Serializable {
                         .params(localPi, language)
                         .build())
                 .orElse("");
+    }
+
+    /**
+     * 
+     * @return true if record has MEI URL; false otherwise
+     * @throws IndexUnreachableException
+     */
+    public boolean isHasMeiDocument() throws IndexUnreachableException {
+        return StringUtils.isNotEmpty(getMeiUrl());
+    }
+
+    /**
+     * 
+     * @return MEI file URL for this record
+     * @throws IndexUnreachableException
+     */
+    public String getMeiUrl() throws IndexUnreachableException {
+        if (meiUrl == null) {
+            if (topStructElement == null || StringUtils.isEmpty(topStructElement.getMetadataValue(SolrConstants.FILENAME_MEI))) {
+                meiUrl = "";
+                return meiUrl;
+            }
+
+            try {
+                if (!AccessConditionUtils
+                        .checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, BeanUtils.getRequest())
+                        .isGranted()) {
+                    logger.trace("User is not allowed MEI access.");
+                    meiUrl = "";
+                    return meiUrl;
+                }
+            } catch (RecordNotFoundException | DAOException e) {
+                logger.error(e.getMessage());
+                meiUrl = "";
+                return meiUrl;
+            }
+
+            String localPi = getPi();
+            meiUrl = DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> urls.path(RECORDS_FILES, ApiUrls.RECORDS_FILES_MEI)
+                            .params(localPi)
+                            .build())
+                    .orElse("");
+        }
+
+        return meiUrl;
     }
 
     /**
@@ -4043,6 +4094,33 @@ public class ViewManager implements Serializable {
         }
 
         return this.citationLinks.get(level).getList();
+    }
+
+    /**
+     * 
+     * @return true if this record has archive node ID and archive node exists in index; false otherwise
+     * @should set displayArchivesWidget to false if no ead node id exists
+     * @should set displayArchivesWidget to false if no archive node with id found in index
+     * @should set displayArchivesWidget to true if both id and archive node exist
+     */
+    public boolean isDisplayArchivesWidget() {
+        if (displayArchivesWidget == null) {
+            if (StringUtils.isEmpty(getArchiveEntryIdentifier())) {
+                displayArchivesWidget = false;
+            } else {
+                try {
+                    displayArchivesWidget = DataManager.getInstance()
+                            .getSearchIndex()
+                            .getHitCount("+" + SolrConstants.EAD_NODE_ID + ":" + getArchiveEntryIdentifier() + " +" + SolrConstants.DOCTYPE + ":"
+                                    + DocType.ARCHIVE.name()) > 0;
+                } catch (IndexUnreachableException | PresentationException e) {
+                   logger.error(e.getMessage());
+                   displayArchivesWidget = false;
+                }
+            }
+        }
+
+        return displayArchivesWidget;
     }
 
     /**
