@@ -1,0 +1,9 @@
+# Lefthook configuration for goobi-viewer-core
+# Formats and lints only staged files before commit
+
+pre-commit:
+  parallel: false
+  commands:
+    run-precommit-script:
+      run: node scripts/precommitfunctions.js
+      always_run: true

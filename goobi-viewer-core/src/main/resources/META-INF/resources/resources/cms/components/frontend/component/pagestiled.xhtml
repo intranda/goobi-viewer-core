@@ -17,10 +17,10 @@
 	</composite:interface>
 
 	<composite:implementation>
-
+   
 		<ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
 
-			<!-- CONTENT ITEM WITH SELECTED OPTIONS -->
+			<!-- CONTENT ITEM WITH SELECTED OPTIONS --> 
 			<div
 				class="content-component content-component__pages-tiled
 						-width-100 #{cc.attrs.hideOnScreenSizes}
@@ -33,7 +33,7 @@
 					rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
 					<div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
 				</ui:fragment>
-
+ 
 				<div class="content-component__pages-tiled-list">
 					<ui:repeat var="subPage"
 						value="#{cc.attrs.component.getContentItem('pagelist').content.getNestedPages(cc.attrs.random, cmsBean.templateManager)}">
@@ -47,14 +47,14 @@
 												<!-- IMAGE -->
 													<a href="#{cmsBean.getUrl(subPage)}"> 
 														<img src="#{previewItem.content.url}" alt="#{previewItem.content.mediaName}" />
-														<ui:include src="/resources/images/icons/external-link.svg">
+														<ui:include src="/resources/images/icons/external-link.svg" />
 													</a>
 													<figcaption>#{previewItem.content.mediaDescription}</figcaption>
 											</ui:fragment>
 										</ui:fragment>
 									</ui:repeat>
 
-
+									<!-- TEST COMMENT 3214000 -->
 									<ui:repeat var="previewItem" value="#{subPage.previewItems}">
 
 										<ui:fragment rendered="#{previewItem.isShortText()}">
@@ -68,7 +68,7 @@
 												<h:outputText escape="false" value="#{previewItem.content.text}"></h:outputText>
 											</div>
 										</ui:fragment>
-
+ 
 									</ui:repeat>
 
 							</div>
