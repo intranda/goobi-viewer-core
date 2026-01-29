@@ -47,7 +47,7 @@
 		        <img id="objectLoader" src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 
         	</div>
-        	<facelet:voyager3d model="http://localhost:8080/viewer/api/v1/records/Mathe-Objekt3/files/3d/Mathe-Objekt3.gltf" />
+        	<facelet:voyager3d model="#{activeDocumentBean.viewManager.currentObjectUrl}" />
         </div>
         <!-- ACCESS DENIED DESCRIPTION TEXT -->
         <h:panelGroup styleClass="view-object__access-denied-text"

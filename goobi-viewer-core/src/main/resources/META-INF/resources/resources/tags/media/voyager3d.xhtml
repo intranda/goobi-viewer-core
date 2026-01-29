@@ -8,8 +8,17 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-		<voyager-explorer style="display:block;" model='#{model}'></voyager-explorer>
-	
-		 <script defer="defer" src="#{request.contextPath}/resources/javascript/libs/voyager/js/voyager-explorer.min.js"></script>
+	<script defer="defer" src="#{request.contextPath}/resources/javascript/libs/voyager/js/voyager-story.min.js"></script>
+	<link href="#{request.contextPath}/resources/javascript/libs/voyager/css/voyager-story.min.css" rel="stylesheet"></link>
+<!-- 	<voyager-story id="voyagerStory" bgcolor="#015999 #000" bgstyle="LinearGradient" style="display:block;" document='#{model}/scene.svx.json'></voyager-story>  -->
+
+	<voyager-explorer id="voyager" bgcolor="#015999 #000" bgstyle="LinearGradient" style="display:none;" document='#{model}/scene.svx.json' uiMode="menu" resourceRoot="#{request.contextPath}/resources/javascript/libs/voyager/"></voyager-explorer>
+	<script defer="defer" src="#{request.contextPath}/resources/javascript/libs/voyager/js/voyager-explorer.min.js"></script>
+
+	<script>
+		document.getElementById("voyager").addEventListener("model-load", e => {
+			console.log("loaded ", e); 
+		})
+	</script>
 	 
 </ui:composition>
