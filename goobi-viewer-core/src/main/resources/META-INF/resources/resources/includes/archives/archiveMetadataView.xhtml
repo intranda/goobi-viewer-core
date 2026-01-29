@@ -24,7 +24,7 @@
 			<!-- Identity statement metadata -->
 			<ui:fragment rendered="#{archiveMetadataBean.getMetadata(archiveEntry).getAreaList(index).stream().filter(metadata -> !metadata.blank).count() > 0}">
 				<div class="archives__object-block-label">#{msg['archives__archive_area_'.concat(index)]}</div>
-				<ui:repeat var="metadata" value="#{archiveMetadataBean.getMetadata(archiveEntry).getAreaList(index)}">
+				<c:forEach var="metadata" items="#{archiveMetadataBean.getMetadata(archiveEntry).getAreaList(index)}">
 
                     <!-- grouped="true" -->
                     <h:panelGroup rendered="#{metadata.group}">
@@ -49,7 +49,8 @@
                     <h:panelGroup styleClass="metadata__ungrouped-wrapper" layout="block" rendered="#{!metadata.group}">
                         <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
                             <dt title="#{metadata.label}">
-                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+                                <h:outputText value="#{msg[metadata.label]}" escape="false" />
+                                <h:outputText value=":" rendered="#{not empty msg[metadata.label]}" />
                             </dt>
                             <ui:repeat value="#{metadata.values}" var="val">
                                  <dd>
@@ -62,16 +63,16 @@
                         </dl>
                     </h:panelGroup>
                     
-				</ui:repeat>
+				</c:forEach>
 			</ui:fragment>
 			
 			</ui:repeat>
 			
 			<!-- Description control metadata -->
-			<c:if
-				test="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList.stream().filter(metadata -> !metadata.blank).count() > 0}">
+			<ui:fragment 
+				rendered="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList.stream().filter(metadata -> !metadata.blank).count() > 0}">
 				<div class="archives__object-block-label">#{msg.archives__archive_area_descriptionControl}</div>
-				<ui:repeat var="metadata" value="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList}">
+				<c:forEach var="metadata" items="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList}">
                     <!-- grouped="true" -->
                     <h:panelGroup rendered="#{metadata.group}">
 
@@ -95,7 +96,8 @@
                     <h:panelGroup styleClass="metadata__ungrouped-wrapper" layout="block" rendered="#{!metadata.group}">
                         <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
                             <dt title="#{metadata.label}">
-                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+                                <h:outputText value="#{msg[metadata.label]}" escape="false" />
+                                <h:outputText value=":" rendered="#{not empty msg[metadata.label]}" />
                             </dt>
                             <ui:repeat value="#{metadata.values}" var="val">
                                  <dd>
@@ -107,8 +109,8 @@
                             </ui:repeat>
                         </dl>
                     </h:panelGroup>
-				</ui:repeat>
-			</c:if>
+				</c:forEach>
+			</ui:fragment>
 		</div>
 
 		<h:inputHidden value="#{archiveEntry.associatedRecordPi}">

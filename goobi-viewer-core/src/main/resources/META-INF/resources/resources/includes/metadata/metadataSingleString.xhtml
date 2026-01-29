@@ -25,6 +25,7 @@
 					
 					<!-- STANDARD STRUCTURE -->
 					<ui:fragment rendered="#{metadata.separator == null}">
+					    <!-- ui:repeat won't work with recusrive embedding of child metadata here -->
 						<c:forEach items="#{metadata.values}" var="val">
 						    <dd>
 								<!-- Metadata value -->
