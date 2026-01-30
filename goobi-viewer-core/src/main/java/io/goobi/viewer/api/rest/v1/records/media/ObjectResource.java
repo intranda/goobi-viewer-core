@@ -55,6 +55,7 @@ import org.json.JSONObject;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
+import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.api.rest.model.MediaResourceHelper;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
@@ -108,7 +109,6 @@ public class ObjectResource {
      * @param context
      * @param request
      * @param response
-     * @param urls
      * @param pi
      * @param filename
      */
@@ -204,6 +204,7 @@ public class ObjectResource {
     @PUT
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_SCENE)
     @Consumes({ MediaType.APPLICATION_JSON })
+    @AdminLoggedInBinding
     public Response setScene(String scene) {
 
         String baseFilename = FilenameUtils.getBaseName(filename);

@@ -27,12 +27,4 @@
             <name>user</name>
         </attribute>
     </tag>
-    <!-- Media Views -->
-     <tag>
-        <tag-name>voyager3d</tag-name>
-        <source>resources/resources/tags/media/voyager3d.xhtml</source>
-        <attribute>
-            <name>model</name>
-        </attribute>
-    </tag>
 </facelet-taglib>
