@@ -168,57 +168,68 @@
                             <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType != null}">
                                 <h2>#{msg.information}</h2>
                                 <div class="admin__default-block">
-                                    <dl class="row">
-                                        <dt class="col-4">
-                                           <h:outputText rendered="#{adminLicenseBean.currentLicense.user != null}">#{adminLicenseBean.currentLicense.user.displayName}</h:outputText>
-                                           <h:outputText rendered="#{adminLicenseBean.currentLicense.userGroup != null}">#{adminLicenseBean.currentLicense.userGroup.name}</h:outputText>
-                                           <h:outputText rendered="#{adminLicenseBean.currentLicense.ipRange != null}">#{adminLicenseBean.currentLicense.ipRange.name}</h:outputText>
-                                           <h:outputText rendered="#{adminLicenseBean.currentLicense.clientId != null}">#{client.name}</h:outputText>
-                                        </dt>
-                                        <dd class="col-8">
-
+                                    <ui:repeat var="licensee" value="#{adminLicenseBean.currentLicense.licensees}">
+                                        <dl class="row">
                                             <!-- USER -->
-                                             <h:outputText rendered="#{adminLicenseBean.currentLicense.user != null}">
-                                                #{msg.admin__user_contact}: #{adminLicenseBean.currentLicense.user.email}
-                                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.user.lastLogin != null}">
-                                                    | #{msg.lastLoginDate}:
-                                                    <h:outputText value="#{adminLicenseBean.currentLicense.user.lastLogin}">
-                                                        <!-- Everything longer than MM in this pattern is treated as character for the month to be displayed -->
-                                                        <f:converter converterId="localDateTimeConverter" />
-                                                        <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+                                            <ui:fragment rendered="#{licensee.user != null}">
+                                                <dt class="col-4">#{licensee.user.displayName}</dt>
+                                                <dd class="col-8">
+                                                    <h:outputText>
+                                                       #{msg.admin__user_contact}: #{licensee.user.email}
+                                                        <ui:fragment rendered="#{licensee.user.lastLogin != null}">
+                                                            | #{msg.lastLoginDate}:
+                                                            <h:outputText value="#{licensee.user.lastLogin}">
+                                                                <!-- Everything longer than MM in this pattern is treated as character for the month to be displayed -->
+                                                                <f:converter converterId="localDateTimeConverter" />
+                                                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+                                                            </h:outputText>
+                                                        </ui:fragment>
                                                     </h:outputText>
-                                                </ui:fragment>
-                                            </h:outputText>
-
+                                                </dd>
+                                            </ui:fragment>
                                             <!-- USER GROUP -->
-                                            <h:outputText rendered="#{adminLicenseBean.currentLicense.userGroup.description ne ''}">#{adminLicenseBean.currentLicense.userGroup.description}</h:outputText>
-                                            <h:outputText rendered="#{adminLicenseBean.currentLicense.userGroup.description eq ''}">
-                                            	<span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
-                                            </h:outputText>
-
+                                            <ui:fragment rendered="#{licensee.userGroup != null}">
+                                                <dt class="col-4">#{licensee.userGroup.name}</dt>
+                                                <dd class="col-8">
+                                                    <h:outputText rendered="#{licensee.userGroup.description ne ''}">#{licensee.userGroup.description}</h:outputText>
+                                                    <h:outputText rendered="#{licensee.userGroup.description eq ''}">
+                                                        <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
+                                                    </h:outputText>
+                                                </dd>
+                                            </ui:fragment>
                                             <!-- IP RANGE -->
-                                            <h:outputText rendered="#{adminLicenseBean.currentLicense.ipRange.description ne ''}">#{adminLicenseBean.currentLicense.ipRange.description}</h:outputText>
-                                            <h:outputText rendered="#{adminLicenseBean.currentLicense.ipRange.description eq ''}">
-                                            	<span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
-                                            </h:outputText>
-                                            
+                                            <ui:fragment rendered="#{licensee.ipRange != null}">
+                                                <dt class="col-4">#{licensee.ipRange.name} </dt>
+                                                <dd class="col-8">
+                                                    <h:outputText rendered="#{licensee.ipRange.description ne ''}">#{licensee.ipRange.description}</h:outputText>
+                                                    <h:outputText rendered="#{licensee.ipRange.description == null or licensee.ipRange.description eq ''}">
+                                                        <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
+                                                   </h:outputText>
+                                                </dd>
+                                            </ui:fragment>
                                             <!-- CLIENT -->
-                                            <h:outputText rendered="#{client.description ne ''}">#{client.description}</h:outputText>
-                                            <h:outputText rendered="#{client.description eq ''}">
-                                            	<span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
-                                            </h:outputText>
-                                            
+                                            <ui:fragment rendered="#{licensee.clientId != null}">
+                                                <dt class="col-4">{licensee.client.name} </dt>
+                                                <dd class="col-8">
+                                                    <h:outputText rendered="#{licensee.client.description ne ''}">#{licensee.client.description}</h:outputText>
+                                                    <h:outputText rendered="#{licensee.client.description == null or licensee.client.description eq ''}">
+                                                        <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
+                                                    </h:outputText>
+                                                </dd>
+                                            </ui:fragment>
+                                        </dl>
+                                    </ui:repeat>
+                                    <!-- LICENSE TYPE INFO -->
+                                    <dl class="row">
+                                        <dt class="col-4">#{msg[adminLicenseBean.currentLicense.licenseType.name]}</dt>
+                                        <dd class="col-8">
+                                            <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.description ne ''}">
+                                                #{msg[adminLicenseBean.currentLicense.licenseType.description]}
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.description eq ''}">
+                                                <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
+                                            </ui:fragment>
                                         </dd>
-                                        <!-- LICENSE TYPE INFO -->
-                                            <dt class="col-4">#{msg[adminLicenseBean.currentLicense.licenseType.name]}</dt>
-                                            <dd class="col-8">
-                                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.description ne ''}">
-                                                    #{msg[adminLicenseBean.currentLicense.licenseType.description]}
-                                                </ui:fragment>
-                                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.description eq ''}">
-                                                    <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
-                                                </ui:fragment>
-                                            </dd>
                                     </dl>
                                 </div>
                                 </ui:fragment>
