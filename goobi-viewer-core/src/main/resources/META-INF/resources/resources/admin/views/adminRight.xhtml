@@ -145,7 +145,7 @@
                                      </div>
                                      <div class="col-sm-8">
                                          <h:selectOneMenu
-                                             rendered="#{adminLicenseBean.currentLicense.user != null or adminLicenseBean.currentLicense.userGroup != null or adminLicenseBean.currentLicense.ipRange != null or adminLicenseBean.currentLicense.client != null}"
+                                             rendered="#{adminLicenseBean.currentLicense.hasLicensees}"
                                              value="#{adminLicenseBean.currentLicense.licenseType}"
                                              styleClass="form-control"
                                              immediate="true"

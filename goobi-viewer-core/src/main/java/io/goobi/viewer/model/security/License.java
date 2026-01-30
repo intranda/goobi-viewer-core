@@ -149,22 +149,22 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     @PrivateOwned
     private List<LicenseRightsHolder> licensees = new ArrayList<>();
 
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     @ManyToOne
     @JoinColumn(name = "user_group_id")
     private UserGroup userGroup;
 
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     @ManyToOne
     @JoinColumn(name = "ip_range_id")
     private IpRange ipRange;
 
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     @ManyToOne
     @JoinColumn(name = "client_id")
     private ClientApplication client;
@@ -672,7 +672,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      *
      * @return the user
      */
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     public User getUser() {
         return user;
     }
@@ -686,7 +686,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @should set userGroup and ipRange to null if user not null
      * @should not set userGroup and ipRange to null if user null
      */
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     public void setUser(User user) {
         this.user = user;
         if (user != null) {
@@ -702,7 +702,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      *
      * @return the userGroup
      */
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     public UserGroup getUserGroup() {
         return userGroup;
     }
@@ -716,7 +716,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @should set user and ipRange to null if userGroup not null
      * @should not set user and ipRange to null if userGroup null
      */
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
         if (userGroup != null) {
@@ -732,7 +732,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      *
      * @return the ipRange
      */
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     public IpRange getIpRange() {
         return ipRange;
     }
@@ -746,7 +746,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @should set user and userGroup to null if ipRange not null
      * @should not set user and userGroup to null if ipRange null
      */
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     public void setIpRange(IpRange ipRange) {
         this.ipRange = ipRange;
         if (ipRange != null) {
@@ -996,12 +996,12 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * @return the client
      */
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     public Long getClientId() {
         return Optional.ofNullable(client).map(ClientApplication::getId).orElse(null);
     }
 
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     public ClientApplication getClient() {
         return this.client;
     }
@@ -1009,7 +1009,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * @param client the client to set
      */
-    @Deprecated(since = "2025.12")
+    @Deprecated(since = "2026.01")
     public void setClient(ClientApplication client) {
         this.client = client;
     }
@@ -1020,6 +1020,14 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     public void removeLicensee(LicenseRightsHolder licensee) {
         licensees.remove(licensee);
+    }
+
+    /**
+     * 
+     * @return true if at least one of user/userGroup/ipRange/client are non-null; false otherwise
+     */
+    public boolean isHasLicensees() {
+        return !licensees.isEmpty();
     }
 
     /**
@@ -1038,7 +1046,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      */
     public ILicensee getSecondaryAccessRequirement() {
         if (licensees.size() > 1) {
-            logger.trace("Secondary access requirement found: {}",  licensees.get(1).getLicensee().getName());
+            logger.trace("Secondary access requirement found: {}", licensees.get(1).getLicensee().getName());
             return licensees.get(1).getLicensee();
         }
 
