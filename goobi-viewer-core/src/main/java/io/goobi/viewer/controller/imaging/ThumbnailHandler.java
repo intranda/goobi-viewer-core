@@ -88,6 +88,7 @@ public class ThumbnailHandler {
     private static final String AUDIO_THUMB = "thumbnail_audio.jpg";
     private static final String OBJECT_3D_THUMB = "thumbnail_3d.png";
     private static final String GROUP_THUMB = "thumbnail_group.jpg";
+    private static final String MEI_THUMB = "thumbnail_mei.png";
 
     /** Constant <code>REQUIRED_SOLR_FIELDS</code>. */
     public static final Set<String> REQUIRED_SOLR_FIELDS =
@@ -879,6 +880,9 @@ public class ThumbnailHandler {
                             ret = getThumbnailPath(OBJECT_3D_THUMB).toString();
                             break;
                         default:
+                            if (StringUtils.isNotBlank(doc.getMetadataValue(SolrConstants.FILENAME_MEI))) {
+                                ret = getThumbnailPath(MEI_THUMB).toString();
+                            }
                             break;
                     }
                     break;
