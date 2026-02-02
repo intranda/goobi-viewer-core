@@ -40,24 +40,34 @@
     <script defer="defer" src="#{request.contextPath}/resources/javascript/libs/voyager/js/voyager-explorer.min.js"></script>
     
     <div class="view-object__object-3d-voyager-editor-button-wrapper">
-    	<button jsf:id="loadStoryEditor" class="btn btn--default view-object__object-3d-voyager-open-editor-button" rendered="#{userBean.admin}" onclick="loadStory()"><span class="view-object__object-3d-voyager-editor-button-inside"><util:icon icon="edit" /><span>#{msg.voyager__open_editor}</span></span></button>
-    	<button jsf:id="closeStoryEditor" class="btn btn--default view-object__object-3d-voyager-close-editor-button" rendered="#{userBean.admin}" style="display:none;" onclick="loadObject()"><span class="view-object__object-3d-voyager-editor-button-inside"><util:icon icon="edit-off" /><span>#{msg.voyager__close_editor}</span></span></button>
+    	<button jsf:id="loadStoryEditor" class="btn btn--default view-object__object-3d-voyager-open-editor-button" rendered="#{userBean.admin}"><span class="view-object__object-3d-voyager-editor-button-inside"><util:icon icon="edit" /><span>#{msg.voyager__open_editor}</span></span></button>
+    	<button jsf:id="closeStoryEditor" class="btn btn--default view-object__object-3d-voyager-close-editor-button" rendered="#{userBean.admin}" style="display:none;"><span class="view-object__object-3d-voyager-editor-button-inside"><util:icon icon="edit-off" /><span>#{msg.voyager__close_editor}</span></span></button>
     </div>
     
     <div id="objectContainer" class="view-object__object-3d -setBorderTop">        
         <!-- MAP -->
-        <div id="world" class="view-object__object-3d-world" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
+        <ui:fragment rendered="#{ activeDocumentBean.viewManager.currentPage.accessPermission3DObject }">
+        <div id="world" class="view-object__object-3d-world" data-resource-path="#{request.contextPath}/resources/javascript/libs/voyager/" data-object-url="#{activeDocumentBean.viewManager.currentObjectUrl}" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
             <div id="preloader">
  
         		<p id="beforeLoad" class="before-load view-object__object-3d-world-before-load-text">
         			<h:outputText value="#{msg.object_3d__before_load}" escape="false" /> 
         		</p>
-        		<button id="startLoadButton" class="before-load btn btn--default" onclick="loadObject()">#{msg.show}</button>
+        		<button id="startLoadButton" class="before-load btn btn--default" >#{msg.show}</button>
 		        <progress id="loadingProgress"  max="undefined" value="undefined"></progress>
 		        <img id="objectLoader" src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 
         	</div>
         </div>
+        </ui:fragment>
+        <ui:fragment rendered="#{ !activeDocumentBean.viewManager.currentPage.accessPermission3DObject }">
+       		<div id="world" class="view-object__object-3d-world">
+       			<div class="view-object__access-denied">
+       				#{msg.noImage_accessDenied}
+       			</div>
+       		</div>
+        </ui:fragment>
+        
         <!-- ACCESS DENIED DESCRIPTION TEXT -->
         <h:panelGroup styleClass="view-object__access-denied-text"
             rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionObject and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForImage(navigationHelper.locale) != null}">
@@ -70,85 +80,5 @@
         <div id="imageContainerMobile" class="view-object__image-mobile">
 
         </div>
-        
-        <script>
-        
-        const explorer = `<voyager-explorer id='voyager' bgcolor='#015999 #000' bgstyle='LinearGradient' style='display:none;' document='#{activeDocumentBean.viewManager.currentObjectUrl}/scene.svx.json' uiMode='menu' resourceRoot='#{request.contextPath}/resources/javascript/libs/voyager/'></voyager-explorer>`;
-    	const world = document.getElementById("world");
-        const loadStoryButton = document.getElementById("loadStoryEditor");
-        const closeStoryButton = document.getElementById("closeStoryEditor");
-    	
-       	function loadObject() {
-       		console.log("loading object");
-       		
-       		show(loadStoryButton);
-       		hide(closeStoryButton);
-       		unloadObject();
-       		unloadStory();
-       		$("#startLoadButton").hide();
-       		$("#loadingProgress").show();
-       		
-       		
-       		const tempElement = document.createElement('div');
-       		tempElement.innerHTML = explorer;
-       		
-       		console.log("appending ", ...tempElement.children,  " to ", world);
-       		world.append(...tempElement.children);
-       		
-       		const voyager = document.getElementById("voyager");
-       		voyager.addEventListener("model-load", e => {
-    			console.log("loaded ", e); 
-    			show(voyager);
-    		})
-       	}
-       	
-       	const story = `<voyager-story id='voyagerStory' bgcolor='#015999 #000' bgstyle='LinearGradient' style='display:none;' document='#{activeDocumentBean.viewManager.currentObjectUrl}/scene.svx.json'></voyager-story>`;
-
-       	
-       	function loadStory() {
-       		console.log("loading story");
-       		
-       		hide(loadStoryButton);
-       		show(closeStoryButton);
-       		unloadObject();
-       		unloadStory();
-       		$("#startLoadButton").hide();
-       		$("#loadingProgress").show();
-       		
-       		const tempElement = document.createElement('div');
-       		tempElement.innerHTML = story;
-       		
-       		console.log("appending ", ...tempElement.children,  " to ", world);
-       		world.append(...tempElement.children);
-       		
-       		const voyager = document.getElementById("voyagerStory");
-       		voyager.addEventListener("model-load", e => {
-    			console.log("loaded ", e); 
-    			show(voyager);
-    		})
-       		
-       	}
-       	
-       	function hide(element) {
-       		if(element) {
-       			element.style.display = "none";
-       		}
-       	}
-       	
-    	function show(element) {
-       		if(element) {
-       			element.style.display = "block";
-       		}
-       	}
-       	
-       	function unloadObject() {
-       		document.getElementById("voyager")?.remove();
-       	}
-       	
-       	function unloadStory() {
-       		document.getElementById("voyagerStory")?.remove();
-       	}
-        
-        </script>
 
 </ui:composition>

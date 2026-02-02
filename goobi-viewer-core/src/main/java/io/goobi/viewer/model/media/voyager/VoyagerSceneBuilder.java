@@ -1,18 +1,26 @@
 package io.goobi.viewer.model.media.voyager;
 
+import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class VoyagerSceneBuilder {
 
-    private final List<URI> models = new ArrayList<>();
+    private static final Logger logger = LogManager.getLogger(VoyagerSceneBuilder.class);
+
+    private final Map<URI, Path> models = new LinkedHashMap<>();
     private final String name;
     private String unit = "mm";
 
@@ -25,14 +33,14 @@ public class VoyagerSceneBuilder {
         return this;
     }
 
-    public VoyagerSceneBuilder addModel(URI model) {
-        this.models.add(model);
+    public VoyagerSceneBuilder addModel(URI url, Path file) {
+        this.models.put(url, file);
         return this;
     }
 
     public String build() {
 
-        JSONArray models = new JSONArray(this.models.stream().map(this::createModel).toList());
+        JSONArray models = new JSONArray(this.models.entrySet().stream().map(e -> createModel(e.getKey(), e.getValue())).toList());
         JSONArray nodes = new JSONArray(IntStream.range(0, models.length()).mapToObj(this::createNode).toList());
         JSONArray scenes = new JSONArray(List.of(createScene(IntStream.range(0, nodes.length()).toArray())));
 
@@ -70,11 +78,11 @@ public class VoyagerSceneBuilder {
         return node;
     }
 
-    private JSONObject createModel(URI modelUri) {
-        return createModel(modelUri, this.unit);
+    private JSONObject createModel(URI modelUri, Path modelPath) {
+        return createModel(modelUri, modelPath, this.unit);
     }
 
-    private JSONObject createModel(URI modelUri, String unit) {
+    private JSONObject createModel(URI modelUri, Path modelPath, String unit) {
         JSONObject model = new JSONObject();
         model.put("units", unit);
 
@@ -85,6 +93,11 @@ public class VoyagerSceneBuilder {
         JSONObject asset = new JSONObject();
         asset.put("uri", modelUri.toString());
         asset.put("type", get3DObjectType(modelUri));
+        try {
+            asset.put("byteSize", Files.size(modelPath));
+        } catch (IOException e) {
+            logger.warn("Unable to determin file size of 3d model at {}", modelPath);
+        }
 
         derivative.put("assets", List.of(asset));
 

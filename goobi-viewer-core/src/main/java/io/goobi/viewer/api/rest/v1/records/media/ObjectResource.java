@@ -191,7 +191,7 @@ public class ObjectResource {
             Path modelFile = mediaDirectory.resolve(FileTools.sanitizeFileName(this.filename));
             if (Files.exists(modelFile)) {
                 URI modelUri = this.urls.path(RECORDS_FILES_3D).params(this.pi, modelFile.getFileName().toString()).buildURI();
-                return Response.ok(new VoyagerSceneBuilder(baseFilename).addModel(modelUri).build()).build();
+                return Response.ok(new VoyagerSceneBuilder(baseFilename).addModel(modelUri, modelFile).build()).build();
             }
 
         } catch (PresentationException | IndexUnreachableException e) {
