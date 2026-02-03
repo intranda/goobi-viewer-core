@@ -36,6 +36,7 @@
     viewer.WebSocket.PATH_CAMPAIGN_SOCKET = "/crowdsourcing/campaign.socket";
     viewer.WebSocket.PATH_CONFIG_EDITOR_SOCKET = "/admin/config/edit.socket";
     viewer.WebSocket.PATH_DOWNLOAD_TASK = "/tasks/download/monitor.socket";
+    viewer.WebSocket.PATH_SEARCH_AUTOCOMPLETE = "/search/autocomplete.socket";
 
     //prototype methods
     viewer.WebSocket.prototype.sendMessage = function(message) {

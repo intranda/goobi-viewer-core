@@ -120,9 +120,16 @@
 
                 <!-- VIEW 3D OBJECT -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'object' or activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'model'}">
-                    <ui:insert name="viewObject3d">
-                        <ui:include src="/resources/includes/object/object3d.xhtml" />
-                    </ui:insert>
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType.matches('.*\\/gl(tf|b)(\\+json)?')}">
+	                    <ui:insert name="viewObject3d">
+	                    	<ui:include src="/resources/includes/object/voyager3d.xhtml" />
+	                    </ui:insert>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.mimeType.matches('.*\\/gl(tf|b)(\\+json)?')}">
+	                    <ui:insert name="viewObject3d">
+	                        <ui:include src="/resources/includes/object/object3d.xhtml" />
+	                    </ui:insert>
+                    </ui:fragment>
                 </h:panelGroup>
 
                 <!-- TODO -->

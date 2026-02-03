@@ -33,7 +33,7 @@
     }  
     </style>
     
-    <div id="objectContainer" class="view-object__object-3d">        
+    <div id="objectContainer" class="view-object__object-3d -setBorderTop">        
         <!-- MAP -->
         <div id="world" class="view-object__object-3d-world" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
             <div id="preloader">
@@ -123,7 +123,7 @@
        	// desktop object view
        	if ( access && objectVisible ) {
 	 		var world = WorldGenerator.create(worldConfig);
-	 		fetch("#{activeDocumentBean.viewManager.currentObjectUrl}")
+	 		fetch("#{activeDocumentBean.viewManager.currentObjectUrl}/info.json")
 	 		.then(resp => resp.json())
 	 		.then(json => {
 	 			console.log("object details: ", json);
@@ -136,7 +136,7 @@
 	 			 	$("#beforeLoad").text(unknownSizeMsgKey);
 	 			}
 	       		world.loadingMonitor.subscribe(e => {
-// 	       			console.log("load progress ", e);
+ 	       			console.log("load progress ", e);
 	       			let loaded = e.loaded;
 	       			let total = json.resourceSizes[e.url];
 	       			let finished = total - loaded  <= 0;
@@ -156,7 +156,7 @@
        		$("#startLoadButton").hide();
        		$("#loadingProgress").show();
        		const params = {
-	 	 		 url: "#{activeDocumentBean.viewManager.currentObjectUrl}",
+	 	 		 url: "#{activeDocumentBean.viewManager.currentObjectUrl}/info.json",
 	 			 position: { x:0, y:0, z:-0 },
 	 			 rotation:  { x:0, y:0, z:0 },
 	 			 size:  10,

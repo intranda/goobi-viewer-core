@@ -84,6 +84,8 @@ public final class StringTools {
     public static final String REGEX_WORDS = "[\\wäáàâöóòôüúùûëéèêßñ]+";
     /** Constant <code>DEFAULT_ENCODING="UTF-8"</code>. */
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
+    /** Constant <code>DEFAULT_CHARSET="UTF-8"</code>. */
+    public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     /** Constant <code>SLASH_REPLACEMENT="U002F"</code>. */
     public static final String SLASH_REPLACEMENT = "U002F";

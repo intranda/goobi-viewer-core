@@ -27,6 +27,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_3D_AUXILIARY_FIL
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_3D_AUXILIARY_FILE_2;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_3D_INFO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_3D_SCENE;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,37 +40,46 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.exceptions.JSONException;
+import org.json.JSONObject;
+
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
+import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
+import io.goobi.viewer.api.rest.model.MediaResourceHelper;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataFileTools;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.media.voyager.VoyagerSceneBuilder;
+import io.goobi.viewer.model.viewer.object.ObjectInfo;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
-import io.goobi.viewer.api.rest.model.MediaResourceHelper;
-import io.goobi.viewer.controller.DataFileTools;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.viewer.object.ObjectInfo;
-import io.swagger.v3.oas.annotations.Parameter;
 
 /**
  * <p>
@@ -93,24 +103,24 @@ public class ObjectResource {
 
     private final String pi;
     private final String filename;
+    private final AbstractApiUrlManager urls;
 
     /**
      * @param context
      * @param request
      * @param response
-     * @param urls
      * @param pi
      * @param filename
      */
     public ObjectResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Context AbstractApiUrlManager urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
         request.setAttribute("pi", pi);
         request.setAttribute("filename", filename);
         this.pi = pi;
         this.filename = filename;
+        this.urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(new ApiUrls());
     }
 
     /**
@@ -156,6 +166,67 @@ public class ObjectResource {
 
     }
 
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_FILES_3D_SCENE)
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Response getScene() {
+        String baseFilename = FilenameUtils.getBaseName(filename);
+        String svxFilename = baseFilename + ".svx.json";
+        try {
+            Path mediaDirectory = DataFileTools.getMediaFolder(pi);
+
+            Path svxFile = mediaDirectory.resolve(svxFilename);
+
+            if (Files.exists(svxFile)) {
+
+                try {
+                    String scene = Files.readString(svxFile);
+                    JSONObject json = new JSONObject(scene); //just check that this is valid json
+                    return Response.ok(scene).build();
+                } catch (IOException | JSONException e) {
+                    logger.error("Error reading svx.json from {}: {}", svxFile, e.toString());
+                }
+            }
+
+            Path modelFile = mediaDirectory.resolve(FileTools.sanitizeFileName(this.filename));
+            if (Files.exists(modelFile)) {
+                URI modelUri = this.urls.path(RECORDS_FILES_3D).params(this.pi, modelFile.getFileName().toString()).buildURI();
+                return Response.ok(new VoyagerSceneBuilder(baseFilename).addModel(modelUri, modelFile).build()).build();
+            }
+
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error("Error reading media directory for {} ", pi, e);
+            return Response.serverError().entity("Error reading media directory: " + e.toString()).build();
+        }
+        return Response.ok().build();
+    }
+
+    @PUT
+    @jakarta.ws.rs.Path(RECORDS_FILES_3D_SCENE)
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @AdminLoggedInBinding
+    public Response setScene(String scene) {
+
+        String baseFilename = FilenameUtils.getBaseName(filename);
+        String svxFilename = baseFilename + ".svx.json";
+        try {
+            Path mediaDirectory = DataFileTools.getMediaFolder(pi);
+
+            Path svxFile = mediaDirectory.resolve(svxFilename);
+
+            Files.writeString(
+                    svxFile,
+                    scene,
+                    StringTools.DEFAULT_CHARSET,
+                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+        } catch (IOException | PresentationException | IndexUnreachableException e) {
+            logger.error("Error writing voyager scene file {}", svxFilename, e);
+            return Response.serverError().entity("Error writing voyager scene file: " + e.toString()).build();
+        }
+        return Response.ok().build();
+    }
+
     /**
      * <p>
      * getObject.
@@ -169,7 +240,7 @@ public class ObjectResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
-    @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    @Produces({ MediaType.TEXT_PLAIN })
     public StreamingOutput getObject(@Context HttpServletRequest request, @Context HttpServletResponse response)
             throws IOException, PresentationException, IndexUnreachableException {
 
