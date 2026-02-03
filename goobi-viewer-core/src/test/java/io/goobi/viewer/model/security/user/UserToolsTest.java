@@ -69,10 +69,10 @@ class UserToolsTest extends AbstractDatabaseEnabledTest {
     void deleteUserGroupOwnedByUser_shouldDeleteAllUserGroupsOwnedByUser() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assertions.assertNotNull(user);
-        Assertions.assertNotNull(DataManager.getInstance().getDao().getUserGroup(1));
+        Assertions.assertNotNull(DataManager.getInstance().getDao().getUserGroup(2));
 
         UserTools.deleteUserGroupOwnedByUser(user);
-        Assertions.assertNull(DataManager.getInstance().getDao().getUserGroup(1));
+        Assertions.assertNull(DataManager.getInstance().getDao().getUserGroup(2));
     }
 
     /**
@@ -94,7 +94,6 @@ class UserToolsTest extends AbstractDatabaseEnabledTest {
         Assertions.assertTrue(statistics.get(0).getReviewers().isEmpty());
         Assertions.assertFalse(statistics.get(0).getReviewers().contains(user));
     }
-
 
     /**
      * @see UserTools#anonymizeUserPublicContributions(User)

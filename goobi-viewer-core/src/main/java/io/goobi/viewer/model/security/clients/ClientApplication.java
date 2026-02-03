@@ -17,30 +17,17 @@ package io.goobi.viewer.model.security.clients;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Map.Entry;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
-import org.eclipse.persistence.annotations.PrivateOwned;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,10 +39,19 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.AccessPermission;
-import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
+import io.goobi.viewer.model.security.License.AccessType;
+import io.goobi.viewer.model.security.user.AbstractLicensee;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * @author florian
@@ -66,9 +62,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Entity
 @Table(name = "client_applications")
-public class ClientApplication implements ILicensee, Serializable {
+public class ClientApplication extends AbstractLicensee implements Serializable {
 
     private static final long serialVersionUID = -6806071337346935488L;
+
+    /** Logger for this class. */
+    private static final Logger logger = LogManager.getLogger(ClientApplication.class);
 
     /** Unique database ID. */
     @Id
@@ -146,14 +145,6 @@ public class ClientApplication implements ILicensee, Serializable {
     private AccessStatus accessStatus;
 
     /**
-     * List of {@link License Licenses} this client is privileged to
-     */
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
-    @PrivateOwned
-    @JsonIgnore
-    private List<License> licenses = new ArrayList<>();
-
-    /**
      * Status describing if the client is eligible to receive viewing privileges
      * 
      * @author florian
@@ -200,7 +191,6 @@ public class ClientApplication implements ILicensee, Serializable {
         this.name = source.getName();
         this.description = source.getDescription();
         this.subnetMask = source.getSubnetMask();
-        this.licenses = new ArrayList<>(source.getLicenses());
     }
 
     /**
@@ -356,6 +346,12 @@ public class ClientApplication implements ILicensee, Serializable {
         this.description = description;
     }
 
+    @Override
+    @JsonIgnore
+    public AccessType getAccessType() {
+        return AccessType.CLIENT;
+    }
+
     /**
      * Check if the given identifier matches this instances {@link #clientIdentifier}
      * 
@@ -412,33 +408,6 @@ public class ClientApplication implements ILicensee, Serializable {
     }
 
     /**
-     * Get the {@link License}s this client is privileged to
-     * 
-     * @return the licenses
-     */
-    public List<License> getLicenses() {
-        return Collections.unmodifiableList(this.licenses);
-    }
-
-    /**
-     * Add a {@link License} to the {@link #licenses}
-     * 
-     * @param license
-     * @return true if added successfully; false otherwise
-     */
-    public boolean addLicense(License license) {
-        return this.licenses.add(license);
-    }
-
-    /**
-     * Remove {@link License} from the {@link #licenses}
-     */
-    @Override
-    public boolean removeLicense(License license) {
-        return this.licenses.remove(license);
-    }
-
-    /**
      * Get the {@link #subnetMask}
      * 
      * @return the {@link #subnetMask}
@@ -457,7 +426,7 @@ public class ClientApplication implements ILicensee, Serializable {
     }
 
     /**
-     * Check if this client has the privilege of the given privilegeName via its {@link #licenses}
+     * Check if this client has the privilege of the given privilegeName via its licenses.
      * 
      * @param requiredAccessConditions List of access condition names to satisfy
      * @param privilegeName The privilege to check for
@@ -469,13 +438,14 @@ public class ClientApplication implements ILicensee, Serializable {
      */
     public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("canSatisfyAllAccessConditions: {}, {}", privilegeName, pi);
         // always allow access if the only condition is open access and there is no special license configured for it
         if (requiredAccessConditions.size() == 1 && requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE)
                 && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
             return AccessPermission.granted();
         }
 
-        Map<String, AccessPermission> permissionMap = new HashMap<>(requiredAccessConditions.size());
+        Map<String, AccessPermission> permissionMap = HashMap.newHashMap(requiredAccessConditions.size());
         for (String accessCondition : requiredAccessConditions) {
             AccessPermission access = hasLicense(accessCondition, privilegeName, pi);
             if (access.isGranted()) {

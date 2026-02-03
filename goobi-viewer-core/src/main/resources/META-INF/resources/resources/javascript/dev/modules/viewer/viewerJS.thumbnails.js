@@ -76,12 +76,16 @@ var viewerJS = ( function( viewer ) {
             },
         })
         .done((blob) => {
-        
-            var url = window.URL || window.webkitURL;
-            element.src = url.createObjectURL(blob);
-            element.alt = alt;
-            element.style.display = display;
-            this.thumbnailImageLoaded.next(element);
+            try {
+                var url = window.URL || window.webkitURL;
+                element.src = url.createObjectURL(blob);
+                element.alt = alt;
+                element.style.display = display;
+                this.thumbnailImageLoaded.next(element);
+            } catch(error) {
+                console.error("Error resolving url ", source);
+                throw error;
+            }
         })
         .fail((error) => {
             var status = error.status;

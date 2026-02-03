@@ -328,23 +328,27 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public void initialiseCMSComponents(CMSTemplateManager templateManager) {
-        this.cmsComponents = new ArrayList<>();
-        for (PersistentCMSComponent component : this.persistentComponents) {
-            CMSComponent comp = templateManager
-                    .getComponent(component.getTemplateFilename())
-                    .map(c -> new CMSComponent(c, Optional.of(component)))
-                    .orElse(null);
-            if (comp != null) {
-                this.cmsComponents.add(comp);
+        synchronized (this.cmsComponents) {
+            this.cmsComponents = new ArrayList<>();
+            for (PersistentCMSComponent component : this.persistentComponents) {
+                CMSComponent comp = templateManager
+                        .getComponent(component.getTemplateFilename())
+                        .map(c -> new CMSComponent(c, Optional.of(component)))
+                        .orElse(null);
+                if (comp != null) {
+                    this.cmsComponents.add(comp);
+                }
             }
         }
         sortComponents();
     }
 
     private void sortComponents() {
-        Collections.sort(this.cmsComponents);
-        for (int i = 0; i < this.cmsComponents.size(); i++) {
-            this.cmsComponents.get(i).setOrder(i + 1);
+        synchronized (this.cmsComponents) {
+            Collections.sort(this.cmsComponents);
+            for (int i = 0; i < this.cmsComponents.size(); i++) {
+                this.cmsComponents.get(i).setOrder(i + 1);
+            }
         }
     }
 
@@ -1341,8 +1345,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public boolean removeComponent(CMSComponent component) {
-        this.persistentComponents.remove(component.getPersistentComponent());
-        boolean success = this.cmsComponents.remove(component);
+        boolean success = false;
+        synchronized (this.cmsComponents) {
+            this.persistentComponents.remove(component.getPersistentComponent());
+            success = this.cmsComponents.remove(component);
+        }
         if (success) {
             sortComponents();
         }
@@ -1360,9 +1367,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         PersistentCMSComponent persistentComponent = new PersistentCMSComponent(template);
         persistentComponent.setOrder(getHighestComponentOrder() + 1);
         persistentComponent.setOwningPage(this);
-        this.persistentComponents.add(persistentComponent);
-        CMSComponent cmsComponent = new CMSComponent(template, Optional.of(persistentComponent));
-        this.cmsComponents.add(cmsComponent);
+        synchronized (this.cmsComponents) {
+            this.persistentComponents.add(persistentComponent);
+            CMSComponent cmsComponent = new CMSComponent(template, Optional.of(persistentComponent));
+            this.cmsComponents.add(cmsComponent);
+        }
         this.sortComponents();
         return persistentComponent;
     }
