@@ -89,6 +89,7 @@
         <class>io.goobi.viewer.model.maps.SearchResultFeatureSet</class>
 		<class>io.goobi.viewer.model.search.Search</class>
 		<class>io.goobi.viewer.model.security.License</class>
+        <class>io.goobi.viewer.model.security.LicenseRightsHolder</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
         <class>io.goobi.viewer.model.security.LicenseTypePlaceholderInfo</class>
 		<class>io.goobi.viewer.model.security.Role</class>
@@ -217,6 +218,7 @@
         <class>io.goobi.viewer.model.maps.SearchResultFeatureSet</class>
 		<class>io.goobi.viewer.model.search.Search</class>
 		<class>io.goobi.viewer.model.security.License</class>
+        <class>io.goobi.viewer.model.security.LicenseRightsHolder</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
         <class>io.goobi.viewer.model.security.LicenseTypePlaceholderInfo</class>
 		<class>io.goobi.viewer.model.security.Role</class>

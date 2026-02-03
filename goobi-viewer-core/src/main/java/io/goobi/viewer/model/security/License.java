@@ -33,6 +33,7 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.annotations.PrivateOwned;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.converter.ConsentScopeConverter;
@@ -48,6 +49,7 @@ import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -61,6 +63,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -72,6 +75,30 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "licenses")
 public class License extends AbstractPrivilegeHolder implements Serializable {
+
+    public enum AccessType {
+        USER("admin__users"),
+        USER_GROUP("admin__groups"),
+        IP_RANGE("admin__ip_ranges"),
+        CLIENT("admin__clients");
+
+        private final String labelKey;
+
+        /**
+         * 
+         * @param labelKey
+         */
+        private AccessType(String labelKey) {
+            this.labelKey = labelKey;
+        }
+
+        /**
+         * @return the labelKey
+         */
+        public String getLabelKey() {
+            return labelKey;
+        }
+    }
 
     private static final long serialVersionUID = 1363557138283960150L;
 
@@ -118,18 +145,26 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     @JoinColumn(name = "license_type_id") // TODO nullable = false?
     private LicenseType licenseType;
 
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
+    @PrivateOwned
+    private List<LicenseRightsHolder> licensees = new ArrayList<>();
+
+    @Deprecated(since = "2026.01")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Deprecated(since = "2026.01")
     @ManyToOne
     @JoinColumn(name = "user_group_id")
     private UserGroup userGroup;
 
+    @Deprecated(since = "2026.01")
     @ManyToOne
     @JoinColumn(name = "ip_range_id")
     private IpRange ipRange;
 
+    @Deprecated(since = "2026.01")
     @ManyToOne
     @JoinColumn(name = "client_id")
     private ClientApplication client;
@@ -183,9 +218,6 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     private ConsentScope disclaimerScope = new ConsentScope();
 
     @Transient
-    private String type;
-
-    @Transient
     private Set<String> privilegesCopy = new HashSet<>();
 
     @Transient
@@ -196,6 +228,15 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     @Transient
     private transient List<Selectable<CMSPageTemplate>> selectableTemplates = null;
+
+    /**
+     * Zero-arg constructor.
+     */
+    public License() {
+        if (licensees.isEmpty()) {
+            licensees.add(new LicenseRightsHolder(this));
+        }
+    }
 
     /**
      * Checks the validity of this license. A valid license is either not time limited (start and/or end) or the current date lies between the
@@ -611,12 +652,27 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
+     * @return the licensees
+     */
+    public List<LicenseRightsHolder> getLicensees() {
+        return licensees;
+    }
+
+    /**
+     * @param licensees the licensees to set
+     */
+    public void setLicensees(List<LicenseRightsHolder> licensees) {
+        this.licensees = licensees;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>user</code>.
      * </p>
      *
      * @return the user
      */
+    @Deprecated(since = "2026.01")
     public User getUser() {
         return user;
     }
@@ -630,6 +686,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @should set userGroup and ipRange to null if user not null
      * @should not set userGroup and ipRange to null if user null
      */
+    @Deprecated(since = "2026.01")
     public void setUser(User user) {
         this.user = user;
         if (user != null) {
@@ -645,6 +702,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      *
      * @return the userGroup
      */
+    @Deprecated(since = "2026.01")
     public UserGroup getUserGroup() {
         return userGroup;
     }
@@ -658,6 +716,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @should set user and ipRange to null if userGroup not null
      * @should not set user and ipRange to null if userGroup null
      */
+    @Deprecated(since = "2026.01")
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
         if (userGroup != null) {
@@ -673,6 +732,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      *
      * @return the ipRange
      */
+    @Deprecated(since = "2026.01")
     public IpRange getIpRange() {
         return ipRange;
     }
@@ -686,6 +746,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @should set user and userGroup to null if ipRange not null
      * @should not set user and userGroup to null if ipRange null
      */
+    @Deprecated(since = "2026.01")
     public void setIpRange(IpRange ipRange) {
         this.ipRange = ipRange;
         if (ipRange != null) {
@@ -915,29 +976,6 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * @return the type
-     */
-    public String getType() {
-        if (type == null) {
-            if (user != null) {
-                type = "user";
-            } else if (userGroup != null) {
-                type = "group";
-            } else if (ipRange != null) {
-                type = "iprange";
-            }
-        }
-        return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    /**
      * @return the privilegesCopy
      */
     public Set<String> getPrivilegesCopy() {
@@ -958,10 +996,12 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * @return the client
      */
+    @Deprecated(since = "2026.01")
     public Long getClientId() {
         return Optional.ofNullable(client).map(ClientApplication::getId).orElse(null);
     }
 
+    @Deprecated(since = "2026.01")
     public ClientApplication getClient() {
         return this.client;
     }
@@ -969,18 +1009,48 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      * @param client the client to set
      */
+    @Deprecated(since = "2026.01")
     public void setClient(ClientApplication client) {
         this.client = client;
     }
 
+    public void addLicensee() {
+        licensees.add(new LicenseRightsHolder(this));
+    }
+
+    public void removeLicensee(LicenseRightsHolder licensee) {
+        licensees.remove(licensee);
+    }
+
     /**
-     * @param clientId the clientId to set
-     * @throws DAOException
+     * 
+     * @return true if at least one of user/userGroup/ipRange/client are non-null; false otherwise
      */
-    public void setClientId(Long clientId) throws DAOException {
-        if (clientId != null) {
-            this.client = DataManager.getInstance().getDao().getClientApplication(clientId);
+    public boolean isHasLicensees() {
+        return !licensees.isEmpty();
+    }
+
+    /**
+     * 
+     * @return true if at least two of user/userGroup/ipRange/client are non-null; false otherwise
+     */
+    public boolean isHasMultipleLicensees() {
+        return licensees.size() > 1;
+    }
+
+    /**
+     * a
+     * 
+     * @return The other non-null member of user/userGroup/ipRange/client
+     * @should return correct object
+     */
+    public ILicensee getSecondaryAccessRequirement() {
+        if (licensees.size() > 1) {
+            logger.trace("Secondary access requirement found: {}", licensees.get(1).getLicensee().getName());
+            return licensees.get(1).getLicensee();
         }
+
+        return null;
     }
 
     /**
@@ -990,8 +1060,16 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @should return null if all relevant fields filled
      */
     public String getDisabledStatus() {
-        return (this.getType() == null
-                || (this.getUser() == null && this.getUserGroup() == null && this.getIpRange() == null && this.getClient() == null)
-                || this.getLicenseType() == null) ? "disabled" : null;
+        if (getLicenseType() == null) {
+            return "disabled";
+        }
+
+        for (LicenseRightsHolder licensee : licensees) {
+            if (licensee.isDisabled()) {
+                return "disabled";
+            }
+        }
+
+        return null;
     }
 }
