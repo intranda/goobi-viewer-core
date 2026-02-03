@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -70,6 +71,9 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
     /** Constant <code>TYPE_OPENID="openId"</code> */
     public static final String TYPE_OPENID = "openId";
+
+    /** Reusable Random object. */
+    private Random random = new SecureRandom();
 
     /** OAuth discovery URI. */
     private String discoveryUri;
@@ -135,7 +139,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
         // Generate nonce
         byte[] secureBytes = new byte[64];
-        new SecureRandom().nextBytes(secureBytes);
+        random.nextBytes(secureBytes);
         String nonce = Base64.getUrlEncoder().encodeToString(secureBytes);
         HttpSession session = (HttpSession) ec.getSession(false);
         session.setAttribute("openIDNonce", nonce);
