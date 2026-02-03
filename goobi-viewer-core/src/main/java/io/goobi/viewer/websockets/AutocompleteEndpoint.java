@@ -64,7 +64,8 @@ public class AutocompleteEndpoint {
     }
 
     private String cleanSuggestion(String suggestion) {
-        return suggestion.replaceAll("(^\\W++)|(\\W++$)", "");
+        return suggestion.replaceAll("^\\W+", "")
+                .replaceAll("\\W+$", "");
     }
 
     private static String getTerm(String messageString) {
