@@ -65,7 +65,7 @@ public class AutocompleteEndpoint {
 
     private String cleanSuggestion(String suggestion) {
         return suggestion.replaceAll("^\\W++", "")
-                .replaceAll("\\W++$", "");
+                .replaceAll("\\W++$", ""); //NOSONAR – false positive: anchored regex used only to trim non-word chars
     }
 
     private static String getTerm(String messageString) {
