@@ -229,6 +229,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     @Transient
     private int listPage = 1;
+    
+    @Transient
+    private final Object cmsComponentsLock = new Object();
 
     /**
      * <p>
@@ -328,7 +331,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public void initialiseCMSComponents(CMSTemplateManager templateManager) {
-        synchronized (this.cmsComponents) {
+        synchronized (this.cmsComponentsLock) {
             this.cmsComponents = new ArrayList<>();
             for (PersistentCMSComponent component : this.persistentComponents) {
                 CMSComponent comp = templateManager
@@ -344,7 +347,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     private void sortComponents() {
-        synchronized (this.cmsComponents) {
+        synchronized (this.cmsComponentsLock) {
             Collections.sort(this.cmsComponents);
             for (int i = 0; i < this.cmsComponents.size(); i++) {
                 this.cmsComponents.get(i).setOrder(i + 1);
@@ -1346,7 +1349,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     public boolean removeComponent(CMSComponent component) {
         boolean success = false;
-        synchronized (this.cmsComponents) {
+        synchronized (this.cmsComponentsLock) {
             this.persistentComponents.remove(component.getPersistentComponent());
             success = this.cmsComponents.remove(component);
         }
@@ -1367,7 +1370,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         PersistentCMSComponent persistentComponent = new PersistentCMSComponent(template);
         persistentComponent.setOrder(getHighestComponentOrder() + 1);
         persistentComponent.setOwningPage(this);
-        synchronized (this.cmsComponents) {
+        synchronized (this.cmsComponentsLock) {
             this.persistentComponents.add(persistentComponent);
             CMSComponent cmsComponent = new CMSComponent(template, Optional.of(persistentComponent));
             this.cmsComponents.add(cmsComponent);

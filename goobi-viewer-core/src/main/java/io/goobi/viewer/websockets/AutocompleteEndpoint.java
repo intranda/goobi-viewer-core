@@ -8,8 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -50,12 +48,7 @@ public class AutocompleteEndpoint {
         logger.debug("receive message {}", messageString);
         if (searchBean == null) {
             String message = "Search context not found in session. Autosuggest not available";
-            try {
-                sendError(message);
-            } catch (JsonProcessingException e) {
-                logger.error("Error sending error message {}: {}", message, e.toString());
-
-            }
+            sendError(message);
         } else {
 
             String term = getTerm(messageString);
@@ -63,7 +56,7 @@ public class AutocompleteEndpoint {
                 try {
                     List<String> suggestions = searchBean.autocomplete(term);
                     sendMessage(suggestions.stream().map(this::cleanSuggestion).distinct().toList());
-                } catch (IndexUnreachableException | JsonProcessingException e) {
+                } catch (IndexUnreachableException e) {
                     logger.error("Error getting autocomplete suggestions for {}: {}", term, e.toString());
                 }
             }
@@ -71,19 +64,18 @@ public class AutocompleteEndpoint {
     }
 
     private String cleanSuggestion(String suggestion) {
-        return suggestion.replaceAll("^\\W+|\\W+$", "");
+        return suggestion.replaceAll("(^\\W+)|(\\W+$)", "");
     }
 
-    private String getTerm(String messageString) {
+    private static String getTerm(String messageString) {
         JSONObject message = new JSONObject(messageString);
         if (message.has("term")) {
             return message.getString("term");
-        } else {
-            return "";
         }
+        return "";
     }
 
-    private synchronized void sendError(String error) throws JsonProcessingException {
+    private synchronized void sendError(String error) {
         logger.debug("send error message {}", error);
         try {
             JSONObject object = new JSONObject();
@@ -95,7 +87,7 @@ public class AutocompleteEndpoint {
         }
     }
 
-    private synchronized void sendMessage(List<String> suggestions) throws JsonProcessingException {
+    private synchronized void sendMessage(List<String> suggestions) {
         logger.debug("send message {}", StringUtils.join(suggestions));
         try {
             session.getBasicRemote().sendText(JsonTools.getAsJson(suggestions));
