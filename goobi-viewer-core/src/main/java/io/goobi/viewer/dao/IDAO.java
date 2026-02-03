@@ -39,6 +39,7 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSSlider;
@@ -1350,6 +1351,7 @@ public interface IDAO {
     public boolean deleteUploadJob(UploadJob uploadJob) throws DAOException;
 
     // CMS
+
     /**
      * <p>
      * getAllCMSPages.
@@ -1767,6 +1769,41 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException;
+
+    /**
+     * <p>
+     * getCMSArchiveConfigs.
+     * </p>
+     *
+     * @param first
+     * @param pageSize
+     * @param sortField
+     * @param descending
+     * @param filters
+     * @return List<CMSArchiveConfig>
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<CMSArchiveConfig> getCMSArchiveConfigs(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException;
+    
+    /**
+     * <p>
+     * getCMSArchiveConfigCount.
+     * </p>
+     *
+     * @param filters Selected filters
+     * @return Number of found rows
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public long getCMSArchiveConfigCount(Map<String, String> filters) throws DAOException;
+    
+    /**
+     * 
+     * @param pi Archive record identifier
+     * @return Optional<CMSArchiveConfig> for the given pi; null if none found
+     * @throws DAOException
+     */
+    public Optional<CMSArchiveConfig> getCmsArchiveConfigForArchive(String pi) throws DAOException;
 
     /**
      * <p>

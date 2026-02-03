@@ -129,6 +129,21 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
+                        <ui:fragment>
+                            <li
+                                class="#{navigationHelper.currentPage == 'adminCmsArchives' ? 'active' : ''}"
+                            >
+                                <h:outputLink
+                                    value="#{navigationHelper.getPageUrl('adminCmsArchives')}/"
+                                >
+                                    <util:icon-text
+                                        icon="box"
+                                        text="#{msg.admin__cms_archives}"
+                                        styleClass="icon-text--nav"
+                                    />
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
                         <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_GEOMAPS')}">
                             <li
                                 class="#{navigationHelper.currentPage == 'adminCmsGeoMaps' ? 'active' : ''}"

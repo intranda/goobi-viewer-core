@@ -1,0 +1,111 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsArchives')}" />
+<!--             <f:event type="preRenderView" listener="#{adminBean.resetCurrentUserAction}" /> -->
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <div id="adminAllUsers">
+            <h:panelGroup rendered="#{userBean.admin}">
+            <h:form id="adminAllCMSArchiveConfigurationsForm" prependId="false">
+                <div class="admin__title-bar">
+                    <!-- TITLE -->
+                    <h1 class="admin__title">#{msg.admin__cms_archives}</h1>
+                </div>
+                
+                <viewerComponent:adminBreadcrumbs />
+
+                <div class="admin__content-inner-content">
+                    <div class="admin__table-tools">
+                        <!-- PAGINATOR -->
+                        <div class="admin__table-paginator">
+                            <viewerComponent:dataTablePaginator tableValues="#{cmsArchivesBean.lazyModelArchiveConfigurations}" />
+                        </div>
+                        <!-- FILTER -->
+                        <div class="admin__table-filter">
+                            <viewerComponent:dataTableColumnFilter key="admin__archive_search"
+                                filter="#{cmsArchivesBean.lazyModelArchiveConfigurations.getFilter('title_description')}"/>
+                        </div>
+                    </div>
+
+                    <!-- All ACRHIVE CONFIGURATIONS TABLE -->
+                    <div id="new-table-adminallusertable" class="admin__table-content" role="grid"
+                        aria-label="#{msg.admin__users}: #{msg.aria_label__table__actions}">
+                        <!-- TITLE ROW -->
+                        <div class="row no-gutters admin__table-title" role="row">
+                            <!-- NAME COL -->
+                            <div class="col-6 d-flex -sorting-arrow-trigger">
+                                <!-- SORTING -->
+                                <viewerComponent:sortingArrow filterType="email" colHeading="#{msg.admin__archives}"
+                                   list="#{cmsArchivesBean.lazyModelArchiveConfigurations}" />
+                            </div>
+                        </div>
+
+
+                        <!-- ARCHIVE ROWS -->
+                        <ui:repeat var="archiveWrapper" value="#{cmsArchivesBean.pageArchiveWrappers}">
+                            <div class="row no-gutters admin__table-entry" role="row">
+                                <div class="col-6 d-flex">
+                                    <!-- IMAGE -->
+                                    <div class="admin__table-img" role="presentation">
+                                        <ui:fragment rendered="#{archive.hasMediaItem()}"> 
+                                            <div class="crowdsourcing-campaigns-overview__campaign__image">
+                                                <img srcset="#{archive.mediaItem.getIconURI(1200,600)} 1200w,
+                                                    #{archive.mediaItem.getIconURI(900,400)} 900w,
+                                                    #{archive.mediaItem.getIconURI(600,450)} 600w,
+                                                    #{archive.mediaItem.getIconURI(400,300)} 400w"
+                                                    sizes="(max-width: 1200px) 660px, 300px"
+                                                    src="#{archive.mediaItem.getIconURI(200,300)}"
+                                                    alt="#{archive.mediaItem.alternativeText != '' ? archive.mediaItem.alternativeText : '' }" />
+                                            </div>
+                                        </ui:fragment>
+                                    </div>
+                                    <div class="admin__table-data" role="gridcell">
+                                        <!-- Title -->
+                                        <span class="admin__table-name">
+                                            <h:outputText value="#{archiveWrapper.archiveResource.resourceName}" escape="true" />
+                                        </span>
+                                        <!-- DESCRIPTION -->
+                                        <span class="admin__table-desc">
+                                            <h:outputText value="#{archiveWrapper.archiveConfig.description}" escape="true" />
+                                        </span>
+                                        <!-- EDIT -->
+                                        <a href="#{navigationHelper.applicationUrl}admin/cms/archives/edit/#{archiveWrapper.archiveResource.resourceId}/"
+                                            class="admin__table-action-link" aria-label="#{msg.edit}: #{user.email}">
+                                            #{msg.edit}
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </div>
+               </h:form>
+            </h:panelGroup>
+        </div>
+
+        <script type="text/javascript">
+            var dataTableConfig = {
+                dataTablePaginator : "#dataTablePaginator",
+                txtField1 : "#txtMoveTo1",
+                txtField2 : "#txtMoveTo2",
+                totalCount : "#totalCount",
+                reloadBtn : 'input[id*="cmdMoveTo"]',
+            };
+
+            viewerJS.dataTable.init(dataTableConfig);
+        </script>
+    </ui:define>
+
+</ui:composition>

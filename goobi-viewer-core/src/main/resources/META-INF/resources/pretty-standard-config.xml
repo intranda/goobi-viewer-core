@@ -1031,6 +1031,17 @@
 		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+    <url-mapping id="adminCmsArchives">
+        <pattern value="/admin/cms/archives/" />
+        <view-id value="/resources/cms/adminCmsArchives.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsArchiveEdit">
+        <pattern value="/admin/cms/archives/edit/#{resourceId}/" />
+        <view-id value="/resources/cms/adminCmsArchive.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsArchivesBean.setsetSelectedResourceId(resourceId)}</action>
+    </url-mapping>
 	<url-mapping id="adminCmsOverview">
 		<pattern value="/admin/cms/pages/" />
 		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
