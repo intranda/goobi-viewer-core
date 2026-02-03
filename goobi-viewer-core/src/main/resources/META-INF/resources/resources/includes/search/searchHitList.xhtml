@@ -49,11 +49,11 @@
                         </div>
                     </div>
                  </ui:fragment>
-
+ 
 				<ui:fragment rendered="#{showSorting}">
                     <div class="search-list__nav-helper-item search-list__nav-helper-item-sorting">
                         <div class="search-list__nav-helper-label">
-                            <label id="searchListSortingLabel " for="sortSelect">#{msg.sortBy}:</label>
+                            <h:outputLabel id="searchListSortingLabel" for="sortSelect" value="#{msg.sortBy}:" />
                         </div>
                         <div class="custom-control custom-control--select">
                         	<!-- The onkeypress prevents the command button from being triggered accidentally by pressing enter. It should only 

@@ -66,6 +66,7 @@ import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -83,7 +84,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
-import net.sf.saxon.trans.LicenseException;
 
 /**
  * <p>
@@ -800,10 +800,18 @@ public interface IDAO {
     /**
      *
      * @param licenseType
-     * @return List of {@link LicenseException}s of the given licenseType
+     * @return List of {@link License}s of the given licenseType
      * @throws DAOException
      */
     public List<License> getLicenses(LicenseType licenseType) throws DAOException;
+
+    /**
+     *
+     * @param licensee
+     * @return List of {@link License}s for the given licensee
+     * @throws DAOException
+     */
+    public List<License> getLicenses(ILicensee licensee) throws DAOException;
 
     /**
      * Returns the number of licenses that use the given license type.
@@ -813,6 +821,39 @@ public interface IDAO {
      * @throws DAOException
      */
     public long getLicenseCount(LicenseType licenseType) throws DAOException;
+
+    /**
+     * <p>
+     * addLicenseType.
+     * </p>
+     *
+     * @param license a {@link io.goobi.viewer.model.security.License} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean addLicense(License license) throws DAOException;
+
+    /**
+     * <p>
+     * updateLicenseType.
+     * </p>
+     *
+     * @param license a {@link io.goobi.viewer.model.security.License} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean updateLicense(License license) throws DAOException;
+
+    /**
+     * <p>
+     * deleteLicenseType.
+     * </p>
+     *
+     * @param license a {@link io.goobi.viewer.model.security.License} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean deleteLicense(License license) throws DAOException;
 
     // AccessTicket
 

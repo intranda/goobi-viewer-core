@@ -28,6 +28,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.net.util.SubnetUtils;
+import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.annotations.PrivateOwned;
+
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.License;
+import io.goobi.viewer.model.security.License.AccessType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,21 +50,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import org.apache.commons.net.util.SubnetUtils;
-import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
-import org.eclipse.persistence.annotations.PrivateOwned;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.security.AccessConditionUtils;
-import io.goobi.viewer.model.security.AccessPermission;
-import io.goobi.viewer.model.security.License;
-import io.goobi.viewer.model.security.LicenseType;
 
 /**
  * <p>
@@ -161,7 +159,6 @@ public class IpRange extends AbstractLicensee implements Serializable {
      * </p>
      *
      * @param requiredAccessConditions a {@link java.util.Set} object.
-     * @param relevantLicenseTypes a list of relevant license types. If null, the DAO may be queried to check for any restrictions in OpenAccess
      * @param privilegeName a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
      * @return a boolean.
@@ -173,9 +170,9 @@ public class IpRange extends AbstractLicensee implements Serializable {
      * @should return false if ip range has no license
      * @should return true if condition list empty
      */
-    public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, List<LicenseType> relevantLicenseTypes,
-            String privilegeName, String pi) throws PresentationException, IndexUnreachableException, DAOException {
-        if (requiredAccessConditions.isEmpty() || AccessConditionUtils.isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
+    public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, String privilegeName, String pi)
+            throws PresentationException, IndexUnreachableException, DAOException {
+        if (requiredAccessConditions.isEmpty()) {
             return AccessPermission.granted();
         }
 
@@ -188,31 +185,6 @@ public class IpRange extends AbstractLicensee implements Serializable {
         }
 
         return getAccessPermissionFromMap(permissionMap);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean addLicense(License license) {
-        if (licenses == null) {
-            licenses = new ArrayList<>();
-        }
-        if (!licenses.contains(license)) {
-            licenses.add(license);
-            license.setIpRange(this);
-            return true;
-        }
-
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean removeLicense(License license) {
-        if (license != null && licenses != null) {
-            return licenses.remove(license);
-        }
-
-        return false;
     }
 
     /**
@@ -298,21 +270,9 @@ public class IpRange extends AbstractLicensee implements Serializable {
         this.description = description;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public List<License> getLicenses() {
-        return licenses;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>licenses</code>.
-     * </p>
-     *
-     * @param licenses the licenses to set
-     */
-    public void setLicenses(List<License> licenses) {
-        this.licenses = licenses;
+    public AccessType getAccessType() {
+        return AccessType.IP_RANGE;
     }
 
     /**
@@ -329,5 +289,10 @@ public class IpRange extends AbstractLicensee implements Serializable {
         } catch (IllegalArgumentException e) {
             logger.error("Invalid subnet mask", e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return this.name + " (" + this.subnetMask + ")";
     }
 }

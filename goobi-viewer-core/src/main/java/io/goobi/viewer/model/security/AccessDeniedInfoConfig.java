@@ -34,6 +34,10 @@ public class AccessDeniedInfoConfig {
         this.description = description;
     }
 
+    public AccessDeniedInfoConfig copy() {
+        return new AccessDeniedInfoConfig(language, imageUri, description);
+    }
+
     /**
      * @return the language
      */
