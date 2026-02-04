@@ -24,15 +24,14 @@ package io.goobi.viewer.dao.converter;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
-
 import org.json.JSONObject;
 
 import io.goobi.viewer.model.viewer.themes.ThemeLink;
 import io.goobi.viewer.model.viewer.themes.ThemeLink.InternalService;
 import io.goobi.viewer.model.viewer.themes.ThemeLink.Service;
 import io.goobi.viewer.model.viewer.themes.ThemeLink.SocialMediaService;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 /**
  * @author florian
@@ -65,7 +64,12 @@ public class ThemeLinkConverter implements AttributeConverter<List<ThemeLink>, S
             try {
                 service = SocialMediaService.valueOf(key);
             } catch (IllegalArgumentException e) {
-                service = InternalService.valueOf(key);
+                try {
+                    service = InternalService.valueOf(key);
+                } catch (IllegalArgumentException e1) {
+                    //no matching key. Must be a deprecated link type (like slideshare). Ignore
+                    continue;
+                }
             }
             if (service != null) {
                 String url = json.getString(key);
