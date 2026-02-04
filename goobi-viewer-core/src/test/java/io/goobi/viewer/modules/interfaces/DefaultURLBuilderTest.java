@@ -68,6 +68,21 @@ class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see DefaultURLBuilder#generateURL(BrowseElement)
+     * @verifies ignore page greater than one in toc view
+     */
+    @Test
+    void generateURL_shouldIgnorePageGreatedThanOneInTocView() {
+        BrowseElement be = new BrowseElement("PPN123", 1, "Title", null, Locale.ENGLISH, null, null);
+        be.setAnchor(true);
+        be.setLogId("LOG_0000");
+        IURLBuilder builder = new DefaultURLBuilder();
+        Assertions.assertEquals("toc/PPN123/", builder.generateURL(be));
+        be.setImageNo(2);
+        Assertions.assertEquals("toc/PPN123/", builder.generateURL(be));
+    }
+
+    /**
      * @see DefaultURLBuilder#buildPageUrl(String,int,String,PageType,boolean)
      * @verifies return archive view url if page type archive
      */
