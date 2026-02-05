@@ -1811,6 +1811,8 @@ public interface IDAO {
      */
     public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException;
 
+    // CMS archive configurations
+
     /**
      * <p>
      * getCMSArchiveConfigs.
@@ -1826,7 +1828,7 @@ public interface IDAO {
      */
     public List<CMSArchiveConfig> getCMSArchiveConfigs(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException;
-    
+
     /**
      * <p>
      * getCMSArchiveConfigCount.
@@ -1837,7 +1839,7 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getCMSArchiveConfigCount(Map<String, String> filters) throws DAOException;
-    
+
     /**
      * 
      * @param pi Archive record identifier
@@ -1845,6 +1847,28 @@ public interface IDAO {
      * @throws DAOException
      */
     public Optional<CMSArchiveConfig> getCmsArchiveConfigForArchive(String pi) throws DAOException;
+
+    /**
+     * <p>
+     * saveCMSArchiveConfig.
+     * </p>
+     *
+     * @param config a {@link io.goobi.viewer.model.cms.CMSArchiveConfig} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean saveCMSArchiveConfig(CMSArchiveConfig config) throws DAOException;
+
+    /**
+     * <p>
+     * deleteCMSArchiveConfig.
+     * </p>
+     *
+     * @param config a {@link io.goobi.viewer.model.cms.CMSArchiveConfig} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean deleteCMSArchiveConfig(CMSArchiveConfig config) throws DAOException;
 
     /**
      * <p>

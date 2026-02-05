@@ -75,8 +75,22 @@ public class CMSArchiveConfig implements CMSMediaHolder, Serializable {
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText description = new TranslatedText();
 
-    @JoinColumn(name = "media_item_id")
-    private CMSMediaItem mediaItem;
+    @JoinColumn(name = "tile_media_item_id")
+    private CMSMediaItem tileImage;
+
+    @JoinColumn(name = "header_media_item_id")
+    private CMSMediaItem headerImage;
+
+    public CMSArchiveConfig() {
+    }
+
+    /**
+     * 
+     * @param pi
+     */
+    public CMSArchiveConfig(String pi) {
+        this.pi = pi;
+    }
 
     /**
      * @return the id
@@ -163,19 +177,41 @@ public class CMSArchiveConfig implements CMSMediaHolder, Serializable {
     }
 
     /**
-     * @return the mediaItem
+     * @return the tileImage
      */
-    @Override
-    public CMSMediaItem getMediaItem() {
-        return mediaItem;
+    public CMSMediaItem getTileImage() {
+        return tileImage;
     }
 
     /**
-     * @param mediaItem the mediaItem to set
+     * @param tileImage the tileImage to set
      */
+    public void setTileImage(CMSMediaItem tileImage) {
+        this.tileImage = tileImage;
+    }
+
+    /**
+     * @return the headerImage
+     */
+    public CMSMediaItem getHeaderImage() {
+        return headerImage;
+    }
+
+    /**
+     * @param headerImage the headerImage to set
+     */
+    public void setHeaderImage(CMSMediaItem headerImage) {
+        this.headerImage = headerImage;
+    }
+
     @Override
-    public void setMediaItem(CMSMediaItem mediaItem) {
-        this.mediaItem = mediaItem;
+    public void setMediaItem(CMSMediaItem item) {
+        setTileImage(item);
+    }
+
+    @Override
+    public CMSMediaItem getMediaItem() {
+        return getTileImage();
     }
 
     @Override
@@ -196,8 +232,8 @@ public class CMSArchiveConfig implements CMSMediaHolder, Serializable {
     @Override
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
         if (hasMediaItem()) {
-            return new CategorizableTranslatedSelectable<>(mediaItem, true,
-                    mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
+            return new CategorizableTranslatedSelectable<>(tileImage, true,
+                    tileImage.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
         }
 
         return null;

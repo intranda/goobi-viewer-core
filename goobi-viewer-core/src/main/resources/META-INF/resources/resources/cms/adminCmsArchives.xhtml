@@ -26,6 +26,9 @@
                 <viewerComponent:adminBreadcrumbs />
 
                 <div class="admin__content-inner-content">
+                    <!-- GENERAL DESCRIPTION -->
+                    <div class="admin__info-text">#{msg.admin__cms_archives_desc}</div>
+                
                     <div class="admin__table-tools">
                         <!-- PAGINATOR -->
                         <div class="admin__table-paginator">
@@ -33,7 +36,7 @@
                         </div>
                         <!-- FILTER -->
                         <div class="admin__table-filter">
-                            <viewerComponent:dataTableColumnFilter key="admin__archive_search"
+                            <viewerComponent:dataTableColumnFilter key="admin__cms_archives_search"
                                 filter="#{cmsArchivesBean.lazyModelArchiveConfigurations.getFilter('title_description')}"/>
                         </div>
                     </div>
@@ -46,7 +49,7 @@
                             <!-- NAME COL -->
                             <div class="col-6 d-flex -sorting-arrow-trigger">
                                 <!-- SORTING -->
-                                <viewerComponent:sortingArrow filterType="email" colHeading="#{msg.admin__archives}"
+                                <viewerComponent:sortingArrow filterType="email" colHeading="#{msg.admin__cms_archives_archives}"
                                    list="#{cmsArchivesBean.lazyModelArchiveConfigurations}" />
                             </div>
                         </div>
@@ -58,15 +61,10 @@
                                 <div class="col-6 d-flex">
                                     <!-- IMAGE -->
                                     <div class="admin__table-img" role="presentation">
-                                        <ui:fragment rendered="#{archive.hasMediaItem()}"> 
+                                        <ui:fragment rendered="#{archiveWrapper.archiveConfig.hasMediaItem()}"> 
                                             <div class="crowdsourcing-campaigns-overview__campaign__image">
-                                                <img srcset="#{archive.mediaItem.getIconURI(1200,600)} 1200w,
-                                                    #{archive.mediaItem.getIconURI(900,400)} 900w,
-                                                    #{archive.mediaItem.getIconURI(600,450)} 600w,
-                                                    #{archive.mediaItem.getIconURI(400,300)} 400w"
-                                                    sizes="(max-width: 1200px) 660px, 300px"
-                                                    src="#{archive.mediaItem.getIconURI(200,300)}"
-                                                    alt="#{archive.mediaItem.alternativeText != '' ? archive.mediaItem.alternativeText : '' }" />
+                                                <img src="#{archiveWrapper.archiveConfig.mediaItem.getIconURI()}"
+                                                    alt="#{archiveWrapper.archiveConfig.mediaItem.alternativeText != '' ? archiveWrapper.archiveConfig.mediaItem.alternativeText : '' }" />
                                             </div>
                                         </ui:fragment>
                                     </div>
@@ -77,7 +75,7 @@
                                         </span>
                                         <!-- DESCRIPTION -->
                                         <span class="admin__table-desc">
-                                            <h:outputText value="#{archiveWrapper.archiveConfig.description}" escape="true" />
+                                            <h:outputText value="#{archiveWrapper.archiveConfig.description}" escape="false" />
                                         </span>
                                         <!-- EDIT -->
                                         <a href="#{navigationHelper.applicationUrl}admin/cms/archives/edit/#{archiveWrapper.archiveResource.resourceId}/"

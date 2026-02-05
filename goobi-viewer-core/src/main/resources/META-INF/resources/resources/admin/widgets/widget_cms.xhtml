@@ -129,7 +129,7 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
-                        <ui:fragment>
+                        <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                             <li
                                 class="#{navigationHelper.currentPage == 'adminCmsArchives' ? 'active' : ''}"
                             >
@@ -137,7 +137,7 @@
                                     value="#{navigationHelper.getPageUrl('adminCmsArchives')}/"
                                 >
                                     <util:icon-text
-                                        icon="box"
+                                        icon="archive"
                                         text="#{msg.admin__cms_archives}"
                                         styleClass="icon-text--nav"
                                     />

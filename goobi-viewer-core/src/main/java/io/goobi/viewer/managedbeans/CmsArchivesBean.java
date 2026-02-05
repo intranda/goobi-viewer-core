@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,9 +36,11 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.CmsCollectionsBean.CMSCollectionImageMode;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import jakarta.annotation.PostConstruct;
@@ -59,6 +62,8 @@ public class CmsArchivesBean implements Serializable {
     private ArchiveResourceWrapper selectedArchiveWrapper;
 
     private Map<String, ArchiveResourceWrapper> archiveMap = new HashMap<>();
+
+    private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
 
     @PostConstruct
     public void init() {
@@ -86,6 +91,9 @@ public class CmsArchivesBean implements Serializable {
                         if (config.isPresent()) {
                             logger.trace("Found configuration for archive resource: {}", resource.getResourceId());
                             wrapper.setArchiveConfig(config.get());
+                        } else {
+                            // Make sure the CMSArchiveConfig is available early
+                            wrapper.setArchiveConfig(new CMSArchiveConfig(resource.getResourceId()));
                         }
                     }
                     return ret;
@@ -110,6 +118,34 @@ public class CmsArchivesBean implements Serializable {
         lazyModelArchiveConfigurations.getFilter("title_description");
     }
 
+    public String saveSelectedArchiveAction() {
+        if (selectedArchiveWrapper == null || selectedArchiveWrapper.getArchiveConfig() == null) {
+            return "";
+        }
+
+        try {
+            if (saveArchiveConfig(selectedArchiveWrapper.getArchiveConfig())) {
+                Messages.info(null, "button__save__success", selectedArchiveWrapper.getArchiveResource().getResourceName());
+                return "pretty:adminCmsArchives";
+            }
+            Messages.error("button__save__error");
+        } catch (DAOException e) {
+            Messages.error("button__save__error", e.getMessage());
+            logger.error(e.getMessage());
+        }
+
+        return "";
+    }
+
+    public boolean saveArchiveConfig(CMSArchiveConfig config) throws DAOException {
+        if (config == null) {
+            return false;
+        }
+
+        config.setDateUpdated(LocalDateTime.now());
+        return DataManager.getInstance().getDao().saveCMSArchiveConfig(config);
+    }
+
     /**
      * <p>
      * Getter for the field <code>lazyModelArchiveConfigurations</code>.
@@ -130,6 +166,48 @@ public class CmsArchivesBean implements Serializable {
      */
     public List<ArchiveResourceWrapper> getPageArchiveWrappers() {
         return lazyModelArchiveConfigurations.getPaginatorList();
+    }
+
+    /**
+     * @return the selectedArchiveWrapper
+     */
+    public ArchiveResourceWrapper getSelectedArchiveWrapper() {
+        return selectedArchiveWrapper;
+    }
+
+    /**
+     * @param selectedArchiveWrapper the selectedArchiveWrapper to set
+     */
+    public void setSelectedArchiveWrapper(ArchiveResourceWrapper selectedArchiveWrapper) {
+        this.selectedArchiveWrapper = selectedArchiveWrapper;
+    }
+
+    public void setsetSelectedResourceId(String resourceId) {
+        logger.trace("setsetSelectedResourceId: {}", resourceId);
+        if (StringUtils.isNotEmpty(resourceId)) {
+            this.selectedArchiveWrapper = archiveMap.get(resourceId);
+            if (this.selectedArchiveWrapper != null) {
+                logger.trace("resource found");
+                return;
+            }
+        }
+
+        this.selectedArchiveWrapper = null;
+    }
+
+    /**
+     * @return the imageMode
+     */
+    public CMSCollectionImageMode getImageMode() {
+        return imageMode;
+    }
+
+    /**
+     * @param imageMode the imageMode to set
+     */
+    public void setImageMode(CMSCollectionImageMode imageMode) {
+        logger.trace("setImageMode: {}", imageMode);
+        this.imageMode = imageMode;
     }
 
     /**
@@ -165,26 +243,4 @@ public class CmsArchivesBean implements Serializable {
         }
     }
 
-    /**
-     * @return the selectedArchiveWrapper
-     */
-    public ArchiveResourceWrapper getSelectedArchiveWrapper() {
-        return selectedArchiveWrapper;
-    }
-
-    /**
-     * @param selectedArchiveWrapper the selectedArchiveWrapper to set
-     */
-    public void setSelectedArchiveWrapper(ArchiveResourceWrapper selectedArchiveWrapper) {
-        this.selectedArchiveWrapper = selectedArchiveWrapper;
-    }
-
-    public void setsetSelectedResourceId(String resourceId) {
-        logger.trace("setsetSelectedResourceId: {");
-        if (StringUtils.isNotEmpty(resourceId)) {
-            this.selectedArchiveWrapper = archiveMap.get(resourceId);
-        }
-
-        this.selectedArchiveWrapper = null;
-    }
 }

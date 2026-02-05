@@ -4281,6 +4281,9 @@ public class JPADAO implements IDAO {
         }
     }
 
+    // CMS archive configurations
+
+    /** {@inheritDoc} */
     @Override
     public Optional<CMSArchiveConfig> getCmsArchiveConfigForArchive(String pi) throws DAOException {
         preQuery();
@@ -4295,6 +4298,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<CMSArchiveConfig> getCMSArchiveConfigs(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
@@ -4331,6 +4335,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public long getCMSArchiveConfigCount(Map<String, String> filters) throws DAOException {
         preQuery();
@@ -4347,6 +4352,48 @@ public class JPADAO implements IDAO {
             Query q = em.createQuery(sbQuery.toString());
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
             return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean saveCMSArchiveConfig(CMSArchiveConfig config) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            if (config.getId() == null) {
+                em.persist(config);
+            } else {
+                em.merge(config);
+            }
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error(e.toString(), e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteCMSArchiveConfig(CMSArchiveConfig config) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            Role o = em.getReference(Role.class, config.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
             close(em);
         }

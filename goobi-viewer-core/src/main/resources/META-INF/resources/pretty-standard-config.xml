@@ -1038,7 +1038,7 @@
     </url-mapping>
     <url-mapping id="adminCmsArchiveEdit">
         <pattern value="/admin/cms/archives/edit/#{resourceId}/" />
-        <view-id value="/resources/cms/adminCmsArchive.xhtml" />
+        <view-id value="/resources/cms/adminCmsArchiveEdit.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsArchivesBean.setsetSelectedResourceId(resourceId)}</action>
     </url-mapping>
