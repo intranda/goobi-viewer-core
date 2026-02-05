@@ -58,6 +58,7 @@ public class DefaultURLBuilder implements IURLBuilder {
      * 
      * @should only add page if not topStruct or page greater than one
      * @should only add logId if not topStruct
+     * @should ignore page greater than one in toc view
      */
     @Override
     public String generateURL(BrowseElement ele) {
@@ -102,6 +103,8 @@ public class DefaultURLBuilder implements IURLBuilder {
                         .append(lang != null ? lang.getIsoCode() : "eng")
                         .append("/")
                         .toString();
+            } else if (PageType.viewToc.equals(pageType)) {
+                url = buildPageUrl(ele.getPi(), 1, ele.getLogId(), pageType, topstruct);
             } else {
                 url = buildPageUrl(ele.getPi(), ele.getImageNo(), ele.getLogId(), pageType, topstruct);
             }
