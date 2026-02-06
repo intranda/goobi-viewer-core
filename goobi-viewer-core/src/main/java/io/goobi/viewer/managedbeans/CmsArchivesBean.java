@@ -182,7 +182,7 @@ public class CmsArchivesBean implements Serializable {
         this.selectedArchiveWrapper = selectedArchiveWrapper;
     }
 
-    public void setsetSelectedResourceId(String resourceId) {
+    public void setSelectedResourceId(String resourceId) {
         logger.trace("setsetSelectedResourceId: {}", resourceId);
         if (StringUtils.isNotEmpty(resourceId)) {
             this.selectedArchiveWrapper = archiveMap.get(resourceId);
