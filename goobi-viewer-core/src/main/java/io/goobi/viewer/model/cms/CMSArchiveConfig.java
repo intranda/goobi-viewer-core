@@ -31,8 +31,8 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaMultiHolder;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -45,7 +45,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_archive_configs")
-public class CMSArchiveConfig implements CMSMediaHolder, Serializable {
+public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
 
     private static final long serialVersionUID = -1267723820348788709L;
 
@@ -206,12 +206,12 @@ public class CMSArchiveConfig implements CMSMediaHolder, Serializable {
 
     @Override
     public void setMediaItem(CMSMediaItem item) {
-        setTileImage(item);
+        setMediaItem(0, item);
     }
 
     @Override
     public CMSMediaItem getMediaItem() {
-        return getTileImage();
+        return getMediaItem(0);
     }
 
     @Override
@@ -239,4 +239,51 @@ public class CMSArchiveConfig implements CMSMediaHolder, Serializable {
         return null;
     }
 
+    @Override
+    public void setMediaItem(int index, CMSMediaItem item) {
+        switch (index) {
+            case 0:
+                setTileImage(item);
+                break;
+            case 1:
+                setHeaderImage(item);
+                break;
+            default:
+                logger.warn("Unknown item index: {}", index);
+        }
+    }
+
+    @Override
+    public CMSMediaItem getMediaItem(int index) {
+        return switch (index) {
+            case 0 -> getTileImage();
+            case 1 -> getHeaderImage();
+            default -> null;
+        };
+    }
+
+    @Override
+    public String getMediaFilter(int index) {
+        return CmsMediaBean.getImageFilter();
+    }
+
+    @Override
+    public String getMediaTypes(int index) {
+        return CmsMediaBean.getImageTypes();
+    }
+
+    @Override
+    public boolean hasMediaItem(int index) {
+        return getMediaItem(index) != null;
+    }
+
+    @Override
+    public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper(int index) {
+        if (hasMediaItem(index)) {
+            return new CategorizableTranslatedSelectable<>(getMediaItem(index), true,
+                    getMediaItem(index).getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
+        }
+
+        return null;
+    }
 }
