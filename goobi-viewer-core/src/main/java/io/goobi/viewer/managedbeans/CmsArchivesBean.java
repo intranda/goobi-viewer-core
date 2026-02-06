@@ -90,7 +90,7 @@ public class CmsArchivesBean implements Serializable {
                                 DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(resource.getResourceId());
                         if (config.isPresent()) {
                             logger.trace("Found configuration for archive resource: {}", resource.getResourceId());
-                            wrapper.setArchiveConfig(config.get());
+                            wrapper.setArchiveConfig(new CMSArchiveConfig(config.get())); // Clone DB object for editing
                         } else {
                             // Make sure the CMSArchiveConfig is available early
                             wrapper.setArchiveConfig(new CMSArchiveConfig(resource.getResourceId()));

@@ -93,6 +93,22 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     }
 
     /**
+     * Cloning constructor. Must be updated after any changes to the class.
+     * 
+     * @param orig {@link CMSArchiveConfig} to clone
+     */
+    public CMSArchiveConfig(CMSArchiveConfig orig) {
+        this.id = orig.id;
+        this.pi = orig.pi;
+        this.dateUpdated = orig.dateUpdated;
+        this.title = new TranslatedText(orig.title);
+        this.previewText = new TranslatedText(orig.previewText);
+        this.description = new TranslatedText(orig.description);
+        this.tileImage = orig.tileImage;
+        this.headerImage = orig.headerImage;
+    }
+
+    /**
      * @return the id
      */
     public Long getId() {
