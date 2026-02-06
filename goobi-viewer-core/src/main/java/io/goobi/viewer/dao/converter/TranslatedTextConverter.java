@@ -52,12 +52,10 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
     private Collection<Locale> configuredLocales;
 
     public TranslatedTextConverter() {
-        System.out.println("TranslatedTextConverter");
         configuredLocales = null;
     }
 
     public TranslatedTextConverter(Collection<Locale> locales) {
-        System.out.println("TranslatedTextConverter(locales)");
         this.configuredLocales = locales;
     }
 
@@ -66,7 +64,6 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
      */
     @Override
     public String convertToDatabaseColumn(TranslatedText attribute) {
-        System.out.println("convertToDatabaseColumn");
         if (attribute != null) {
             if (attribute.hasTranslations()) {
                 try {
@@ -90,7 +87,6 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
      */
     @Override
     public TranslatedText convertToEntityAttribute(String dbData) {
-        System.out.println("convertToEntityAttribute");
         TranslatedText attribute = new TranslatedText(getConfiguredLocales());
         if (StringUtils.isBlank(dbData)) {
             return attribute;
