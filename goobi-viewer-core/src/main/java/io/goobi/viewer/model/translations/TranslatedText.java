@@ -303,9 +303,16 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(TranslatedText.class)) {
             TranslatedText other = (TranslatedText) obj;
-            if (other.getLanguages().size() != this.getLanguages().size()) {
-                return false;
+
+            for (ValuePair pair : other.getValues()) {
+                Locale locale = pair.getLocale();
+                String value = pair.getValue();
+                boolean same = Objects.equals(this.getValue(locale).orElse(""), value == null ? "" : value);
+                if (!same) {
+                    return false;
+                }
             }
+
             for (ValuePair pair : this.getValues()) {
                 Locale locale = pair.getLocale();
                 String value = pair.getValue();
@@ -314,6 +321,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
                     return false;
                 }
             }
+
             return true;
         }
 
