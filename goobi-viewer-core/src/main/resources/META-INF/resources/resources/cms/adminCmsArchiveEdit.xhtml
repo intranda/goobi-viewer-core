@@ -153,7 +153,7 @@
 												value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
 												class="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() == null ? 'btn btn--default' : ''}"
 												role="button">
-												<f:ajax execute="@form" render="mediaSelectPanelTile" />
+												<f:ajax execute="@form" render="mediaSelectPanel0" />
 											</h:commandLink>
 											<h:commandLink
 												rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() != null}"
@@ -222,7 +222,7 @@
                                                 value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
                                                 class="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() == null ? 'btn btn--default' : ''}"
                                                 role="button">
-                                                <f:ajax execute="@form" render="mediaSelectPanelHeader" />
+                                                <f:ajax execute="@form" render="mediaSelectPanel1" />
                                             </h:commandLink>
                                             <h:commandLink
                                                 rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() != null}"
@@ -248,7 +248,7 @@
 									#{msg.button__save}</button>
 							</div>
 
-							<h:panelGroup id="mediaSelectPanelTile">
+							<h:panelGroup id="mediaSelectPanel0">
 								<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
 									<div class="admin-cms-media-select-overlay">
 
@@ -270,7 +270,7 @@
 								</ui:fragment>
 							</h:panelGroup>
 							
-                            <h:panelGroup id="mediaSelectPanelHeader">
+                            <h:panelGroup id="mediaSelectPanel1">
                                 <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
                                     <div class="admin-cms-media-select-overlay">
 

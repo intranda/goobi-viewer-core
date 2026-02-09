@@ -98,13 +98,13 @@
                             value="#{msg.button__abort}" 
                             class="btn btn--clean" 
                             role="button">
-                            <f:ajax render="mediaSelectPanel" onevent="cmsJS.media.checkMediaSelectModal( false )" />
+                            <f:ajax render="mediaSelectPanel#{index}" onevent="cmsJS.media.checkMediaSelectModal( false )" />
                         </h:commandLink>
                         <h:commandLink 
                             action="#{cmsBean.fillSelectedMediaHolder(cmsMediaBean.selectedMediaItem, index, true)}" 
                             value="#{msg.cms_selectMediaItem_agree}"
                             class="btn btn--full" role="button">
-                            <f:ajax execute="@form" render="mediaSelectPanel #{mediaDisplayPanel}" onevent="cmsJS.media.checkMediaSelectModal( false )" />
+                            <f:ajax execute="@form" render="mediaSelectPanel#{index} #{mediaDisplayPanel}" onevent="cmsJS.media.checkMediaSelectModal( false )" />
                         </h:commandLink>
                     </div>
                 </h:form>

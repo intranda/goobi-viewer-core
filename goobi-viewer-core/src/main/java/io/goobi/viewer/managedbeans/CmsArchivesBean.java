@@ -190,6 +190,7 @@ public class CmsArchivesBean implements Serializable {
             this.selectedArchiveWrapper = archiveMap.get(resourceId);
             if (this.selectedArchiveWrapper != null) {
                 logger.trace("resource found");
+                initImageMode();
                 return;
             }
         }
@@ -208,7 +209,6 @@ public class CmsArchivesBean implements Serializable {
      * @param imageModeTile the imageModeTile to set
      */
     public void setImageModeTile(CMSCollectionImageMode imageModeTile) {
-        logger.trace("setImageModeTile: {}", imageModeTile);
         this.imageModeTile = imageModeTile;
     }
     
@@ -223,8 +223,30 @@ public class CmsArchivesBean implements Serializable {
      * @param imageModeHeader the imageModeHeader to set
      */
     public void setImageModeHeader(CMSCollectionImageMode imageModeHeader) {
-        logger.trace("setImageModeHeader: {}", imageModeHeader);
         this.imageModeHeader = imageModeHeader;
+    }
+    
+    /**
+     * Sets the value of <code>imageMode</code> depending on the properties of <code>currentCollection</code>.
+     *
+     * @should set imageMode correctly
+     */
+    public void initImageMode() {
+        if (selectedArchiveWrapper == null) {
+            return;
+        }
+
+         if (selectedArchiveWrapper.getArchiveConfig().hasMediaItem(0)) {
+            imageModeTile = CMSCollectionImageMode.IMAGE;
+        } else {
+            imageModeTile = CMSCollectionImageMode.NONE;
+        }
+         
+         if (selectedArchiveWrapper.getArchiveConfig().hasMediaItem(1)) {
+             imageModeHeader = CMSCollectionImageMode.IMAGE;
+         } else {
+             imageModeHeader = CMSCollectionImageMode.NONE;
+         }
     }
 
     /**
