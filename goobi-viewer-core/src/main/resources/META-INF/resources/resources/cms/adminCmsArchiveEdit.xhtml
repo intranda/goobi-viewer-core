@@ -129,18 +129,18 @@
 
 									<h:panelGroup layout="block"
 										styleClass="admin__cms-edit-collection-wrapper-choose-image"
-										id="mediaGroupTile"
+										id="mediaGroup0"
 										rendered="#{cmsArchivesBean.imageModeTile == 'IMAGE'}">
 										<!-- THUMBNAIL -->
 										<div class="admin__cms-edit-collection-image-thumbnail">
 											<ui:fragment
-												rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem()}">
+												rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(0)}">
 												<img
-													src="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.mediaItem.iconURI}"
+													src="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem(0).iconURI}"
 													class="img-fluid" alt="" />
 											</ui:fragment>
 											<ui:fragment
-												rendered="#{!cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem()}">
+												rendered="#{!cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(0)}">
 												<img src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
 													data-viewer-thumbnail="thumbnail" class="img-fluid" alt="" />
 											</ui:fragment>
@@ -150,14 +150,14 @@
 										<div class="admin__cms-edit-collection-image-actions">
 											<h:commandLink
 												action="#{cmsBean.setSelectedMediaHolder(cmsArchivesBean.selectedArchiveWrapper.archiveConfig)}"
-												value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
-												class="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() == null ? 'btn btn--default' : ''}"
+												value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem(0) == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
+												class="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem(0) == null ? 'btn btn--default' : ''}"
 												role="button">
 												<f:ajax execute="@form" render="mediaSelectPanel0" />
 											</h:commandLink>
 											<h:commandLink
-												rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() != null}"
-												action="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.setMediaItem(null)}"
+												rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem(0) != null}"
+												action="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.setMediaItem(0, null)}"
 												value="#{msg.cms_selectMediaItem_deselect}" class="-redlink"
 												role="button">
 												<f:ajax render="mediaGroupTile" />
@@ -198,18 +198,18 @@
 
                                     <h:panelGroup layout="block"
                                         styleClass="admin__cms-edit-collection-wrapper-choose-image"
-                                        id="mediaGroupHeader"
+                                        id="mediaGroup1"
                                         rendered="#{cmsArchivesBean.imageModeHeader == 'IMAGE'}">
                                         <!-- THUMBNAIL -->
                                         <div class="admin__cms-edit-collection-image-thumbnail">
                                             <ui:fragment
-                                                rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem()}">
+                                                rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(1)}">
                                                 <img
-                                                    src="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.mediaItem.iconURI}"
+                                                    src="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem(1).iconURI}"
                                                     class="img-fluid" alt="" />
                                             </ui:fragment>
                                             <ui:fragment
-                                                rendered="#{!cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem()}">
+                                                rendered="#{!cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(1)}">
                                                 <img src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
                                                     data-viewer-thumbnail="thumbnail" class="img-fluid" alt="" />
                                             </ui:fragment>
@@ -219,14 +219,14 @@
                                         <div class="admin__cms-edit-collection-image-actions">
                                             <h:commandLink
                                                 action="#{cmsBean.setSelectedMediaHolder(cmsArchivesBean.selectedArchiveWrapper.archiveConfig)}"
-                                                value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
-                                                class="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() == null ? 'btn btn--default' : ''}"
+                                                value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem(1) == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
+                                                class="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem(1) == null ? 'btn btn--default' : ''}"
                                                 role="button">
                                                 <f:ajax execute="@form" render="mediaSelectPanel1" />
                                             </h:commandLink>
                                             <h:commandLink
-                                                rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() != null}"
-                                                action="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.setMediaItem(null)}"
+                                                rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem(1) != null}"
+                                                action="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.setMediaItem(1, null)}"
                                                 value="#{msg.cms_selectMediaItem_deselect}" class="-redlink"
                                                 role="button">
                                                 <f:ajax render="mediaGroupHeader" />
@@ -258,7 +258,7 @@
 										<!-- SELECT MEDIA ITEM -->
 										<div class="admin-cms-media__select">
 											<ui:include src="/resources/cms/includes/mediaSelect.xhtml">
-												<ui:param name="mediaDisplayPanel" value="mediaGroup" />
+												<ui:param name="mediaDisplayPanel" value="mediaGroup0" />
 												<ui:param name="fileTypes"
 													value="#{cmsMediaBean.getImageTypes()}" />
 												<ui:param name="fileTypeValidator"
@@ -280,7 +280,7 @@
                                         <!-- SELECT MEDIA ITEM -->
                                         <div class="admin-cms-media__select">
                                             <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
-                                                <ui:param name="mediaDisplayPanel" value="mediaGroup" />
+                                                <ui:param name="mediaDisplayPanel" value="mediaGroup1" />
                                                 <ui:param name="fileTypes"
                                                     value="#{cmsMediaBean.getImageTypes()}" />
                                                 <ui:param name="fileTypeValidator"
