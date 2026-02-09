@@ -21,7 +21,8 @@
         <!-- TAB PANES -->
         <div class="tab-content">
             <!-- UPLOAD -->
-            <div role="tabpanel" class="tab-pane" id="fileUpload">
+            <div role="tabpanel" class="tab-pane" id="fileUpload#{index}">
+            
                 <adminMediaUpload></adminMediaUpload>
 
                 <!-- ACTION -->
@@ -39,25 +40,27 @@
             </div>
             
             <!-- FILE SELECT -->
-            <div role="tabpanel" class="tab-pane active" id="fileSelect">
-                <h:form id="adminCmsMediaFilesForm" prependId="false">
+            <div role="tabpanel" class="tab-pane active" id="fileSelect#{index}">
+                <h:form id="adminCmsMediaFilesForm#{index}" prependId="false">
                     <!-- MEDIA ACTIONS -->
                     <ui:include src="/resources/cms/includes/mediaActions.xhtml">
                         <ui:param name="bulkaction" value="#{false}" />
                         <ui:param name="viewswitch" value="#{false}" />
+                        <ui:param name="index" value="#{index}" />
                     </ui:include>
         
                     <div class="admin-cms-media__select-files">
                         <!-- MEDIA FILES -->
                         <div class="admin-cms-media__select-files-files">
                             <div class="admin-cms-media__files">
-                                <ui:repeat id="mediaList" value="#{cmsMediaBean.getMediaItems()}" 
+                                <ui:repeat id="mediaList#{index}" value="#{cmsMediaBean.getMediaItems()}" 
                                     var="selectableItem" varStatus="status">
                                     <div class="admin-cms-media__item-wrapper">
                                         <div class="admin-cms-media__item">
                                             <ui:include src="/resources/cms/includes/mediaFile.xhtml">
                                                 <ui:param name="item" value="#{selectableItem}" />
                                                 <ui:param name="idPrefix" value="mediaList:#{status.index}:" />
+                                                <ui:param name="idSuffix" value="#{index}" />
                                             </ui:include>
                                         </div>
                                         <div class="admin-cms-media__item-select-frame #{selectableItem.value == cmsMediaBean.selectedMediaItem.value ? 'in' : ''}">
@@ -78,10 +81,11 @@
                         
                         <!-- SELECTED MEDIA FILES -->
                         <!-- must be h:panelgroup for ajax refresh -->
-                        <h:panelGroup id="selectedMediaItemPanel" styleClass="admin-cms-media__select-files-selected" layout="block">
+                        <h:panelGroup id="selectedMediaItemPanel#{index}" styleClass="admin-cms-media__select-files-selected" layout="block">
                             <ui:fragment rendered="#{cmsMediaBean.selectedMediaItem != null}">
                                 <ui:include src="/resources/cms/includes/mediaFile.xhtml">
                                     <ui:param name="item" value="#{cmsMediaBean.selectedMediaItem}" />
+                                    <ui:param name="idSuffix" value="#{index}" />
                                 </ui:include>
                             </ui:fragment>
                         </h:panelGroup>
@@ -97,7 +101,7 @@
                             <f:ajax render="mediaSelectPanel" onevent="cmsJS.media.checkMediaSelectModal( false )" />
                         </h:commandLink>
                         <h:commandLink 
-                            action="#{cmsBean.fillSelectedMediaHolder(cmsMediaBean.selectedMediaItem, true)}" 
+                            action="#{cmsBean.fillSelectedMediaHolder(cmsMediaBean.selectedMediaItem, index, true)}" 
                             value="#{msg.cms_selectMediaItem_agree}"
                             class="btn btn--full" role="button">
                             <f:ajax execute="@form" render="mediaSelectPanel #{mediaDisplayPanel}" onevent="cmsJS.media.checkMediaSelectModal( false )" />
@@ -113,6 +117,7 @@
 			postUrl : '#{navigationHelper.applicationUrl}api/v1/cms/media/files/',
 			fileTypes: "#{fileTypes}",
         	fileTypeValidator: /#{fileTypeValidator.replace("(?i)", "")}/i,
+        	index: '#{index}',
 			msg : {
 				buttonUpload : "#{msg.button__upload}",
 				uploadText : "#{msg.admin__media_upload_text}",

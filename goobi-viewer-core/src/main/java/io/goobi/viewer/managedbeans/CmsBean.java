@@ -72,6 +72,7 @@ import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaMultiHolder;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
@@ -1645,9 +1646,24 @@ public class CmsBean implements Serializable {
      * @param saveMedia a boolean.
      */
     public void fillSelectedMediaHolder(CategorizableTranslatedSelectable<CMSMediaItem> mediaItem, boolean saveMedia) {
-        this.selectedMediaHolder.ifPresent(item -> {
+        fillSelectedMediaHolder(mediaItem, 0, saveMedia);
+    }
+
+    /**
+     * 
+     * @param mediaItem
+     * @param index Media item index for instances of CMSMediaMultiHolder
+     * @param saveMedia
+     */
+    public void fillSelectedMediaHolder(CategorizableTranslatedSelectable<CMSMediaItem> mediaItem, int index, boolean saveMedia) {
+        logger.trace("fillSelectedMediaHolder, index {}", index);
+        this.selectedMediaHolder.ifPresent(holder -> {
             if (mediaItem != null) {
-                item.setMediaItem(mediaItem.getValue());
+                if (holder instanceof CMSMediaMultiHolder mediaMultiItem) {
+                    mediaMultiItem.setMediaItem(index, mediaItem.getValue());
+                } else {
+                    holder.setMediaItem(mediaItem.getValue());
+                }
                 if (saveMedia) {
                     try {
                         cmsMediaBean.saveMedia(mediaItem.getValue(), mediaItem.getCategories());
@@ -1656,7 +1672,7 @@ public class CmsBean implements Serializable {
                     }
                 }
             } else {
-                item.setMediaItem(null);
+                holder.setMediaItem(null);
             }
         });
         this.selectedMediaHolder = Optional.empty();

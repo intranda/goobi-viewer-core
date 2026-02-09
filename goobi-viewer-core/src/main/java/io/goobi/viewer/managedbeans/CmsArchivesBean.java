@@ -63,7 +63,9 @@ public class CmsArchivesBean implements Serializable {
 
     private Map<String, ArchiveResourceWrapper> archiveMap = new HashMap<>();
 
-    private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
+    private CMSCollectionImageMode imageModeTile = CMSCollectionImageMode.NONE;
+    
+    private CMSCollectionImageMode imageModeHeader = CMSCollectionImageMode.NONE;
 
     @PostConstruct
     public void init() {
@@ -196,18 +198,33 @@ public class CmsArchivesBean implements Serializable {
     }
 
     /**
-     * @return the imageMode
+     * @return the imageModeTile
      */
-    public CMSCollectionImageMode getImageMode() {
-        return imageMode;
+    public CMSCollectionImageMode getImageModeTile() {
+        return imageModeTile;
     }
 
     /**
-     * @param imageMode the imageMode to set
+     * @param imageModeTile the imageModeTile to set
      */
-    public void setImageMode(CMSCollectionImageMode imageMode) {
-        logger.trace("setImageMode: {}", imageMode);
-        this.imageMode = imageMode;
+    public void setImageModeTile(CMSCollectionImageMode imageModeTile) {
+        logger.trace("setImageModeTile: {}", imageModeTile);
+        this.imageModeTile = imageModeTile;
+    }
+    
+    /**
+     * @return the imageModeHeader
+     */
+    public CMSCollectionImageMode getImageModeHeader() {
+        return imageModeHeader;
+    }
+
+    /**
+     * @param imageModeHeader the imageModeHeader to set
+     */
+    public void setImageModeHeader(CMSCollectionImageMode imageModeHeader) {
+        logger.trace("setImageModeHeader: {}", imageModeHeader);
+        this.imageModeHeader = imageModeHeader;
     }
 
     /**

@@ -99,39 +99,38 @@
 								</h:panelGroup>
 							</div>
 
-							<!-- IMAGE -->
-							<h2>#{msg.admin__cms_archives_image}</h2>
+							<!-- IMAGE: TILE -->
+							<h2>#{msg.admin__cms_archives_image_tile}</h2>
 							<div class="admin__default-block">
-								<p class="admin__boxed-entry-description">#{msg.admin__cms_archives_image_desc}</p>
+								<p class="admin__boxed-entry-description">#{msg.admin__cms_archives_image_tile_desc}</p>
 
-								<h:panelGroup layout="block" id="imageModeGroup"
+								<h:panelGroup layout="block" id="imageModeGroupTile"
 									styleClass="admin__cms-edit-collection-image-actions-wrapper">
 
 									<div
 										class="form-group admin__cms-edit-collection-connected-radio-buttons">
 										<div class="connected-top">
-											<h:selectOneRadio group="imageModeRadio"
-												value="#{cmsArchivesBean.imageMode}" immediate="true">
+											<h:selectOneRadio group="imageModeTileRadio"
+												value="#{cmsArchivesBean.imageModeTile}" immediate="true">
 												<f:selectItem itemValue="NONE"
 													itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
-												<f:ajax render="imageModeGroup" />
+												<f:ajax render="imageModeGroupTile" />
 											</h:selectOneRadio>
 										</div>
 										<div class="connected-bottom">
-											<h:selectOneRadio group="imageModeRadio"
-												value="#{cmsArchivesBean.imageMode}" immediate="true">
+											<h:selectOneRadio group="imageModeTileRadio"
+												value="#{cmsArchivesBean.imageModeTile}" immediate="true">
 												<f:selectItem itemValue="IMAGE"
 													itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
-												<f:ajax render="imageModeGroup" />
+												<f:ajax render="imageModeGroupTile" />
 											</h:selectOneRadio>
 										</div>
 									</div>
 
-
 									<h:panelGroup layout="block"
 										styleClass="admin__cms-edit-collection-wrapper-choose-image"
-										id="mediaGroup"
-										rendered="#{cmsArchivesBean.imageMode == 'IMAGE'}">
+										id="mediaGroupTile"
+										rendered="#{cmsArchivesBean.imageModeTile == 'IMAGE'}">
 										<!-- THUMBNAIL -->
 										<div class="admin__cms-edit-collection-image-thumbnail">
 											<ui:fragment
@@ -154,21 +153,90 @@
 												value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
 												class="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() == null ? 'btn btn--default' : ''}"
 												role="button">
-												<f:ajax execute="@form" render="mediaSelectPanel" />
+												<f:ajax execute="@form" render="mediaSelectPanelTile" />
 											</h:commandLink>
 											<h:commandLink
 												rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() != null}"
 												action="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.setMediaItem(null)}"
 												value="#{msg.cms_selectMediaItem_deselect}" class="-redlink"
 												role="button">
-												<f:ajax render="mediaGroup" />
+												<f:ajax render="mediaGroupTile" />
 											</h:commandLink>
 										</div>
-
 									</h:panelGroup>
 
 								</h:panelGroup>
 							</div>
+							
+                            <!-- IMAGE: HEADER -->
+                            <h2>#{msg.admin__cms_archives_image_header}</h2>
+                            <div class="admin__default-block">
+                                <p class="admin__boxed-entry-description">#{msg.admin__cms_archives_image_header_desc}</p>
+
+                                <h:panelGroup layout="block" id="imageModeGroupHeader"
+                                    styleClass="admin__cms-edit-collection-image-actions-wrapper">
+
+                                    <div
+                                        class="form-group admin__cms-edit-collection-connected-radio-buttons">
+                                        <div class="connected-top">
+                                            <h:selectOneRadio group="imageModeHeaderRadio"
+                                                value="#{cmsArchivesBean.imageModeHeader}" immediate="true">
+                                                <f:selectItem itemValue="NONE"
+                                                    itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
+                                                <f:ajax render="imageModeGroupHeader" />
+                                            </h:selectOneRadio>
+                                        </div>
+                                        <div class="connected-bottom">
+                                            <h:selectOneRadio group="imageModeHeaderRadio"
+                                                value="#{cmsArchivesBean.imageModeHeader}" immediate="true">
+                                                <f:selectItem itemValue="IMAGE"
+                                                    itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
+                                                <f:ajax render="imageModeGroupHeader" />
+                                            </h:selectOneRadio>
+                                        </div>
+                                    </div>
+
+                                    <h:panelGroup layout="block"
+                                        styleClass="admin__cms-edit-collection-wrapper-choose-image"
+                                        id="mediaGroupHeader"
+                                        rendered="#{cmsArchivesBean.imageModeHeader == 'IMAGE'}">
+                                        <!-- THUMBNAIL -->
+                                        <div class="admin__cms-edit-collection-image-thumbnail">
+                                            <ui:fragment
+                                                rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem()}">
+                                                <img
+                                                    src="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.mediaItem.iconURI}"
+                                                    class="img-fluid" alt="" />
+                                            </ui:fragment>
+                                            <ui:fragment
+                                                rendered="#{!cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem()}">
+                                                <img src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
+                                                    data-viewer-thumbnail="thumbnail" class="img-fluid" alt="" />
+                                            </ui:fragment>
+                                        </div>
+
+                                        <!-- ACTIONS -->
+                                        <div class="admin__cms-edit-collection-image-actions">
+                                            <h:commandLink
+                                                action="#{cmsBean.setSelectedMediaHolder(cmsArchivesBean.selectedArchiveWrapper.archiveConfig)}"
+                                                value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
+                                                class="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() == null ? 'btn btn--default' : ''}"
+                                                role="button">
+                                                <f:ajax execute="@form" render="mediaSelectPanelHeader" />
+                                            </h:commandLink>
+                                            <h:commandLink
+                                                rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem() != null}"
+                                                action="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.setMediaItem(null)}"
+                                                value="#{msg.cms_selectMediaItem_deselect}" class="-redlink"
+                                                role="button">
+                                                <f:ajax render="mediaGroupHeader" />
+                                            </h:commandLink>
+                                        </div>
+
+                                    </h:panelGroup>
+
+                                </h:panelGroup>
+                            </div>
 
 							<!-- SAVE/CANCEL BUTTONS -->
 							<div class="admin__final-actions">
@@ -180,7 +248,7 @@
 									#{msg.button__save}</button>
 							</div>
 
-							<h:panelGroup id="mediaSelectPanel">
+							<h:panelGroup id="mediaSelectPanelTile">
 								<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
 									<div class="admin-cms-media-select-overlay">
 
@@ -195,11 +263,34 @@
 													value="#{cmsMediaBean.getImageTypes()}" />
 												<ui:param name="fileTypeValidator"
 													value="#{cmsMediaBean.getImageFilter()}" />
+                                                <ui:param name="index" value="0" />
 											</ui:include>
 										</div>
 									</div>
 								</ui:fragment>
 							</h:panelGroup>
+							
+                            <h:panelGroup id="mediaSelectPanelHeader">
+                                <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+                                    <div class="admin-cms-media-select-overlay">
+
+                                        <!-- SELECT MEDIA ITEM OVERLAY -->
+                                        <div class="admin-cms-media__select-overlay"></div>
+
+                                        <!-- SELECT MEDIA ITEM -->
+                                        <div class="admin-cms-media__select">
+                                            <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+                                                <ui:param name="mediaDisplayPanel" value="mediaGroup" />
+                                                <ui:param name="fileTypes"
+                                                    value="#{cmsMediaBean.getImageTypes()}" />
+                                                <ui:param name="fileTypeValidator"
+                                                    value="#{cmsMediaBean.getImageFilter()}" />
+                                                <ui:param name="index" value="1" />
+                                            </ui:include>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+                            </h:panelGroup>
 
 						</h:form>
 
