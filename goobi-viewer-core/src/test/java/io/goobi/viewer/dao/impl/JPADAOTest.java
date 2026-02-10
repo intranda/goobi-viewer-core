@@ -88,9 +88,6 @@ import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.job.download.DownloadJob;
-import io.goobi.viewer.model.job.download.EPUBDownloadJob;
-import io.goobi.viewer.model.job.download.PDFDownloadJob;
 import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.log.LogMessage;
@@ -274,25 +271,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             assertEquals(1, user2.getLicenses().size());
         }
 
-        // Adding a new license should update the attached object with ID
-        {
-            License license = new License();
-            license.setLicenseType(user.getLicenses().get(0).getLicenseType());
-            user.addLicense(license);
-            assertTrue(DataManager.getInstance().getDao().updateUser(user));
-            User user2 = DataManager.getInstance().getDao().getUser(user.getId());
-            assertNotNull(user2);
-            assertEquals(2, user2.getLicenses().size());
-            assertNotNull(user2.getLicenses().get(0).getId());
-            assertNotNull(user2.getLicenses().get(1).getId());
-        }
-
-        // Orphaned licenses should be deleted properly
-        user.removeLicense(user.getLicenses().get(0));
-        assertTrue(DataManager.getInstance().getDao().updateUser(user));
-        User user3 = DataManager.getInstance().getDao().getUser(user.getId());
-        assertNotNull(user3);
-        assertEquals(1, user3.getLicenses().size());
+        // Deleting a license should not delete the user
+        License license = DataManager.getInstance().getDao().getLicense(1L);
+        assertNotNull(license);
+        assertNotNull(license.getLicensees().get(0).getUser());
+        assertEquals(2L, license.getLicensees().get(0).getUser().getId());
+        assertTrue(DataManager.getInstance().getDao().deleteLicense(license));
+        assertNull(DataManager.getInstance().getDao().getLicense(1L));
+        assertNotNull(DataManager.getInstance().getDao().getUser(2L));
 
     }
 
@@ -466,27 +452,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             assertEquals(2, userGroup2.getLicenses().size());
         }
 
-        // Adding a new license should update the attached object with ID
-        {
-            License license = new License();
-            license.setLicenseType(userGroup.getLicenses().get(0).getLicenseType());
-            userGroup.addLicense(license);
-            assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
-            UserGroup userGroup2 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
-            assertNotNull(userGroup2);
-            assertEquals(3, userGroup2.getLicenses().size());
-            assertNotNull(userGroup2.getLicenses().get(0).getId());
-            assertNotNull(userGroup2.getLicenses().get(1).getId());
-        }
-
-        // Orphaned licenses should be deleted properly
-        {
-            userGroup.removeLicense(userGroup.getLicenses().get(0));
-            assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
-            UserGroup userGroup3 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
-            assertNotNull(userGroup3);
-            assertEquals(2, userGroup3.getLicenses().size());
-        }
+        // Deleting a license should not delete the user group
+        License license = DataManager.getInstance().getDao().getLicense(2L);
+        assertNotNull(license);
+        assertNotNull(license.getLicensees().get(0).getUserGroup());
+        assertEquals(1L, license.getLicensees().get(0).getUserGroup().getId());
+        assertTrue(DataManager.getInstance().getDao().deleteLicense(license));
+        assertNull(DataManager.getInstance().getDao().getLicense(2L));
+        assertNotNull(DataManager.getInstance().getDao().getUserGroup(1L));
     }
 
     @Test
@@ -617,10 +590,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void deleteIpRangeTest() throws DAOException {
         assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
-        IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
+        IpRange ipRange = DataManager.getInstance().getDao().getIpRange(2);
         assertNotNull(ipRange);
-        assertTrue(DataManager.getInstance().getDao().deleteIpRange(ipRange));
-        assertNull(DataManager.getInstance().getDao().getIpRange(1));
+        assertTrue(DataManager.getInstance().getDao().deleteIpRange(ipRange)); // TODO make sure licenses containing this are deleted/altered first
+        assertNull(DataManager.getInstance().getDao().getIpRange(2));
         assertEquals(1, DataManager.getInstance().getDao().getAllIpRanges().size());
     }
 
@@ -640,12 +613,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(ipRange2);
         assertEquals(1, ipRange2.getLicenses().size());
 
-        // Orphaned licenses should be deleted properly
-        ipRange.removeLicense(ipRange.getLicenses().get(0));
-        assertTrue(DataManager.getInstance().getDao().updateIpRange(ipRange));
-        IpRange ipRange3 = DataManager.getInstance().getDao().getIpRange(ipRange.getId());
-        assertNotNull(ipRange3);
-        assertEquals(0, ipRange3.getLicenses().size());
+        // Deleting a license should not delete the user
+        License license = DataManager.getInstance().getDao().getLicense(3L);
+        assertNotNull(license);
+        assertNotNull(license.getLicensees().get(0).getIpRange());
+        assertEquals(1L, license.getLicensees().get(0).getIpRange().getId());
+        assertTrue(DataManager.getInstance().getDao().deleteLicense(license));
+        assertNull(DataManager.getInstance().getDao().getLicense(3L));
+        assertNotNull(DataManager.getInstance().getDao().getIpRange(1L));
     }
 
     // CommentGroups
@@ -2096,157 +2071,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getUserGroupCount_shouldReturnCorrectCount() throws Exception {
         assertEquals(3L, DataManager.getInstance().getDao().getUserGroupCount(null));
-    }
-
-    /**
-     * @see JPADAO#getAllDownloadJobs()
-     * @verifies return all objects
-     */
-    @Test
-    void getAllDownloadJobs_shouldReturnAllObjects() throws Exception {
-        assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
-    }
-
-    /**
-     * @see JPADAO#getDownloadJob(long)
-     * @verifies return correct object
-     */
-    @Test
-    void getDownloadJob_shouldReturnCorrectObject() throws Exception {
-        {
-            DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(1);
-            assertNotNull(job);
-            assertEquals(PDFDownloadJob.class, job.getClass());
-            assertEquals(Long.valueOf(1), job.getId());
-            assertEquals("PI_1", job.getPi());
-            assertNull(job.getLogId());
-            assertEquals(DownloadJob.generateDownloadJobId(job.getType(), job.getPi(), job.getLogId()), job.getIdentifier());
-            assertEquals(3600, job.getTtl());
-            assertEquals(JobStatus.WAITING, job.getStatus());
-            assertEquals(1, job.getObservers().size());
-            assertEquals("viewer@intranda.com", job.getObservers().get(0));
-        }
-        {
-            DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(2);
-            assertNotNull(job);
-            assertEquals(EPUBDownloadJob.class, job.getClass());
-            assertEquals(DownloadJob.generateDownloadJobId(job.getType(), job.getPi(), job.getLogId()), job.getIdentifier());
-        }
-    }
-
-    /**
-     * @see JPADAO#getDownloadJobByIdentifier(String)
-     * @verifies return correct object
-     */
-    @Test
-    void getDownloadJobByIdentifier_shouldReturnCorrectObject() throws Exception {
-        DownloadJob job =
-                DataManager.getInstance().getDao().getDownloadJobByIdentifier("187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a");
-        assertNotNull(job);
-        assertEquals(PDFDownloadJob.class, job.getClass());
-        assertEquals(Long.valueOf(1), job.getId());
-        assertEquals("PI_1", job.getPi());
-        assertNull(job.getLogId());
-        assertEquals(PDFDownloadJob.generateDownloadJobId(job.getType(), job.getPi(), job.getLogId()), job.getIdentifier());
-        assertEquals(3600, job.getTtl());
-        assertEquals(JobStatus.WAITING, job.getStatus());
-        assertEquals(1, job.getObservers().size());
-        assertEquals("viewer@intranda.com", job.getObservers().get(0));
-    }
-
-    /**
-     * @see JPADAO#getDownloadJobByMetadata(String,String,String)
-     * @verifies return correct object
-     */
-    @Test
-    void getDownloadJobByMetadata_shouldReturnCorrectObject() throws Exception {
-        {
-            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.LOCAL_TYPE, "PI_1", null);
-            assertNotNull(job);
-            assertEquals(PDFDownloadJob.class, job.getClass());
-            assertEquals(Long.valueOf(1), job.getId());
-        }
-        {
-            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(EPUBDownloadJob.LOCAL_TYPE, "PI_1", "LOG_0001");
-            assertNotNull(job);
-            assertEquals(EPUBDownloadJob.class, job.getClass());
-            assertEquals(Long.valueOf(2), job.getId());
-        }
-    }
-
-    /**
-     * @see JPADAO#addDownloadJob(DownloadJob)
-     * @verifies add object correctly
-     */
-    @Test
-    void addDownloadJob_shouldAddObjectCorrectly() throws Exception {
-        LocalDateTime now = LocalDateTime.now();
-        PDFDownloadJob job = new PDFDownloadJob("PI_2", "LOG_0002", now, 3600);
-        job.generateDownloadIdentifier();
-        job.setStatus(JobStatus.WAITING);
-        assertNotNull(job.getIdentifier());
-        job.getObservers().add("a@b.com");
-
-        assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
-        assertTrue(DataManager.getInstance().getDao().addDownloadJob(job));
-        assertNotNull(job.getId());
-        assertEquals(3, DataManager.getInstance().getDao().getAllDownloadJobs().size());
-
-        DownloadJob job2 = DataManager.getInstance().getDao().getDownloadJob(job.getId());
-        assertNotNull(job2);
-        assertEquals(job.getId(), job2.getId());
-        assertEquals(job.getPi(), job2.getPi());
-        assertEquals(job.getLogId(), job2.getLogId());
-        assertEquals(job.getIdentifier(), job2.getIdentifier());
-        // Compare date strings instead of LocalDateTime due to differences in millisecond precision between JVMs
-        assertEquals(DateTools.FORMATTERISO8601DATETIME.format(now),
-                DateTools.FORMATTERISO8601DATETIME.format(job2.getLastRequested()));
-        assertEquals(job.getTtl(), job2.getTtl());
-        assertEquals(job.getStatus(), job2.getStatus());
-    }
-
-    /**
-     * @see JPADAO#updateDownloadJob(DownloadJob)
-     * @verifies update object correctly
-     */
-    @Test
-    void updateDownloadJob_shouldUpdateObjectCorrectly() throws Exception {
-        assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
-
-        DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(1);
-        assertNotNull(job);
-        LocalDateTime now = LocalDateTime.now();
-        job.setLastRequested(now);
-        job.setStatus(JobStatus.READY);
-        job.getObservers().add("newobserver@example.com");
-
-        assertTrue(DataManager.getInstance().getDao().updateDownloadJob(job));
-        assertEquals(2, job.getObservers().size(), "Too many observers after updateDownloadJob");
-        List<DownloadJob> allJobs = DataManager.getInstance().getDao().getAllDownloadJobs();
-        assertEquals(2, allJobs.size());
-        assertEquals(2, job.getObservers().size(), "Too many observers after getAllDownloadJobs");
-
-        DownloadJob job2 = DataManager.getInstance().getDao().getDownloadJob(job.getId());
-        assertNotNull(job2);
-        assertEquals(job.getId(), job2.getId());
-        // Compare date strings instead of LocalDateTime due to differences in millisecond precision between JVMs
-        assertEquals(DateTools.FORMATTERISO8601DATETIME.format(now),
-                DateTools.FORMATTERISO8601DATETIME.format(job2.getLastRequested()));
-        assertEquals(JobStatus.READY, job2.getStatus());
-        assertEquals(2, job2.getObservers().size());
-        assertEquals("newobserver@example.com", job2.getObservers().get(1));
-    }
-
-    /**
-     * @see JPADAO#deleteDownloadJob(DownloadJob)
-     * @verifies delete object correctly
-     */
-    @Test
-    void deleteDownloadJob_shouldDeleteObjectCorrectly() throws Exception {
-        DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(1);
-        assertNotNull(job);
-        assertTrue(DataManager.getInstance().getDao().deleteDownloadJob(job));
-        assertNull(DataManager.getInstance().getDao().getDownloadJob(1));
     }
 
     /**

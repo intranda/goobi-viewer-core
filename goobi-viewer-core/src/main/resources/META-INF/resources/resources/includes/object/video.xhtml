@@ -21,9 +21,9 @@
             poster="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/video_placeholder.png"
             controlslist="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload and configurationBean.displaySidebarWidgetUsagePageDownloadOptions ? '' : 'nodownload'}"
             style="margin-left: auto; margin-right: auto;">
-            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('webm')}" type="video/webm" />
-            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mp4')}" type="video/mp4" />
-            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('ogg')}" type="video/ogg" />
+            <ui:repeat var="format" value="#{activeDocumentBean.viewManager.currentPage.getMediaFormats('video')}">
+                <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl(format)}" type="video/#{format}" />
+            </ui:repeat>
         </video>
 	    <!-- ACCESS DENIED DESCRIPTION TEXT -->
 	    <h:panelGroup styleClass="view-object__access-denied-text"

@@ -69,7 +69,6 @@ class UserTest extends AbstractDatabaseEnabledTest {
         blueprint.setAgreedToTermsOfUse(true);
         blueprint.setAvatarType(UserAvatarOption.GRAVATAR);
         blueprint.setLocalAvatarUpdated(DateTools.getMillisFromLocalDateTime(now, false));
-        blueprint.getLicenses().add(license);
         blueprint.getOpenIdAccounts().add("google:foo@example.com");
         blueprint.getUserProperties().put("foo", "bar");
 
@@ -90,9 +89,6 @@ class UserTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(blueprint.isAgreedToTermsOfUse(), clone.isAgreedToTermsOfUse());
         Assertions.assertEquals(blueprint.getAvatarType(), clone.getAvatarType());
         Assertions.assertEquals(blueprint.getLocalAvatarUpdated(), clone.getLocalAvatarUpdated());
-
-        Assertions.assertEquals(1, clone.getLicenses().size());
-        Assertions.assertEquals(license, clone.getLicenses().get(0));
 
         Assertions.assertEquals(1, clone.getOpenIdAccounts().size());
         Assertions.assertEquals(blueprint.getOpenIdAccounts().get(0), clone.getOpenIdAccounts().get(0));

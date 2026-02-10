@@ -94,9 +94,6 @@
         <!-- workflow: REST service URL of Goobi workflow -->
         <workflow>https://example.com/goobi/api</workflow>
 
-        <!-- taskManager: Url of local taskManager for pdf-download -->
-        <taskManager>taskmanager_url/</taskManager>
-
 		<download>https://viewer.goobi.io/download/</download>
 	</urls>
 
@@ -1533,6 +1530,19 @@
             <createDeveloperPackage>{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -s {solr-url} </createDeveloperPackage>
         </scripts>
     </developer>
+
+	<externalResource>
+	    <urls>
+	        <template>
+	            <url>http://d-nb.info/{MD_DOWNLOAD_IDENTIFIER}/34</url>
+	            <httpHeader key="accountId" value="testinsitution" />
+	            <httpHeader key="x-api-key" value="Wobblewock" />
+	            <httpHeader key="Authorization" value="Bearer $SYS(DNB_DOWNLOAD_KEY)" />
+	        </template>
+	        <template>https://devel.dnb.de/npregional-bereitstellung/objekte?iln=63&amp;idn={MD_FILEURL}</template>
+	    </urls>
+	</externalResource>
+
 
 </config>
 

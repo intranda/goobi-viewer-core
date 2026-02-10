@@ -22,14 +22,20 @@
 	    }
 	    &__action {
 			border: 0;
+			background: transparent;
+			color: @image-controls-icon-color;
 		    /* ELEMENT */
 	    	&:hover,
-			&:active,
 			&:focus {
-				background-color: transparent;
+				background-color: @image-controls-action-background-hover;
+				color: @image-controls-icon-color-hover;
+			}
+			&:active {
+				background-color: @image-controls-action-background-hover;
+				color: @image-controls-icon-color-active;
 			}
 		    a,
-			span, 
+			span,
 			button {
 				display: flex;
 				align-items: center;
@@ -72,10 +78,17 @@
 		        .fofs-control__select {
 		            select {
 		            	font-size: 0.9375rem;
+		            	background: inherit;
+		            	color: @image-controls-icon-color;
 		            }
 		        }
 		        .custom-control--select {
-		        	select {}
+		        	background: inherit;
+		        	color: @image-controls-icon-color;
+		        	select {
+		        		background: inherit;
+		        		color: @image-controls-icon-color;
+		        	}
 		        	&:after {}
 		        }
 		    }
@@ -134,18 +147,26 @@
 		    &.zoom-slider-wrapper {
 		    	width: 125px;
 		    	margin-left: 10px;
+		    	background: transparent;
+		    	&:hover,
+		    	&:focus,
+		    	&:active {
+		    		background-color: transparent;
+		    		color: inherit;
+		    	}
 		        .zoom-slider {
 		        	height: 10px;
 		        	margin-top: 0;
 		        	background-color: transparent;
+		        	border-color: @image-controls-slider-border-color;
 		        }
 		        .zoom-slider-handle {
 		        	top: -12px;
 		        	width: 24px;
 		        	height: 24px;
-		        	border: 2px solid @fsDarkgray;
+		        	border: 2px solid @image-controls-slider-border-color;
 		        	border-radius: 100%;
-		        	background-color: @white;
+		        	background-color: @image-controls-slider-thumb-background;
 		        }
 		    }
 		}
@@ -197,6 +218,8 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
 	.fullscreen {
+		.image-controls__action.prev,
+		.image-controls__action.next,
 		.image-controls__action.start,
 		.image-controls__action.end {
 			display: none;
@@ -204,8 +227,15 @@
 		.image-controls__action.select {
 			width: 105px;
 		}
+		.image-controls__action.page-browse.next:nth-child(1 of .image-controls__action.page-browse.next) {
+			display: flex;
+		}
+		.image-controls__action.page-browse.prev:nth-last-child(1 of .image-controls__action.page-browse.prev) {
+			display: flex;
+		}
 		.image-controls__action.prev,
 		.image-controls__action.next {
+			opacity: 0.8;
 			position: fixed;
 			top: 50%;
 			width: 50px;

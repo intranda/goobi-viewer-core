@@ -23,7 +23,7 @@
             <!-- WIDGET COPYRIGHT -->
             <ui:fragment rendered="#{widgetName == 'copyright'}">
                 <widgetComponent:widget_copyrightInfo
-                    rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}"/>
+                    rendered="#{configurationBean.copyrightIndicatorStyle == 'widget'}"/>
             </ui:fragment>
             
             <!-- WIDGET SEARCH RESULT NAVIGATION -->
@@ -79,7 +79,8 @@
                         currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
                         featureClickHandling="openSearch" />
                 </ui:fragment>
-                <!--  WIDGET METADATA TECH -->
+                
+                <!--  WIDGET METADATA -->
                 <ui:fragment rendered="#{widgetName == 'metadata'}">
                     <widgetComponent:widget_metadata id="widgetMetadata" />
                 </ui:fragment>

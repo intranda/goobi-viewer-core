@@ -264,8 +264,9 @@
                                 
                                 <div class="#{!adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-target-redirect="input">
 	                                <div class="form-group form-row admin__license-selectable-block">
-	                                
-	                                	<div class="col-2"></div>
+	                                    <div class="col-2 control-label admin__form-label">
+                                            <label for="placeholderDesc">#{msg.admin__highlights__target_type_url}:</label>
+                                        </div>
 		                                <div class="col-9 admin__form-input cms-module__option-control mt-2 mb-3">
 		                                	<!-- VALIDATOR HAS TO BE REWORKED/EXTENDED TO CHECK FOR VALID URL PATTERNS -->
 		                                    

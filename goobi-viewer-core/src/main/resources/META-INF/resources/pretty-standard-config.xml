@@ -181,10 +181,10 @@
 	</url-mapping>
 	<url-mapping id="searchadvanced">
 		<pattern value="/searchadvanced/" />
-        <!-- TODO replace with correct page -->
 		<view-id value="/searchAdvanced.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.facets.resetActiveFacets}</action>
+        <action onPostback="false">#{searchBean.resetSearchParameters(true)}</action>
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveContext('-')}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
@@ -711,6 +711,35 @@
 		<view-id value="/viewCalendar.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
+    
+    <!-- MEI -->
+    <url-mapping id="mei1">
+        <pattern value="/mei/#{pi:activeDocumentBean.persistentIdentifier}/" />
+        <view-id value="/viewMEI.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+    <url-mapping id="mei2">
+        <pattern value="/mei/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+        <view-id value="/viewMEI.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+    <url-mapping id="mei3">
+        <pattern value="/mei/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewMEI.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+    <url-mapping id="mei3active">
+        <pattern value="/!mei/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewMEI.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+    <url-mapping id="mei4">
+        <pattern value="/mei/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewMEI.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+
+
 
 	<!-- DOWNLOAD -->
 	<url-mapping id="download1">
@@ -719,7 +748,7 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{downloadBean.openDownloadAction()}</action>
 	</url-mapping>
-    
+	
 	<!-- BOOKMARKS -->
     <url-mapping id="bookmarkLists">
         <pattern value="/bookmarks/" />
@@ -1205,19 +1234,6 @@
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
-	</url-mapping>
-	<!-- Deprecated. Keep for backward compatibility -->
-	<url-mapping id="cmsOpenPageWithCollection">
-		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action onPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-	<!-- Deprecated. Keep for backward compatibility -->
-	<url-mapping id="cmsOpenPagePreviewWithCollection">
-		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 
 	<url-mapping id="cmsBrowse3">

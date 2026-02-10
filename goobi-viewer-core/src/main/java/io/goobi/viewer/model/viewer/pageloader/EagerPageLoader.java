@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -182,51 +183,54 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
      */
     private Map<Integer, PhysicalElement> loadAllPages(StructElement topElement)
             throws PresentationException, IndexUnreachableException {
-        Map<Integer, PhysicalElement> ret = new HashMap<>();
+        try (Time t = DataManager.getInstance().getTiming().takeTime("loadAllPages")) {
+            Map<Integer, PhysicalElement> ret = new HashMap<>();
 
-        if (topElement.isAnchor() || topElement.isGroup()) {
-            logger.trace("Anchor or group document, no pages.");
-            return ret;
-        }
-
-        String pi = topElement.getPi();
-        if (StringUtils.isEmpty(pi)) {
-            logger.debug("PI not found, no pages.");
-            return ret;
-        }
-        logger.trace("Loading pages for '{}'...", pi);
-        List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
-
-        StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append(SolrConstants.PI_TOPSTRUCT)
-                .append(':')
-                .append(topElement.getPi())
-                .append(" AND ")
-                .append(SolrConstants.DOCTYPE)
-                .append(':')
-                .append(DocType.PAGE);
-        SolrDocumentList result = DataManager.getInstance()
-                .getSearchIndex()
-                .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), fields);
-        if (result.isEmpty()) {
-            return ret;
-        }
-
-        boolean flipRectoVerso = false;
-        for (SolrDocument doc : result) {
-            PhysicalElement pe = loadPageFromDoc(doc, pi, topElement, pageOwnerIddocMap);
-            ret.put(pe.getOrder(), pe);
-            if (!pe.isDoubleImage()) {
-                pe.setFlipRectoVerso(flipRectoVerso);
-                // logger.trace("page {} flipped: {}", pe.getOrder(), pe.isFlipRectoVerso()); //NOSONAR Debug
+            if (topElement.isAnchor() || topElement.isGroup()) {
+                logger.trace("Anchor or group document, no pages.");
+                return ret;
             }
-            if (pe.isDoubleImage()) {
-                flipRectoVerso = !flipRectoVerso;
-            }
-        }
 
-        logger.debug("Loaded {} pages for '{}'.", ret.size(), pi);
-        return ret;
+            String pi = topElement.getPi();
+            if (StringUtils.isEmpty(pi)) {
+                logger.debug("PI not found, no pages.");
+                return ret;
+            }
+            logger.trace("Loading pages for '{}'...", pi);
+            List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
+
+            StringBuilder sbQuery = new StringBuilder();
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT)
+                    .append(':')
+                    .append(topElement.getPi())
+                    .append(" AND ")
+                    .append(SolrConstants.DOCTYPE)
+                    .append(':')
+                    .append(DocType.PAGE);
+            SolrDocumentList result = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")),
+                            fields);
+            if (result.isEmpty()) {
+                return ret;
+            }
+
+            boolean flipRectoVerso = false;
+            for (SolrDocument doc : result) {
+                PhysicalElement pe = loadPageFromDoc(doc, pi, topElement, pageOwnerIddocMap);
+                ret.put(pe.getOrder(), pe);
+                if (!pe.isDoubleImage()) {
+                    pe.setFlipRectoVerso(flipRectoVerso);
+                    // logger.trace("page {} flipped: {}", pe.getOrder(), pe.isFlipRectoVerso()); //NOSONAR Debug
+                }
+                if (pe.isDoubleImage()) {
+                    flipRectoVerso = !flipRectoVerso;
+                }
+            }
+
+            logger.debug("Loaded {} pages for '{}'.", ret.size(), pi);
+            return ret;
+        }
     }
 
     @Override

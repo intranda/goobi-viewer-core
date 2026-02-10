@@ -28,14 +28,6 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_VIDEO;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Context;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,6 +40,13 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
 
 /**
  * A rest resource for delivering video and audio files.
@@ -108,16 +107,18 @@ public class MediaResource {
         return serveMediaContent("video", format, pi, filename);
     }
 
-    private String serveMediaContent(String type, String format, String identifier, String filename)
+    private String serveMediaContent(String type, String format, String identifier, String filepath)
             throws PresentationException, IndexUnreachableException, WebApplicationException {
+        logger.trace("serveMediaContent: {}/{}/{}/{}", type, format, identifier, filepath);
         String mimeType = type + "/" + format;
 
+        String filename = java.nio.file.Path.of(filepath).getFileName().toString();
         checkAccess(type, identifier, filename);
 
         java.nio.file.Path file =
                 DataFileTools.getDataFilePath(identifier, DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
         if (Files.isRegularFile(file)) {
-            logger.debug("Video file: {} ({} bytes)", file.toAbsolutePath(), file.toFile().length());
+            logger.debug("Media file: {} ({} bytes)", file.toAbsolutePath(), file.toFile().length());
             try {
                 new MediaDeliveryService().processRequest(request, response, file.toAbsolutePath().toString(), mimeType);
             } catch (IOException e) {

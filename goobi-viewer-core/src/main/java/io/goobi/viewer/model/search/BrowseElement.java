@@ -126,9 +126,9 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     @JsonIgnore
     private boolean hasMedia = false;
     @JsonIgnore
-    private boolean hasTeiFiles = false;
+    private boolean hasMeiFile = false;
     @JsonIgnore
-    private boolean showThumbnail = false;
+    private boolean hasTeiFiles = false;
     @JsonIgnore
     private long numVolumes = 0;
     private String pi;
@@ -371,9 +371,9 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
         // Thumbnail
         if (thumbs != null) {
-            String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
-            if (sbThumbnailUrl != null && !sbThumbnailUrl.isEmpty()) {
-                thumbnailUrl = StringTools.intern(sbThumbnailUrl);
+            String thumbUrl = thumbs.getThumbnailUrl(structElement);
+            if (thumbUrl != null && !thumbUrl.isEmpty()) {
+                thumbnailUrl = StringTools.intern(thumbUrl);
             }
 
             // Check thumbnail access so that a custom access denied image can be used
@@ -400,7 +400,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         //..or if we have video or audio or a 3d-object
         hasMedia = !hasImages && !isAnchor() && baseMimeType.isMediaType();
 
-        showThumbnail = hasImages || hasMedia || isAnchor() || cmsPage;
+        // MEI file
+        hasMeiFile = StringUtils.isNotEmpty(structElement.getMetadataValue(SolrConstants.FILENAME_MEI));
 
         // TEI files
         hasTeiFiles = structElement.getMetadataFields().keySet().stream().filter(k -> k.startsWith(SolrConstants.FILENAME_TEI)).count() > 0;
@@ -1062,17 +1063,11 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * @return the showThumbnail
+     * 
+     * @return true if either criterion for thumbnail display is fulfilled; false otherwise
      */
     public boolean isShowThumbnail() {
-        return showThumbnail;
-    }
-
-    /**
-     * @param showThumbnail the showThumbnail to set
-     */
-    public void setShowThumbnail(boolean showThumbnail) {
-        this.showThumbnail = showThumbnail;
+        return hasImages || hasMedia || isAnchor() || cmsPage || hasMeiFile;
     }
 
     /**

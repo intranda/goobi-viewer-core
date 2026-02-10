@@ -30,9 +30,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,6 +39,8 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class HttpHeaderProvider extends HttpAuthenticationProvider {
 
@@ -152,7 +151,7 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
                     user = new User();
                     user.getUserProperties().put(parameterName, ssoId);
                     user.setActive(true);
-                    if (EmailValidator.validateEmailAddress(ssoId)) {
+                    if (EmailValidator.validateEmailAddress(ssoId, false)) {
                         user.setEmail(ssoId);
                         try {
                             DataManager.getInstance().getDao().addUser(user);

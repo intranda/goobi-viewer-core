@@ -78,9 +78,6 @@
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.questions.Question</class>
-		<class>io.goobi.viewer.model.job.download.DownloadJob</class>
-		<class>io.goobi.viewer.model.job.download.EPUBDownloadJob</class>
-		<class>io.goobi.viewer.model.job.download.PDFDownloadJob</class>
         <class>io.goobi.viewer.model.job.quartz.RecurringTaskTrigger</class>
         <class>io.goobi.viewer.model.job.upload.UploadJob</class>
         <class>io.goobi.viewer.model.log.LogMessage</class>
@@ -92,6 +89,7 @@
         <class>io.goobi.viewer.model.maps.SearchResultFeatureSet</class>
 		<class>io.goobi.viewer.model.search.Search</class>
 		<class>io.goobi.viewer.model.security.License</class>
+        <class>io.goobi.viewer.model.security.LicenseRightsHolder</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
         <class>io.goobi.viewer.model.security.LicenseTypePlaceholderInfo</class>
 		<class>io.goobi.viewer.model.security.Role</class>
@@ -220,6 +218,7 @@
         <class>io.goobi.viewer.model.maps.SearchResultFeatureSet</class>
 		<class>io.goobi.viewer.model.search.Search</class>
 		<class>io.goobi.viewer.model.security.License</class>
+        <class>io.goobi.viewer.model.security.LicenseRightsHolder</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
         <class>io.goobi.viewer.model.security.LicenseTypePlaceholderInfo</class>
 		<class>io.goobi.viewer.model.security.Role</class>

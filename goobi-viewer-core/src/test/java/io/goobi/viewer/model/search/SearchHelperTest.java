@@ -1167,14 +1167,16 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(group.addNewQueryItem(group.getQueryItems().get(0).getField(), 0));
         group.getQueryItems().get(0).setValue("person1");
         group.getQueryItems().get(0).setDisplaySelectItems(false);
+        group.getQueryItems().get(0).setOperator(SearchItemOperator.OR);
         group.getQueryItems().get(1).setValue("person2");
         group.getQueryItems().get(1).setDisplaySelectItems(false);
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
 
-        Assertions.assertEquals(" +(+((MD_NAME:(person1)) (MD_NAME:(person2))))", SearchHelper.generateAdvancedExpandQuery(group, false));
+        Assertions.assertEquals(" +((MD_NAME:(person1)) (MD_NAME:(person2)))", SearchHelper.generateAdvancedExpandQuery(group, false));
 
         // Removing the value from one of the group items should trigger the finalization of the group query correctly
         group.getQueryItems().get(1).setValue("");
-        Assertions.assertEquals(" +(+((MD_NAME:(person1))))", SearchHelper.generateAdvancedExpandQuery(group, false));
+        Assertions.assertEquals(" +((MD_NAME:(person1)))", SearchHelper.generateAdvancedExpandQuery(group, false));
 
     }
 

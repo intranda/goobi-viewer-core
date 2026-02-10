@@ -95,15 +95,6 @@ public class SearchChildHit {
         return "file-text";
     }
 
-    /**
-     * @deprecated use {@link #getIconName()} instead.
-     * @return {@link String}
-     */
-    @Deprecated(since = "25.10")
-    public String getIconClass() {
-        return getIconNameForType(this.type);
-    }
-
     private String getDisplayText(BrowseElement browseElement) {
         if (browseElement != null && this.type != null) {
             switch (this.type) {

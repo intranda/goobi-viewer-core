@@ -61,11 +61,11 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.JobStatus;
-import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -83,7 +83,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
-import net.sf.saxon.trans.LicenseException;
 
 /**
  * <p>
@@ -800,10 +799,18 @@ public interface IDAO {
     /**
      *
      * @param licenseType
-     * @return List of {@link LicenseException}s of the given licenseType
+     * @return List of {@link License}s of the given licenseType
      * @throws DAOException
      */
     public List<License> getLicenses(LicenseType licenseType) throws DAOException;
+
+    /**
+     *
+     * @param licensee
+     * @return List of {@link License}s for the given licensee
+     * @throws DAOException
+     */
+    public List<License> getLicenses(ILicensee licensee) throws DAOException;
 
     /**
      * Returns the number of licenses that use the given license type.
@@ -813,6 +820,39 @@ public interface IDAO {
      * @throws DAOException
      */
     public long getLicenseCount(LicenseType licenseType) throws DAOException;
+
+    /**
+     * <p>
+     * addLicenseType.
+     * </p>
+     *
+     * @param license a {@link io.goobi.viewer.model.security.License} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean addLicense(License license) throws DAOException;
+
+    /**
+     * <p>
+     * updateLicenseType.
+     * </p>
+     *
+     * @param license a {@link io.goobi.viewer.model.security.License} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean updateLicense(License license) throws DAOException;
+
+    /**
+     * <p>
+     * deleteLicenseType.
+     * </p>
+     *
+     * @param license a {@link io.goobi.viewer.model.security.License} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean deleteLicense(License license) throws DAOException;
 
     // AccessTicket
 
@@ -1131,6 +1171,17 @@ public interface IDAO {
 
     /**
      * <p>
+     * countCommentsForWork.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @return a long
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    long countCommentsForWork(String pi) throws DAOException;
+
+    /**
+     * <p>
      * getComment.
      * </p>
      *
@@ -1287,97 +1338,6 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteSearch(Search search) throws DAOException;
-
-    // Download jobs
-
-    /**
-     * <p>
-     * getAllDownloadJobs.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public List<DownloadJob> getAllDownloadJobs() throws DAOException;
-
-    /**
-     * <p>
-     * getDownloadJobsForPi.
-     * </p>
-     *
-     * @param pi Record identifier
-     * @return List of {@link DownloadJob}s for given record identfier
-     * @throws DAOException
-     */
-    public List<DownloadJob> getDownloadJobsForPi(String pi) throws DAOException;
-
-    /**
-     * <p>
-     * getDownloadJob.
-     * </p>
-     *
-     * @param id a long.
-     * @return a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public DownloadJob getDownloadJob(long id) throws DAOException;
-
-    /**
-     * <p>
-     * getDownloadJobByIdentifier.
-     * </p>
-     *
-     * @param identifier a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public DownloadJob getDownloadJobByIdentifier(String identifier) throws DAOException;
-
-    /**
-     * <p>
-     * getDownloadJobByMetadata.
-     * </p>
-     *
-     * @param type a {@link java.lang.String} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public DownloadJob getDownloadJobByMetadata(String type, String pi, String logId) throws DAOException;
-
-    /**
-     * <p>
-     * addDownloadJob.
-     * </p>
-     *
-     * @param downloadJob a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public boolean addDownloadJob(DownloadJob downloadJob) throws DAOException;
-
-    /**
-     * <p>
-     * updateDownloadJob.
-     * </p>
-     *
-     * @param downloadJob a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public boolean updateDownloadJob(DownloadJob downloadJob) throws DAOException;
-
-    /**
-     * <p>
-     * deleteDownloadJob.
-     * </p>
-     *
-     * @param downloadJob a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public boolean deleteDownloadJob(DownloadJob downloadJob) throws DAOException;
 
     // UploadJob
 

@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -86,6 +87,9 @@ public final class SolrTools {
 
     private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";
     private static final String SUFFIX_LANGUAGE_REGEX = SolrConstants.MIDFIX_LANG + "([A-Z]{2,3})$";
+
+    /** Reusable Random object. */
+    private static Random random = new SecureRandom();
 
     /**
      *
@@ -883,7 +887,7 @@ public final class SolrTools {
      * @return Randomized sorting field
      */
     public static String generateRandomSortField() {
-        return "random_" + new SecureRandom().nextInt(Integer.MAX_VALUE);
+        return "random_" + random.nextInt(Integer.MAX_VALUE);
     }
 
     /**
@@ -1111,23 +1115,4 @@ public final class SolrTools {
 
         return refId;
     }
-
-    /**
-     * Extract locales from language-specific metadata fields on the given {@link StructElement}.
-     * 
-     * @param structElement
-     * @return List<Locale>
-     * @deprecated No longer in use, as it can produce a list of only irrelevant locales
-     */
-    @Deprecated(since = "24.09")
-    public static List<Locale> getAllUsedLocales(StructElement structElement) {
-        return structElement.getMetadataFields()
-                .keySet()
-                .stream()
-                .filter(field -> field.matches(MULTILANGUAGE_FIELD_REGEX))
-                .map(SolrTools::getLanguage)
-                .map(Locale::forLanguageTag)
-                .toList();
-    }
-
 }

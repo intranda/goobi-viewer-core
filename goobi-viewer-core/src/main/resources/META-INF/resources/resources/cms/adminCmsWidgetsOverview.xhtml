@@ -78,7 +78,10 @@
                                         
 											
                                         <!-- DESCRIPTION -->
-                                        <p class="admin__boxed-entry-description">#{widget.descriptionOrTypeDescription.getValue(navigationHelper.locale)}</p>
+                                        <p class="admin__boxed-entry-description">
+                                            <h:outputText escape="true"
+                                                value="#{widget.descriptionOrTypeDescription.getValue(navigationHelper.locale)}" />
+                                        </p>
                                         
                                         <!-- INFOS + DATA -->
 										<div class="cms-widgets-overview__single-widget-info-wrapper">

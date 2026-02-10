@@ -93,10 +93,8 @@ public class Sitemap {
      */
     public List<File> generate(String viewerRootUrl, String outputPath)
             throws IOException, PresentationException, IndexUnreachableException, DAOException {
-        this.viewerRootUrl = viewerRootUrl;
-        if (this.viewerRootUrl != null && !this.viewerRootUrl.endsWith("/")) {
-            this.viewerRootUrl += "/";
-        }
+        setViewerRootUrl(viewerRootUrl);
+
         // Sitemap index root
         docIndex.setRootElement(new Element("sitemapindex", NS_SITEMAP));
 
@@ -297,9 +295,10 @@ public class Sitemap {
      * @param changefreq
      * @param priority
      * @return Created {@link Element}
+     * @should create url correctly
      */
-    private Element createUrlElement(String pi, int order, String dateModified, String type, String changefreq, String priority) {
-        return createUrlElement(viewerRootUrl + '/' + type + '/' + pi + '/' + order + '/', dateModified, changefreq, priority);
+    Element createUrlElement(String pi, int order, String dateModified, String type, String changefreq, String priority) {
+        return createUrlElement(viewerRootUrl + type + '/' + pi + '/' + order + '/', dateModified, changefreq, priority);
     }
 
     /**
@@ -386,4 +385,13 @@ public class Sitemap {
         return ret;
     }
 
+    /**
+     * @param viewerRootUrl the viewerRootUrl to set
+     */
+    void setViewerRootUrl(String viewerRootUrl) {
+        this.viewerRootUrl = viewerRootUrl;
+        if (this.viewerRootUrl != null && !this.viewerRootUrl.endsWith("/")) {
+            this.viewerRootUrl += "/";
+        }
+    }
 }

@@ -24,7 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -45,7 +45,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.goobi.presentation.contentServlet.controller.GetMetsPageCountAction;
 import org.jboss.weld.contexts.ContextNotActiveException;
 import org.json.JSONObject;
 import org.omnifaces.cdi.Push;
@@ -58,13 +57,8 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
-import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
@@ -90,15 +84,15 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
-import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.DownloadOption;
-import io.goobi.viewer.model.job.download.EPUBDownloadJob;
-import io.goobi.viewer.model.job.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.download.EpubDownloadJob;
+import io.goobi.viewer.model.job.download.PdfDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.RecordGeoMap;
 import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
+import io.goobi.viewer.model.pdf.PdfSizeCalculator;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -211,6 +205,9 @@ public class ActiveDocumentBean implements Serializable {
     @Inject
     @Push
     private PushContext tocUpdateChannel;
+
+    private Dataset recordDataset;
+    private PdfSizeCalculator pdfSizes;
 
     /**
      * Empty constructor.
@@ -467,8 +464,15 @@ public class ActiveDocumentBean implements Serializable {
                     }
                 }
 
-                viewManager = new ViewManager(topStructElement, AbstractPageLoader.create(topStructElement), topDocumentIddoc,
+                PageType pageType = Optional.ofNullable(this.navigationHelper).map(NavigationHelper::getCurrentPageType).orElse(PageType.other);
+                String mimeType = topStructElement.getMetadataValue(SolrConstants.MIMETYPE);
+                PageNavigation pageNavigation = this.calculateCurrentPageNavigation(pageType, mimeType);
+                boolean showThumbnailGallery = DataManager.getInstance().getConfiguration().showImageThumbnailGallery(pageType, mimeType);
+                viewManager = new ViewManager(topStructElement,
+                        AbstractPageLoader.create(topStructElement, true, PageNavigation.SEQUENCE.equals(pageNavigation) || showThumbnailGallery),
+                        topDocumentIddoc,
                         logid, topStructElement.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
+                viewManager.setPageNavigation(pageNavigation);
                 viewManager.setToc(createTOC());
                 viewManager.setRecordAccessTicketRequired(accessTicketRequired);
 
@@ -525,8 +529,10 @@ public class ActiveDocumentBean implements Serializable {
                     subElementIddoc = (String) docList.get(0).getFieldValue(SolrConstants.IDDOC);
                     // Re-initialize ViewManager with the new current element
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
+                    PageNavigation pageNavigation = viewManager.getPageNavigation();
                     viewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(), subElementIddoc, logid,
                             viewManager.getMimeType(), imageDelivery);
+                    viewManager.setPageNavigation(pageNavigation);
                     viewManager.setFirstPageOrientation(firstPageOrientation);
                     viewManager.setToc(createTOC());
                 } else {
@@ -1819,16 +1825,14 @@ public class ActiveDocumentBean implements Serializable {
         return getPdfSize(null);
     }
 
-    public String getPdfSize(String logId) throws PresentationException {
+    public synchronized String getPdfSize(String logId) throws PresentationException {
+
         try {
-            Dataset dataset = new ProcessDataResolver().getDataset(getPersistentIdentifier());
-            Map<String, String> params = Map.of("imageSource",
-                    dataset.getMediaFolderPath().getParent().toString(), "pdfSource", dataset.getPdfFolderPath().getParent().toString(), "altoSource",
-                    dataset.getAltoFolderPath().getParent().toString());
-            MetsPdfRequest request = new MetsPdfRequest(PathConverter.toURI(dataset.getMetadataFilePath()), logId, false, params);
-            long size = new GetMetsPageCountAction(ContentServerCacheManager.getInstance()).getPdfInfo(request).getSize();
-            return FileSizeCalculator.formatSize(size);
-        } catch (URISyntaxException | ContentLibException | IndexUnreachableException | IOException | RecordNotFoundException e) {
+            if (this.pdfSizes == null) {
+                this.pdfSizes = new PdfSizeCalculator(getRecordDataset());
+            }
+            return this.pdfSizes.getPdfSize(logId);
+        } catch (PresentationException | IndexUnreachableException | IOException | RecordNotFoundException | NullPointerException e) {
             logger.error("Error getting pdf file sizes", e.toString());
             return "unknown";
         }
@@ -2134,17 +2138,27 @@ public class ActiveDocumentBean implements Serializable {
     public boolean isAccessPermissionEpub() {
         synchronized (this) {
             try {
-                if ((navigationHelper != null && !isEnabled(EPUBDownloadJob.LOCAL_TYPE, navigationHelper.getCurrentPage())) || viewManager == null
-                        || !DownloadJob.ocrFolderExists(viewManager.getPi())) {
+                if ((navigationHelper != null && !isEnabled(EpubDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null
+                        || !ocrFolderExists(viewManager.getPi())) {
                     return false;
                 }
-            } catch (PresentationException | IndexUnreachableException e) {
+            } catch (IndexUnreachableException e) {
                 logger.error("Error checking EPUB resources: {}", e.getMessage());
                 return false;
             }
 
             // TODO EPUB privilege type
             return viewManager.isAccessPermissionPdf();
+        }
+    }
+
+    private boolean ocrFolderExists(String pi) {
+        try {
+            Path altoFolder = getRecordDataset().getAltoFolderPath();
+            return altoFolder != null && Files.isDirectory(altoFolder);
+        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException e) {
+            logger.error("Error finding alto folder for {}", pi, e);
+            return false;
         }
     }
 
@@ -2157,7 +2171,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public boolean isAccessPermissionPdf() {
         synchronized (this) {
-            if ((navigationHelper != null && !isEnabled(PDFDownloadJob.LOCAL_TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
+            if ((navigationHelper != null && !isEnabled(PdfDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
                 return false;
             }
 
@@ -2171,11 +2185,11 @@ public class ActiveDocumentBean implements Serializable {
      * @return true if download of the given type is enabled for the given page type; false otherwise
      */
     private static boolean isEnabled(String downloadType, String pageTypeName) {
-        if (downloadType.equals(EPUBDownloadJob.LOCAL_TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue()) {
+        if (downloadType.equals(EpubDownloadJob.TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue()) {
             return false;
         }
         PageType pageType = PageType.getByName(pageTypeName);
-        boolean pdf = PDFDownloadJob.LOCAL_TYPE.equals(downloadType);
+        boolean pdf = PdfDownloadJob.TYPE.equals(downloadType);
         if (pageType != null) {
             switch (pageType) {
                 case viewToc:
@@ -2812,7 +2826,54 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public void updatePageNavigation(PageType pageType) {
-        Optional.ofNullable(this.viewManager).ifPresent(vm -> vm.updatePageNavigation(pageType));
+        Optional.ofNullable(this.viewManager).ifPresent(vm -> vm.setPageNavigation(calculateCurrentPageNavigation(pageType, vm.getMimeType())));
+    }
+
+    protected PageNavigation calculateCurrentPageNavigation(PageType pageType, String mimeType) {
+        try {
+            PageNavigation defaultPageNavigation = getDefaultPageNavigation(pageType, mimeType);
+            PageNavigation currentPageNavigation =
+                    Optional.ofNullable(this.viewManager).map(ViewManager::getPageNavigation).orElse(PageNavigation.SINGLE);
+            if (currentPageNavigation == defaultPageNavigation) {
+                return currentPageNavigation;
+            } else if (defaultPageNavigation == PageNavigation.SEQUENCE) {
+                return defaultPageNavigation;
+            } else if (currentPageNavigation == PageNavigation.SINGLE) {
+                return currentPageNavigation;
+            } else if (currentPageNavigation == PageNavigation.DOUBLE
+                    && DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(pageType, mimeType)) {
+                return currentPageNavigation;
+            } else {
+                return defaultPageNavigation;
+            }
+
+        } catch (ViewerConfigurationException | NullPointerException | IllegalArgumentException e) {
+            logger.error("Failed to set view mode: {}", e.toString());
+            return PageNavigation.SINGLE;
+        }
+    }
+
+    protected PageNavigation getDefaultPageNavigation(PageType pageType, String mimeType) {
+        try {
+            if (DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(pageType, mimeType)) {
+                return PageNavigation.SEQUENCE;
+            } else if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, mimeType)) {
+                return PageNavigation.DOUBLE;
+            } else {
+                return PageNavigation.SINGLE;
+            }
+        } catch (ViewerConfigurationException e) {
+            logger.error("Error reading default page navigation from config", e);
+            return PageNavigation.SINGLE;
+        }
+    }
+
+    private synchronized Dataset getRecordDataset() throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
+        if (this.recordDataset == null) {
+            String cleanedPi = StringTools.cleanUserGeneratedData(getPersistentIdentifier());
+            this.recordDataset = new ProcessDataResolver().getDataset(cleanedPi);
+        }
+        return this.recordDataset;
     }
 
 }

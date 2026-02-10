@@ -206,7 +206,10 @@
                 page: '[data-image="zoomable"] [data-image-data="pageNumber"]',
                 footer: '[data-image="zoomable"] [data-image-data="footer"]',
                 pageAreas: '[data-image="zoomable"] [data-image-data="pageAreas"]',
-                overlays: '[data-image="zoomable"] [data-image-data="overlays"]',
+                overlays: '[data-image="zoomable"] [data-image-data="overlays"]', 
+                topMarginElement: '[data-image="zoomable"] [data-image-data="topMarginElement"]',
+                leftMarginElement: '[data-image="zoomable"] [data-image-data="leftMarginElement"]',
+                rightMarginElement: '[data-image="zoomable"] [data-image-data="rightMarginElement"]',
             },
             controls: { 
                 rotateLeft: '.rotate-left',
@@ -242,6 +245,10 @@
                 this.pageType = document.querySelector(_config.elementSelectors.data.pageType).textContent;
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
                 
+                this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
+                this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
+                this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
+
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 this.viewer = new ImageView.Image(imageViewConfig);
                 this.zoom = new ImageView.Controls.Zoom(this.viewer);
@@ -252,6 +259,7 @@
                 this.footer = createFooter(this.viewer);
 
                 this.tileSources = createTileSource();
+                
                 this.tileSourceIdToOrder = Object.fromEntries(
                     Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
                 );
@@ -286,6 +294,24 @@
 
             }
         }
+
+        resetSize() {
+            this.viewer?.extent?.setSize(this.viewer.tileSources);
+            this.updateMargins();
+        }
+
+        updateMargins() {
+            if(this.viewer?.openseadragon?.viewport) {
+                const viewerRight = (this.viewer.element.offsetLeft + this.viewer.element.offsetWidth);
+                const sidebarRightLeft = document.querySelector(this.rightMarginElement)?.offsetLeft;
+                const margins = {
+                    left: (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) + (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
+                    right: sidebarRightLeft ? (viewerRight - sidebarRightLeft) : 0,
+                    top: document.querySelector(this.topMarginElement)?.offsetHeight ?? 0,
+                };
+                this.viewer.setMargins(margins);
+            }
+        }
      
         load() {
             if(this.viewer) {
@@ -293,13 +319,18 @@
                 .then(image => {
                     this.sequence?.initialize(this.getCurrentTileSourceId());
                     this.overlayGroups.forEach(group => group.show());
+                    this.initWindowResize();
                     return this;
                 });
             } else {
                 return new Promise( ( resolve, reject ) => {
-                    reject("no image found");
+                    reject("no image found"); 
                 })
             }
+        }
+
+        initWindowResize() { 
+            window.addEventListener("resize", () => this.resetSize());
         }
 
         getCurrentTileSourceIndex() {
@@ -333,7 +364,7 @@
         getTileSourceOrderFromId(id) {
             return this.tileSourceIdToOrder[id];
         }
-      
+
     }
 
     function _drawPageAreas(image) {
@@ -366,7 +397,8 @@
                 });
                 return tileSources;
             } catch(e) {
-                console.error(`Error parsing tileSource "${tileSourcesString}": ${e}`);
+                //if no image number map is passed, but a simple url string
+                return {1 : tileSourcesString};
             }
         }
     }
@@ -399,7 +431,9 @@
         return  {
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
-            margins: getMargins(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight], document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
+            margins:{
+                bottom: Number(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight])
+            }, 
             zoom:  {
                 enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== "false"
             },
@@ -428,15 +462,10 @@
     function getFittingMode(pageType) {
         switch((pageType || "").toLowerCase()) {
             case "viewfullscreen":
+            case "crowdsourcing":
                 return "fixed";
             default:
                 return "toWidth";
-        }
-    }
-
-    function getMargins(footerHeight, pageType) {
-        return {
-            bottom: Number(footerHeight)
         }
     }
 
@@ -623,6 +652,142 @@
         }
     }
 
+    const _default = {
+        container : "#world",
+        loadStory : "#loadStoryEditor",
+        closeStory : "#closeStoryEditor",
+        sizeText : "#objectSize",
+        explorer: "#voyager",
+        story: "#voyagerStory",
+        startLoad: "#startLoadButton",
+        loadProgress: "#loadingProgress"
+    }; 
+
+    class Voyager3dView {
+
+        constructor(config) {
+            this.config = jQuery.extend(true, {}, _default, config);
+            this.container = document.querySelector(this.config.container);
+            console.log("init voyager3d", this);
+            if(this.isVisible()) { 
+                this.loaded = this.initView().then(() => {});
+            }
+        }
+
+        async initView() {
+            this.loadStoryButton = document.querySelector(this.config.loadStory);
+            this.closeStoryButton = document.querySelector(this.config.closeStory);
+            this.startLoadButton = document.querySelector(this.config.startLoad);
+            this.loadingProgressMonitor = document.querySelector(this.config.loadProgress);
+            this.objectUrl = this.container.dataset.objectUrl;
+            this.resourcePath = this.container.dataset.resourcePath; 
+            if(this.objectUrl) {
+
+                this.startLoadButton?.addEventListener("click", e => this.loadExplorer());
+                this.loadStoryButton?.addEventListener("click", e => this.loadStory());
+                this.closeStoryButton?.addEventListener("click", e => this.loadExplorer());
+                this.sceneData = await this.getSceneData();
+                this.showLoadSizeText();
+            }
+        }
+
+        loadExplorer() {
+            const explorer = `<voyager-explorer id='voyager' bgcolor='#015999 #000' bgstyle='LinearGradient' style='display:none;' document='${this.getSceneUrl()}' uiMode='menu' resourceRoot='${this.resourcePath}'></voyager-explorer>`;
+            
+            show(this.loadStoryButton);
+            hide(this.closeStoryButton);
+            this.unloadObject();
+            this.unloadStory();
+            hide(this.startLoadButton);
+            show(this.loadingProgressMonitor);
+
+
+            const tempElement = document.createElement('div');
+            tempElement.innerHTML = explorer;
+            this.container.append(...tempElement.children);
+
+            this.voyager = document.getElementById(this.config.explorer);
+            voyager.addEventListener("model-load", e => {
+                show(voyager);
+            });
+        }
+
+
+
+        loadStory() {
+                
+            const story = `<voyager-story id='voyagerStory' bgcolor='#015999 #000' bgstyle='LinearGradient' style='display:none;' document='${this.getSceneUrl()}'></voyager-story>`;
+
+            hide(this.loadStoryButton);
+            show(this.closeStoryButton);
+            this.unloadObject();
+            this.unloadStory();
+            hide(this.startLoadButton);
+            show(this.loadingProgressMonitor);
+
+            const tempElement = document.createElement('div');
+            tempElement.innerHTML = story;
+
+            console.log("appending ", ...tempElement.children, " to ", this.container);
+            this.container.append(...tempElement.children);
+
+            const voyager = document.getElementById(this.config.story);
+            voyager.addEventListener("model-load", e => {
+                console.log("loaded ", e);
+                show(voyager);
+            });
+
+        }
+
+        showLoadSizeText() { 
+            const size = this.getTotalSize(this.sceneData);
+            const sizeText = document.querySelector(this.config.sizeText);
+            if(size && sizeText) {
+               sizeText.innerHTML = (size / 1000 / 1000).toFixed(2) + " MB";
+            }
+        }
+
+        isVisible() {
+            return this.container && $(this.container).is(":visible");
+        }
+
+
+
+        getTotalSize(scene) {
+            return scene.models.flatMap(m => m.derivatives).flatMap(d => d.assets).map(a => a.byteSize).reduce((a, b) => a + b, 0);
+        }
+
+        getSceneUrl() {
+            return this.objectUrl + "/scene.svx.json";
+        }
+
+        async getSceneData() {
+            return fetch(this.getSceneUrl())
+            .then(res => res.json());
+        }
+
+
+        unloadObject() {
+            document.querySelector(this.config.explorer)?.remove();
+        }
+
+        unloadStory() {
+            document.querySelector(this.config.story)?.remove();
+        }
+    }
+
+    function hide(element) {
+        if (element) {
+            element.style.display = "none";
+        }
+    }
+
+    function show(element) {
+        if (element) {
+            element.style.display = "block";
+        }
+    }
+
     window.ShareImageFragment = ShareImageFragment;
 
     window.zoomableImageLoaded = new rxjs.Subject();
@@ -636,6 +801,9 @@
         .catch(e => {
             window.zoomableImageLoaded.error(e);
         });
+
+        window.voyager3dView = new Voyager3dView();
+
     });
 
 })();

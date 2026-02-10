@@ -26,6 +26,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_CMDI;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_MEDIA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_MEI;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
@@ -45,11 +46,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
@@ -68,6 +71,7 @@ import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -75,6 +79,8 @@ import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.record.views.FileType;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -133,7 +139,7 @@ public class RecordFileResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        StringPair ret = builder.getAltoDocument(pi, filename);
+        StringPair ret = builder.getAltoDocument(pi, Path.of(filename).getFileName().toString());
         return ret.getOne();
     }
 
@@ -144,11 +150,12 @@ public class RecordFileResource {
     public String getPlaintext(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, ServiceNotAllowedException {
+        logger.trace("getPlaintext: {}", filename);
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        return builder.getFulltext(pi, filename);
+        return builder.getFulltext(pi, Path.of(filename).getFileName().toString());
     }
 
     @GET
@@ -162,7 +169,45 @@ public class RecordFileResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        return builder.getFulltextAsTEI(pi, filename);
+        return builder.getFulltextAsTEI(pi, Path.of(filename).getFileName().toString());
+    }
+
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_FILES_MEI)
+    @Produces({ MediaType.TEXT_XML })
+    @Operation(tags = { "records" }, summary = "Get MEI document for the record")
+    public String getMEI()
+            throws ContentLibException, DAOException, IOException, IndexUnreachableException, PresentationException {
+        try {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, servletRequest)
+                    .isGranted()) {
+                throw new ServiceNotAllowedException("Access to MEI file for '" + pi + "' not allowed");
+            }
+        } catch (RecordNotFoundException e) {
+            throw new ContentLibException("Record not found: " + pi);
+        }
+
+        if (servletResponse != null) {
+            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
+        }
+
+        SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+        if (solrDoc == null) {
+            throw new ContentLibException("Record not found: " + pi);
+        }
+
+        String meiFileName = SolrTools.getSingleFieldStringValue(solrDoc, SolrConstants.FILENAME_MEI);
+        if (meiFileName == null) {
+            throw new ContentLibException("No MEI file name indexed for record: " + pi);
+        }
+
+        Path file = DataFileTools.getDataFilePath(pi, "mei", null, meiFileName);
+        logger.trace("MEI file: {}", file.toAbsolutePath());
+        if (!Files.isRegularFile(file)) {
+            throw new ContentLibException("MEI file not found: " + file);
+        }
+
+        return FileTools.getStringFromFile(file.toFile(), null);
     }
 
     @GET
@@ -313,18 +358,21 @@ public class RecordFileResource {
 
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
-    @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    @Operation(tags = { "records" }, summary = "Download an external resource previously downloaded to the viewer server")
     @RecordFileDownloadBinding
     public Response getDownloadedResource(
             @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,
             @Parameter(description = "file path relative to the download directory") @PathParam("path") String path)
-            throws PresentationException, IndexUnreachableException, ContentNotFoundException {
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, IllegalRequestException {
 
         //TODO: check access conditions for some download action
 
         Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
         Path taskFolder = downloadFolder.resolve(taskId);
-        Path resourceFile = taskFolder.resolve(Path.of(path));
+        Path resourceFile = taskFolder.resolve(Path.of(path)).normalize();
+        if (!resourceFile.startsWith(taskFolder)) {
+            throw new IllegalRequestException("May not download from path " + path);
+        }
         String mimeType = "application/octet-stream";
         if (Files.isRegularFile(resourceFile)) {
             try {

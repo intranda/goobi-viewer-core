@@ -71,6 +71,7 @@ import org.json.JSONObject;
 import org.omnifaces.util.Faces;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.api.iiif.image.ImageInformation;
 import de.undercouch.citeproc.CSL;
@@ -139,9 +140,12 @@ import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.SelectPageItem;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ValueChangeEvent;
@@ -211,6 +215,7 @@ public class ViewManager implements Serializable {
     private Long pagesWithAlto = null;
     private Boolean workHasTEIFiles = null;
     private Boolean metadataViewOnly = null;
+    private Boolean displayArchivesWidget = null;
     private String citationStyle = null;
     private CitationProcessorWrapper citationProcessorWrapper;
     private ArchiveResource archiveResource = null;
@@ -218,8 +223,9 @@ public class ViewManager implements Serializable {
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
     private Map<CitationLinkLevel, CitationList> citationLinks = new HashMap<>();
-    private List<String> externalResourceUrls = null;
+    private Map<String, String> externalResourceUrls = null;
     private List<PhysicalResource> downloadResources = null;
+    private String meiUrl = null;
 
     private PageNavigation pageNavigation = PageNavigation.SINGLE;
 
@@ -271,8 +277,6 @@ public class ViewManager implements Serializable {
         this.mimeType = mimeType;
         logger.trace("mimeType: {}", mimeType);
 
-        this.pageNavigation = getDefaultPageNavigation(null);
-
         // Linked archive node
         try {
             String archiveId = getArchiveEntryIdentifier();
@@ -283,21 +287,6 @@ public class ViewManager implements Serializable {
             }
         } catch (ArchiveException e) {
             logger.error("Error creating archive link for {}: {}", this.pi, e.getMessage());
-        }
-    }
-
-    protected PageNavigation getDefaultPageNavigation(PageType pageType) {
-        try {
-            if (DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(pageType, this.mimeType)) {
-                return PageNavigation.SEQUENCE;
-            } else if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, this.mimeType)) {
-                return PageNavigation.DOUBLE;
-            } else {
-                return PageNavigation.SINGLE;
-            }
-        } catch (ViewerConfigurationException e) {
-            logger.error("Error reading default page navigation from config", e);
-            return PageNavigation.SINGLE;
         }
     }
 
@@ -389,7 +378,9 @@ public class ViewManager implements Serializable {
                 break;
             case SEQUENCE:
                 for (PhysicalElement page : this.getAllPages()) {
-                    infos.put(page.getOrder(), getImageInfo(page, pageType));
+                    if (page.isHasImage()) {
+                        infos.put(page.getOrder(), getImageInfo(page, pageType));
+                    }
                 }
                 break;
             default:
@@ -647,20 +638,6 @@ public class ViewManager implements Serializable {
      * getCurrentMasterImageUrl.
      * </p>
      *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated(since = "24.10")
-    public String getCurrentMasterImageUrl() throws IndexUnreachableException, DAOException {
-        return getMasterImageUrl(Scale.MAX, getCurrentPage());
-    }
-
-    /**
-     * <p>
-     * getCurrentMasterImageUrl.
-     * </p>
-     *
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
      * @param page
      * @return a {@link java.lang.String} object.
@@ -907,34 +884,6 @@ public class ViewManager implements Serializable {
         }
 
         return format;
-    }
-
-    /**
-     * <p>
-     * getMasterImageUrlForDownload.
-     * </p>
-     *
-     * @param boxSizeInPixel
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated(since = "24.10")
-    public String getMasterImageUrlForDownload(String boxSizeInPixel) throws IndexUnreachableException, DAOException {
-        if (boxSizeInPixel == null) {
-            throw new IllegalArgumentException("boxSizeInPixel may not be null");
-        }
-
-        Scale scale;
-        if (boxSizeInPixel.equalsIgnoreCase(Scale.MAX_SIZE) || boxSizeInPixel.equalsIgnoreCase(Scale.FULL_SIZE)) {
-            scale = Scale.MAX;
-        } else if (boxSizeInPixel.matches("\\d{1,9}")) {
-            scale = new Scale.ScaleToBox(Integer.valueOf(boxSizeInPixel), Integer.valueOf(boxSizeInPixel));
-        } else {
-            throw new IllegalArgumentException("Not a valid size parameter: " + boxSizeInPixel);
-        }
-
-        return getMasterImageUrl(scale, getCurrentPage());
     }
 
     /**
@@ -1262,9 +1211,7 @@ public class ViewManager implements Serializable {
      * @return true if record is born digital material (no scanned images); false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated replc
      */
-    @Deprecated(since = "25.02")
     public boolean isBornDigital() throws IndexUnreachableException, DAOException {
         return isHasPages() && isFilesOnly();
     }
@@ -1531,34 +1478,8 @@ public class ViewManager implements Serializable {
         }
     }
 
-    protected void setPageNavigation(PageNavigation navigation) {
+    public void setPageNavigation(PageNavigation navigation) {
         this.pageNavigation = navigation;
-    }
-
-    public void updatePageNavigation(PageType pageType) {
-        this.pageNavigation = calculateCurrentPageNavigation(pageType);
-    }
-
-    protected PageNavigation calculateCurrentPageNavigation(PageType pageType) {
-        try {
-            PageNavigation defaultPageNavigation = getDefaultPageNavigation(pageType);
-            if (this.pageNavigation == defaultPageNavigation) {
-                return this.pageNavigation;
-            } else if (defaultPageNavigation == PageNavigation.SEQUENCE) {
-                return defaultPageNavigation;
-            } else if (this.pageNavigation == PageNavigation.SINGLE) {
-                return this.pageNavigation;
-            } else if (this.pageNavigation == PageNavigation.DOUBLE
-                    && DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(pageType, this.mimeType)) {
-                return this.pageNavigation;
-            } else {
-                return defaultPageNavigation;
-            }
-
-        } catch (ViewerConfigurationException | NullPointerException | IllegalArgumentException e) {
-            logger.error("Failed to set view mode: {}", e.toString());
-            return PageNavigation.SINGLE;
-        }
     }
 
     /**
@@ -2017,58 +1938,6 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * <p>
-     * getMetsResolverUrl.
-     * </p>
-     *
-     * @return METS resolver link
-     * @deprecated Use ViewManager.getSourceFileResolverUrl()
-     */
-    @Deprecated(since = "24.08")
-    public String getMetsResolverUrl() {
-        return getSourceFileResolverUrl();
-    }
-
-    /**
-     * <p>
-     * getLidoResolverUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl()
-     */
-    @Deprecated(since = "24.08")
-    public String getLidoResolverUrl() {
-        return getSourceFileResolverUrl();
-    }
-
-    /**
-     * <p>
-     * getDenkxwebResolverUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl()
-     */
-    @Deprecated(since = "24.08")
-    public String getDenkxwebResolverUrl() {
-        return getSourceFileResolverUrl();
-    }
-
-    /**
-     * <p>
-     * getDublinCoreResolverUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl()
-     */
-    @Deprecated(since = "24.08")
-    public String getDublinCoreResolverUrl() {
-        return getSourceFileResolverUrl();
-    }
-
-    /**
      * 
      * @return Source file resolver URL for the current record identifier
      */
@@ -2170,6 +2039,54 @@ public class ViewManager implements Serializable {
                         .params(localPi, language)
                         .build())
                 .orElse("");
+    }
+
+    /**
+     * 
+     * @return true if record has MEI URL; false otherwise
+     * @throws IndexUnreachableException
+     */
+    public boolean isHasMeiDocument() throws IndexUnreachableException {
+        return StringUtils.isNotEmpty(getMeiUrl());
+    }
+
+    /**
+     * 
+     * @return MEI file URL for this record
+     * @throws IndexUnreachableException
+     */
+    public String getMeiUrl() throws IndexUnreachableException {
+        if (meiUrl == null) {
+            if (topStructElement == null || StringUtils.isEmpty(topStructElement.getMetadataValue(SolrConstants.FILENAME_MEI))) {
+                meiUrl = "";
+                return meiUrl;
+            }
+
+            try {
+                if (!AccessConditionUtils
+                        .checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, BeanUtils.getRequest())
+                        .isGranted()) {
+                    logger.trace("User is not allowed MEI access.");
+                    meiUrl = "";
+                    return meiUrl;
+                }
+            } catch (RecordNotFoundException | DAOException e) {
+                logger.error(e.getMessage());
+                meiUrl = "";
+                return meiUrl;
+            }
+
+            String localPi = getPi();
+            meiUrl = DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> urls.path(RECORDS_FILES, ApiUrls.RECORDS_FILES_MEI)
+                            .params(localPi)
+                            .build())
+                    .orElse("");
+        }
+
+        return meiUrl;
     }
 
     /**
@@ -3033,69 +2950,6 @@ public class ViewManager implements Serializable {
                         .append(SolrConstants.FILENAME_ALTO)
                         .append(":*")
                         .toString());
-    }
-
-    /**
-     * Default fulltext getter (with HTML escaping).
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @deprecated Use <code>PhysicalElement.getFullText()</code>
-     */
-    @Deprecated(since = "24.10")
-    public String getFulltext() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return getFulltext(true, null);
-    }
-
-    /**
-     * Returns the full-text for the current page, stripped of any included JavaScript.
-     *
-     * @param escapeHtml If true HTML tags will be escaped to prevent pseudo-HTML from breaking the text.
-     * @param language a {@link java.lang.String} object.
-     * @return Full-text for the current page.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @deprecated Use <code>PhysicalElement.getFullText()</code>
-     */
-    @Deprecated(since = "24.10")
-    public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
-        String currentFulltext = null;
-
-        // Current page fulltext
-
-        if (isDoublePageMode()) {
-            // Double page view
-            StringBuilder sb = new StringBuilder();
-            Optional<PhysicalElement> leftPage = getCurrentLeftPage();
-            if (leftPage.isPresent() && StringUtils.isNotEmpty(leftPage.get().getFullText())) {
-                sb.append(leftPage.get().getFullText());
-            }
-            Optional<PhysicalElement> rightPage = getCurrentRightPage();
-            if (rightPage.isPresent() && StringUtils.isNotEmpty(rightPage.get().getFullText())) {
-                if (sb.length() > 0) {
-                    sb.append("<hr />");
-                }
-                sb.append(rightPage.get().getFullText());
-            }
-            currentFulltext = sb.toString();
-        } else {
-            // Single page view
-            PhysicalElement currentPage = getCurrentPage();
-            if (currentPage == null || StringUtils.isEmpty(currentPage.getFullText())) {
-                return currentFulltext;
-            }
-            currentFulltext = currentPage.getFullText();
-        }
-
-        if (escapeHtml) {
-            currentFulltext = StringTools.escapeHtmlChars(currentFulltext);
-        }
-
-        // logger.trace(currentFulltext); //NOSONAR Debug
-        return currentFulltext;
     }
 
     /**
@@ -4243,6 +4097,33 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * 
+     * @return true if this record has archive node ID and archive node exists in index; false otherwise
+     * @should set displayArchivesWidget to false if no ead node id exists
+     * @should set displayArchivesWidget to false if no archive node with id found in index
+     * @should set displayArchivesWidget to true if both id and archive node exist
+     */
+    public boolean isDisplayArchivesWidget() {
+        if (displayArchivesWidget == null) {
+            if (StringUtils.isEmpty(getArchiveEntryIdentifier())) {
+                displayArchivesWidget = false;
+            } else {
+                try {
+                    displayArchivesWidget = DataManager.getInstance()
+                            .getSearchIndex()
+                            .getHitCount("+" + SolrConstants.EAD_NODE_ID + ":" + getArchiveEntryIdentifier() + " +" + SolrConstants.DOCTYPE + ":"
+                                    + DocType.ARCHIVE.name()) > 0;
+                } catch (IndexUnreachableException | PresentationException e) {
+                   logger.error(e.getMessage());
+                   displayArchivesWidget = false;
+                }
+            }
+        }
+
+        return displayArchivesWidget;
+    }
+
+    /**
      *
      * @return Value of EAD_NODE_ID in the loaded record
      */
@@ -4441,20 +4322,30 @@ public class ViewManager implements Serializable {
                 .toList();
     }
 
-    public List<String> getExternalResourceUrls() throws IndexUnreachableException {
+    public Map<String, String> getExternalResourceUrls() throws IndexUnreachableException {
         if (this.externalResourceUrls == null) {
             this.externalResourceUrls = loadExternalResourceUrls();
         }
         return this.externalResourceUrls;
     }
 
-    private List<String> loadExternalResourceUrls() throws IndexUnreachableException {
-        List<String> urlTemplates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
+    public String getExternalResourceUrlsAsJson() {
+        try {
+            return new ObjectMapper().writeValueAsString(getExternalResourceUrls());
+        } catch (IndexUnreachableException | JsonProcessingException e) {
+            logger.error("Cannot map external resource urls map to json", e);
+            return "{}";
+        }
+    }
+
+    private Map<String, String> loadExternalResourceUrls() throws IndexUnreachableException {
+        List<String> urlTemplates =
+                DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
         VariableReplacer vr = new VariableReplacer(this);
         return urlTemplates.stream()
-                .flatMap(templ -> vr.replace(templ).stream())
-                .filter(ExternalFilesDownloader::resourceExists)
-                .toList();
+                .flatMap(templ -> vr.replace(templ).stream().map(url -> new StringPair(url, templ)))
+                .filter(pair -> ExternalFilesDownloader.resourceExists(pair.getOne(), pair.getTwo()))
+                .collect(Collectors.toMap(StringPair::getOne, StringPair::getTwo));
     }
 
     public StructElement getAnchorStructElement() {
@@ -4481,6 +4372,27 @@ public class ViewManager implements Serializable {
         return DataManager.getInstance()
                 .getConfiguration()
                 .showImageThumbnailGallery(pageType, Optional.ofNullable(getCurrentPage()).map(PhysicalElement::getMimeType).orElse(null));
+
+    }
+
+    public String getMimeTypesForLoadedPagesAsJson() throws IndexUnreachableException {
+        return JSONObject.wrap(getMimeTypesForLoadedPages()).toString();
+    }
+
+    public Map<Integer, String> getMimeTypesForLoadedPages() throws IndexUnreachableException {
+        if (this.pageLoader instanceof LeanPageLoader) {
+            return Map.of(currentImageOrder, this.pageLoader.getPage(currentImageOrder).getMimeType());
+        } else if (this.pageLoader instanceof EagerPageLoader) {
+            Map<Integer, String> map = new LinkedHashMap<>();
+            for (int i = this.pageLoader.getFirstPageOrder(); i <= this.pageLoader.getLastPageOrder(); i++) {
+                if (this.pageLoader.getPage(i) != null) {
+                    map.put(i, this.pageLoader.getPage(i).getMimeType());
+                }
+            }
+            return map;
+        } else {
+            return Collections.emptyMap();
+        }
 
     }
 }

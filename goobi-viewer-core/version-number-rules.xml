@@ -18,7 +18,7 @@
         </rule>
         <rule groupId="org.glassfish.jersey.*" artifactId="*">
             <ignoreVersions>
-                <ignoreVersion>4.0.0</ignoreVersion>
+                <ignoreVersion type="regex">4.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="jakarta.websocket" artifactId="jakarta.websocket-*">
@@ -41,6 +41,16 @@
         <rule groupId="jakarta.ws.rs" artifactId="jakarta.ws.rs-api">
             <ignoreVersions>
                 <ignoreVersion type="regex">4.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.springframework" artifactId="spring-*">
+            <ignoreVersions>
+                <ignoreVersion type="regex">7.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.omnifaces" artifactId="omnifaces">
+            <ignoreVersions>
+                <ignoreVersion type="regex">5.*</ignoreVersion>
             </ignoreVersions>
         </rule>
 

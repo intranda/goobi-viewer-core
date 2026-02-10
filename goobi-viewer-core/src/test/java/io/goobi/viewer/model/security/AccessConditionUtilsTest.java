@@ -288,14 +288,14 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "alto/PPN123456789/00000001.txt");
             Assertions.assertEquals(
                     "+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME_FULLTEXT
-                            + ":\"alto/PPN123456789/00000001.txt\" FILENAME_PLAIN:\"00000001.txt\")",
+                            + ":\"alto/PPN123456789/00000001.txt\" " + SolrConstants.FILENAME_FULLTEXT_SHORT + ":\"00000001.txt\")",
                     result);
         }
         {
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "alto/PPN123456789/00000001.xml");
             Assertions.assertEquals(
                     "+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME_ALTO
-                            + ":\"alto/PPN123456789/00000001.xml\" FILENAME_XML:\"00000001.xml\")",
+                            + ":\"alto/PPN123456789/00000001.xml\" " + SolrConstants.FILENAME_ALTO_SHORT + ":\"00000001.xml\")",
                     result);
         }
     }
@@ -305,7 +305,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies use correct file name for pdf files
      */
     @Test
-    void generateAccessCheckQuery_shouldUseCorrectFileNameForPdfFiles() throws Exception {
+    void generateAccessCheckQuery_shouldUseCorrectFileNameForPdfFiles() {
         String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "12345.pdf");
         Assertions.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"12345.pdf\"", result);
     }
@@ -319,7 +319,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.xml");
         Assertions.assertEquals(
                 "+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +(" + SolrConstants.FILENAME_ALTO
-                        + ":*/PPN123456789/00000001.xml FILENAME_XML:\"00000001.xml\")",
+                        + ":*/PPN123456789/00000001.xml " + SolrConstants.FILENAME_ALTO_SHORT + ":\"00000001.xml\")",
                 result);
     }
 

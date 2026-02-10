@@ -1160,19 +1160,6 @@ public class NavigationHelper implements Serializable {
 
     /**
      * <p>
-     * getReadingModeUrl.
-     * </p>
-     *
-     * @return the reading mode url
-     * @deprecated renamed to fullscreen
-     */
-    @Deprecated(since = "24.10")
-    public String getReadingModeUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFullscreen.getName();
-    }
-
-    /**
-     * <p>
      * getCalendarUrl.
      * </p>
      *
@@ -1272,6 +1259,28 @@ public class NavigationHelper implements Serializable {
 
     /**
      * <p>
+     * getMeiActiveUrl.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getMeiActiveUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewMei.getName();
+    }
+    
+    /**
+     * <p>
+     * getMeiUrl.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getMeiUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewMei.getName();
+    }
+
+    /**
+     * <p>
      * getFulltextActiveUrl.
      * </p>
      *
@@ -1280,6 +1289,7 @@ public class NavigationHelper implements Serializable {
     public String getFulltextActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewFulltext.getName();
     }
+
 
     /**
      * 
@@ -1513,6 +1523,10 @@ public class NavigationHelper implements Serializable {
     private static void resetCurrentDocument() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null) {
+            if (!adb.isRecordLoaded()) {
+                logger.trace("No record loaded, no need to reset.");
+                return;
+            }
             try {
                 adb.reset();
             } catch (IndexUnreachableException e) {
@@ -2047,24 +2061,11 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Simply returns the given string to redirect to a page via jsf
-     * 
-     * @param page the string to return
-     * @return the passed string 'page'
-     * @deprecated Apparently not used. And should be easily replacable by just entering the 'page' string in the action attribute
-     */
-    @Deprecated(forRemoval = true)
-    public String returnTo(String page) {
-        return page;
-    }
-
-    /**
      * 
      * @param keys
      * @return JSON with translations for the given message keys
      */
     public String getTranslationsAsJson(List<String> keys) {
-        Locale locale = getLocale();
         JSONObject json = new JSONObject();
         for (String key : keys) {
             String translation = ViewerResourceBundle.getTranslation(key, locale);

@@ -42,6 +42,9 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
  */
 public enum PageType {
 
+    /**
+     * When adding new types, also update isDocumentPage() and isCmsPage()!
+     */
     viewImage("image"),
     viewToc("toc"),
     viewThumbs("thumbs"),
@@ -50,6 +53,7 @@ public enum PageType {
     viewFullscreen("fullscreen"),
     viewObject("object"),
     viewCalendar("calendar"),
+    viewMei("mei"),
     searchlist("searchlist", "search"),
     searchCalendar("searchcalendar", "searchCalendar"),
     searchGeoMap("searchgeomap", "title__search_geomap"),
@@ -251,6 +255,7 @@ public enum PageType {
                 case viewMetadata:
                 case viewThumbs:
                 case viewToc:
+                case viewMei:
                     return true;
                 default:
                     return false;
@@ -282,6 +287,7 @@ public enum PageType {
                 case viewThumbs:
                 case viewToc:
                 case viewObject:
+                case viewMei:
                     return true;
                 default:
                     return false;

@@ -62,7 +62,6 @@
 		pointer-events: none;
 		input, button, button:hover {
 			position: absolute;
-			color: @white;
 			i.fa {
 				font-size: 1.6rem;
 			}
@@ -98,13 +97,18 @@
 			}
 		}
 		
+		[data-toggle="searchFacetFilter"] {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
 		[data-toggle="searchFacetFilter"],
 		[data-toggle="searchFacetFilter"]:hover {
 			right: 0;
 			width: 34px;
 			height: 34px;
 			font-size: 1.8rem;
-
 			i.fa {
 				font-size: 1.8rem;
 			}
@@ -136,7 +140,7 @@
     &__collapse {
             display: block;
             text-align: center;
-        a, button {
+        a, button { 
             color: @middlegray;
         }
     }
@@ -145,8 +149,8 @@
     }
 	&__boolean {
 		display: flex;
-		gap: 20px; 
-		padding: 1rem 1.5rem;
+		gap: 20px;
+
 	}
 	&__boolean-button-wrapper {
 		flex-grow: 1;

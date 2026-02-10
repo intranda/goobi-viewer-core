@@ -42,10 +42,13 @@
 
             <!-- TOP DOC ANCHOR -->
             <a name="topDocAnchor"></a>
+
  
             <!-- No access ticket required or already unlocked -->
             <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-            <div id="viewObject" class="view-object #{activeDocumentBean.viewManager.cssClass}">
+            <div 
+            id="viewObject" 
+            class="view-object #{activeDocumentBean.viewManager.cssClass}">
 
 		    	<div id="title" class="title">
 		    		<!-- TITLE HEADER -->
@@ -61,7 +64,7 @@
 							<!-- NAME OF THE RECORD -->
 							<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
 		
-		                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+		                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 								<viewerComponent:copyrightIndicator />
 							</ui:fragment>
 		
@@ -117,9 +120,16 @@
 
                 <!-- VIEW 3D OBJECT -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'object' or activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'model'}">
-                    <ui:insert name="viewObject3d">
-                        <ui:include src="/resources/includes/object/object3d.xhtml" />
-                    </ui:insert>
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType.matches('.*\\/gl(tf|b)(\\+json)?')}">
+	                    <ui:insert name="viewObject3d">
+	                    	<ui:include src="/resources/includes/object/voyager3d.xhtml" />
+	                    </ui:insert>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.mimeType.matches('.*\\/gl(tf|b)(\\+json)?')}">
+	                    <ui:insert name="viewObject3d">
+	                        <ui:include src="/resources/includes/object/object3d.xhtml" />
+	                    </ui:insert>
+                    </ui:fragment>
                 </h:panelGroup>
 
                 <!-- TODO -->
@@ -137,11 +147,12 @@
 	                    	$(document).ready(() => {
 	                    		riot.mount("#simplePaginator", "simplepaginator", {
 	                    			navigationMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase() == 'sequence' ? 'buttons' : 'links'}",
+	                    			mimeTypes: #{activeDocumentBean.viewManager.mimeTypesForLoadedPagesAsJson},
 	                    			itemCount: #{activeDocumentBean.viewManager.imagesCount},
 	            	                itemActive: #{activeDocumentBean.viewManager.currentImageOrderForPaginator},
 	            	                firstItem: #{activeDocumentBean.viewManager.firstPageOrder},
 	            	                lastItem: #{activeDocumentBean.viewManager.lastPageOrder},
-	            	                urlTemplate: (pageNo) => `#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/\${pageNo}#topDocAnchor`,
+	            	                urlTemplate: (pageNo) => `#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/\${pageNo}/#topDocAnchor`,
 	            	                rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
 	            	                classSuffix: "",
 	            	                positionBottom: false,
@@ -247,37 +258,6 @@
                 <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
             </h:panelGroup>
 
-            <script type="text/javascript">
-            	var downloadModalConfig = {
-                	downloadBtn: ".download-modal",
-                    path: "#{navigationHelper.applicationUrl}",
-                    iiifPath: "#{configurationBean.iiifApiUrl}",
-                    userEmail: $( "#userEmail" ).val(),
-                    useReCaptcha: #{configurationBean.useReCaptcha},
-                    reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
-                    messages: {
-                        downloadInfo: {
-                            text: "#{msg.downloadInfoText}",
-                            title: "#{msg.downloadInfoTitle}",
-                            part: "#{msg.downloadInfoPart}",
-                            fileSize: "#{msg.downloadInfoFileSize}"
-                        },
-                        reCaptchaText: "#{msg.downloadReCaptchaText}",
-                        rcInvalid: "#{msg.downloadRcInvalid}",
-                        rcValid: "#{msg.downloadRcValid}",
-                        eMailText: "#{msg.downloadEMailText}",
-                        eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
-                        eMail: "#{msg.downloadEmail}",
-                        closeBtn: "#{msg.downloadCloseModal}",
-                        saveBtn: "#{msg.downloadGenerateFile}",
-                    }
-                };
-				$(document).ready(() => {
-					viewerJS.downloadModal.init( downloadModalConfig );
-				});
-
-                // viewerJS.clipboard.init( '[data-copy]' );
-            </script>
 		</f:view>
     </ui:define>
 

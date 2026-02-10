@@ -168,6 +168,5 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     void testLegacyIconMapping() {
         NodeType nodeType = new NodeType("legacy", "fa fa-file-video-o");
         assertEquals("video", nodeType.getIcon());
-        assertEquals("video", nodeType.getIconClass());
     }
 }

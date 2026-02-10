@@ -34,20 +34,8 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.solr.SolrConstants;
 
 class IpRangeTest extends AbstractDatabaseEnabledTest {
-
-    /**
-     * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
-     * @verifies return true if condition is open access
-     */
-    @Test
-    void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionIsOpenAccess() throws Exception {
-        IpRange ipRange = new IpRange();
-        Assertions.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList(SolrConstants.OPEN_ACCESS_VALUE)), null,
-                IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
-    }
 
     /**
      * @see IpRange#canSatisfyAllAccessConditions(Set,String,String)
@@ -58,7 +46,7 @@ class IpRangeTest extends AbstractDatabaseEnabledTest {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
         Assertions.assertNotNull(ipRange);
         List<String> licences = Arrays.asList(new String[] { "license type 3 name", "restriction on access" });
-        Assertions.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(licences), null, IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
+        Assertions.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<>(licences), IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
     }
 
     /**
@@ -69,7 +57,7 @@ class IpRangeTest extends AbstractDatabaseEnabledTest {
     void canSatisfyAllAccessConditions_shouldReturnFalseIfIpRangeHasNoLicense() throws Exception {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
         Assertions.assertNotNull(ipRange);
-        Assertions.assertFalse(ipRange.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("license type 2 name")), null,
+        Assertions.assertFalse(ipRange.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("license type 2 name")),
                 IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
     }
 
@@ -80,7 +68,7 @@ class IpRangeTest extends AbstractDatabaseEnabledTest {
     @Test
     void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionListEmpty() throws Exception {
         IpRange ipRange = new IpRange();
-        Assertions.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<String>(0), null, "restricted", "PPN123").isGranted());
+        Assertions.assertTrue(ipRange.canSatisfyAllAccessConditions(new HashSet<String>(0), "restricted", "PPN123").isGranted());
     }
 
     /**
@@ -105,7 +93,7 @@ class IpRangeTest extends AbstractDatabaseEnabledTest {
         Assertions.assertTrue(ipRange.matchIp("192.168.1.10"));
         Assertions.assertTrue(ipRange.matchIp("192.168.1.11"));
     }
-    
+
     @Test
     void matchIp_shouldNotMatchAddresses() throws Exception {
         IpRange ipRange = new IpRange();

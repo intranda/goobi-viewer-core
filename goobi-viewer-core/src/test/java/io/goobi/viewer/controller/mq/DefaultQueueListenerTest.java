@@ -41,7 +41,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.job.mq.PdfMessageHandler;
+import io.goobi.viewer.model.job.mq.CreateDownloadPdfMessageHandler;
 
 class DefaultQueueListenerTest extends AbstractDatabaseEnabledTest {
 
@@ -58,7 +58,7 @@ class DefaultQueueListenerTest extends AbstractDatabaseEnabledTest {
         Mockito.when(dao.addViewerMessage(Mockito.any())).thenReturn(true);
         Mockito.when(dao.updateViewerMessage(Mockito.any())).thenReturn(true);
 
-        PdfMessageHandler pdfHandler = Mockito.mock(PdfMessageHandler.class);
+        CreateDownloadPdfMessageHandler pdfHandler = Mockito.mock(CreateDownloadPdfMessageHandler.class);
         Mockito.when(pdfHandler.call(Mockito.any(), Mockito.any())).thenReturn(MessageStatus.FINISH);
         ActiveMQConfig activeMQConfig = new ActiveMQConfig(Paths.get(activeMqConfigPath));
         MessageQueueManager tempBroker = new MessageQueueManager(activeMQConfig, this.dao, Map.of(TaskType.DOWNLOAD_PDF.name(), pdfHandler));

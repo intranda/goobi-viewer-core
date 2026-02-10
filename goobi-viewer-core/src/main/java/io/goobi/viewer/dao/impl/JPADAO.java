@@ -87,11 +87,11 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.JobStatus;
-import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -219,7 +219,7 @@ public class JPADAO implements IDAO {
             factory.createEntityManager();
             preQuery();
             return true;
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             logger.error(e.getMessage());
         }
 
@@ -1592,6 +1592,58 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * {@inheritDoc}
+     * 
+     * @should return correct values
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<License> getLicenses(ILicensee licensee) throws DAOException {
+        if (licensee == null) {
+            throw new IllegalArgumentException("licensee may not be null");
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        String query = switch (licensee) {
+            case User u -> """
+                    SELECT DISTINCT l
+                    FROM License l
+                    JOIN l.licensees lh
+                    WHERE lh.user = :licensee
+                    """;
+            case UserGroup g -> """
+                    SELECT DISTINCT l
+                    FROM License l
+                    JOIN l.licensees lh
+                    WHERE lh.userGroup = :licensee
+                    """;
+            case IpRange r -> """
+                    SELECT DISTINCT l
+                    FROM License l
+                    JOIN l.licensees lh
+                    WHERE lh.ipRange = :licensee
+                    """;
+            case ClientApplication c -> """
+                    SELECT DISTINCT l
+                    FROM License l
+                    JOIN l.licensees lh
+                    WHERE lh.client = :licensee
+                    """;
+            default -> throw new IllegalArgumentException(
+                    "Unsupported licensee type: " + licensee.getClass().getName());
+        };
+
+        try {
+            Query q = em.createQuery(query);
+            q.setParameter("licensee", licensee);
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
      * @see io.goobi.viewer.dao.IDAO#getLicenseCount(io.goobi.viewer.model.security.LicenseType)
      * @should return correct value
      */
@@ -1615,6 +1667,61 @@ public class JPADAO implements IDAO {
             }
             // H2
             return (long) q.getResultList().get(0);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addLicense(License license) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(license);
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+        return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateLicense(License license) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(license);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteLicense(License license) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            License o = em.getReference(License.class, license.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
             close(em);
         }
@@ -2183,6 +2290,23 @@ public class JPADAO implements IDAO {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public long countCommentsForWork(String pi) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder(80);
+            sbQuery.append("SELECT COUNT(o) FROM Comment o WHERE o.targetPI = :pi");
+            Query q = em.createQuery(sbQuery.toString());
+            q.setParameter("pi", pi);
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
     @Override
     public Comment getComment(long id) throws DAOException {
         preQuery();
@@ -2553,181 +2677,6 @@ public class JPADAO implements IDAO {
         try {
             startTransaction(em);
             Search o = em.getReference(Search.class, search.getId());
-            em.remove(o);
-            commitTransaction(em);
-            return true;
-        } catch (PersistenceException e) {
-            handleException(em);
-            return false;
-        } finally {
-            close(em);
-        }
-    }
-
-    // Downloads
-
-    /**
-     * {@inheritDoc}
-     *
-     * @should return all objects
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<DownloadJob> getAllDownloadJobs() throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("SELECT o FROM DownloadJob o");
-            // q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
-            return q.getResultList();
-        } finally {
-            close(em);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<DownloadJob> getDownloadJobsForPi(String pi) throws DAOException {
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            return em.createQuery("SELECT o FROM DownloadJob o WHERE o.pi = :pi").setParameter("pi", pi).getResultList();
-        } finally {
-            close(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @should return correct object
-     */
-    @Override
-    public DownloadJob getDownloadJob(long id) throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            return em.getReference(DownloadJob.class, id);
-        } catch (EntityNotFoundException e) {
-            return null;
-        } finally {
-            close(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @should return correct object
-     */
-    @Override
-    public DownloadJob getDownloadJobByIdentifier(String identifier) throws DAOException {
-        if (identifier == null) {
-            throw new IllegalArgumentException("identifier may not be null");
-        }
-
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append("SELECT o FROM DownloadJob o WHERE o.identifier = :identifier");
-            Query q = em.createQuery(sbQuery.toString());
-            q.setParameter("identifier", identifier);
-            q.setMaxResults(1);
-            return (DownloadJob) q.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        } finally {
-            close(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @should return correct object
-     */
-    @Override
-    public DownloadJob getDownloadJobByMetadata(String type, String pi, String logId) throws DAOException {
-        if (type == null) {
-            throw new IllegalArgumentException("type may not be null");
-        }
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append("SELECT o FROM DownloadJob o WHERE o.type = :type AND o.pi = :pi");
-            if (logId != null) {
-                sbQuery.append(" AND o.logId = :logId");
-            }
-            Query q = em.createQuery(sbQuery.toString());
-            q.setParameter("type", type);
-            q.setParameter("pi", pi);
-            if (logId != null) {
-                q.setParameter("logId", logId);
-            }
-            q.setMaxResults(1);
-            return (DownloadJob) q.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        } finally {
-            close(em);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean addDownloadJob(DownloadJob downloadJob) throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            startTransaction(em);
-            em.persist(downloadJob);
-            commitTransaction(em);
-        } catch (PersistenceException e) {
-            handleException(em);
-            return false;
-        } finally {
-            close(em);
-        }
-        return true;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean updateDownloadJob(DownloadJob downloadJob) throws DAOException {
-        logger.trace("updateDownloadJob: {}", downloadJob.getId());
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            startTransaction(em);
-            em.merge(downloadJob);
-            commitTransaction(em);
-            return true;
-        } catch (PersistenceException e) {
-            handleException(em);
-            return false;
-        } finally {
-            close(em);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean deleteDownloadJob(DownloadJob downloadJob) throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            startTransaction(em);
-            DownloadJob o = em.getReference(DownloadJob.class, downloadJob.getId());
             em.remove(o);
             commitTransaction(em);
             return true;

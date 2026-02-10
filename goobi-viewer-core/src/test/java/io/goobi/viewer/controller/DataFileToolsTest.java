@@ -169,17 +169,6 @@ class DataFileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see DataFileTools#sanitizeFileName(String)
-     * @verifies remove everything but the file name from given path
-     */
-    @Test
-    void sanitizeFileName_shouldRemoveEverythingButTheFileNameFromGivenPath() {
-        Assertions.assertEquals("foo.bar", DataFileTools.sanitizeFileName("/opt/digiverso/foo.bar"));
-        Assertions.assertEquals("foo.bar", DataFileTools.sanitizeFileName("../../foo.bar"));
-        Assertions.assertEquals("foo.bar", DataFileTools.sanitizeFileName("/foo.bar"));
-    }
-
-    /**
      * @throws IOException
      * @see DataFileTools#loadTei(String,String)
      * @verifies load tei document correctly

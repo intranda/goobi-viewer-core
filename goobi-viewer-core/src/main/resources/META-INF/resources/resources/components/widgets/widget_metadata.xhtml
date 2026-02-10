@@ -174,19 +174,19 @@
 								<h2>#{msg[event.label]}</h2>
 								<dl>
 									<ui:repeat value="#{event.sidebarMetadata}" var="metadata">
-										<h:panelGroup rendered="#{!metadata.blank}">
+										<h:panelGroup rendered="#{!metadata.blank}" layout="block" styleClass="widget-metadata__key-value-group">
 											<dt>
 												<h:outputText value="#{msg[metadata.label]}:" escape="false" />
 											</dt>
 											<h:panelGroup>
-												<dd>
 													<ui:repeat value="#{metadata.values}" var="val">
-														<h:outputFormat
-															value="#{val.getDisplayValue(navigationHelper.locale)}"
-															escape="false">
-														</h:outputFormat>
-													</ui:repeat>
+												<dd class="widget-metadata__non-grouped-metadata-dd">
+															<h:outputFormat
+																value="#{val.getDisplayValue(navigationHelper.locale)}"
+																escape="false">
+															</h:outputFormat>
 												</dd>
+													</ui:repeat>
 											</h:panelGroup>
 										</h:panelGroup>
 									</ui:repeat>

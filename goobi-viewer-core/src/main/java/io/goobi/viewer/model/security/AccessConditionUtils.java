@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -220,11 +221,11 @@ public final class AccessConditionUtils {
             case "txt":
                 sbQuery.append(" +(")
                         .append(SolrConstants.FILENAME_FULLTEXT)
-                        .append(':')
-                        .append("\"")
+                        .append(":\"")
                         .append(fileName)
                         .append("\" ")
-                        .append("FILENAME_PLAIN:\"")
+                        .append(SolrConstants.FILENAME_FULLTEXT_SHORT)
+                        .append(":\"")
                         .append(simpleFileName)
                         .append("\")");
                 break;
@@ -239,7 +240,8 @@ public final class AccessConditionUtils {
                         .append(':')
                         .append(altoFileName)
                         .append(" ")
-                        .append("FILENAME_XML:\"")
+                        .append(SolrConstants.FILENAME_ALTO_SHORT)
+                        .append(":\"")
                         .append(simpleFileName)
                         .append("\")");
                 break;
@@ -328,15 +330,12 @@ public final class AccessConditionUtils {
                 }
             }
 
-            if (user == null) {
-                user = retrieveUserFromContext(session);
-            }
-
             Map<String, AccessPermission> ret = HashMap.newHashMap(requiredAccessConditions.size());
             for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
                 Set<String> pageAccessConditions = entry.getValue();
                 AccessPermission access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
-                        privilegeName, user, ipAddress, ClientApplicationManager.getClientFromSession(session), query);
+                        privilegeName, user == null ? retrieveUserFromContext(session) : user, ipAddress,
+                        ClientApplicationManager.getClientFromSession(session), query);
                 ret.put(entry.getKey(), access);
             }
             return ret;
@@ -388,6 +387,52 @@ public final class AccessConditionUtils {
             }
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
+        } catch (PresentationException e) {
+            logger.debug(e.getMessage());
+        }
+
+        return AccessPermission.denied();
+
+    }
+
+    /**
+     * Checks whether the client may access an image (by PI + file name).
+     *
+     * @param request Calling HttpServiceRequest.
+     * @param pi identifier of the record
+     * @param pageOrder order property of the page
+     * @param privilegeName a {@link java.lang.String} object.
+     * @return {@link AccessPermission}
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public static AccessPermission checkAccessPermissionByIdentifierAndPageOrder(String pi, Integer pageOrder, String privilegeName,
+            HttpServletRequest request) throws IndexUnreachableException, DAOException {
+        if (pageOrder == null) {
+            throw new IllegalArgumentException("page order may not be null");
+        }
+
+        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.ORDER + ":" + pageOrder;
+
+        try {
+            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
+            if (user == null) {
+                UserBean userBean = BeanUtils.getUserBean();
+                if (userBean != null) {
+                    user = userBean.getUser();
+                }
+            }
+
+            SolrDocumentList results = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, 1, null, Collections.singletonList(SolrConstants.ACCESSCONDITION));
+            if (results.size() > 0) {
+                Set<String> accessConditions =
+                        results.getFirst().getFieldValues(SolrConstants.ACCESSCONDITION).stream().map(Object::toString).collect(Collectors.toSet());
+                return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), accessConditions,
+                        privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
+            }
+
         } catch (PresentationException e) {
             logger.debug(e.getMessage());
         }
@@ -1053,7 +1098,7 @@ public final class AccessConditionUtils {
             useAccessConditions.add(licenseType.getName());
             if (licenseType.isHasCustomPlaceholderInfo()) {
                 licenseTypesWithCustomAccessDeniedInfo.add(licenseType);
-                logger.trace("Considering access denied image URI map from LicenseType '{}'.", licenseType.getName());
+                // logger.trace("Considering access denied image URI map from LicenseType '{}'.", licenseType.getName());
             }
             if (licenseType.isRedirect()) {
                 redirect = true;
@@ -1079,6 +1124,7 @@ public final class AccessConditionUtils {
             return AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl).setAccessTicketRequired(accessTicketRequired);
         } else {
             // Check IP range
+            IpRange useIpRange = null;
             if (StringUtils.isNotEmpty(remoteAddress)) {
                 if (NetTools.isIpAddressLocalhost(remoteAddress)
                         && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
@@ -1088,10 +1134,12 @@ public final class AccessConditionUtils {
                 // Check whether the requested privilege is allowed to this IP range (for all access conditions)
                 for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
                     if (ipRange.matchIp(remoteAddress)) {
-                        AccessPermission access =
-                                ipRange.canSatisfyAllAccessConditions(useAccessConditions, relevantLicenseTypes, privilegeName, null);
+                        useIpRange = ipRange;
+                        AccessPermission access = ipRange.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
                         if (access.isGranted()) {
                             logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
+                            access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, ipRange,
+                                    client.orElse(null));
                             return access.setAccessTicketRequired(accessTicketRequired);
                         }
                     }
@@ -1103,6 +1151,7 @@ public final class AccessConditionUtils {
                 AccessPermission access =
                         user.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null).setAccessTicketRequired(accessTicketRequired);
                 if (access.isGranted()) {
+                    access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
                     return access;
                 }
             }
@@ -1115,6 +1164,7 @@ public final class AccessConditionUtils {
                             .canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null)
                             .setAccessTicketRequired(accessTicketRequired);
                     if (access.isGranted()) {
+                        access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
                         return access;
                     }
                 }
@@ -1125,6 +1175,7 @@ public final class AccessConditionUtils {
                             allClients.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null)
                                     .setAccessTicketRequired(accessTicketRequired);
                     if (access.isGranted()) {
+                        access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
                         return access;
                     }
                 }
@@ -1143,7 +1194,7 @@ public final class AccessConditionUtils {
 
     /**
      * Check whether the requiredAccessConditions consist only of the {@link io.goobi.viewer.solr.SolrConstants#OPEN_ACCESS_VALUE OPENACCESS}
-     * condition and OPENACCESS is not contained in allLicenseTypes. In this and only this case can we safe1y assume that everything is permitted. If
+     * condition and OPENACCESS is not contained in allLicenseTypes. In this and only this case can we safely assume that everything is permitted. If
      * OPENACCESS is in the database then it likely contains some access restrictions which need to be checked
      *
      * @param requiredAccessConditions a {@link java.util.Set} object.

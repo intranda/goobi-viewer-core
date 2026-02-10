@@ -78,6 +78,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -106,17 +107,17 @@ public class ManifestBuilder extends AbstractBuilder {
      * </p>
      *
      * @param apiUrlManager
+     * @param request
      */
-    public ManifestBuilder(AbstractApiUrlManager apiUrlManager) {
-        super(apiUrlManager);
-        this.canvasBuilder = new CanvasBuilder(urls);
+    public ManifestBuilder(AbstractApiUrlManager apiUrlManager, HttpServletRequest request) {
+        super(apiUrlManager, request);
+        this.canvasBuilder = new CanvasBuilder(urls, request);
 
     }
 
     /**
      * 
      * @param pi
-     * @param request
      * @return {@link IPresentationModelElement3}
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -125,7 +126,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws DAOException
      * @throws ViewerConfigurationException
      */
-    public IPresentationModelElement3 build(String pi, HttpServletRequest request)
+    public IPresentationModelElement3 build(String pi)
             throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, DAOException {
 
         List<StructElement> documents = this.dataRetriever.getDocumentWithChildren(pi);
@@ -146,7 +147,7 @@ public class ManifestBuilder extends AbstractBuilder {
         return manifest;
     }
 
-    public IPresentationModelElement build(String pi, Integer pageNo, HttpServletRequest servletRequest) throws PresentationException,
+    public IPresentationModelElement build(String pi, Integer pageNo) throws PresentationException,
             IndexUnreachableException, ContentLibException, URISyntaxException, DAOException {
         StructElement mainDocument = this.dataRetriever.getDocument(pi);
 
@@ -154,7 +155,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
         if (manifest instanceof Manifest3 manifest3) {
             addPage(manifest3, mainDocument, pageNo);
-            addAnnotations(mainDocument.getPi(), pageNo, manifest3, servletRequest);
+            addAnnotations(mainDocument.getPi(), pageNo, manifest3, this.request);
         } else if (manifest instanceof Collection3) {
             throw new IllegalRequestException("Cannot build a page manifest: PI refers to an anchor record without pages");
         }
@@ -172,16 +173,37 @@ public class ManifestBuilder extends AbstractBuilder {
         try {
             ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
             URI uri = URI.create(apiPath.build());
+
+            boolean accessGranted = isAccessGranted(pi, IPrivilegeHolder.PRIV_VIEW_UGC);
+
             AnnotationPage crowdAnnos = new AnnotationsResourceBuilder(urls, request).getWebAnnotationCollectionForRecord(pi, uri).getFirst();
             if (crowdAnnos != null && !crowdAnnos.getItems().isEmpty()) {
-                manifest.addAnnotations(new InternalAnnotationPage(crowdAnnos));
+
+                InternalAnnotationPage annoPage = new InternalAnnotationPage(crowdAnnos);
+                if (!accessGranted) {
+                    annoPage.setItems(Collections.emptyList());
+                    for (Service service : AuthorizationFlowTools.getAuthServicesRecord(pi, IPrivilegeHolder.PRIV_VIEW_UGC)) {
+                        annoPage.addService(service);
+                    }
+                }
+                manifest.addAnnotations(annoPage);
             }
             AnnotationPage comments = new AnnotationsResourceBuilder(urls, request).getWebAnnotationCollectionForRecordComments(pi, uri).getFirst();
             if (comments != null && !comments.getItems().isEmpty()) {
-                manifest.addAnnotations(new InternalAnnotationPage(comments));
+
+                InternalAnnotationPage annoPage = new InternalAnnotationPage(comments);
+                if (!accessGranted) {
+                    annoPage.setItems(Collections.emptyList());
+                    for (Service service : AuthorizationFlowTools.getAuthServicesRecord(pi, IPrivilegeHolder.PRIV_VIEW_UGC)) {
+                        annoPage.addService(service);
+                    }
+                }
+                manifest.addAnnotations(annoPage);
             }
         } catch (DAOException e) {
             logger.error("Error adding annotations to manifest: {}", e.toString(), e);
+        } catch (PresentationException e) {
+            logger.error("Error checking access conditions for annotations to manifest: {}", e.toString(), e);
         }
     }
 
@@ -236,7 +258,7 @@ public class ManifestBuilder extends AbstractBuilder {
      */
     private void addStructures(StructElement mainDocument, List<StructElement> childDocuments, Manifest3 manifest)
             throws ContentNotFoundException, PresentationException {
-        RangeBuilder rangeBuilder = new RangeBuilder(urls);
+        RangeBuilder rangeBuilder = new RangeBuilder(urls, this.request);
         Range3 topRange = rangeBuilder.build(mainDocument, childDocuments, null);
         topRange.getItems()
                 .stream()
@@ -346,7 +368,9 @@ public class ManifestBuilder extends AbstractBuilder {
                 .getIIIFProvider(variableReplacer)
                 .forEach(providerConfig -> manifest.addProvider(getProvider(providerConfig)));
 
-        addMetadata(manifest, ele);
+        if (isAccessGranted(ele, IPrivilegeHolder.PRIV_VIEW_METADATA)) {
+            addMetadata(manifest, ele);
+        }
 
         pageNo
                 .map(no -> {
@@ -468,7 +492,7 @@ public class ManifestBuilder extends AbstractBuilder {
             IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoLido());
             LabeledResource resolver =
                     new LabeledResource(getLidoResolverUrl(ele), "Dataset", Format.TEXT_XML.getLabel(), "http://www.lido-schema.org", label);
-            if (!ele.isAccessPermissionDownloadMetadata()) {
+            if (!ele.isAccessPermissionDownloadMetadata(this.request)) {
                 // Add auth services
                 for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
                     resolver.addService(service);
@@ -479,7 +503,7 @@ public class ManifestBuilder extends AbstractBuilder {
             IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoMets());
             LabeledResource resolver =
                     new LabeledResource(getMetsResolverUrl(ele), "Dataset", Format.TEXT_XML.getLabel(), "http://www.loc.gov/METS/", label);
-            if (!ele.isAccessPermissionDownloadMetadata()) {
+            if (!ele.isAccessPermissionDownloadMetadata(this.request)) {
                 // Add auth services
                 for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
                     resolver.addService(service);

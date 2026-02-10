@@ -86,16 +86,16 @@ var viewerJS = ( function( viewer ) {
                     
                     // check if sidebar is resizing
                     if ( e.target[ 'id' ] != _sidebarId ) {
-                        $( 'body' ).hide();
-                        window.location.href = window.location.href;                    
+                        window.image?.updateMargins();       
+                        setTimeout(() => window.image?.zoom?.goHome(), 100);         
                     }
                 } );
             } 
             else {
                 // set position on resize/orientationchange
                 $( window ).on( 'orientationchange', function(e) {
-                    $( 'body' ).hide();                    
-                    window.location.href = window.location.href;                    
+                    window.image?.updateMargins();   
+                   setTimeout(() => window.image?.zoom?.goHome(), 100);     
                 } );   
             }
             
@@ -105,6 +105,8 @@ var viewerJS = ( function( viewer ) {
             _setSidebarStatus();
             _getSidebarScrollPosition();
             _hideEmptyPanels();
+
+            window.image?.updateMargins();
 
             // toggle sidebar
             $( '[data-close="fs-sidebar"]' ).on( 'click', function() {
@@ -145,11 +147,12 @@ var viewerJS = ( function( viewer ) {
 
             		// show back and forward on small devices
                 	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
-                		$( '.image-controls__action.prev, .image-controls__action.next' ).show();
+                		$( '.image-controls__action.prev, .image-controls__action.next' ).removeClass('d-none');
                 	}
 
             		// save sidebar status
             		sessionStorage.setItem( 'fsSidebarStatus', false );
+                    window.image?.updateMargins();
             	} );
 
             	
@@ -174,8 +177,8 @@ var viewerJS = ( function( viewer ) {
             	
             	// show back and forward on small devices
             	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
-            		$( '.image-controls__action.prev, .image-controls__action.next' ).hide();
-            	}
+            		$( '.image-controls__action.prev, .image-controls__action.next' ).addClass('d-none');
+            	} 
             	
               // Remove display:none => make slide in animation possible (see below)
               // Originally set so focusable elements in the closed sidebar cannot be reached using the tab key 
@@ -199,8 +202,12 @@ var viewerJS = ( function( viewer ) {
             		
             		// save sidebar status
             		sessionStorage.setItem( 'fsSidebarStatus', true );
+                                   
+                    window.image?.updateMargins();
+
 
             	} );
+
             	
             	if ( $( '.fullscreen__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
             		$( '.fullscreen__view-image-thumbs-wrapper' ).animate( {

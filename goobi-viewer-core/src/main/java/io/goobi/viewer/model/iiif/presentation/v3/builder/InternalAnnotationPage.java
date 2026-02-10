@@ -44,4 +44,5 @@ public class InternalAnnotationPage extends AnnotationPage {
         this.setPrev(orig.getPrev());
         this.setStartIndex(orig.getStartIndex());
     }
+
 }

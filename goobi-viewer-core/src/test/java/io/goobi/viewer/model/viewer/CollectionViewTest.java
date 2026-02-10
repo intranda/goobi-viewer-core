@@ -206,7 +206,7 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         contentItem.setOwningComponent(component);
 
         CollectionViewBean collectionViewBean = new CollectionViewBean();
-        CollectionView collection = collectionViewBean.getCollection(contentItem, 0, false, false, false);
+        CollectionView collection = collectionViewBean.getCollection(contentItem);
 
         HierarchicalBrowseDcElement element =
                 collection.getVisibleDcElements().stream().filter(ele -> ele.getName().equals("dcimage")).findAny().orElse(null);
@@ -326,4 +326,16 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
 
     }
 
+
+    /**
+     * @throws PresentationException 
+     * @see Configuration#getFirstRecordUrl(HierarchicalBrowseDcElement,String)
+     * @verifies escape url encode collection name
+     */
+    @Test
+    void getFirstRecordUrl_shouldReturnHyphenIfCollectionNotFound() throws PresentationException {
+        HierarchicalBrowseDcElement collection = new HierarchicalBrowseDcElement("Foo (2025-2026)", 1, "MD_FOO", null, ".", 0);
+        String url = CollectionView.getFirstRecordUrl(collection, "MD_FOO");
+        Assertions.assertEquals("/browse/MD_FOO/Foo+%282025-2026%29/record/", url);
+    }
 }

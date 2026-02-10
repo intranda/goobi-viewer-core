@@ -37,7 +37,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -59,7 +58,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -101,8 +99,11 @@ import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.model.search.SearchQueryItemLine;
 import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.search.SearchSortingOption;
+import io.goobi.viewer.model.search.query.QueryResult;
+import io.goobi.viewer.model.search.query.SimpleQueryBuilder;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -193,8 +194,6 @@ public class SearchBean implements SearchInterface, Serializable {
                     advancedSearchFieldTemplate);
     /** Human-readable representation of the advanced search query for displaying. */
     private String advancedSearchQueryInfo;
-
-    private String searchInCurrentItemString;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
     private Search currentSearch;
     /** If >0, proximity search will be applied to phrase searches. */
@@ -480,7 +479,6 @@ public class SearchBean implements SearchInterface, Serializable {
         mirrorAdvancedSearchCurrentHierarchicalFacets();
         resetSearchResults();
         resetSearchParameters(true, true);
-        searchInCurrentItemString = null;
         proximitySearchDistance = 0;
     }
 
@@ -633,7 +631,6 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should not add more facets if field value combo already in current facets
      * @should not replace obsolete facets with duplicates
      * @should remove facets that are not matched among query items
-     * @should put item sequences with the same field into common parentheses
      */
     String generateAdvancedSearchMainQuery() {
         logger.trace("generateAdvancedSearchMainQuery");
@@ -641,205 +638,184 @@ public class SearchBean implements SearchInterface, Serializable {
         StringBuilder sbInfo = new StringBuilder();
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
-        StringBuilder sbSameFieldGroup = new StringBuilder();
         Set<String> usedHierarchicalFields = new HashSet<>();
         Set<String> usedFieldValuePairs = new HashSet<>();
         this.proximitySearchDistance = 0;
         for (SearchQueryItem item : advancedSearchQueryGroup.getQueryItems()) {
-            // logger.trace("Query item: {}", queryItem.toString()); //NOSONAR Debug
-            if (StringUtils.isEmpty(item.getField())) {
-                continue;
-            }
-            if (sbInfo.length() > 1) {
-                sbInfo.append(' ');
-            }
-            sbInfo.append(ViewerResourceBundle.getTranslation("searchOperator_" + item.getOperator().name(),
-                    BeanUtils.getLocale()))
-                    .append(' ');
-
-            // Generate the hierarchical facet parameter from query items
-            if (item.isHierarchical()) {
-                // logger.trace("{} is hierarchical", queryItem.getField()); //NOSONAR Debug
-                if (StringUtils.isBlank(item.getValue())) {
+            for (SearchQueryItemLine line : item.getLines()) {
+                logger.trace("Query item line: {}:{}", item.getField(), line.getValue()); //NOSONAR Debug
+                if (StringUtils.isEmpty(item.getField())) {
                     continue;
                 }
+                if (sbInfo.length() > 1) {
+                    sbInfo.append(' ');
+                }
+                if (StringUtils.isNotEmpty(item.getValue())) {
+                    sbInfo.append(ViewerResourceBundle.getTranslation("searchOperator_" + line.getOperator().name(),
+                            BeanUtils.getLocale()))
+                            .append(' ');
+                }
 
-                // Skip identical hierarchical items
-
-                // Find existing facet items that can be re-purposed for the existing facets
-                boolean skipQueryItem = false;
-                for (IFacetItem facetItem : facets.getActiveFacetsCopy()) {
-                    // logger.trace("checking facet item: {}", facetItem.getLink()); //NOSONAR Debug
-                    if (!facetItem.getField().equals(item.getField())) {
+                // Generate the hierarchical facet parameter from query items
+                if (item.isHierarchical()) {
+                    // logger.trace("{} is hierarchical", queryItem.getField()); //NOSONAR Debug
+                    if (StringUtils.isBlank(item.getValue())) {
                         continue;
                     }
-                    if (usedFieldValuePairs.contains(facetItem.getLink())) {
-                        // logger.trace("facet item already handled: {}", facetItem.getLink()); //NOSONAR Debug
-                        continue;
+
+                    // Skip identical hierarchical items
+
+                    // Find existing facet items that can be re-purposed for the existing facets
+                    boolean skipQueryItem = false;
+                    for (IFacetItem facetItem : facets.getActiveFacetsCopy()) {
+                        // logger.trace("checking facet item: {}", facetItem.getLink()); //NOSONAR Debug
+                        if (!facetItem.getField().equals(item.getField())) {
+                            continue;
+                        }
+                        if (usedFieldValuePairs.contains(facetItem.getLink())) {
+                            // logger.trace("facet item already handled: {}", facetItem.getLink()); //NOSONAR Debug
+                            continue;
+                        }
+                        if (!usedFieldValuePairs.contains(item.getField() + ":" + item.getValue())) {
+                            facetItem.setLink(item.getField() + ":" + item.getValue());
+                            usedFieldValuePairs.add(facetItem.getLink());
+                            usedHierarchicalFields.add(item.getField());
+                            // logger.trace("reuse facet item: {}", facetItem); //NOSONAR Debug
+                            skipQueryItem = true;
+                            break;
+                        }
                     }
-                    if (!usedFieldValuePairs.contains(item.getField() + ":" + item.getValue())) {
-                        facetItem.setLink(item.getField() + ":" + item.getValue());
-                        usedFieldValuePairs.add(facetItem.getLink());
+
+                    if (!skipQueryItem) {
+                        String itemQuery =
+                                new StringBuilder().append(item.getField()).append(':').append(item.getValue().trim()).toString();
+                        // logger.trace("item query: {}", itemQuery); //NOSONAR Debug
+
+                        // Check whether this combination already exists and skip, if that's the case
+                        if (usedFieldValuePairs.contains(itemQuery)) {
+                            // logger.trace("facet item already exists: {}", itemQuery); //NOSONAR Debug
+                            continue;
+                        }
+                        usedFieldValuePairs.add(itemQuery);
                         usedHierarchicalFields.add(item.getField());
-                        // logger.trace("reuse facet item: {}", facetItem); //NOSONAR Debug
-                        skipQueryItem = true;
-                        break;
+
+                        sbCurrentCollection.append(itemQuery).append(";;");
+
+                        sbInfo.append('(')
+                                .append(ViewerResourceBundle.getTranslation(item.getField(), BeanUtils.getLocale()))
+                                .append(": \"")
+                                .append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()))
+                                .append('"')
+                                .append(')');
                     }
-                }
-
-                if (!skipQueryItem) {
-                    String itemQuery =
-                            new StringBuilder().append(item.getField()).append(':').append(item.getValue().trim()).toString();
-                    // logger.trace("item query: {}", itemQuery); //NOSONAR Debug
-
-                    // Check whether this combination already exists and skip, if that's the case
-                    if (usedFieldValuePairs.contains(itemQuery)) {
-                        // logger.trace("facet item already exists: {}", itemQuery); //NOSONAR Debug
-                        continue;
-                    }
-                    usedFieldValuePairs.add(itemQuery);
-                    usedHierarchicalFields.add(item.getField());
-
-                    sbCurrentCollection.append(itemQuery).append(";;");
-
-                    sbInfo.append('(')
-                            .append(ViewerResourceBundle.getTranslation(item.getField(), BeanUtils.getLocale()))
-                            .append(": \"")
-                            .append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()))
-                            .append('"')
-                            .append(')');
-                }
-                continue;
-            }
-
-            // Non-hierarchical fields
-            if (searchTerms.get(SolrConstants.FULLTEXT) == null) {
-                searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>());
-            }
-
-            String itemQuery = null;
-            if (SolrConstants.BOOKMARKS.equals(item.getField())) {
-
-                // Bookmark list search
-                if (StringUtils.isEmpty(item.getValue())) {
                     continue;
                 }
 
-                String key = getBookmarkListSharedKey();
-                String name = getBookmarkListName();
+                // Non-hierarchical fields
+                if (searchTerms.get(SolrConstants.FULLTEXT) == null) {
+                    searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>());
+                }
 
-                if (StringUtils.isNotBlank(key)) {
-                    try {
-                        BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
-                        if (bookmarkList != null) {
-                            item.setValue(bookmarkList.getName());
-                            itemQuery = bookmarkList.getFilterQuery();
-                        }
-                    } catch (DAOException e) {
-                        logger.error(e.toString(), e);
+                String itemQuery = null;
+                if (SolrConstants.BOOKMARKS.equals(item.getField())) {
+
+                    // Bookmark list search
+                    if (StringUtils.isEmpty(item.getValue())) {
+                        continue;
                     }
-                } else if (StringUtils.isNotBlank(name) && !"session".equals(name)) {
-                    try {
-                        BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(name, null);
-                        if (bookmarkList != null) {
-                            item.setValue(bookmarkList.getName());
-                            itemQuery = bookmarkList.getFilterQuery();
+
+                    String key = getBookmarkListSharedKey();
+                    String name = getBookmarkListName();
+
+                    if (StringUtils.isNotBlank(key)) {
+                        try {
+                            BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
+                            if (bookmarkList != null) {
+                                item.setValue(bookmarkList.getName());
+                                itemQuery = bookmarkList.getFilterQuery();
+                            }
+                        } catch (DAOException e) {
+                            logger.error(e.toString(), e);
                         }
-                    } catch (DAOException e) {
-                        logger.error(e.toString(), e);
+                    } else if (StringUtils.isNotBlank(name) && !"session".equals(name)) {
+                        try {
+                            BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(name, null);
+                            if (bookmarkList != null) {
+                                item.setValue(bookmarkList.getName());
+                                itemQuery = bookmarkList.getFilterQuery();
+                            }
+                        } catch (DAOException e) {
+                            logger.error(e.toString(), e);
+                        }
+                    } else if (userBean.isLoggedIn()) {
+                        // User bookmark list
+                        try {
+                            BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(item.getValue(), userBean.getUser());
+                            if (bookmarkList != null) {
+                                itemQuery = bookmarkList.getFilterQuery();
+                            }
+                        } catch (DAOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    } else {
+                        // Session bookmark list
+                        Optional<BookmarkList> obs =
+                                DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
+                        if (obs.isPresent()) {
+                            itemQuery = obs.get().getFilterQuery();
+                        }
                     }
-                } else if (userBean.isLoggedIn()) {
-                    // User bookmark list
-                    try {
-                        BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkList(item.getValue(), userBean.getUser());
-                        if (bookmarkList != null) {
-                            itemQuery = bookmarkList.getFilterQuery();
-                        }
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
+                    if (StringUtils.isEmpty(itemQuery)) {
+                        // Skip empty bookmark list
+                        continue;
                     }
                 } else {
-                    // Session bookmark list
-                    Optional<BookmarkList> obs =
-                            DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
-                    if (obs.isPresent()) {
-                        itemQuery = obs.get().getFilterQuery();
-                    }
+                    // Generate item query
+                    itemQuery = item.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true, fuzzySearchEnabled);
+                    this.proximitySearchDistance = Math.max(this.proximitySearchDistance, item.getProximitySearchDistance());
                 }
-                if (StringUtils.isEmpty(itemQuery)) {
-                    // Skip empty bookmark list
-                    continue;
-                }
-            } else {
-                // Generate item query
-                itemQuery = item.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true, fuzzySearchEnabled);
-                this.proximitySearchDistance = Math.max(this.proximitySearchDistance, item.getProximitySearchDistance());
-            }
 
-            logger.trace("Item query: {}", itemQuery);
-            String infoFieldLabel =
-                    SearchHelper.SEARCH_FILTER_ALL.getField().equals(item.getField()) ? item.getLabel() : item.getField();
-            sbInfo.append('(').append(ViewerResourceBundle.getTranslation(infoFieldLabel, BeanUtils.getLocale())).append(": ");
-            switch (item.getOperator()) {
-                case AND:
-                    if (SolrConstants.BOOKMARKS.equals(item.getField()) && !userBean.isLoggedIn()) {
-                        // Session bookmark list value
-                        sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
-                    } else if (item.isRange()) {
-                        sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
-                    } else {
-                        if (item.isDisplaySelectItems()) {
-                            sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
-                        } else {
-                            sbInfo.append(item.getValue());
-                        }
+                logger.trace("Item query: {}", itemQuery);
+                if (StringUtils.isNotEmpty(item.getValue())) {
+                    String infoFieldLabel =
+                            SearchHelper.SEARCH_FILTER_ALL.getField().equals(item.getField()) ? item.getLabel() : item.getField();
+                    sbInfo.append('(').append(ViewerResourceBundle.getTranslation(infoFieldLabel, BeanUtils.getLocale())).append(": ");
+                    switch (line.getOperator()) {
+                        case AND:
+                            if (SolrConstants.BOOKMARKS.equals(item.getField()) && !userBean.isLoggedIn()) {
+                                // Session bookmark list value
+                                sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
+                            } else if (item.isRange()) {
+                                sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
+                            } else {
+                                if (item.isDisplaySelectItems()) {
+                                    sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
+                                } else {
+                                    sbInfo.append(item.getValue());
+                                }
+                            }
+                            break;
+                        case NOT:
+                            if (item.isDisplaySelectItems()) {
+                                sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
+                            } else {
+                                sbInfo.append(item.getValue());
+                            }
+                            break;
+                        default:
+                            if (item.isRange()) {
+                                sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
+                            } else {
+                                if (item.isDisplaySelectItems()) {
+                                    sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
+                                } else {
+                                    sbInfo.append(item.getValue());
+                                }
+                            }
                     }
-                    break;
-                case NOT:
-                    if (item.isDisplaySelectItems()) {
-                        sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
-                    } else {
-                        sbInfo.append(item.getValue());
-                    }
-                    break;
-                default:
-                    if (item.isRange()) {
-                        sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
-                    } else {
-                        if (item.isDisplaySelectItems()) {
-                            sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
-                        } else {
-                            sbInfo.append(item.getValue());
-                        }
-                    }
-            }
-            sbInfo.append(')');
+                    sbInfo.append(')');
+                }
 
-            // Add item query part to the group query
-            if (item.isSameFieldGroupStart() || item.isSameFieldGroupCopy()) {
-                // Put a group of same-field items into a single query
-                if (item.isSameFieldGroupStart()) {
-                    sbSameFieldGroup.append("+(");
-                }
-                if (!itemQuery.isEmpty()) {
-                    if (sbSameFieldGroup.length() > 2) {
-                        sbSameFieldGroup.append(' ');
-                    }
-                    // Hack for allowing OR-searches if AND is configured as the item's operator
-                    // (fields won't work properly if OR is configured and only one item exists)
-                    sbSameFieldGroup.append(itemQuery.startsWith("+") ? itemQuery.substring(1) : itemQuery);
-                }
-                if (item.isSameFieldGroupEnd()) {
-                    sbSameFieldGroup.append(")");
-                    if (sb.length() > 1) {
-                        sb.append(' ');
-                    }
-                    logger.debug("Query item group query: {}", sbSameFieldGroup);
-                    sb.append(sbSameFieldGroup);
-                    sbSameFieldGroup = new StringBuilder();
-                }
-            } else {
-                // Single item query
                 if (!itemQuery.isEmpty()) {
                     if (sb.length() > 1) {
                         sb.append(' ');
@@ -884,23 +860,6 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.debug("advanced query: {}", sb);
 
         return sb.toString();
-    }
-
-    /**
-     * <p>
-     * hitsPerPageListener.
-     * </p>
-     *
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    @Deprecated(since = "25.05")
-    public void hitsPerPageListener()
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        logger.trace("hitsPerPageListener");
-        executeSearch();
     }
 
     /**
@@ -1257,242 +1216,28 @@ public class SearchBean implements SearchInterface, Serializable {
         generateSimpleSearchString(this.searchString);
     }
 
-    /**
-     * @param inSearchString the searchString to set
-     * @should generate phrase search query without filter correctly
-     * @should generate phrase search query with specific filter correctly
-     * @should generate non-phrase search query without filter correctly
-     * @should generate non-phrase search query with specific filter correctly
-     * @should add proximity search token correctly
-     * @should reset exactSearchString if input empty
-     */
     void generateSimpleSearchString(final String inSearchString) {
         logger.trace("generateSimpleSearchString: {}", inSearchString);
         logger.trace("currentSearchFilter: {}", currentSearchFilter.getLabel());
-        String tempSearchString = inSearchString;
-        if (tempSearchString == null) {
-            tempSearchString = "";
-        }
-        try {
-            tempSearchString = URLDecoder.decode(tempSearchString, URL_ENCODING);
-        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
-            logger.warn(e.getMessage());
-        }
-        if ("-".equals(tempSearchString)) {
-            searchString = "";
-        }
 
-        searchString = StringTools.stripJS(tempSearchString).trim();
-        if (StringUtils.isEmpty(tempSearchString)) {
-            searchString = "";
+        SimpleQueryBuilder builder = SimpleQueryBuilder.builder()
+                .withSearchFilter(currentSearchFilter)
+                .withFuzzySearchEnabled(fuzzySearchEnabled)
+                .withSearchTerms(searchTerms)
+                .build();
+
+        QueryResult result = builder.build(inSearchString);
+
+        searchString = result.getDisplaySearchString();
+        searchStringInternal = result.getInternalQuery();
+        proximitySearchDistance = result.getProximityDistance();
+        this.searchTerms = result.getSearchTerms();
+
+        if (StringUtils.isBlank(searchStringInternal) || "*".equals(searchStringInternal)) {
             setExactSearchString("");
-            return;
-        }
-
-        // Reset internal query etc. only after confirming the given search string is not empty
-        searchStringInternal = "";
-        searchTerms.clear();
-
-        if ("*".equals(tempSearchString)) {
-            searchStringInternal = SearchHelper.prepareQuery("");
-            setExactSearchString("");
-            return;
-        }
-
-        tempSearchString = tempSearchString.replace(SolrConstants.SOLR_QUERY_OR, " || ");
-        tempSearchString = tempSearchString.replace(SolrConstants.SOLR_QUERY_AND, " && ");
-        tempSearchString = tempSearchString.toLowerCase(); // Regular tokens are lowercase
-
-        if (tempSearchString.contains("\"")) {
-            // Phrase search
-            // Determine proximity search distance if token present, then remove it from the term
-            proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(tempSearchString);
-            if (proximitySearchDistance > 0) {
-                tempSearchString = SearchHelper.removeProximitySearchToken(tempSearchString);
-            }
-            String[] toSearch = tempSearchString.split("\"");
-            StringBuilder sb = new StringBuilder();
-            for (String p : toSearch) {
-                String phrase = p.replace("\"", "");
-                if (!phrase.isEmpty()) {
-                    if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
-                        // For aggregated searches include both SUPER and regular DEFAULT/FULLTEXT fields
-                        sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append('"');
-                        if (proximitySearchDistance > 0) {
-                            // Proximity search term augmentation
-                            sb.append('~').append(proximitySearchDistance);
-                        }
-                        sb.append(')').append(SolrConstants.SOLR_QUERY_OR);
-                        sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append('"');
-                        if (proximitySearchDistance > 0) {
-                            // Proximity search term augmentation
-                            sb.append('~').append(proximitySearchDistance);
-                        }
-                        sb.append(')').append(SolrConstants.SOLR_QUERY_OR);
-                        sb.append(SolrConstants.NORMDATATERMS).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\") OR ");
-                        sb.append(SolrConstants.CMS_TEXT_ALL).append(":(\"").append(phrase).append("\")");
-                    } else {
-                        // Specific filter selected
-                        switch (currentSearchFilter.getField()) {
-                            case SolrConstants.DEFAULT:
-                                sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                                sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\")");
-                                break;
-                            case SolrConstants.FULLTEXT:
-                                sb.append(SolrConstants.SUPERFULLTEXT)
-                                        .append(":(\"")
-                                        .append(phrase)
-                                        .append('"');
-                                if (proximitySearchDistance > 0) {
-                                    // Proximity search term augmentation
-                                    sb.append('~').append(proximitySearchDistance);
-                                }
-                                sb.append(')')
-                                        .append(SolrConstants.SOLR_QUERY_OR)
-                                        .append(SolrConstants.FULLTEXT)
-                                        .append(":(\"")
-                                        .append(phrase)
-                                        .append('"');
-                                if (proximitySearchDistance > 0) {
-                                    // Proximity search term augmentation
-                                    sb.append('~').append(proximitySearchDistance);
-                                }
-                                sb.append(')');
-                                break;
-                            case SolrConstants.UGCTERMS:
-                                sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
-                                sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\")");
-                                break;
-                            case SolrConstants.SEARCHTERMS_ARCHIVE:
-                                sb.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\") OR ");
-                                sb.append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\")");
-                                break;
-                            default:
-                                sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
-                                break;
-                        }
-                    }
-                    sb.append(SolrConstants.SOLR_QUERY_AND);
-                }
-            }
-            searchStringInternal = sb.toString();
-        } else {
-            // Non-phrase search
-            tempSearchString = tempSearchString.replace(" &&", "");
-            String[] termsSplit = tempSearchString.split(SearchHelper.SEARCH_TERM_SPLIT_REGEX);
-
-            // Clean up terms and create OR-connected groups
-            List<String> preparedTerms = new ArrayList<>(termsSplit.length);
-            for (int i = 0; i < termsSplit.length; ++i) {
-                String term = termsSplit[i].trim();
-                term = SearchHelper.cleanUpSearchTerm(term);
-                String unescapedTerm = term;
-                term = term.replace("\\*", "*"); // unescape falsely escaped truncation
-                if (!term.isEmpty() && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
-                    if (fuzzySearchEnabled) {
-                        // Fuzzy search term augmentation
-                        String[] wildcards = SearchHelper.getWildcardsTokens(term);
-                        term = SearchHelper.addFuzzySearchToken(wildcards[1], wildcards[0], wildcards[2]);
-                    }
-                    logger.trace("term: {}", term);
-                    if (!"\\|\\|".equals(term)) {
-                        // Avoid duplicate terms
-                        if (!preparedTerms.contains(term)) {
-                            preparedTerms.add(term);
-                        }
-                        for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
-                            entry.getValue().add(unescapedTerm);
-                        }
-                    } else if (i > 0 && i < termsSplit.length - 1) {
-                        // Two terms separated by OR: remove previous term and add it together with the next term as a group
-                        int previousIndex = preparedTerms.size() - 1;
-                        String prevTerm = preparedTerms.get(previousIndex);
-                        String unescapedNextTerm = SearchHelper.cleanUpSearchTerm(termsSplit[i + 1]);
-                        String nextTerm = ClientUtils.escapeQueryChars(unescapedNextTerm);
-                        nextTerm = nextTerm.replace("\\*", "*"); // unescape falsely escaped truncation
-                        preparedTerms.remove(previousIndex);
-                        preparedTerms.add(prevTerm + " OR " + nextTerm);
-                        for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
-                            entry.getValue().add(unescapedNextTerm);
-                        }
-                        i++;
-                    }
-                }
-            }
-            // Construct inner query part
-            String innerQuery = SearchHelper.buildTermQuery(preparedTerms);
-            if (!innerQuery.isEmpty()) {
-                StringBuilder sbOuter = new StringBuilder();
-                if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
-                    // No filters defined or ALL
-                    sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.DEFAULT).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.FULLTEXT).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.NORMDATATERMS).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.UGCTERMS).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(").append(innerQuery);
-                    sbOuter.append(") ").append(SolrConstants.CMS_TEXT_ALL).append(":(").append(innerQuery).append(')');
-                } else {
-                    // Specific filter selected
-                    switch (currentSearchFilter.getField()) {
-                        case SolrConstants.DEFAULT:
-                            sbOuter.append(SolrConstants.SUPERDEFAULT)
-                                    .append(":(")
-                                    .append(innerQuery)
-                                    .append(')')
-                                    .append(SolrConstants.SOLR_QUERY_OR);
-                            sbOuter.append(SolrConstants.DEFAULT).append(":(").append(innerQuery).append(')');
-                            break;
-                        case SolrConstants.FULLTEXT:
-                            sbOuter.append(SolrConstants.SUPERFULLTEXT)
-                                    .append(":(")
-                                    .append(innerQuery)
-                                    .append(')')
-                                    .append(SolrConstants.SOLR_QUERY_OR);
-                            sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(innerQuery).append(')');
-                            break;
-                        case SolrConstants.UGCTERMS:
-                            sbOuter.append(SolrConstants.SUPERUGCTERMS)
-                                    .append(":(")
-                                    .append(innerQuery)
-                                    .append(')')
-                                    .append(SolrConstants.SOLR_QUERY_OR);
-                            sbOuter.append(SolrConstants.UGCTERMS).append(":(").append(innerQuery).append(')');
-                            break;
-                        case SolrConstants.SEARCHTERMS_ARCHIVE:
-                            sbOuter.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE)
-                                    .append(":(")
-                                    .append(innerQuery)
-                                    .append(')')
-                                    .append(SolrConstants.SOLR_QUERY_OR);
-                            sbOuter.append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(").append(innerQuery).append(')');
-                            break;
-                        default:
-                            sbOuter.append(currentSearchFilter.getField()).append(":(").append(innerQuery).append(')');
-                            break;
-                    }
-                }
-                searchStringInternal += sbOuter.toString();
-            }
-
-        }
-        if (searchStringInternal.endsWith(SolrConstants.SOLR_QUERY_OR)) {
-            searchStringInternal = searchStringInternal.substring(0, searchStringInternal.length() - 4);
-        } else if (searchStringInternal.endsWith(SolrConstants.SOLR_QUERY_AND)) {
-            searchStringInternal = searchStringInternal.substring(0, searchStringInternal.length() - 5);
         }
 
         logger.trace("search string: {}", searchStringInternal);
-        // logger.trace("search terms: {}", searchTerms.toString()); //NOSONAR Debug
     }
 
     /**
@@ -1806,10 +1551,13 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should add extra search query item if all items full
      * @should not replace query items already in use
      * @should not add identical hierarchical query items
+     * @should change nothing if facet already exists in query items
+     * 
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
         if (facets.getActiveFacets().isEmpty()) {
+            // Reset hierarchical query items if no active facets selected
             List<SearchQueryItem> queryItems = new ArrayList<>(advancedSearchQueryGroup.getQueryItems());
             for (SearchQueryItem item : queryItems) {
                 if (item.isHierarchical()) {
@@ -1827,33 +1575,56 @@ public class SearchBean implements SearchInterface, Serializable {
                 continue;
             }
             // logger.trace("facet item: {}", facetItem); //NOSONAR Debug
-            // Look up and re-purpose existing query items with the same field first
-            boolean matched = false;
+
+            SearchQueryItem match = null;
+
+            // First try to match item with exact field
             for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
-                // field:value pair already exists
-                if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || StringUtils.isEmpty(queryItem.getValue()))) {
-                    // Override existing items without a field or with the same field with current facet value
-                    // logger.trace("updating query item: {}", queryItem); //NOSONAR Debug
-                    queryItem.setField(facetItem.getField());
-                    queryItem.setValue(facetItem.getValue());
-                    // logger.trace("updated query item: {}", queryItem); //NOSONAR Debug
-                    populatedQueryItems.add(queryItem);
-                    matched = true;
+                if (!populatedQueryItems.contains(queryItem)
+                        && (facetItem.getField().equals(queryItem.getField()) && facetItem.getValue().equals(queryItem.getValue()))) {
+                    match = queryItem;
+                    logger.trace("Found query item with same field+value: {}:{}", match.getField(), match.getValue());
                     break;
                 }
             }
-            if (!matched) {
-                // If no search field is set up for collection search, add new field containing the currently selected collection
-                SearchQueryItem item = new SearchQueryItem();
-                item.setField(facetItem.getField());
-                item.setValue(facetItem.getValue());
-                // ...but only if there is no exact field:value pair already among the query items
-                if (!populatedQueryItems.contains(item)) {
-                    advancedSearchQueryGroup.getQueryItems().add(item);
-                    // logger.trace("added new item: {}", item); //NOSONAR Debug
-                    populatedQueryItems.add(item);
+
+            // Match same field with no value selected
+            if (match == null) {
+                for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+                    if (!populatedQueryItems.contains(queryItem)
+                            && facetItem.getField().equals(queryItem.getField())
+                            && StringUtils.isEmpty(queryItem.getValue())) {
+
+                        match = queryItem;
+                        logger.trace("Found same field with empty value: {}", queryItem.getField());
+                        break;
+                    }
                 }
             }
+
+            // If no exact field match found, try to re-purpose an unused item
+            if (match == null) {
+                for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+                    // field:value pair already exists
+                    if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || StringUtils.isEmpty(queryItem.getValue()))) {
+                        match = queryItem;
+                        logger.trace("updating query item: {}:{}", match.getField(), match.getValue());
+                        break;
+                    }
+                }
+            }
+
+            if (match == null) {
+                // If no search field is set up for collection search, add new field containing the currently selected collection
+                match = new SearchQueryItem();
+                if (!populatedQueryItems.contains(match)) {
+                    advancedSearchQueryGroup.getQueryItems().add(match);
+                }
+            }
+
+            match.setField(facetItem.getField());
+            match.setValue(facetItem.getValue());
+            populatedQueryItems.add(match);
         }
     }
 
@@ -2438,30 +2209,6 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         return fields;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>searchInCurrentItemString</code>.
-     * </p>
-     *
-     * @return the searchInCurrentItemString
-     */
-    public String getSearchInCurrentItemString() {
-        return searchInCurrentItemString;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>searchInCurrentItemString</code>.
-     * </p>
-     *
-     * @param searchInCurrentItemString the searchInCurrentItemString to set
-     */
-    public void setSearchInCurrentItemString(String searchInCurrentItemString) {
-        // Reset the advanced search parameters prior to setting
-        resetAdvancedSearchParameters();
-        this.searchInCurrentItemString = searchInCurrentItemString;
     }
 
     /**
@@ -3278,15 +3025,25 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return Navigation outcome
      */
     public String searchInRecord(String queryField, String queryValue) {
+        logger.trace("searchInRecord: {}:{}", queryField, queryValue);
+        // reset all items except the one containing the value from the search input field
+        int index = 0;
+        for (SearchQueryItem item : this.advancedSearchQueryGroup.getQueryItems()) {
+            if (index != 1) {
+                item.reset();
+            }
+            index++;
+        }
         this.advancedSearchQueryGroup.getQueryItems().get(0).setField(queryField);
         if (StringUtils.isNotBlank(queryValue)) {
             this.advancedSearchQueryGroup.getQueryItems().get(0).setValue(queryValue);
         }
-        this.advancedSearchQueryGroup.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        this.advancedSearchQueryGroup.getQueryItems().get(0).getLines().get(0).setOperator(SearchItemOperator.AND);
         this.advancedSearchQueryGroup.getQueryItems().get(1).setField(SearchHelper.SEARCH_FILTER_ALL.getField());
         this.advancedSearchQueryGroup.getQueryItems().get(1).setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
-        this.advancedSearchQueryGroup.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+        this.advancedSearchQueryGroup.getQueryItems().get(1).getLines().get(0).setOperator(SearchItemOperator.AND);
         this.setActiveSearchType(1);
+        logger.trace("Searching for: {}", this.advancedSearchQueryGroup.getQueryItems().get(1).getValue());
 
         return this.searchAdvanced();
     }
@@ -3299,7 +3056,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String searchInField(String queryField) {
         this.advancedSearchQueryGroup.getQueryItems().get(0).setField(queryField);
-        this.advancedSearchQueryGroup.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        this.advancedSearchQueryGroup.getQueryItems().get(0).getLines().get(0).setOperator(SearchItemOperator.AND);
         this.setActiveSearchType(1);
 
         return this.searchAdvanced();

@@ -239,9 +239,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return ret;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -253,9 +250,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -289,11 +283,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(PhysicalElement o) {
@@ -500,7 +489,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
     @Override
     public String getAccessDeniedThumbnailUrl(Locale locale) throws IndexUnreachableException, DAOException {
-        logger.trace("getAccessDeniedThumbnailUrl: locale: {}, page: {}", locale, order);
+        // logger.trace("getAccessDeniedThumbnailUrl: locale: {}, page: {}", locale, order); //NOSONAR Debug
         return getAccessDeniedUrl(getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS), locale);
     }
 
@@ -547,7 +536,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             }
         }
 
-        return accessPermissionMap.get(privilegeName);
+        return accessPermissionMap.getOrDefault(privilegeName, AccessPermission.denied());
     }
 
     /**
@@ -1347,6 +1336,47 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
         logger.trace("currentMediaUrl: {}", url);
         return url;
+    }
+
+    /**
+     * Returns a list of media formats available for this element.
+     * 
+     * @param type audio or video
+     * @return List of supported formats for the given type
+     */
+    public List<String> getMediaFormats(String type) {
+        logger.trace("getMediaFormats: {}", type);
+        if (type == null) {
+            return Collections.emptyList();
+        }
+
+        List<String> ret = new ArrayList<>();
+        switch (type.toLowerCase()) {
+            case "audio":
+                if (fileNames.get("ogg") != null) {
+                    ret.add("ogg");
+                }
+                if (fileNames.get("mpeg") != null || fileNames.get("mp3") != null) {
+                    ret.add("mpeg");
+                    ret.add("mp3");
+                }
+                break;
+            case "video":
+                if (fileNames.get("webm") != null) {
+                    ret.add("webm");
+                }
+                if (fileNames.get("mp4") != null) {
+                    ret.add("mp4");
+                }
+                if (fileNames.get("ogg") != null) {
+                    ret.add("ogg");
+                }
+                break;
+            default:
+                logger.warn("Unsupported type: {}", type);
+        }
+
+        return ret;
     }
 
     /**

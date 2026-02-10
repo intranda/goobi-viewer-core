@@ -1,281 +1,400 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:o="http://omnifaces.org/ui"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:jsf="http://xmlns.jcp.org/jsf"
+  xmlns:o="http://omnifaces.org/ui"
+  xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+  xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+  xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+>
+  <composite:interface />
+  <composite:implementation>
+    <!-- Modal -->
+    <div
+      class="modal fade access-ticket-modal show"
+      id="accessTicketModal"
+      tabindex="-1"
+      role="dialog"
+      aria-label=""
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title">#{msg.access_tickets__unlock}</h1>
+            <button
+              type="button"
+              class="fancy-close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">x</span>
+            </button>
+          </div>
 
+          <div class="modal-body">
+            <!-- DESCRIPTION FOR REQUESTING A TICKET -->
+            <h2 data-mode="ticketMode">
+              <span class="access-ticket-modal__object-title"
+                >#{activeDocumentBean.titleBarLabel}</span
+              >
+            </h2>
+            <p data-mode="ticketMode">
+              <h:outputText value="#{msg.access_tickets__modal_desc_request}" />
+            </p>
 
-	<composite:interface />
-    <composite:implementation>
+            <div class="access-ticket-modal__accessTicket">
+              <!-- ENTER PASSWORD MODE -->
+              <h:form
+                id="access-ticket-modal__accessTicketFormPassword"
+                styleClass="form-horizontal"
+                prependId="false"
+                enctype="multipart/form-data"
+              >
+                <div
+                  class="access-ticket-modal__password-mode"
+                  data-mode="passwordMode"
+                >
+                  <h2>
+                    <span class="access-ticket-modal__object-title"
+                      >#{activeDocumentBean.titleBarLabel}</span
+                    >
+                  </h2>
 
-		<!-- Modal -->
-		<div class="modal fade access-ticket-modal show" id="accessTicketModal" tabindex="-1" role="dialog" aria-label="" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h1 class="modal-title">#{msg.access_tickets__unlock}</h1>
-						<button type="button" class="fancy-close" data-dismiss="modal"
-							aria-label="Close">
-							<span aria-hidden="true">x</span>
-						</button>
-					</div>
+                  <!-- DESCRIPTION FOR ENTERING THE PASSWORD -->
+                  <p data-mode="passwordMode">
+                    <h:outputText
+                      value="#{msg.access_tickets__modal_desc_pw}"
+                    />
+                  </p>
 
-					<div class="modal-body">
-						
-						<!-- DESCRIPTION FOR REQUESTING A TICKET -->
-						<h2 data-mode="ticketMode"><span class="access-ticket-modal__object-title">#{activeDocumentBean.titleBarLabel}</span></h2>
-						<p data-mode="ticketMode">
-							<h:outputText value="#{msg.access_tickets__modal_desc_request}" />
-						</p>
+                  <!-- PASSWORD (visible when ticket request mode OFF) -->
+                  <div class="form-group form-row">
+                    <label
+                      id="access-ticket-modal__labelAccessTicketPassword"
+                      for="access-ticket-modal__title"
+                      class="col-lg-3 control-label"
+                    >
+                      <span class="access-ticket-modal__label-span"
+                        >#{msg.access_tickets__ticket}:</span
+                      >
+                    </label>
 
-						
-							<div class="access-ticket-modal__accessTicket">
+                    <div class="col-12 col-lg-9">
+                      <h:inputSecret
+                        id="access-ticket-modal__accessTicketPassword"
+                        styleClass="form-control"
+                        value="#{accessTicketBean.ticketPassword}"
+                        requiredMessage="#{msg.required}"
+                        aria-labelledby="labelAccessTicketPassword"
+                        pt:data-require-input-text="passwordRequired"
+                        pt:autocomplete="new-password"
+                      >
+                        <f:passThroughAttribute
+                          name="aria-labelledby"
+                          value="access-ticket-modal__accessTicketPassword"
+                        />
+                      </h:inputSecret>
+                    </div>
+                  </div>
 
-							<!-- ENTER PASSWORD MODE -->
-							<h:form id="access-ticket-modal__accessTicketFormPassword" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
-							
-							<div class="access-ticket-modal__password-mode" data-mode="passwordMode">
-							
-								<h2><span class="access-ticket-modal__object-title">#{activeDocumentBean.titleBarLabel}</span></h2>
-								
-								<!-- DESCRIPTION FOR ENTERING THE PASSWORD -->
-								<p data-mode="passwordMode">
-									<h:outputText value="#{msg.access_tickets__modal_desc_pw}" />
-								</p>
+                  <div class="access-ticket-modal__actions">
+                    <!-- SWITCH TO TICKET REQUEST MODE (visible when ticket request mode OFF)-->
+                    <div
+                      class="form-row access-ticket-modal__action"
+                      data-target="switchToTicketMode"
+                    >
+                      <div class="col-sm-12 d-flex justify-content-end">
+                        <button type="button" class="btn btn--clean">
+                          #{msg.access_tickets__need_ticket}
+                        </button>
+                      </div>
+                    </div>
+                    <!-- SUBMIT PASSWORD (visible when ticket request mode OFF) -->
+                    <div class="form-row access-ticket-modal__action">
+                      <div class="col-sm-12 d-flex justify-content-end">
+                        <h:commandButton
+                          styleClass="btn btn--full"
+                          value="#{msg.submit}"
+                          action="#{accessTicketBean.checkTicketPasswordAction}"
+                          pt:data-require-input="passwordRequired"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </h:form>
 
-								<!-- PASSWORD (visible when ticket request mode OFF) -->
-								<div class="form-group form-row">
-									<label id="access-ticket-modal__labelAccessTicketPassword" for="access-ticket-modal__title"
-										class="col-lg-3 control-label">
-										<span class="access-ticket-modal__label-span">#{msg.access_tickets__ticket}:</span>
-									</label>
-									
-									<div class="col-12 col-lg-9">
-										<h:inputSecret id="access-ticket-modal__accessTicketPassword" styleClass="form-control"
-											value="#{accessTicketBean.ticketPassword}"
-											requiredMessage="#{msg.required}"
-											aria-labelledby="labelAccessTicketPassword" pt:data-require-input-text="passwordRequired" pt:autocomplete="new-password">
-											<f:passThroughAttribute name="aria-labelledby"
-												value="access-ticket-modal__accessTicketPassword" />
-										</h:inputSecret>
-									</div>
-								</div>
-							
+              <!-- REQUEST TICKET MODE -->
+              <h:form
+                id="access-ticket-modal__accessTicketFormRequest"
+                pt:data-target="requestTicketForm"
+                styleClass="form-horizontal"
+                prependId="false"
+                enctype="multipart/form-data"
+              >
+                <div
+                  class="access-ticket-modal__ticket-mode"
+                  data-mode="ticketMode"
+                >
+                  <!-- E-MAIL (visible when ticket request mode ON) -->
+                  <h:panelGroup
+                    layout="block"
+                    styleClass="form-group form-row"
+                    id="emailGroup"
+                  >
+                    <label
+                      id="access-ticket-modal__labelEmail"
+                      for="access-ticket-modal__accessTicketEmail"
+                      class="col-lg-12 control-label"
+                    >
+                      <span class="access-ticket-modal__label-span"
+                        >#{msg.email}:</span
+                      >
+                      <!-- REQUIRED MSG NOT NEEDED? FILLED AUTOMATICALLY -->
+                      <!--                                         <span class="access-ticket-modal__label-required-field">(#{msg.form__required_field})</span> -->
+                    </label>
+                    <div class="col-12">
+                      <div class="cms-module__option-message">
+                        <h:messages
+                          for="accessTicketEmail"
+                          styleClass="m-0 p-0 pb-1 list-unstyled"
+                          infoClass="cms-module__option-message-status success"
+                          warnClass="cms-module__option-message-status warning"
+                          errorClass="cms-module__option-message-status danger"
+                        />
+                        <div class="cms-module__option-message-mark">
+                          <i class="fa fa-check" aria-hidden="true"></i>
+                          <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        </div>
+                      </div>
+                      <h:inputText
+                        id="access-ticket-modal__email"
+                        label="ticketEmail"
+                        required="true"
+                        value="#{accessTicketBean.ticketEmail}"
+                        styleClass="form-control"
+                        pt:data-require-input-text="ticketRequired"
+                        pt:data-target="mailValidatorCheck"
+                      >
+                        <f:passThroughAttribute
+                          name="aria-labelledby"
+                          value="access-ticket-modal__labelTicket"
+                        />
+                        <f:passThroughAttribute name="type" value="email" />
+                        <f:validator
+                          validatorId="emailValidator"
+                          for="accessTicketEmail"
+                        />
+                      </h:inputText>
+                    </div>
+                  </h:panelGroup>
 
+                  <!-- REQUEST MESSAGE (visible when ticket request mode ON) -->
+                  <div class="form-group form-row">
+                    <label
+                      id="access-ticket-modal__labelAccessTicketRequestMessage"
+                      for="access-ticket-modal__requestMessage"
+                      class="col-12 control-label"
+                    >
+                      <span class="access-ticket-modal__label-span"
+                        >#{msg.access_tickets__request_message}:</span
+                      >
+                    </label>
 
-							<div class="access-ticket-modal__actions">
-								<!-- SWITCH TO TICKET REQUEST MODE (visible when ticket request mode OFF)-->
-	                            <div class="form-row access-ticket-modal__action" data-target="switchToTicketMode">
-	                                <div class="col-sm-12 d-flex justify-content-end">
-	                                    <button type="button" class="btn btn--clean">#{msg.access_tickets__need_ticket}</button>
-	                                </div>
-	                            </div>
-	                            <!-- SUBMIT PASSWORD (visible when ticket request mode OFF) -->
-								<div class="form-row access-ticket-modal__action">
-									<div class="col-sm-12 d-flex justify-content-end">
-										<h:commandButton styleClass="btn btn--full"
-											value="#{msg.submit}"
-											action="#{accessTicketBean.checkTicketPasswordAction}"  
-											pt:data-require-input="passwordRequired"/>
-									</div>
-								</div>
-								
-                            
-							</div>
+                    <div class="col-12">
+                      <h:inputTextarea
+                        id="access-ticket-modal__requestMessage"
+                        styleClass="form-control"
+                        value="#{accessTicketBean.ticketRequestMessage}"
+                        aria-labelledby="labelTicketRequestMessage"
+                      >
+                        <f:passThroughAttribute
+                          name="aria-labelledby"
+                          value="access-ticket-modal__labelUploadJobDescription"
+                        />
+                      </h:inputTextarea>
+                    </div>
+                  </div>
 
-							
-							</div>
-							</h:form>
-							
-							<!-- REQUEST TICKET MODE -->
-							<h:form id="access-ticket-modal__accessTicketFormRequest" pt:data-target="requestTicketForm"
-							    styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
+                  <!-- SECURITY QUESTION -->
+                  <ui:fragment
+                    rendered="#{captchaBean.resetSecurityQuestion() and captchaBean.securityQuestion != null}"
+                  >
+                    <div class="form-group form-row">
+                      <label
+                        id="access-ticket-modal__ticketSecurityQuestion"
+                        for="access-ticket-modal__ticketSecurityQuestion"
+                        class="col-12 control-label"
+                        >#{msg.user__security_question}:</label
+                      >
+                      <div class="col-12 composite-control pt-0">
+                        <span class="control-label d-block pb-1"
+                          >#{msg[captchaBean.securityQuestion.questionKey]}:</span
+                        >
+                        <h:messages
+                          for="accessTicketSecurityQuestion"
+                          styleClass="m-0 p-0 pb-1 list-unstyled"
+                          infoClass="cms-module__option-message-status success"
+                          warnClass="cms-module__option-message-status warning"
+                          errorClass="cms-module__option-message-status danger"
+                        />
+                        <h:inputText
+                          id="accessTicketSecurityQuestion"
+                          styleClass="form-control"
+                          autocomplete="off"
+                          pt:data-require-input-text="ticketRequired"
+                          pt:aria-labelledby="access-ticket-modal__ticketSecurityQuestion"
+                          pt:autocomplete="new-password"
+                          value="#{captchaBean.securityAnswer}"
+                          required="true"
+                          requiredMessage="#{msg.user__security_question_required_msg}"
+                        >
+                        </h:inputText>
+                      </div>
+                    </div>
+                  </ui:fragment>
 
-							<div class="access-ticket-modal__ticket-mode" data-mode="ticketMode">
+                  <div class="access-ticket-modal__required-checkbox-wrapper">
+                    <div class="form-row">
+                      <p class="col-12 feedback-modal__accept-terms-text">
+                        <h:outputText
+                          escape="false"
+                          value="#{msg.feedbackAcceptingTerms}"
+                        />
+                      </p>
 
-                                <!-- E-MAIL (visible when ticket request mode ON) -->
-                                <h:panelGroup layout="block"
-                                    styleClass="form-group form-row" id="emailGroup">
-                                    <label id="access-ticket-modal__labelEmail" for="access-ticket-modal__accessTicketEmail"
-                                        class="col-lg-12 control-label">
-                                        <span class="access-ticket-modal__label-span">#{msg.email}:</span>
-                                        <!-- REQUIRED MSG NOT NEEDED? FILLED AUTOMATICALLY -->
-<!--                                         <span class="access-ticket-modal__label-required-field">(#{msg.form__required_field})</span> -->
-                                    </label>
-                                    <div class="col-12">
-                                        <div class="cms-module__option-message">
-                                            <h:messages for="accessTicketEmail"
-                                                styleClass="m-0 p-0 pb-1 list-unstyled"
-                                                infoClass="cms-module__option-message-status success"
-                                                warnClass="cms-module__option-message-status warning"
-                                                errorClass="cms-module__option-message-status danger" />
-                                            <div class="cms-module__option-message-mark">
-                                                <i class="fa fa-check" aria-hidden="true"></i> <i
-                                                    class="fa fa-exclamation" aria-hidden="true"></i>
-                                            </div>
-                                        </div>
-                                        <h:inputText id="access-ticket-modal__email" label="ticketEmail"
-                                            required="true"
-                                            value="#{accessTicketBean.ticketEmail}" styleClass="form-control"
-                                                pt:data-require-input-text="ticketRequired" pt:data-target="mailValidatorCheck">
-                                            <f:passThroughAttribute name="aria-labelledby"
-                                                value="access-ticket-modal__labelTicket" />
-                                            <f:passThroughAttribute name="type"
-                                                value="email" />
-                                            <f:validator validatorId="emailValidator" for="accessTicketEmail" />
-                                        </h:inputText>
-                                    </div>
-                                </h:panelGroup>
-                                
-                                <!-- REQUEST MESSAGE (visible when ticket request mode ON) -->
-                                <div class="form-group form-row">
-                                    <label id="access-ticket-modal__labelAccessTicketRequestMessage" for="access-ticket-modal__requestMessage"
-                                        class="col-12 control-label">
-                                        <span class="access-ticket-modal__label-span">#{msg.access_tickets__request_message}:</span>
-                                    </label>
-                                    
-                                    <div class="col-12">
-                                        <h:inputTextarea id="access-ticket-modal__requestMessage"
-                                            styleClass="form-control" value="#{accessTicketBean.ticketRequestMessage}"
-                                            aria-labelledby="labelTicketRequestMessage">
-                                            <f:passThroughAttribute name="aria-labelledby"
-                                                value="access-ticket-modal__labelUploadJobDescription" />
-                                        </h:inputTextarea>
-                                    </div>
-                                </div>
-                                
-								<!-- SECURITY QUESTION -->
-								<ui:fragment rendered="#{captchaBean.resetSecurityQuestion() and captchaBean.securityQuestion != null}">
-									<div class="form-group form-row">
-										<label id="access-ticket-modal__ticketSecurityQuestion" for="access-ticket-modal__ticketSecurityQuestion"
-											class="col-12 control-label">#{msg.user__security_question}:</label>
-										<div class="col-12 composite-control pt-0">
-											<span class="control-label d-block pb-1">#{msg[captchaBean.securityQuestion.questionKey]}:</span>
-											<h:messages for="accessTicketSecurityQuestion"
-												styleClass="m-0 p-0 pb-1 list-unstyled"
-												infoClass="cms-module__option-message-status success"
-												warnClass="cms-module__option-message-status warning"
-												errorClass="cms-module__option-message-status danger" />
-											<h:inputText id="accessTicketSecurityQuestion"
-												styleClass="form-control" autocomplete="off"
-												pt:data-require-input-text="ticketRequired"
-												pt:aria-labelledby="access-ticket-modal__ticketSecurityQuestion"
-												pt:autocomplete="new-password"
-												value="#{captchaBean.securityAnswer}" required="true"
-												requiredMessage="#{msg.user__security_question_required_msg}">
-						                	</h:inputText>
-										</div>
-									</div>
-								</ui:fragment>
-                                
-								<div class="access-ticket-modal__required-checkbox-wrapper">
-								  
-								  	<div class="form-row">
-									  	<p class="col-12 feedback-modal__accept-terms-text"><h:outputText escape="false" value="#{msg.feedbackAcceptingTerms}" /></p>
-									  
-									  
-					  					<div id="sendContactFormAcceptTerms" class="col-12 col-sm-3 feedback-modal__accept-terms-label">
-											<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
-										</div>	
-                                       
-                                       
-                                        <div class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch">
-                                            <h:selectOneRadio group="requiredAccessTicketTerms" value="false"
-                                                immediate="true" checked="false"
-                                                pt:data-require-input-checkbox="uncheckedChecker">
-                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                            </h:selectOneRadio>
-                                            <h:selectOneRadio id="requiredAccessTicketCheckbox2" group="requiredAccessTicketTerms" value="true"
-                                                immediate="true" checked="true"
-                                                pt:data-require-input-checkbox="ticketRequired">
-                                                <f:selectItem itemValue="#{feedbackModalAcceptedTerms}" itemLabel="#{msg.yes}" />
-                                            </h:selectOneRadio>
-                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
-                                        </div>
-                                       </div>
+                      <div
+                        id="sendContactFormAcceptTerms"
+                        class="col-12 col-sm-3 feedback-modal__accept-terms-label"
+                      >
+                        <label class="mr-3 mb-0"
+                          >#{msg.admin__terms_of_use__accept}:</label
+                        >
+                      </div>
 
-								</div>
+                      <div
+                        class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch"
+                      >
+                        <h:selectOneRadio
+                          group="requiredAccessTicketTerms"
+                          value="false"
+                          immediate="true"
+                          checked="false"
+                          pt:data-require-input-checkbox="uncheckedChecker"
+                        >
+                          <f:selectItem
+                            itemValue="#{false}"
+                            itemLabel="#{msg.no}"
+                          />
+                        </h:selectOneRadio>
+                        <h:selectOneRadio
+                          id="requiredAccessTicketCheckbox2"
+                          group="requiredAccessTicketTerms"
+                          value="true"
+                          immediate="true"
+                          checked="true"
+                          pt:data-require-input-checkbox="ticketRequired"
+                        >
+                          <f:selectItem
+                            itemValue="#{feedbackModalAcceptedTerms}"
+                            itemLabel="#{msg.yes}"
+                          />
+                        </h:selectOneRadio>
+                        <span class="toggle-outside"
+                          ><span class="toggle-inside"></span
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
 
-								<div class="access-ticket-modal__actions small-button-loader__wrapper">
-									
-									<!-- SWITCH TO PASSWORD ENTER MODE (visible when ticket request mode ON)-->
-		                            <div class="form-row access-ticket-modal__action" data-target="switchToPasswordMode">
-		                                <div class="col-sm-12 d-flex justify-content-end">
-		                                    <button type="button" class="btn btn--clean">#{msg.previous}</button>
-		                                </div>
-		                            </div>
-									
-									<!-- SUBMIT REQUEST (visible when ticket request mode ON) -->
-		                            <div class="form-row access-ticket-modal__action">
-		                                <div class="col-sm-12 d-flex justify-content-end">
-		                                    <h:commandButton styleClass="btn btn--full"
-		                                        value="#{msg.submit}" action="#{accessTicketBean.requestNewRecordAccessTicketAction}"
-		                                        pt:data-require-input="ticketRequired" pt:data-target="buttonLoaderClickEvent">
-		                                    </h:commandButton>
-		                                </div>
-		                            </div>
-		                            
-		                            <div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
-		                            
-								</div>
-								
-								<!-- SHOW LOADER AFTER BUTTON CLICK FOR REQUESTING TICKET -->
-								<script>
+                  <div
+                    class="access-ticket-modal__actions small-button-loader__wrapper"
+                  >
+                    <!-- SWITCH TO PASSWORD ENTER MODE (visible when ticket request mode ON)-->
+                    <div
+                      class="form-row access-ticket-modal__action"
+                      data-target="switchToPasswordMode"
+                    >
+                      <div class="col-sm-12 d-flex justify-content-end">
+                        <button type="button" class="btn btn--clean">
+                          #{msg.previous}
+                        </button>
+                      </div>
+                    </div>
 
-								$.fn.isValid = function(){
-								  return this[0].checkValidity()
-								}
-								
-								$('[data-target="buttonLoaderClickEvent"]').on('click', function(e) {
-									if($('[data-target="mailValidatorCheck"]').isValid())
-									
-									{
-								      		$('[data-target="buttonLoader"]').fadeIn('fast');
-											$('[data-target="buttonLoaderClickEvent').css('opacity', '0.5');
-										}
+                    <!-- SUBMIT REQUEST (visible when ticket request mode ON) -->
+                    <div class="form-row access-ticket-modal__action">
+                      <div class="col-sm-12 d-flex justify-content-end">
+                        <h:commandButton
+                          styleClass="btn btn--full"
+                          value="#{msg.submit}"
+                          action="#{accessTicketBean.requestNewRecordAccessTicketAction}"
+                          pt:data-require-input="ticketRequired"
+                          pt:data-target="buttonLoaderClickEvent"
+                        >
+                        </h:commandButton>
+                      </div>
+                    </div>
 
-								});
+                    <div
+                      class="small-button-loader__icon -top-right"
+                      data-target="buttonLoader"
+                    ></div>
+                  </div>
 
-								</script>
-                                
-                                
-                                <!-- TODO: captcha? -->
-                                
-                                <!-- TODO: user consent? -->
-                                
-                                </div>
-                                </h:form>
+                  <!-- SHOW LOADER AFTER BUTTON CLICK FOR REQUESTING TICKET -->
+                  <script>
+                    $.fn.isValid = function () {
+                      return this[0].checkValidity();
+                    };
 
-							</div>
-                            
-                            <script>
-	                            $('[data-target="switchToTicketMode"]').on('click', function () {
-	                            	$('[data-mode="passwordMode"]').hide();
-	                            	$('[data-mode="ticketMode"]').fadeIn();
-	                            });
-	                            
-	                            $('[data-target="switchToPasswordMode"]').on('click', function () {
-	                            	$('[data-mode="ticketMode"]').hide();
-	                            	$('[data-mode="passwordMode"]').fadeIn();
-	                            });
-	                            
-	                            // OPEN MODAL ON PAGE LOAD
-	                            $(document).ready(function() {
-	                                $('#accessTicketModal').modal('show'); 
-	                            });
-	                            
-                            </script>
+                    $('[data-target="buttonLoaderClickEvent"]').on(
+                      "click",
+                      function (e) {
+                        if ($('[data-target="mailValidatorCheck"]').isValid()) {
+                          $('[data-target="buttonLoader"]').fadeIn("fast");
+                          $('[data-target="buttonLoaderClickEvent').css(
+                            "opacity",
+                            "0.5"
+                          );
+                        }
+                      }
+                    );
+                  </script>
 
+                  <!-- TODO: captcha? -->
 
-					</div>
-				</div>
-			</div>
-		</div>
+                  <!-- TODO: user consent? -->
+                </div>
+              </h:form>
+            </div>
 
-	</composite:implementation>
+            <script>
+              $('[data-target="switchToTicketMode"]').on("click", function () {
+                $('[data-mode="passwordMode"]').hide();
+                $('[data-mode="ticketMode"]').fadeIn();
+              });
+
+              $('[data-target="switchToPasswordMode"]').on(
+                "click",
+                function () {
+                  $('[data-mode="ticketMode"]').hide();
+                  $('[data-mode="passwordMode"]').fadeIn();
+                }
+              );
+
+              // OPEN MODAL ON PAGE LOAD
+              $(document).ready(function () {
+                $("#accessTicketModal").modal("show");
+              });
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+  </composite:implementation>
 </ui:composition>

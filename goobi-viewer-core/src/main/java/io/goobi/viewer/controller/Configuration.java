@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.configuration2.BaseHierarchicalConfiguration;
@@ -71,6 +72,7 @@ import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.DownloadBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
@@ -872,6 +874,23 @@ public class Configuration extends AbstractConfiguration {
         return getMetadataForTemplate(template, templateList, true, false);
     }
 
+    public float getGeomapClusterDistanceMultiplier() {
+        return getLocalFloat("maps.cluster.distanceMultiplier", 1.0f);
+    }
+
+    public int getGeomapClusterRadius() {
+        return getLocalInt("maps.cluster.radius", 80);
+    }
+
+    public Integer getGeomapDisableClusteringAtZoom() {
+        String value = getLocalString("maps.cluster.disableAtZoom", "");
+        if (StringTools.isInteger(value)) {
+            return Integer.parseInt(value);
+        } else {
+            return null;
+        }
+    }
+
     public Metadata getGeoMapFeatureConfiguration(String option, String template) {
         return getGeomapFeatureConfigurations(option).getOrDefault(template, new Metadata());
     }
@@ -1227,6 +1246,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct values
      */
     public List<String> getSidebarWidgetsForView(String view) {
+        logger.trace("getSidebarWidgetsForView: {}", view);
         List<String> ret = new ArrayList<>();
         if (StringUtils.isEmpty(view)) {
             return ret;
@@ -1633,7 +1653,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @deprecated because download uri is now built from request in {@link DownloadBean}
      */
+    @Deprecated(since = "25.11")
     public String getDownloadUrl() {
         String urlString = getLocalString("urls.download", "http://localhost:8080/viewer/download/");
         if (!urlString.endsWith("/")) {
@@ -2109,7 +2131,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isAdvancedSearchFieldAllowMultipleItems(String field, String template, boolean fallbackToDefaultTemplate) {
-        logger.trace("isAdvancedSearchFieldAllowMultipleItems: {}/{}/{}", field, template, fallbackToDefaultTemplate);
+        // logger.trace("isAdvancedSearchFieldAllowMultipleItems: {}/{}/{}", field, template, fallbackToDefaultTemplate);
         return isAdvancedSearchFieldHasAttribute(field, "allowMultipleItems", template, fallbackToDefaultTemplate);
     }
 
@@ -3089,7 +3111,7 @@ public class Configuration extends AbstractConfiguration {
      * @return Configured values
      */
     private HierarchicalConfiguration<ImmutableNode> getSidebarViewConfiguration(String name) {
-        return getSubConfigurationByNameAttribute("sidebar.views.view", name, false);
+        return getSubConfigurationByNameAttribute("sidebar.views.view", name, true);
     }
 
     /**
@@ -4105,8 +4127,47 @@ public class Configuration extends AbstractConfiguration {
         }
     }
 
+    public Map<String, String> getDownloadHeader(String externalResourceUrl) {
+
+        if (StringUtils.isBlank(externalResourceUrl)) {
+            return Collections.emptyMap();
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
+
+        for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
+            String templateUrl = templateConfig.getString("url", "");
+            if (externalResourceUrl.equals(templateUrl)) {
+                Map<String, String> headerMap = new HashMap<>();
+                List<HierarchicalConfiguration<ImmutableNode>> headerConfigs = templateConfig.configurationsAt("httpHeader");
+                for (HierarchicalConfiguration<ImmutableNode> headerConfig : headerConfigs) {
+                    String key = headerConfig.getString("[@key]", "");
+                    String value = headerConfig.getString("[@value]", "");
+                    if (StringUtils.isNoneBlank(key, value)) {
+                        headerMap.put(key, value);
+                    }
+                }
+                return headerMap;
+            }
+        }
+        return Collections.emptyMap();
+    }
+
     public List<String> getExternalResourceUrlTemplates() {
-        return getLocalList("externalResource.urls.template", Collections.emptyList());
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
+        List<String> templates = new ArrayList<>();
+        for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
+            String url = templateConfig.getString(".", "");
+            if (StringUtils.isNotBlank(url)) {
+                templates.add(url);
+            } else {
+                url = templateConfig.getString("url", "");
+                if (StringUtils.isNotBlank(url)) {
+                    templates.add(url);
+                }
+            }
+        }
+        return templates.stream().distinct().toList();
     }
 
     public Duration getExternalResourceTimeBeforeDeletion() {
@@ -4429,7 +4490,9 @@ public class Configuration extends AbstractConfiguration {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public BaseHierarchicalConfiguration getZoomImageViewConfig(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("viewer.zoomImageView");
+        List<HierarchicalConfiguration<ImmutableNode>> configs = new ArrayList<>();
+        configs.addAll(getLocalConfigurationsAt("viewer.zoomImageView"));
+        configs.addAll(getConfig().configurationsAt("viewer.zoomImageView"));
 
         for (HierarchicalConfiguration<ImmutableNode> subConfig : configs) {
 
@@ -4449,6 +4512,7 @@ public class Configuration extends AbstractConfiguration {
 
             return (BaseHierarchicalConfiguration) subConfig;
         }
+
         throw new ViewerConfigurationException("Viewer config must define at least a generic <zoomImageView>");
     }
 
@@ -5361,34 +5425,6 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return urlString;
-    }
-
-    /**
-     * <p>
-     * getTaskManagerServiceUrl.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     * @deprecated currently unused since download jobs are handled via message queues
-     */
-    @Deprecated(since = "24.10")
-    public String getTaskManagerServiceUrl() {
-        return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "service";
-    }
-
-    /**
-     * <p>
-     * getTaskManagerRestUrl.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     * @deprecated jobs are no longs handled via TaskManager but via queues
-     */
-    @Deprecated(since = "24.10")
-    public String getTaskManagerRestUrl() {
-        return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "rest";
     }
 
     /**
@@ -6657,6 +6693,19 @@ public class Configuration extends AbstractConfiguration {
 
     public String getRecordViewStyleClass() {
         return getLocalString("viewer.viewStyleClass", "docstructtype__{record.DOCSTRCT}");
+    }
+
+    public Duration getDownloadPdfTimeToLive() {
+        int num = getLocalInt("pdf.expireAfter", 14);
+        String unitString = getLocalString("pdf.expireAfter[@unit]", "DAYS");
+        TimeUnit unit = TimeUnit.DAYS;
+        try {
+            unit = TimeUnit.valueOf(unitString);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid value in configuration pdf.expireAfter[@unit]: {}", unitString);
+        }
+        return Duration.of((long) num, unit.toChronoUnit());
+
     }
 
 }

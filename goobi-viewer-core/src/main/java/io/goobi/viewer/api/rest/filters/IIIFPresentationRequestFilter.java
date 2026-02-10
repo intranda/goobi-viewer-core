@@ -24,19 +24,9 @@ package io.goobi.viewer.api.rest.filters;
 import java.io.IOException;
 import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.container.ContainerRequestFilter;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.ext.Provider;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
@@ -48,6 +38,15 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * <p>
@@ -77,9 +76,6 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
             }
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.APPLICATION_JSON;
-            //            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
-            //                mediaType = MediaType.APPLICATION_JSON;
-            //            }
             Response response = Response.status(Status.FORBIDDEN).type(mediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
             request.abortWith(response);
         }
@@ -117,7 +113,7 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
                 }
 
             } catch (NumberFormatException | PresentationException | IndexUnreachableException e) {
-                logger.error("Unable to resolve image file for image order {} and pi {}", imageName, pi);
+                logger.error("Unable to resolve resource file for image order {} and pi {}", imageName, pi);
             }
         }
         return false;
@@ -134,7 +130,7 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
 
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logId, IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST,
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logId, IPrivilegeHolder.PRIV_LIST,
                     servletRequest).isGranted();
         } catch (IndexUnreachableException | DAOException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
@@ -143,7 +139,7 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
         }
 
         if (!access) {
-            throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
+            throw new ServiceNotAllowedException("Serving this resource is restricted due to access conditions");
         }
     }
 

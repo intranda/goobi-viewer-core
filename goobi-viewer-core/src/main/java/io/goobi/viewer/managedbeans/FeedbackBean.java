@@ -26,13 +26,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Optional;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.faces.context.ExternalContext;
-import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,6 +38,12 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.email.EMailSender;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.Feedback;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.mail.MessagingException;
 
 @Named
@@ -131,7 +130,7 @@ public class FeedbackBean implements Serializable {
             logger.debug("Honeypot field entry: {}", lastName);
             return "";
         }
-        if (!EmailValidator.validateEmailAddress(this.feedback.getSenderAddress())) {
+        if (!EmailValidator.validateEmailAddress(this.feedback.getSenderAddress(), false)) {
             Messages.error("email_errlnvalid");
             logger.debug("Invalid email: {}", this.feedback.getSenderAddress());
             return "";

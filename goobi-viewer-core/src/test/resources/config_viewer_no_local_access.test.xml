@@ -74,9 +74,6 @@
 			<ese>ese_value</ese>
 		</metadata>
 
-		<!-- taskManager: Url of local taskManager for pdf-download -->
-		<taskManager>taskmanager_url/</taskManager>
-
 		<!-- solr: URL to the Solr index core -->
 		<solr>https://viewer-testing-index.goobi.io/solr/current</solr>
 

@@ -1,0 +1,10 @@
+<!DOCTYPE suppressions PUBLIC
+     "-//Checkstyle//DTD SuppressionFilter Configuration 1.0//EN"
+     "https://checkstyle.org/dtds/suppressions_1_0.dtd">
+ 
+<suppressions>
+	<!-- The Apache lib used is throwing the general Exception... -->
+	<suppress checks="IllegalCatch"
+		  files="MessageQueueManager.java"
+		  lines="250-650"/>
+</suppressions>

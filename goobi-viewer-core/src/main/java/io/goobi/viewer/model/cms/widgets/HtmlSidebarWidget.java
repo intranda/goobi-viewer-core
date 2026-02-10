@@ -25,6 +25,7 @@ import java.util.Locale;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import io.goobi.viewer.controller.HtmlParser;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
@@ -106,7 +107,7 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
         if (!this.getDescription().isEmpty()) {
             return getDescription().copy().transformValues(s -> StringTools.truncateText(s, maxLength));
         } else if (!this.getHtmlText().isEmpty()) {
-            return getHtmlText().copy().transformValues(s -> StringTools.truncateText(s, maxLength));
+            return getHtmlText().copy().transformValues(s -> StringTools.truncateText(HtmlParser.getPlaintext(s), maxLength));
         } else {
             return new SimpleMetadataValue("");
         }

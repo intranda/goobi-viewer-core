@@ -100,7 +100,7 @@ class QuartzListenerTest extends AbstractDatabaseEnabledTest{
         listener.contextInitialized(contextEvt);
         
         QuartzBean bean = new QuartzBean();
-        assertEquals(6, bean.getActiveJobs().size());
+        assertEquals(7, bean.getActiveJobs().size());
     }
 
 
