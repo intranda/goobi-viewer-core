@@ -21,7 +21,6 @@ io.goobi.viewer.api.rest.v1.clients
 io.goobi.viewer.api.rest.v1.cms
 io.goobi.viewer.api.rest.v1.collections
 io.goobi.viewer.api.rest.v1.crowdsourcing
-io.goobi.viewer.api.rest.v1.downloads
 io.goobi.viewer.api.rest.v1.index
 io.goobi.viewer.api.rest.v1.localization
 io.goobi.viewer.api.rest.v1.media
@@ -47,6 +46,7 @@ io.goobi.viewer.controller.files
 io.goobi.viewer.controller.imaging
 io.goobi.viewer.controller.json
 io.goobi.viewer.controller.model
+io.goobi.viewer.controller.model.alto
 io.goobi.viewer.controller.mq
 io.goobi.viewer.controller.shell
 io.goobi.viewer.controller.sorting
@@ -113,15 +113,20 @@ io.goobi.viewer.model.log
 io.goobi.viewer.model.maps
 io.goobi.viewer.model.maps.coordinates
 io.goobi.viewer.model.maps.features
+io.goobi.viewer.model.media.voyager
 io.goobi.viewer.model.metadata
 io.goobi.viewer.model.misc
 io.goobi.viewer.model.normdata
+io.goobi.viewer.model.pdf
+io.goobi.viewer.model.resources.download
 io.goobi.viewer.model.rss
 io.goobi.viewer.model.search
+io.goobi.viewer.model.search.query
 io.goobi.viewer.model.security
 io.goobi.viewer.model.security.authentication
 io.goobi.viewer.model.security.authentication.model
 io.goobi.viewer.model.security.clients
+io.goobi.viewer.model.security.encryption
 io.goobi.viewer.model.security.recordlock
 io.goobi.viewer.model.security.tickets
 io.goobi.viewer.model.security.user
