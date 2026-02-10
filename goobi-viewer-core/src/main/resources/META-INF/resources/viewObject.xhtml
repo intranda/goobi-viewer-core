@@ -98,9 +98,10 @@
                 </h:panelGroup>
 
                 <!-- VIEW IMAGE -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' or activeDocumentBean.viewManager.currentPage.mimeType == 'application/pdf'}">
                     <ui:insert name="viewImage">
-                        <ui:include src="/resources/includes/object/image.xhtml" />
+                        <ui:include src="/resources/includes/object/image.xhtml">
+                        </ui:include>
                     </ui:insert>
                 </h:panelGroup>
 

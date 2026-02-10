@@ -768,7 +768,7 @@ public class ThumbnailHandler {
             case APPLICATION:
                 switch (page.getMimeType()) {
                     case "application/pdf":
-                        thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
+                        thumbnailUrl = page.getFilepath();
                         break;
                     case "application/object":
                         thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();

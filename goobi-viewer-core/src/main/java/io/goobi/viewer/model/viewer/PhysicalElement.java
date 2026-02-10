@@ -312,18 +312,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         }
         switch (baseMimeType) {
             case IMAGE:
+            case APPLICATION:
                 return getImageUrl();
             case VIDEO, AUDIO:
                 String format = getFileNames().keySet().stream().findFirst().orElse("");
                 return getMediaUrl(format);
-            case APPLICATION:
-                if (StringUtils.isEmpty(fileName)) {
-                    fileName = determineFileName(filePath);
-                }
-                String localFilename = fileName;
-                return getMediaUrl(localFilename);
-            //                PdfHandler pdfHandler = BeanUtils.getImageDeliveryBean().getPdf();
-            //                return pdfHandler.getPdfUrl(pi, localFilename);
             case SANDBOXED_HTML:
                 return getSandboxedUrl();
             default:
