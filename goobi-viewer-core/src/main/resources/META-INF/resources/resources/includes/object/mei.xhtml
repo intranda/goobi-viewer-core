@@ -13,7 +13,7 @@
 	<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/dist/verovio.css" />
 
 	<!-- VIEW MEI -->
-	<mei:verovio content="#{textBean.getStringFromUrl(activeDocumentBean.viewManager.meiUrl)}" />
+	<mei:verovio content="#{activeDocumentBean.viewManager.meiDocument}" />
 
 	<h:outputScript name="resources/javascript/dist/verovio.js" target="head" /> 
 	

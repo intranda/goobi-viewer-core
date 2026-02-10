@@ -97,6 +97,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.controller.sorting.AlphanumCollatorComparator;
+import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.ArchiveException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -2087,6 +2088,15 @@ public class ViewManager implements Serializable {
         }
 
         return meiUrl;
+    }
+
+    public String getMeiDocument() {
+        try {
+            return DataFileTools.loadMei(pi, BeanUtils.getRequest());
+        } catch (AccessDeniedException | DAOException | IndexUnreachableException | IOException | PresentationException | RecordNotFoundException e) {
+            logger.error(e.getMessage());
+            return "";
+        }
     }
 
     /**
@@ -4114,8 +4124,8 @@ public class ViewManager implements Serializable {
                             .getHitCount("+" + SolrConstants.EAD_NODE_ID + ":" + getArchiveEntryIdentifier() + " +" + SolrConstants.DOCTYPE + ":"
                                     + DocType.ARCHIVE.name()) > 0;
                 } catch (IndexUnreachableException | PresentationException e) {
-                   logger.error(e.getMessage());
-                   displayArchivesWidget = false;
+                    logger.error(e.getMessage());
+                    displayArchivesWidget = false;
                 }
             }
         }
