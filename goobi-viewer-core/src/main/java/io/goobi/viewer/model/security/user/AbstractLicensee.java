@@ -22,16 +22,20 @@
 package io.goobi.viewer.model.security.user;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
@@ -43,8 +47,19 @@ public abstract class AbstractLicensee implements ILicensee {
     private static final Logger logger = LogManager.getLogger(AbstractLicensee.class);
 
     /** {@inheritDoc} */
+    public List<License> getLicenses() {
+        try {
+            return DataManager.getInstance().getDao().getLicenses(this);
+        } catch (DAOException e) {
+            logger.error(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    /** {@inheritDoc} */
     @Override
-    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
+    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi)
+            throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi); //NOSONAR Debug
 
         // No privilege name given
@@ -52,7 +67,7 @@ public abstract class AbstractLicensee implements ILicensee {
             return AccessPermission.granted();
         }
 
-        for (License license : getLicenses()) {
+        for (License license : DataManager.getInstance().getDao().getLicenses(this)) {
             if (license.isValid() && license.getLicenseType().getName().equals(licenseName)) {
                 // LicenseType grants privilege
                 if (license.getLicenseType().getPrivileges().contains(privilegeName)) {
@@ -69,7 +84,8 @@ public abstract class AbstractLicensee implements ILicensee {
                                 .setAccessTicketRequired(license.getLicenseType().isAccessTicketRequired())
                                 .setDownloadTicketRequired(license.isTicketRequired())
                                 .setRedirect(license.getLicenseType().isRedirect())
-                                .setRedirectUrl(license.getLicenseType().getRedirectUrl());
+                                .setRedirectUrl(license.getLicenseType().getRedirectUrl())
+                                .setAddionalCheckRequired(license.getSecondaryAccessRequirement());
                     } else if (StringUtils.isNotEmpty(pi)) {
                         // If PI and Solr condition subquery are present, check via Solr
                         String query = SolrConstants.PI + ":" + pi + " AND (" + license.getConditions() + ")";
@@ -81,7 +97,8 @@ public abstract class AbstractLicensee implements ILicensee {
                                     .setAccessTicketRequired(license.getLicenseType().isAccessTicketRequired())
                                     .setDownloadTicketRequired(license.isTicketRequired())
                                     .setRedirect(license.getLicenseType().isRedirect())
-                                    .setRedirectUrl(license.getLicenseType().getRedirectUrl());
+                                    .setRedirectUrl(license.getLicenseType().getRedirectUrl())
+                                    .setAddionalCheckRequired(license.getSecondaryAccessRequirement());
                         }
                     }
                 }
@@ -100,6 +117,8 @@ public abstract class AbstractLicensee implements ILicensee {
      * @should preserve accessTicketRequired
      * @should preserve downloadTicketRequired
      * @should preserve redirect metadata
+     * @should preserve access denied placeholder info
+     * @should preserve additional licensee
      */
     public static AccessPermission getAccessPermissionFromMap(Map<String, AccessPermission> permissionMap) {
         // It should be sufficient if the user can satisfy one required license
@@ -108,6 +127,8 @@ public abstract class AbstractLicensee implements ILicensee {
         boolean downloadTicketRequired = false;
         boolean redirect = false;
         String redirectUrl = null;
+        ILicensee additional = null;
+        Map<String, AccessDeniedInfoConfig> accessDeniedPlaceholderInfo = new HashMap<>();
         for (Entry<String, AccessPermission> entry : permissionMap.entrySet()) {
             if (entry.getValue().isGranted()) {
                 granted = true;
@@ -124,13 +145,19 @@ public abstract class AbstractLicensee implements ILicensee {
             if (StringUtils.isNotEmpty(entry.getValue().getRedirectUrl())) {
                 redirectUrl = entry.getValue().getRedirectUrl();
             }
+            for (Entry<String, AccessDeniedInfoConfig> e : entry.getValue().getAccessDeniedPlaceholderInfo().entrySet()) {
+                accessDeniedPlaceholderInfo.put(e.getKey(), e.getValue().copy());
+            }
+            additional = entry.getValue().getAddionalCheckRequired();
         }
         if (granted) {
             return AccessPermission.granted()
                     .setAccessTicketRequired(accessTicketRequired)
                     .setDownloadTicketRequired(downloadTicketRequired)
                     .setRedirect(redirect)
-                    .setRedirectUrl(redirectUrl);
+                    .setRedirectUrl(redirectUrl)
+                    .setAccessDeniedPlaceholderInfo(accessDeniedPlaceholderInfo)
+                    .setAddionalCheckRequired(additional);
         }
 
         return AccessPermission.denied();

@@ -88,6 +88,9 @@ public class CreateDownloadEpubMessageHandler implements MessageHandler<MessageS
                 } catch (PresentationException | IOException e) {
                     Files.deleteIfExists(epubFile);
                     throw e;
+                } catch (NullPointerException | IndexOutOfBoundsException e) {
+                    Files.deleteIfExists(epubFile);
+                    throw new PresentationException(e.toString());
                 }
             }
 

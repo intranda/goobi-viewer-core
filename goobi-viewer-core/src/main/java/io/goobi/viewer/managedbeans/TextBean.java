@@ -288,6 +288,7 @@ public class TextBean implements Serializable {
     }
 
     public String getStringFromUrl(String url) throws IOException, HTTPException {
+        logger.info("getStringFromUrl: {}", url);
         return NetTools.getWebContentGET(url);
     }
 }
