@@ -21,8 +21,6 @@ module.exports = function(config) {
 	      'libs/reactiveX/rx.lite.min.js',
 	      'libs/jqplot/jquery.jqplot.min.js',
 	      'libs/jqueryUi/1.11.0/jquery-ui.min.js',
-	      'libs/openseadragon/openseadragon.js',
-	      'libs/openseadragon/openseadragon-viewerinputhook.js',
 
 	      'dev/modules/statistics/statistics.js',
 	      'dev/modules/viewer/viewerJS.helper.js',
@@ -36,7 +34,6 @@ module.exports = function(config) {
 	      'tests/spec/viewerPaginator-spec.js',
 	      'tests/spec/cms.tagList-spec.js',
 	      'tests/spec/cms.stackedCollection-spec.js',
-	      'tests/spec/openseadragon-specs.js',
 	      'tests/spec/statistics-specs.js',
 	      'tests/spec/viewerHelper-spec.js',
 	      'tests/spec/viewImage-spec.js',

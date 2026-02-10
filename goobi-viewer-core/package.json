@@ -82,7 +82,6 @@
     "mapbox-gl": "~2.9.1",
     "masonry-layout": "~4.2.2",
     "mirador": "~3.4.0",
-    "openseadragon": "5.0.1",
     "pdfjs-dist": "~2.10.377",
     "riot": "~3.12.0",
     "simple-lightbox": "~2.1.0",
