@@ -39,6 +39,8 @@ public enum BaseMimeType {
     UNKNOWN("other"),
     NONE("");
 
+    private static final String MIMETYPE_PDF = "application/pdf";
+
     /** Constant <code>logger</code> */
     private static final Logger logger = LogManager.getLogger(BaseMimeType.class);
 
@@ -67,6 +69,11 @@ public enum BaseMimeType {
     public static BaseMimeType getByName(final String name) {
         if (StringUtils.isBlank(name)) {
             return NONE;
+        }
+
+        //we handle PDFs like images
+        if (name.equalsIgnoreCase(MIMETYPE_PDF)) {
+            return IMAGE;
         }
 
         String useName = name;
