@@ -35,6 +35,37 @@
 				<div class="admin__content-inner-content">
 
 						<h:form id="cmsEditArchiveConfigForm" prependId="false">
+						
+                            <h2>#{msg.title}</h2>
+                            <div class="admin__cms-edit-collection-translation-box">
+                                <h:panelGroup id="titleGroup">
+
+                                    <!-- LANGUAGE TABS -->
+                                    <div class="admin__language-tabs">
+                                        <viewerComponent:localeSelector
+                                            object="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.title}"
+                                            render="titleGroup" execute="titleGroup" />
+                                    </div>
+
+                                    <div class="admin__default-block">
+                                        <div class="form-group form-row">
+                                            <div class="col-2">#{msg.title}:</div>
+                                            <div class="col-10">
+                                                <div class="#{status.index == 0 ? 'active' : ''}"
+                                                    id="titleLanguage-#{status.index}">
+                                                    <h:inputText
+                                                        value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.title.text}">
+                                                        <f:passThroughAttribute name="aria-label"
+                                                            value="#{msg.aria_label__collections_title}" />
+                                                        <!-- f:ajax execute="@this" event="valueChange" / -->
+                                                    </h:inputText>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </h:panelGroup>
+                            </div>
 
 							<h2>#{msg.description}</h2>
 							<div class="admin__cms-edit-collection-translation-box">
@@ -83,12 +114,12 @@
 											<div class="col-2">#{msg.previewText}:</div>
 											<div class="col-10">
 												<div class="#{status.index == 0 ? 'active' : ''}"
-													id="descriptionLanguage-#{status.index}">
+													id="privewTextLanguage-#{status.index}">
 													<h:inputTextarea
 														value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.previewText.text}"
 														styleClass="form-control tinyMCE -validation-input">
 														<f:passThroughAttribute name="aria-label"
-															value="#{msg.aria_label__collections_description}" />
+															value="#{msg.aria_label__collections_preview_text}" />
 														<f:ajax execute="@this" event="valueChange" />
 													</h:inputTextarea>
 												</div>
