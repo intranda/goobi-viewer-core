@@ -3,3 +3,7 @@
 /.settings.worktrees/
 .worktrees/
 docs/
+
+/.settings
+.flattened-pom.xml
+*/.flattened-pom.xml
