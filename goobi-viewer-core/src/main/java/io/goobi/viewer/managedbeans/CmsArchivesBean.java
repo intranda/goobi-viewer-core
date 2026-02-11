@@ -42,6 +42,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.archives.ArchiveResource;
+import io.goobi.viewer.model.archives.ArchiveResourceWrapper;
 import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
@@ -64,7 +65,7 @@ public class CmsArchivesBean implements Serializable {
     private Map<String, ArchiveResourceWrapper> archiveMap = new HashMap<>();
 
     private CMSCollectionImageMode imageModeTile = CMSCollectionImageMode.NONE;
-    
+
     private CMSCollectionImageMode imageModeHeader = CMSCollectionImageMode.NONE;
 
     @PostConstruct
@@ -211,7 +212,7 @@ public class CmsArchivesBean implements Serializable {
     public void setImageModeTile(CMSCollectionImageMode imageModeTile) {
         this.imageModeTile = imageModeTile;
     }
-    
+
     /**
      * @return the imageModeHeader
      */
@@ -225,7 +226,7 @@ public class CmsArchivesBean implements Serializable {
     public void setImageModeHeader(CMSCollectionImageMode imageModeHeader) {
         this.imageModeHeader = imageModeHeader;
     }
-    
+
     /**
      * Sets the value of <code>imageMode</code> depending on the properties of <code>currentCollection</code>.
      *
@@ -236,50 +237,16 @@ public class CmsArchivesBean implements Serializable {
             return;
         }
 
-         if (selectedArchiveWrapper.getArchiveConfig().hasMediaItem(0)) {
+        if (selectedArchiveWrapper.getArchiveConfig().hasMediaItem(0)) {
             imageModeTile = CMSCollectionImageMode.IMAGE;
         } else {
             imageModeTile = CMSCollectionImageMode.NONE;
         }
-         
-         if (selectedArchiveWrapper.getArchiveConfig().hasMediaItem(1)) {
-             imageModeHeader = CMSCollectionImageMode.IMAGE;
-         } else {
-             imageModeHeader = CMSCollectionImageMode.NONE;
-         }
-    }
 
-    /**
-     * Wrapper class for archive and configuration pairs.
-     */
-    public class ArchiveResourceWrapper {
-        private final ArchiveResource archiveResource;
-        private CMSArchiveConfig archiveConfig;
-
-        public ArchiveResourceWrapper(ArchiveResource archiveResource) {
-            this.archiveResource = archiveResource;
-        }
-
-        /**
-         * @return the archiveResource
-         */
-        public ArchiveResource getArchiveResource() {
-            return archiveResource;
-        }
-
-        /**
-         * @return the archiveConfig
-         */
-        public CMSArchiveConfig getArchiveConfig() {
-            return archiveConfig;
-        }
-
-        /**
-         * @param archiveConfig the archiveConfig to set
-         */
-        public void setArchiveConfig(CMSArchiveConfig archiveConfig) {
-            this.archiveConfig = archiveConfig;
+        if (selectedArchiveWrapper.getArchiveConfig().hasMediaItem(1)) {
+            imageModeHeader = CMSCollectionImageMode.IMAGE;
+        } else {
+            imageModeHeader = CMSCollectionImageMode.NONE;
         }
     }
-
 }

@@ -1,0 +1,69 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    template="/resources/themes/#{navigationHelper.theme}/template.html"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPage('archives', false, true)}" />
+<!--             <f:event type="preRenderView" listener="#{archiveBean.redirectToOnlyDatabase()}" /> -->
+            <f:viewAction onPostback="false" action="#{archiveBean.updateArchives()}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <div id="archivesList" class="record-notes">
+            <h:panelGroup>
+
+                    <!-- TITLE -->
+                    <h1 class="admin__title">#{msg.archives}</h1>
+
+                    <div class="admin__table-content" role="grid"
+                        aria-label="#{msg.cms__record_notes__title_plural}: #{msg.aria_label__table__actions}">
+                        <ui:repeat var="archiveWrapper" value="#{archiveBean.filteredArchiveWrappers}">
+                            <div class="row no-gutters admin__table-entry #{note.displayNote ? '' : '-unpublished'}" role="row">
+                                <div class="col-12 d-flex" role="presentation">
+                                    <div class="admin__record-notes-table-img align-self-center">
+                                        <a href="#{navigationHelper.getPageUrl('archives')}/#{archiveWrapper.archiveResource.resourceId}/">
+                                            <ui:fragment rendered="#{archiveWrapper.archiveConfig.hasMediaItem(0)}">
+                                                <img src="#{archiveWrapper.archiveConfig.mediaItem.getIconURI()}"
+                                                    alt="#{archiveWrapper.archiveConfig.mediaItem.alternativeText != '' ? archiveWrapper.archiveConfig.mediaItem.alternativeText : '' }" />
+                                            </ui:fragment>
+                                        </a>
+                                   </div>
+
+                                   <div class="admin__table-data" role="gridcell">
+                                       <a href="#{navigationHelper.getPageUrl('archives')}/#{archiveWrapper.archiveResource.resourceId}/">
+                                           <div class="admin__table-name">#{archiveWrapper.getLabel(navigationHelper.locale)}</div>
+                                       </a>
+                                       <h:panelGroup
+                                           rendered="#{archiveWrapper.archiveConfig.description.isValid(navigationHelper.locale)}"
+                                           class="admin__table-data-content">
+                                           <label jsf:escape="false"
+                                               value="#{archiveWrapper.archiveConfig.description.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}">
+                                           </label>
+                                       </h:panelGroup>
+                                   </div>
+                               </div>
+                           </div>
+                        </ui:repeat>
+                    </div>
+
+            </h:panelGroup>
+        </div>
+
+    </ui:define>
+
+</ui:composition>
+

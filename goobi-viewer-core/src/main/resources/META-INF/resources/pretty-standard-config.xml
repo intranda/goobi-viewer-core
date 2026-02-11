@@ -99,7 +99,7 @@
     <!-- ARCHIVES -->
     <url-mapping id="archives">
         <pattern value="/archives/" />
-        <view-id value="/archivesContent.xhtml" />
+        <view-id value="/archivesList.xhtml" />
         <action onPostback="false">#{archiveBean.reset()}</action>
     </url-mapping>
     <url-mapping id="archives1">

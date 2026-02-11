@@ -51,7 +51,9 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.archives.ArchiveEntry;
 import io.goobi.viewer.model.archives.ArchiveManager;
 import io.goobi.viewer.model.archives.ArchiveManager.DatabaseState;
+import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import io.goobi.viewer.model.archives.ArchiveResource;
+import io.goobi.viewer.model.archives.ArchiveResourceWrapper;
 import io.goobi.viewer.model.archives.ArchiveTree;
 import io.goobi.viewer.model.archives.NodeType;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -391,6 +393,25 @@ public class ArchiveBean implements Serializable {
 
     public ArchiveResource getCurrentArchive() {
         return archiveManager.getArchive(currentResource);
+    }
+
+    public List<ArchiveResourceWrapper> getFilteredArchiveWrappers() throws DAOException {
+        List<ArchiveResourceWrapper> ret = new ArrayList<>();
+        for (ArchiveResource resource : getFilteredDatabases()) {
+            logger.trace("Processing archive resource: {}", resource.getResourceId());
+            ArchiveResourceWrapper wrapper = new ArchiveResourceWrapper(resource);
+            ret.add(wrapper);
+            Optional<CMSArchiveConfig> config =
+                    DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(resource.getResourceId());
+            if (config.isPresent()) {
+                logger.trace("Found configuration for archive resource: {}", resource.getResourceId());
+                wrapper.setArchiveConfig(new CMSArchiveConfig(config.get())); // Clone DB object for editing
+            } else {
+                // Make sure the CMSArchiveConfig is available early
+                wrapper.setArchiveConfig(new CMSArchiveConfig(resource.getResourceId()));
+            }
+        }
+        return ret;
     }
 
     /**

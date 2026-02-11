@@ -62,10 +62,8 @@
                                     <!-- IMAGE -->
                                     <div class="admin__table-img" role="presentation">
                                         <ui:fragment rendered="#{archiveWrapper.archiveConfig.hasMediaItem()}"> 
-                                            <div class="crowdsourcing-campaigns-overview__campaign__image">
-                                                <img src="#{archiveWrapper.archiveConfig.mediaItem.getIconURI()}"
-                                                    alt="#{archiveWrapper.archiveConfig.mediaItem.alternativeText != '' ? archiveWrapper.archiveConfig.mediaItem.alternativeText : '' }" />
-                                            </div>
+                                            <img src="#{archiveWrapper.archiveConfig.mediaItem.getIconURI()}"
+                                                alt="#{archiveWrapper.archiveConfig.mediaItem.alternativeText != '' ? archiveWrapper.archiveConfig.mediaItem.alternativeText : '' }" />
                                         </ui:fragment>
                                     </div>
                                     <div class="admin__table-data" role="gridcell">
