@@ -168,6 +168,11 @@
                                 </div>
                             </ui:repeat>
                         </h:panelGroup>
+                        <!-- DESCRIPTION TEXT -->
+                        <h:panelGroup rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.description.isValid(navigationHelper.locale)}">
+                            <h:outputText escape="false" value="#{archiveBean.archiveConfig.description}" />
+                        </h:panelGroup>
+                        
                         <h:panelGroup layout="block" id="metadataGroup">
                             <ui:include
                                 src="/resources/includes/archives/archiveMetadataView.xhtml"
