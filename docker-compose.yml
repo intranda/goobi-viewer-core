@@ -1,0 +1,105 @@
+---
+services:
+  viewer:
+    image: intranda/goobi-viewer:testing
+    depends_on:
+      - viewer-db
+      - indexer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: viewer-db
+      DB_NAME: goobi
+      DB_USER: goobi
+      DB_PORT: 3306
+      DB_PASSWORD: CHANGEME
+      SOLR_HOST: solr
+      VIEWER_DOMAIN: localhost
+      TOMCAT_SAMESITECOOKIES: strict
+      STOPWORDS_LANG: "de"
+    volumes:
+      - type: bind
+        source: ./viewer-data
+        target: /opt/digiverso/viewer
+      - type: bind
+        source: ./hotfolder
+        target: /opt/digiverso/viewer/hotfolder
+      - type: bind
+        source: ./viewer-logs
+        target: /opt/digiverso/logs
+      - type: bind
+        source: ./indexer
+        target: /opt/digiverso/indexer
+
+  viewer-db:
+    image: mariadb:lts
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    environment:
+      MYSQL_ROOT_PASSWORD: CHANGEME
+      MYSQL_DATABASE: goobi
+      MYSQL_USER: goobi
+      MYSQL_PASSWORD: CHANGEME
+      TZ: "Europe/Berlin"
+    volumes:
+      - type: bind
+        source: ./db/mysql
+        target: /var/lib/mysql
+
+  indexer:
+    image: intranda/goobi-viewer-indexer:latest
+    depends_on:
+      - solr
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Berlin"
+      SOLR_HOST: solr
+      VIEWER_HOST: viewer
+    volumes:
+      - type: bind
+        source: ./viewer/
+        target: /opt/digiverso/viewer
+      - type: bind
+        source: ./viewer-logs
+        target: /opt/digiverso/logs
+      - type: bind
+        source: ./indexer
+        target: /opt/digiverso/indexer
+
+  solr:
+    image: intranda/goobi-viewer-docker-solr:latest
+    depends_on:
+      - zookeeper
+    restart: unless-stopped
+    expose:
+      - 8983
+    environment:
+      ZK_HOST: zookeeper:2181
+      TZ: "Europe/Berlin"
+      # for further configuration check documentation of official Solr docker image
+    volumes:
+      - type: bind
+        source: ./solr
+        target: /var/solr
+
+  zookeeper:
+    image: zookeeper:3.9.4
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Berlin"
+    volumes:
+      - type: bind
+        source: ./zookeeper/data
+        target: /data
+      - type: bind
+        source: ./zookeeper/datalog
+        target: /datalog
+      - type: bind
+        source: ./zookeeper/logs
+        target: /logs
