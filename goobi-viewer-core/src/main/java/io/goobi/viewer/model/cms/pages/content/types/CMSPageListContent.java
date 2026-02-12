@@ -32,8 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.inject.Inject;
-
 import org.apache.commons.collections4.CollectionUtils;
 
 import io.goobi.viewer.controller.DataManager;
@@ -51,6 +49,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import jakarta.inject.Inject;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -241,9 +240,10 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     }
 
     /**
-     * <p>
-     * Getter for the field <code>nestedPagesCount</code>.
-     * </p>
+     * @
+     *   <p>
+     *   Getter for the field <code>nestedPagesCount</code>.
+     *   </p>
      *
      * @return a int.
      */
@@ -267,14 +267,12 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * getSortedCategories.
      * </p>
      * 
-     * @param pageNo
      * @param random
-     * @param paged
      * @param templateManager
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<CMSCategory> getSortedCategories(int pageNo, boolean random, boolean paged, CMSTemplateManager templateManager) throws DAOException {
+    public List<CMSCategory> getSortedCategories(boolean random, CMSTemplateManager templateManager) throws DAOException {
         if (!this.categories.isEmpty()) {
             SortedMap<Long, CMSCategory> sortMap = new TreeMap<>();
             for (CMSCategory category : getCategories()) {
@@ -293,6 +291,24 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
         }
 
         return Collections.emptyList();
+    }
+
+    /**
+     * <p>
+     * getSortedCategories.
+     * </p>
+     * 
+     * @param pageNo
+     * @param random
+     * @param paged
+     * @param templateManager
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated use {@link #getSortedCategories(boolean, CMSTemplateManager)} instead
+     */
+    @Deprecated(since = "26.02")
+    public List<CMSCategory> getSortedCategories(int pageNo, boolean random, boolean paged, CMSTemplateManager templateManager) throws DAOException {
+        return getSortedCategories(random, templateManager);
     }
 
     public void setGroupByCategory(boolean groupByCategory) {
