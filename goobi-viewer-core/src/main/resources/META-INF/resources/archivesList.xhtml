@@ -37,8 +37,8 @@
                                     <div class="admin__record-notes-table-img align-self-center">
                                         <a href="#{navigationHelper.getPageUrl('archives')}/#{archiveWrapper.archiveResource.resourceId}/">
                                             <ui:fragment rendered="#{archiveWrapper.archiveConfig.hasMediaItem(0)}">
-                                                <img src="#{archiveWrapper.archiveConfig.mediaItem.getIconURI()}"
-                                                    alt="#{archiveWrapper.archiveConfig.mediaItem.alternativeText != '' ? archiveWrapper.archiveConfig.mediaItem.alternativeText : '' }" />
+                                                <img src="#{archiveWrapper.archiveConfig.getMediaItem(0).getIconURI()}"
+                                                    alt="#{archiveWrapper.archiveConfig.getMediaItem(0).alternativeText != '' ? archiveWrapper.archiveConfig.mediaItem.alternativeText : '' }" />
                                             </ui:fragment>
                                         </a>
                                    </div>
@@ -50,8 +50,8 @@
                                        <h:panelGroup
                                            rendered="#{archiveWrapper.archiveConfig.description.isValid(navigationHelper.locale)}"
                                            class="admin__table-data-content">
-                                           <label jsf:escape="false"
-                                               value="#{archiveWrapper.archiveConfig.description.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}">
+                                           <!-- TODO A form label must be associated with a control. -->
+                                           <label jsf:escape="false" value="#{archiveWrapper.archiveConfig.description}">
                                            </label>
                                        </h:panelGroup>
                                    </div>

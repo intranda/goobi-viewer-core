@@ -73,6 +73,7 @@ public class ArchiveBean implements Serializable {
     private String searchString;
     private boolean databaseLoaded = false;
     private ArchiveTree archiveTree = null;
+    private CMSArchiveConfig archiveConfig;
     private String currentResource;
     private final ArchiveManager archiveManager;
 
@@ -91,6 +92,7 @@ public class ArchiveBean implements Serializable {
         this.currentResource = "";
         this.searchString = "";
         this.archiveTree = null;
+        this.archiveConfig = null;
         this.databaseLoaded = false;
     }
 
@@ -118,7 +120,13 @@ public class ArchiveBean implements Serializable {
                 if (StringUtils.isNotBlank(selectedEntryId)) {
                     this.setSelectedEntryId(selectedEntryId);
                 }
-            } catch (PresentationException | IllegalStateException | IndexUnreachableException e) {
+                Optional<CMSArchiveConfig> config =
+                        DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(getCurrentArchive().getResourceId());
+                if (config.isPresent()) {
+                    logger.trace("Found configuration for archive resource: {}", getCurrentArchive().getResourceId());
+                    this.archiveConfig = config.get();
+                }
+            } catch (PresentationException | IllegalStateException | IndexUnreachableException | DAOException e) {
                 logger.error("Error initializing archive tree: {}", e.getMessage());
                 Messages.error("Error initializing archive tree: " + e.getMessage());
                 this.databaseLoaded = false;
@@ -147,6 +155,13 @@ public class ArchiveBean implements Serializable {
         // logger.trace("getArchiveTree: {} from ArchiveBean {}", archiveTree != null ?
         // archiveTree.toString() : "null", this.toString()); //NOSONAR Debug
         return archiveTree;
+    }
+
+    /**
+     * @return the archiveConfig
+     */
+    public CMSArchiveConfig getArchiveConfig() {
+        return archiveConfig;
     }
 
     public void toggleEntryExpansion(ArchiveEntry entry) {

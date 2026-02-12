@@ -40,6 +40,13 @@
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
+        
+        <!-- HEADER IMAGE -->
+        <ui:fragment rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1)}">
+           <img src="#{archiveBean.archiveConfig.getMediaItem(1).getIconURI()}"
+               alt="#{archiveBean.archiveConfig.getMediaItem(1).alternativeText != '' ? archiveBean.archiveConfig.mediaItem.alternativeText : '' }" />
+        </ui:fragment>
+        
             <div class="archives__wrapper">
                 <!-- LEFT SIDE -->
                 <div class="archives__left-side">
