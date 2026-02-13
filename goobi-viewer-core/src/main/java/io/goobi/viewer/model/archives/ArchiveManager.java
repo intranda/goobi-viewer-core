@@ -307,13 +307,17 @@ public class ArchiveManager implements Serializable {
             throw new IllegalArgumentException("entryId may not be null");
         }
 
+        Optional<String> prev = Optional.empty();
+        Optional<String> next = Optional.empty();
+
         // Determine main archive PI for the given node ID
         String query1 = "+" + SolrConstants.EAD_NODE_ID + ":\"" + entryId + "\" +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name();
         SolrDocument archiveRootDoc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc(query1, Collections.singletonList(SolrConstants.PI_TOPSTRUCT));
         if (archiveRootDoc == null) {
-            logger.warn("No indexed EAD parent archive found");
+            logger.trace("No indexed EAD parent archive found");
+            return Pair.of(prev, next);
         }
 
         // Get list of all node IDs for the archive, sorted by EAD_NODE_ID
@@ -339,8 +343,6 @@ public class ArchiveManager implements Serializable {
                 .filter(doc -> archiveNodeIds.contains(SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID)))
                 .toList();
 
-        Optional<String> prev = Optional.empty();
-        Optional<String> next = Optional.empty();
         ListIterator<SolrDocument> iter = relevantRecordDocs.listIterator();
         while (iter.hasNext()) {
             SolrDocument doc = iter.next();
