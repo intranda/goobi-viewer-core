@@ -138,7 +138,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     private final String urn;
     private String purlPart;
     /** Media mime type. */
-    private String mimeType = BaseMimeType.IMAGE.getName();
+    private String mimeType = "image";
     /** Actual image/video width (if available). */
     private int width = 0;
     /** Actual image/video height (if available). */
@@ -305,23 +305,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getUrl() throws IndexUnreachableException, ViewerConfigurationException {
-        BaseMimeType baseMimeType = BaseMimeType.getByName(this.mimeType);
-        if (baseMimeType == null) {
-            logger.error("Page {} of record '{}' has unknown mime-type: {}", orderLabel, pi, this.mimeType);
+        MimeType mediaType = new MimeType(this.mimeType);
+
+        if (mediaType.isAllowsImageView()) {
+            return getImageUrl();
+        } else if (mediaType.isAudio() || mediaType.isVideo()) {
+            String format = getFileNames().keySet().stream().findFirst().orElse("");
+            return getMediaUrl(format);
+        } else if (mediaType.isSandboxedHtml()) {
+            return getSandboxedUrl();
+        } else {
+            logger.error("Page {} of record '{}' has unsupported mime-type: {}", orderLabel, pi, this.mimeType);
             return "";
-        }
-        switch (baseMimeType) {
-            case IMAGE:
-            case APPLICATION:
-                return getImageUrl();
-            case VIDEO, AUDIO:
-                String format = getFileNames().keySet().stream().findFirst().orElse("");
-                return getMediaUrl(format);
-            case SANDBOXED_HTML:
-                return getSandboxedUrl();
-            default:
-                logger.error("Page {} of record '{}' has unsupported mime-type: {}", orderLabel, pi, baseMimeType);
-                return "";
         }
     }
 
@@ -552,7 +547,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @should return jpeg if availabel
      */
     public String getImageFilepath() {
-        if (!BaseMimeType.IMAGE.equals(getBaseMimeType())) {
+
+        if (getMediaType().isAllowsImageView()) {
             if (filePathTiff != null) {
                 return filePathTiff;
             }
@@ -562,6 +558,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         }
 
         return getFilepath();
+    }
+
+    public MimeType getMediaType() {
+        return new MimeType(this.mimeType);
     }
 
     /**
@@ -698,7 +698,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         if (mimeType.contains("/")) {
             return mimeType;
         }
-        if (mimeType.equals(BaseMimeType.IMAGE.getName())) {
+
+        MimeType mediaType = new MimeType(mimeType);
+
+        if (mediaType.isImage()) {
             ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(fileName);
             if (ImageFileFormat.PNG.equals(fileFormat)) {
                 return fileFormat.getMimeType();
@@ -707,16 +710,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         }
 
         return mimeType;
-    }
-
-    /**
-     * 
-     * @return First part of the mime type
-     * @should return correct base mime type
-     * @should return image if base mime type not found
-     */
-    public BaseMimeType getBaseMimeType() {
-        return FileTools.getBaseMimeType(mimeType);
     }
 
     /**
@@ -1322,9 +1315,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
 
         String url;
         try {
-            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(getBaseMimeType().getName(), format, pi, getFileNameForFormat(format));
+            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(getMediaType().getType(), format, pi, getFileNameForFormat(format));
         } catch (IllegalRequestException e) {
-            throw new IllegalStateException("media type must be either audio or video, but is " + getBaseMimeType());
+            throw new IllegalStateException("media type must be either audio or video, but is " + getMediaType().getType());
         }
 
         logger.trace("currentMediaUrl: {}", url);
@@ -1525,24 +1518,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @return a {@link java.lang.String} object.
      */
     public String getPageLinkLabel() {
-        BaseMimeType baseMimeType = BaseMimeType.getByName(this.mimeType);
-        if (baseMimeType == null) {
+        MimeType type = getMediaType();
+
+        if (type.isAllowsImageView()) {
             return "viewImage";
-
+        } else if (type.isVideo()) {
+            return "viewVideo";
+        } else if (type.isAudio()) {
+            return "viewAudio";
+        } else if (type.isSandboxedHtml()) {
+            return "viewSandboxedHtml";
+        } else {
+            return "viewImage";
         }
 
-        switch (baseMimeType) {
-            case IMAGE:
-                return "viewImage";
-            case VIDEO:
-                return "viewVideo";
-            case AUDIO:
-                return "viewAudio";
-            case SANDBOXED_HTML:
-                return "viewSandboxedHtml";
-            default:
-                return "viewImage";
-        }
     }
 
     /**
@@ -1555,7 +1544,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     public boolean isAccessPermission3DObject() throws IndexUnreachableException, DAOException {
         logger.trace("AccessPermission3DObject");
         // Prevent access if mime type incompatible
-        if (!BaseMimeType.MODEL.equals(BaseMimeType.getByName(mimeType))) {
+        if (!getMediaType().is3DModel()) {
             return false;
         }
 
@@ -1595,7 +1584,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      */
     public boolean isAccessPermissionObject() throws IndexUnreachableException, DAOException {
         // Prevent access if mime type incompatible
-        if (!BaseMimeType.isImageOrPdfDownloadAllowed(mimeType)) {
+        if (!getMediaType().isAllowsImageView()) {
             return false;
         }
 
@@ -1662,7 +1651,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             return false;
         }
         // Prevent access if mime type incompatible
-        if (!BaseMimeType.isImageOrPdfDownloadAllowed(mimeType)) {
+        if (!getMediaType().isAllowsImageView()) {
             return false;
         }
 

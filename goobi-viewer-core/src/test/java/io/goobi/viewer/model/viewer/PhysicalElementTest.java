@@ -21,10 +21,6 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import jakarta.faces.component.UIViewRoot;
-import jakarta.faces.context.ExternalContext;
-import jakarta.faces.context.FacesContext;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
@@ -34,6 +30,9 @@ import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.managedbeans.ContextMocker;
+import jakarta.faces.component.UIViewRoot;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 
 class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -120,24 +119,13 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void getBaseMimeType_shouldReturnCorrectBaseMimeType() throws Exception {
-        Assertions.assertEquals(BaseMimeType.IMAGE, new PhysicalElementBuilder().setMimeType("image/tiff").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.AUDIO, new PhysicalElementBuilder().setMimeType("audio/mpeg3").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.VIDEO, new PhysicalElementBuilder().setMimeType("video/webm").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.APPLICATION,
-                new PhysicalElementBuilder().setMimeType("application/pdf").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.SANDBOXED_HTML,
-                new PhysicalElementBuilder().setMimeType("text/html").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.MODEL, new PhysicalElementBuilder().setMimeType("model/gltf+json").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.MODEL, new PhysicalElementBuilder().setMimeType("model/object").build().getBaseMimeType());
-    }
-
-    /**
-     * @see PhysicalElement#getBaseMimeType()
-     * @verifies return image if base mime type not found
-     */
-    @Test
-    void getBaseMimeType_shouldReturnImageIfBaseMimeTypeNotFound() throws Exception {
-        Assertions.assertEquals(BaseMimeType.IMAGE, new PhysicalElementBuilder().setMimeType("foo/bar").build().getBaseMimeType());
+        Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("image/tiff").build().getMediaType().isImage());
+        Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("audio/mpeg3").build().getMediaType().isAudio());
+        Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("video/webm").build().getMediaType().isVideo());
+        Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("application/pdf").build().getMediaType().isPdf());
+        Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("text/html-sandboxed").build().getMediaType().isSandboxedHtml());
+        Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("model/gltf+json").build().getMediaType().is3DModel());
+        Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("model/object").build().getMediaType().is3DModel());
     }
 
     /**

@@ -41,7 +41,7 @@ public class PhysicalElementBuilder {
 
     private String purlPart;
     /** Media mime type. */
-    private String mimeType = BaseMimeType.IMAGE.getName();
+    private String mimeType = "image";
     /** Data repository name for the record to which this page belongs. */
     private String dataRepository;
 

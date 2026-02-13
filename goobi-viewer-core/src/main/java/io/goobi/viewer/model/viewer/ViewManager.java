@@ -82,8 +82,6 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
-import de.unigoettingen.sub.commons.util.MimeType;
-import de.unigoettingen.sub.commons.util.MimeType.UnknownMimeTypeException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
@@ -1177,45 +1175,6 @@ public class ViewManager implements Serializable {
         return pageLoader != null && pageLoader.getNumPages() > 0;
     }
 
-    /**
-     * <p>
-     * isFilesOnly.
-     * </p>
-     *
-     * @return true if record or first child or first page have an application mime type; false otherwise
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @should return true if mime type application
-     */
-    public boolean isFilesOnly() throws IndexUnreachableException, DAOException {
-        // TODO check all files for mime type?
-        if (filesOnly == null) {
-            BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
-            if (BaseMimeType.APPLICATION.equals(baseMimeType)) {
-                filesOnly = true;
-            } else {
-                boolean childIsFilesOnly = isChildFilesOnly();
-                PhysicalElement firstPage = pageLoader.getPage(pageLoader.getFirstPageOrder());
-                filesOnly =
-                        childIsFilesOnly || (isHasPages() && firstPage != null && firstPage.getMimeType().equals(BaseMimeType.APPLICATION.getName()));
-            }
-
-        }
-
-        return filesOnly;
-    }
-
-    /**
-     * Convenience method for identifying born digital material records.
-     *
-     * @return true if record is born digital material (no scanned images); false otherwise
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public boolean isBornDigital() throws IndexUnreachableException, DAOException {
-        return isHasPages() && isFilesOnly();
-    }
-
     public boolean isHasExternalResources() throws IndexUnreachableException {
         return Optional.ofNullable(getExternalResourceUrls()).map(list -> !list.isEmpty()).orElse(false);
     }
@@ -1242,26 +1201,6 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     *
-     * @return true if current record is anchor or group and its first child volume is of application mime type; false otherwise
-     * @throws IndexUnreachableException
-     */
-    private boolean isChildFilesOnly() throws IndexUnreachableException {
-        boolean childIsFilesOnly = false;
-        if (currentStructElement != null && (currentStructElement.isAnchor() || currentStructElement.isGroup())) {
-            try {
-                String localMimeType = currentStructElement.getFirstVolumeFieldValue(SolrConstants.MIMETYPE);
-                if (BaseMimeType.APPLICATION.getName().equals(localMimeType)) {
-                    childIsFilesOnly = true;
-                }
-            } catch (PresentationException e) {
-                logger.warn(e.toString());
-            }
-        }
-        return childIsFilesOnly;
-    }
-
-    /**
      * Defines the criteria whether to list all remaining volumes in the TOC if the current record is a volume.
      *
      * @return a boolean.
@@ -1269,7 +1208,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isListAllVolumesInTOC() throws IndexUnreachableException, DAOException {
-        return DataManager.getInstance().getConfiguration().isTocListSiblingRecords() || isFilesOnly();
+        return DataManager.getInstance().getConfiguration().isTocListSiblingRecords() || !isHasPages();
     }
 
     /**
@@ -2344,7 +2283,8 @@ public class ViewManager implements Serializable {
             if (topStructElement == null || !topStructElement.isWork() || !isHasPages()) {
                 return false;
             }
-            if (!BaseMimeType.isImageOrPdfDownloadAllowed(topStructElement.getMetadataValue(SolrConstants.MIMETYPE))) {
+            //if mimetype is not image or pdf, do not allow access since no pdf download is possible
+            if (!getMediaType().isAllowsImageView()) {
                 return false;
             }
         } catch (IndexUnreachableException e) {
@@ -2516,7 +2456,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isDisplayObjectViewLink() throws IndexUnreachableException, DAOException {
-        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetObjectViewLinkVisible() && isHasPages() && !isFilesOnly();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetObjectViewLinkVisible() && isHasPages();
     }
 
     /**
@@ -2537,7 +2477,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isDisplayTocViewLink() throws IndexUnreachableException, DAOException {
-        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetTocViewLinkVisible() && !isFilesOnly() && topStructElement != null
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetTocViewLinkVisible() && topStructElement != null
                 && !topStructElement.isLidoRecord() && toc != null
                 && toc.isHasChildren();
     }
@@ -2549,8 +2489,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isDisplayThumbnailViewLink() throws IndexUnreachableException, DAOException {
-        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetThumbsViewLinkVisible()
-                && pageLoader != null && pageLoader.getNumPages() > 1 && !isFilesOnly();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetThumbsViewLinkVisible() && isHasPages();
     }
 
     /**
@@ -2572,7 +2511,6 @@ public class ViewManager implements Serializable {
     public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, PresentationException {
         return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetFulltextLinkVisible() && topStructElement != null
                 && ((topStructElement.isFulltextAvailable()
-                        && !isFilesOnly()
                         && getCurrentPage() != null
                         && getCurrentPage().isFulltextAccessPermission()) || isRecordHasTEIFiles());
         // TODO tweak conditions as necessary
@@ -2753,7 +2691,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public boolean isFulltextAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
-        if (isBornDigital()) {
+        if (!isHasPages()) {
             return false;
         }
 
@@ -2805,7 +2743,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public boolean isTeiAvailableForWork() throws IndexUnreachableException, DAOException, PresentationException {
-        if (isBornDigital()) {
+        if (!isHasPages()) {
             return false;
         }
 
@@ -2931,10 +2869,14 @@ public class ViewManager implements Serializable {
      */
     public String getMimeTypeViaFileName(String filename) {
         try {
-            return MimeType.getMimeTypeFromExtension(filename);
-        } catch (UnknownMimeTypeException e) {
+            return FileTools.getMimeTypeFromFile(Path.of(filename));
+        } catch (IOException e) {
             return "unknown";
         }
+    }
+
+    public MimeType getMediaType() {
+        return new MimeType(getMimeType());
     }
 
     public Long getPageCountWithAlto() throws IndexUnreachableException, PresentationException {
@@ -3287,8 +3229,8 @@ public class ViewManager implements Serializable {
      */
     public String getHighwirePressMetaTags() {
         try {
-            return MetadataTools.generateHighwirePressMetaTags(this.topStructElement, isFilesOnly() ? getAllPages() : null);
-        } catch (IndexUnreachableException | ViewerConfigurationException | DAOException | PresentationException e) {
+            return MetadataTools.generateHighwirePressMetaTags(this.topStructElement, getDownloadResources());
+        } catch (IndexUnreachableException | ViewerConfigurationException | PresentationException e) {
             logger.error(e.getMessage(), e);
             return "";
         }
@@ -4114,8 +4056,8 @@ public class ViewManager implements Serializable {
                             .getHitCount("+" + SolrConstants.EAD_NODE_ID + ":" + getArchiveEntryIdentifier() + " +" + SolrConstants.DOCTYPE + ":"
                                     + DocType.ARCHIVE.name()) > 0;
                 } catch (IndexUnreachableException | PresentationException e) {
-                   logger.error(e.getMessage());
-                   displayArchivesWidget = false;
+                    logger.error(e.getMessage());
+                    displayArchivesWidget = false;
                 }
             }
         }

@@ -1,247 +1,290 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
+    xmlns:util="http://goobi.io/util"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:jsf="http://xmlns.jcp.org/jsf" 
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" >
-
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <composite:interface></composite:interface>
-    
+
     <composite:implementation>
-            <div jsf:id="widgetFormatLinks" class="widget widget-format-links" rendered="#{displayConditions.getTag('widgetFormatLinks').getChildCount('widget-element') > 0}">
+        <div
+            jsf:id="widgetFormatLinks"
+            class="widget widget-format-links"
+            rendered="#{displayConditions.getTag('widgetFormatLinks').getChildCount('widget-element') > 0}">
+            <div
+                tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links') ? '0' : ''}"
+                role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links') ? 'button' : ''}"
+                class="widget__topbar widget-format-links__topbar #{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links') ? 'collapsible' : ''} #{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'formats-links') ? '' : ''}">
+                <h2 class="widget__title widget-format-links__title">#{msg.widget_formatsLinks}</h2>
 
-			<div tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links') ? '0' : ''}"
-				role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links') ? 'button' : ''}"
-				class="widget__topbar 
-				widget-format-links__topbar #{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'formats-links')  ? 'collapsible' : ''}
-				#{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'formats-links')  ? '' : ''}">
+                <div class="widget__topbar-icons-container">
+                    <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+                        <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+                    </div>
 
-					<h2 class="widget__title widget-format-links__title">
-	                    #{msg.widget_formatsLinks}
-	                </h2>
-					
-	                <div class="widget__topbar-icons-container">
-	                    <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
-							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-						</div>
-
-						<util:icon icon="chevron-down" styleClass="widget__topbar-icon-collapsible icon-rot-on-open" />
-
-	                </div>
-				</div>
- 
-                <!-- WIDGET BODY -->
-				<div jsf:id="widgetFormatsLinksBody" class="widget__body widget-format-links__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'formats-links')  ? '-collapsed' : ''}" >
-                    <!-- INTRODUCTION TEXT -->
-                    <ui:fragment rendered="#{fn:length(msg['widget__formatlinks_intro_text']) > 0}">
-                        <p id="introductionText" class="widget-format-links__license-text">
-                            <h:outputText value="#{msg['widget__formatlinks_intro_text']}" escape="false" />
-                        </p>
-                    </ui:fragment>
-                    
-                    <!-- FORMATS -->
-					 	<div jsf:id="widgetSectionFormats" rendered="#{displayConditions.getTag('widgetSectionFormats').getChildCount('widget-element') > 0}"
-					 	class="widget-format-links__work-downloads widget__badge-container" >
-	                    	<h3 id="titleFormats" class="widget-format-links__subtitle widget__badge-container-heading">#{msg.widget__formatlinks_formats}</h3>
-	                         
-	                    
-	                        <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->     
-	                            <!-- METS -->
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
-	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
-	                                    id="lidomets" 
-	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
-	                                    title="#{msg.metadata_dl_mets}"
-	                                    data-toggle="tooltip"
-	                                    data-placement="top"
-	                                    data-trigger="hover"
-	                                    target="_blank" rel="nofollow noopener"
-	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadMetsButtonLabel}"> 
-	                                    #{msg.downloadMetsButtonLabel}
-	                                </a> 
-	                            </ui:fragment>
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:[volume], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
-	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
-	                                    id="metsanchor" 
-	                                    class="badge badge-dark widget-format-links__work-download-mets-anchor" 
-	                                    title="#{msg.metadata_dl_metsAnchor}"
-	                                    data-toggle="tooltip"
-	                                    data-placement="top"
-	                                    data-trigger="hover"
-	                                    target="_blank" rel="nofollow noopener"
-	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAnchorMetsButtonLabel}"> 
-	                                    #{msg.downloadAnchorMetsButtonLabel}
-	                                </a>
-	                            </ui:fragment>
-	                        
-	                            <!-- LIDO -->
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[LIDO]}')}">
-	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
-	                                    id="lidomets" 
-	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
-	                                    title="#{msg.metadata_dl_lido}"
-	                                    data-toggle="tooltip"
-	                                    data-placement="top"
-	                                    data-trigger="hover"
-	                                    target="_blank" rel="nofollow noopener"
-	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadLidoButtonLabel}"> 
-	                                    #{msg.downloadLidoButtonLabel}
-	                                </a>
-	                            </ui:fragment>
-	                            
-	                            <!-- DENKXWEB -->
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DENKXWEB]}')}">
-	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
-	                                    id="denkxweb"
-	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
-	                                    title="#{msg.metadata_dl_denkxweb}"
-	                                    data-toggle="tooltip"
-	                                    data-placement="top"
-	                                    data-trigger="hover"
-	                                    target="_blank" rel="nofollow noopener"
-	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDenkxwebButtonLabel}"> 
-	                                    #{msg.downloadDenkxwebButtonLabel}
-	                                </a>
-	                            </ui:fragment>
-	     
-	                            <!-- DUBLINCORE -->
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DUBLINCORE]}')}">
-	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
-	                                    id="dublincorexml"
-	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
-	                                    title="#{msg.metadata_dl_dublincore}"
-	                                    data-toggle="tooltip"
-	                                    data-placement="top"
-	                                    data-trigger="hover"
-	                                    target="_blank" rel="nofollow noopener"
-	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDublinCoreButtonLabel}"> 
-	                                    #{msg.downloadDublinCoreButtonLabel}
-	                                </a>
-	                            </ui:fragment>
-	
-	                            <!-- MARCXML -->
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
-	                                <a
-	                                    id="marc"
-	                                    href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
-	                                    class="badge badge-dark widget-format-links__work-download-oai-marc"
-	                                    title="#{msg.metadata_dl_marc}"
-	                                    data-toggle="tooltip"
-	                                    data-placement="top"
-	                                    data-trigger="hover"
-	                                    target="_blank" rel="nofollow noopener"
-	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.marcLink}">
-	                                    #{msg.marcLink}
-	                                </a>
-	                            </ui:fragment>
-	                        
-	                            <!-- OAI DC -->
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA}')}">
-	                                <a
-	                                    id="dc"
-	                                    href="#{activeDocumentBean.viewManager.oaiDcUrl}"
-	                                    class="badge badge-dark widget-format-links__work-download-oai-dc"
-	                                    title="#{msg.metadata_dl_dublinCore}"
-	                                    data-toggle="tooltip"
-	                                    data-placement="top"
-	                                    data-trigger="hover"
-	                                    target="_blank" rel="nofollow noopener"
-	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.dcLink}"> 
-	                                    #{msg.dcLink} 
-	                                </a>
-	                            </ui:fragment>
-	                        	                        
-	                        <!-- IIIF MANIFEST -->
-	                        <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:GENERATE_IIIF_MANIFEST, mimeType:![application], numPages:1}')}">
-	                           <button 
-	                                id="iiifManifest"
-	                                class="badge badge-dark widget-format-links__work-download-iiif" 
-	                                data-copy-value="#{imageDelivery.iiifManifest}" 
-	                                data-copy-done-msg="#{msg.copyUrlDone}"
-	                                title="#{msg.copyUrl}"
-	                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
-	                                tabindex="0"> 
-	                                #{msg.iiif}
-	                            </button> 
-	                        </ui:fragment>      
-	    
-	                    </div>
-                     
-                    <!-- LINKS -->
-                   	<!-- ONLY RENDER IF OPAC, DFG OR MIRADOR AVAILABLE -->
-	                    <div jsf:id="widgetSectionLinks" class="widget-format-links__work-downloads widget__badge-container" rendered="#{displayConditions.getTag('widgetSectionLinks').getChildCount('widget-element') > 0}"> 
-	
-	                    	<h3 id="titleLinks" class="widget-format-links__subtitle widget__badge-container-heading">#{msg.links}</h3>
-	
-	                    	
-	                        <!-- OPAC -->
-	                        <ui:fragment visibility-class="widget-element" rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
-	                            <a href="#{activeDocumentBean.viewManager.opacUrl}"
-	                                id="opac"
-	                                class="badge badge-dark widget-format-links__work-link-opac" 
-	                                title="#{msg.opacLink}"
-	                                data-toggle="tooltip"
-	                                data-placement="top"
-	                                data-trigger="hover"
-	                                target="_blank" rel="nofollow noopener"
-	                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.opacLink}">
-	                                #{msg.opacLink} 
-	                            </a>
-	                        </ui:fragment>
-	                        
-	                        <!-- DFG Viewer -->
-	                        <ui:fragment visibility-class="widget-element" rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages
-	                            and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.bornDigital}">
-	                           <a 
-	                                href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
-	                                id="dfgViewer" 
-	                                class="badge badge-dark widget-format-links__work-link-dfg-viewer" 
-	                                title="#{msg.dfgViewerLink}"
-	                                data-toggle="tooltip"
-	                                data-placement="top"
-	                                data-trigger="hover"
-	                                target="_blank" rel="nofollow noopener"
-	                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.dfgViewerLink}"> 
-	                               #{msg.dfgViewerLink}
-	                            </a>
-	                        </ui:fragment>
-	                        
-	                        <!-- MIRADOR -->
-	                        <ui:fragment visibility-class="widget-element"
-	                            rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">                     
-	                                <a
-	                                    href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}&amp;page=1" 
-	                                    id="mirador" 
-	                                    class="badge badge-dark widget-format-links__work-link-mirador-viewer" 
-	                                    title="#{msg.action__view_in_mirador__tooltip}"
-	                                    data-toggle="tooltip"
-	                                    data-placement="top"
-	                                    data-trigger="hover"
-	                                    target="_blank" rel="nofollow noopener"
-	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.action__view_in_mirador}"> 
-	                                    #{msg.action__view_in_mirador}
-	                                </a> 
-	                        </ui:fragment>
-	                        
-	                    </div>
+                    <util:icon
+                        icon="chevron-down"
+                        styleClass="widget__topbar-icon-collapsible icon-rot-on-open" />
                 </div>
             </div>
-		             
-            <!-- ACTIVATE CLIPBOARD (TOOLTIPS + COPY URL)  -->
-            <script>
-                viewerJS.clipboard.init();
-            </script>
 
+            <!-- WIDGET BODY -->
+            <div
+                jsf:id="widgetFormatsLinksBody"
+                class="widget__body widget-format-links__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'formats-links') ? '-collapsed' : ''}">
+                <!-- INTRODUCTION TEXT -->
+                <ui:fragment rendered="#{fn:length(msg['widget__formatlinks_intro_text']) > 0}">
+                    <p
+                        id="introductionText"
+                        class="widget-format-links__license-text">
+                        <h:outputText
+                            value="#{msg['widget__formatlinks_intro_text']}"
+                            escape="false" />
+                    </p>
+                </ui:fragment>
+
+                <!-- FORMATS -->
+                <div
+                    jsf:id="widgetSectionFormats"
+                    rendered="#{displayConditions.getTag('widgetSectionFormats').getChildCount('widget-element') > 0}"
+                    class="widget-format-links__work-downloads widget__badge-container">
+                    <h3
+                        id="titleFormats"
+                        class="widget-format-links__subtitle widget__badge-container-heading">
+                        #{msg.widget__formatlinks_formats}
+                    </h3>
+
+                    <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
+                    <!-- METS -->
+                    <ui:fragment
+                        visibility-class="widget-element"
+                        rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
+                        <a
+                            href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
+                            id="lidomets"
+                            class="badge badge-dark widget-format-links__work-download-lido-mets"
+                            title="#{msg.metadata_dl_mets}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener"
+                            aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadMetsButtonLabel}">
+                            #{msg.downloadMetsButtonLabel}
+                        </a>
+                    </ui:fragment>
+                    <ui:fragment
+                        visibility-class="widget-element"
+                        rendered="#{displayConditions.matchRecord('{docType:[volume], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
+                        <a
+                            href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
+                            id="metsanchor"
+                            class="badge badge-dark widget-format-links__work-download-mets-anchor"
+                            title="#{msg.metadata_dl_metsAnchor}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener"
+                            aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAnchorMetsButtonLabel}">
+                            #{msg.downloadAnchorMetsButtonLabel}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- LIDO -->
+                    <ui:fragment
+                        visibility-class="widget-element"
+                        rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[LIDO]}')}">
+                        <a
+                            href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
+                            id="lidomets"
+                            class="badge badge-dark widget-format-links__work-download-lido-mets"
+                            title="#{msg.metadata_dl_lido}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener"
+                            aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadLidoButtonLabel}">
+                            #{msg.downloadLidoButtonLabel}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- DENKXWEB -->
+                    <ui:fragment
+                        visibility-class="widget-element"
+                        rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DENKXWEB]}')}">
+                        <a
+                            href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
+                            id="denkxweb"
+                            class="badge badge-dark widget-format-links__work-download-lido-mets"
+                            title="#{msg.metadata_dl_denkxweb}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener"
+                            aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDenkxwebButtonLabel}">
+                            #{msg.downloadDenkxwebButtonLabel}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- DUBLINCORE -->
+                    <ui:fragment
+                        visibility-class="widget-element"
+                        rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DUBLINCORE]}')}">
+                        <a
+                            href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
+                            id="dublincorexml"
+                            class="badge badge-dark widget-format-links__work-download-lido-mets"
+                            title="#{msg.metadata_dl_dublincore}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener"
+                            aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDublinCoreButtonLabel}">
+                            #{msg.downloadDublinCoreButtonLabel}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- MARCXML -->
+                    <ui:fragment
+                        visibility-class="widget-element"
+                        rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
+                        <a
+                            id="marc"
+                            href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
+                            class="badge badge-dark widget-format-links__work-download-oai-marc"
+                            title="#{msg.metadata_dl_marc}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener"
+                            aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.marcLink}">
+                            #{msg.marcLink}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- OAI DC -->
+                    <ui:fragment
+                        visibility-class="widget-element"
+                        rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA}')}">
+                        <a
+                            id="dc"
+                            href="#{activeDocumentBean.viewManager.oaiDcUrl}"
+                            class="badge badge-dark widget-format-links__work-download-oai-dc"
+                            title="#{msg.metadata_dl_dublinCore}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener"
+                            aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.dcLink}">
+                            #{msg.dcLink}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- IIIF MANIFEST -->
+                    <ui:fragment
+                        visibility-class="widget-element"
+                        rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:GENERATE_IIIF_MANIFEST, mimeType:![application], numPages:1}')}">
+                        <button
+                            id="iiifManifest"
+                            class="badge badge-dark widget-format-links__work-download-iiif"
+                            data-copy-value="#{imageDelivery.iiifManifest}"
+                            data-copy-done-msg="#{msg.copyUrlDone}"
+                            title="#{msg.copyUrl}"
+                            aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
+                            tabindex="0">
+                            #{msg.iiif}
+                        </button>
+                    </ui:fragment>
+                </div>
+
+                <!-- LINKS -->
+                <!-- ONLY RENDER IF OPAC, DFG OR MIRADOR AVAILABLE -->
+                <div
+                    jsf:id="widgetSectionLinks"
+                    class="widget-format-links__work-downloads widget__badge-container"
+                    rendered="#{displayConditions.getTag('widgetSectionLinks').getChildCount('widget-element') > 0}">
+                    <h3
+                        id="titleLinks"
+                        class="widget-format-links__subtitle widget__badge-container-heading">
+                        #{msg.links}
+                    </h3>
+
+                    <!-- OPAC -->
+                    <ui:fragment
+                        visibility-class="widget-element"
+                        rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
+                        <a
+                            href="#{activeDocumentBean.viewManager.opacUrl}"
+                            id="opac"
+                            class="badge badge-dark widget-format-links__work-link-opac"
+                            title="#{msg.opacLink}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener"
+                            aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.opacLink}">
+                            #{msg.opacLink}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- DFG Viewer -->
+                    <ui:fragment
+                        visibility-class="widget-element"
+                        rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages
+	                            and activeDocumentBean.viewManager.linkForDFGViewer != null}">
+                        <a
+                            href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
+                            id="dfgViewer"
+                            class="badge badge-dark widget-format-links__work-link-dfg-viewer"
+                            title="#{msg.dfgViewerLink}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener"
+                            aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.dfgViewerLink}">
+                            #{msg.dfgViewerLink}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- MIRADOR -->
+                    <ui:fragment
+                        visibility-class="widget-element"
+                        rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.mediaType.allowsImageView}">
+                        <a
+                            href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}&amp;page=1"
+                            id="mirador"
+                            class="badge badge-dark widget-format-links__work-link-mirador-viewer"
+                            title="#{msg.action__view_in_mirador__tooltip}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener"
+                            aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.action__view_in_mirador}">
+                            #{msg.action__view_in_mirador}
+                        </a>
+                    </ui:fragment>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIVATE CLIPBOARD (TOOLTIPS + COPY URL)  -->
+        <script>
+            viewerJS.clipboard.init();
+        </script>
     </composite:implementation>
 </ui:composition>

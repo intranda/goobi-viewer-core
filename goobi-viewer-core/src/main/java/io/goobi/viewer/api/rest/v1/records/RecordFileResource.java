@@ -76,7 +76,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.translations.language.Language;
-import io.goobi.viewer.model.viewer.BaseMimeType;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.record.views.FileType;
 import io.goobi.viewer.solr.SolrConstants;
@@ -315,7 +315,8 @@ public class RecordFileResource {
     protected boolean checkMediaFileAccess(String filename) throws IndexUnreachableException, DAOException {
 
         try {
-            if (BaseMimeType.IMAGE == BaseMimeType.getByName(FileTools.getMimeTypeFromFile(Path.of(filename)))) {
+            MimeType mediaType = MimeType.of(Path.of(filename));
+            if (mediaType.isImage()) {
                 return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(), pi, filename,
                         IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES, NetTools.getIpAddress(servletRequest)).isGranted();
             }

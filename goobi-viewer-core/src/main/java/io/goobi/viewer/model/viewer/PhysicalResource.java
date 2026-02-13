@@ -79,18 +79,14 @@ public class PhysicalResource {
         return mimeType;
     }
 
-    public BaseMimeType getBaseMimeType() {
-        BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
-        if (BaseMimeType.UNKNOWN.equals(baseMimeType)) {
-            return BaseMimeType.IMAGE;
-        }
-        return baseMimeType;
+    public MimeType getMediaType() {
+        return new MimeType(mimeType);
     }
 
     public String getUrl() throws IllegalRequestException {
         return BeanUtils.getImageDeliveryBean()
                 .getMedia()
-                .getMediaUrl(getBaseMimeType().getName(), BaseMimeType.getSpecificMimeType(this.mimeType), pi, getFileName());
+                .getMediaUrl(getMediaType().getType(), getMediaType().getSubType(), pi, getFileName());
     }
 
     public boolean isDownloadTicketRequired() throws IndexUnreachableException, DAOException {
