@@ -30,7 +30,10 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -168,5 +171,23 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     void testLegacyIconMapping() {
         NodeType nodeType = new NodeType("legacy", "fa fa-file-video-o");
         assertEquals("video", nodeType.getIcon());
+    }
+
+    /**
+     * @see ArchiveManager#findIndexedNeighbours(String)
+     * @verifies return neighbors correctly
+     */
+    @Test
+    void findIndexedNeighbours_shouldRecturnNeighborsCorrectly() throws Exception {
+        Pair<Optional<String>, Optional<String>> result = ArchiveManager.findIndexedNeighbours("A91x36057394742965620181205135958381");
+        assertNotNull(result);
+        assertEquals("A91x28075361251831020181205135958451", result.getLeft().get());
+        Assertions.assertTrue(result.getRight().isEmpty());
+
+        result = ArchiveManager.findIndexedNeighbours("A91x28075361251831020181205135958451");
+        assertNotNull(result);
+        Assertions.assertTrue(result.getLeft().isEmpty());
+        assertEquals("A91x36057394742965620181205135958381", result.getRight().get());
+
     }
 }
