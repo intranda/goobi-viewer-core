@@ -16,11 +16,6 @@ FROM tomcat:10-jre21 AS assemble-stage
 
 # CATALINA_HOME is set to /usr/local/tomcat in the base image
 
-ENV DB_HOST=viewer-db
-ENV DB_PORT=3306
-ENV DB_NAME=viewer
-ENV DB_USER=viewer
-ENV DB_PASSWORD=viewer
 ENV SOLR_HOST=solr
 ENV VIEWER_DOMAIN=localhost
 ENV TOMCAT_SAMESITECOOKIES=strict

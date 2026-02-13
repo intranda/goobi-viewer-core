@@ -63,7 +63,7 @@ services:
       VIEWER_HOST: viewer
     volumes:
       - type: bind
-        source: ./viewer/
+        source: ./viewer-data
         target: /opt/digiverso/viewer
       - type: bind
         source: ./viewer-logs
