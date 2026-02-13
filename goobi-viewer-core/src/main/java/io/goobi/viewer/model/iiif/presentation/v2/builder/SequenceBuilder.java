@@ -338,7 +338,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 canvas.setHeight(size.height);
             }
 
-            if (page.getMimeType().toLowerCase().startsWith("image") && StringUtils.isNotBlank(page.getFilepath())) {
+            if (page.getMediaType().isAllowsImageView() && StringUtils.isNotBlank(page.getFileName())) {
                 String thumbnailUrl = page.getThumbnailUrl();
                 ImageContent resource = new ImageContent(new URI(thumbnailUrl));
                 if (size.getWidth() * size.getHeight() > 0) {
@@ -574,9 +574,9 @@ public class SequenceBuilder extends AbstractBuilder {
      */
     private Dimension getSize(PhysicalElement page) throws PresentationException, IndexUnreachableException {
         Dimension size = new Dimension(0, 0);
-        if (page.getMimeType().toLowerCase().startsWith("video") || page.getMimeType().toLowerCase().startsWith("text")) {
+        if (page.getMediaType().isVideo() || page.getMediaType().isSandboxedHtml()) {
             size.setSize(page.getVideoWidth(), page.getVideoHeight());
-        } else if (page.getMimeType().toLowerCase().startsWith("image")) {
+        } else if (page.getMediaType().isAllowsImageView()) {
             if (page.hasIndividualSize()) {
                 size.setSize(page.getImageWidth(), page.getImageHeight());
             } else {

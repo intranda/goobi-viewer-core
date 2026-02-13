@@ -421,7 +421,7 @@
                     <!-- IIIF MANIFEST FULL RECORD -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchRecord('{numPages:1, mimeType:![application], pageType:![viewFulltext, viewMetadata], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                        rendered="#{displayConditions.matchRecord('{numPages:1, pageType:![viewFulltext, viewMetadata], accessCondition:GENERATE_IIIF_MANIFEST}')}">
                         <button
                             id="iiifManifestRecord"
                             class="badge badge-dark widget-usage__work-download-iiif"
