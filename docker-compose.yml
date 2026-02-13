@@ -77,6 +77,10 @@ services:
     depends_on:
       - zookeeper
     restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 65000
+        hard: 65000
     expose:
       - 8983
     environment:
