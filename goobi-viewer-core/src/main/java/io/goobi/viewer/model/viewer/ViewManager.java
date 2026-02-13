@@ -850,7 +850,7 @@ public class ViewManager implements Serializable {
      */
     public List<DownloadOption> getDownloadOptionsForPage(PhysicalElement page)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException {
-        if (page != null && page.isHasImage()) {
+        if (page != null && page.getMediaType().isAllowsImageView()) {
             List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsPageDownloadOptions();
             String imageFilename = page.getFileName();
             Dimension maxSize = new Dimension(

@@ -469,7 +469,7 @@
                     <!-- PDF (PAGE) -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen, cmsPage], contentType:[IMAGE], accessCondition:DOWNLOAD_PAGE_PDF}')}">
+                        rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen, cmsPage], contentType:[IMAGE, PDF], numPages:1, accessCondition:DOWNLOAD_PAGE_PDF}')}">
                         <a
                             href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
                             id="pdfPage"
@@ -490,7 +490,7 @@
                     <!-- IMAGE DOWNLOAD OPTIONS -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage).size() > 0 and displayConditions.matchPage('{pageType:[viewObject, viewFullscreen, cmsPage], mimeType: [image], accessCondition:DOWNLOAD_IMAGES}')}">
+                        rendered="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage).size() > 0 and displayConditions.matchPage('{pageType:[viewObject, viewFullscreen, cmsPage], contentType: [IMAGE, PDF], accessCondition:DOWNLOAD_IMAGES}')}">
                         <!-- IMAGE (PAGE) GENERATE LINKS FOR EVERY CONFIGURED DOWNLOAD SIZE -->
                         <ui:repeat
                             varStatus="status"
@@ -575,7 +575,7 @@
                     <!-- IIIF MANIFEST PAGE -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, mimeType: [image], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                        rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, contentType: [IMAGE, PDF], accessCondition:GENERATE_IIIF_MANIFEST}')}">
                         <button
                             id="iiifManifestPage"
                             class="badge badge-dark widget-usage__page-download-iiif"
@@ -591,7 +591,7 @@
                     <!-- MIRADOR PAGE -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, contentType:[IMAGE], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                        rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, contentType:[IMAGE, PDF], accessCondition:GENERATE_IIIF_MANIFEST}')}">
                         <a
                             href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}"
                             id="mirador"
