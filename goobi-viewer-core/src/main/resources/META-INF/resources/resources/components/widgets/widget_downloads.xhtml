@@ -437,7 +437,7 @@
                     <!-- MIRADOR FULL RECORD -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchRecord('{pageType:![viewFulltext, viewMetadata], contentType:[IMAGE], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                        rendered="#{displayConditions.matchRecord('{pageType:![viewFulltext, viewMetadata], contentType:[IMAGE, PDF], numPages:1, accessCondition:GENERATE_IIIF_MANIFEST}')}">
                         <a
                             href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1"
                             id="mirador"

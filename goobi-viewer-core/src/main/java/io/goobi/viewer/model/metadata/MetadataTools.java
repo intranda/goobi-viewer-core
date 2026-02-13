@@ -223,7 +223,7 @@ public final class MetadataTools {
      * </p>
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param pages a {@link java.util.List} object.
+     * @param resources a {@link java.util.List} object.
      * @return String containing meta tags
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
