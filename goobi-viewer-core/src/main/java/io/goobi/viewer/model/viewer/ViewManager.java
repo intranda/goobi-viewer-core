@@ -273,7 +273,11 @@ public class ViewManager implements Serializable {
                         isBelowFulltextThreshold(), BeanUtils.getLocale());
             }
         }
-        this.mimeType = mimeType;
+        if (StringUtils.isNotBlank(mimeType)) {
+            this.mimeType = mimeType;
+        } else {
+            this.mimeType = topDocument.getMimeType().toString();
+        }
         logger.trace("mimeType: {}", mimeType);
 
         // Linked archive node
@@ -3846,7 +3850,7 @@ public class ViewManager implements Serializable {
         // Build URL
         StringBuilder url = new StringBuilder();
         boolean anchorOrGroup = currentStructElement.isAnchor() || currentStructElement.isGroup();
-        PageType pageType = PageType.determinePageType(currentStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
+        PageType pageType = PageType.determinePageType(currentStructElement.getDocStructType(), getMimeType(), anchorOrGroup, isHasPages(), false);
         if (pageType == null) {
             if (isHasPages()) {
                 pageType = PageType.viewObject;

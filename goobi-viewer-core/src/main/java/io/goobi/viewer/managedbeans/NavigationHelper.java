@@ -1267,7 +1267,7 @@ public class NavigationHelper implements Serializable {
     public String getMeiActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewMei.getName();
     }
-    
+
     /**
      * <p>
      * getMeiUrl.
@@ -1290,7 +1290,6 @@ public class NavigationHelper implements Serializable {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewFulltext.getName();
     }
 
-
     /**
      * 
      * @param pi
@@ -1302,7 +1301,7 @@ public class NavigationHelper implements Serializable {
      * @should construct url correctly
      */
     public String getRecordUrl(String pi, String docStructType, int order, boolean anchorOrGroup, boolean hasImages) {
-        PageType pageType = PageType.determinePageType(docStructType, null, anchorOrGroup, hasImages, false);
+        PageType pageType = PageType.determinePageType(docStructType, "image/tiff", anchorOrGroup, hasImages, false);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + '/'
                 + DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, order, null, pageType, true);
     }

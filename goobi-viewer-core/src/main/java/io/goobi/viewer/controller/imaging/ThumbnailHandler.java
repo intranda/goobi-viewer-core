@@ -777,7 +777,7 @@ public class ThumbnailHandler {
      * @return The representative thumbnail url for the given doc, or a replacement image url if no representative thumbnail url is applicable (born
      *         digital material and - depending on configuration - anchors)
      */
-    private String getImagePath(StructElement doc) {
+    String getImagePath(StructElement doc) {
         if (doc == null) {
             return null;
         }
