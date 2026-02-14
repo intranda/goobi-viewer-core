@@ -1,107 +1,93 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsArchives')}" />
-            <f:event type="preRenderView" listener="#{cmsArchivesBean.setSelectedResourceId('')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminCmsArchives')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{cmsArchivesBean.setSelectedResourceId('')}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <div id="adminAllUsers">
+        <div
+            id="archives"
+            class="admin__archives">
             <h:panelGroup rendered="#{userBean.admin}">
-            <h:form id="adminAllCMSArchiveConfigurationsForm" prependId="false">
-                <div class="admin__title-bar">
-                    <!-- TITLE -->
-                    <h1 class="admin__title">#{msg.admin__cms_archives}</h1>
-                </div>
-                
-                <viewerComponent:adminBreadcrumbs />
-
-                <div class="admin__content-inner-content">
-                    <!-- GENERAL DESCRIPTION -->
-                    <div class="admin__info-text">#{msg.admin__cms_archives_desc}</div>
-                
-                    <div class="admin__table-tools">
-                        <!-- PAGINATOR -->
-                        <div class="admin__table-paginator">
-                            <viewerComponent:dataTablePaginator tableValues="#{cmsArchivesBean.lazyModelArchiveConfigurations}" />
-                        </div>
-                        <!-- FILTER -->
-                        <div class="admin__table-filter">
-                            <viewerComponent:dataTableColumnFilter key="admin__cms_archives_search"
-                                filter="#{cmsArchivesBean.lazyModelArchiveConfigurations.getFilter('title_description')}"/>
-                        </div>
+                <h:form
+                    id="adminAllCMSArchiveConfigurationsForm"
+                    prependId="false">
+                    <div class="admin__title-bar">
+                        <!-- TITLE -->
+                        <h1 class="admin__title">#{msg.admin__cms_archives}</h1>
                     </div>
 
-                    <!-- All ACRHIVE CONFIGURATIONS TABLE -->
-                    <div id="new-table-adminallusertable" class="admin__table-content" role="grid"
-                        aria-label="#{msg.admin__users}: #{msg.aria_label__table__actions}">
-                        <!-- TITLE ROW -->
-                        <div class="row no-gutters admin__table-title" role="row">
-                            <!-- NAME COL -->
-                            <div class="col-6 d-flex -sorting-arrow-trigger">
-                                <!-- SORTING -->
-                                <viewerComponent:sortingArrow filterType="email" colHeading="#{msg.admin__cms_archives_archives}"
-                                   list="#{cmsArchivesBean.lazyModelArchiveConfigurations}" />
-                            </div>
-                        </div>
+                    <viewerComponent:adminBreadcrumbs />
 
+                    <div class="admin__content-inner-content">
+                        <!-- GENERAL DESCRIPTION -->
+                        <div class="admin__info-text">#{msg.admin__cms_archives_desc}</div>
 
-                        <!-- ARCHIVE ROWS -->
-                        <ui:repeat var="archiveWrapper" value="#{cmsArchivesBean.pageArchiveWrappers}">
-                            <div class="row no-gutters admin__table-entry" role="row">
-                                <div class="col-6 d-flex">
-                                    <!-- IMAGE -->
-                                    <div class="admin__table-img" role="presentation">
-                                        <ui:fragment rendered="#{archiveWrapper.archiveConfig.hasMediaItem()}"> 
-                                            <img src="#{archiveWrapper.archiveConfig.mediaItem.getIconURI()}"
-                                                alt="#{archiveWrapper.archiveConfig.mediaItem.alternativeText != '' ? archiveWrapper.archiveConfig.mediaItem.alternativeText : '' }" />
+                        <!-- EMPTY STATE -->
+                        <h:panelGroup rendered="#{empty cmsArchivesBean.pageArchiveWrappers}">
+                            <p class="admin__info-text">#{msg.hitsZero}</p>
+                        </h:panelGroup>
+
+                        <!-- ARCHIVE CARDS -->
+                        <h:panelGroup
+                            rendered="#{not empty cmsArchivesBean.pageArchiveWrappers}"
+                            layout="block"
+                            styleClass="admin__entry-list -w33">
+                            <ui:repeat
+                                var="archiveWrapper"
+                                value="#{cmsArchivesBean.pageArchiveWrappers}">
+                                <div class="admin__boxed-entry -w33 admin__archives-card">
+                                    <!-- CARD IMAGE -->
+                                    <div class="admin__archives-card__image">
+                                        <ui:fragment rendered="#{archiveWrapper.archiveConfig.hasMediaItem()}">
+                                            <img
+                                                src="#{archiveWrapper.archiveConfig.mediaItem.getIconURI()}"
+                                                alt="#{archiveWrapper.archiveConfig.mediaItem.alternativeText != '' ? archiveWrapper.archiveConfig.mediaItem.alternativeText : archiveWrapper.archiveResource.resourceName}" />
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{!archiveWrapper.archiveConfig.hasMediaItem()}">
+                                            <div class="admin__archives-card__image-placeholder"></div>
                                         </ui:fragment>
                                     </div>
-                                    <div class="admin__table-data" role="gridcell">
-                                        <!-- Title -->
-                                        <span class="admin__table-name">
-                                            <h:outputText value="#{archiveWrapper.archiveResource.resourceName}" escape="true" />
-                                        </span>
-                                        <!-- DESCRIPTION -->
-                                        <span class="admin__table-desc">
-                                            <h:outputText value="#{archiveWrapper.archiveConfig.description}" escape="false" />
-                                        </span>
-                                        <!-- EDIT -->
-                                        <a href="#{navigationHelper.applicationUrl}admin/cms/archives/edit/#{archiveWrapper.archiveResource.resourceId}/"
-                                            class="admin__table-action-link" aria-label="#{msg.edit}: #{user.email}">
-                                            #{msg.edit}
-                                        </a>
+                                    <!-- CARD CONTENT -->
+                                    <div class="admin__archives-card__content">
+                                        <h2>#{archiveWrapper.archiveResource.resourceName}</h2>
+                                        <ui:fragment rendered="#{not empty archiveWrapper.archiveConfig.description}">
+                                            <div class="admin__archives-card__description">
+                                                <h:outputText
+                                                    value="#{archiveWrapper.archiveConfig.getShortDescription(200)}" />
+                                            </div>
+                                        </ui:fragment>
+                                    </div>
+                                    <!-- CARD ACTIONS -->
+                                    <div class="row admin__boxed-entry-actions">
+                                        <div class="col-3 d-flex">
+                                            <a
+                                                href="#{navigationHelper.applicationUrl}admin/cms/archives/edit/#{archiveWrapper.archiveResource.resourceId}/"
+                                                class="admin__boxed-entry-actions-edit"
+                                                aria-label="#{msg.edit}: #{archiveWrapper.archiveResource.resourceName}">
+                                                #{msg.edit}
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-
-                            </div>
-                        </ui:repeat>
+                            </ui:repeat>
+                        </h:panelGroup>
                     </div>
-                </div>
-               </h:form>
+                </h:form>
             </h:panelGroup>
         </div>
-
-        <script type="text/javascript">
-            var dataTableConfig = {
-                dataTablePaginator : "#dataTablePaginator",
-                txtField1 : "#txtMoveTo1",
-                txtField2 : "#txtMoveTo2",
-                totalCount : "#totalCount",
-                reloadBtn : 'input[id*="cmdMoveTo"]',
-            };
-
-            viewerJS.dataTable.init(dataTableConfig);
-        </script>
     </ui:define>
-
 </ui:composition>

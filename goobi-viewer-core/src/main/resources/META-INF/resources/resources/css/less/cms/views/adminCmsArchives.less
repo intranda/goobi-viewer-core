@@ -1,0 +1,122 @@
+/* ==============================================================
+   CMS Archives Overview
+   style declarations for adminCmsArchives.xhtml
+   ==============================================================*/
+.admin__archives-card {
+    display: flex;
+    flex-direction: column;
+
+    &__image {
+        margin: -2rem -2rem 1.5rem -2rem;
+        height: 180px;
+        overflow: hidden;
+        background: @lightgray2;
+        border-top-left-radius: 7px;
+        border-top-right-radius: 7px;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: @lightgray2;
+
+        &::before {
+            content: '';
+            display: block;
+            width: 45%;
+            height: 45%;
+            opacity: 0.3;
+            background-color: #999;
+            mask: url('../../icons/outline/photo-off.svg') center/100% 100% no-repeat;
+            -webkit-mask: url('../../icons/outline/photo-off.svg') center/100% 100% no-repeat;
+        }
+    }
+
+    &__content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        h2 {
+            font-size: @fontNormal;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 0.6rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    }
+
+    &__description {
+        font-size: @fontMedium;
+        color: @inlineStatic;
+        line-height: 1.5;
+        word-break: break-word;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+}
+
+/* Archive cards: 4 per row on wide screens */
+.admin__entry-list .admin__boxed-entry.-w33.admin__archives-card {
+    grid-column: span 3;
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+    .admin__entry-list .admin__boxed-entry.-w33.admin__archives-card {
+        grid-column: span 4;
+    }
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+    .admin__archives-card {
+        &__image {
+            height: 150px;
+        }
+    }
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    .admin__entry-list .admin__boxed-entry.-w33.admin__archives-card {
+        grid-column: span 12;
+    }
+
+    .admin__archives-card {
+        &__image {
+            height: 140px;
+        }
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    .admin__archives-card {
+        &__image {
+            height: 120px;
+        }
+
+        &__content h2 {
+            font-size: @fontMedium;
+        }
+
+        &__description {
+            font-size: @fontSmall;
+        }
+    }
+}

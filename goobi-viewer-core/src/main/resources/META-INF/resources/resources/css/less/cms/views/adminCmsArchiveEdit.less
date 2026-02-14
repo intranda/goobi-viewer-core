@@ -1,0 +1,298 @@
+/* ==============================================================
+   CMS Archive Edit
+   style declarations for adminCmsArchiveEdit.xhtml
+   ==============================================================*/
+.admin__cms-archive-edit {
+    padding-bottom: 10px;
+
+    .admin__breadcrumbs-wrapper {
+        margin-bottom: 0px;
+    }
+
+    &__section-title {
+        font-size: @fontLarge;
+        margin-top: 3rem;
+        margin-bottom: 1rem;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    &__translation-box {
+        margin-bottom: 2rem;
+    }
+
+    &__field-block {
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background-color: @white;
+        border: 1px solid @middlegray;
+        border-radius: 7px;
+
+        .admin__language-tabs + & {
+            border-top-left-radius: 0;
+        }
+    }
+
+    &__field-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    &__field-label {
+        flex: 0 0 16.666%;
+        max-width: 16.666%;
+        font-weight: 600;
+    }
+
+    &__field-input {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__image-block {
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background-color: @white;
+        border: 1px solid @middlegray;
+        border-radius: 7px;
+    }
+
+    &__image-description {
+        color: @gray;
+        font-size: @fontMedium;
+        margin-bottom: 1.5rem;
+    }
+
+    &__image-options {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    &__image-radios {
+        padding-right: 10rem;
+        margin-bottom: 0;
+        min-width: 280px;
+
+        label {
+            margin-left: 0.5rem;
+        }
+
+        .connected-bottom {
+            margin-bottom: 0;
+            padding-bottom: 0.5rem;
+        }
+    }
+
+    &__image-preview {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+        background: @lightgray2;
+        border: 1px dashed @middlegray;
+        border-radius: 7px;
+        transition: border-color 0.2s ease;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    &__image-thumbnail {
+        max-width: 200px;
+        max-height: 140px;
+
+        img {
+            max-height: 140px;
+        }
+    }
+
+    &__image-actions {
+        padding-left: 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+
+        a {
+            padding: 0.5rem 0;
+
+            &:after {
+                display: none;
+            }
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+        }
+    }
+
+    &__save-bar {
+        display: flex;
+
+        .btn--cancel {
+            color: #acacac;
+            text-decoration: none;
+
+            &:hover {
+                color: @white;
+            }
+        }
+    }
+
+    &__sidebar {
+        position: sticky;
+        top: 3.5rem;
+        padding-top: 2.5rem;
+        max-height: calc(~'100vh - 3.5rem - 70px');
+        overflow-y: auto;
+
+        .admin__default-block {
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+
+            h2 {
+                font-size: @fontMedium;
+                margin-bottom: 0.8rem;
+            }
+        }
+
+        .admin__form-help-text {
+            margin-top: 0.8rem !important;
+            margin-bottom: 0;
+            font-size: @fontSmall;
+        }
+    }
+
+    &__hint-schema {
+        border: 1px solid @middlegray;
+        border-radius: 5px;
+        overflow: hidden;
+        background: @white;
+    }
+
+    &__hint-schema-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: @neutralgray;
+        color: @gray;
+
+        .icon {
+            width: 2rem;
+            height: 2rem;
+            opacity: 0.4;
+        }
+
+        .admin__cms-archive-edit__hint-schema--tile & {
+            aspect-ratio: 3 / 2;
+        }
+
+        .admin__cms-archive-edit__hint-schema--header & {
+            aspect-ratio: 5 / 1;
+        }
+    }
+
+    &__hint-schema-label {
+        padding: 0.4rem 0.8rem;
+        font-size: @fontSmall;
+        color: @gray;
+        text-align: center;
+        border-top: 1px solid @middlegray;
+        background: @lightgray2;
+    }
+
+    &__hint-meta {
+        margin-top: 0.5rem;
+        padding: 0.4rem 0.6rem;
+        font-size: @fontSmall;
+        color: @gray;
+        background: @lightgray2;
+        border-radius: 4px;
+        line-height: 1.4;
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+    .admin__cms-archive-edit {
+        .admin__content-wrapper {
+            flex-wrap: wrap;
+        }
+
+        .admin__content-main {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .admin__content-side {
+            flex: 0 0 100%;
+            max-width: 100%;
+            padding-left: 0;
+        }
+
+        &__sidebar {
+            position: static;
+            padding-top: 0;
+            max-height: none;
+            overflow-y: visible;
+        }
+
+        &__hint-schema--header &__hint-schema-image {
+            aspect-ratio: 4 / 1;
+        }
+    }
+}
+
+@media screen and (max-width: @smallBreakpoint) {
+    .admin__cms-archive-edit {
+        &__field-label {
+            flex: 0 0 100%;
+            max-width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        &__image-options {
+            flex-direction: column;
+        }
+
+        &__image-radios {
+            min-width: 0;
+            padding-right: 0;
+            margin-bottom: 1.5rem;
+        }
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    .admin__cms-archive-edit {
+        &__section-title {
+            font-size: @fontNormal;
+            margin-top: 2rem;
+        }
+
+        &__field-block,
+        &__image-block {
+            padding: 1.5rem;
+        }
+
+        &__image-preview {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        &__image-thumbnail {
+            max-width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        &__image-actions {
+            padding-left: 0;
+        }
+    }
+}

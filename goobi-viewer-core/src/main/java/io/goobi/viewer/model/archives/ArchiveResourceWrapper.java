@@ -49,7 +49,10 @@ public class ArchiveResourceWrapper {
      */
     public String getLabel(Locale locale) {
         if (archiveConfig != null && archiveConfig.getTitle() != null) {
-            archiveConfig.getTitle().getText(null);
+            String title = archiveConfig.getTitle().getText(locale);
+            if (title != null && !title.isEmpty()) {
+                return title;
+            }
         }
 
         return archiveResource.getResourceName();

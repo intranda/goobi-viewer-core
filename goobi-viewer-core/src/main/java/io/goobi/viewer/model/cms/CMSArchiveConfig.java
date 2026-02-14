@@ -28,6 +28,8 @@ import java.util.Collections;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.controller.HtmlParser;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -218,6 +220,19 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
      */
     public void setHeaderImage(CMSMediaItem headerImage) {
         this.headerImage = headerImage;
+    }
+
+    /**
+     * @param maxLength maximum character length
+     * @return truncated plaintext
+     */
+    public String getShortDescription(int maxLength) {
+        if (description.isEmpty()) {
+            return "";
+        }
+        String text = description.getTextOrDefault();
+        String plain = HtmlParser.getPlaintext(text);
+        return StringTools.truncateText(plain, maxLength);
     }
 
     @Override
