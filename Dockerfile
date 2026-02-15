@@ -17,7 +17,6 @@ FROM tomcat:10-jre21 AS assemble-stage
 # CATALINA_HOME is set to /usr/local/tomcat in the base image
 
 ENV SOLR_HOST=solr
-ENV VIEWER_DOMAIN=localhost
 ENV TOMCAT_SAMESITECOOKIES=strict
 ENV CONFIGSOURCE=folder
 ENV CONFIG_FOLDER=/viewer-template
@@ -43,7 +42,7 @@ RUN mkdir -p ${CATALINA_HOME}/conf/Catalina/localhost/ && mkdir -p ${CATALINA_HO
 
 COPY goobi-viewer-connector/src/main/resources/*.xsl /viewer-template/oai/
 COPY goobi-viewer-core-config/src/main/resources/docker/setenv.sh ${CATALINA_HOME}/bin/setenv.sh
-COPY goobi-viewer-core-config/src/main/resources/install/* /viewer-template/config
+COPY goobi-viewer-core-config/src/main/resources/install/ /viewer-template/config
 COPY goobi-viewer-core-config/src/main/resources/docker/stopwords /stopwords
 COPY goobi-viewer-core-config/src/main/resources/docker/viewer.xml.template ${CATALINA_HOME}/conf/
 

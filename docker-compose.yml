@@ -1,7 +1,7 @@
 ---
 services:
   viewer:
-    image: intranda/goobi-viewer:testing
+    image: intranda/goobi-viewer:latest
     depends_on:
       - viewer-db
       - indexer
@@ -16,6 +16,7 @@ services:
       DB_PASSWORD: CHANGEME
       SOLR_HOST: solr
       VIEWER_DOMAIN: localhost
+      USE_SSL: false
       TOMCAT_SAMESITECOOKIES: strict
       STOPWORDS_LANG: "de"
     volumes:
