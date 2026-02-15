@@ -57,11 +57,11 @@
                     </h1>
                     <ui:fragment
                         rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.description.isValid(navigationHelper.locale)}">
-                        <p class="archives__hero-description">
+                        <div class="archives__hero-description">
                             <h:outputText
                                 escape="false"
                                 value="#{archiveBean.archiveConfig.description}" />
-                        </p>
+                        </div>
                     </ui:fragment>
                 </div>
             </div>
