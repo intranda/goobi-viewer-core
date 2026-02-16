@@ -24,7 +24,6 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,13 +59,13 @@ public class CmsArchivesBean implements Serializable {
 
     private TableDataProvider<ArchiveResourceWrapper> lazyModelArchiveConfigurations;
 
-    private ArchiveResourceWrapper selectedArchiveWrapper;
-
     private Map<String, ArchiveResourceWrapper> archiveMap = new HashMap<>();
 
     private CMSCollectionImageMode imageModeTile = CMSCollectionImageMode.NONE;
 
     private CMSCollectionImageMode imageModeHeader = CMSCollectionImageMode.NONE;
+    
+    private ArchiveResourceWrapper selectedArchiveWrapper;
 
     @PostConstruct
     public void init() {
@@ -95,12 +94,6 @@ public class CmsArchivesBean implements Serializable {
             @Override
             public List<ArchiveResourceWrapper> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
                     Map<String, String> filters) {
-                logger.trace("getEntries<ArchiveResourceWrapper>, {}-{}", first, first + pageSize);
-                String useSortField = sortField;
-                SortOrder useSortOrder = sortOrder;
-                if (StringUtils.isBlank(useSortField)) {
-                    useSortField = "id";
-                }
                 List<ArchiveResourceWrapper> ret = new ArrayList<>();
                 for (ArchiveResource resource : DataManager.getInstance().getArchiveManager().getDatabases()) {
                     ret.add(archiveMap.get(resource.getResourceId()));
@@ -110,17 +103,17 @@ public class CmsArchivesBean implements Serializable {
 
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
-                return DataManager.getInstance().getArchiveManager().getDatabases().size();
+                return archiveMap.size();
             }
 
             @Override
             public void resetTotalNumberOfRecords() {
-
+                // not applicable
             }
 
         });
         lazyModelArchiveConfigurations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        lazyModelArchiveConfigurations.getFilter("title_description");
+        // lazyModelArchiveConfigurations.getFilter("title_description");
     }
 
     public String saveSelectedArchiveAction() {

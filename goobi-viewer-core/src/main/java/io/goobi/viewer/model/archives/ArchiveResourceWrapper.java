@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.archives;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 import org.jboss.weld.exceptions.IllegalArgumentException;
@@ -30,7 +31,9 @@ import io.goobi.viewer.model.cms.CMSArchiveConfig;
 /**
  * Wrapper class for archive and configuration pairs.
  */
-public class ArchiveResourceWrapper {
+public class ArchiveResourceWrapper implements Serializable {
+
+    private static final long serialVersionUID = 8240190195476685234L;
 
     private final ArchiveResource archiveResource;
     private CMSArchiveConfig archiveConfig;
