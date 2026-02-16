@@ -70,6 +70,25 @@ public class CmsArchivesBean implements Serializable {
 
     @PostConstruct
     public void init() {
+        logger.trace("init");
+
+        for (ArchiveResource resource : DataManager.getInstance().getArchiveManager().getDatabases()) {
+            logger.trace("Processing archive resource: {}", resource.getResourceId());
+            ArchiveResourceWrapper wrapper = new ArchiveResourceWrapper(resource);
+            archiveMap.put(resource.getResourceId(), wrapper);
+            try {
+                Optional<CMSArchiveConfig> config = DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(resource.getResourceId());
+                if (config.isPresent()) {
+                    logger.trace("Found configuration for archive resource: {}", resource.getResourceId());
+                    wrapper.setArchiveConfig(new CMSArchiveConfig(config.get())); // Clone DB object for editing
+                } else {
+                    // Make sure the CMSArchiveConfig is available early
+                    wrapper.setArchiveConfig(new CMSArchiveConfig(resource.getResourceId()));
+                }
+            } catch (DAOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
 
         lazyModelArchiveConfigurations = new TableDataProvider<>(new TableDataSource<ArchiveResourceWrapper>() {
 
@@ -77,33 +96,16 @@ public class CmsArchivesBean implements Serializable {
             public List<ArchiveResourceWrapper> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
                     Map<String, String> filters) {
                 logger.trace("getEntries<ArchiveResourceWrapper>, {}-{}", first, first + pageSize);
-                try {
-                    String useSortField = sortField;
-                    SortOrder useSortOrder = sortOrder;
-                    if (StringUtils.isBlank(useSortField)) {
-                        useSortField = "id";
-                    }
-                    List<ArchiveResourceWrapper> ret = new ArrayList<>();
-                    for (ArchiveResource resource : DataManager.getInstance().getArchiveManager().getDatabases()) {
-                        logger.trace("Processing archive resource: {}", resource.getResourceId());
-                        ArchiveResourceWrapper wrapper = new ArchiveResourceWrapper(resource);
-                        ret.add(wrapper);
-                        archiveMap.put(resource.getResourceId(), wrapper);
-                        Optional<CMSArchiveConfig> config =
-                                DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(resource.getResourceId());
-                        if (config.isPresent()) {
-                            logger.trace("Found configuration for archive resource: {}", resource.getResourceId());
-                            wrapper.setArchiveConfig(new CMSArchiveConfig(config.get())); // Clone DB object for editing
-                        } else {
-                            // Make sure the CMSArchiveConfig is available early
-                            wrapper.setArchiveConfig(new CMSArchiveConfig(resource.getResourceId()));
-                        }
-                    }
-                    return ret;
-                } catch (DAOException e) {
-                    logger.error(e.getMessage());
+                String useSortField = sortField;
+                SortOrder useSortOrder = sortOrder;
+                if (StringUtils.isBlank(useSortField)) {
+                    useSortField = "id";
                 }
-                return Collections.emptyList();
+                List<ArchiveResourceWrapper> ret = new ArrayList<>();
+                for (ArchiveResource resource : DataManager.getInstance().getArchiveManager().getDatabases()) {
+                    ret.add(archiveMap.get(resource.getResourceId()));
+                }
+                return ret;
             }
 
             @Override
