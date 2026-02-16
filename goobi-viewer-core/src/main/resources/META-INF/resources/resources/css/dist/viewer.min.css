@@ -3081,6 +3081,17 @@ html[dir='rtl'] .bookmark-navigation__string {
     margin-top: 2rem;
     font-size: 1.2rem;
 }
+.breadcrumbs__list {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+.breadcrumbs__list li {
+    display: flex;
+    align-items: center;
+}
 .breadcrumbs a,
 .breadcrumbs span {
     display: inline-block;
