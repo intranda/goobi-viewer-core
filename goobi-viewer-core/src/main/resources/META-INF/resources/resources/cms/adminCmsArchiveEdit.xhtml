@@ -292,6 +292,12 @@
                                             href="#{navigationHelper.getPageUrl('adminCmsArchives')}">
                                             #{msg.button__abort}
                                         </a>
+                                        <a
+                                            class="btn btn--default"
+                                            target="_blank"
+                                            href="#{navigationHelper.getPageUrl('archives')}/#{cmsArchivesBean.selectedArchiveWrapper.archiveResource.resourceId}/">
+                                            #{msg.cms_pagePreview}
+                                        </a>
                                         <button
                                             class="btn btn--success"
                                             jsf:action="#{cmsArchivesBean.saveSelectedArchiveAction}">

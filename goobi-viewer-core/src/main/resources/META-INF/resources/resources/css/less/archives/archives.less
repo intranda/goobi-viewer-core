@@ -734,7 +734,7 @@
         color: rgba(255, 255, 255, 0.9);
         text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
         display: -webkit-box;
-        -webkit-line-clamp: 3;
+        -webkit-line-clamp: 5;
         -webkit-box-orient: vertical;
         overflow: hidden;
 
@@ -794,6 +794,10 @@
     .archives__hero-title {
         font-size: 2.2rem;
     }
+
+    .archives__hero-description {
+        -webkit-line-clamp: 3;
+    }
 }
 
 /* BREAKPOINT FOR TABLETS */
@@ -840,9 +844,5 @@
 
     .archives__hero-title {
         font-size: @fontNormal;
-    }
-
-    .archives__hero-description {
-        display: none;
     }
 }

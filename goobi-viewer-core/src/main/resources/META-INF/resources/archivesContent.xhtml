@@ -41,9 +41,10 @@
                     rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1)}">
                     <img
                         class="archives__hero-image"
-                        srcset="#{archiveBean.archiveConfig.getMediaItem(1).getIconURI(1920,600)} 1920w,
-        			        #{archiveBean.archiveConfig.getMediaItem(1).getIconURI(1200,400)} 1200w,
-        			        #{archiveBean.archiveConfig.getMediaItem(1).getIconURI(800,260)} 800w"
+                        srcset="#{archiveBean.archiveConfig.getMediaItem(1).getIconURI(2560,800)} 2560w,
+                                #{archiveBean.archiveConfig.getMediaItem(1).getIconURI(1920,600)} 1920w,
+                                #{archiveBean.archiveConfig.getMediaItem(1).getIconURI(1200,400)} 1200w,
+                                #{archiveBean.archiveConfig.getMediaItem(1).getIconURI(800,260)} 800w"
                         sizes="100vw"
                         src="#{archiveBean.archiveConfig.getMediaItem(1).getIconURI(1200,400)}"
                         alt="#{archiveBean.archiveConfig.getMediaItem(1).alternativeText != '' ? archiveBean.archiveConfig.getMediaItem(1).alternativeText : ''}" />

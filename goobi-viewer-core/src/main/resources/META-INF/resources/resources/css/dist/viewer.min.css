@@ -24052,7 +24052,7 @@ img.cms-static-pages__page-language--complete {
 }
 .admin__archives-card__image {
     margin: -2rem -2rem 1.5rem -2rem;
-    height: 180px;
+    height: 280px;
     overflow: hidden;
     background: #f7f7f7;
     border-top-left-radius: 7px;
@@ -26218,7 +26218,7 @@ html[dir='rtl'] .campaign-statistics__bar {
     color: rgba(255, 255, 255, 0.9);
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 5;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -26265,6 +26265,9 @@ html[dir='rtl'] .campaign-statistics__bar {
     .archives__hero-title {
         font-size: 2.2rem;
     }
+    .archives__hero-description {
+        -webkit-line-clamp: 3;
+    }
 }
 @media screen and (max-width: 768px) {
     .archives__object-metadata-entry {
@@ -26298,9 +26301,6 @@ html[dir='rtl'] .campaign-statistics__bar {
     }
     .archives__hero-title {
         font-size: 1.6rem;
-    }
-    .archives__hero-description {
-        display: none;
     }
 }
 .archives-list__title {
@@ -26348,7 +26348,7 @@ html[dir='rtl'] .campaign-statistics__bar {
 }
 .archives-list__image-wrapper {
     position: relative;
-    height: 200px;
+    height: 250px;
     overflow: hidden;
     background: var(--archives-placeholder-bg, #f1f1f1);
 }
@@ -26384,7 +26384,7 @@ html[dir='rtl'] .campaign-statistics__bar {
     color: var(--archives-overlay-text, #fff);
     font-size: 1.6rem;
     font-weight: 700;
-    padding: 4px 15px;
+    padding: 6px 15px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -26444,7 +26444,7 @@ html[dir='rtl'] .campaign-statistics__bar {
         gap: 12px;
     }
     .archives-list__image-wrapper {
-        height: 160px;
+        height: 200px;
     }
     .archives-list__image-title {
         font-size: 1.4rem;
