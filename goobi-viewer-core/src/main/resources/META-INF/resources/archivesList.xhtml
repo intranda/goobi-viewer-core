@@ -15,7 +15,10 @@
         <f:metadata>
             <f:event
                 type="preRenderView"
-                listener="#{navigationHelper.setCurrentPage('archives', false, true)}" />
+                listener="#{navigationHelper.setCurrentPage('archives', true, true)}" />
+            <f:event
+                type="preRenderView"
+                listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('archives__archiveViewHeading', 1)}" />
             <f:viewAction
                 onPostback="false"
                 action="#{archiveBean.updateArchives()}" />

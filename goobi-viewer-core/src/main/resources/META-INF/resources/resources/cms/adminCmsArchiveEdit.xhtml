@@ -56,11 +56,11 @@
                                             </div>
 
                                             <div class="admin__cms-archive-edit__field-block">
-                                                <div class="admin__cms-archive-edit__field-row">
+                                                <div class="admin__cms-archive-edit__field-row form-group">
                                                     <div class="admin__cms-archive-edit__field-label">
                                                         #{msg.title}:
                                                     </div>
-                                                    <div class="admin__cms-archive-edit__field-input">
+                                                    <div class="admin__cms-archive-edit__field-input admin__form-input">
                                                         <div
                                                             class="#{status.index == 0 ? 'active' : ''}"
                                                             id="titleLanguage-#{status.index}">
@@ -72,6 +72,18 @@
                                                                     value="#{msg.aria_label__collections_title}" />
                                                             </h:inputText>
                                                         </div>
+                                                        <span class="admin__form-help-text">
+                                                            #{msg.admin__cms_archives_title_help}
+                                                        </span>
+                                                    </div>
+                                                    <div class="admin__form-help-icon">
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn--clean"
+                                                            data-toggle="helptext"
+                                                            aria-label="inline help icon">
+                                                            <util:icon icon="help" />
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -91,11 +103,11 @@
                                             </div>
 
                                             <div class="admin__cms-archive-edit__field-block">
-                                                <div class="admin__cms-archive-edit__field-row">
+                                                <div class="admin__cms-archive-edit__field-row form-group">
                                                     <div class="admin__cms-archive-edit__field-label">
                                                         #{msg.description}:
                                                     </div>
-                                                    <div class="admin__cms-archive-edit__field-input">
+                                                    <div class="admin__cms-archive-edit__field-input admin__form-input">
                                                         <div
                                                             class="#{status.index == 0 ? 'active' : ''}"
                                                             id="descriptionLanguage-#{status.index}">
@@ -107,6 +119,18 @@
                                                                     value="#{msg.aria_label__collections_description}" />
                                                             </h:inputTextarea>
                                                         </div>
+                                                        <span class="admin__form-help-text">
+                                                            #{msg.admin__cms_archives_description_help}
+                                                        </span>
+                                                    </div>
+                                                    <div class="admin__form-help-icon">
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn--clean"
+                                                            data-toggle="helptext"
+                                                            aria-label="inline help icon">
+                                                            <util:icon icon="help" />
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
