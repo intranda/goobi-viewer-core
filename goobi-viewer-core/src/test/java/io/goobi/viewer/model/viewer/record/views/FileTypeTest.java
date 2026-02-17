@@ -19,7 +19,7 @@ class FileTypeTest {
     void test_containedFileTypes() throws IndexUnreachableException, DAOException, RecordNotFoundException {
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
         Map<String, String> filenameMap = Map.of(
-                "tiff", "01.tif",
+                "image", "01.tif",
                 "fulltext", "02.txt",
                 "alto", "03.xml",
                 "model", "04.obj",

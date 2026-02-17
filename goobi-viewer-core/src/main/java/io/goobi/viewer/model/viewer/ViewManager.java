@@ -3802,7 +3802,8 @@ public class ViewManager implements Serializable {
         // Build URL
         StringBuilder url = new StringBuilder();
         boolean anchorOrGroup = topStructElement.isAnchor() || topStructElement.isGroup();
-        PageType pageType = PageType.determinePageType(topStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
+        PageType pageType = PageType.determinePageType(topStructElement.getDocStructType(), topStructElement.getMimeType().toString(), anchorOrGroup,
+                isHasPages(), false);
         if (pageType == null) {
             if (isHasPages()) {
                 pageType = PageType.viewObject;
@@ -3907,7 +3908,7 @@ public class ViewManager implements Serializable {
         PageType pageType = null;
         if (topStructElement != null) {
             boolean anchorOrGroup = topStructElement.isAnchor() || topStructElement.isGroup();
-            pageType = PageType.determinePageType(topStructElement.getDocStructType(), null, anchorOrGroup, isHasPages(), false);
+            pageType = PageType.determinePageType(topStructElement.getDocStructType(), currentPage.getMimeType(), anchorOrGroup, isHasPages(), false);
         }
         if (pageType == null) {
             pageType = PageType.viewObject;

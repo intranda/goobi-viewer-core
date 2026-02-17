@@ -227,7 +227,7 @@ public enum FileType {
 
     public static FileType fromMimeType(String mimeType) {
         try {
-            return FileType.valueOf(new MimeType(mimeType).getType());
+            return FileType.valueOf(new MimeType(mimeType).getType().toUpperCase());
         } catch (IllegalArgumentException e) {
             return null;
         }

@@ -455,6 +455,8 @@ public enum PageType {
             return PageType.viewMetadata;
         } else if (mediaType.isAllowsImageView() || mediaType.is3DModel() || mediaType.isAudio() || mediaType.isVideo()) {
             return PageType.viewObject;
+        } else if (hasImages) {
+            return PageType.viewObject;
         }
 
         return PageType.viewMetadata;
