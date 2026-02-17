@@ -218,6 +218,8 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
 	.fullscreen {
+		.image-controls__action.prev,
+		.image-controls__action.next,
 		.image-controls__action.start,
 		.image-controls__action.end {
 			display: none;
@@ -225,8 +227,15 @@
 		.image-controls__action.select {
 			width: 105px;
 		}
+		.image-controls__action.page-browse.next:nth-child(1 of .image-controls__action.page-browse.next) {
+			display: flex;
+		}
+		.image-controls__action.page-browse.prev:nth-last-child(1 of .image-controls__action.page-browse.prev) {
+			display: flex;
+		}
 		.image-controls__action.prev,
 		.image-controls__action.next {
+			opacity: 0.8;
 			position: fixed;
 			top: 50%;
 			width: 50px;

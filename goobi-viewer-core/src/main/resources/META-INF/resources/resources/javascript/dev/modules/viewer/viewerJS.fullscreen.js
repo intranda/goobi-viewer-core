@@ -147,7 +147,7 @@ var viewerJS = ( function( viewer ) {
 
             		// show back and forward on small devices
                 	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
-                		$( '.image-controls__action.prev, .image-controls__action.next' ).show();
+                		$( '.image-controls__action.prev, .image-controls__action.next' ).removeClass('d-none');
                 	}
 
             		// save sidebar status
@@ -177,8 +177,8 @@ var viewerJS = ( function( viewer ) {
             	
             	// show back and forward on small devices
             	if ( window.matchMedia( '(max-width: 480px)' ).matches ) {
-            		$( '.image-controls__action.prev, .image-controls__action.next' ).hide();
-            	}
+            		$( '.image-controls__action.prev, .image-controls__action.next' ).addClass('d-none');
+            	} 
             	
               // Remove display:none => make slide in animation possible (see below)
               // Originally set so focusable elements in the closed sidebar cannot be reached using the tab key 

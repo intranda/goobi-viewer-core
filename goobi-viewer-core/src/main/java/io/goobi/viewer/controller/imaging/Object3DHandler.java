@@ -63,7 +63,7 @@ public class Object3DHandler {
      */
     public String getObjectUrl(String pi, String filename) {
         if (this.urls != null) {
-            return this.urls.path(ApiUrls.RECORDS_FILES_3D, ApiUrls.RECORDS_FILES_3D_INFO).params(pi, filename).build();
+            return this.urls.path(ApiUrls.RECORDS_FILES_3D).params(pi, filename).build();
         }
         return this.restApiUrl + URL_TEMPLATE.replace("{identifier}", pi).replace("{filename}", filename);
     }

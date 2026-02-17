@@ -14,13 +14,13 @@
 		<!-- MV GROUP -->
 		<h:panelGroup rendered="#{group != '_DEFAULT'}">
 			<div class="toc__mv-group">
-				<h4>
+				<h2 class="toc__mv-group-heading">
 					<button type="button" class="btn btn--link"
 						data-toggle="mv-element">
 						<span></span>
 					</button>
 					#{msg[group]}
-				</h4>
+				</h2>
 			</div>
 
 			<!-- MV ELEMENT -->
@@ -28,7 +28,7 @@
 				value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}">
 				<div class="toc__mv-element level-#{tocElement.level}">
 					<h:panelGroup rendered="#{tocElement.pageNo == null}">
-						<h4>#{tocElement.label}</h4>
+						<h3 class="toc__mv-element-heading">#{tocElement.label}</h3>
 					</h:panelGroup>
 
 					<div class="row">
@@ -78,7 +78,7 @@
 				value="#{activeDocumentBean.toc.flatView}">
 				<div class="toc__mv-element level-#{tocElement.level}">
 					<h:panelGroup rendered="#{tocElement.pageNo == null}">
-						<h4>#{tocElement.label}</h4>
+						<h3 class="toc__mv-element-heading">#{tocElement.label}</h3>
 					</h:panelGroup>
 
 					<div class="row">

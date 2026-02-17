@@ -228,8 +228,8 @@
 						</ui:fragment>
 
 						<ui:fragment visibility-class="widget-element"
-							rendered="#{ activeDocumentBean.viewManager.hasMeiDocument}">
-							<div id="pdfWork" title="#{msg.label__pdf_download_mei}"
+							rendered="#{configurationBean.generatePdfInMessageQueue}">
+							<div id="pdfWork" title="#{msg.label__pdf_download_record}"
 								data-toggle="tooltip" data-placement="top" data-trigger="hover">
 								<button
 									class="badge badge-dark widget-downloads__work-download-pdf"
@@ -245,7 +245,7 @@
 					
                     <!-- MEI -->
                     <ui:fragment visibility-class="widget-element"
-                        rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], accessCondition:DOWNLOAD_METADATA}')}">
+                        rendered="#{activeDocumentBean.viewManager.hasMeiDocument and displayConditions.matchRecord('{accessCondition:DOWNLOAD_METADATA}')}">
                         <a href="#{activeDocumentBean.viewManager.meiUrl}"
                             id="mei" class="badge badge-dark widget-downloads__work-download-mei"
                             title="#{msg.metadata_dl_mei}" data-toggle="tooltip"

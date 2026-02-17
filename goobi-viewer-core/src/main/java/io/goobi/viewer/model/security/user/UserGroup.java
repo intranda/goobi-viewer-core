@@ -31,22 +31,19 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.persistence.annotations.PrivateOwned;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.License;
+import io.goobi.viewer.model.security.License.AccessType;
 import io.goobi.viewer.model.security.Role;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -80,10 +77,6 @@ public class UserGroup extends AbstractLicensee implements Serializable {
 
     @Column(name = "active")
     private boolean active = true;
-
-    @OneToMany(mappedBy = "userGroup", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
-    @PrivateOwned
-    private List<License> licenses = new ArrayList<>();
 
     /** List for reflecting dirty changes to memberships. */
     @Transient
@@ -210,31 +203,6 @@ public class UserGroup extends AbstractLicensee implements Serializable {
         return false;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean addLicense(License license) {
-        if (licenses == null) {
-            licenses = new ArrayList<>();
-        }
-        if (!licenses.contains(license)) {
-            licenses.add(license);
-            license.setUserGroup(this);
-            return true;
-        }
-
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean removeLicense(License license) {
-        if (license != null && licenses != null) {
-            return licenses.remove(license);
-        }
-
-        return false;
-    }
-
     /*********************************** Getter and Setter ***************************************/
 
     /**
@@ -298,6 +266,11 @@ public class UserGroup extends AbstractLicensee implements Serializable {
         this.description = description;
     }
 
+    @Override
+    public AccessType getAccessType() {
+        return AccessType.USER_GROUP;
+    }
+
     /**
      * <p>
      * Getter for the field <code>owner</code>.
@@ -342,45 +315,28 @@ public class UserGroup extends AbstractLicensee implements Serializable {
         this.active = active;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public List<License> getLicenses() {
-        return licenses;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>licenses</code>.
-     * </p>
-     *
-     * @param licenses the licenses to set
-     */
-    public void setLicenses(List<License> licenses) {
-        this.licenses = licenses;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>licenses</code>.
-     * </p>
-     *
-     * @param core a boolean.
-     * @return List of filtered licenses whose type's core attribute matches the given value
-     */
-    public List<License> getLicenses(boolean core) {
-        if (licenses == null || licenses.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<License> ret = new ArrayList<>(licenses.size());
-        for (License license : licenses) {
-            if (license.getLicenseType().isCore() == core) {
-                ret.add(license);
-            }
-        }
-
-        return ret;
-    }
+//    /**
+//     * <p>
+//     * Getter for the field <code>licenses</code>.
+//     * </p>
+//     *
+//     * @param core a boolean.
+//     * @return List of filtered licenses whose type's core attribute matches the given value
+//     */
+//    public List<License> getLicenses(boolean core) {
+//        if (licenses == null || licenses.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        List<License> ret = new ArrayList<>(licenses.size());
+//        for (License license : licenses) {
+//            if (license.getLicenseType().isCore() == core) {
+//                ret.add(license);
+//            }
+//        }
+//
+//        return ret;
+//    }
 
     /**
      *

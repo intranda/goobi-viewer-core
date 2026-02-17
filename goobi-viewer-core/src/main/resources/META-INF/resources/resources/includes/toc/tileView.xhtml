@@ -10,29 +10,29 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
-
-	<div class="toc__mv-tile-grid test">
-
+	<div class="toc__mv-tile-grid">
 		<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.flatView}">
 
 			<h:panelGroup rendered="#{tocElement.pageNo == null}">
-				<h4>#{tocElement.label}</h4>
+				<h2 class="toc__mv-tile-grid-heading">#{tocElement.label}</h2>
 			</h:panelGroup>
 
-			<a href="#{tocElement.url}" class="toc__mv-tile">
-				<ui:fragment rendered="#{tocElement.thumbnailUrl != null}">
-					<img src="#{tocElement.thumbnailUrl}" class="toc__mv-tile-image"
-						alt="" data-viewer-thumbnail="thumbnail"
-						data-viewer-access-denied-url="#{tocElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
-				</ui:fragment>
-				<div class="toc__mv-tile-title-wrapper">
-					<h2>#{tocElement.label}</h2>
-				</div> 
-			</a>
+			<ui:fragment rendered="#{tocElement.pageNo != null}">
+				<a href="#{tocElement.url}" class="toc__mv-tile"> <ui:fragment
+						rendered="#{tocElement.thumbnailUrl != null}">
+						<div class="toc__mv-tile-image-wrapper">
+						<img src="#{tocElement.getThumbnailUrl(450, 450)}" class="toc__mv-tile-image"
+							alt="" data-viewer-thumbnail="thumbnail"
+							data-viewer-access-denied-url="#{tocElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
+						</div>
+					</ui:fragment>
+
+					<div class="toc__mv-tile-title-wrapper">
+						<span class="toc__mv-tile-title">#{tocElement.label}</span>
+					</div>
+				</a>
+			</ui:fragment>
 
 		</ui:repeat>
-
-
 	</div>
-
 </ui:composition>

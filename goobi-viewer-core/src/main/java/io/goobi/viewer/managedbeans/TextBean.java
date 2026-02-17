@@ -24,9 +24,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,11 +40,11 @@ import de.intranda.digiverso.ocr.tei.convert.wiener.TeiToHtmlConverter;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.controller.XmlTools;
+import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -61,6 +58,8 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 
 /**
  * Bean representing the primary source record for image display. Whether a source record or an annotation record is currently loaded in
@@ -287,7 +286,12 @@ public class TextBean implements Serializable {
         return null;
     }
 
-    public String getStringFromUrl(String url) throws IOException, HTTPException {
-        return NetTools.getWebContentGET(url);
+    public String getMeiDocumentForRecord(String pi) {
+        try {
+            return DataFileTools.loadMei(pi, BeanUtils.getRequest());
+        } catch (AccessDeniedException | DAOException | IndexUnreachableException | IOException | PresentationException | RecordNotFoundException e) {
+            logger.error(e.getMessage());
+            return "";
+        }
     }
 }

@@ -8,7 +8,7 @@
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
-	<composite:interface componentType="io.goobi.viewer.faces.components.Autocomplete">
+	<composite:interface>
 		<composite:attribute name="value" required="true"/>
 		<composite:attribute name="items" required="false" method-signature="java.util.List complete(java.lang.String)" />
 		<composite:attribute name="placeholder" default=""/>
@@ -22,32 +22,46 @@
 		<div class="ui-autocomplete ui-inputwrapper-filled search-input-wrapper"> 
 			<input class="#{cc.attrs.styleclass} ui-autocomplete-input ui-inputfield ui-widget ui-state-default ui-corner-all -no-outline -active-border ui-state-filled" 
              type="text" jsf:id="#{cc.attrs.id}" id="#{cc.attrs.id}" value="#{cc.attrs.value}" placeholder="#{cc.attrs.placeholder}" aria-label="#{cc.attrs.arialabel}"/>
-			<h:commandScript name="automcompleteRequest_#{cc.attrs.id}" action="#{cc.handleAutocomplete}" onevent="handleAutocompleteResponse_#{cc.attrs.id}"/>
 		<script>
 		
-	
-			//Observable for ajax responses of automcompleteRequest commandScript
-			let autocompleteResponseListener_#{cc.attrs.id} = new rxjs.Subject();
-		
-			//jquery autocomplete
-			let autocomplete__#{cc.attrs.id} = $("##{cc.attrs.id}").autocomplete( {
-			    source: function( request, response ) {
-			        //pass entered term to commandScript
-			        automcompleteRequest_#{cc.attrs.id}({term:request.term});
-			        //subscribe to ajax response listener of commandscript to fill autocomplete options
-			        autocompleteResponseListener_#{cc.attrs.id}.pipe(rxjs.operators.first()).subscribe(resp => {
-			            response(resp);
-			        });
-			    },
-		        minLength: 3,
-		        delay: 300, //ms
-		        //appendTo: $("##{cc.attrs.id}").parent(),
-		        change: function(event, ui) {
-		            //console.log("change ", event, ui);
-		            //refocus input field after other javascript has finished because jquery will defocus the element first
-		            setTimeout( () => $("##{cc.attrs.id}").focus(), 0);
-		        },
-			});
+			function initAutocomplete() {
+				
+				//Observable for ajax responses of automcompleteRequest commandScript
+				const autocompleteResponseListener_#{cc.attrs.id} = new rxjs.Subject();
+				const socket = new viewerJS.WebSocket(window.location.host, "#{request.contextPath}", viewerJS.WebSocket.PATH_SEARCH_AUTOCOMPLETE);
+				const input = document.getElementById("#{cc.attrs.id}");
+				
+				socket.onMessage.subscribe( (event) => {
+					//console.log("autosuggest-event ", event);
+					if(event.data) {					
+						autocompleteResponseListener_#{cc.attrs.id}.next(JSON.parse(event.data));
+					}
+				});
+				
+				//jquery autocomplete
+				let autocomplete__#{cc.attrs.id} = $("##{cc.attrs.id}").autocomplete( {
+				    source: function( request, response ) {
+				    	//console.log("request autocomplete ", request.term);
+				        //pass entered term to commandScript
+				        socket.sendMessage(JSON.stringify({term:request.term}));
+				        //subscribe to ajax response listener of commandscript to fill autocomplete options
+				        autocompleteResponseListener_#{cc.attrs.id}.pipe(rxjs.operators.first()).subscribe(resp => {
+				            response(resp);
+				        });
+				    },
+			        minLength: 3,
+			        delay: 300, //ms
+			        //appendTo: $("##{cc.attrs.id}").parent(),
+			        change: function(event, ui) {
+			            //console.log("change ", event, ui);
+			            //refocus input field after other javascript has finished because jquery will defocus the element first
+			            setTimeout( () => $("##{cc.attrs.id}").focus(), 0);
+			        },
+				});
+				
+			}
+			
+			initAutocomplete();
 			
 			//Trigger form submit button when pressing enter
 			$("##{cc.attrs.id}").on("keyup", e => {
@@ -57,17 +71,6 @@
 		            $button.click();
 			    }
 			})
-			
-			//onEvent listener for commandScript ajax response. append response to responseListener observable
-			handleAutocompleteResponse_#{cc.attrs.id} = function(e) {
-			    if(e.status === "complete") {
-			        try {			            
-			        autocompleteResponseListener_#{cc.attrs.id}.next(JSON.parse(e.responseText));
-			        } catch(e) {
-			            console.error("Error handling autocomplete response ", e.responseText)
-			        }
-			    }
-			}
 		
 		</script>
 		</div>

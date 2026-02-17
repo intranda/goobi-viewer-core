@@ -49,7 +49,9 @@ import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.MessageQueueException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EpubDownloadJob;
@@ -106,9 +108,9 @@ public class DownloadBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.DownloadException if any.
+     * @throws PresentationException
      */
-    public String openDownloadAction() throws DAOException, DownloadException {
+    public String openDownloadAction() throws DAOException, PresentationException {
 
         if (StringUtils.isNotBlank(downloadIdentifier)) {
             //get message after creating file in message queue
@@ -124,9 +126,11 @@ public class DownloadBean implements Serializable {
 
         if (message != null) {
             return message.getMessageId();
+        } else {
+            logger.debug("No download message with id {} found", downloadIdentifier);
+            Messages.error("No download message with id " + downloadIdentifier + " found");
+            return "";
         }
-        logger.error("Download job with the ID {} not found.", downloadIdentifier);
-        throw new DownloadException("downloadErrorNotFound");
     }
 
     /**

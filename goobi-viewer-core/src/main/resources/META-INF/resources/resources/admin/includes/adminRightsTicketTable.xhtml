@@ -204,7 +204,8 @@
 
 						<div class="admin__grid-table-sorting-wrapper">
 							<viewerComponent:sortingArrow filterType="email"
-								colHeading="#{msg.admin__download_tickets__title}" />
+								colHeading="#{msg.admin__download_tickets__title}"
+								list="#{adminLicenseBean.lazyModelTickets}" />
 						</div>
 						
                         <div class="admin__grid-table-sorting-wrapper">
@@ -214,13 +215,15 @@
                             #{msg.message}</div>
 
 						<div class="admin__grid-table-sorting-wrapper">
-							<viewerComponent:sortingArrow filterType="dateRegistered"
-								colHeading="#{msg.admin__download_tickets__email}" />
+							<viewerComponent:sortingArrow filterType="dateCreated"
+								colHeading="#{msg.admin__download_tickets__email}"
+								list="#{adminLicenseBean.lazyModelTickets}" />
 						</div>
 
 						<div class="admin__grid-table-sorting-wrapper">
 							<viewerComponent:sortingArrow filterType="dateLastAccess"
-								colHeading="#{msg.admin__download_tickets__expires}" />
+								colHeading="#{msg.admin__download_tickets__expires}"
+								list="#{adminLicenseBean.lazyModelTickets}" />
 						</div>
 
 					</div>

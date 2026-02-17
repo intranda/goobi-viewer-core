@@ -42,7 +42,7 @@
             <!-- No access ticket required or already unlocked -->
             <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
 
-			<div id="viewToc" class="view-toc"> 
+			<div id="viewToc" class="view-toc #{activeDocumentBean.viewManager.cssClass}"> 
 
 		    	<div id="title" class="title">
 		    		<!-- TITLE HEADER --> 
