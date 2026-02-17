@@ -135,7 +135,8 @@ public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageSt
                         .forEach(FileUtils::deleteQuietly);
             } catch (IOException e) {
                 logger.error(
-                        "Error checking pdf download folder '{}' for file locks. PDF generation may not be able to continue if files ending with '{}' exist in the folder",
+                        "Error checking pdf download folder '{}' for file locks."
+                                + " PDF generation may not be able to continue if files ending with '{}' exist in the folder",
                         targetFolder, DownloadJob.FILE_EXTENSION_CREATING_LOCK);
             }
         }

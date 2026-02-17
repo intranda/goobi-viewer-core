@@ -140,7 +140,8 @@ public class CreateDownloadEpubMessageHandler implements MessageHandler<MessageS
                         .forEach(FileUtils::deleteQuietly);
             } catch (IOException e) {
                 logger.error(
-                        "Error checking epub download folder '{}' for file locks. Epub generation may not be able to continue if files ending with '{}' exist in the folder",
+                        "Error checking epub download folder '{}' for file locks. "
+                                + "Epub generation may not be able to continue if files ending with '{}' exist in the folder",
                         targetFolder, DownloadJob.FILE_EXTENSION_CREATING_LOCK);
             }
         }
