@@ -25662,6 +25662,12 @@ html[dir='rtl'] .campaign-statistics__bar {
 .archives__header a:active {
     color: #fff;
 }
+.archives__header a:focus-visible {
+    outline: 2px solid #ff0038;
+    outline-offset: -2px;
+    z-index: 9999;
+    outline-color: #fff;
+}
 .archives__header-brand {
     display: flex;
     padding: 0.5rem 2rem;
@@ -25957,7 +25963,7 @@ html[dir='rtl'] .campaign-statistics__bar {
 }
 .archives .thumbnails-image-overlay {
     opacity: 0;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.55);
     position: absolute;
     top: 0;
     left: 0;
@@ -26051,9 +26057,16 @@ html[dir='rtl'] .campaign-statistics__bar {
     top: 0;
     font-size: 1.6rem;
     line-height: 1.1rem;
+    border: none;
+    background: none;
 }
 .archives__search-clear.-isNotEmpty {
     display: block;
+}
+.archives__search-clear:focus-visible {
+    outline: 2px solid #ff0038;
+    outline-offset: -2px;
+    z-index: 9999;
 }
 .archives__content-right {
     margin-left: 1.5rem;
@@ -26106,6 +26119,11 @@ html[dir='rtl'] .campaign-statistics__bar {
 .archives__tree-heading #archivesSearchTrigger:hover,
 .archives__tree-heading #archivesSearchTrigger:active {
     color: inherit;
+}
+.archives__tree-heading #archivesSearchTrigger:focus-visible {
+    outline: 2px solid #ff0038;
+    outline-offset: -2px;
+    z-index: 9999;
 }
 .archives__tree-heading #archivesSearchTrigger.-active .fa:before {
     content: '';
@@ -26250,7 +26268,7 @@ html[dir='rtl'] .campaign-statistics__bar {
     overflow: hidden;
 }
 .archives__hero-description {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     line-height: 1.5;
     margin: 0;
     color: rgba(255, 255, 255, 0.9);
@@ -26327,7 +26345,7 @@ html[dir='rtl'] .campaign-statistics__bar {
             0 1px 5px rgba(0, 0, 0, 0.4);
     }
     .archives__hero-description {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         -webkit-line-clamp: 2;
         text-shadow:
             0 1px 2px rgba(0, 0, 0, 0.7),

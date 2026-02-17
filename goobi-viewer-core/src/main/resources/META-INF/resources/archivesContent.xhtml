@@ -30,7 +30,9 @@
             encoding="utf-8">
             <!-- HERO HEADER -->
             <div
-                class="archives__hero#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1) ? '' : ' archives__hero--no-image'}">
+                class="archives__hero#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1) ? '' : ' archives__hero--no-image'}"
+                role="region"
+                aria-label="#{archiveBean.displayEntry.label}">
                 <ui:fragment
                     rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1)}">
                     <img
@@ -41,7 +43,7 @@
                                 #{archiveBean.archiveConfig.getMediaItem(1).getIconURI(800,260)} 800w"
                         sizes="100vw"
                         src="#{archiveBean.archiveConfig.getMediaItem(1).getIconURI(1200,400)}"
-                        alt="#{archiveBean.archiveConfig.getMediaItem(1).alternativeText != '' ? archiveBean.archiveConfig.getMediaItem(1).alternativeText : ''}" />
+                        alt="#{archiveBean.archiveConfig.getMediaItem(1).alternativeText != '' ? archiveBean.archiveConfig.getMediaItem(1).alternativeText : archiveBean.displayEntry.label}" />
                 </ui:fragment>
                 <div class="archives__hero-content">
                     <h1 class="archives__hero-title">
@@ -99,7 +101,8 @@
                         <button
                             id="archivesSearchTrigger"
                             class="#{not empty archiveBean.searchString ? '-active' : ''} btn"
-                            aria-label="#{msg.search}">
+                            aria-label="#{msg.search}"
+                            pt:aria-expanded="#{not empty archiveBean.searchString}">
                             <util:icon icon="search" />
                         </button>
                     </div>
@@ -124,10 +127,12 @@
                                         name="aria-label"
                                         value="#{msg.aria_label__search_form}" />
                                 </h:inputText>
-                                <div
-                                    class="archives__search-clear #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
-                                    x
-                                </div>
+                                <button
+                                    type="button"
+                                    class="archives__search-clear #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}"
+                                    aria-label="#{msg.delete}">
+                                    <util:icon icon="x" />
+                                </button>
                                 <h:commandButton
                                     styleClass="archives__search-submit-button"
                                     value="#{msg.search}"

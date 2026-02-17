@@ -50,7 +50,8 @@
                             <a
                                 href="#{navigationHelper.getPageUrl('archives')}/#{archiveWrapper.archiveResource.resourceId}/"
                                 class="archives-list__link"
-                                aria-label="#{archiveWrapper.getLabel(navigationHelper.locale)}">
+                                aria-labelledby="archiveTitle-#{archiveWrapper.archiveResource.resourceId}"
+                                aria-describedby="archiveDesc-#{archiveWrapper.archiveResource.resourceId}">
                                 <!-- IMAGE AREA -->
                                 <div class="archives-list__image-wrapper">
                                     <ui:fragment rendered="#{archiveWrapper.archiveConfig.hasMediaItem(0)}">
@@ -64,13 +65,24 @@
                                     </ui:fragment>
 
                                     <!-- TITLE OVERLAY -->
-                                    <div class="archives-list__image-title">
+                                    <div
+                                        class="archives-list__image-title"
+                                        aria-hidden="true">
                                         #{archiveWrapper.getLabel(navigationHelper.locale)}
                                     </div>
                                 </div>
 
+                                <!-- SR-ONLY TITLE -->
+                                <span
+                                    class="-sr-only"
+                                    id="archiveTitle-#{archiveWrapper.archiveResource.resourceId}">
+                                    #{archiveWrapper.getLabel(navigationHelper.locale)}
+                                </span>
+
                                 <!-- DESCRIPTION -->
-                                <div class="archives-list__description">
+                                <div
+                                    class="archives-list__description"
+                                    id="archiveDesc-#{archiveWrapper.archiveResource.resourceId}">
                                     <h:outputText value="#{archiveWrapper.archiveConfig.getShortDescription(200)}" />
                                 </div>
                             </a>

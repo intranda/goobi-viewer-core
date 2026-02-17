@@ -65,6 +65,11 @@
             &:active {
                 color: @white;
             }
+
+            &:focus-visible {
+                .mx-focus-visible;
+                outline-color: @white;
+            }
         }
     }
 
@@ -416,7 +421,7 @@
 
     .thumbnails-image-overlay {
         opacity: 0;
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(0, 0, 0, 0.55);
         position: absolute;
         top: 0;
         left: 0;
@@ -526,9 +531,15 @@
         top: 0;
         font-size: 1.6rem;
         line-height: 1.1rem;
+        border: none;
+        background: none;
 
         &.-isNotEmpty {
             display: block;
+        }
+
+        &:focus-visible {
+            .mx-focus-visible;
         }
     }
 
@@ -595,6 +606,10 @@
             &:hover,
             &:active {
                 color: inherit;
+            }
+
+            &:focus-visible {
+                .mx-focus-visible;
             }
 
             &.-active {
@@ -768,7 +783,7 @@
     }
 
     &__hero-description {
-        font-size: @fontMedium;
+        font-size: @fontNormal;
         line-height: 1.5;
         margin: 0;
         color: rgba(255, 255, 255, 0.9);
@@ -866,7 +881,7 @@
     }
 
     .archives__hero-description {
-        font-size: @fontSmall;
+        font-size: @fontMedium;
         -webkit-line-clamp: 2;
         text-shadow:
             0 1px 2px rgba(0, 0, 0, 0.7),
