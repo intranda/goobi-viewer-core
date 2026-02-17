@@ -548,7 +548,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      */
     public String getImageFilepath() {
 
-        if (getMediaType().isAllowsImageView()) {
+        if (!getMediaType().isAllowsImageView()) {
             if (filePathTiff != null) {
                 return filePathTiff;
             }
