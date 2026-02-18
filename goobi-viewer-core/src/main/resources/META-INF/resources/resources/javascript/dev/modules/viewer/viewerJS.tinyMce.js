@@ -30,11 +30,12 @@ var viewerJS = ( function( viewer ) {
         currLang: 'de',
         selector: 'textarea.tinyMCE',
         width: '100%',
-        height: 400,
+        height: 400, 
         theme: 'silver',
         plugins: 'print preview paste searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount media textpattern help',
-        toolbar: ['formatselect | undo redo | bold italic underline strikethrough superscript forecolor backcolor | link | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | fullscreen code | addFeedbackModalLink'],
-        menubar: false,
+		toolbar: 'formatselect fontsizeselect | undo redo | bold italic underline strikethrough | removeformat | alignleft aligncenter alignright alignjustify | bullist numlist | link anchor image media | table | code',
+		fontsize_formats: '10pt 12pt 14pt 15pt 16pt 18pt 24pt 36pt',
+		menubar: false,
         statusbar: false,
         pagebreak_separator: '<span class="pagebreak"></span>',
         relative_urls: false,
@@ -62,12 +63,13 @@ var viewerJS = ( function( viewer ) {
 		        $(ed.targetElm).blur();
 		    });
             
-			ed.ui.registry.addButton('myCustomToolbarButton', {
-				text: 'My Custom Button',
-	              onAction: function () {
-	                alert('Button clicked!');
-	              }
-    		});
+			// SETUP IS OVERRIDEN BY THE INIT FUNCTION
+//			ed.ui.registry.addButton('myCustomToolbarButton', {
+//				text: 'My Custom Button',
+//	              onAction: function () {
+//	                alert('Button clicked!');
+//	              }
+//    		});
         }
     };
     
