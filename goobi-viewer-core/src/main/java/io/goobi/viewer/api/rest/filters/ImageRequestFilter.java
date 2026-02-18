@@ -24,6 +24,18 @@ package io.goobi.viewer.api.rest.filters;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.annotation.Priority;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,17 +46,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import software.amazon.awssdk.utils.StringUtils;
 
 /**
  * <p>
@@ -66,6 +68,20 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
+
+    private final SolrSearchIndex searchIndex;
+
+    public ImageRequestFilter() {
+        super();
+        this.searchIndex = DataManager.getInstance().getSearchIndex();
+    }
+
+    public ImageRequestFilter(HttpServletRequest servletRequest, HttpServletResponse servletResponse, SolrSearchIndex searchIndex) {
+        super();
+        this.servletRequest = servletRequest;
+        this.servletResponse = servletResponse;
+        this.searchIndex = searchIndex;
+    }
 
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
@@ -115,13 +131,13 @@ public class ImageRequestFilter implements ContainerRequestFilter {
      */
     public boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        if (imageName != null && !imageName.contains(".") && imageName.matches("\\d+")) {
+        if (StringUtils.isNotBlank(imageName) && !imageName.contains(".")) {
             try {
-                Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, imageName);
+                Optional<String> filename = searchIndex.getFilename(pi, imageName);
 
                 if (filename.isPresent()) {
                     request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename.get());
-                    String redirectURI = request.getRequestURI().replace("/" + imageName + "/", "/" + filename.get() + "/");
+                    String redirectURI = StringTools.replaceLast(request.getRequestURI(), "/" + imageName + "/", "/" + filename.get() + "/");
                     response.sendRedirect(redirectURI);
                     return true;
                 } else if (imageName.matches("\\d+")) {
