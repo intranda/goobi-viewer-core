@@ -45,6 +45,7 @@ COPY goobi-viewer-core-config/src/main/resources/docker/setenv.sh ${CATALINA_HOM
 COPY goobi-viewer-core-config/src/main/resources/install/ /viewer-template/config
 COPY goobi-viewer-core-config/src/main/resources/docker/stopwords /stopwords
 COPY goobi-viewer-core-config/src/main/resources/docker/viewer.xml.template ${CATALINA_HOME}/conf/
+COPY goobi-viewer-core-config/src/main/resources/docker/disable_dev_options.patch /viewer-template/
 
 RUN --mount=type=bind,source=goobi-viewer-core-config/src/main/resources/docker,target=/tmp/patches,readonly \
     patch --output=${CATALINA_HOME}/conf/server.xml.template ${CATALINA_HOME}/conf/server.xml < /tmp/patches/server.xml.patch && \
