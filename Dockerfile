@@ -40,7 +40,6 @@ RUN ["/bin/bash", "-c", "mkdir -p /opt/digiverso/{config/bin,indexer,logs,viewer
 RUN ["/bin/bash", "-c", "mkdir -p /viewer-template/{config,oai}" ]
 RUN mkdir -p ${CATALINA_HOME}/conf/Catalina/localhost/ && mkdir -p ${CATALINA_HOME}/webapps/viewer
 
-COPY goobi-viewer-connector/src/main/resources/*.xsl /viewer-template/oai/
 COPY goobi-viewer-core-config/src/main/resources/docker/setenv.sh ${CATALINA_HOME}/bin/setenv.sh
 COPY goobi-viewer-core-config/src/main/resources/install/ /viewer-template/config
 COPY goobi-viewer-core-config/src/main/resources/docker/stopwords /stopwords
