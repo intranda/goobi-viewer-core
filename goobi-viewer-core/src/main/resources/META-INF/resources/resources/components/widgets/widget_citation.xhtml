@@ -146,7 +146,7 @@
 				</div>
 				
 				<viewerComponent:citationRecommendation visibility-class="widget-element"
-					rendered="#{cc.attrs.showCiteLinksButton or (configurationBean.displaySidebarWidgetUsageCitationRecommendation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0)}" />
+					rendered="#{(configurationBean.displaySidebarWidgetUsageCitationRecommendation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0)}" />
 				
 			</div>
 		</div>
