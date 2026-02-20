@@ -8917,43 +8917,50 @@ body:has(.view-error-page) {
     height: auto;
     pointer-events: none;
     filter: brightness(1.04) contrast(1.15);
+    transform: translateX(-3%);
 }
 .view-error__headline {
     font-size: 2.6rem;
     color: #1a1a1a;
-    margin-bottom: 0.8rem;
-    line-height: 1.25;
-    letter-spacing: -0.03em;
+    margin-top: -1.6rem;
+    margin-bottom: 1.2rem;
+    position: relative;
+    z-index: 1;
+    line-height: 1.2;
+    letter-spacing: -0.04em;
 }
 .view-error__code {
     font-weight: 800;
     color: #3365a9;
+    letter-spacing: -0.05em;
 }
 .view-error__title {
     font-weight: 300;
     color: #4b4b4b;
+    letter-spacing: -0.02em;
 }
 .view-error__message {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     color: #6f6f6f;
-    line-height: 1.75;
-    margin: 0 auto 2.8rem;
-    max-width: 420px;
+    line-height: 1.7;
+    margin: 0 auto 2.4rem;
+    max-width: 400px;
+    letter-spacing: 0.005em;
 }
 .view-error__actions {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
+    gap: 1.2rem;
     flex-wrap: wrap;
 }
 .view-error__actions .btn {
-    min-width: 170px;
+    min-width: 180px;
     border-radius: 100px;
-    padding: 1rem 2.4rem;
+    padding: 1.1rem 2.6rem;
     font-size: 1.4rem;
-    font-weight: 500;
-    letter-spacing: 0.01em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     transition: all 0.2s ease;
     cursor: pointer;
 }
@@ -8963,12 +8970,12 @@ body:has(.view-error-page) {
 .view-error__actions .btn--full {
     background-color: #3365a9;
     border-color: #3365a9;
-    box-shadow: 0 2px 8px rgba(51, 101, 169, 0.3);
+    box-shadow: 0 2px 8px rgba(51, 101, 169, 0.25);
 }
 .view-error__actions .btn--full:hover {
     background-color: #134ea0;
     border-color: #134ea0;
-    box-shadow: 0 4px 16px rgba(51, 101, 169, 0.35);
+    box-shadow: 0 4px 12px rgba(51, 101, 169, 0.3);
     transform: translateY(-1px);
 }
 .view-error__actions .btn--full:active {
@@ -8984,14 +8991,14 @@ body:has(.view-error-page) {
 .view-error__actions .btn--default {
     color: #4b4b4b;
     background-color: #fff;
-    border-color: #ccc;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border-color: #d4d4d4;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 .view-error__actions .btn--default:hover {
     color: #1a1a1a;
-    border-color: #6f6f6f;
+    border-color: #bbb;
     background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     transform: translateY(-1px);
 }
 .view-error__actions .btn--default:active {
@@ -9004,18 +9011,27 @@ body:has(.view-error-page) {
 .view-error__actions .btn--default:focus {
     color: #4b4b4b;
     background-color: #fff;
-    border-color: #ccc;
+    border-color: #d4d4d4;
 }
 @media screen and (max-width: 768px) {
     .view-error__image {
-        max-width: 300px;
+        max-width: 360px;
+        transform: none;
     }
     .view-error__headline {
         font-size: 2.2rem;
+        margin-top: -0.8rem;
     }
     .view-error__message {
         font-size: 1.4rem;
-        margin-bottom: 2.2rem;
+        margin-bottom: 2rem;
+    }
+    .view-error__actions {
+        gap: 1rem;
+    }
+    .view-error__actions .btn {
+        min-width: 150px;
+        padding: 0.9rem 2rem;
     }
 }
 @media screen and (max-width: 480px) {
@@ -9023,21 +9039,25 @@ body:has(.view-error-page) {
         padding: 0 1.5rem 4rem;
     }
     .view-error__image {
-        max-width: 220px;
+        max-width: 70vw;
+        transform: none;
     }
     .view-error__headline {
         font-size: 2rem;
+        margin-top: -0.4rem;
+        margin-bottom: 1rem;
     }
     .view-error__message {
         font-size: 1.4rem;
-        margin-bottom: 1.8rem;
+        margin-bottom: 1.6rem;
     }
     .view-error__actions {
-        flex-direction: column;
         gap: 0.8rem;
     }
     .view-error__actions .btn {
-        width: 100%;
+        min-width: 140px;
+        padding: 0.8rem 1.6rem;
+        font-size: 1.2rem;
     }
 }
 .view-feedback {
