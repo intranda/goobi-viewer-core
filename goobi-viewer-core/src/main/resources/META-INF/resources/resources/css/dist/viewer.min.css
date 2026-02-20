@@ -14561,6 +14561,7 @@ html[dir='rtl'] .timematrix__loader {
 }
 .toc__multi-volume {
     margin-top: 35px;
+    margin-bottom: 35px;
 }
 .toc__mv-group {
     padding: 5px 0;
@@ -14672,6 +14673,51 @@ html[dir='rtl'] .timematrix__loader {
 }
 .toc__list-full {
     margin-top: 15px;
+}
+.toc__mv-tile-grid-heading {
+    display: none;
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+}
+.toc__mv-tile-grid {
+    display: grid;
+    gap: 20px 30px;
+    grid-template-columns: 1fr 1fr 1fr;
+    background: #fff;
+    padding: 1.5rem;
+}
+.toc__mv-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.toc__mv-tile:hover .toc__mv-tile-image {
+    opacity: 0.85;
+}
+.toc__mv-tile-image {
+    object-fit: cover;
+    object-position: center;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    transition: opacity 0.2s ease;
+}
+.toc__mv-tile-image-wrapper {
+    height: 200px;
+}
+.toc__mv-tile-title {
+    word-wrap: break-word;
+    font-size: 16px;
+}
+@media screen and (max-width: 768px) {
+    .toc__mv-tile-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+@media screen and (max-width: 480px) {
+    .toc__mv-tile-grid {
+        grid-template-columns: 1fr;
+    }
 }
 .download__status .card-title {
     margin: 0;

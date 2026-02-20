@@ -1061,6 +1061,15 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Return the layout type for TOCs of anchor records. Dafaults to 'list'
+     * 
+     * @return a string
+     */
+    public String getTocAnchorLayout() {
+        return getLocalString("toc.tocAnchorLayout", "list");
+    }
+
+    /**
      * <p>
      * Returns a regex such that all download files which filenames fit this regex should not be visible in the downloads widget. If an empty string
      * is returned, all downloads should remain visible

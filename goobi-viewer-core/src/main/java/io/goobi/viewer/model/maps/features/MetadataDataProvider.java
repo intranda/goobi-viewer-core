@@ -44,7 +44,8 @@ public class MetadataDataProvider extends AbstractFeatureDataProvider {
         super(searchIndex, requiredFields);
     }
 
-    public List<MetadataDocument> getResults(String query, int maxResults) throws PresentationException, IndexUnreachableException {
+    public List<MetadataDocument> getResults(String query, List<String> facetFilterQueries, int maxResults)
+            throws PresentationException, IndexUnreachableException {
 
         if (StringUtils.isBlank(query)) {
             return Collections.emptyList();
@@ -57,7 +58,7 @@ public class MetadataDataProvider extends AbstractFeatureDataProvider {
         Map<String, String> paramMap = SearchHelper.getExpandQueryParams(metadataQuery, MAX_METATA_PER_RECORD);
         paramMap.put("fq", filterQuery);
 
-        return search(maxResults, topDocQuery, paramMap);
+        return search(maxResults, topDocQuery, facetFilterQueries, paramMap);
 
     }
 

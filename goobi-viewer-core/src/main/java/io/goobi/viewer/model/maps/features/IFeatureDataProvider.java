@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.maps.features;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -33,6 +34,11 @@ public interface IFeatureDataProvider {
                     "MD_VALUE", "MD_REFID", "MD_PROCESSID", "MD_IDENTIFIER", "THUMBPAGENO", "ORDER", "MIMETYPE", "THUMBNAIL", "BOOL_WKT_COORDS",
                     "WKT_COORDS");
 
-    public List<MetadataDocument> getResults(String query, int maxResults) throws PresentationException, IndexUnreachableException;
+    public default List<MetadataDocument> getResults(String query, int maxResults) throws PresentationException, IndexUnreachableException {
+        return getResults(query, Collections.emptyList(), maxResults);
+    }
+
+    public List<MetadataDocument> getResults(String query, List<String> facetFilterQueries, int maxResults)
+            throws PresentationException, IndexUnreachableException;
 
 }

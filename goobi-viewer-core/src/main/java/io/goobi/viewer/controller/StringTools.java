@@ -902,6 +902,16 @@ public final class StringTools {
         return buffer.toString();
     }
 
+    public static String replaceLast(String text, String target, String replacement) {
+        int index = text.lastIndexOf(target);
+        if (index == -1) {
+            return text; // target nicht gefunden
+        }
+        return text.substring(0, index)
+                + replacement
+                + text.substring(index + target.length());
+    }
+
     /**
      * Returns a truncated version of the given text which is no longer that maxLength. If possible the truncated text ends between words. If it is
      * shorter than the original text, '...' is appended at the end (these count towards the maxLength, i.e. the actual text has at most maxLength-3
