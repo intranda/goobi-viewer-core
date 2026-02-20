@@ -235,7 +235,19 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.toc {
+		&__mv-tile-grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+	.toc { 
+		&__mv-tile-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+}
