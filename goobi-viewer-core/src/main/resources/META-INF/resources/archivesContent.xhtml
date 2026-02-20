@@ -47,9 +47,8 @@
                 </ui:fragment>
                 <div class="archives__hero-content">
                     <h1 class="archives__hero-title">
-                        #{archiveBean.archiveConfig != null and
-                        archiveBean.archiveConfig.title.isValid(navigationHelper.locale) ?
-                        archiveBean.archiveConfig.title.getText(navigationHelper.locale) :
+                        #{archiveBean.archiveConfig != null and not empty archiveBean.archiveConfig.title.textOrDefault ?
+                        archiveBean.archiveConfig.title.textOrDefault :
                         archiveBean.displayEntry.label}
                     </h1>
                     <ui:fragment
