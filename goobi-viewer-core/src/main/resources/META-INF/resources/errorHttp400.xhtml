@@ -24,10 +24,9 @@
                     id="errorHttp400"
                     class="view-error">
                     <div class="view-error__icon">
-                        <h:graphicImage
-                            library="resources"
-                            name="images/goobi-error.gif"
-                            styleClass="view-error__image"
+                        <img
+                            src="#{request.contextPath}#{navigationHelper.getResource('images/goobi-error.gif')}"
+                            class="view-error__image"
                             alt="Goobi Error" />
                     </div>
                     <div class="view-error__headline">
