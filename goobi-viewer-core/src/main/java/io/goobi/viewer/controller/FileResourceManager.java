@@ -53,13 +53,21 @@ public class FileResourceManager {
         this.theme = theme;
     }
 
+    public FileResourceManager(String theme) {
+        this.coreResourcesPath = Path.of("resources");
+        this.themResourcesPath = Path.of("resources/themes/" + theme);
+        this.context = null;
+        this.theme = theme;
+    }
+
     public Path getCoreResourcePath(String resource) {
-        String path = context.getRealPath("resources/" + resource);
-        if (StringUtils.isNotBlank(path)) {
-            return Paths.get(path);
-        } else {
-            return Path.of("");
+        if (this.context != null) {
+            String path = context.getRealPath("resources/" + resource);
+            if (StringUtils.isNotBlank(path)) {
+                return Paths.get(path);
+            }
         }
+        return Path.of("");
     }
 
     public Path getThemeResourcePath(String resource) {
