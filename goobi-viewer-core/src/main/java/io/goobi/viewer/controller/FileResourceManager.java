@@ -25,6 +25,8 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.lang3.StringUtils;
+
 import jakarta.servlet.ServletContext;
 
 /**
@@ -53,7 +55,11 @@ public class FileResourceManager {
 
     public Path getCoreResourcePath(String resource) {
         String path = context.getRealPath("resources/" + resource);
-        return Paths.get(path);
+        if (StringUtils.isNotBlank(path)) {
+            return Paths.get(path);
+        } else {
+            return Path.of("");
+        }
     }
 
     public Path getThemeResourcePath(String resource) {
