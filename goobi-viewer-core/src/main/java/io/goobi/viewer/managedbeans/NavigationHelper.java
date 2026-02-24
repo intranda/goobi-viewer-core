@@ -2007,19 +2007,32 @@ public class NavigationHelper implements Serializable {
                 return ret;
             } else if (!alternativeSuffixes.isEmpty()) {
                 for (String suffix : alternativeSuffixes) {
-                    if (suffix.startsWith(".")) {
-                        suffix = suffix.substring(1);
-                    }
-                    Path file = FileTools.replaceExtension(themePath, suffix);
-                    if (Files.exists(file)) {
-                        Path resourcePath = FileTools.replaceExtension(Path.of(path), suffix);
-                        return this.fileResourceManager.getThemeResourceURI(resourcePath.toString()).toString();
+                    Optional<String> resourceUri = findResource(path, themePath, removeLeadingDot(suffix));
+                    if (resourceUri.isPresent()) {
+                        return resourceUri.get();
                     }
                 }
             }
             return fileResourceManager.getCoreResourceURI(path).toString();
         }
         return "";
+    }
+
+    private Optional<String> findResource(String path, Path themePath, String suffix) {
+        Path file = FileTools.replaceExtension(themePath, suffix);
+        if (Files.exists(file)) {
+            Path resourcePath = FileTools.replaceExtension(Path.of(path), suffix);
+            return Optional.ofNullable(this.fileResourceManager.getThemeResourceURI(resourcePath.toString()).toString());
+        }
+        return Optional.empty();
+    }
+
+    private String removeLeadingDot(String string) {
+        if (string != null && string.startsWith(".")) {
+            return string.substring(1);
+        } else {
+            return string;
+        }
     }
 
     public boolean isRtl() {
