@@ -79,7 +79,7 @@
                         <!-- Object -->
                         <h:panelGroup
                             visibility-class="widget-element"
-                            rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, mimeType: [image, video, audio, model]}')}">
+                            rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, contentType:[IMAGE, AUDIO, VIDEO, MODEL, PDF]}')}">
                             <li class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
                                 <h:outputLink
                                     value="#{navigationHelper.imageActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">

@@ -76,6 +76,14 @@ public class PdfDownloadJob extends DownloadJob {
         this.path = generatePath();
     }
 
+    public PdfDownloadJob(String pi, String logId, String configVariant, boolean usePdfSource, Path targetFolder) {
+        super(pi);
+        this.logId = logId;
+        this.configVariant = configVariant;
+        this.usePdfSource = usePdfSource;
+        this.path = targetFolder.resolve(generateFilename());
+    }
+
     public PdfDownloadJob(Path path) {
         super("");
         this.logId = "";
@@ -198,8 +206,8 @@ public class PdfDownloadJob extends DownloadJob {
         if (folder == null || !Files.exists(folder)) {
             return false;
         }
-        try {
-            return Files.list(folder).anyMatch(f -> f.getFileName().toString().matches("(?i).*\\.pdf"));
+        try (Stream<Path> files = Files.list(folder)) {
+            return files.anyMatch(f -> f.getFileName().toString().matches("(?i).*\\.pdf"));
         } catch (IOException e) {
             logger.error("Error parsing folder {} to look for existing pdf files ", folder);
             return false;

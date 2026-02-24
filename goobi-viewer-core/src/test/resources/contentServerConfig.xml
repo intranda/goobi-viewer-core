@@ -54,20 +54,35 @@
 		<image value="image_$datetime" sendAsAttachment="false" />
 	</defaultFileNames>
 
-	<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ * configuration 
-		for the pdf generation, these parameters will change the performance of pdf 
-		generation * - alwaysUseRenderedImage convert all images always to rendered 
-		image before sending it to iText * - alwaysCompressToJPEG compress all images 
-		always to jpeg image before sending it to iText * - metsFileGroup the filegroup 
-		to use for pdf generation * - writeAsPdfA write PDF file as Pdf/A * - pagesize 
-		default page size for pdf generation; possible values are 'A4', 'original' 
-		and 'A4Box' * sample: <defaultPdfConfig alwaysUseRenderedImage="true" alwaysCompressToJPEG="true" 
-		metsFileGroup="DEFAULT" writeAsPdfA="true" pagesize="A4"/> *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<defaultPdfConfig alwaysUseRenderedImage="true"
-		alwaysCompressToJPEG="true" metsFileGroup="PRESENTATION" writeAsPdfA="false"
-		pagesize="original" />
+    <pdfConfig>
+        <config variant="default"
+                alwaysUseRenderedImage="true"
+                alwaysCompressToJPEG="true"
+                metsFileGroup="PRESENTATION"
+                metsFileUrlRemove="file:\/\/\/opt\/digiverso\/viewer\/media\/"
+                writeAsPdfA="false"
+                pagesize="original"
+                convertToGrayscale="false" />
 
-	<!--########################################################## *############################################################# 
+        <config variant="pdfa"
+                metsFileGroup="PRESENTATION"
+                metsFileUrlRemove="file:\/\/\/opt\/digiverso\/viewer\/media\/"
+                writeAsPdfA="true"
+                pagesize="original" />
+
+        <config variant="small"
+                metsFileGroup="PRESENTATION"
+                metsFileUrlRemove="file:\/\/\/opt\/digiverso\/viewer\/media\/"
+                writeAsPdfA="false"
+                pagesize="original"
+                convertToGrayscale="false"
+                imageCompression="50"
+                imageScaleToBox="1500x1500" />
+
+    </pdfConfig>
+
+
+	<!--########################################################## *###########i################################################## 
 		* * ContentServer parameters * *############################################################# 
 		*########################################################### -->
 
