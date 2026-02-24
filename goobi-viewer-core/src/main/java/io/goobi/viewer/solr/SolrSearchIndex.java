@@ -303,13 +303,13 @@ public class SolrSearchIndex {
             for (String fq : filterQueries) {
                 String cleanedQuery = SolrTools.cleanUpQuery(fq);
                 solrQuery.addFilterQuery(cleanedQuery);
-                // logger.trace("adding filter query: {}", fq) //NOSONAR Debug
+                // logger.trace("adding filter query: {}", cleanedQuery); //NOSONAR Debug
             }
         }
         if (params != null && !params.isEmpty()) {
             for (Entry<String, String> entry : params.entrySet()) {
                 solrQuery.set(entry.getKey(), entry.getValue());
-                // logger.trace("&{}={}", key, params.get(key)); //NOSONAR Debug
+                // logger.trace("&{}={}", entry.getKey(), entry.getValue()); //NOSONAR Debug
             }
         }
 
