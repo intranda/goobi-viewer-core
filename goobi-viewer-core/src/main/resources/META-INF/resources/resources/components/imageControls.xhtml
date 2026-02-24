@@ -87,7 +87,7 @@
                             						pageList: #{activeDocumentBean.viewManager.dropdownPagesAsJson},
                             						tooltipPlacement: "top",
                             						navigationSteps: #{configurationBean.pageBrowseEnabled ? configurationBean.pageBrowseSteps : '[1]' },
-                            						pageUrlTemplate : (page) => `#{request.contextPath}/#{navigationHelper.currentPageType.name}/#{activeDocumentBean.viewManager.pi}/\${page}/`,
+                            						pageUrlTemplate : (page) => `#{request.contextPath}/#{navigationHelper.currentPageType.name}/#{activeDocumentBean.viewManager.pi}/\${page}/#topDocAnchor`,
                             						update: typeof imageOrderChanged !== 'undefined' ? imageOrderChanged : undefined,
                             						onUpdate: (pageNumber) => changeImageOrder.next(pageNumber),
                             						msg: {

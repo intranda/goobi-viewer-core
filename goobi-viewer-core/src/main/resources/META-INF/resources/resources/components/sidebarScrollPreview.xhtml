@@ -28,7 +28,7 @@
                                     rendered="#{!page.mediaType.allowsImageView or activeDocumentBean.viewManager.pageNavigation.name() != 'SEQUENCE'}">
                                     <h:outputLink
                                         styleClass="sidebar-scroll-preview__link"
-                                        value="#{activeDocumentBean.getPageUrl(page.order)}">
+                                        value="#{activeDocumentBean.getPageUrl(page.order)}#topDocAnchor">
                                         <span class="sidebar-scroll-preview__image-wrapper">
                                             <img
                                                 data-script="fadeIn"
