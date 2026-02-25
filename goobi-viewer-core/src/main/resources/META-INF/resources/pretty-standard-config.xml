@@ -1402,7 +1402,23 @@
 		<pattern value="/errorTest/" />
 		<view-id value="/errorTest.xhtml" />
 	</url-mapping>
-    
+	<url-mapping id="errorHttp400">
+		<pattern value="/error/400/" />
+		<view-id value="/errorHttp400.xhtml" />
+	</url-mapping>
+	<url-mapping id="errorHttp403">
+		<pattern value="/error/403/" />
+		<view-id value="/errorHttp403.xhtml" />
+	</url-mapping>
+	<url-mapping id="errorHttp404">
+		<pattern value="/error/404/" />
+		<view-id value="/errorHttp404.xhtml" />
+	</url-mapping>
+	<url-mapping id="errorHttp500">
+		<pattern value="/error/500/" />
+		<view-id value="/errorHttp500.xhtml" />
+	</url-mapping>
+
     <!-- Close tab -->
    <url-mapping id="logincomplete">
         <pattern value="/logincomplete/" />
