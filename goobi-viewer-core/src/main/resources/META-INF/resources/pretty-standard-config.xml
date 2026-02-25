@@ -99,7 +99,7 @@
     <!-- ARCHIVES -->
     <url-mapping id="archives">
         <pattern value="/archives/" />
-        <view-id value="/archivesContent.xhtml" />
+        <view-id value="/archivesList.xhtml" />
         <action onPostback="false">#{archiveBean.reset()}</action>
     </url-mapping>
     <url-mapping id="archives1">
@@ -1031,6 +1031,17 @@
 		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+    <url-mapping id="adminCmsArchives">
+        <pattern value="/admin/cms/archives/" />
+        <view-id value="/resources/cms/adminCmsArchives.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsArchiveEdit">
+        <pattern value="/admin/cms/archives/edit/#{resourceId}/" />
+        <view-id value="/resources/cms/adminCmsArchiveEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsArchivesBean.setSelectedResourceId(resourceId)}</action>
+    </url-mapping>
 	<url-mapping id="adminCmsOverview">
 		<pattern value="/admin/cms/pages/" />
 		<view-id value="/resources/cms/adminCmsOverview.xhtml" />

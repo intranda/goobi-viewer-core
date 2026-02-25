@@ -51,7 +51,9 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.archives.ArchiveEntry;
 import io.goobi.viewer.model.archives.ArchiveManager;
 import io.goobi.viewer.model.archives.ArchiveManager.DatabaseState;
+import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import io.goobi.viewer.model.archives.ArchiveResource;
+import io.goobi.viewer.model.archives.ArchiveResourceWrapper;
 import io.goobi.viewer.model.archives.ArchiveTree;
 import io.goobi.viewer.model.archives.NodeType;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -71,6 +73,7 @@ public class ArchiveBean implements Serializable {
     private String searchString;
     private boolean databaseLoaded = false;
     private ArchiveTree archiveTree = null;
+    private CMSArchiveConfig archiveConfig;
     private String currentResource;
     private final ArchiveManager archiveManager;
 
@@ -89,6 +92,7 @@ public class ArchiveBean implements Serializable {
         this.currentResource = "";
         this.searchString = "";
         this.archiveTree = null;
+        this.archiveConfig = null;
         this.databaseLoaded = false;
     }
 
@@ -116,13 +120,35 @@ public class ArchiveBean implements Serializable {
                 if (StringUtils.isNotBlank(selectedEntryId)) {
                     this.setSelectedEntryId(selectedEntryId);
                 }
-            } catch (PresentationException | IllegalStateException | IndexUnreachableException e) {
+                Optional<CMSArchiveConfig> config =
+                        DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(getCurrentArchive().getResourceId());
+                if (config.isPresent()) {
+                    logger.trace("Found configuration for archive resource: {}", getCurrentArchive().getResourceId());
+                    this.archiveConfig = config.get();
+                }
+            } catch (PresentationException | IllegalStateException | IndexUnreachableException | DAOException e) {
                 logger.error("Error initializing archive tree: {}", e.getMessage());
                 Messages.error("Error initializing archive tree: " + e.getMessage());
                 this.databaseLoaded = false;
                 throw new ArchiveConnectionException("Error retrieving database {} from {}", getCurrentResource());
             }
         }
+    }
+
+    /**
+     * @return configured title or root entry label
+     */
+    public String getBreadcrumbTitle() {
+        if (archiveConfig != null && archiveConfig.getTitle() != null) {
+            String configuredTitle = archiveConfig.getTitle().getTextOrDefault();
+            if (StringUtils.isNotBlank(configuredTitle)) {
+                return configuredTitle;
+            }
+        }
+        if (getTrueRoot() != null) {
+            return getTrueRoot().getLabel();
+        }
+        return "";
     }
 
     /**
@@ -145,6 +171,13 @@ public class ArchiveBean implements Serializable {
         // logger.trace("getArchiveTree: {} from ArchiveBean {}", archiveTree != null ?
         // archiveTree.toString() : "null", this.toString()); //NOSONAR Debug
         return archiveTree;
+    }
+
+    /**
+     * @return the archiveConfig
+     */
+    public CMSArchiveConfig getArchiveConfig() {
+        return archiveConfig;
     }
 
     public void toggleEntryExpansion(ArchiveEntry entry) {
@@ -391,6 +424,25 @@ public class ArchiveBean implements Serializable {
 
     public ArchiveResource getCurrentArchive() {
         return archiveManager.getArchive(currentResource);
+    }
+
+    public List<ArchiveResourceWrapper> getFilteredArchiveWrappers() throws DAOException {
+        List<ArchiveResourceWrapper> ret = new ArrayList<>();
+        for (ArchiveResource resource : getFilteredDatabases()) {
+            logger.trace("Processing archive resource: {}", resource.getResourceId());
+            ArchiveResourceWrapper wrapper = new ArchiveResourceWrapper(resource);
+            ret.add(wrapper);
+            Optional<CMSArchiveConfig> config =
+                    DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(resource.getResourceId());
+            if (config.isPresent()) {
+                logger.trace("Found configuration for archive resource: {}", resource.getResourceId());
+                wrapper.setArchiveConfig(new CMSArchiveConfig(config.get())); // Clone DB object for editing
+            } else {
+                // Make sure the CMSArchiveConfig is available early
+                wrapper.setArchiveConfig(new CMSArchiveConfig(resource.getResourceId()));
+            }
+        }
+        return ret;
     }
 
     /**

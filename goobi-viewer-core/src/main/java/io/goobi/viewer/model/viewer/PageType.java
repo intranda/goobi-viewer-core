@@ -106,6 +106,8 @@ public enum PageType {
     adminTranslationsEdit("admin/translations/new", "admin__translations__add_new_entry", adminTranslations),
     //admin/cms
     adminCms("admin/cms", "admin__cms", adminDashboard),
+    adminCmsArchives("admin/cms/archives", "admin__cms_archives", adminDashboard),
+    adminCmsArchiveEdit("admin/cms/archives/edit", "admin__cms_archives_edit", adminCmsArchives),
     adminCmsOverview("admin/cms/pages", "cms_menu_pages", adminDashboard),
     adminCmsSelectTemplate("admin/cms/pages/templates", "admin__cms__select_template", adminCmsOverview),
     adminCmsNewPage("admin/cms/pages/new", "cms_createPage", adminCmsSelectTemplate),

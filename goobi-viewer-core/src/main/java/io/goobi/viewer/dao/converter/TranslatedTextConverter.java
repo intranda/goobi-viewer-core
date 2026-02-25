@@ -41,6 +41,8 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 /**
+ * Objects using this converter should be cloned after reading from the database, otherwise changes to the text values may not be updated correctly.
+ * 
  * @author florian
  *
  */

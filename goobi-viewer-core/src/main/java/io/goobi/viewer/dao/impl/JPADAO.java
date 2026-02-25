@@ -61,6 +61,7 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSProperty;
@@ -4275,6 +4276,124 @@ public class JPADAO implements IDAO {
             q.setParameter("name", pageType.getName());
             // q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
             return getSingleResult(q);
+        } finally {
+            close(em);
+        }
+    }
+
+    // CMS archive configurations
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<CMSArchiveConfig> getCmsArchiveConfigForArchive(String pi) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT a FROM CMSArchiveConfig a WHERE a.pi = :pi");
+            q.setParameter("pi", pi);
+            // q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
+            return getSingleResult(q);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<CMSArchiveConfig> getCMSArchiveConfigs(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM CMSArchiveConfig a");
+            Map<String, String> params = new HashMap<>();
+            String filterQuery = createFilterQuery(null, filters, params);
+            if (StringUtils.isEmpty(filterQuery)) {
+                sbQuery.append(QUERY_ELEMENT_WHERE);
+            } else {
+                sbQuery.append(filterQuery).append(QUERY_ELEMENT_AND);
+            }
+            if (StringUtils.isNotBlank(sortField)) {
+                String[] sortFields = sortField.split("_");
+                sbQuery.append(" ORDER BY ");
+                for (String sf : sortFields) {
+                    sbQuery.append("a.").append(sf);
+                    if (descending) {
+                        sbQuery.append(QUERY_ELEMENT_DESC);
+                    }
+                    sbQuery.append(",");
+                }
+                sbQuery.deleteCharAt(sbQuery.length() - 1);
+            }
+
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+            return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getCMSArchiveConfigCount(Map<String, String> filters) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM CMSArchiveConfig a");
+            Map<String, String> params = new HashMap<>();
+            String filterQuery = createFilterQuery(null, filters, params);
+            if (StringUtils.isEmpty(filterQuery)) {
+                sbQuery.append(QUERY_ELEMENT_WHERE);
+            } else {
+                sbQuery.append(filterQuery).append(QUERY_ELEMENT_AND);
+            }
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean saveCMSArchiveConfig(CMSArchiveConfig config) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            if (config.getId() == null) {
+                em.persist(config);
+            } else {
+                em.merge(config);
+            }
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error(e.toString(), e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteCMSArchiveConfig(CMSArchiveConfig config) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            Role o = em.getReference(Role.class, config.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
             close(em);
         }

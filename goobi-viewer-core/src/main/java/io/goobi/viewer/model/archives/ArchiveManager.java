@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -298,31 +299,67 @@ public class ArchiveManager implements Serializable {
      * @return the neighboring entry id if it exists
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should return neighbors correctly
      */
-    public Pair<Optional<String>, Optional<String>> findIndexedNeighbours(String entryId) throws PresentationException, IndexUnreachableException {
-        String query = "+" + SolrConstants.EAD_NODE_ID + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name();
-        List<StringPair> sortFields = Collections.singletonList(new StringPair(SolrConstants.PI, "asc"));
-        List<String> fieldList = Arrays.asList(SolrConstants.PI, SolrConstants.EAD_NODE_ID);
+    public static Pair<Optional<String>, Optional<String>> findIndexedNeighbours(String entryId)
+            throws PresentationException, IndexUnreachableException {
+        if (entryId == null) {
+            throw new IllegalArgumentException("entryId may not be null");
+        }
 
-        SolrDocumentList docs = DataManager.getInstance()
-                .getSearchIndex()
-                .search(query, SolrSearchIndex.MAX_HITS, sortFields, fieldList);
         Optional<String> prev = Optional.empty();
         Optional<String> next = Optional.empty();
 
-        ListIterator<SolrDocument> iter = docs.listIterator();
+        // Determine main archive PI for the given node ID
+        String query1 = "+" + SolrConstants.EAD_NODE_ID + ":\"" + entryId + "\" +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name();
+        SolrDocument archiveRootDoc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc(query1, Collections.singletonList(SolrConstants.PI_TOPSTRUCT));
+        if (archiveRootDoc == null) {
+            logger.trace("No indexed EAD parent archive found");
+            return Pair.of(prev, next);
+        }
+
+        // Get list of all node IDs for the archive, sorted by EAD_NODE_ID
+        String archivePi = SolrTools.getSingleFieldStringValue(archiveRootDoc, SolrConstants.PI_TOPSTRUCT);
+        String query2 = "+" + SolrConstants.PI_TOPSTRUCT + ":\"" + archivePi + "\" +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name();
+        SolrDocumentList archiveNodeDocs = DataManager.getInstance()
+                .getSearchIndex()
+                .search(query2, SolrSearchIndex.MAX_HITS, null, Collections.singletonList(SolrConstants.EAD_NODE_ID));
+        Set<String> archiveNodeIds = archiveNodeDocs.stream()
+                .map(doc -> SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID))
+                .filter(StringUtils::isNotEmpty)
+                .collect(Collectors.toSet());
+
+        // Find records with linked archive nodes that belong to the relevant archive
+        String query3 = "+" + SolrConstants.EAD_NODE_ID + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name();
+        SolrDocumentList linkedRecordDocs = DataManager.getInstance()
+                .getSearchIndex()
+                .search(query3, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.EAD_NODE_ID, "asc")),
+                        Arrays.asList(SolrConstants.PI, SolrConstants.EAD_NODE_ID));
+
+        // Filter records, leaving only those linked to nodes in the relevant archive
+        List<SolrDocument> relevantRecordDocs = linkedRecordDocs.stream()
+                .filter(doc -> archiveNodeIds.contains(SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID)))
+                .toList();
+
+        ListIterator<SolrDocument> iter = relevantRecordDocs.listIterator();
         while (iter.hasNext()) {
             SolrDocument doc = iter.next();
-            String id = SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID);
-            if (id.equals(entryId)) {
+            String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
+            String nodeId = SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID);
+            if (entryId.equals(nodeId)) {
+                logger.error("current node");
                 if (iter.hasNext()) {
-                    String nextId = SolrTools.getSingleFieldStringValue(iter.next(), SolrConstants.EAD_NODE_ID);
-                    next = Optional.of(nextId);
+                    logger.error("current node has next");
+                    String nextPi = SolrTools.getSingleFieldStringValue(iter.next(), SolrConstants.PI);
+                    next = Optional.of(nextPi);
                 }
                 break;
             }
-            prev = Optional.of(id);
+            prev = Optional.of(pi);
         }
+
         return Pair.of(prev, next);
     }
 

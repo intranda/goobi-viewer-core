@@ -14,8 +14,8 @@
       <!-- BULK ACTIONS -->
 	  <ui:fragment rendered="#{bulkaction == true}">
       	<div class="admin-cms-media__bulk-actions">
-          <label for="selectAllMediaItems" class="custom-control custom-control--checkbox">
-          <h:selectBooleanCheckbox id="selectAllMediaItems" name="selectAllMediaItems" value="#{cmsMediaBean.allSelected}">
+          <label for="selectAllMediaItems#{index}" class="custom-control custom-control--checkbox">
+          <h:selectBooleanCheckbox id="selectAllMediaItems#{index}" name="selectAllMediaItems#{index}" value="#{cmsMediaBean.allSelected}">
 	          <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__select_all}"/>
 	          <f:ajax render="@none" execute="@this"/>
           </h:selectBooleanCheckbox>
@@ -30,13 +30,13 @@
 	          </label>
 	
 	          <div class="custom-control custom-control--select">
-	              <select id="bulkActionSelect" name="bulkActionSelect" aria-label="#{msg.admin__media_bulk_actions}"> 
+	              <select id="bulkActionSelect#{index}" name="bulkActionSelect#{index}" aria-label="#{msg.admin__media_bulk_actions}"> 
 	                  <option value="bulk">#{msg.admin__media_bulk_actions}</option>
 	                  <option value="edit">#{msg.admin__media_bulk_edit}</option>
 	                  <option value="delete">#{msg.admin__media_bulk_delete}</option>
 	              </select>
 	          </div>
-	          <h:commandLink id="deleteSelectedItemsButton" styleClass="d-none" action="#{cmsMediaBean.deleteSelectedItems}">
+	          <h:commandLink id="deleteSelectedItemsButton#{index}" styleClass="d-none" action="#{cmsMediaBean.deleteSelectedItems}">
 	          	<f:ajax render="adminCmsMediaFilesForm :messages" onevent="reload"></f:ajax>
 	          </h:commandLink>
       	</div>
@@ -57,10 +57,10 @@
       <!-- FILTER -->
       <div class="admin-cms-media__filter">
               <label class="sr-only" for="adminCmsMediaFilter">#{msg.admin__media_filter}</label>
-              <h:inputText type="text" class="form-control" id="adminCmsMediaFilter" placeholder="#{msg.admin__media_filter}" value="#{cmsMediaBean.filter}">
+              <h:inputText type="text" class="form-control" id="adminCmsMediaFilter#{index}" placeholder="#{msg.admin__media_filter}" value="#{cmsMediaBean.filter}">
               	<f:passThroughAttribute name="placeholder" value="#{msg.admin__media_filter}"></f:passThroughAttribute>
               </h:inputText>
-           <h:commandButton id="reloadButton" style="display:none" action="#{cmsMediaBean.reloadMediaList}">
+           <h:commandButton id="reloadButton#{index}" style="display:none" action="#{cmsMediaBean.reloadMediaList}">
                <!-- Must not submit form, otherwise the CMSMediaItem-listing will become confused after file upload -->
            	<f:ajax execute="adminCmsMediaFilter" render="@form" onevent="reload"></f:ajax>
            </h:commandButton>

@@ -1,0 +1,108 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    template="/resources/themes/#{navigationHelper.theme}/template.html"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPage('archives', true, true)}" />
+            <f:event
+                type="preRenderView"
+                listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('archives__archiveViewHeading', 1)}" />
+            <f:viewAction
+                onPostback="false"
+                action="#{archiveBean.updateArchives()}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <div
+            id="archivesList"
+            class="archives-list">
+            <h:panelGroup>
+                <!-- TITLE -->
+                <h1 class="archives-list__title">#{msg.archives}</h1>
+
+                <!-- EMPTY STATE -->
+                <h:panelGroup rendered="#{empty archiveBean.filteredArchiveWrappers}">
+                    <p class="archives-list__empty">#{msg.hitsZero}</p>
+                </h:panelGroup>
+
+                <!-- GRID -->
+                <h:panelGroup
+                    rendered="#{not empty archiveBean.filteredArchiveWrappers}"
+                    layout="block"
+                    styleClass="archives-list__grid">
+                    <ui:repeat
+                        var="archiveWrapper"
+                        value="#{archiveBean.filteredArchiveWrappers}">
+                        <div class="archives-list__card">
+                            <a
+                                href="#{navigationHelper.getPageUrl('archives')}/#{archiveWrapper.archiveResource.resourceId}/"
+                                class="archives-list__link"
+                                aria-labelledby="archiveTitle-#{archiveWrapper.archiveResource.resourceId}"
+                                aria-describedby="archiveDesc-#{archiveWrapper.archiveResource.resourceId}">
+                                <!-- IMAGE AREA -->
+                                <div class="archives-list__image-wrapper">
+                                    <ui:fragment rendered="#{archiveWrapper.archiveConfig.hasMediaItem(0)}">
+                                        <img
+                                            src="#{archiveWrapper.archiveConfig.getMediaItem(0).getIconURI()}"
+                                            alt="#{archiveWrapper.getLabel(navigationHelper.locale)}"
+                                            class="archives-list__image" />
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{!archiveWrapper.archiveConfig.hasMediaItem(0)}">
+                                        <div class="archives-list__placeholder"></div>
+                                    </ui:fragment>
+                                </div>
+
+                                <!-- TITLE OVERLAY -->
+                                <div
+                                    class="archives-list__image-title"
+                                    aria-hidden="true">
+                                    #{archiveWrapper.getLabel(navigationHelper.locale)}
+                                </div>
+
+                                <!-- SR-ONLY TITLE -->
+                                <span
+                                    class="-sr-only"
+                                    id="archiveTitle-#{archiveWrapper.archiveResource.resourceId}">
+                                    #{archiveWrapper.getLabel(navigationHelper.locale)}
+                                </span>
+
+                                <!-- DESCRIPTION -->
+                                <div
+                                    class="archives-list__description"
+                                    id="archiveDesc-#{archiveWrapper.archiveResource.resourceId}">
+                                    <h:outputText value="#{archiveWrapper.archiveConfig.getShortDescription(200)}" />
+                                </div>
+                            </a>
+
+                            <!-- ADMIN EDIT BUTTON -->
+                            <ui:fragment rendered="#{userBean.loggedIn and userBean.admin}">
+                                <a
+                                    href="#{navigationHelper.applicationUrl}admin/cms/archives/edit/#{archiveWrapper.archiveResource.resourceId}/"
+                                    class="archives-list__edit-button"
+                                    aria-label="#{msg.edit}: #{archiveWrapper.getLabel(navigationHelper.locale)}">
+                                    <util:icon icon="pencil" />
+                                    <span>#{msg.edit}</span>
+                                </a>
+                            </ui:fragment>
+                        </div>
+                    </ui:repeat>
+                </h:panelGroup>
+            </h:panelGroup>
+        </div>
+    </ui:define>
+
+    <ui:define name="sidebar" />
+</ui:composition>

@@ -142,7 +142,9 @@ public class TOC implements Serializable {
             int visibleLevel = DataManager.getInstance().getConfiguration().getSidebarTocInitialCollapseLevel();
             int collapseThreshold = DataManager.getInstance().getConfiguration().getSidebarTocCollapseLengthThreshold();
             int lowestLevelToCollapse = DataManager.getInstance().getConfiguration().getSidebarTocLowestLevelToCollapseForLength();
-            String currentElementIdDoc = BeanUtils.getActiveDocumentBean().getViewManager().getCurrentStructElementIddoc();
+            String currentElementIdDoc =
+                    BeanUtils.getActiveDocumentBean().isRecordLoaded()
+                            ? BeanUtils.getActiveDocumentBean().getViewManager().getCurrentStructElementIddoc() : null;
             buildTree(group, visibleLevel, collapseThreshold, lowestLevelToCollapse, currentElementIdDoc);
         }
         return getViewForGroup(group);

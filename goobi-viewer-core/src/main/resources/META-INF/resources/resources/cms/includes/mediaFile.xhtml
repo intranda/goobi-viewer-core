@@ -24,8 +24,8 @@
         <div class="admin-cms-media__file-top">
             <!-- FILE SELECT -->
             <div class="admin-cms-media__file-select">
-                <label for="#{idPrefix}selectMediaItem" class="custom-control custom-control--checkbox">
-                    <h:selectBooleanCheckbox id="selectMediaItem" name="selectMediaItem" value="#{item.selected}">
+                <label for="#{idPrefix}selectMediaItem#{idSuffix}" class="custom-control custom-control--checkbox">
+                    <h:selectBooleanCheckbox id="selectMediaItem#{idSuffix}" name="selectMediaItem" value="#{item.selected}">
                         <f:ajax event="change" render="@none" execute="@this" />
                     </h:selectBooleanCheckbox>
               <span class="custom-control__icon">
@@ -69,7 +69,7 @@
             <div class="admin-cms-media__file-metadata">
                 <!-- FILE METADATA VIEW -->
                 <div class="admin-cms-media__file-metadata-view in">
-                    <h:panelGroup id="display-fields">
+                    <h:panelGroup id="display-fields#{idSuffix}">
                         <dl class="dl-horizontal admin-cms-media__file-metadata-list">
                             <!-- TITLE -->
                             <dt>#{msg.admin__media_title}:</dt>
@@ -102,14 +102,14 @@
 
                 <!-- FILE METADATA EDIT -->
                 <div class="admin-cms-media__file-metadata-edit">
-                    <h:panelGroup id="edit-fields">
+                    <h:panelGroup id="edit-fields#{idSuffix}">
                         <!-- EDIT TITLE -->
                         <div class="cms-module__option-group">
                             <div class="cms-module__option-label">
                                 <label for="editMediaTitle">#{msg.admin__media_title}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputText id="editMediaTitle" value="#{media.getMetadataForLocale(item.locale).name}"
+                                <h:inputText id="editMediaTitle#{idSuffix}" value="#{media.getMetadataForLocale(item.locale).name}"
                                     styleClass="form-control">
                                     <f:passThroughAttribute name="aria-label" value="#{msg.admin__media_title}"/>
                    				</h:inputText>
@@ -128,7 +128,7 @@
                                 <label for="editMediaDescription">#{msg.admin__media_description}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputTextarea id="editMediaDescription" value="#{media.getMetadataForLocale(item.locale).description}"
+                                <h:inputTextarea id="editMediaDescription#{idSuffix}" value="#{media.getMetadataForLocale(item.locale).description}"
                                     styleClass="form-control">
                                      <f:passThroughAttribute name="aria-label" value="#{msg.admin__media_description}"/>
                                 </h:inputTextarea>
@@ -147,7 +147,7 @@
                                 <label for="editMediaAltText">#{msg.admin__media_alt_text}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputText id="editMediaAltText" value="#{media.getMetadataForLocale(item.locale).alternativeText}"
+                                <h:inputText id="editMediaAltText#{idSuffix}" value="#{media.getMetadataForLocale(item.locale).alternativeText}"
                                     styleClass="form-control">
                                 	<f:passThroughAttribute name="aria-label" value="#{msg.admin__media_description}"/>
                                 </h:inputText>
@@ -168,7 +168,7 @@
                                 <label for="editMediaDisplayOrder">#{msg.admin__media_display_order}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputText  id="editMediaDisplayOrder" value="#{media.displayOrder}" styleClass="form-control">
+                                <h:inputText id="editMediaDisplayOrder#{idSuffix}" value="#{media.displayOrder}" styleClass="form-control">
                                 	<f:passThroughAttribute name="type" value="number"></f:passThroughAttribute>
                                 	<f:passThroughAttribute name="min" value="0"></f:passThroughAttribute>
 									<f:passThroughAttribute name="aria-label" value="#{msg.admin__media_display_order}"/>
@@ -207,7 +207,7 @@
                                 <label for="editMediaLinksTo">#{msg.admin__media_links_to}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputText id="editMediaLinksTo" value="#{media.link}" validator="URISyntaxValidator" styleClass="form-control">
+                                <h:inputText id="editMediaLinksTo#{idSuffix}" value="#{media.link}" validator="URISyntaxValidator" styleClass="form-control">
                                 	<f:passThroughAttribute name="aria-label" value="#{msg.admin__media_links_to}"/>
                                 </h:inputText>
                                 <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_links_to}</span>
@@ -300,7 +300,7 @@
             <!-- FILE LANGUAGE -->
             <div class="admin-cms-media__file-language">
                 <strong>#{msg.admin__available_languages}:</strong>
-                <h:panelGroup id="language-select">
+                <h:panelGroup id="language-select#{idSuffix}">
                   <ul>
                     <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                         <li class="#{media.isFinished(locale) ? 'finished' : ''} #{locale.equals(item.locale) ? 'active' : ''}">

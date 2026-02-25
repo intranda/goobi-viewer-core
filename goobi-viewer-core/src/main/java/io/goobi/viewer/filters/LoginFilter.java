@@ -85,8 +85,8 @@ public class LoginFilter implements Filter {
             return;
         }
 
-        logger.trace("request uri: {}", requestURI);
-        logger.trace("Checking session ID {} for user object", httpRequest.getSession().getId());
+        // logger.trace("request uri: {}", requestURI);
+        // logger.trace("Checking session ID {} for user object", httpRequest.getSession().getId());
         User user = (User) httpRequest.getSession().getAttribute("user");
         if (user == null) {
             logger.debug("No user found, redirecting to login...");
