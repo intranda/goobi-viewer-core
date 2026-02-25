@@ -1774,6 +1774,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     void isPhrase_shouldDetectPhraseCorrectly() {
         Assertions.assertFalse(SearchHelper.isPhrase("foo bar"));
         Assertions.assertTrue(SearchHelper.isPhrase("\"foo bar\""));
+        Assertions.assertTrue(SearchHelper.isPhrase("\"foo \"bar\"\""));
     }
 
     /**
@@ -1863,6 +1864,36 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
         Assertions.assertTrue(SearchHelper.buildExpandQueryFromFacets(facets, Collections.singletonList("YARGLE:bargle")).isEmpty(),
                 "+FOO:bar +DOCTYPE:DOCSTRCT");
+    }
+
+    /**
+     * @see SearchHelper#unquoteValue(String)
+     * @verifies return value if blank
+     */
+    @Test
+    void unquoteValue_shouldReturnValueIfBlank() {
+        assertEquals(" ", SearchHelper.unquoteValue(" "));
+    }
+    
+    /**
+     * @see SearchHelper#unquoteValue(String)
+     * @verifies return value if not in quotes
+     */
+    @Test
+    void unquoteValue_shouldReturnValueIfNotInQuotes() {
+        assertEquals("foo bar", SearchHelper.unquoteValue("foo bar"));
+    }
+    
+    /**
+     * @see SearchHelper#unquoteValue(String)
+     * @verifies unquote value correctly
+     */
+    @Test
+    void unquoteValue_shouldUnquoteValueCorrectly() {
+        assertEquals("foo bar", SearchHelper.unquoteValue("\"foo bar\""));
+        assertEquals("foo bar", SearchHelper.unquoteValue("\"foo bar\"~10"));
+        assertEquals("foo \"bar\"", SearchHelper.unquoteValue("\"foo \"bar\"\""));
+        assertEquals("foo \"bar\"", SearchHelper.unquoteValue("\"foo \"bar\"\"~20"));
     }
 
     /**

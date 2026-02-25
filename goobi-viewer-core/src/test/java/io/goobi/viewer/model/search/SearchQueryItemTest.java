@@ -117,18 +117,18 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
             SearchQueryItem item = new SearchQueryItem();
             item.setOperator(SearchItemOperator.OR);
             item.setField(SolrConstants.DEFAULT);
-            item.setValue("[foo] {bar}");
+            item.setValue("[foo] {bar} \"baz\"");
             Set<String> searchTerms = new HashSet<>(2);
-            Assertions.assertEquals("(SUPERDEFAULT:(\\[foo\\] AND \\{bar\\}) DEFAULT:(\\[foo\\] AND \\{bar\\}))",
+            Assertions.assertEquals("(SUPERDEFAULT:(\\[foo\\] AND \\{bar\\} AND \\\"baz\\\") DEFAULT:(\\[foo\\] AND \\{bar\\} AND \\\"baz\\\"))",
                     item.generateQuery(searchTerms, true, false));
         }
         {
-            // Phrase searches should NOT have escaped terms
+            // Phrase searches should NOT have escaped terms (double quotes should always be escaped, though)
             SearchQueryItem item = new SearchQueryItem();
             item.setField(SolrConstants.DEFAULT);
-            item.setValue("\"[foo] :bar:\"");
+            item.setValue("\"[foo] :bar: \"baz\"\"");
             Set<String> searchTerms = new HashSet<>(2);
-            Assertions.assertEquals("+(SUPERDEFAULT:\"[foo] :bar:\" DEFAULT:\"[foo] :bar:\")", item.generateQuery(searchTerms, true, false));
+            Assertions.assertEquals("+(SUPERDEFAULT:\"[foo] :bar: \\\"baz\\\"\" DEFAULT:\"[foo] :bar: \\\"baz\\\"\")", item.generateQuery(searchTerms, true, false));
         }
     }
 

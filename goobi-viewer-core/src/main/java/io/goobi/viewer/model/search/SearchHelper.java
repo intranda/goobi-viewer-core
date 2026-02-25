@@ -163,7 +163,7 @@ public final class SearchHelper {
     /** Regex pattern for negations not followed by brackets */
     private static final Pattern PATTERN_NOT = Pattern.compile("NOT [a-zA-Z_]+:[a-zA-Z0-9\\*]+");
     /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code>. */
-    public static final String REGEX_QUOTATION_MARKS = "@?+\"[^()\"]*\"@?+";
+    public static final String REGEX_QUOTATION_MARKS = "@?+\"(?:[^()\"\\\\]|\\\\.)*\"@?+";
     /** Constant <code>PATTERN_FIELD_PHRASE</code> */
     private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]++:" + REGEX_QUOTATION_MARKS); //NOSONAR Checked and fixed potential CB
     /** Constant <code>PATTERN_PHRASE</code> */
@@ -2351,6 +2351,7 @@ public final class SearchHelper {
         Matcher mPhrases = PATTERN_FIELD_PHRASE.matcher(queryCopy);
         while (mPhrases.find()) {
             String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
+            // logger.trace("phrase: {}", phrase);
             String[] phraseSplit = phrase.split(":", 2);
             String field = phraseSplit[0];
             switch (field) {
@@ -2454,7 +2455,7 @@ public final class SearchHelper {
                         }
                     }
                 }
-            } else if (s.length() > 0 && !stopwords.contains(s)) {
+            } else if (!s.isEmpty() && !stopwords.contains(s)) {
                 // single values w/o a field
 
                 // Skip duplicates for fuzzy search
@@ -2475,6 +2476,26 @@ public final class SearchHelper {
         }
 
         return ret;
+    }
+
+    /**
+     * 
+     * @param value
+     * @return value without surrounding quotation marks
+     * @should return value if blank
+     * @should return value if not in quotes
+     * @should unquote value correctly
+     */
+    public static String unquoteValue(String value) {
+        if (StringUtils.isNotBlank(value)) {
+            Pattern pattern = Pattern.compile("^\"((?:[^\\\\])+)\"(?:~\\d+)?$");
+            Matcher matcher = pattern.matcher(value);
+            if (matcher.matches()) {
+                return matcher.group(1);
+            }
+        }
+
+        return value;
     }
 
     /**
@@ -3333,7 +3354,8 @@ public final class SearchHelper {
         // Construct inner query part
         StringBuilder sbInner = new StringBuilder();
         for (String term : searchTerms) {
-            if (sbInner.length() > 0) {
+            // logger.trace("term: {}", term);
+            if (!sbInner.isEmpty()) {
                 if (addOperators) {
                     sbInner.append(SolrConstants.SOLR_QUERY_AND);
                 } else {
@@ -3808,8 +3830,12 @@ public final class SearchHelper {
         if (StringUtils.isBlank(s)) {
             return false;
         }
-
-        Matcher m = PATTERN_PHRASE.matcher(s.trim());
+        
+        String phraseCheckUnquoteValue = SearchHelper.unquoteValue(s);
+        if(!phraseCheckUnquoteValue.equals(s)) {
+            phraseCheckUnquoteValue = '"' + phraseCheckUnquoteValue.replace("\"", "\\\"") + '"'; // escape double quotes
+        }
+        Matcher m = PATTERN_PHRASE.matcher(phraseCheckUnquoteValue);
         return m.find();
     }
 
