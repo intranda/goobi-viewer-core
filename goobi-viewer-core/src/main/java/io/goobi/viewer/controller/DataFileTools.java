@@ -42,14 +42,20 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.Dataset;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Utility class for retrieving data folders, data files and source files.
@@ -513,6 +519,43 @@ public final class DataFileTools {
             logger.error(e.toString());
             return null;
         }
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param servletRequest
+     * @return MEI content string; null if none available
+     * @throws AccessDeniedException
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws IOException
+     * @throws PresentationException
+     * @throws RecordNotFoundException
+     */
+    public static String loadMei(String pi, HttpServletRequest servletRequest)
+            throws AccessDeniedException, DAOException, IndexUnreachableException, IOException, PresentationException, RecordNotFoundException {
+        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, servletRequest)
+                .isGranted()) {
+            throw new AccessDeniedException("Access to MEI file for '" + pi + "' not allowed");
+        }
+        SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+        if (solrDoc == null) {
+            throw new RecordNotFoundException("Record not found: " + pi);
+        }
+
+        String meiFileName = SolrTools.getSingleFieldStringValue(solrDoc, SolrConstants.FILENAME_MEI);
+        if (meiFileName == null) {
+            return null;
+        }
+
+        Path file = DataFileTools.getDataFilePath(pi, "mei", null, meiFileName);
+        logger.trace("MEI file: {}", file.toAbsolutePath());
+        if (!Files.isRegularFile(file)) {
+            throw new FileNotFoundException("MEI file not found: " + file);
+        }
+
+        return FileTools.getStringFromFile(file.toFile(), null);
     }
 
     /**

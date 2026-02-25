@@ -68,6 +68,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
+import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -76,7 +77,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.translations.language.Language;
-import io.goobi.viewer.model.viewer.BaseMimeType;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.record.views.FileType;
 import io.goobi.viewer.solr.SolrConstants;
@@ -176,38 +177,14 @@ public class RecordFileResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_MEI)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get MEI document for the record")
-    public String getMEI()
-            throws ContentLibException, DAOException, IOException, IndexUnreachableException, PresentationException {
+    public String getMEI() throws ContentLibException, DAOException, IOException, IndexUnreachableException, PresentationException {
         try {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, servletRequest)
-                    .isGranted()) {
-                throw new ServiceNotAllowedException("Access to MEI file for '" + pi + "' not allowed");
-            }
+            return DataFileTools.loadMei(pi, servletRequest);
+        } catch (AccessDeniedException e) {
+            throw new ServiceNotAllowedException("Access to MEI file for '" + pi + "' not allowed");
         } catch (RecordNotFoundException e) {
             throw new ContentLibException("Record not found: " + pi);
         }
-
-        if (servletResponse != null) {
-            servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
-        }
-
-        SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        if (solrDoc == null) {
-            throw new ContentLibException("Record not found: " + pi);
-        }
-
-        String meiFileName = SolrTools.getSingleFieldStringValue(solrDoc, SolrConstants.FILENAME_MEI);
-        if (meiFileName == null) {
-            throw new ContentLibException("No MEI file name indexed for record: " + pi);
-        }
-
-        Path file = DataFileTools.getDataFilePath(pi, "mei", null, meiFileName);
-        logger.trace("MEI file: {}", file.toAbsolutePath());
-        if (!Files.isRegularFile(file)) {
-            throw new ContentLibException("MEI file not found: " + file);
-        }
-
-        return FileTools.getStringFromFile(file.toFile(), null);
     }
 
     @GET
@@ -315,7 +292,8 @@ public class RecordFileResource {
     protected boolean checkMediaFileAccess(String filename) throws IndexUnreachableException, DAOException {
 
         try {
-            if (BaseMimeType.IMAGE == BaseMimeType.getByName(FileTools.getMimeTypeFromFile(Path.of(filename)))) {
+            MimeType mediaType = MimeType.of(Path.of(filename));
+            if (mediaType.isImage()) {
                 return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest.getSession(), pi, filename,
                         IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES, NetTools.getIpAddress(servletRequest)).isGranted();
             }

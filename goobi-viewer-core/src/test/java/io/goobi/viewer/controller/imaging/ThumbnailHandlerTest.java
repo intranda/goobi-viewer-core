@@ -30,6 +30,7 @@ import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Map;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
@@ -447,9 +448,26 @@ class ThumbnailHandlerTest extends AbstractTest {
      */
     @Test
     void getImagePath_shouldReturnPdfThumbnailPathCorrectly() {
+        Assertions.assertEquals("00000001.pdf",
+                new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
+                        .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.pdf").setMimeType("application/pdf").build()));
+    }
+
+    /**
+     * @throws IndexUnreachableException
+     * @see ThumbnailHandler#getImagePath(PhysicalElement)
+     * @verifies return pdf thumbnail path correctly
+     */
+    @Test
+    void getImagePath_shouldReturnBornDigitalThumbnailPathCorrectly() throws IndexUnreachableException {
+        StructElement struct = new StructElement(new SolrDocument(Map.of(
+                SolrConstants.IDDOC, "abcd",
+                SolrConstants.DOCTYPE, "DOCSTRCT",
+                SolrConstants.MIMETYPE, "application/pdf",
+                SolrConstants.BOOL_IMAGEAVAILABLE, false)));
         Assertions.assertEquals("https://example/com/viewer/thumbnail_epub.jpg",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
-                        .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("application/pdf").build()));
+                        .getImagePath(struct));
     }
 
     /**
@@ -460,7 +478,7 @@ class ThumbnailHandlerTest extends AbstractTest {
     void getImagePath_shouldReturn3dObjectThumbnailPathCorrectly() {
         Assertions.assertEquals("https://example/com/viewer/thumbnail_3d.png",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
-                        .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("application/object").build()));
+                        .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("model/gltf+json").build()));
         Assertions.assertEquals("https://example/com/viewer/thumbnail_3d.png",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("object").build()));

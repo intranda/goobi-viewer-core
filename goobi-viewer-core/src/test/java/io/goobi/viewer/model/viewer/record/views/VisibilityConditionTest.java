@@ -15,7 +15,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.toc.TOC;
-import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
@@ -30,7 +29,7 @@ class VisibilityConditionTest {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
         info.setMimeType(List.of("image"));
         VisibilityCondition cond = new VisibilityCondition(info);
-        Assertions.assertTrue(cond.getMimeType().matches(List.of(BaseMimeType.IMAGE)));
+        Assertions.assertTrue(cond.getMimeType().matches(List.of("image")));
     }
 
     @Test
@@ -47,7 +46,7 @@ class VisibilityConditionTest {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
         info.setMimeType(List.of("images"));
         VisibilityCondition cond = new VisibilityCondition(info);
-        Assertions.assertFalse(cond.getMimeType().matches(List.of(BaseMimeType.IMAGE)));
+        Assertions.assertFalse(cond.getMimeType().matches(List.of("image")));
     }
 
     @Test
@@ -55,8 +54,8 @@ class VisibilityConditionTest {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
         info.setNumPages("2");
         VisibilityCondition cond = new VisibilityCondition(info);
-        Assertions.assertTrue(cond.getMimeType().matches(List.of(BaseMimeType.IMAGE)));
-        Assertions.assertTrue(cond.getMimeType().matches(List.of(BaseMimeType.APPLICATION)));
+        Assertions.assertTrue(cond.getMimeType().matches(List.of("image")));
+        Assertions.assertTrue(cond.getMimeType().matches(List.of("application")));
         Assertions.assertTrue(cond.getNumPages().matches(312));
     }
 

@@ -39,6 +39,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
+import io.goobi.viewer.model.translations.IPolyglott;
 import jakarta.faces.context.FacesContext;
 
 /**
@@ -77,7 +78,7 @@ public class CMSMediaUpdate implements IModelUpdate {
         if (dao.columnsExists("cms_media_items", "image_alt_text")) {
 
             // Migrate values to language-specific column
-            Locale locale = FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
+            Locale locale = IPolyglott.getDefaultLocale();
             if (locale == null) {
                 locale = Locale.ENGLISH;
             }
@@ -104,12 +105,12 @@ public class CMSMediaUpdate implements IModelUpdate {
             if (!deprecatedAltTexts.isEmpty()) {
                 logger.warn("{} values found in deprecated column cms_media_items.image_alt_text, cannot drop column.", deprecatedAltTexts.size());
             }
-                //  else {
-                // TODO Comment in once CMSMediaItem.alternativeText has been removed
-                //            dao.executeUpdate("ALTER TABLE cms_media_items DROP COLUMN image_alt_text");
-                //            logger.info("Dropped column cms_media_items.image_alt_text");
-                //            ret = true;
-                // }
+            //  else {
+            // TODO Comment in once CMSMediaItem.alternativeText has been removed
+            //            dao.executeUpdate("ALTER TABLE cms_media_items DROP COLUMN image_alt_text");
+            //            logger.info("Dropped column cms_media_items.image_alt_text");
+            //            ret = true;
+            // }
 
         }
 

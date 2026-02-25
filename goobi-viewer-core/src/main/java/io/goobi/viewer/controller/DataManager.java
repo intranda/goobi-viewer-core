@@ -67,7 +67,6 @@ public final class DataManager {
 
     private static final Object LOCK = new Object();
 
-
     private static DataManager instance = null;
 
     private final List<IModule> modules = new ArrayList<>();
@@ -528,17 +527,21 @@ public final class DataManager {
     }
 
     public FileResourceManager getFileResourceManager() {
-        if (this.fileResourceManager == null) {
-            this.fileResourceManager = createFileResourceManager();
+        try {
+            return createFileResourceManager();
+        } catch (NullPointerException | IllegalStateException e) {
+            logger.trace("Cannot create file resource manager: {}", e.getMessage());
+            return new FileResourceManager(getConfiguration().getTheme());
         }
-        return this.fileResourceManager;
     }
 
     private FileResourceManager createFileResourceManager() {
         if (FacesContext.getCurrentInstance() != null) {
             ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
-            String themeName = getConfiguration().getTheme();
-            return new FileResourceManager(servletContext, themeName);
+            if (servletContext != null) {
+                String themeName = getConfiguration().getTheme();
+                return new FileResourceManager(servletContext, themeName);
+            }
         }
 
         throw new IllegalStateException("Must be called from within faces context");

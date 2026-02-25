@@ -1,514 +1,469 @@
 <ui:composition
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:util="http://goobi.io/util"
-  xmlns:c="http://java.sun.com/jsp/jstl/core"
-  xmlns:f="http://xmlns.jcp.org/jsf/core"
-  xmlns:h="http://xmlns.jcp.org/jsf/html"
-  xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-  xmlns:composite="http://xmlns.jcp.org/jsf/composite"
->
-  <!-- INTERFACE -->
-  <composite:interface>
-    <composite:attribute
-      name="tooltipPlacement"
-      required="false"
-      default="top"
-    />
-  </composite:interface>
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <!-- INTERFACE -->
+    <composite:interface>
+        <composite:attribute
+            name="tooltipPlacement"
+            required="false"
+            default="top" />
+    </composite:interface>
 
-  <!-- IMPLEMENTATION -->
-  <composite:implementation>
-    <nav
-      id="imageControls"
-      aria-label="#{msg.aria_label__nav_image_controls}"
-      class="#{activeDocumentBean.viewManager.topStructElement.rtl ? 'image-controls -rtl' : 'image-controls -ltr'}"
-    >
-      <!-- FORM -->
-      <h:form
-        id="imageControlsForm"
-        styleClass="image-controls__inner"
-        prependId="false"
-        rendered="#{activeDocumentBean.viewManager != null and activeDocumentBean.viewManager.currentPage != null}"
-      >
-        <!-- ACTIONS -->
-        <div class="image-controls__actions">
-          <!-- USE OF CUSTOM ICONS FOR IMAGE CONTROLS
+    <!-- IMPLEMENTATION -->
+    <composite:implementation>
+        <nav
+            id="imageControls"
+            aria-label="#{msg.aria_label__nav_image_controls}"
+            class="#{activeDocumentBean.viewManager.topStructElement.rtl ? 'image-controls -rtl' : 'image-controls -ltr'}">
+            <!-- FORM -->
+            <h:form
+                id="imageControlsForm"
+                styleClass="image-controls__inner"
+                prependId="false"
+                rendered="#{activeDocumentBean.viewManager != null and activeDocumentBean.viewManager.currentPage != null}">
+                <!-- ACTIONS -->
+                <div class="image-controls__actions">
+                    <!-- USE OF CUSTOM ICONS FOR IMAGE CONTROLS
                 Place the new icons with identical names in the images/icons/ template folder for example: reference/images/icons/icon_ic-first-page.svg */ -->
-          <!-- START -->
-          <ui:fragment
-            rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}"
-          >
-            <ul id="imageNavigation" class="image-controls__actions-nav">
-              <!-- HIDDEN CONTAINER JUST FOR SVG FILES IN RIOT -->
-              <div class="image-controls__includes-container">
-                <!-- FIRST PAGE ICON INCLUDE -->
-                <yield to="first-page">
-                  <util:icon
-                    icon="arrow-bar-to-left"
-                    styleClass="image-controls__icon"
-                    svgClass="image-controls__icon-svg "
-                  />
-                </yield>
+                    <!-- START -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
+                        <ul
+                            id="imageNavigation"
+                            class="image-controls__actions-nav">
+                            <!-- HIDDEN CONTAINER JUST FOR SVG FILES IN RIOT -->
+                            <div class="image-controls__includes-container">
+                                <!-- FIRST PAGE ICON INCLUDE -->
+                                <yield to="first-page">
+                                    <util:icon
+                                        icon="arrow-bar-to-left"
+                                        styleClass="image-controls__icon"
+                                        svgClass="image-controls__icon-svg " />
+                                </yield>
 
-                <!-- LAST PAGE ICON INCLUDE -->
-                <yield to="last-page">
-                  <util:icon
-                    icon="arrow-bar-to-right"
-                    styleClass="image-controls__icon"
-                    svgClass="image-controls__icon-svg"
-                  />
-                </yield>
+                                <!-- LAST PAGE ICON INCLUDE -->
+                                <yield to="last-page">
+                                    <util:icon
+                                        icon="arrow-bar-to-right"
+                                        styleClass="image-controls__icon"
+                                        svgClass="image-controls__icon-svg" />
+                                </yield>
 
-                <!-- PREV PAGE ICON INCLUDE -->
-                <yield to="prev-page">
-                  <util:icon
-                    icon="arrow-narrow-left"
-                    styleClass="image-controls__icon"
-                    svgClass="image-controls__icon-svg"
-                  />
-                </yield>
-                <!-- NEXT PAGE ICON INCLUDE -->
-                <yield to="next-page">
-                  <util:icon
-                    icon="arrow-narrow-right"
-                    styleClass="image-controls__icon"
-                    svgClass="image-controls__icon-svg"
-                  />
-                </yield>
-              </div>
-            </ul>
+                                <!-- PREV PAGE ICON INCLUDE -->
+                                <yield to="prev-page">
+                                    <util:icon
+                                        icon="arrow-narrow-left"
+                                        styleClass="image-controls__icon"
+                                        svgClass="image-controls__icon-svg" />
+                                </yield>
+                                <!-- NEXT PAGE ICON INCLUDE -->
+                                <yield to="next-page">
+                                    <util:icon
+                                        icon="arrow-narrow-right"
+                                        styleClass="image-controls__icon"
+                                        svgClass="image-controls__icon-svg" />
+                                </yield>
+                            </div>
+                        </ul>
 
-            <script>
-              				$(document).ready( () => {
+                        <script>
+                            				$(document).ready( () => {
 
-              					riot.mount("#imageNavigation", "imagepaginator", {
-              						navigationMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}",
-              						rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
-              						enablePageNavigation: #{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)},
-              						showDropdown: #{activeDocumentBean.viewManager.imagesCount ge configurationBean.pageSelectDropdownDisplayMinPages},
-              						currentPageNumber: "#{activeDocumentBean.imageToShow}",
-              						mimeTypes: #{activeDocumentBean.viewManager.mimeTypesForLoadedPagesAsJson},
-              						firstPageNumber: #{activeDocumentBean.viewManager.firstPageOrder},
-              						lastPageNumber: #{activeDocumentBean.viewManager.lastPageOrder},
-              						numPages: #{activeDocumentBean.viewManager.imagesCount},
-              						pageList: #{activeDocumentBean.viewManager.dropdownPagesAsJson},
-              						tooltipPlacement: "top",
-              						navigationSteps: #{configurationBean.pageBrowseEnabled ? configurationBean.pageBrowseSteps : '[1]' },
-              						pageUrlTemplate : (page) => `#{request.contextPath}/#{navigationHelper.currentPageType.name}/#{activeDocumentBean.viewManager.pi}/\${page}/#topDocAnchor`,
-              						update: typeof imageOrderChanged !== 'undefined' ? imageOrderChanged : undefined,
-              						onUpdate: (pageNumber) => changeImageOrder.next(pageNumber),
-              						msg: {
-              							aria_label__nav_image_controls: "#{msg.aria_label__nav_image_controls}",
-              							firstImage: "#{msg.firstImage}",
-              							lastImage: "#{msg.lastImage}",
-              							stepBack: "#{msg.stepBack}",
-              							stepForward: "#{msg.stepForward}",
-              							aria_label__select_page: "#{msg.aria_label__select_page}"
-              						},
-              	icons: {
-              		first: "#{request.contextPath}/resources/icons/outline/chevrons-left.svg#icon",
-              		last: "#{request.contextPath}/resources/icons/outline/chevrons-right.svg#icon",
-              		prev: "#{request.contextPath}/resources/icons/outline/chevron-left.svg#icon",
-              		next: "#{request.contextPath}/resources/icons/outline/chevron-right.svg#icon"
-              	}
-              })
+                            					riot.mount("#imageNavigation", "imagepaginator", {
+                            						navigationMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}",
+                            						rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
+                            						enablePageNavigation: #{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)},
+                            						showDropdown: #{activeDocumentBean.viewManager.imagesCount ge configurationBean.pageSelectDropdownDisplayMinPages},
+                            						currentPageNumber: "#{activeDocumentBean.imageToShow}",
+                            						mimeTypes: #{activeDocumentBean.viewManager.mimeTypesForLoadedPagesAsJson},
+                            						firstPageNumber: #{activeDocumentBean.viewManager.firstPageOrder},
+                            						lastPageNumber: #{activeDocumentBean.viewManager.lastPageOrder},
+                            						numPages: #{activeDocumentBean.viewManager.imagesCount},
+                            						pageList: #{activeDocumentBean.viewManager.dropdownPagesAsJson},
+                            						tooltipPlacement: "top",
+                            						navigationSteps: #{configurationBean.pageBrowseEnabled ? configurationBean.pageBrowseSteps : '[1]' },
+                            						pageUrlTemplate : (page) => `#{request.contextPath}/#{navigationHelper.currentPageType.name}/#{activeDocumentBean.viewManager.pi}/\${page}/#topDocAnchor`,
+                            						update: typeof imageOrderChanged !== 'undefined' ? imageOrderChanged : undefined,
+                            						onUpdate: (pageNumber) => changeImageOrder.next(pageNumber),
+                            						msg: {
+                            							aria_label__nav_image_controls: "#{msg.aria_label__nav_image_controls}",
+                            							firstImage: "#{msg.firstImage}",
+                            							lastImage: "#{msg.lastImage}",
+                            							stepBack: "#{msg.stepBack}",
+                            							stepForward: "#{msg.stepForward}",
+                            							aria_label__select_page: "#{msg.aria_label__select_page}"
+                            						},
+                            	icons: {
+                            		first: "#{request.contextPath}/resources/icons/outline/chevrons-left.svg#icon",
+                            		last: "#{request.contextPath}/resources/icons/outline/chevrons-right.svg#icon",
+                            		prev: "#{request.contextPath}/resources/icons/outline/chevron-left.svg#icon",
+                            		next: "#{request.contextPath}/resources/icons/outline/chevron-right.svg#icon"
+                            	}
+                            })
 
-              				});
-            </script>
-          </ui:fragment>
-          <ul
-            id="imageAdditionalOptions"
-            class="image-controls__actions-additional"
-          >
-            <!-- DOUBLE PAGE VIEW -->
-            <ui:fragment
-              rendered="#{activeDocumentBean.viewManager.isDoublePageNavigationEnabled(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount gt 1 and activeDocumentBean.viewManager.currentPage.baseMimeType == 'IMAGE' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and !activeDocumentBean.viewManager.currentPage.doubleImage}"
-            >
-              <li class="image-controls__action double-page-view">
-                <h:commandLink
-                  action="#{activeDocumentBean.setDoublePageModeAction(true)}"
-                  title="#{msg.doublePageView}"
-                >
-                  <util:icon
-                    icon="layout-columns"
-                    styleClass="image-controls__icon"
-                    svgClass="image-controls__icon-svg"
-                  />
-                  <span class="labeltext">#{msg.doublePageView}</span>
-                  <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                  <f:passThroughAttribute
-                    name="data-placement"
-                    value="#{cc.attrs.tooltipPlacement}"
-                  />
-                  <f:passThroughAttribute
-                    name="aria-label"
-                    value="#{msg.doublePageView}"
-                  />
-                </h:commandLink>
-              </li>
-            </ui:fragment>
-            <ui:fragment
-              rendered="#{activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext'}"
-            >
-              <!-- SINGLE PAGE VIEW -->
-              <li class="image-controls__action single-page-view">
-                <h:commandLink
-                  action="#{activeDocumentBean.setDoublePageModeAction(false)}"
-                  title="#{msg.singlePageView}"
-                >
-                  <util:icon
-                    icon="layout-columns"
-                    styleClass="image-controls__icon"
-                    svgClass="image-controls__icon-svg"
-                  />
-                  <span class="labeltext">#{msg.singlePageView}</span>
-                  <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                  <f:passThroughAttribute
-                    name="data-placement"
-                    value="#{cc.attrs.tooltipPlacement}"
-                  />
-                  <f:passThroughAttribute
-                    name="aria-label"
-                    value="#{msg.singlePageView}"
-                  />
-                </h:commandLink>
-              </li>
-              <!-- TOGGLE RECTO/VERSO -->
-              <li class="image-controls__action switch-pages">
-                <h:commandLink
-                  action="#{activeDocumentBean.viewManager.togglePageOrientation()}"
-                  title="#{msg.switchPages}"
-                >
-                  <util:icon
-                    icon="arrows-left-right"
-                    styleClass="image-controls__icon"
-                    svgClass="image-controls__icon-svg"
-                  />
-                  <span class="labeltext">#{msg.switchPages}</span>
-                  <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                  <f:passThroughAttribute
-                    name="data-placement"
-                    value="#{cc.attrs.tooltipPlacement}"
-                  />
-                </h:commandLink>
-              </li>
-            </ui:fragment>
-            <ui:fragment
-              rendered="#{navigationHelper.currentPage != 'fulltext'}"
-            >
-              <!-- ROTATE -->
-              <li class="image-controls__action rotate-left">
-                <button
-                  type="button"
-                  class="btn btn--clear"
-                  data-toggle="tooltip"
-                  data-placement="#{cc.attrs.tooltipPlacement}"
-                  title="#{msg.rotateLeft}"
-                  tabindex="0"
-                  aria-label="#{msg.rotateLeft}"
-                >
-                  <util:icon
-                    icon="rotate-2"
-                    styleClass="image-controls__icon"
-                    svgClass="image-controls__icon-svg"
-                  />
-                  <span class="labeltext">#{msg.rotateLeft}</span>
-                </button>
-              </li>
-              <li class="image-controls__action rotate-right">
-                <button
-                  type="button"
-                  class="btn btn--clear"
-                  data-toggle="tooltip"
-                  data-placement="#{cc.attrs.tooltipPlacement}"
-                  title="#{msg.rotateRight}"
-                  tabindex="0"
-                  aria-label="#{msg.rotateRight}"
-                >
-                  <util:icon
-                    icon="rotate-clockwise-2"
-                    styleClass="image-controls__icon"
-                    svgClass="image-controls__icon-svg"
-                  />
-                  <span class="labeltext">#{msg.rotateRight}</span>
-                </button>
-              </li>
-              <!-- RESET -->
-              <li class="image-controls__action reset">
-                <button
-                  type="button"
-                  class="btn btn--clear"
-                  data-toggle="tooltip"
-                  data-placement="#{cc.attrs.tooltipPlacement}"
-                  title="#{msg.resetImage}"
-                  tabindex="0"
-                  aria-label="#{msg.resetImage}"
-                >
-                  <util:icon
-                    icon="refresh"
-                    styleClass="image-controls__icon"
-                    svgClass="image-controls__icon-svg"
-                  />
-                  <span class="labeltext">#{msg.resetImage}</span>
-                </button>
-              </li>
-              <!-- FULLSCREEN -->
-              <ui:fragment
-                rendered="#{navigationHelper.currentPage != 'fullscreen'}"
-              >
-                <li class="image-controls__action enter-fullscreen">
-                  <h:outputLink
-                    id="fullscreenLink"
-                    value="#{activeDocumentBean.fullscreenImageUrl}"
-                    title="#{msg.fullscreen_enter}"
-                  >
-                    <util:icon
-                      icon="maximize"
-                      styleClass="image-controls__icon"
-                      svgClass="image-controls__icon-svg"
-                    />
-                    <span id="fullScreenLabel" class="labeltext"
-                      >#{msg.enterFullscreen}</span
-                    >
-                    <f:passThroughAttribute
-                      name="data-toggle"
-                      value="tooltip"
-                    />
-                    <f:passThroughAttribute
-                      name="data-placement"
-                      value="#{cc.attrs.tooltipPlacement}"
-                    />
-                    <f:passThroughAttribute
-                      name="aria-labelledby"
-                      value="fullScreenLabel"
-                    />
-                  </h:outputLink>
-                </li>
-              </ui:fragment>
-              <!-- ZOOMSLIDER -->
-              <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
-              <ui:fragment
-                rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}"
-              >
-                <li class="image-controls__action zoom-slider-wrapper">
-                  <input
-                    data-toggle="tooltip"
-                    title="#{msg.aria_label__zoom_slider}"
-                    type="range"
-                    min="0"
-                    max="1"
-                    value="0"
-                    step="0.01"
-                    class="slider zoom-slider"
-                    aria-label="#{msg.aria_label__zoom_slider}"
-                  />
-                </li>
-                <!--                                 <li> -->
-                <!--                                 	<input type="number" class="zoom-slider-label"/>% -->
-                <!--                                 </li> -->
-              </ui:fragment>
-            </ui:fragment>
-            <ui:fragment
-              rendered="#{navigationHelper.currentPage == 'fulltext'}"
-            >
-              <li class="image-controls__action enter-fullscreen">
-                <h:outputLink
-                  value="#{activeDocumentBean.fullscreenImageUrl}?activetab=fulltext"
-                  title="#{msg.fullscreen_enter}"
-                >
-                  <util:icon
-                    icon="maximize"
-                    styleClass="image-controls__icon"
-                    svgClass="image-controls__icon-svg"
-                  />
-                  <span id="fullScreenLabel" class="labeltext"
-                    >#{msg.enterFullscreen}</span
-                  >
-                  <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                  <f:passThroughAttribute
-                    name="data-placement"
-                    value="#{cc.attrs.tooltipPlacement}"
-                  />
-                  <f:passThroughAttribute
-                    name="aria-labelledby"
-                    value="fullScreenLabel"
-                  />
-                </h:outputLink>
-              </li>
-            </ui:fragment>
-          </ul>
-        </div>
+                            				});
+                        </script>
+                    </ui:fragment>
+                    <ul
+                        id="imageAdditionalOptions"
+                        class="image-controls__actions-additional">
+                        <!-- DOUBLE PAGE VIEW -->
+                        <ui:fragment
+                            rendered="#{activeDocumentBean.viewManager.isDoublePageNavigationEnabled(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount gt 1 and activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and !activeDocumentBean.viewManager.currentPage.doubleImage}">
+                            <li class="image-controls__action double-page-view">
+                                <h:commandLink
+                                    action="#{activeDocumentBean.setDoublePageModeAction(true)}"
+                                    title="#{msg.doublePageView}">
+                                    <util:icon
+                                        icon="layout-columns"
+                                        styleClass="image-controls__icon"
+                                        svgClass="image-controls__icon-svg" />
+                                    <span class="labeltext">#{msg.doublePageView}</span>
+                                    <f:passThroughAttribute
+                                        name="data-toggle"
+                                        value="tooltip" />
+                                    <f:passThroughAttribute
+                                        name="data-placement"
+                                        value="#{cc.attrs.tooltipPlacement}" />
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.doublePageView}" />
+                                </h:commandLink>
+                            </li>
+                        </ui:fragment>
+                        <ui:fragment
+                            rendered="#{activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext'}">
+                            <!-- SINGLE PAGE VIEW -->
+                            <li class="image-controls__action single-page-view">
+                                <h:commandLink
+                                    action="#{activeDocumentBean.setDoublePageModeAction(false)}"
+                                    title="#{msg.singlePageView}">
+                                    <util:icon
+                                        icon="layout-columns"
+                                        styleClass="image-controls__icon"
+                                        svgClass="image-controls__icon-svg" />
+                                    <span class="labeltext">#{msg.singlePageView}</span>
+                                    <f:passThroughAttribute
+                                        name="data-toggle"
+                                        value="tooltip" />
+                                    <f:passThroughAttribute
+                                        name="data-placement"
+                                        value="#{cc.attrs.tooltipPlacement}" />
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.singlePageView}" />
+                                </h:commandLink>
+                            </li>
+                            <!-- TOGGLE RECTO/VERSO -->
+                            <li class="image-controls__action switch-pages">
+                                <h:commandLink
+                                    action="#{activeDocumentBean.viewManager.togglePageOrientation()}"
+                                    title="#{msg.switchPages}">
+                                    <util:icon
+                                        icon="arrows-left-right"
+                                        styleClass="image-controls__icon"
+                                        svgClass="image-controls__icon-svg" />
+                                    <span class="labeltext">#{msg.switchPages}</span>
+                                    <f:passThroughAttribute
+                                        name="data-toggle"
+                                        value="tooltip" />
+                                    <f:passThroughAttribute
+                                        name="data-placement"
+                                        value="#{cc.attrs.tooltipPlacement}" />
+                                </h:commandLink>
+                            </li>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext'}">
+                            <!-- ROTATE -->
+                            <li class="image-controls__action rotate-left">
+                                <button
+                                    type="button"
+                                    class="btn btn--clear"
+                                    data-toggle="tooltip"
+                                    data-placement="#{cc.attrs.tooltipPlacement}"
+                                    title="#{msg.rotateLeft}"
+                                    tabindex="0"
+                                    aria-label="#{msg.rotateLeft}">
+                                    <util:icon
+                                        icon="rotate-2"
+                                        styleClass="image-controls__icon"
+                                        svgClass="image-controls__icon-svg" />
+                                    <span class="labeltext">#{msg.rotateLeft}</span>
+                                </button>
+                            </li>
+                            <li class="image-controls__action rotate-right">
+                                <button
+                                    type="button"
+                                    class="btn btn--clear"
+                                    data-toggle="tooltip"
+                                    data-placement="#{cc.attrs.tooltipPlacement}"
+                                    title="#{msg.rotateRight}"
+                                    tabindex="0"
+                                    aria-label="#{msg.rotateRight}">
+                                    <util:icon
+                                        icon="rotate-clockwise-2"
+                                        styleClass="image-controls__icon"
+                                        svgClass="image-controls__icon-svg" />
+                                    <span class="labeltext">#{msg.rotateRight}</span>
+                                </button>
+                            </li>
+                            <!-- RESET -->
+                            <li class="image-controls__action reset">
+                                <button
+                                    type="button"
+                                    class="btn btn--clear"
+                                    data-toggle="tooltip"
+                                    data-placement="#{cc.attrs.tooltipPlacement}"
+                                    title="#{msg.resetImage}"
+                                    tabindex="0"
+                                    aria-label="#{msg.resetImage}">
+                                    <util:icon
+                                        icon="refresh"
+                                        styleClass="image-controls__icon"
+                                        svgClass="image-controls__icon-svg" />
+                                    <span class="labeltext">#{msg.resetImage}</span>
+                                </button>
+                            </li>
+                            <!-- FULLSCREEN -->
+                            <ui:fragment rendered="#{navigationHelper.currentPage != 'fullscreen'}">
+                                <li class="image-controls__action enter-fullscreen">
+                                    <h:outputLink
+                                        id="fullscreenLink"
+                                        value="#{activeDocumentBean.fullscreenImageUrl}"
+                                        title="#{msg.fullscreen_enter}">
+                                        <util:icon
+                                            icon="maximize"
+                                            styleClass="image-controls__icon"
+                                            svgClass="image-controls__icon-svg" />
+                                        <span
+                                            id="fullScreenLabel"
+                                            class="labeltext">
+                                            #{msg.enterFullscreen}
+                                        </span>
+                                        <f:passThroughAttribute
+                                            name="data-toggle"
+                                            value="tooltip" />
+                                        <f:passThroughAttribute
+                                            name="data-placement"
+                                            value="#{cc.attrs.tooltipPlacement}" />
+                                        <f:passThroughAttribute
+                                            name="aria-labelledby"
+                                            value="fullScreenLabel" />
+                                    </h:outputLink>
+                                </li>
+                            </ui:fragment>
+                            <!-- ZOOMSLIDER -->
+                            <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
+                            <ui:fragment
+                                rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView and activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
+                                <li class="image-controls__action zoom-slider-wrapper">
+                                    <input
+                                        data-toggle="tooltip"
+                                        title="#{msg.aria_label__zoom_slider}"
+                                        type="range"
+                                        min="0"
+                                        max="1"
+                                        value="0"
+                                        step="0.01"
+                                        class="slider zoom-slider"
+                                        aria-label="#{msg.aria_label__zoom_slider}" />
+                                </li>
+                                <!--                                 <li> -->
+                                <!--                                 	<input type="number" class="zoom-slider-label"/>% -->
+                                <!--                                 </li> -->
+                            </ui:fragment>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext'}">
+                            <li class="image-controls__action enter-fullscreen">
+                                <h:outputLink
+                                    value="#{activeDocumentBean.fullscreenImageUrl}?activetab=fulltext"
+                                    title="#{msg.fullscreen_enter}">
+                                    <util:icon
+                                        icon="maximize"
+                                        styleClass="image-controls__icon"
+                                        svgClass="image-controls__icon-svg" />
+                                    <span
+                                        id="fullScreenLabel"
+                                        class="labeltext">
+                                        #{msg.enterFullscreen}
+                                    </span>
+                                    <f:passThroughAttribute
+                                        name="data-toggle"
+                                        value="tooltip" />
+                                    <f:passThroughAttribute
+                                        name="data-placement"
+                                        value="#{cc.attrs.tooltipPlacement}" />
+                                    <f:passThroughAttribute
+                                        name="aria-labelledby"
+                                        value="fullScreenLabel" />
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
+                    </ul>
+                </div>
 
-        <!-- DOCUMENT OPTIONS -->
-        <ul class="image-controls__options">
-          <!-- CROWDSOURCING TRANSCRIPTION MODULE -->
-          <ui:fragment
-            rendered="#{configurationBean.displayCrowdsourcingModuleLinks}"
-          >
-            <ui:fragment rendered="#{navigationHelper.currentPage == 'object'}">
-              <li class="image-controls__option -ltr">
-                <a
-                  class="image-controls__crowd-link"
-                  href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}"
-                  >#{msg.action__crowdsourcing_participate}!</a
-                >
-              </li>
-            </ui:fragment>
-            <ui:fragment
-              rendered="#{navigationHelper.currentPage == 'fulltext'}"
-            >
-              <li class="image-controls__option">
-                <a
-                  class="image-controls__crowd-link"
-                  href="#{navigationHelper.applicationUrl}crowd/editOcr/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}"
-                  >#{msg.action__edit_text}</a
-                >
-              </li>
-            </ui:fragment>
-          </ui:fragment>
+                <!-- DOCUMENT OPTIONS -->
+                <ul class="image-controls__options">
+                    <!-- CROWDSOURCING TRANSCRIPTION MODULE -->
+                    <ui:fragment rendered="#{configurationBean.displayCrowdsourcingModuleLinks}">
+                        <ui:fragment rendered="#{navigationHelper.currentPage == 'object'}">
+                            <li class="image-controls__option -ltr">
+                                <a
+                                    class="image-controls__crowd-link"
+                                    href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}">
+                                    #{msg.action__crowdsourcing_participate}!
+                                </a>
+                            </li>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext'}">
+                            <li class="image-controls__option">
+                                <a
+                                    class="image-controls__crowd-link"
+                                    href="#{navigationHelper.applicationUrl}crowd/editOcr/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}">
+                                    #{msg.action__edit_text}
+                                </a>
+                            </li>
+                        </ui:fragment>
+                    </ui:fragment>
 
-          <!-- CROWDSOURCING CAMPAIGN -->
-          <ui:fragment>
-            <ui:repeat
-              var="campaign"
-              value="#{crowdsourcingBean.getActiveCampaignsForRecord(activeDocumentBean.viewManager.pi)}"
-            >
-              <li class="image-controls__option">
-                <h:commandLink
-                  target="_blank"
-                  action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign, activeDocumentBean.viewManager.pi)}"
-                  styleClass="btn btn--icon image-controls__campaign-link"
-                >
-                  <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                  <f:passThroughAttribute
-                    name="data-placement"
-                    value="#{cc.attrs.tooltipPlacement}"
-                  />
-                  <f:passThroughAttribute
-                    name="data-original-title"
-                    value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}"
-                  />
-                  <f:passThroughAttribute
-                    name="aria-label"
-                    value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}"
-                  />
-                  <util:icon icon="bulb" svgClass="icon" />
-                </h:commandLink>
-              </li>
-            </ui:repeat>
-          </ui:fragment>
+                    <!-- CROWDSOURCING CAMPAIGN -->
+                    <ui:fragment>
+                        <ui:repeat
+                            var="campaign"
+                            value="#{crowdsourcingBean.getActiveCampaignsForRecord(activeDocumentBean.viewManager.pi)}">
+                            <li class="image-controls__option">
+                                <h:commandLink
+                                    target="_blank"
+                                    action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign, activeDocumentBean.viewManager.pi)}"
+                                    styleClass="btn btn--icon image-controls__campaign-link">
+                                    <f:passThroughAttribute
+                                        name="data-toggle"
+                                        value="tooltip" />
+                                    <f:passThroughAttribute
+                                        name="data-placement"
+                                        value="#{cc.attrs.tooltipPlacement}" />
+                                    <f:passThroughAttribute
+                                        name="data-original-title"
+                                        value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" />
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" />
+                                    <util:icon
+                                        icon="bulb"
+                                        svgClass="icon" />
+                                </h:commandLink>
+                            </li>
+                        </ui:repeat>
+                    </ui:fragment>
 
-          <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext'}">
-            <!-- FULLTEXT -->
-            <ui:fragment
-              rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}"
-            >
-              <li class="image-controls__option fulltext">
-                <h:outputLink
-                  styleClass="btn btn--icon image-controls__fulltext-link"
-                  value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/"
-                  title="#{msg.fulltext}"
-                  target="_blank"
-                >
-                  <util:icon icon="align-box-left-bottom" svgClass="icon" />
-                  <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                  <f:passThroughAttribute
-                    name="data-placement"
-                    value="#{cc.attrs.tooltipPlacement}"
-                  />
-                  <f:passThroughAttribute
-                    name="aria-label"
-                    value="#{msg.fulltext}"
-                  />
-                </h:outputLink>
-              </li>
-            </ui:fragment>
+                    <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext'}">
+                        <!-- FULLTEXT -->
+                        <ui:fragment
+                            rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
+                            <li class="image-controls__option fulltext">
+                                <h:outputLink
+                                    styleClass="btn btn--icon image-controls__fulltext-link"
+                                    value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/"
+                                    title="#{msg.fulltext}"
+                                    target="_blank">
+                                    <util:icon
+                                        icon="align-box-left-bottom"
+                                        svgClass="icon" />
+                                    <f:passThroughAttribute
+                                        name="data-toggle"
+                                        value="tooltip" />
+                                    <f:passThroughAttribute
+                                        name="data-placement"
+                                        value="#{cc.attrs.tooltipPlacement}" />
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.fulltext}" />
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
 
-            <!-- SHARE IMAGE REGION -->
-            <ui:fragment
-              rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode and !activeDocumentBean.viewManager.sequenceMode}"
-            >
-              <li class="image-controls__option share-image-region">
-                <a
-                  class="image-controls__share-image-link"
-                  role="button"
-                  title="#{msg.action__share_image_region}"
-                  data-toggle="tooltip"
-                  data-placement="top"
-                  data-popover-element="#share-image-area-popup"
-                  aria-label="#{msg.action__share_image_region}"
-                >
-                  <util:icon icon="screen-share" svgClass="icon" />
-                </a>
-              </li>
-            </ui:fragment>
+                        <!-- SHARE IMAGE REGION -->
+                        <ui:fragment
+                            rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView and !activeDocumentBean.viewManager.doublePageMode and !activeDocumentBean.viewManager.sequenceMode}">
+                            <li class="image-controls__option share-image-region">
+                                <a
+                                    class="image-controls__share-image-link"
+                                    role="button"
+                                    title="#{msg.action__share_image_region}"
+                                    data-toggle="tooltip"
+                                    data-placement="top"
+                                    data-popover-element="#share-image-area-popup"
+                                    aria-label="#{msg.action__share_image_region}">
+                                    <util:icon
+                                        icon="screen-share"
+                                        svgClass="icon" />
+                                </a>
+                            </li>
+                        </ui:fragment>
 
-            <!-- IMAGE FILTER -->
-            <ui:fragment
-              rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}"
-            >
-              <li
-                id="imageFiltering"
-                class="image-controls__option image-filter"
-              >
-                <button
-                  type="button"
-                  class="btn btn--icon image-controls__image-filter-button"
-                  disabled="disabled"
-                  data-popover-element="#imageFilterPopover"
-                  data-popover-placement="bottom"
-                  data-popover-dismiss="click-outside"
-                  data-container="#imageFiltering"
-                  data-popover-aria-label="#{msg.label__image_filter_toolkit}"
-                  aria-label="#{msg.label__image_filter_toolkit}"
-                  data-toggle="tooltip"
-                  title="#{msg.label__image_filter_toolkit__error}"
-                >
-                  <util:icon icon="tool" svgClass="icon" />
-                </button>
-              </li>
-            </ui:fragment>
-          </ui:fragment>
+                        <!-- IMAGE FILTER -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
+                            <li
+                                id="imageFiltering"
+                                class="image-controls__option image-filter">
+                                <button
+                                    type="button"
+                                    class="btn btn--icon image-controls__image-filter-button"
+                                    disabled="disabled"
+                                    data-popover-element="#imageFilterPopover"
+                                    data-popover-placement="bottom"
+                                    data-popover-dismiss="click-outside"
+                                    data-container="#imageFiltering"
+                                    data-popover-aria-label="#{msg.label__image_filter_toolkit}"
+                                    aria-label="#{msg.label__image_filter_toolkit}"
+                                    data-toggle="tooltip"
+                                    title="#{msg.label__image_filter_toolkit__error}">
+                                    <util:icon
+                                        icon="tool"
+                                        svgClass="icon" />
+                                </button>
+                            </li>
+                        </ui:fragment>
+                    </ui:fragment>
 
-          <!-- ADD TO BOOKMARK -->
-          <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
-            <li
-              id="bookmarkButtonObject"
-              class="image-controls__option add-to-bookmark"
-            >
-              <button
-                type="button"
-                class="btn btn--icon image-controls__add-to-bookmark-button"
-                data-bookmark-list-type="add"
-                data-pi="#{activeDocumentBean.viewManager.pi}"
-                data-page="#{activeDocumentBean.viewManager.currentImageOrder}"
-                role="switch"
-                aria-label="#{msg.bookmarkList_addToBookmarkList}"
-              >
-                <span
-                  data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
-                  data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
-                  data-toggle="tooltip"
-                  data-placement="#{cc.attrs.tooltipPlacement}"
-                >
-                  <util:icon
-                    icon="bookmark"
-                    svgClass="icon icons-tabler-outline"
-                    styleClass="icon-bookmark-outline"
-                  />
-                  <util:icon
-                    icon="bookmark"
-                    filled="true"
-                    svgClass="icon icons-tabler-filled"
-                    styleClass="icon-bookmark-filled"
-                  />
-                </span>
-              </button>
-            </li>
-          </ui:fragment>
-        </ul>
-      </h:form>
-    </nav>
-  </composite:implementation>
+                    <!-- ADD TO BOOKMARK -->
+                    <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
+                        <li
+                            id="bookmarkButtonObject"
+                            class="image-controls__option add-to-bookmark">
+                            <button
+                                type="button"
+                                class="btn btn--icon image-controls__add-to-bookmark-button"
+                                data-bookmark-list-type="add"
+                                data-pi="#{activeDocumentBean.viewManager.pi}"
+                                data-page="#{activeDocumentBean.viewManager.currentImageOrder}"
+                                role="switch"
+                                aria-label="#{msg.bookmarkList_addToBookmarkList}">
+                                <span
+                                    data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
+                                    data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
+                                    data-toggle="tooltip"
+                                    data-placement="#{cc.attrs.tooltipPlacement}">
+                                    <util:icon
+                                        icon="bookmark"
+                                        svgClass="icon icons-tabler-outline"
+                                        styleClass="icon-bookmark-outline" />
+                                    <util:icon
+                                        icon="bookmark"
+                                        filled="true"
+                                        svgClass="icon icons-tabler-filled"
+                                        styleClass="icon-bookmark-filled" />
+                                </span>
+                            </button>
+                        </li>
+                    </ui:fragment>
+                </ul>
+            </h:form>
+        </nav>
+    </composite:implementation>
 </ui:composition>

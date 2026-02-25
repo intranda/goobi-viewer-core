@@ -39,4 +39,8 @@ public interface MessageHandler<V> {
 
     public String getMessageHandlerName();
 
+    public default void onStartup() {
+        //no startup action
+    }
+
 }

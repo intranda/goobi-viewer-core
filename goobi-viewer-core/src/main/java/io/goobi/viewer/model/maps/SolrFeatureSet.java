@@ -64,7 +64,7 @@ import jakarta.persistence.Transient;
 @DiscriminatorValue("solr")
 public class SolrFeatureSet extends FeatureSet {
 
-    private static final int MAX_RECORD_HITS = 50_000;
+    protected static final int MAX_RECORD_HITS = 50_000;
     private static final long serialVersionUID = -9054215108168526688L;
     private static final Logger logger = LogManager.getLogger(SolrFeatureSet.class);
 
@@ -158,17 +158,27 @@ public class SolrFeatureSet extends FeatureSet {
             return "[]";
         }
         Collection<GeoMapFeature> featuresFromSolr = createFeatures();
+        String ret = toJsonString(escapeJson, featuresFromSolr);
+
+        return "[" + ret + "]";
+    }
+
+    String toJsonString(boolean escapeJson, Collection<GeoMapFeature> featuresFromSolr) {
         String ret = featuresFromSolr.stream()
                 .distinct()
                 .map(GeoMapFeature::getJsonObject)
                 .map(Object::toString)
                 .map(string -> escapeJson ? StringEscapeUtils.escapeJson(string) : string)
                 .collect(Collectors.joining(","));
-
-        return "[" + ret + "]";
+        return ret;
     }
 
     protected Collection<GeoMapFeature> createFeatures() throws PresentationException, IndexUnreachableException {
+        return createFeatures(getSolrQuery(), Collections.emptyList());
+    }
+
+    protected Collection<GeoMapFeature> createFeatures(String query, List<String> facetFilterQueries)
+            throws PresentationException, IndexUnreachableException {
 
         LabelCreator markerLabels =
                 new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getMarkerMetadataList()));
@@ -180,7 +190,7 @@ public class SolrFeatureSet extends FeatureSet {
             IFeatureDataProvider queryGenerator =
                     AbstractFeatureDataProvider.getDataProvider(getSearchScope() == null ? SolrSearchScope.ALL : getSearchScope(),
                             ListUtils.union(coordinateFields, ListUtils.union(markerLabels.getFieldsToQuery(), itemLabels.getFieldsToQuery())));
-            hits = queryGenerator.getResults(getSolrQuery(), MAX_RECORD_HITS);
+            hits = queryGenerator.getResults(query, facetFilterQueries, MAX_RECORD_HITS);
         } catch (SolrException e) {
             throw new IndexUnreachableException("SOLR communication failed:" + e.toString());
         }
@@ -198,7 +208,7 @@ public class SolrFeatureSet extends FeatureSet {
 
     }
 
-    private Collection<GeoMapFeature> combineFeatures(Collection<GeoMapFeature> singleFeatures) {
+    protected Collection<GeoMapFeature> combineFeatures(Collection<GeoMapFeature> singleFeatures) {
         Map<GeoMapFeature, List<GeoMapFeature>> featureMap = singleFeatures.stream().collect(Collectors.groupingBy(Function.identity()));
         Collection<GeoMapFeature> features = new ArrayList<>();
         for (Entry<GeoMapFeature, List<GeoMapFeature>> entry : featureMap.entrySet()) {

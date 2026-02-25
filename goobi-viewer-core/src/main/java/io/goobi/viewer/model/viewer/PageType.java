@@ -438,23 +438,24 @@ public enum PageType {
      * @should return medatata page type if nothing else matches
      * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
-    public static PageType determinePageType(String docStructType, String mimeType, Boolean anchorOrGroup, Boolean hasImages,
+    public static PageType determinePageType(String docStructType, String mimeType, Boolean anchorOrGroup, boolean hasImages,
             boolean pageResolverUrl) {
         // Determine preferred target for the docstruct
         //         logger.trace("determinePageType: docstrct: {} / mime type: {} / anchor: {} / images: {} / resolver: {}", //NOSONAR Debug
         //         docStructType, mimeType, anchorOrGroup, hasImages, pageResolverUrl);
         PageType configuredPageType = PageType.getPageTypeForDocStructType(docStructType);
+        MimeType mediaType = new MimeType(mimeType);
         if (configuredPageType != null && !pageResolverUrl) {
             return configuredPageType;
         }
 
-        if (BaseMimeType.APPLICATION.equals(BaseMimeType.getByName(mimeType))) {
-            return PageType.viewMetadata;
-        }
         if (Boolean.TRUE.equals(anchorOrGroup)) {
             return PageType.viewToc;
-        }
-        if (Boolean.TRUE.equals(hasImages)) {
+        } else if (!hasImages) {
+            return PageType.viewMetadata;
+        } else if (mediaType.isAllowsImageView() || mediaType.is3DModel() || mediaType.isAudio() || mediaType.isVideo()) {
+            return PageType.viewObject;
+        } else if (hasImages) {
             return PageType.viewObject;
         }
 

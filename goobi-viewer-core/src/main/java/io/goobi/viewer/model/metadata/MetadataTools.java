@@ -37,13 +37,14 @@ import org.apache.solr.common.SolrDocumentList;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.Record;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.translations.language.Language;
-import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.PhysicalResource;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
@@ -222,13 +223,13 @@ public final class MetadataTools {
      * </p>
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param pages a {@link java.util.List} object.
+     * @param resources a {@link java.util.List} object.
      * @return String containing meta tags
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public static String generateHighwirePressMetaTags(StructElement structElement, List<PhysicalElement> pages)
+    public static String generateHighwirePressMetaTags(StructElement structElement, List<PhysicalResource> resources)
             throws IndexUnreachableException, ViewerConfigurationException, PresentationException {
         if (structElement == null) {
             return "";
@@ -289,13 +290,17 @@ public final class MetadataTools {
             result.append("\r\n<meta name=\"citation_language\" content=\"").append(value).append(XML_TAG_CLOSE);
         }
         //  citation_pdf_url
-        if (pages != null && !pages.isEmpty()) {
-            for (PhysicalElement page : pages) {
-                if (page == null) {
+        if (resources != null && !resources.isEmpty()) {
+            for (PhysicalResource resource : resources) {
+                if (resource == null) {
                     continue;
                 }
-                String value = StringEscapeUtils.escapeHtml4(page.getUrl());
-                result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append(XML_TAG_CLOSE);
+                try {
+                    String value = StringEscapeUtils.escapeHtml4(resource.getUrl());
+                    result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append(XML_TAG_CLOSE);
+                } catch (IllegalRequestException e) {
+                    logger.error("Error adding download resource {} to highwire press links", resource);
+                }
             }
         }
         // abstract
@@ -312,7 +317,6 @@ public final class MetadataTools {
             String value = structElement.getMetadataValue("MD_PI_DOI_URL");
             result.append("\r\n<meta name=\"citation_doi\" content=\"").append(value).append("\" />");
         }
-
 
         return result.toString();
     }

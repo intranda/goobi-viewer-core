@@ -72,6 +72,7 @@ public class DynamicContentBuilder {
                     "error building jsf custom component from file " + jsfComponent.toString() + ".\nCause: " + e.getMessage());
         } catch (NullPointerException | IllegalArgumentException | FacesException e) {
             throw new PresentationException("error building jsf custom component from file " + jsfComponent.toString()
+                    + ": " + e.toString()
                     + ". Please check if the file exists and is a valid jsf composite component");
         }
     }

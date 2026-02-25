@@ -166,7 +166,9 @@
 				<div class="admin__content-side -sticky">
 					<!-- THEME PULL STATUS AND ACTIONS BOX -->
 					<h:form>
-						<h:panelGroup layout="block" id="updateThemeGroup" styleClass="admin__developer-autopull-wrapper" rendered="#{configurationBean.pullThemeEnabled == true}">
+						<h:panelGroup layout="block" id="updateThemeGroup" styleClass="admin__developer-autopull-wrapper" rendered="#{configurationBean.pullThemeEnabled == true and (userBean.admin and messageQueueBean.messageQueueState != 'INACTIVE' and userBean.admin and messageQueueBean.messageQueueState != 'STOPPED')}">
+								
+
 								<div class="admin__developer-autopull-status-wrapper">
 									<!-- PULL STATUS CAN BE SUCCESSFUL, FAILED OR UNKNOWN -->
 									<div class="admin__developer-autopull-status-text">
@@ -231,6 +233,13 @@
 						<h:panelGroup layout="block" styleClass="admin__developer-autopull-wrapper -isOff" rendered="#{configurationBean.pullThemeEnabled == false}">
 							<p class="admin__developer-autopull-wrapper-text">#{msg.admin__developer__pull_theme_not_possible}</p>
 						</h:panelGroup>
+						
+						<!-- PULL VIA BACKEND IS NOT POSSIBLE BECAUSE MSG QUEUE NOT RUNNING -->
+						<h:panelGroup layout="block" styleClass="admin__developer-autopull-wrapper -isOff" rendered="#{configurationBean.pullThemeEnabled == true and (userBean.admin and messageQueueBean.messageQueueState == 'INACTIVE' or userBean.admin and messageQueueBean.messageQueueState == 'STOPPED')}">
+							<p class="admin__developer-autopull-wrapper-text">#{msg.admin__developer__pull_theme_queue_offline}</p>
+						</h:panelGroup>
+
+						
 					</h:form>
 				</div>
 

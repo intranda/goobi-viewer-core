@@ -51,7 +51,6 @@ import de.intranda.api.iiif.auth.v2.AuthProbeService2;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -63,7 +62,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
-import io.goobi.viewer.model.viewer.BaseMimeType;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 import io.swagger.v3.oas.annotations.Operation;
@@ -353,17 +352,16 @@ public class AuthorizationFlowResource {
             Boolean access = token.hasPermission(key);
             if (access == null) {
                 try {
-                    BaseMimeType baseMimeType = FileTools.getBaseMimeType(
-                            FileTools.getMimeTypeFromFile(Paths.get(filename)));
-                    logger.trace("Base mime type: {}", baseMimeType);
-                    if (BaseMimeType.IMAGE.equals(baseMimeType)) {
+                    MimeType mediaType = MimeType.of(Paths.get(filename));
+                    logger.trace("Base mime type: {}", mediaType);
+                    if (mediaType.isAllowsImageView()) {
                         // Image/text access check
                         access = AccessConditionUtils
                                 .checkAccess(DataManager.getInstance().getBearerTokenManager().getTokenSessionMap().get(token.getAccessToken()),
-                                        baseMimeType.getName(), pi, filename, NetTools.getIpAddress(servletRequest), false)
+                                        mediaType.getType(), pi, filename, NetTools.getIpAddress(servletRequest), false)
                                 .isGranted();
                     } else {
-                        logger.warn("Unsupported mime type: {}", baseMimeType.getName());
+                        logger.warn("Unsupported mime type: {}", mediaType);
                     }
                     token.addPermission(key, access);
                 } catch (IndexUnreachableException | DAOException | IOException e) {
