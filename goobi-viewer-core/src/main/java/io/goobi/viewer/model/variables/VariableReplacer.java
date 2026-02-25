@@ -65,7 +65,15 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElementStub;
 import io.goobi.viewer.model.viewer.ViewManager;
+import io.goobi.viewer.solr.SolrConstants;
 
+/**
+ * Replace variable expression denoted by <code>{variable-name}</code> in strings. Possible variables are those listed in {@link ReplacerVariables} or
+ * any SOLR fields (partially listed in {@link SolrConstants}). Values may be taken from configuration and/or solr-derived documents passed in
+ * construction of the VariableReplacer instance </br>
+ * Variables may have more than one value, typically for multivalued metadata fields, for this reason, in general a list of replaced strings is
+ * returned, with one element for each replacement value
+ */
 public class VariableReplacer {
 
     private static final String REPLACEMENT_REGEX = "\\{[\\w.-]+\\}";
@@ -74,11 +82,27 @@ public class VariableReplacer {
 
     private final Map<String, Map<String, List<String>>> replacementsMap;
 
+    /**
+     * Take variable values from current struct element and page of the given navigationHelper
+     * 
+     * @param viewManager
+     * @throws IndexUnreachableException
+     */
     public VariableReplacer(ViewManager viewManager) throws IndexUnreachableException {
         this(DataManager.getInstance().getConfiguration(), viewManager.getAnchorStructElement(), viewManager.getTopStructElement(),
                 viewManager.getCurrentStructElement(), viewManager.getCurrentPage());
     }
 
+    /**
+     * Take variable values from the given config and structure elements. Any passed objects may be null, in which case the associated values won't be
+     * replaced
+     * 
+     * @param config
+     * @param anchor
+     * @param topStruct
+     * @param structElement
+     * @param page
+     */
     public VariableReplacer(Configuration config, StructElementStub anchor, StructElementStub topStruct, StructElementStub structElement,
             PhysicalElement page) {
         Map<String, List<String>> configValues = readMappingsFromConfig(config);
@@ -96,19 +120,40 @@ public class VariableReplacer {
 
     }
 
+    /**
+     * Specifically replace the variables defined in the given replacement map
+     * 
+     * @param replacementsMap
+     */
     public VariableReplacer(Map<String, Map<String, List<String>>> replacementsMap) {
         super();
         this.replacementsMap = replacementsMap;
     }
 
+    /**
+     * Only replace configuration variables
+     * 
+     * @param configuration
+     */
     public VariableReplacer(Configuration configuration) {
         this(configuration, null, null, null, null);
     }
 
+    /**
+     * Take variable values from global configuration and the given struct element
+     * 
+     * @param struct
+     */
     public VariableReplacer(StructElementStub struct) {
         this(DataManager.getInstance().getConfiguration(), null, struct, null, null);
     }
 
+    /**
+     * Replace variables in the given template string. The first element in the returned list will use the first replacement value and so on
+     * 
+     * @param template
+     * @return A list of strings
+     */
     public List<String> replace(String template) {
         List<String> replacementStrings = getReplacementStrings(template);
         SortedMap<String, List<String>> replacementValues = getReplacementValues(replacementStrings);
@@ -119,15 +164,67 @@ public class VariableReplacer {
         return getReplacedStrings(template, replacementValues);
     }
 
+    /**
+     * Return a single string which only uses the first replacement values for each variable if there is more than one
+     * 
+     * @param template
+     * @return
+     */
     public String replaceFirst(String template) {
         return this.replace(template).stream().findFirst().orElse("");
     }
 
+    /**
+     * Concatenate all returned strings of {@link #replace(String)}, separated by the given separator
+     * 
+     * @param template
+     * @param separator
+     * @return
+     */
     public String replaceAll(String template, String separator) {
         return this.replace(template).stream().collect(Collectors.joining(separator));
     }
 
-    public List<String> getReplacedStrings(String template, SortedMap<String, List<String>> replacementValues) {
+    /**
+     * Add a custom replacement variable
+     * 
+     * @param s
+     * @param value
+     */
+    public void addReplacement(String s, String value) {
+        Map<String, List<String>> map = this.replacementsMap.computeIfAbsent("custom", key -> new HashMap<String, List<String>>());
+        map.put(s, List.of(value));
+    }
+
+    /**
+     * return a new {@link Metada} object with the replaced values of the given metadata object as values
+     * 
+     * @param metadata
+     * @return a new metadata object
+     */
+    public Metadata replace(Metadata metadata) {
+        return new Metadata(metadata.getLabel(), this.replace(metadata.getValue()));
+    }
+
+    /**
+     * return a new {@link IMetadataValue} object with the replaced values of the given object as values
+     * 
+     * @param value
+     * @return a new IMetadata value
+     */
+    public IMetadataValue replace(IMetadataValue value) {
+        if (value instanceof SimpleMetadataValue simple) {
+            return new SimpleMetadataValue(this.replaceFirst(simple.getValue().orElse("")));
+        } else if (value instanceof MultiLanguageMetadataValue multi) {
+            Map<String, String> valueMap =
+                    multi.getValues().stream().collect(Collectors.toMap(pair -> pair.getLanguage(), pair -> this.replaceFirst(pair.getValue())));
+            return new MultiLanguageMetadataValue(valueMap);
+        } else {
+            return value;
+        }
+    }
+
+    private List<String> getReplacedStrings(String template, SortedMap<String, List<String>> replacementValues) {
         int numValues = replacementValues.values().stream().mapToInt(List::size).max().orElse(0);
         ArrayList<Entry<String, List<String>>> entryList = new ArrayList<>(replacementValues.entrySet());
         List<String> replacedStrings = new ArrayList<>(numValues);
@@ -144,7 +241,7 @@ public class VariableReplacer {
         return replacedStrings;
     }
 
-    public SortedMap<String, List<String>> getReplacementValues(List<String> replacementStrings) {
+    private SortedMap<String, List<String>> getReplacementValues(List<String> replacementStrings) {
         SortedMap<String, List<String>> replacementValues = new TreeMap<>();
         for (String string : replacementStrings) {
             String[] term = getReplacementTerm(string);
@@ -175,7 +272,7 @@ public class VariableReplacer {
         return Collections.emptyList();
     }
 
-    public List<String> getReplacementStrings(String template) {
+    private List<String> getReplacementStrings(String template) {
         if (StringUtils.isBlank(template)) {
             return List.of("");
         }
@@ -235,27 +332,6 @@ public class VariableReplacer {
         temp.put(REST_API_URL, List.of(config.getRestApiUrl()));
         temp.put(VIEWER_URL, List.of(config.getViewerBaseUrl()));
         return temp;
-    }
-
-    public void addReplacement(String s, String value) {
-        Map<String, List<String>> map = this.replacementsMap.computeIfAbsent("custom", key -> new HashMap<String, List<String>>());
-        map.put(s, List.of(value));
-    }
-
-    public Metadata replace(Metadata metadata) {
-        return new Metadata(metadata.getLabel(), this.replace(metadata.getValue()));
-    }
-
-    public IMetadataValue replace(IMetadataValue value) {
-        if (value instanceof SimpleMetadataValue simple) {
-            return new SimpleMetadataValue(this.replaceFirst(simple.getValue().orElse("")));
-        } else if (value instanceof MultiLanguageMetadataValue multi) {
-            Map<String, String> valueMap =
-                    multi.getValues().stream().collect(Collectors.toMap(pair -> pair.getLanguage(), pair -> this.replaceFirst(pair.getValue())));
-            return new MultiLanguageMetadataValue(valueMap);
-        } else {
-            return value;
-        }
     }
 
 }
