@@ -556,7 +556,7 @@ public class Metadata implements Serializable {
                                 LocalDateTime date = LocalDateTime.parse(value);
                                 value = date.format(DateTimeFormatter.ofPattern(outputPattern));
                             } catch (DateTimeParseException e2) {
-                                logger.warn("Error parsing '{}' as dateor datetime", value);
+                                logger.warn("Error parsing '{}' as date or datetime", value);
                             }
                         }
                     }

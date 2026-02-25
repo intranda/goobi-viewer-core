@@ -12709,6 +12709,7 @@ html[dir='rtl'] .user-login-modal__terms-accept .mr-3 {
 .metadata__wrapper.-isBoxed .metadata__element-wrapper-single {
     background: transparent;
     padding: 0;
+    margin-bottom: 0;
 }
 .metadata__element-dl,
 .metadata__event-dl {
@@ -25658,6 +25659,12 @@ html[dir='rtl'] .campaign-statistics__bar {
     padding: 2rem;
     display: flex;
     flex-wrap: wrap;
+}
+.archives__object-info .metadata__element-wrapper-single {
+    border: none;
+    background: transparent;
+    padding: unset;
+    margin-bottom: unset;
 }
 .archives__object-metadata.-singleImage {
     max-width: 60%;

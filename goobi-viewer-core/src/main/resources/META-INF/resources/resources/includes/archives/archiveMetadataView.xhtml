@@ -1,147 +1,198 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <c:set
+        var="archiveEntry"
+        value="archiveEntry != null ? archiveEntry : 'archiveBean.displayEntry'}"
+        scope="request"></c:set>
 
-	<c:set var="archiveEntry"
-		value="archiveEntry != null ? archiveEntry : 'archiveBean.displayEntry'}"
-		scope="request"></c:set>
+    <div class="archives__object-info-heading">#{msg.archives__archive_area_unit}</div>
+    <div class="archives__object-info">
+        <div class="archives__object-metadata">
+            <!-- METADATA -->
+            <div class="archives__object-title">#{archiveEntry.label}</div>
 
-	<div class="archives__object-info-heading">#{msg.archives__archive_area_unit}</div>
-	<div class="archives__object-info">
-		<div class="archives__object-metadata">
-			<!-- METADATA -->
-			<div class="archives__object-title">#{archiveEntry.label}</div>
-			
-			<!-- Replacing these with c:forEach will result in get*List() being called for each iteration -->			
-			<ui:repeat begin="0" end="6" var="index">
-			
-			<!-- Identity statement metadata -->
-			<ui:fragment rendered="#{archiveMetadataBean.getMetadata(archiveEntry).getAreaList(index).stream().filter(metadata -> !metadata.blank).count() > 0}">
-				<div class="archives__object-block-label">#{msg['archives__archive_area_'.concat(index)]}</div>
-				<ui:repeat var="metadata" value="#{archiveMetadataBean.getMetadata(archiveEntry).getAreaList(index)}">
+            <!-- Replacing these with c:forEach will result in get*List() being called for each iteration -->
+            <ui:repeat
+                begin="0"
+                end="6"
+                var="index">
+                <!-- Identity statement metadata -->
+                <ui:fragment
+                    rendered="#{archiveMetadataBean.getMetadata(archiveEntry).getAreaList(index).stream().filter(metadata -> !metadata.blank).count() > 0}">
+                    <div class="archives__object-block-label">#{msg['archives__archive_area_'.concat(index)]}</div>
+                    <c:forEach
+                        var="metadata"
+                        items="#{archiveMetadataBean.getMetadata(archiveEntry).getAreaList(index)}">
+                        <!-- grouped="true" -->
+                        <h:panelGroup rendered="#{metadata.group}">
+                            <!-- Single label for all values, each value is a single string -->
+                            <h:panelGroup rendered="#{metadata.singleString}">
+                                <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                    <ui:param
+                                        name="metadata"
+                                        value="#{metadata}" />
+                                </ui:include>
+                            </h:panelGroup>
 
+                            <!-- Each value has a label column and a value column -->
+                            <h:panelGroup rendered="#{!metadata.singleString}">
+                                <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                    <ui:param
+                                        name="metadata"
+                                        value="#{metadata}" />
+                                </ui:include>
+                            </h:panelGroup>
+                        </h:panelGroup>
+
+                        <!-- grouped="false" -->
+                        <h:panelGroup
+                            styleClass="metadata__ungrouped-wrapper"
+                            layout="block"
+                            rendered="#{!metadata.group}">
+                            <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
+                                <dt title="#{metadata.label}">
+                                    <h:outputText
+                                        value="#{msg[metadata.label]}"
+                                        escape="false" />
+                                    <h:outputText
+                                        value=":"
+                                        rendered="#{not empty msg[metadata.label]}" />
+                                </dt>
+                                <ui:repeat
+                                    value="#{metadata.values}"
+                                    var="val">
+                                    <dd>
+                                        <span class="metadata__element-value">
+                                            <h:outputFormat
+                                                value="#{val.getDisplayValue(navigationHelper.locale)}"
+                                                escape="false"></h:outputFormat>
+                                        </span>
+                                    </dd>
+                                </ui:repeat>
+                            </dl>
+                        </h:panelGroup>
+                    </c:forEach>
+                </ui:fragment>
+            </ui:repeat>
+
+            <!-- Description control metadata -->
+            <ui:fragment
+                rendered="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList.stream().filter(metadata -> !metadata.blank).count() > 0}">
+                <div class="archives__object-block-label">#{msg.archives__archive_area_descriptionControl}</div>
+                <c:forEach
+                    var="metadata"
+                    items="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList}">
                     <!-- grouped="true" -->
                     <h:panelGroup rendered="#{metadata.group}">
-
                         <!-- Single label for all values, each value is a single string -->
                         <h:panelGroup rendered="#{metadata.singleString}">
                             <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
-                                <ui:param name="metadata" value="#{metadata}" />
+                                <ui:param
+                                    name="metadata"
+                                    value="#{metadata}" />
                             </ui:include>
                         </h:panelGroup>
 
                         <!-- Each value has a label column and a value column -->
                         <h:panelGroup rendered="#{!metadata.singleString}">
                             <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
-                                <ui:param name="metadata" value="#{metadata}" />
+                                <ui:param
+                                    name="metadata"
+                                    value="#{metadata}" />
                             </ui:include>
                         </h:panelGroup>
-
                     </h:panelGroup>
 
                     <!-- grouped="false" -->
-                    <h:panelGroup styleClass="metadata__ungrouped-wrapper" layout="block" rendered="#{!metadata.group}">
+                    <h:panelGroup
+                        styleClass="metadata__ungrouped-wrapper"
+                        layout="block"
+                        rendered="#{!metadata.group}">
                         <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
                             <dt title="#{metadata.label}">
-                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+                                <h:outputText
+                                    value="#{msg[metadata.label]}"
+                                    escape="false" />
+                                <h:outputText
+                                    value=":"
+                                    rendered="#{not empty msg[metadata.label]}" />
                             </dt>
-                            <ui:repeat value="#{metadata.values}" var="val">
-                                 <dd>
-                                     <span class="metadata__element-value">
-                                         <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
-                                         </h:outputFormat>
-                                     </span>
+                            <ui:repeat
+                                value="#{metadata.values}"
+                                var="val">
+                                <dd>
+                                    <span class="metadata__element-value">
+                                        <h:outputFormat
+                                            value="#{val.getDisplayValue(navigationHelper.locale)}"
+                                            escape="false"></h:outputFormat>
+                                    </span>
                                 </dd>
                             </ui:repeat>
                         </dl>
                     </h:panelGroup>
-                    
-				</ui:repeat>
-			</ui:fragment>
-			
-			</ui:repeat>
-			
-			<!-- Description control metadata -->
-			<c:if
-				test="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList.stream().filter(metadata -> !metadata.blank).count() > 0}">
-				<div class="archives__object-block-label">#{msg.archives__archive_area_descriptionControl}</div>
-				<ui:repeat var="metadata" value="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList}">
-                    <!-- grouped="true" -->
-                    <h:panelGroup rendered="#{metadata.group}">
+                </c:forEach>
+            </ui:fragment>
+        </div>
 
-                        <!-- Single label for all values, each value is a single string -->
-                        <h:panelGroup rendered="#{metadata.singleString}">
-                            <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
-                                <ui:param name="metadata" value="#{metadata}" />
-                            </ui:include>
-                        </h:panelGroup>
+        <h:inputHidden value="#{archiveEntry.associatedRecordPi}">
+            <f:passThroughAttribute
+                name="data-name"
+                value="recordPi" />
+            <f:passThroughAttribute
+                name="data-contains-image"
+                value="#{archiveEntry.containsImage}" />
+        </h:inputHidden>
 
-                        <!-- Each value has a label column and a value column -->
-                        <h:panelGroup rendered="#{!metadata.singleString}">
-                            <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
-                                <ui:param name="metadata" value="#{metadata}" />
-                            </ui:include>
-                        </h:panelGroup>
+        <!-- ASSOCIATED RECORD -->
+        <div class="archives__object-image">
+            <h:outputLink
+                styleClass="archives__object-image-link"
+                rendered="#{archiveEntry != null and archiveEntry.associatedRecordPi != ''}"
+                value="#{navigationHelper.objectUrl}/#{archiveEntry.associatedRecordPi}/1/">
+                <!-- TODO less trivial image display -->
+                <div class="archives__object-image-overlay"></div>
+                <img />
+                <!-- set src from javascript -->
+                <div class="archives__object-image-hover-text">#{msg.archives__showRecord}</div>
+                <div class="archives__object-image-hover-icon">
+                    <util:icon icon="circle-arrow-right" />
+                </div>
+            </h:outputLink>
+        </div>
+        <div class="archives__object-thumbnails-wrapper">
+            <div
+                class="archives__object-ajax-loader ajax_loader"
+                data-loader="load_record_image">
+                <img
+                    src="#{request.contextPath}/resources/images/infinity_loader.gif"
+                    class="img-responsive"
+                    alt="Waiting..." />
+            </div>
+            <div
+                class="archives__object-thumbnails"
+                source="#{request.contextPath}/api/v2/records/#{archiveEntry.associatedRecordPi}/manifest"></div>
+        </div>
+    </div>
 
-                    </h:panelGroup>
+    <script type="text/javascript">
+        var normdataConfig = {
+            path: '#{request.contextPath}',
+            lang: {
+                popoverTitle: '#{msg.normdataPopoverTitle}',
+                popoverClose: '#{msg.normdataPopoverClose}',
+                showNormdata: '#{msg.normdataExpand}',
+            },
+            elemWrapper: $('#metadataElementWrapper'),
+        };
 
-                    <!-- grouped="false" -->
-                    <h:panelGroup styleClass="metadata__ungrouped-wrapper" layout="block" rendered="#{!metadata.group}">
-                        <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
-                            <dt title="#{metadata.label}">
-                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
-                            </dt>
-                            <ui:repeat value="#{metadata.values}" var="val">
-                                 <dd>
-                                     <span class="metadata__element-value">
-                                         <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
-                                         </h:outputFormat>
-                                     </span>
-                                </dd>
-                            </ui:repeat>
-                        </dl>
-                    </h:panelGroup>
-				</ui:repeat>
-			</c:if>
-		</div>
-
-		<h:inputHidden value="#{archiveEntry.associatedRecordPi}">
-			<f:passThroughAttribute name="data-name" value="recordPi" />
-			<f:passThroughAttribute name="data-contains-image"
-				value="#{archiveEntry.containsImage}" />
-		</h:inputHidden>
-
-		<!-- ASSOCIATED RECORD -->
-		<div class="archives__object-image">
-			<h:outputLink styleClass="archives__object-image-link"
-				rendered="#{archiveEntry != null and archiveEntry.associatedRecordPi != ''}"
-				value="#{navigationHelper.objectUrl}/#{archiveEntry.associatedRecordPi}/1/">
-				<!-- TODO less trivial image display -->
-				<div class="archives__object-image-overlay"></div>
-				<img />
-				<!-- set src from javascript -->
-				<div class="archives__object-image-hover-text">#{msg.archives__showRecord}</div>
-				<div class="archives__object-image-hover-icon">
-					<util:icon icon="circle-arrow-right" />
-				</div>
-			</h:outputLink>
-		</div>
-		<div class="archives__object-thumbnails-wrapper">
-			<div class="archives__object-ajax-loader ajax_loader"
-				data-loader="load_record_image">
-				<img
-					src="#{request.contextPath}/resources/images/infinity_loader.gif"
-					class="img-responsive" alt="Waiting..." />
-			</div>
-			<div class="archives__object-thumbnails"
-				source="#{request.contextPath}/api/v2/records/#{archiveEntry.associatedRecordPi}/manifest"></div>
-		</div>
-	</div>
-
+        viewerJS.normdata.init(normdataConfig);
+    </script>
 </ui:composition>
