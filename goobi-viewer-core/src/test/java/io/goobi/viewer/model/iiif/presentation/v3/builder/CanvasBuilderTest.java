@@ -29,7 +29,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.viewer.BaseMimeType;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
@@ -53,7 +53,7 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
         Mockito.when(element.isHasImage()).thenReturn(true);
         Mockito.when(element.getFileName()).thenReturn("00000001.tif");
         Mockito.when(element.getFilepath()).thenReturn("00000001.tif");
-        Mockito.when(element.getBaseMimeType()).thenReturn(BaseMimeType.IMAGE);
+        Mockito.when(element.getMediaType()).thenReturn(new MimeType("image/tiff"));
 
         {
             Mockito.when(element.getMimeType()).thenReturn("image/tiff");

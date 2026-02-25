@@ -46,10 +46,11 @@ public class GlobalFeatureDataProvider implements IFeatureDataProvider {
     }
 
     @Override
-    public List<MetadataDocument> getResults(String query, int maxResults) throws PresentationException, IndexUnreachableException {
-        List<MetadataDocument> recordResults = this.recordDataProvider.getResults(query, maxResults);
-        List<MetadataDocument> docStructResults = this.docStructProvider.getResults(query, maxResults);
-        List<MetadataDocument> metadataResults = this.metadataDataProvider.getResults(query, maxResults);
+    public List<MetadataDocument> getResults(String query, List<String> facetFilterQueries, int maxResults)
+            throws PresentationException, IndexUnreachableException {
+        List<MetadataDocument> recordResults = this.recordDataProvider.getResults(query, facetFilterQueries, maxResults);
+        List<MetadataDocument> docStructResults = this.docStructProvider.getResults(query, facetFilterQueries, maxResults);
+        List<MetadataDocument> metadataResults = this.metadataDataProvider.getResults(query, facetFilterQueries, maxResults);
         List<MetadataDocument> results = new ArrayList<>();
         results.addAll(recordResults);
         results.addAll(docStructResults);

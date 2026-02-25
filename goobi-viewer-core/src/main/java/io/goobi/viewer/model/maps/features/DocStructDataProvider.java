@@ -45,7 +45,8 @@ public class DocStructDataProvider extends AbstractFeatureDataProvider {
         super(searchIndex, requiredFields);
     }
 
-    public List<MetadataDocument> getResults(String query, int maxResults) throws PresentationException, IndexUnreachableException {
+    public List<MetadataDocument> getResults(String query, List<String> facetFilterQueries, int maxResults)
+            throws PresentationException, IndexUnreachableException {
 
         if (StringUtils.isBlank(query)) {
             return Collections.emptyList();
@@ -57,7 +58,7 @@ public class DocStructDataProvider extends AbstractFeatureDataProvider {
 
         Map<String, String> paramMap = SearchHelper.getExpandQueryParams(docStructQuery, MAX_DOCSTRUCTS_PER_RECORD);
 
-        return search(maxResults, mainDocQuery, paramMap);
+        return search(maxResults, mainDocQuery, facetFilterQueries, paramMap);
     }
 
     protected MetadataDocument getMetadataDocument(QueryResponse response, SolrDocument topDoc) {

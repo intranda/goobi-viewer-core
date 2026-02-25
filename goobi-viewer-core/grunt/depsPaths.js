@@ -226,17 +226,6 @@ const depsPathsJS = [
     rename: (dest) => `${dest}masonry.min.js`
   },
 
-  { // OPENSEADRAGON
-    expand: true,
-    cwd: nodeModules,
-    src: [
-      'openseadragon/build/openseadragon/openseadragon*'
-    ], 
-    flatten: true,
-    dest: `${jsLibsDir}openseadragon/`,
-  },
-
-
   { // MIRADOR
     expand: true,
     cwd: nodeModules,
