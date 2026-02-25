@@ -197,7 +197,7 @@ public class VariableReplacer {
     }
 
     /**
-     * return a new {@link Metada} object with the replaced values of the given metadata object as values
+     * return a new {@link Metadata} object with the replaced values of the given metadata object as values
      * 
      * @param metadata
      * @return a new metadata object
