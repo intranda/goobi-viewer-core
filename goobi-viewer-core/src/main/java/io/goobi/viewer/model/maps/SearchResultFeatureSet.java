@@ -21,25 +21,20 @@
  */
 package io.goobi.viewer.model.maps;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.solr.common.SolrDocument;
+import org.apache.commons.lang3.StringUtils;
 
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
-import io.goobi.viewer.model.search.SearchHit;
+import io.goobi.viewer.model.search.SearchHelper;
+import jakarta.enterprise.inject.spi.DefinitionException;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
@@ -59,12 +54,21 @@ public class SearchResultFeatureSet extends SolrFeatureSet {
 
     @Override
     public String getFeaturesAsString() throws PresentationException {
-        return getFeaturesAsString(BeanUtils.getSearchBean());
+        return getFeaturesAsString(getSearchBean());
+    }
+
+    SearchBean getSearchBean() {
+        try {
+            return BeanUtils.getSearchBean();
+        } catch (DefinitionException e) {
+            //outside a session.
+            return null;
+        }
     }
 
     @Override
     public String getFeaturesAsJsonString() throws PresentationException {
-        return getFeaturesAsJsonString(BeanUtils.getSearchBean());
+        return getFeaturesAsJsonString(getSearchBean());
     }
 
     public String getFeaturesAsString(SearchBean searchBean) throws PresentationException {
@@ -90,31 +94,38 @@ public class SearchResultFeatureSet extends SolrFeatureSet {
 
         if (searchBean != null && searchBean.getCurrentSearch() != null) {
 
-            GeoCoordinateConverter converter = new GeoCoordinateConverter(this.getMarkerTitleField());
-            List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
+            List<String> facetFilterQueries = searchBean.getFacets().generateFacetFilterQueries(true);
+            String finalQuery = createFinalQuery(searchBean);
 
-            Search search = new Search(searchBean.getCurrentSearch());
-            search.setCustomFilterQuery(getSolrQuery());
-            SearchAggregationType aggregationType =
-                    this.isAggregateResults() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT;
-            search.execute(searchBean.getFacets(), null, Integer.MAX_VALUE, BeanUtils.getLocale(), true, aggregationType);
-            Map<SolrDocument, List<SolrDocument>> solrDocMap = search.getHits()
-                    .stream()
-                    .map(SearchHit::getSolrDoc)
-                    .collect(Collectors.toMap(Function.identity(), List::of));
-
-            List<GeoMapFeature> features = converter.getFeaturesFromSolrDocs(coordinateFields, getMarkerTitleField(), solrDocMap);
-
-            String ret = features.stream()
-                    .distinct()
-                    .map(GeoMapFeature::getJsonObject)
-                    .map(Object::toString)
-                    .map(string -> escapeJson ? StringEscapeUtils.escapeJson(string) : string)
-                    .collect(Collectors.joining(","));
+            Collection<GeoMapFeature> features = super.createFeatures(finalQuery, facetFilterQueries);
+            String ret = toJsonString(escapeJson, features);
 
             return "[" + ret + "]";
         } else {
             return "[]";
+        }
+    }
+
+    String createFinalQuery(SearchBean searchBean) {
+        String query = searchBean.getCurrentSearch().getQuery();
+        String combinedQuery = createCombinedQuery(query, getSolrQuery());
+        String currentQuery = SearchHelper.prepareQuery(combinedQuery);
+        SearchAggregationType aggregationType =
+                this.isAggregateResults() ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION;
+        String finalQuery =
+                SearchHelper.buildFinalQuery(currentQuery, true, aggregationType);
+        return finalQuery;
+    }
+
+    String createCombinedQuery(String query1, String query2) {
+        if (StringUtils.isNoneBlank(query1, query2)) {
+            return "+(%s) +(%s)".formatted(query1, query2);
+        } else if (StringUtils.isNotBlank(query1)) {
+            return query1;
+        } else if (StringUtils.isNotBlank(query2)) {
+            return query2;
+        } else {
+            return "";
         }
     }
 

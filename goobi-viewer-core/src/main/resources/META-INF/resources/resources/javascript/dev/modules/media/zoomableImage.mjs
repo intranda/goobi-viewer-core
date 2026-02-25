@@ -124,7 +124,7 @@ export default class ZoomableImage {
             this.viewer.setMargins(margins);
         }
     }
- 
+
     load() {
         if(this.viewer) {
             return this.viewer.load( Object.values(this.tileSources), this.getCurrentTileSourceIndex() )
@@ -205,6 +205,8 @@ function createTileSource() {
                 let value = tileSources[key];
                 if(typeof value == "string" && (value.startsWith("{") || value.startsWith("["))) {
                     tileSources[key] = JSON.parse(value);
+                } else if(value.endsWith("/info.json")) {
+                    tileSources[key] = value.replace("/info.json", "");
                 }
             });
             return tileSources;

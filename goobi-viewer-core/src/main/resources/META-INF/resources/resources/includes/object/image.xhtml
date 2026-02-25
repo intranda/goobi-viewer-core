@@ -1,320 +1,373 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:o="http://omnifaces.org/ui"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-
     <!-- IMAGE CONTAINER -->
-    <div id="imageContainer" class="view-object__image #{!activeDocumentBean.viewManager.currentPage.accessPermissionImage ? '-setBorderTop' : ''} #{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3 ? '-thumbnailPreviewGallery' : ''}">
-		
-        <!-- MAP -->
-<!--         <div id="imageMap" class="view-object__image-map" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"></div> -->
-
-		<div jsf:id="mainImage" class="view-object__image-map" rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}"
-			data-image="zoomable" 
-			data-image-view-mode="#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}"
-			data-image-show-navigator="#{configurationBean.showImageNavigator(navigationHelper.currentPage, activeDocumentBean.viewManager.currentPage.mimeType)}"
-			data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"
-			data-allow-zoom="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
-			<div id="mainImageData" class="d-none">
-				<div data-image-data="tileSource">#{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)}</div>
-				<div data-image-data="recordIdentifier">#{activeDocumentBean.viewManager.pi}</div>
-				<div data-image-data="structureIdentifier">#{activeDocumentBean.logid}</div>
-				<div data-image-data="pageType">#{navigationHelper.currentPageType}</div>
-				<div data-image-data="pageNumber">#{activeDocumentBean.viewManager.currentImageOrder}</div>
-				<div data-image-data="footer" data-height="#{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)}">#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}</div>
-				<div data-image-data="pageAreas">#{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson}</div>
-				<div data-image-data="overlays" data-styleclass="coords-highlighting" data-show-tooltip="false">#{activeDocumentBean.viewManager.currentSearchResultCoords}</div>
-				<div data-image-data="overlays" data-styleclass="ugcBox" data-show-tooltip="true">#{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}</div>
-				<div data-image-data="rightMarginElement">#fullscreenViewSidebar</div>
-<!-- 				<div data-image-data="leftMarginElement">#fullscreenView #sidebarScrollPreview</div> -->
-<!-- 				<div data-image-data="topMarginElement">#fullscreenHeader</div> -->
-			</div>
-		</div>
-		<div jsf:id="mainImageForbidden" class="view-object__image-map" rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
-            <div class="view-object__access-denied" >
-                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) != null}">
-                    <img src="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale)}" alt="access denied" />
+    <div
+        id="imageContainer"
+        class="view-object__image #{!activeDocumentBean.viewManager.currentPage.accessPermissionImage ? '-setBorderTop' : ''} #{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3 ? '-thumbnailPreviewGallery' : ''}">
+        <div
+            jsf:id="mainImage"
+            class="view-object__image-map"
+            rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}"
+            data-image="zoomable"
+            data-image-view-mode="#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}"
+            data-image-show-navigator="#{configurationBean.showImageNavigator(navigationHelper.currentPage, activeDocumentBean.viewManager.currentPage.mimeType)}"
+            data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"
+            data-allow-zoom="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
+            <div
+                id="mainImageData"
+                class="d-none">
+                <div data-image-data="tileSource">
+                    #{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)}
+                </div>
+                <div data-image-data="recordIdentifier">#{activeDocumentBean.viewManager.pi}</div>
+                <div data-image-data="structureIdentifier">#{activeDocumentBean.logid}</div>
+                <div data-image-data="pageType">#{navigationHelper.currentPageType}</div>
+                <div data-image-data="pageNumber">#{activeDocumentBean.viewManager.currentImageOrder}</div>
+                <div
+                    data-image-data="footer"
+                    data-height="#{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)}">
+                    #{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}
+                </div>
+                <div data-image-data="pageAreas">
+                    #{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson}
+                </div>
+                <div
+                    data-image-data="overlays"
+                    data-styleclass="coords-highlighting"
+                    data-show-tooltip="false">
+                    #{activeDocumentBean.viewManager.currentSearchResultCoords}
+                </div>
+                <div
+                    data-image-data="overlays"
+                    data-styleclass="ugcBox"
+                    data-show-tooltip="true">
+                    #{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}
+                </div>
+                <div data-image-data="rightMarginElement">#fullscreenViewSidebar</div>
+            </div>
+        </div>
+        <div
+            jsf:id="mainImageForbidden"
+            class="view-object__image-map"
+            rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+            <div class="view-object__access-denied">
+                <ui:fragment
+                    rendered="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) != null}">
+                    <img
+                        src="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale)}"
+                        alt="access denied" />
                 </ui:fragment>
-                <ui:fragment rendered="activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) == null}">
-                    #{msg.noImage_accessDenied}
+                <ui:fragment
+                    rendered="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) == null}">
+                    <h:outputText
+                        value="#{msg.noImage_accessDenied}"
+                        escape="false" />
                 </ui:fragment>
                 <!-- ACCESS DENIED DESCRIPTION TEXT -->
-                <h:panelGroup styleClass="view-object__access-denied-text"
+                <h:panelGroup
+                    styleClass="view-object__access-denied-text"
                     rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionObject and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForImage(navigationHelper.locale) != null}">
-                    <h:outputText escape="false"
+                    <h:outputText
+                        escape="false"
                         value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForImage(navigationHelper.locale)}" />
                 </h:panelGroup>
-                
             </div>
-		</div>
+        </div>
 
-		<!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
-		<ui:fragment rendered="#{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3}">
-
-			<viewerComponent:sidebarScrollPreview range="300" imageSize="200" currentPageOrder="#{activeDocumentBean.viewManager.currentImageOrder}" />
-		
-		</ui:fragment>
+        <!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
+        <ui:fragment
+            rendered="#{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3}">
+            <viewerComponent:sidebarScrollPreview
+                range="300"
+                imageSize="200"
+                currentPageOrder="#{activeDocumentBean.viewManager.currentImageOrder}" />
+        </ui:fragment>
 
         <!-- MOBILE IMAGE OVERLAY -->
-        <div id="imageContainerMobileOverlay" class="view-object__image-mobile-overlay"></div>
+        <div
+            id="imageContainerMobileOverlay"
+            class="view-object__image-mobile-overlay"></div>
     </div>
-    
-	<popover id="share-image-area-popup">
 
-	<div class="share-image-area">
-		<div class="share-image-area__instructions">#{msg.help__share_image_area__select}</div>
+    <popover id="share-image-area-popup">
+        <div class="share-image-area">
+            <div class="share-image-area__instructions">#{msg.help__share_image_area__select}</div>
 
-		<div class="share-image-area__links">
-		<div>#{msg.help__share_image_area__share}</div> 
-			<ul>
-				<li>
-					<a data-copy-done-msg="#{msg.copyUrlDone}"
-						data-fragment-link="page"
-						data-copy-share-image="image-region-page"
-						title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_page}</a>
-				</li> 
-				<li>
-					<a data-copy-share-image="image-region-image"
-						data-fragment-link="iiif"
-						data-copy-done-msg="#{msg.copyUrlDone}"
-						title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_image}</a>
-				</li>
-			</ul>
-		</div>
+            <div class="share-image-area__links">
+                <div>#{msg.help__share_image_area__share}</div>
+                <ul>
+                    <li>
+                        <a
+                            data-copy-done-msg="#{msg.copyUrlDone}"
+                            data-fragment-link="page"
+                            data-copy-share-image="image-region-page"
+                            title="#{msg.bookmarkList_shareLink_copy}">
+                            #{msg.label__share_image_region_page}
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            data-copy-share-image="image-region-image"
+                            data-fragment-link="iiif"
+                            data-copy-done-msg="#{msg.copyUrlDone}"
+                            title="#{msg.bookmarkList_shareLink_copy}">
+                            #{msg.label__share_image_region_image}
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-		<div class="share-image-area__controls">
-			<button type="button" data-popover="close" class="btn btn--full">#{msg.closeWindow}</button>
-		</div>
-	</div>
-	</popover> 
-	
-	<popover id="imageFilterPopover">
-		<imageFilters/>
-	</popover>
+            <div class="share-image-area__controls">
+                <button
+                    type="button"
+                    data-popover="close"
+                    class="btn btn--full">
+                    #{msg.closeWindow}
+                </button>
+            </div>
+        </div>
+    </popover>
 
-	<!-- OPEN SEADRAGON -->
-    <script type="text/javascript" src="#{request.contextPath}/resources/js/dist/imageView.min.js"></script>
+    <popover id="imageFilterPopover">
+        <imageFilters />
+    </popover>
+
+    <!-- OPEN SEADRAGON -->
+    <script
+        type="text/javascript"
+        src="#{request.contextPath}/resources/js/dist/imageView.min.js"></script>
     <script type="text/javascript">
-  		//<![CDATA[
-  		const changeImageOrder = new rxjs.Subject();	//call next() to set image in canvas, pass image order as parameter
-       	const imageOrderChanged = new rxjs.Subject();	//Called when image is changed from within the canvas. subscribe to get notified of changes. image order is passed as parameter
-        
+        //<![CDATA[
+        const changeImageOrder = new rxjs.Subject(); //call next() to set image in canvas, pass image order as parameter
+        const imageOrderChanged = new rxjs.Subject(); //Called when image is changed from within the canvas. subscribe to get notified of changes. image order is passed as parameter
+
         var imageFilterConfig = {
-	        filters : {
-	            brightness: {
-	                label: "#{msg.label__image_filter_brightness}"
-	            },
-	            contrast: {
-	                label: "#{msg.label__image_filter_contrast}"
-	            },
-	            saturate: {
-	                label: "#{msg.label__image_filter_saturate}"
-	            },
-	            grayscale: {
-	                label: "#{msg.label__image_filter_grayscale}"
-	            },
-	            threshold: {
-	                label: "#{msg.label__image_filter_bitonal}"
-	            },
-	            blur: {
-	                label: "#{msg.label__image_filter_blur}",
-	                visible: false
-	            },
-	            sharpen: {
-	                label: "#{msg.label__image_filter_sharpen}"
-	            },
-	            invert: {
-	                label: "#{msg.label__image_filter_invert}"
-	            },
-	            hue: {
-	                label: "#{msg.label__image_filter_rotate}"
-	            }
-	        },
-	        messages: {
-	            clearAll: "#{msg.action__reset_all_image_filters}"
-	        }
+            filters: {
+                brightness: {
+                    label: '#{msg.label__image_filter_brightness}',
+                },
+                contrast: {
+                    label: '#{msg.label__image_filter_contrast}',
+                },
+                saturate: {
+                    label: '#{msg.label__image_filter_saturate}',
+                },
+                grayscale: {
+                    label: '#{msg.label__image_filter_grayscale}',
+                },
+                threshold: {
+                    label: '#{msg.label__image_filter_bitonal}',
+                },
+                blur: {
+                    label: '#{msg.label__image_filter_blur}',
+                    visible: false,
+                },
+                sharpen: {
+                    label: '#{msg.label__image_filter_sharpen}',
+                },
+                invert: {
+                    label: '#{msg.label__image_filter_invert}',
+                },
+                hue: {
+                    label: '#{msg.label__image_filter_rotate}',
+                },
+            },
+            messages: {
+                clearAll: '#{msg.action__reset_all_image_filters}',
+            },
         };
-        
-	    function setBrowserLocation(pi, pageNo) {
-	    	const url = new URL(window.location.href);
-       		let pathArray = url.pathname.split("/");
-       		let replacedPathPart = false;
-       		for (var i = pathArray.length-1; i >= 0; i--) {
-				if(/^\d+$/.test(pathArray[i]) && pathArray[i] != pi) {
-					//this is presumably the page number
-					pathArray[i] = pageNo;
-					replacedPathPart = true;
-					break;
-				}
-			}
-       		if(!replacedPathPart) {
-       			if(pathArray[pathArray.length-1].length == 0) {
-       				pathArray.pop();
-       			}
-       			pathArray.push(pageNo)
-       		}
-       		url.pathname = pathArray.join("/");
-       		
-       		//update tab url
-       	 	//alternatively use history.addState to add an entry to the browser history, so navigating back leads to the previous page
-       		window.history.replaceState(null, "", url.toString());
-	    }
-        
-	    function initializeSequence(image) {
-           	if(image.sequence) {
-           			           		
-           		//ajax updates
-           		image.sequence.onScroll
-           		.pipe(
-           			rxjs.operators.withLatestFrom(image.sequence.onCurrentImageChange),
-           			rxjs.operators.map(e => e[1]),
-           			rxjs.operators.distinctUntilChanged(),
-           			rxjs.operators.debounceTime(800)		
-           		)
-           		.subscribe(tileSource => {
-           			const imageId = viewerJS.iiif.getId(tileSource);
-           			const pageOrder = image.getTileSourceOrderFromId(imageId);
-           			if(pageOrder != undefined) {	          
-           				setCurrentImageOrder({"order": pageOrder});
-           			}
-           		});
 
-           		//js updates
-	           	image.sequence.onCurrentImageChange.subscribe (tileSource => {
-	           		const imageId = viewerJS.iiif.getId(tileSource);
-	           		const pageNo = image.getTileSourceOrderFromId(imageId);
-	           		if(pageNo != undefined) {	           			
-		           		setBrowserLocation(image.pi, pageNo);
-		           		imageOrderChanged.next(pageNo);
-	           		}
-	           	});
-           		
-	           	changeImageOrder.subscribe(pageNo => {	    
-	           		if(pageNo != undefined ) {
-	           			const id = image.getTileSourceIdFromOrder(pageNo);
-	           			if(id != undefined) {		           				
-	            			image.sequence.setCurrentImage(id, true);
-	           			}
-	           		}
-	           	})
-             }
-	    }
-	    
-		function enableGeoMapHighlighting(image) {
-  				let mapFeatureMap = new Map();
-  				image.overlays?.getOverlays().forEach(imageArea => {
-  					let id = imageArea.id;
-  					let mapMarker = viewerJS.GeoMap.maps.get('widget_geoMap_').layers.flatMap(l => l.markers)
-  					.find(marker => marker.feature?.properties?.documentId == id);
-  					//highlight image overlay on hover over map marker with same annotation id
-  					if(mapMarker) {
-  						mapMarker.on("mouseover", e => imageArea.element.focus(true));
-  						mapMarker.on("mouseout", e => imageArea.element.focus(false));
-  						mapFeatureMap.set(imageArea, mapMarker);
-  					}
-  				});
-  				//highlight map marker when hovering over image overlay with same annotation id
-  				image.overlays?.onFocus((overlay, focus) => {
-  					let marker = mapFeatureMap.get(overlay);
-  					if(focus) {
-  						marker?.feature?.layer?.highlightMarker(marker);					
-  					} else {
-  						marker?.feature?.layer?.highlightMarker();
-  					}
-  				})
-  			}
-  			
-  			// Focus UGC
-  			function highlightUGC(image) {		    
-  				var hash = window.location.hash;
-  				if(hash && hash.startsWith("#ugc=")) {
-  				    let ugcId = hash.substring(5);
-  				    if($('#viewObject').length) {			        
-  				    	$("html, body").scrollTop($('#viewObject').offset().top - 40);
-  				    }
-  				    if(image && image.overlays) {
-  				        let widgetTitle = $("#widgetAnnotations").find(".widget__title.collapsible");
-  				        if(widgetTitle.length > 0 && !widgetTitle.hasClass("in")) {			            
-  				            widgetTitle.toggleClass('in').next().slideToggle('fast');
-  				        }
-  				        $("#words-" + ugcId).addClass("ugc-highlight");
-  				        image.overlays.focusBox("ugc", ugcId);
-  				    }
-  				}
-  			}
-	    
-   		const imageElement = document.getElementById("mainImage");
-	    function onError(error) {
-	    	console.error( "viewObject.xhtml - viewImage.init: Error opening image", error );
-       		if(imageElement) {           		    
-       			imageElement.innerHTML = viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false );
-       		}
-	    }
-   		zoomableImageLoaded.subscribe(image => {
-   			initializeSequence(image);
-   			
-       	    $(".openseadragon-canvas").get(0).focus = () => {
-        	       //prevent focus on os-div to avoid scrolling down on click
-        	 } 
-       		window.shareImageFragment = new window.ShareImageFragment(image);
-       		window.shareImageFragment.initImageFragmentLinks();
-       		
-   	 	    let originClean = image.viewer.isOriginClean();
-   	 	    if(originClean) {
-   	 	        $(".image-controls__option.image-filter button").prop('disabled', false);
-   	 	    	$(".image-controls__option.image-filter button i").tooltip("disable");
-   	 	        $(".image-controls__option.image-filter button")
-   	 	        .attr('title', "#{msg.label__image_filter_toolkit}")
-   	 	        .tooltip('_fixTitle');
-   	 	        
-				riot.mount("imageFilters", {
-				    image: image.viewer,
-				    config: imageFilterConfig
-			    });
-    	 	 }
-   	 	   
-   			highlightUGC(image);
-   			enableGeoMapHighlighting(image);
-   			
-		});
+        function setBrowserLocation(pi, pageNo) {
+            const url = new URL(window.location.href);
+            let pathArray = url.pathname.split('/');
+            let replacedPathPart = false;
+            for (var i = pathArray.length - 1; i >= 0; i--) {
+                if (/^\d+$/.test(pathArray[i]) && pathArray[i] != pi) {
+                    //this is presumably the page number
+                    pathArray[i] = pageNo;
+                    replacedPathPart = true;
+                    break;
+                }
+            }
+            if (!replacedPathPart) {
+                if (pathArray[pathArray.length - 1].length == 0) {
+                    pathArray.pop();
+                }
+                pathArray.push(pageNo);
+            }
+            url.pathname = pathArray.join('/');
+            //update tab url
+            //alternatively use history.addState to add an entry to the browser history, so navigating back leads to the previous page
+            window.history.replaceState(null, '', url.toString());
+        }
 
+        function initializeSequence(image) {
+            if (image.sequence) {
+                //ajax updates
+                image.sequence.onScroll
+                    .pipe(
+                        rxjs.operators.withLatestFrom(image.sequence.onCurrentImageChange),
+                        rxjs.operators.map((e) => e[1]),
+                        rxjs.operators.distinctUntilChanged(),
+                        rxjs.operators.debounceTime(800)
+                    )
+                    .subscribe((tileSource) => {
+                        const imageId = viewerJS.iiif.getId(tileSource);
+                        const pageOrder = image.getTileSourceOrderFromId(imageId);
+                        if (pageOrder != undefined) {
+                            setCurrentImageOrder({ order: pageOrder });
+                        }
+                    });
 
-       	// mobile overlay
-       	if ( window.matchMedia( '(max-width: 768px)' ).matches && page !== 'fullscreen' ) {
-       		$( "#imageContainerMobileOverlay" ).show();
-       	}
-   	
-      	//]]>
-  		
+                //js updates
+                image.sequence.onCurrentImageChange.subscribe((tileSource) => {
+                    const imageId = viewerJS.iiif.getId(tileSource);
+                    const pageNo = image.getTileSourceOrderFromId(imageId);
+                    if (pageNo != undefined) {
+                        setBrowserLocation(image.pi, pageNo);
+                        imageOrderChanged.next(pageNo);
+                    }
+                });
+
+                changeImageOrder.subscribe((pageNo) => {
+                    if (pageNo != undefined) {
+                        const id = image.getTileSourceIdFromOrder(pageNo);
+                        if (id != undefined) {
+                            image.sequence.setCurrentImage(id, true);
+                        }
+                    }
+                });
+            }
+        }
+
+        function enableGeoMapHighlighting(image) {
+            let mapFeatureMap = new Map();
+            image.overlays?.getOverlays().forEach((imageArea) => {
+                let id = imageArea.id;
+                let mapMarker = viewerJS.GeoMap.maps
+                    .get('widget_geoMap_')
+                    .layers.flatMap((l) => l.markers)
+                    .find((marker) => marker.feature?.properties?.documentId == id);
+                //highlight image overlay on hover over map marker with same annotation id
+                if (mapMarker) {
+                    mapMarker.on('mouseover', (e) => imageArea.element.focus(true));
+                    mapMarker.on('mouseout', (e) => imageArea.element.focus(false));
+                    mapFeatureMap.set(imageArea, mapMarker);
+                }
+            });
+            //highlight map marker when hovering over image overlay with same annotation id
+            image.overlays?.onFocus((overlay, focus) => {
+                let marker = mapFeatureMap.get(overlay);
+                if (focus) {
+                    marker?.feature?.layer?.highlightMarker(marker);
+                } else {
+                    marker?.feature?.layer?.highlightMarker();
+                }
+            });
+        }
+
+        // Focus UGC
+        function highlightUGC(image) {
+            var hash = window.location.hash;
+            if (hash && hash.startsWith('#ugc=')) {
+                let ugcId = hash.substring(5);
+                if ($('#viewObject').length) {
+                    $('html, body').scrollTop($('#viewObject').offset().top - 40);
+                }
+                if (image && image.overlays) {
+                    let widgetTitle = $('#widgetAnnotations').find('.widget__title.collapsible');
+                    if (widgetTitle.length > 0 && !widgetTitle.hasClass('in')) {
+                        widgetTitle.toggleClass('in').next().slideToggle('fast');
+                    }
+                    $('#words-' + ugcId).addClass('ugc-highlight');
+                    image.overlays.focusBox('ugc', ugcId);
+                }
+            }
+        }
+
+        const imageElement = document.getElementById('mainImage');
+        function onError(error) {
+            console.error('viewObject.xhtml - viewImage.init: Error opening image', error);
+            if (imageElement) {
+                imageElement.innerHTML = viewerJS.helper.renderAlert(
+                    'alert-danger',
+                    '#{msg.noImage_fileNotFound}: ' + error,
+                    false
+                );
+            }
+        }
+        zoomableImageLoaded.subscribe((image) => {
+            initializeSequence(image);
+
+            $('.openseadragon-canvas').get(0).focus = () => {
+                //prevent focus on os-div to avoid scrolling down on click
+            };
+            window.shareImageFragment = new window.ShareImageFragment(image);
+            window.shareImageFragment.initImageFragmentLinks();
+
+            let originClean = image.viewer.isOriginClean();
+            if (originClean) {
+                $('.image-controls__option.image-filter button').prop('disabled', false);
+                $('.image-controls__option.image-filter button i').tooltip('disable');
+                $('.image-controls__option.image-filter button')
+                    .attr('title', '#{msg.label__image_filter_toolkit}')
+                    .tooltip('_fixTitle');
+
+                riot.mount('imageFilters', {
+                    image: image.viewer,
+                    config: imageFilterConfig,
+                });
+            }
+
+            highlightUGC(image);
+            enableGeoMapHighlighting(image);
+        });
+
+        // mobile overlay
+        if (window.matchMedia('(max-width: 768px)').matches && page !== 'fullscreen') {
+            $('#imageContainerMobileOverlay').show();
+        }
+
+        //]]>
     </script>
-    
 
-    
-    <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
-    	<ui:fragment rendered="#{se.hasShapeMetadata()}">
-    	<ui:repeat var="shape" value="#{se.getShapeMetadataForPage(activeDocumentBean.viewManager.currentPage.order)}" varStatus="status">
-	    	<div id="pageAreaFrame_#{se.logid}_#{status.index}" class="page-area #{se.logid == activeDocumentBean.logid ? 'active':''}">
-	    	</div>
-	    	<div id="pageAreaLabel_#{se.logid}_#{status.index}" class="page-area-label #{se.logid == activeDocumentBean.logid ? 'active':''}">
-			    <svg viewBox="0 0 100 100">
-					  <foreignObject width="100%" height="100%">
-					  <div class="page-area-label-text"
-					  	title="#{se.label}">
-						#{se.label}
-					  </div>
-					  </foreignObject>
-				</svg> 
-	    	</div>
-    	</ui:repeat>
-    	</ui:fragment>
-	</ui:repeat>
-
+    <ui:repeat
+        var="se"
+        value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
+        <ui:fragment rendered="#{se.hasShapeMetadata()}">
+            <ui:repeat
+                var="shape"
+                value="#{se.getShapeMetadataForPage(activeDocumentBean.viewManager.currentPage.order)}"
+                varStatus="status">
+                <div
+                    id="pageAreaFrame_#{se.logid}_#{status.index}"
+                    class="page-area #{se.logid == activeDocumentBean.logid ? 'active':''}"></div>
+                <div
+                    id="pageAreaLabel_#{se.logid}_#{status.index}"
+                    class="page-area-label #{se.logid == activeDocumentBean.logid ? 'active':''}">
+                    <svg viewBox="0 0 100 100">
+                        <foreignObject
+                            width="100%"
+                            height="100%">
+                            <div
+                                class="page-area-label-text"
+                                title="#{se.label}">
+                                #{se.label}
+                            </div>
+                        </foreignObject>
+                    </svg>
+                </div>
+            </ui:repeat>
+        </ui:fragment>
+    </ui:repeat>
 </ui:composition>

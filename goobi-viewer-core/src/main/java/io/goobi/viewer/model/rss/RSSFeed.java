@@ -64,7 +64,7 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.model.viewer.BaseMimeType;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -250,7 +250,7 @@ public final class RSSFeed {
             boolean hasImages = SolrTools.isHasImages(doc);
             String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
             String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-            boolean hasMedia = !hasImages && !anchor && BaseMimeType.getByName(mimeType).isMediaType();
+            boolean hasMedia = !hasImages && !anchor && new MimeType(mimeType).isMediaType();
             PageType pageType = DocType.ARCHIVE.name().equals(docType) ? PageType.archive
                     : PageType.determinePageType(docStructType, mimeType, anchor, hasImages || hasMedia, false);
             int pageNo = getRepresentativePageNumber(doc);

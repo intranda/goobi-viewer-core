@@ -58,6 +58,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileResourceManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringConstants;
@@ -99,6 +100,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @Named
 @SessionScoped
 public class NavigationHelper implements Serializable {
+
+    private static final List<String> BROWSER_IMAGE_EXTENSIONS = List.of("jpg", "jpeg", "png", "webp", "gif", "svg");
 
     private static final int MAX_HTML_ID_LENGTH = 100;
 
@@ -143,11 +146,19 @@ public class NavigationHelper implements Serializable {
 
     private boolean isCmsPage = false;
 
+    private final FileResourceManager fileResourceManager;
+
     /**
      * Empty constructor.
      */
     public NavigationHelper() {
         theme = DataManager.getInstance().getConfiguration().getTheme();
+        this.fileResourceManager = DataManager.getInstance().getFileResourceManager();
+    }
+
+    public NavigationHelper(String theme, FileResourceManager fileResourceManager) {
+        this.theme = theme;
+        this.fileResourceManager = fileResourceManager;
     }
 
     public void setCmsBean(CmsBean cmsBean) {
@@ -1267,7 +1278,7 @@ public class NavigationHelper implements Serializable {
     public String getMeiActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewMei.getName();
     }
-    
+
     /**
      * <p>
      * getMeiUrl.
@@ -1290,7 +1301,6 @@ public class NavigationHelper implements Serializable {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewFulltext.getName();
     }
 
-
     /**
      * 
      * @param pi
@@ -1302,7 +1312,7 @@ public class NavigationHelper implements Serializable {
      * @should construct url correctly
      */
     public String getRecordUrl(String pi, String docStructType, int order, boolean anchorOrGroup, boolean hasImages) {
-        PageType pageType = PageType.determinePageType(docStructType, null, anchorOrGroup, hasImages, false);
+        PageType pageType = PageType.determinePageType(docStructType, "image/tiff", anchorOrGroup, hasImages, false);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + '/'
                 + DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, order, null, pageType, true);
     }
@@ -1963,20 +1973,66 @@ public class NavigationHelper implements Serializable {
      * @return Resource path
      */
     public String getResource(String path) {
-        FileResourceManager manager = DataManager.getInstance().getFileResourceManager();
-        if (manager != null) {
-            Path themePath = manager.getThemeResourcePath(path);
-            //            Path corePath = manager.getCoreResourcePath(path);
+        return getResource(path, true);
+    }
+
+    /**
+     * Get the path to a viewer resource relative to the root path ("/viewer") If it exists, the resource from the theme, otherwise from the core If
+     * the resource exists neither in theme nor core. An Exception will be thrown
+     *
+     * @param path The resource path relative to the first "resources" directory
+     * @param considerAlternativeSuffixes Whether to check files with different file extensions in the theme if the given file doesn't exist there.
+     *            This does not effect the core path.
+     * @return Resource path
+     */
+    public String getResource(String path, boolean considerAlternativeSuffixes) {
+        return getResource(path, considerAlternativeSuffixes ? BROWSER_IMAGE_EXTENSIONS : Collections.emptyList());
+    }
+
+    /**
+     * Get the path to a viewer resource relative to the root path ("/viewer") If it exists, the resource from the theme, otherwise from the core If
+     * the resource exists neither in theme nor core. An Exception will be thrown
+     *
+     * @param path The resource path relative to the first "resources" directory
+     * @param alternativeSuffixes a list of alternative file extensions to check in the theme if the given file doesn't exist there. This does not
+     *            effect the core path. May be an empty list, but not null. Suffixes should be written without the extension separator dot
+     * @return Resource path
+     */
+    public String getResource(String path, List<String> alternativeSuffixes) {
+        FileResourceManager fileResourceManager = DataManager.getInstance().getFileResourceManager();
+        if (fileResourceManager != null) {
+            Path themePath = fileResourceManager.getThemeResourcePath(path);
             if (Files.exists(themePath)) {
-                String ret = manager.getThemeResourceURI(path).toString();
+                String ret = fileResourceManager.getThemeResourceURI(path).toString();
                 return ret;
+            } else if (!alternativeSuffixes.isEmpty()) {
+                for (String suffix : alternativeSuffixes) {
+                    Optional<String> resourceUri = findResource(path, themePath, removeLeadingDot(suffix));
+                    if (resourceUri.isPresent()) {
+                        return resourceUri.get();
+                    }
+                }
             }
-            //            } else if(Files.exists(corePath)) {
-            return manager.getCoreResourceURI(path).toString();
-            //            } else {
-            //                return "";
+            return fileResourceManager.getCoreResourceURI(path).toString();
         }
         return "";
+    }
+
+    private Optional<String> findResource(String path, Path themePath, String suffix) {
+        Path file = FileTools.replaceExtension(themePath, suffix);
+        if (Files.exists(file)) {
+            Path resourcePath = FileTools.replaceExtension(Path.of(path), suffix);
+            return Optional.ofNullable(this.fileResourceManager.getThemeResourceURI(resourcePath.toString()).toString());
+        }
+        return Optional.empty();
+    }
+
+    private String removeLeadingDot(String string) {
+        if (string != null && string.startsWith(".")) {
+            return string.substring(1);
+        } else {
+            return string;
+        }
     }
 
     public boolean isRtl() {

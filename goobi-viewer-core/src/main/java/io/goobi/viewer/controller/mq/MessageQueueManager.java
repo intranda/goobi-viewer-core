@@ -337,6 +337,7 @@ public class MessageQueueManager {
         for (Class<? extends MessageHandler> clazz : ticketHandlers) {
             try {
                 MessageHandler<MessageStatus> handler = clazz.getDeclaredConstructor().newInstance();
+                handler.onStartup(); //handle necessary cleanup on startup
                 handlers.put(handler.getMessageHandlerName(), handler);
                 logger.trace("Loaded ticket handler: {}", handler.getMessageHandlerName());
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException

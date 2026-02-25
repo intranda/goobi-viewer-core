@@ -36,7 +36,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -67,7 +66,6 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
@@ -89,8 +87,6 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
-import jakarta.faces.context.FacesContext;
-import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -562,7 +558,8 @@ public class ManifestBuilder extends AbstractBuilder {
         //        return pageType;
 
         return PageType.determinePageType(ele.getDocStructType(), ele.getMetadataValue(SolrConstants.MIMETYPE), ele.isAnchor() || ele.isGroup(),
-                ele.isHasImages(), false);
+                ele.isHasImages(),
+                false);
     }
 
     /**

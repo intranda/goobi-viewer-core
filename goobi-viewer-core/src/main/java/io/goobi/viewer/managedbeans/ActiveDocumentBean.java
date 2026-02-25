@@ -2331,8 +2331,9 @@ public class ActiveDocumentBean implements Serializable {
         String linkEnd = "\" />";
 
         PageType currentPageType = PageType.getByName(navigationHelper.getCurrentView());
-        PageType defaultPageTypeForRecord = PageType.determinePageType(viewManager.getTopStructElement().getDocStructType(), null,
-                isAnchor() || isGroup(), viewManager.isHasPages(), false);
+        PageType defaultPageTypeForRecord =
+                PageType.determinePageType(viewManager.getTopStructElement().getDocStructType(), viewManager.getMimeType(),
+                        isAnchor() || isGroup(), viewManager.isHasPages(), false);
 
         StringBuilder sb = new StringBuilder();
 

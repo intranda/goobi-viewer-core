@@ -36,6 +36,7 @@ import jakarta.mail.MessagingException;
 
 public abstract class DownloadJob {
 
+    public static final String FILE_EXTENSION_CREATING_LOCK = ".creating.lock";
     private final String pi;
 
     public DownloadJob(String pi) {
@@ -76,7 +77,7 @@ public abstract class DownloadJob {
 
     public boolean createLock() throws IOException {
         try {
-            Path lockFile = getPath().getParent().resolve(FilenameUtils.getBaseName(getFilename()) + ".creating.lock");
+            Path lockFile = getPath().getParent().resolve(FilenameUtils.getBaseName(getFilename()) + FILE_EXTENSION_CREATING_LOCK);
             Files.createFile(lockFile);
             return true;
         } catch (FileAlreadyExistsException e) {
@@ -85,12 +86,12 @@ public abstract class DownloadJob {
     }
 
     public boolean releaseLock() throws IOException {
-        Path lockFile = getPath().getParent().resolve(FilenameUtils.getBaseName(getFilename()) + ".creating.lock");
+        Path lockFile = getPath().getParent().resolve(FilenameUtils.getBaseName(getFilename()) + FILE_EXTENSION_CREATING_LOCK);
         return Files.deleteIfExists(lockFile);
     }
 
     public boolean isLocked() throws IOException {
-        Path lockFile = getPath().getParent().resolve(FilenameUtils.getBaseName(getFilename()) + ".creating.lock");
+        Path lockFile = getPath().getParent().resolve(FilenameUtils.getBaseName(getFilename()) + FILE_EXTENSION_CREATING_LOCK);
         return Files.exists(lockFile);
     }
 

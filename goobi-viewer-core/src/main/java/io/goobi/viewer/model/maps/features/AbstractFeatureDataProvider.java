@@ -46,12 +46,12 @@ public abstract class AbstractFeatureDataProvider implements IFeatureDataProvide
         this.requiredFields = requiredFields;
     }
 
-    List<MetadataDocument> search(int maxResults, String finalQuery, Map<String, String> paramMap)
+    List<MetadataDocument> search(int maxResults, String finalQuery, List<String> facetFilterQueries, Map<String, String> paramMap)
             throws PresentationException, IndexUnreachableException {
         QueryResponse response =
                 searchIndex
                         .search(finalQuery, 0, maxResults, Collections.emptyList(), Collections.emptyList(), getFieldList(),
-                                Collections.emptyList(), paramMap);
+                                facetFilterQueries, paramMap);
         return response.getResults().stream().map(doc -> getMetadataDocument(response, doc)).toList();
     }
 
@@ -88,6 +88,7 @@ public abstract class AbstractFeatureDataProvider implements IFeatureDataProvide
     protected abstract MetadataDocument getMetadataDocument(QueryResponse response, SolrDocument doc);
 
     @Override
-    public abstract List<MetadataDocument> getResults(String query, int maxResults) throws PresentationException, IndexUnreachableException;
+    public abstract List<MetadataDocument> getResults(String query, List<String> facetFilterQueries, int maxResults)
+            throws PresentationException, IndexUnreachableException;
 
 }

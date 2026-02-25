@@ -482,7 +482,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
             Mockito.when(page.getFilepath()).thenReturn(pi + "/" + pageFilename);
         }
         Mockito.when(page.getMimeType()).thenReturn(mimeType);
-        Mockito.when(page.getBaseMimeType()).thenReturn(BaseMimeType.getByName(mimeType));
+        Mockito.when(page.getMediaType()).thenReturn(new MimeType(mimeType));
         Mockito.when(page.getImageType()).thenReturn(new ImageType(ImageFileFormat.getImageFileFormatFromMimeType(mimeType)));
 
         IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
@@ -550,17 +550,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
             assertEquals(17, pages.get(16).intValue());
         }
 
-    }
-
-    /**
-     * @see ViewManager#isFilesOnly()
-     * @verifies return true if mime type application
-     */
-    @Test
-    void isFilesOnly_shouldReturnTrueIfMimeTypeApplication() throws Exception {
-        StructElement se = new StructElement(iddocKleiuniv);
-        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, "application/pdf", null);
-        Assertions.assertTrue(viewManager.isFilesOnly());
     }
 
     @Test
@@ -658,7 +647,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("EAD_123", viewManager.getArchiveEntryIdentifier());
         Assertions.assertFalse(viewManager.isDisplayArchivesWidget());
     }
-    
+
     /**
      * @see ViewManager#isDisplayArchivesWidget()
      * @verifies set displayArchivesWidget to true if both id and archive node exist
