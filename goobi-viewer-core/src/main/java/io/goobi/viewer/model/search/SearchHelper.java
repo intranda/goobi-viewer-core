@@ -3830,9 +3830,9 @@ public final class SearchHelper {
         if (StringUtils.isBlank(s)) {
             return false;
         }
-        
+
         String phraseCheckUnquoteValue = SearchHelper.unquoteValue(s);
-        if(!phraseCheckUnquoteValue.equals(s)) {
+        if (!phraseCheckUnquoteValue.equals(s)) {
             phraseCheckUnquoteValue = '"' + phraseCheckUnquoteValue.replace("\"", "\\\"") + '"'; // escape double quotes
         }
         Matcher m = PATTERN_PHRASE.matcher(phraseCheckUnquoteValue);
