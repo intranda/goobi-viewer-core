@@ -136,6 +136,22 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
+     * @return configured title or root entry label
+     */
+    public String getBreadcrumbTitle() {
+        if (archiveConfig != null && archiveConfig.getTitle() != null) {
+            String configuredTitle = archiveConfig.getTitle().getTextOrDefault();
+            if (StringUtils.isNotBlank(configuredTitle)) {
+                return configuredTitle;
+            }
+        }
+        if (getTrueRoot() != null) {
+            return getTrueRoot().getLabel();
+        }
+        return "";
+    }
+
+    /**
      *
      * @return actual root element of the document, even if it's not in the displayed tree
      */
