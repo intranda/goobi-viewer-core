@@ -168,7 +168,7 @@ public class VariableReplacer {
      * Return a single string which only uses the first replacement values for each variable if there is more than one
      * 
      * @param template
-     * @return
+     * @return the string with replaced variables
      */
     public String replaceFirst(String template) {
         return this.replace(template).stream().findFirst().orElse("");
@@ -179,7 +179,7 @@ public class VariableReplacer {
      * 
      * @param template
      * @param separator
-     * @return
+     * @return The concatenated strings with replaced variables
      */
     public String replaceAll(String template, String separator) {
         return this.replace(template).stream().collect(Collectors.joining(separator));
