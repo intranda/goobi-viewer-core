@@ -24,6 +24,7 @@ package io.goobi.viewer.model.viewer;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.apache.solr.common.SolrDocument;
 
@@ -56,21 +57,19 @@ public class MimeType {
     public String getType() {
         if (name.contains("/")) {
             return name.substring(0, name.indexOf("/"));
-        } else {
-            return name;
         }
+        return name;
     }
 
     public String getSubType() {
         if (name.contains("/")) {
             return name.substring(name.indexOf("/") + 1);
-        } else {
-            return "";
         }
+        return "";
     }
 
     public String[] getSubTypes() {
-        return getSubType().split("+");
+        return getSubType().split(Pattern.quote("+"));
     }
 
     public boolean isImage() {
@@ -128,9 +127,7 @@ public class MimeType {
     public boolean equals(Object obj) {
         if (obj.getClass().equals(this.getClass())) {
             return this.name.equals(((MimeType) obj).name);
-        } else {
-            return false;
         }
+        return false;
     }
-
 }

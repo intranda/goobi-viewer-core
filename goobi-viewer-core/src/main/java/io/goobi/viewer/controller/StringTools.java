@@ -902,11 +902,21 @@ public final class StringTools {
         return buffer.toString();
     }
 
+    /**
+     * 
+     * @param text
+     * @param target
+     * @param replacement
+     * @return ALtered text
+     * @should return original text if target not found
+     * @should replace target with replacement correctly
+     */
     public static String replaceLast(String text, String target, String replacement) {
         int index = text.lastIndexOf(target);
         if (index == -1) {
-            return text; // target nicht gefunden
+            return text;
         }
+        
         return text.substring(0, index)
                 + replacement
                 + text.substring(index + target.length());
