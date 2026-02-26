@@ -1305,7 +1305,8 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
 
-        searchTerms = SearchHelper.extractSearchTermsFromQuery(searchStringInternal.replace("\\", ""), discriminatorValue);
+        // TODO re-add removing backslashes (but preserving escaped double quotes)?
+        searchTerms = SearchHelper.extractSearchTermsFromQuery(searchStringInternal, discriminatorValue);
         logger.trace("searchTerms: {}", searchTerms);
 
         // TODO reset mode?

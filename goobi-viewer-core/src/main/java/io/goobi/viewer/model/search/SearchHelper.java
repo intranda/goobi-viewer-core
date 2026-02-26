@@ -2300,6 +2300,7 @@ public final class SearchHelper {
      * @return a {@link java.util.Map} object.
      * @should extract all values from query except from NOT blocks
      * @should handle multiple phrases in query correctly
+     * @should handle escaped double quotes correctly
      * @should skip discriminator value
      * @should not remove truncation
      * @should throw IllegalArgumentException if query is null
@@ -2374,7 +2375,8 @@ public final class SearchHelper {
                     break;
             }
 
-            String phraseWithoutQuotation = phraseSplit[1].replace("@", "").replace("\"", "");
+            String phraseWithoutQuotation = phraseSplit[1].replace("@", "");
+            phraseWithoutQuotation = unquoteValue(phraseWithoutQuotation, true); // remove outer double quotes
             if (!phraseWithoutQuotation.isEmpty() && !stopwords.contains(phraseWithoutQuotation)) {
                 if (ret.get(field) == null) {
                     ret.put(field, new HashSet<>());
@@ -2479,19 +2481,26 @@ public final class SearchHelper {
     }
 
     /**
+     * Removes outer double quotes from the given value.
      * 
      * @param value
+     * @param containsEscapedDoubleQuotes Use true if inner double quotes are already backslash-escaped, false otherwise
      * @return value without surrounding quotation marks
      * @should return value if blank
      * @should return value if not in quotes
      * @should unquote value correctly
      */
-    public static String unquoteValue(String value) {
+    public static String unquoteValue(String value, boolean containsEscapedDoubleQuotes) {
         if (StringUtils.isNotBlank(value)) {
-            Pattern pattern = Pattern.compile("^\"((?:[^\\\\])+)\"(?:~\\d+)?$");
-            Matcher matcher = pattern.matcher(value);
-            if (matcher.matches()) {
-                return matcher.group(1);
+            int start = 0;
+            int end = value.length();
+            int tildeIndex = value.lastIndexOf('~');
+            if (tildeIndex > 0 && value.substring(tildeIndex + 1).matches("\\d+")) {
+                end = tildeIndex;
+            }
+            
+            if (end - start >= 2 && value.charAt(start) == '"' && value.charAt(end - 1) == '"') {
+                return value.substring(start + 1, end - 1);
             }
         }
 
@@ -3831,7 +3840,7 @@ public final class SearchHelper {
             return false;
         }
 
-        String phraseCheckUnquoteValue = SearchHelper.unquoteValue(s);
+        String phraseCheckUnquoteValue = SearchHelper.unquoteValue(s, false);
         if (!phraseCheckUnquoteValue.equals(s)) {
             phraseCheckUnquoteValue = '"' + phraseCheckUnquoteValue.replace("\"", "\\\"") + '"'; // escape double quotes
         }

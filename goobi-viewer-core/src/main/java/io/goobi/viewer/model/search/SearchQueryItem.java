@@ -702,7 +702,7 @@ public class SearchQueryItem implements Serializable {
                         // logger.trace("proximity distance: {}", proximitySearchDistance); //NOSONAR Debug
                         sbItem.append(useField).append(':');
 
-                        String unquoteValue = SearchHelper.unquoteValue(useValue);
+                        String unquoteValue = SearchHelper.unquoteValue(useValue, false);
                         // Value already enclosed in double quotes, optionally followed by a tilde and a number
                         boolean valueAlreadyInQuotes = !unquoteValue.equals(useValue);
                         if (!valueAlreadyInQuotes) {
