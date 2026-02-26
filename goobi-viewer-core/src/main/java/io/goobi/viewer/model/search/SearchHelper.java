@@ -162,8 +162,8 @@ public final class SearchHelper {
     private static final Pattern PATTERN_NOT_BRACKETS = Pattern.compile("NOT\\([^()]*\\)");
     /** Regex pattern for negations not followed by brackets */
     private static final Pattern PATTERN_NOT = Pattern.compile("NOT [a-zA-Z_]+:[a-zA-Z0-9\\*]+");
-    /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code>. */
-    public static final String REGEX_QUOTATION_MARKS = "@?+\"(?:[^()\"\\\\]|\\\\.)*\"@?+";
+    /** Constant that matches strings enclosed by double quotes (and optional replacement tags @). May contain escaped double quotes. */
+    public static final String REGEX_QUOTATION_MARKS = "@?+\"(?:[^()\"\\\\]|\\\\.)*\"@?+"; //NOSONAR Supposedly safe?
     /** Constant <code>PATTERN_FIELD_PHRASE</code> */
     private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]++:" + REGEX_QUOTATION_MARKS); //NOSONAR Checked and fixed potential CB
     /** Constant <code>PATTERN_PHRASE</code> */
@@ -3435,7 +3435,6 @@ public final class SearchHelper {
                     .replace("\\\"", "$$$")
                     .replace("\"", "\\\"")
                     .replace("$$$", "\\\"")) + ")";
-            logger.trace("template: " + template);
             sbQuery = new StringBuilder(template);
         }
 
