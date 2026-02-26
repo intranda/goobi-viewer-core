@@ -28,8 +28,8 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -37,7 +37,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.solr.SolrConstants;
 
-class DataFileToolsTest extends AbstractTest {
+class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see DataFileTools#getSourceFilePath(String,String,String)
