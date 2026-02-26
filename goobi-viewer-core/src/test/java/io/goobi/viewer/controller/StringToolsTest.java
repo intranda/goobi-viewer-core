@@ -38,6 +38,8 @@ import org.jsoup.safety.Safelist;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.goobi.viewer.solr.SolrTools;
+
 class StringToolsTest {
 
     /**
@@ -365,5 +367,23 @@ class StringToolsTest {
         Assertions.assertEquals("a...", StringTools.truncateText("abcde", 4));
         Assertions.assertEquals("abc...", StringTools.truncateText("abc def gh", 6));
         Assertions.assertEquals("abc def...", StringTools.truncateText("abc def ghij", 10));
+    }
+    
+    /**
+     * @see SolrTools#replaceLast(String,String,String)
+     * @verifies return original text if target not found
+     */
+    @Test
+    void replaceLast_shouldReturnOriginalTextIfTargetNotFound() {
+        assertEquals("lorem ipsum dolor sit amet", StringTools.replaceLast("lorem ipsum dolor sit amet", "foo", "bar"));
+    }
+    
+    /**
+     * @see SolrTools#replaceLast(String,String,String)
+     * @verifies replace target with replacement correctly
+     */
+    @Test
+    void replaceLast_shouldReplaceTargetWithReplaacementCorrectly() {
+        assertEquals("lorem ipsum dolor stand amet", StringTools.replaceLast("lorem ipsum dolor sit amet", "sit", "stand"));
     }
 }
