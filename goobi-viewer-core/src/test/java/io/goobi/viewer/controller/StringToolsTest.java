@@ -383,7 +383,7 @@ class StringToolsTest {
      * @verifies replace target with replacement correctly
      */
     @Test
-    void replaceLast_shouldReplaceTargetWithReplaacementCorrectly() {
+    void replaceLast_shouldReplaceTargetWithReplacementCorrectly() {
         assertEquals("lorem ipsum dolor stand amet", StringTools.replaceLast("lorem ipsum dolor sit amet", "sit", "stand"));
     }
 }
