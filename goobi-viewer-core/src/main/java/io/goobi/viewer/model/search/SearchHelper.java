@@ -2498,7 +2498,7 @@ public final class SearchHelper {
             if (tildeIndex > 0 && value.substring(tildeIndex + 1).matches("\\d+")) {
                 end = tildeIndex;
             }
-            
+
             if (end - start >= 2 && value.charAt(start) == '"' && value.charAt(end - 1) == '"') {
                 return value.substring(start + 1, end - 1);
             }
@@ -3429,7 +3429,13 @@ public final class SearchHelper {
 
         // Boosting
         if (boostTopLevelDocstructs) {
-            String template = "+(" + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString().replace("\"", "\\\"")) + ")";
+            String template = "+(" + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString()
+                    // All backslaches in the boost query are escaped here (not sure why anymore)
+                    // However, escaped double quotes must be preserved, hence the crude temporary replacement
+                    .replace("\\\"", "$$$")
+                    .replace("\"", "\\\"")
+                    .replace("$$$", "\\\"")) + ")";
+            logger.trace("template: " + template);
             sbQuery = new StringBuilder(template);
         }
 
