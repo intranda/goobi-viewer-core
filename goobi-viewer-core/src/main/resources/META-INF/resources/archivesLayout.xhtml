@@ -1,160 +1,199 @@
-<ui:composition 
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
- 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    <!-- MESSAGES -->
+    <div class="messages">
+        <h:messages
+            id="messages"
+            globalOnly="false"
+            infoClass="alert alert-success"
+            errorClass="alert alert-danger" />
+    </div>
 
-	<!-- MESSAGES -->
-	<div class="messages">
-		<h:messages id="messages" globalOnly="false" infoClass="alert alert-success" errorClass="alert alert-danger" />
-	</div>
-	
-	<!-- ADMIN TOPBAR FRONTEND -->
-	<viewerComponent:frontEndAdminTopBar />
+    <!-- ADMIN TOPBAR FRONTEND -->
+    <viewerComponent:frontEndAdminTopBar />
 
-	<div id="archives" class="archives #{archiveBean.databaseState == 'ARCHIVES_LOADED' ? '-archivesLoaded' : '-archivesNotLoaded'}">
+    <div
+        id="archives"
+        class="archives #{archiveBean.databaseState == 'ARCHIVES_LOADED' ? '-archivesLoaded' : '-archivesNotLoaded'}">
+        <!-- ARCHIVES HEADER BOX -->
+        <header
+            id="header"
+            class="archives__top-wrapper">
+            <div class="archives__header">
+                <!-- LOGO OF INSTITUTION -->
+                <div class="archives__header-brand">
+                    <a
+                        href="#{request.contextPath}/"
+                        title="{msg.home}">
+                        <img
+                            src='#{adminThemesBean.getFullscreenLogo("images/template/fullscreen_logo.png", 300, 40)}'
+                            alt="#{adminThemesBean.getThemeLabel(configurationBean.name)} Logo" />
+                    </a>
+                </div>
 
-		<!-- ARCHIVES HEADER BOX -->
-		<header id="header" class="archives__top-wrapper">
-			<div class="archives__header">
+                <!-- ARCHIVE TITLE -->
+                <div class="archives__top-title">
+                    <a
+                        href="#{request.contextPath}/"
+                        title="{msg.home}"
+                        target="_self"
+                        rel="noopener">
+                        #{msg.home}
+                    </a>
+                    <util:icon icon="chevron-right" />
+                    <a
+                        href="#{request.contextPath}/archives"
+                        target="_self"
+                        rel="noopener">
+                        #{msg.archives__archiveViewHeading}
+                    </a>
+                    <util:icon icon="chevron-right" />
+                    <h1>
+                        <span>
+                            #{archiveBean.databaseState == 'ARCHIVES_LOADED' ? msg.archives__title_placeholder :
+                            archiveBean.breadcrumbTitle}
+                        </span>
+                    </h1>
+                </div>
 
-				<!-- LOGO OF INSTITUTION -->
-				<div class="archives__header-brand">
-					<a href="#{request.contextPath}/" title="{msg.home}"> 
-						<img src="#{adminThemesBean.getFullscreenLogo(&quot;images/template/fullscreen_logo.png&quot;, 300, 40)}" alt="#{adminThemesBean.getThemeLabel(configurationBean.name)} Logo" />
-					</a>
-				</div>
+                <!-- EXIT -->
+                <div class="archives__header-exit">
+                    <h:outputLink
+                        value="#{request.contextPath}#{navigationHelper.previousViewUrl}"
+                        title="#{msg.archives__exit_view}">
+                        <ui:include src="/resources/images/icons/icon_fs-exit.svg" />
+                        <f:passThroughAttribute
+                            name="data-toggle"
+                            value="tooltip" />
+                        <f:passThroughAttribute
+                            name="data-placement"
+                            value="bottom" />
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.archives__exit_view}" />
+                    </h:outputLink>
+                </div>
+            </div>
+        </header>
 
+        <!-- ARCHIVES CONTENT -->
+        <main
+            id="archivesContent"
+            class="archives__main">
+            <c:choose>
+                <!-- CONDITION ERROR -->
+                <c:when test="#{archiveBean.databaseState == 'ERROR_NOT_REACHABLE'}">
+                    <div class="archives__error">
+                        <span>#{msg.errIndexUnreachableMsg}</span>
+                    </div>
+                </c:when>
 
- 
+                <!-- CONDITION IF MORE THAN ONE ARCHIVE EXISTENT -->
+                <c:when test="#{archiveBean.databaseState == 'ARCHIVES_LOADED'}">
+                    <!-- SHOW ARCHIVE SELECTION AS MODAL WITH BACKDROP -->
+                    <div
+                        class="modal fade archives__modal show arcxhives__select-archive-modal"
+                        id="selectArchivesModal"
+                        tabindex="-1"
+                        role="dialog"
+                        aria-hidden="true">
+                        <div
+                            class="modal-dialog modal-dialog-centered widget-usage__citelinks-box"
+                            role="document">
+                            <div class="modal-content">
+                                <!-- MODAL HEADER/TITLE -->
+                                <div class="modal-header">
+                                    <h1 class="modal-title">#{msg.archives__archiveViewHeading}</h1>
+                                </div>
 
-				<!-- ARCHIVE TITLE -->
-				<div class="archives__top-title">
-					<a href="#{request.contextPath}/" title="{msg.home}" target="_self" rel="noopener">#{msg.home}</a>
-					 <util:icon icon="chevron-right" /> 
-					<a href="#{request.contextPath}/archives" target="_self" rel="noopener">#{msg.archives__archiveViewHeading}</a>
-					 <util:icon icon="chevron-right" />  
-					 <h1 >
-						<span>#{archiveBean.databaseState == 'ARCHIVES_LOADED' ? msg.archives__title_placeholder : archiveBean.trueRoot.label}</span></h1>
-				</div>
+                                <div class="modal-body">
+                                    <!-- MODAL CONTENT -->
 
-				<!-- EXIT -->
-				<div class="archives__header-exit">
-					<h:outputLink value="#{request.contextPath}#{navigationHelper.previousViewUrl}" title="#{msg.returnHome}">
-						<ui:include src="/resources/images/icons/icon_fs-exit.svg"/>
-		                <f:passThroughAttribute name="data-toggle" value="tooltip" />
-		                <f:passThroughAttribute name="data-placement" value="bottom" />
-		                <f:passThroughAttribute name="aria-label" value="#{msg.returnHome}" />
-					</h:outputLink>
-				</div>		
+                                    <div class="archives__select">
+                                        <!-- 										<p>#{msg.archives__choose_database}:</p> -->
 
-			</div>
-		</header>
+                                        <!-- SELECT BOX ARCHIVE -->
+                                        <h:form>
+                                            <h:outputLabel for="selectArchivesDropdown">
+                                                #{msg.archives__choose_database}:
+                                            </h:outputLabel>
+                                            <div class="archives__modal-select-database-dropdown-wrapper">
+                                                <h:selectOneMenu
+                                                    id="selectArchivesDropdown"
+                                                    styleClass="archives__modal-select-database-dropdown"
+                                                    value="#{archiveBean.currentResource}">
+                                                    <f:selectItem
+                                                        itemLabel="#{msg.select}"
+                                                        itemValue=""
+                                                        noSelectionOption="true" />
+                                                    <f:selectItems
+                                                        value="#{archiveBean.filteredDatabases}"
+                                                        var="database"
+                                                        itemValue="#{database.resourceId}"
+                                                        itemLabel="#{database.resourceName}"></f:selectItems>
+                                                </h:selectOneMenu>
+                                            </div>
 
-		<!-- ARCHIVES CONTENT -->
-		<main id="archivesContent" class="archives__main">
-			<c:choose>
-				<!-- CONDITION ERROR -->
-				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_REACHABLE'}">
-					<div class="archives__error">
-						<span>#{msg.errIndexUnreachableMsg}</span>
-					</div>
-				</c:when>
-				
-				<!-- CONDITION IF MORE THAN ONE ARCHIVE EXISTENT -->
-				<c:when test="#{archiveBean.databaseState == 'ARCHIVES_LOADED'}">
+                                            <div class="form-group form-row archives__modal-action">
+                                                <div class="col-sm-12 d-flex justify-content-end">
+                                                    <button
+                                                        jsf:action="pretty:archives1"
+                                                        type="submit"
+                                                        styleClass="btn btn--full archives__modal-select-database-confirm">
+                                                        #{msg.apply}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alt-backdrop"></div>
+                    </div>
 
-					<!-- SHOW ARCHIVE SELECTION AS MODAL WITH BACKDROP -->
-					<div class="modal fade archives__modal show arcxhives__select-archive-modal" id="selectArchivesModal" tabindex="-1" role="dialog"  aria-hidden="true">
-						<div class="modal-dialog modal-dialog-centered widget-usage__citelinks-box" role="document">
-							<div class="modal-content">
+                    <script>
+                        // FOCUS SELECTION ELEMENT IN MODAL IF IN ARCHIVE SELECTION SCREEN
+                        archiveBeanDataBaseState = '#{archiveBean.databaseState}';
+                        if (archiveBeanDataBaseState == 'ARCHIVES_LOADED') {
+                            console.log('condition yes');
+                            $(document).ready(function () {
+                                setTimeout(() => {
+                                    $('.archives__modal-select-database-dropdown').focus();
+                                }, '0');
+                            });
+                        }
+                    </script>
+                </c:when>
 
-								<!-- MODAL HEADER/TITLE -->
-								<div class="modal-header">
-									<h1 class="modal-title">#{msg.archives__archiveViewHeading}</h1>
-								</div>
+                <!-- CONDITION ONLY ONE ARCHIVE AND LOADED WITHOUT ERRORS -->
+                <c:otherwise>
+                    <ui:insert name="content" />
+                </c:otherwise>
+            </c:choose>
+        </main>
 
-								<div class="modal-body">
-								<!-- MODAL CONTENT -->
+        <!-- USER TERMS MODAL -->
+        <viewerComponent:modalUserTerms id="userTermsModal" />
 
-									<div class="archives__select">
-<!-- 										<p>#{msg.archives__choose_database}:</p> -->
-
-										<!-- SELECT BOX ARCHIVE -->
-										<h:form>
-											<h:outputLabel for="selectArchivesDropdown">#{msg.archives__choose_database}:</h:outputLabel>
-											<div class="archives__modal-select-database-dropdown-wrapper">
-												<h:selectOneMenu id="selectArchivesDropdown"
-													styleClass="archives__modal-select-database-dropdown"
-													value="#{archiveBean.currentResource}">
-													<f:selectItem itemLabel="#{msg.select}" itemValue=""
-														noSelectionOption="true" />
-													<f:selectItems value="#{archiveBean.filteredDatabases}"
-														var="database" itemValue="#{database.resourceId}"
-														itemLabel="#{database.resourceName}"></f:selectItems>
-												</h:selectOneMenu>
-											</div>
-
-											<div class="form-group form-row archives__modal-action">
-												<div class="col-sm-12 d-flex justify-content-end">
-													<button jsf:action="pretty:archives1" type="submit"
-														styleClass="btn btn--full archives__modal-select-database-confirm"
-														>#{msg.apply}</button>
-												</div>
-											</div>
-										</h:form>
-
-									</div>
-								</div>
-
-							</div>
-						</div>
-						<div class="alt-backdrop"></div>
-					</div>
-					
-					<script>
-						// FOCUS SELECTION ELEMENT IN MODAL IF IN ARCHIVE SELECTION SCREEN
-						archiveBeanDataBaseState = '#{archiveBean.databaseState}';
-						if (archiveBeanDataBaseState == 'ARCHIVES_LOADED') {
-							console.log('condition yes');
-							$( document ).ready(function() {
-							setTimeout(() => {
-								$('.archives__modal-select-database-dropdown').focus();
-								}, "0");
-							});
-						}
-					</script>
-
-				</c:when>
-				
-				<!-- CONDITION ONLY ONE ARCHIVE AND LOADED WITHOUT ERRORS -->
-				<c:otherwise>
-					<ui:insert name="content" />
-				</c:otherwise>
-				
-			</c:choose>
-		</main>
-
-		<!-- USER TERMS MODAL -->
-		<viewerComponent:modalUserTerms id="userTermsModal" />
-		
-		<!-- HC STICKY INIT FOR ARCHIVES -->
-		<script type="text/javascript">
-        	viewerJS.archives.init({
+        <!-- HC STICKY INIT FOR ARCHIVES -->
+        <script type="text/javascript">
+            viewerJS.archives.init({
                 initHcSticky: true,
                 initSearch: true,
                 initTextTree: true,
-        });
+            });
         </script>
-
-	</div>
+    </div>
 </ui:composition>

@@ -63,13 +63,13 @@
                                     <ui:fragment rendered="#{!archiveWrapper.archiveConfig.hasMediaItem(0)}">
                                         <div class="archives-list__placeholder"></div>
                                     </ui:fragment>
+                                </div>
 
-                                    <!-- TITLE OVERLAY -->
-                                    <div
-                                        class="archives-list__image-title"
-                                        aria-hidden="true">
-                                        #{archiveWrapper.getLabel(navigationHelper.locale)}
-                                    </div>
+                                <!-- TITLE OVERLAY -->
+                                <div
+                                    class="archives-list__image-title"
+                                    aria-hidden="true">
+                                    #{archiveWrapper.getLabel(navigationHelper.locale)}
                                 </div>
 
                                 <!-- SR-ONLY TITLE -->

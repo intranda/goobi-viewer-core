@@ -51,7 +51,7 @@
             		</div>
             	</div>
             	<div class="widget__body widget-archives__body">
-            		<ul>
+            		<ul class="widget-archives__entry-list">
 		                <ui:repeat var="entry" value="#{activeDocumentBean.viewManager.getArchiveHierarchyForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">
 						    <li class="widget-archives__entry">#{entry.label}</li>
 						</ui:repeat>

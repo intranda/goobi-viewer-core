@@ -349,9 +349,7 @@ public class ArchiveManager implements Serializable {
             String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
             String nodeId = SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID);
             if (entryId.equals(nodeId)) {
-                logger.error("current node");
                 if (iter.hasNext()) {
-                    logger.error("current node has next");
                     String nextPi = SolrTools.getSingleFieldStringValue(iter.next(), SolrConstants.PI);
                     next = Optional.of(nextPi);
                 }
@@ -566,7 +564,7 @@ public class ArchiveManager implements Serializable {
      */
     private static Map<String, NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
         if (archiveNodeTypes != null) {
-            Map<String, NodeType> ret = new HashMap<>(archiveNodeTypes.size());
+            Map<String, NodeType> ret = HashMap.newHashMap(archiveNodeTypes.size());
             for (Entry<String, String> entry : archiveNodeTypes.entrySet()) {
                 ret.put(entry.getKey(), new NodeType(entry.getKey(), entry.getValue()));
             }
@@ -604,7 +602,7 @@ public class ArchiveManager implements Serializable {
      * @return Number of removed archives
      */
     public int unloadArchives(Set<String> resourceIds) {
-        Set<ArchiveResource> toRemove = new HashSet<>(resourceIds.size());
+        Set<ArchiveResource> toRemove = HashSet.newHashSet(resourceIds.size());
         for (ArchiveResource archiveResource : this.archives.keySet()) {
             if (resourceIds.contains(archiveResource.getResourceId())) {
                 toRemove.add(archiveResource);

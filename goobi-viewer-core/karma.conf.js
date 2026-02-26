@@ -1,106 +1,109 @@
 // Karma configuration
 
-module.exports = function(config) {
+module.exports = function (config) {
     var configuration = {
+        // base path that will be used to resolve all patterns (eg. files, exclude)
+        basePath: 'src/main/resources/META-INF/resources/resources/javascript/',
 
-      // base path that will be used to resolve all patterns (eg. files, exclude)
-      basePath: 'src/main/resources/META-INF/resources/resources/javascript/',
+        // plugins starting with karma- are autoloaded
+        plugins: [
+            'karma-chrome-launcher',
+            'karma-firefox-launcher',
+            'karma-jasmine',
+            'karma-mocha-reporter',
+            'karma-htmlfile-reporter',
+        ],
 
-      // plugins starting with karma- are autoloaded
-      plugins: ['karma-chrome-launcher', 'karma-firefox-launcher', 'karma-jasmine', 'karma-mocha-reporter', 'karma-htmlfile-reporter'],
+        // frameworks to use
+        // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
+        frameworks: ['jasmine'],
 
-      // frameworks to use
-      // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-      frameworks: ['jasmine'],
+        // list of files / patterns to load in the browser
+        files: [
+            'tests/lib/jquery-1.11.3.js',
 
-      // list of files / patterns to load in the browser
-      files: [
-	      'tests/lib/jquery-1.11.3.js',
+            'libs/q-promises/q.min.js',
+            'libs/reactiveX/rx.lite.min.js',
+            'libs/jqplot/jquery.jqplot.min.js',
+            'libs/jqueryUi/1.11.0/jquery-ui.min.js',
 
-	      'libs/q-promises/q.min.js',
-	      'libs/reactiveX/rx.lite.min.js',
-	      'libs/jqplot/jquery.jqplot.min.js',
-	      'libs/jqueryUi/1.11.0/jquery-ui.min.js',
+            'dev/modules/statistics/statistics.js',
+            'dev/modules/viewer/viewerJS.helper.js',
+            'dev/modules/viewer/viewerJS.paginator.js',
+            'dev/modules/cms/cmsJS.js',
+            'dev/modules/cms/cmsJS.tagList.js',
+            'dev/modules/cms/cmsJS.stackedCollection.js',
 
-	      'dev/modules/statistics/statistics.js',
-	      'dev/modules/viewer/viewerJS.helper.js',
-	      'dev/modules/viewer/viewerJS.paginator.js',
-	      'dev/modules/cms/cmsJS.js',
-	      'dev/modules/cms/cmsJS.tagList.js',
-	      'dev/modules/cms/cmsJS.stackedCollection.js',
+            'dist/imageView.min.js',
 
-	      'dist/imageView.min.js',
+            'tests/spec/viewerPaginator-spec.js',
+            'tests/spec/cms.tagList-spec.js',
+            'tests/spec/cms.stackedCollection-spec.js',
+            'tests/spec/statistics-specs.js',
+            'tests/spec/viewerHelper-spec.js',
+            'tests/spec/viewImage-spec.js',
+            'tests/spec/viewImage.controls-spec.js',
+            'tests/spec/viewImage.controls.persistence-spec.js',
+            'tests/spec/viewImage.tileSourceResolver-spec.js',
+            'tests/spec/viewImage.coordinateConversion-spec.js',
 
-	      'tests/spec/viewerPaginator-spec.js',
-	      'tests/spec/cms.tagList-spec.js',
-	      'tests/spec/cms.stackedCollection-spec.js',
-	      'tests/spec/statistics-specs.js',
-	      'tests/spec/viewerHelper-spec.js',
-	      'tests/spec/viewImage-spec.js',
-	      'tests/spec/viewImage.controls-spec.js',
-	      'tests/spec/viewImage.controls.persistence-spec.js',
-	      'tests/spec/viewImage.tileSourceResolver-spec.js',
-	      'tests/spec/viewImage.coordinateConversion-spec.js',
+            'tests/spec/javascripts/fixtures/paginatorTest.html',
+        ],
 
-	      'tests/spec/javascripts/fixtures/paginatorTest.html',
-      ],
+        // list of files to exclude
+        exclude: [],
 
-      // list of files to exclude
-      exclude: [
-      ],
+        // preprocess matching files before serving them to the browser
+        // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+        preprocessors: {},
 
-      // preprocess matching files before serving them to the browser
-      // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-      preprocessors: {
-      },
+        // test results reporter to use
+        // possible values: 'dots', 'progress'
+        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
+        reporters: ['mocha', 'html'],
 
-      // test results reporter to use
-      // possible values: 'dots', 'progress'
-      // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-      reporters: ['mocha', 'html'],
+        htmlReporter: {
+            outputFile: '../../../test-reports-karma/index.html',
 
-    htmlReporter: {
-          outputFile: '../../../test-reports-karma/index.html',
-            
-      pageTitle: 'Goobi viewer Core',
-      subPageTitle: 'Javascript Unit tests written in Jasmine',
-groupSuites: true,
-	  useCompactStyle: true,
-      useLegacyStyle: true
-    },
+            pageTitle: 'Goobi viewer Core',
+            subPageTitle: 'Javascript Unit tests written in Jasmine',
+            groupSuites: true,
+            useCompactStyle: true,
+            useLegacyStyle: true,
+        },
 
-      // web server port
-      port: 9876,
+        // web server port
+        port: 9876,
 
-      // enable / disable colors in the output (reporters and logs)
-      colors: true,
+        // enable / disable colors in the output (reporters and logs)
+        colors: true,
 
-      // level of logging
-      // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-      logLevel: config.LOG_INFO,
+        // level of logging
+        // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+        logLevel: config.LOG_INFO,
 
-      // enable / disable watching file and executing tests whenever any file changes
-      autoWatch: true,
+        // enable / disable watching file and executing tests whenever any file changes
+        autoWatch: true,
 
-      // start these browsers
-      // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-      browsers: ['Chrome', 'Firefox'],
+        // start these browsers
+        // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+        browsers: ['Chrome', 'Firefox'],
 
-      // e.g see https://swizec.com/blog/how-to-run-javascript-tests-in-chrome-on-travis/swizec/6647
-      customLaunchers: {
-        Chrome_travis_ci: {
-          base: 'Chrome',
-          flags: ['--no-sandbox']
-        }
-      },
+        // e.g see https://swizec.com/blog/how-to-run-javascript-tests-in-chrome-on-travis/swizec/6647
+        customLaunchers: {
+            Chrome_travis_ci: {
+                base: 'Chrome',
+                flags: ['--no-sandbox'],
+            },
+        },
 
-      // Continuous Integration mode
-      // if true, Karma captures browsers, runs the tests and exits
-      singleRun: false,
+        // Continuous Integration mode
+        // if true, Karma captures browsers, runs the tests and exits
+        singleRun: false,
 
-      // Concurrency level
-      // how many browser should be started simultaneous
-      concurrency: Infinity
+        // Concurrency level
+        // how many browser should be started simultaneous
+        concurrency: Infinity,
     };
 
     if (process.env.TRAVIS) {
@@ -108,4 +111,4 @@ groupSuites: true,
     }
 
     config.set(configuration);
-} 
+};

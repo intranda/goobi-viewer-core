@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -128,9 +129,8 @@ public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageSt
     public void onStartup() {
         Path targetFolder = Path.of(DataManager.getInstance().getConfiguration().getDownloadFolder(PdfDownloadJob.TYPE));
         if (Files.isDirectory(targetFolder)) {
-            try {
-                Files.list(targetFolder)
-                        .filter(f -> f.getFileName().toString().endsWith(DownloadJob.FILE_EXTENSION_CREATING_LOCK))
+            try (Stream<Path> paths = Files.list(targetFolder)) {
+                paths.filter(f -> f.getFileName().toString().endsWith(DownloadJob.FILE_EXTENSION_CREATING_LOCK))
                         .map(Path::toFile)
                         .forEach(FileUtils::deleteQuietly);
             } catch (IOException e) {
