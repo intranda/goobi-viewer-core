@@ -42,6 +42,8 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
@@ -51,12 +53,15 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.Translation;
+import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.collections.BrowseElementInfo;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -161,6 +166,34 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         this.representativeWorkPI = orig.representativeWorkPI;
         this.selectedLocale = orig.selectedLocale;
         this.translations = orig.translations.stream().map(tr -> new CMSCollectionTranslation(tr, this)).collect(Collectors.toList());
+    }
+
+    /**
+     * Loads representative image info from Solr.
+     * 
+     * @return this
+     */
+    public CMSCollection loadRepresentativeImage() {
+        if (hasRepresentativeWork()) {
+            // Check thumbnail access permission if representative record set
+            try {
+                SolrDocument doc = DataManager.getInstance()
+                        .getSearchIndex()
+                        .getFirstDoc(SolrConstants.PI + ":\"" + getRepresentativeWorkPI() + '"', null);
+                if (doc != null) {
+                    logger.trace("loaded record: {}", getRepresentativeWorkPI());
+                    PhysicalElement pe = ThumbnailHandler.getPage(getRepresentativeWorkPI(),
+                            SolrTools.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO));
+                    if (pe != null) {
+                        setAccessPermissionThumbnail(pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
+                    }
+                }
+            } catch (PresentationException | IndexUnreachableException | DAOException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return this;
     }
 
     /**
@@ -630,9 +663,6 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         this.representativeWorkPI = representativeWorkPI;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getTranslationsForName()
-     */
     /** {@inheritDoc} */
     @Override
     public IMetadataValue getTranslationsForName() {
@@ -658,10 +688,6 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         return new MultiLanguageMetadataValue(descriptions);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaFilter()
-     */
-    /** {@inheritDoc} */
     @Override
     public String getMediaFilter() {
         return CmsMediaBean.getImageFilter();
@@ -672,10 +698,6 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         return CmsMediaBean.getImageTypes();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.CMSMediaHolder#getMediaItemWrapper()
-     */
-    /** {@inheritDoc} */
     @Override
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
         if (hasMediaItem()) {
@@ -686,25 +708,16 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isComplete(java.util.Locale)
-     */
     @Override
     public boolean isComplete(Locale locale) {
         return !isEmpty(locale);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isValid(java.util.Locale)
-     */
     @Override
     public boolean isValid(Locale locale) {
         return !isEmpty(locale);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#isEmpty(java.util.Locale)
-     */
     @Override
     public boolean isEmpty(Locale locale) {
         if (locale == null) {
@@ -719,17 +732,11 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         return StringUtils.isBlank(translation.getTranslationValue());
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#getSelectedLocale()
-     */
     @Override
     public Locale getSelectedLocale() {
         return selectedLocale;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.IPolyglott#setSelectedLocale(java.util.Locale)
-     */
     @Override
     public void setSelectedLocale(Locale locale) {
         logger.trace("setSelectedLocale: {}", locale);
