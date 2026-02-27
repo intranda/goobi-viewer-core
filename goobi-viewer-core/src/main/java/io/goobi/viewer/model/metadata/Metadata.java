@@ -65,7 +65,6 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -469,8 +468,6 @@ public class Metadata implements Serializable {
             return;
         }
 
-        VariableReplacer replacer = new VariableReplacer(DataManager.getInstance().getConfiguration());
-
         // Adopt indexes to list sizes, if necessary
         while (values.size() - 1 < valueIndex) {
             MetadataValue mdValue = new MetadataValue(ownerStructElementIddoc + "_" + valueIndex, getMasterValue(),
@@ -660,8 +657,6 @@ public class Metadata implements Serializable {
             } else {
                 value = SearchHelper.replaceHighlightingPlaceholders(value);
             }
-
-            value = replacer.replaceFirst(value);
 
             if (paramIndex >= 0) {
                 while (mdValue.getParamLabels().size() <= paramIndex) {
