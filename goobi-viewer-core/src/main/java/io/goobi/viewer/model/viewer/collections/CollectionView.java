@@ -37,12 +37,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.common.SolrDocument;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.controller.sorting.ObjectComparatorBuilder;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -50,12 +48,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
-import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.viewer.PageType;
-import io.goobi.viewer.model.viewer.PhysicalElement;
-import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrTools;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
@@ -196,10 +190,8 @@ public class CollectionView implements Serializable {
      * <p>
      * calculateVisibleDcElements.
      * </p>
-     *
-     * @throws IllegalRequestException
      */
-    public void calculateVisibleDcElements() throws IllegalRequestException {
+    public void calculateVisibleDcElements() {
         calculateVisibleDcElements(true);
     }
 
@@ -208,10 +200,9 @@ public class CollectionView implements Serializable {
      * calculateVisibleDcElements.
      * </p>
      *
-     * @param loadDescriptions a boolean.
-     * @throws IllegalRequestException
+     * @param loadDescriptions If true, associated CMS collection configurations will be loaded
      */
-    public void calculateVisibleDcElements(boolean loadDescriptions) throws IllegalRequestException {
+    public void calculateVisibleDcElements(boolean loadDescriptions) {
         logger.trace("calculateVisibleDcElements: {}", loadDescriptions);
         if (completeCollectionList == null) {
             return;
@@ -232,7 +223,7 @@ public class CollectionView implements Serializable {
                 if (isIgnoreHierarchy()) {
                     for (HierarchicalBrowseDcElement element : completeCollectionList) {
                         if (this.ignoreList.contains(element.getName())
-                                || (baseElement != null && !element.getName().startsWith(baseElement.getName() + splittingChar))) {
+                                || (!element.getName().startsWith(baseElement.getName() + splittingChar))) {
                             continue;
                         }
                         visibleList.add(element);
@@ -340,30 +331,12 @@ public class CollectionView implements Serializable {
             if (StringUtils.isBlank(collectionName)) {
                 continue;
             }
-            if (cmsCollection.hasRepresentativeWork()) {
-                // Check thumbnail access permission if representative record set
-                try {
-                    SolrDocument doc = DataManager.getInstance()
-                            .getSearchIndex()
-                            .getFirstDoc(SolrConstants.PI + ":\"" + cmsCollection.getRepresentativeWorkPI() + '"', null);
-                    if (doc != null) {
-                        PhysicalElement pe = ThumbnailHandler.getPage(cmsCollection.getRepresentativeWorkPI(),
-                                SolrTools.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO));
-                        if (pe != null) {
-                            cmsCollection.setAccessPermissionThumbnail(pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
-                        }
-                    }
-                } catch (PresentationException | IndexUnreachableException | DAOException e) {
-                    logger.error(e.getMessage());
-                }
-
-            }
             //include direct child elements to handle views which include children of visible elements (luzern theme e.g.)
             Optional<HierarchicalBrowseDcElement> element = collections.stream()
                     .flatMap(ele -> ele.getChildren(true).stream())
                     .filter(ele -> ele.getName().equals(collectionName))
                     .findAny();
-            element.ifPresent(ele -> ele.setInfo(cmsCollection));
+            element.ifPresent(ele -> ele.setInfo(cmsCollection.loadRepresentativeImage()));
         }
     }
 
@@ -438,7 +411,7 @@ public class CollectionView implements Serializable {
         if (elementIndex > -1) {
             visibleCollectionList.addAll(elementIndex + 1, element.getChildrenAndVisibleDescendants());
             element.setShowSubElements(true);
-            associateElementsWithCMSData();
+            // associateElementsWithCMSData();
         }
     }
 
@@ -671,7 +644,7 @@ public class CollectionView implements Serializable {
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
     public void expandAll(HierarchicalBrowseDcElement element) {
-        expandAll(element, -1);
+        expandAll(element, -1, true);
     }
 
     /**
@@ -679,12 +652,13 @@ public class CollectionView implements Serializable {
      *
      * @param depth a int.
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
+     * @param loadDescriptions
      */
-    public void expandAll(HierarchicalBrowseDcElement element, int depth) {
+    public void expandAll(HierarchicalBrowseDcElement element, int depth, boolean loadDescriptions) {
         if (depth < 0 || element.getLevel() < depth) {
             showChildren(element);
             for (HierarchicalBrowseDcElement child : element.getChildren()) {
-                expandAll(child, depth);
+                expandAll(child, depth, loadDescriptions);
             }
         }
     }
@@ -693,22 +667,25 @@ public class CollectionView implements Serializable {
      * Sets all collection elements visible
      */
     public void expandAll() {
-        expandAll(-1);
+        expandAll(-1, true);
     }
 
     /**
      * Sets all collection elements visible up to 'depth' levels into the hierarchy
      *
      * @param depth a int.
+     * @param loadDescriptions
      */
-    public void expandAll(int depth) {
+    public void expandAll(int depth, boolean loadDescriptions) {
         if (completeCollectionList != null) {
             for (HierarchicalBrowseDcElement collection : completeCollectionList) {
-                expandAll(collection, depth);
+                expandAll(collection, depth, loadDescriptions);
             }
             this.visibleCollectionList = sortDcList(visibleCollectionList, DataManager.getInstance().getConfiguration().getCollectionSorting(field),
                     getBaseElementName(), splittingChar);
-            associateElementsWithCMSData();
+            if (loadDescriptions) {
+                associateElementsWithCMSData();
+            }
         }
     }
 
