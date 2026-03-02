@@ -183,7 +183,7 @@ public class RecordFileResource {
         } catch (AccessDeniedException e) {
             throw new ServiceNotAllowedException("Access to MEI file for '" + pi + "' not allowed");
         } catch (RecordNotFoundException e) {
-            throw new ContentLibException("Record not found: " + pi);
+            throw new ContentNotFoundException("Record not found: " + pi);
         }
     }
 
