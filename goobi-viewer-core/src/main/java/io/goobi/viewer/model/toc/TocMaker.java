@@ -580,8 +580,9 @@ public final class TocMaker {
                 for (String fieldName : volumeDoc.getFieldNames()) {
                     if (fieldName.startsWith(SolrConstants.PREFIX_GROUPID)) {
                         for (Object objValue : volumeDoc.getFieldValues(fieldName)) {
-                            if (!objValue.equals(topStructPiLocal))
+                            if (!objValue.equals(topStructPiLocal)) {
                                 groupIds.add((String) objValue);
+                            }
                         }
                     }
                 }
