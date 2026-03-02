@@ -10,8 +10,8 @@ services:
       - "8080:8080"
     environment:
       DB_HOST: viewer-db
-      DB_NAME: goobi
-      DB_USER: goobi
+      DB_NAME: viewer
+      DB_USER: viewer
       DB_PORT: 3306
       DB_PASSWORD: CHANGEME
       SOLR_HOST: solr
@@ -21,17 +21,17 @@ services:
       STOPWORDS_LANG: "de"
     volumes:
       - type: bind
-        source: ./viewer-data
+        source: ./viewer
         target: /opt/digiverso/viewer
       - type: bind
-        source: ./hotfolder
-        target: /opt/digiverso/viewer/hotfolder
-      - type: bind
-        source: ./viewer-logs
+        source: ./logs/viewer
         target: /opt/digiverso/logs
       - type: bind
         source: ./indexer
         target: /opt/digiverso/indexer
+      - type: bind
+        source: ./logs/tomcat/viewer
+        target: /usr/local/tomcat/logs
 
   viewer-db:
     image: mariadb:lts
@@ -44,13 +44,13 @@ services:
       start_period: 10s
     environment:
       MYSQL_ROOT_PASSWORD: CHANGEME
-      MYSQL_DATABASE: goobi
-      MYSQL_USER: goobi
+      MYSQL_DATABASE: viewer
+      MYSQL_USER: viewer
       MYSQL_PASSWORD: CHANGEME
       TZ: "Europe/Berlin"
     volumes:
       - type: bind
-        source: ./db/mysql
+        source: ./db/viewer
         target: /var/lib/mysql
 
   indexer:
@@ -64,10 +64,10 @@ services:
       VIEWER_HOST: viewer
     volumes:
       - type: bind
-        source: ./viewer-data
+        source: ./viewer
         target: /opt/digiverso/viewer
       - type: bind
-        source: ./viewer-logs
+        source: ./logs/viewer
         target: /opt/digiverso/logs
       - type: bind
         source: ./indexer
