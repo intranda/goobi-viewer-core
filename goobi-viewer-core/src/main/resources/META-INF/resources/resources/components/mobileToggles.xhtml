@@ -1,21 +1,26 @@
-<ui:composition 
-      xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:util="http://goobi.io/util"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <!-- interface options -->
     <composite:interface>
-        <composite:attribute name="sidebarPosition" required="false" default="left" />
+        <composite:attribute
+            name="sidebarPosition"
+            required="false"
+            default="left" />
     </composite:interface>
 
     <!-- component content -->
     <composite:implementation>
         <div id="mobileToggleWrapper">
             <h:panelGroup rendered="#{cc.attrs.sidebarPosition == 'left'}">
-                <button type="button" class="btn-toggle sidebar pull-left" data-toggle="offcanvas">
+                <button
+                    type="button"
+                    class="btn-toggle sidebar pull-left"
+                    data-toggle="offcanvas">
                     <span class="sr-only">Toggle Sidebar</span>
                     <util:icon icon="dots-vertical" />
                 </button>
@@ -23,30 +28,44 @@
 
             <div class="customer-header-logo pull-left">
                 <a href="#{request.contextPath}/">
-                    <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/customer-header-logo.png" alt="Customer Header Logo" />
+                    <img
+                        src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/customer-header-logo.png"
+                        alt="Customer Header Logo" />
                     <span>#{msg.mobileToggleCaption}</span>
                 </a>
             </div>
 
             <h:panelGroup rendered="#{cc.attrs.sidebarPosition == 'right'}">
-                <button type="button" class="btn-toggle sidebar pull-right" data-toggle="offcanvas">
+                <button
+                    type="button"
+                    class="btn-toggle sidebar pull-right"
+                    data-toggle="offcanvas">
                     <span class="sr-only">Toggle Sidebar</span>
                     <util:icon icon="dots-vertical" />
                 </button>
             </h:panelGroup>
-            
-            <button type="button" class="btn-toggle mobilenav pull-right" data-toggle="mobilenav">
+
+            <button
+                type="button"
+                class="btn-toggle mobilenav pull-right"
+                data-toggle="mobilenav">
                 <span class="sr-only">Toggle navigation</span>
                 <util:icon icon="menu-2" />
             </button>
-            
-            <button type="button" class="btn-toggle language pull-right" data-toggle="language">
+
+            <button
+                type="button"
+                class="btn-toggle language pull-right"
+                data-toggle="language">
                 <span class="sr-only">Toggle language</span>
                 <util:icon icon="world" />
             </button>
-            
+
             <h:panelGroup rendered="#{navigationHelper.currentPage != 'search'}">
-                <button type="button" class="btn-toggle search pull-right" data-toggle="search">
+                <button
+                    type="button"
+                    class="btn-toggle search pull-right"
+                    data-toggle="search">
                     <span class="sr-only">Toggle search</span>
                     <util:icon icon="search" />
                 </button>

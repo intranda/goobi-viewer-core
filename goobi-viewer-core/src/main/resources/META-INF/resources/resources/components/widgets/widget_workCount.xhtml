@@ -1,46 +1,60 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:util="http://goobi.io/util">
-
     <!-- interface options -->
     <composite:interface>
-    	<composite:attribute name="collapse" type="java.lang.Boolean" required="false" default="false"/>
+        <composite:attribute
+            name="collapse"
+            type="java.lang.Boolean"
+            required="false"
+            default="false" />
     </composite:interface>
 
     <!-- component content -->
     <composite:implementation>
-	        <!-- WIDGET WORK COUNT STANDARD -->
-	        <h:panelGroup rendered="#{cc.attrs.collapse == false}">
-		        <div id="widgetWorkCount" class="widget widget-workcount">
-		        	<div class="widget__topbar widget-workcount__topbar">
-    			        <h2 class="widget__title widget-workcount__title">#{msg.totalNumberOfVolumes}</h2>
-		        	</div>
-		        	
-		        	<div class="widget__body widget-workcount__body">
-		        		<span><strong>#{searchBean.totalNumberOfVolumes}</strong></span>
-		        	</div>
-		        </div>
-	        </h:panelGroup>
-	        
-	        <!-- WIDGET WORK COUNT FOLDOUT -->
-	        <h:panelGroup rendered="#{cc.attrs.collapse == true}">
-	        	<div id="widgetWorkCount" class="widget widget-workcount">
-	        		<div class="widget__topbar widget-workcount__topbar">
-						<h2 class="widget__title widget-workcount__title">
-							<a href="#workCountCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="workCountCollapse">
-								#{msg.totalNumberOfVolumes}
-								<util:icon icon="arrow-down" />
-							</a>
-						</h2>
-					</div>
-					
-					<div id="workCountCollapse" class="widget__body widget-workcount__body collapse">
-						<p><strong>#{searchBean.totalNumberOfVolumes}</strong></p> 
-					</div>
-		        </div>
-	        </h:panelGroup>
+        <!-- WIDGET WORK COUNT STANDARD -->
+        <h:panelGroup rendered="#{cc.attrs.collapse == false}">
+            <div
+                id="widgetWorkCount"
+                class="widget widget-workcount">
+                <div class="widget__topbar widget-workcount__topbar">
+                    <h2 class="widget__title widget-workcount__title">#{msg.totalNumberOfVolumes}</h2>
+                </div>
+
+                <div class="widget__body widget-workcount__body">
+                    <span><strong>#{searchBean.totalNumberOfVolumes}</strong></span>
+                </div>
+            </div>
+        </h:panelGroup>
+
+        <!-- WIDGET WORK COUNT FOLDOUT -->
+        <h:panelGroup rendered="#{cc.attrs.collapse == true}">
+            <div
+                id="widgetWorkCount"
+                class="widget widget-workcount">
+                <div class="widget__topbar widget-workcount__topbar">
+                    <h2 class="widget__title widget-workcount__title">
+                        <a
+                            href="#workCountCollapse"
+                            data-toggle="collapse"
+                            aria-expanded="false"
+                            aria-controls="workCountCollapse">
+                            #{msg.totalNumberOfVolumes}
+                            <util:icon icon="arrow-down" />
+                        </a>
+                    </h2>
+                </div>
+
+                <div
+                    id="workCountCollapse"
+                    class="widget__body widget-workcount__body collapse">
+                    <p><strong>#{searchBean.totalNumberOfVolumes}</strong></p>
+                </div>
+            </div>
+        </h:panelGroup>
     </composite:implementation>
 </ui:composition>

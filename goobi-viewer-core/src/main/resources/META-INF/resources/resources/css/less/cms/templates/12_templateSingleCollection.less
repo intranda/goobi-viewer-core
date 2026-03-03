@@ -5,102 +5,116 @@
 /* TPL SINGLE COLLECTION */
 /* BLOCK */
 .tpl-single-collection {
-	img {
-		max-width: 100%;
-	}
-    h1 {}
+    img {
+        max-width: 100%;
+    }
+    h1 {
+    }
     /* ELEMENT */
     &__image {
-    	position: relative;
-    	max-height: 400px;
-    	overflow: hidden;
-    	img {
-    		width: 100%;
-    	}
-    	h1 {
-    		position: absolute;
-    		right: 0;
-    		bottom: 60px;
-    		left: 0;
-    		margin: 0;
-    		padding: 1.5rem;
-    		background-color: rgba(255,255,255,.75);
-    	}
+        position: relative;
+        max-height: 400px;
+        overflow: hidden;
+        img {
+            width: 100%;
+        }
+        h1 {
+            position: absolute;
+            right: 0;
+            bottom: 60px;
+            left: 0;
+            margin: 0;
+            padding: 1.5rem;
+            background-color: rgba(255, 255, 255, 0.75);
+        }
     }
     &__description {
-    	margin-bottom: 2rem;
-    	padding: 1.5rem;
-    	color: @white;
-    	background-color: @gray;
-    	a {
-    		color: @blue;
-    		&:hover,
-    		&:active,
-    		&:focus {
-    			color: @blue;
-    		}
-    	}
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        color: @white;
+        background-color: @gray;
+        a {
+            color: @blue;
+            &:hover,
+            &:active,
+            &:focus {
+                color: @blue;
+            }
+        }
     }
     .search-list {
-    	position: relative;
-    	/* OPTIONS */
-	    &__options {
-			position: relative;
-			right: 0;
-			z-index: 20;
-	        a, button {
-	            &:hover,
-	            &:focus,
-	            &:active,
-	            &.active {}
-	        }
-	        form {}
-	    }
-	    &__hitcount,
-	    &__rss,
-	    &__save-search,
-	    &__excel-export,
-	    &__views {}
-	    &__hitcount {
-	    	// .mx-hidden;
-	    }
-	    &__rss {
-	    	border: none;
-	    }
-	    &__save-search {
-	    	.mx-hidden;
-	    }
-	    &__excel-export {
-	        a {}
-	        .excel-export-loader {
-	            img {}
-	        }
-	    }
-	    &__views {
-	    	button {}
-	    	[data-view="search-list-default"] {}
-	    	[data-view="search-list-grid"] {}
-	    	[data-view="search-list-list"] {}
-	    }
+        position: relative;
+        /* OPTIONS */
+        &__options {
+            position: relative;
+            right: 0;
+            z-index: 20;
+            a,
+            button {
+                &:hover,
+                &:focus,
+                &:active,
+                &.active {
+                }
+            }
+            form {
+            }
+        }
+        &__hitcount,
+        &__rss,
+        &__save-search,
+        &__excel-export,
+        &__views {
+        }
+        &__hitcount {
+            // .mx-hidden;
+        }
+        &__rss {
+            border: none;
+        }
+        &__save-search {
+            .mx-hidden;
+        }
+        &__excel-export {
+            a {
+            }
+            .excel-export-loader {
+                img {
+                }
+            }
+        }
+        &__views {
+            button {
+            }
+            [data-view='search-list-default'] {
+            }
+            [data-view='search-list-grid'] {
+            }
+            [data-view='search-list-list'] {
+            }
+        }
     }
 }
 
 /* MODIFICATION */
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
-	.tpl-single-collection {
-		.search-list__options {
-			margin-bottom: 1rem;
-		}
-	}
+    .tpl-single-collection {
+        .search-list__options {
+            margin-bottom: 1rem;
+        }
+    }
 }
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

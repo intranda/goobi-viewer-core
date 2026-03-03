@@ -4,139 +4,139 @@
    ==============================================================*/
 /* WIDGET TOC */
 .widget-toc {
-  position: relative;
-  /* TITLE */
-  &__topbar {
-  }
-  &__body {
-    ul {
-      gap: 5px;
-    }
-  }
-  &__title {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    h2,
-    .h2 {
-      max-width: 90%;
-    }
-  }
-  &__title-expand {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-    a {
-      margin-left: 10px;
-      &:first-child {
-        margin: 0;
-      }
-    }
-  }
-  /* ELEMENTS */
-  &__elements {
     position: relative;
-    max-height: 600px;
-    overflow-y: auto;
-  }
-  &__element {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding-left: 3px;
-    &:hover {
-      background-color: @lightgray;
+    /* TITLE */
+    &__topbar {
     }
-    a {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
+    &__body {
+        ul {
+            gap: 5px;
+        }
     }
-    &.parent {
+    &__title {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        h2,
+        .h2 {
+            max-width: 90%;
+        }
     }
-    &.child {
+    &__title-expand {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        a {
+            margin-left: 10px;
+            &:first-child {
+                margin: 0;
+            }
+        }
     }
-    &.active {
+    /* ELEMENTS */
+    &__elements {
+        position: relative;
+        max-height: 600px;
+        overflow-y: auto;
     }
-  }
-  &__element-expand {
-    max-width: 20px;
-  }
-  &__element-link {
-    width: calc(~"100% - 20px");
-    padding-left: 5px;
-    margin-left: auto;
-    &.has-pagenumber {
-      width: calc(~"100% - 65px");
-      padding-right: 5px;
+    &__element {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding-left: 3px;
+        &:hover {
+            background-color: @lightgray;
+        }
+        a {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        &.parent {
+        }
+        &.child {
+        }
+        &.active {
+        }
     }
-    &.non-tree-view {
-      width: auto;
-      padding-left: 0;
-      margin-left: 0;
-      &.has-pagenumber {
-        width: calc(~"100% - 45px");
-        padding-right: 5px;
-      }
+    &__element-expand {
+        max-width: 20px;
     }
-    a {
-      padding: 2px 0;
+    &__element-link {
+        width: calc(~'100% - 20px');
+        padding-left: 5px;
+        margin-left: auto;
+        &.has-pagenumber {
+            width: calc(~'100% - 65px');
+            padding-right: 5px;
+        }
+        &.non-tree-view {
+            width: auto;
+            padding-left: 0;
+            margin-left: 0;
+            &.has-pagenumber {
+                width: calc(~'100% - 45px');
+                padding-right: 5px;
+            }
+        }
+        a {
+            padding: 2px 0;
+        }
+        &.active {
+            a {
+                font-weight: 700;
+            }
+        }
     }
-    &.active {
-      a {
-        font-weight: 700;
-      }
+    &__element-pagenumber {
+        width: 45px;
+        text-align: right;
     }
-  }
-  &__element-pagenumber {
-    width: 45px;
-    text-align: right;
-  }
-  /* LOADING */
-  &__loader,
-  &__overlay {
-    display: none;
-  }
-  &__loader {
-    position: relative;
-    width: 32px;
-    height: 32px;
-    margin-top: 1px;
-    border-radius: 10px;
-    background-image: url("@{images}/infinity_loader.svg");
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 85%;
-    z-index: 11;
-  }
-  &__overlay {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-color: rgba(255, 255, 255, 0.85);
-    z-index: 10;
-  }
+    /* LOADING */
+    &__loader,
+    &__overlay {
+        display: none;
+    }
+    &__loader {
+        position: relative;
+        width: 32px;
+        height: 32px;
+        margin-top: 1px;
+        border-radius: 10px;
+        background-image: url('@{images}/infinity_loader.svg');
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 85%;
+        z-index: 11;
+    }
+    &__overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(255, 255, 255, 0.85);
+        z-index: 10;
+    }
 }
 
 @{RTL} {
-  .widget-toc {
-    &__title-expand {
-      margin-left: unset;
-      margin-right: auto;
+    .widget-toc {
+        &__title-expand {
+            margin-left: unset;
+            margin-right: auto;
+        }
+        &__element {
+            padding-left: unset;
+            padding-right: 3px;
+        }
+        &__element-link {
+            margin-left: unset;
+            margin-right: auto;
+            padding-left: unset;
+            padding-right: 5px;
+        }
     }
-    &__element {
-      padding-left: unset;
-      padding-right: 3px;
-    }
-    &__element-link {
-      margin-left: unset;
-      margin-right: auto;
-      padding-left: unset;
-      padding-right: 5px;
-    }
-  }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

@@ -3,99 +3,103 @@
    ==============================================================*/
 
 popover {
-	display: none;
+    display: none;
 }
 .popover {
-	max-width: 350px;
+    max-width: 350px;
 }
 .popover popover {
-	display: block;
+    display: block;
 }
 
 .popover .viewerPopover {
-	display: block;
+    display: block;
 }
 
 .viewerPopover {
-	display: none;
-		a {
-		display: block;
-		margin-bottom: 0.3rem;
-	}
+    display: none;
+    a {
+        display: block;
+        margin-bottom: 0.3rem;
+    }
 }
 
 .popover {
-	z-index: 2020;
-	color: var(--fg-popover, @colorFonts);
-	background-color: var(--bg-popover, @white);
-	.popover-title-custom {
-		padding: 8px 14px;
-		margin: 0;
-		font-size: 14px;
-		background-color: var(--bg-popover, @white);
-		border-bottom: 1px solid #ebebeb;
-		border-radius: 5px 5px 0 0;
-	}
-	.popover-content {
-	}
+    z-index: 2020;
+    color: var(--fg-popover, @colorFonts);
+    background-color: var(--bg-popover, @white);
+    .popover-title-custom {
+        padding: 8px 14px;
+        margin: 0;
+        font-size: 14px;
+        background-color: var(--bg-popover, @white);
+        border-bottom: 1px solid #ebebeb;
+        border-radius: 5px 5px 0 0;
+    }
+    .popover-content {
+    }
 }
 
 imageFilters {
-	.imagefilters {
-		&__filter {
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: space-between;
-			min-width: 220px;
-			margin-bottom: 15px;
-			&:last-child {
-				margin-bottom: 5px;
-			}
-		}
-		&__options {
-			padding: 10px 5px;
-			button {
-				width: 100%;
-				color: #fff;
-				&:hover {
-					color: #fff;
-				}
-			}
-		} 
-		&__label {
-			flex-basis: 40%;
-			&-long {
-				flex-basis: 80%;
-			}
-		}
-		&__checkbox {
-			margin: 0;
-		}
-		&__slider {
-			flex-basis: 60%;
-			flex-grow: 1;
-			min-width: 0;
-			&[disabled] {
-				color: lightgray;
-			}
-		}
-	}
+    .imagefilters {
+        &__filter {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            min-width: 220px;
+            margin-bottom: 15px;
+            &:last-child {
+                margin-bottom: 5px;
+            }
+        }
+        &__options {
+            padding: 10px 5px;
+            button {
+                width: 100%;
+                color: #fff;
+                &:hover {
+                    color: #fff;
+                }
+            }
+        }
+        &__label {
+            flex-basis: 40%;
+            &-long {
+                flex-basis: 80%;
+            }
+        }
+        &__checkbox {
+            margin: 0;
+        }
+        &__slider {
+            flex-basis: 60%;
+            flex-grow: 1;
+            min-width: 0;
+            &[disabled] {
+                color: lightgray;
+            }
+        }
+    }
 }
 
 .page-content__sidebar {
-	.popover {
-		z-index: 2050;
-	}
+    .popover {
+        z-index: 2050;
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

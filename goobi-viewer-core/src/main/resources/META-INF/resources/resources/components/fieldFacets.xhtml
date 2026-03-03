@@ -1,60 +1,73 @@
-<ui:composition 
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <composite:interface>
+        <composite:attribute
+            name="field"
+            required="true" />
+        <composite:attribute
+            name="numEntries"
+            required="false"
+            default="5" />
+        <composite:attribute
+            name="filterQuery"
+            required="false"
+            default="" />
+    </composite:interface>
 
-	<composite:interface>
-		<composite:attribute name="field" required="true" />
-		<composite:attribute name="numEntries" required="false" default="5" />
-		<composite:attribute name="filterQuery" required="false" default="" />
-	</composite:interface>
+    <composite:implementation>
+        <div
+            id="fieldFacets"
+            class="field-facets #{cc.attrs.widget.styleClass}">
+            <h:form
+                id="searchListFacetsForm"
+                prependId="false">
+                <!-- DRILL DOWN -->
+                <div class="field-facets__collection">
+                    <h3><span>#{msg[cc.attrs.field.concat('_DD')]}</span></h3>
 
-	<composite:implementation>
+                    <!-- FILTER FACETS -->
+                    <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(cc.attrs.field)}">
+                        <div class="field-facets__filter">
+                            <input
+                                type="text"
+                                id="collectionFacetsFilter"
+                                tabindex="-1"
+                                class="field-facets__filter-input -no-outline"
+                                placeholder="#{msg.placeholder__filter_search_results}"
+                                aria-label="#{msg.placeholder__filter_search_results}"
+                                data-input="searchFacetFilter" />
+                            <button
+                                type="button"
+                                class="btn btn--clean"
+                                data-toggle="searchFacetFilter"
+                                aria-label="#{msg.placeholder__filter_search_results}">
+                                <util:icon icon="search" />
+                            </button>
+                        </div>
+                    </ui:fragment>
 
-			<div id="fieldFacets"
-				class="field-facets #{cc.attrs.widget.styleClass}">
-				<h:form id="searchListFacetsForm" prependId="false">
-				
-					<!-- DRILL DOWN -->
-					<div class="field-facets__collection">
-						<h3><span>#{msg[cc.attrs.field.concat('_DD')]}</span></h3>
-
-						<!-- FILTER FACETS -->
-						<ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(cc.attrs.field)}">
-						<div class="field-facets__filter">
-							<input type="text" id="collectionFacetsFilter" tabindex="-1"
-								class="field-facets__filter-input -no-outline"
-								placeholder="#{msg.placeholder__filter_search_results}"
-								aria-label="#{msg.placeholder__filter_search_results}" 
-								data-input="searchFacetFilter"/>
-							<button type="button" class="btn btn--clean"
-								data-toggle="searchFacetFilter"
-								aria-label="#{msg.placeholder__filter_search_results}">
-								<util:icon icon="search" />
-							</button>
-						</div>
-						</ui:fragment>
-
-						<ul>
-							<!-- AVAILABLE FACETS -->
-							<ui:repeat
-								value="#{searchBean.getFieldFacetValues(cc.attrs.field, cc.attrs.numEntries, cc.attrs.filterQuery)}" var="facet">
-								<li><h:outputLink
-										value="#{navigationHelper.searchUrl}/-/-/1/-/#{facet.urlEscapedLink}/">
-                                                        #{msg[facet.label]} (#{facet.count})
-                                                        <f:passThroughAttribute
-											name="aria-label"
-											value="#{msg[field.concat('_DD')]}: #{msg[facet.label]}" />
-									</h:outputLink></li>
-							</ui:repeat>
-						</ul>
-					</div>
-				</h:form>
-			</div>
-
-
-	</composite:implementation>
+                    <ul>
+                        <!-- AVAILABLE FACETS -->
+                        <ui:repeat
+                            value="#{searchBean.getFieldFacetValues(cc.attrs.field, cc.attrs.numEntries, cc.attrs.filterQuery)}"
+                            var="facet">
+                            <li>
+                                <h:outputLink value="#{navigationHelper.searchUrl}/-/-/1/-/#{facet.urlEscapedLink}/">
+                                    #{msg[facet.label]} (#{facet.count})
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg[field.concat('_DD')]}: #{msg[facet.label]}" />
+                                </h:outputLink>
+                            </li>
+                        </ui:repeat>
+                    </ul>
+                </div>
+            </h:form>
+        </div>
+    </composite:implementation>
 </ui:composition>

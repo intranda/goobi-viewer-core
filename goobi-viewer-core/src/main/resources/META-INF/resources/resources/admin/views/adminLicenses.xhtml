@@ -1,37 +1,46 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminLicenseTypes')}" />
-            <f:event type="preRenderView" listener="#{adminLicenseBean.setCurrentLicenseType(null)}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminLicenseTypes')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{adminLicenseBean.setCurrentLicenseType(null)}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">
+        <f:view
+            contentType="text/html"
+            encoding="utf-8">
             <div id="adminLicenses">
                 <h:panelGroup rendered="#{userBean.admin and navigationHelper.solrIndexOnline}">
                     <!-- TITLE -->
                     <div class="admin__title-bar">
                         <h1 class="admin__title">#{msg.admin__licenses}</h1>
                     </div>
-                    
+
                     <viewerComponent:adminBreadcrumbs />
-                    
+
                     <div class="admin__content-inner-content">
-                        <h:form id="adminLicenseTypesForm" prependId="false">
+                        <h:form
+                            id="adminLicenseTypesForm"
+                            prependId="false">
                             <!-- INFO TEXT -->
                             <div class="admin__info-text">
-                                <h:outputText value="#{msg.admin__licenses_description_text}" escape="false" />
+                                <h:outputText
+                                    value="#{msg.admin__licenses_description_text}"
+                                    escape="false" />
                             </div>
 
                             <!-- NOT CONFIGURED LICENSES -->
@@ -40,12 +49,16 @@
                                     <div class="row">
                                         <h2 class="col-12">#{msg.admin__licenses_not_configured_licenses}</h2>
                                     </div>
-                                    <ui:repeat var="accessCondition" value="#{adminLicenseBean.notConfiguredAccessConditions}">
-                                        <h:commandLink action="pretty:adminLicenseNew"
+                                    <ui:repeat
+                                        var="accessCondition"
+                                        value="#{adminLicenseBean.notConfiguredAccessConditions}">
+                                        <h:commandLink
+                                            action="pretty:adminLicenseNew"
                                             actionListener="#{adminLicenseBean.newCurrentLicenseTypeAction(accessCondition)}"
                                             styleClass="row admin__license-unconfigured-entry">
                                             <div class="col-10 -textlink">
-                                                #{accessCondition} (#{msg.admin__licenses_record_number}: #{adminLicenseBean.getNumRecordsWithAccessCondition(accessCondition)})
+                                                #{accessCondition} (#{msg.admin__licenses_record_number}:
+                                                #{adminLicenseBean.getNumRecordsWithAccessCondition(accessCondition)})
                                             </div>
                                             <div class="col-2 d-flex justify-content-end">
                                                 <span>#{msg.admin__licenses_configure_license_now}</span>
@@ -57,160 +70,246 @@
 
                             <div class="admin__entry-list">
                                 <!-- INDIVIDUAL LICENSES -->
-                                <ui:repeat var="licenseType" value="#{adminLicenseBean.allRecordLicenseTypes}">
+                                <ui:repeat
+                                    var="licenseType"
+                                    value="#{adminLicenseBean.allRecordLicenseTypes}">
                                     <div class="admin__boxed-entry -w50">
-	                                    <div class="overflow-hidden">
-	                                        <!-- NAME -->
-	                                        <div class="row">
-	                                            <h2 class="col-12">#{licenseType.name}</h2>
-	                                        </div>
-	                                        <!-- DESCRIPTION + OPEN ACCESS + MOVING WALL + PDF QUOTA AND CONCURRENT VIEW NOTICE -->
-                                        	<div class="row admin__boxed-entry-description">
-                                        	
-	                                            <ui:fragment rendered="#{not empty licenseType.description}">
-	                                                <p class="col-12 mb-1">#{licenseType.description}</p>
-	                                            </ui:fragment>
+                                        <div class="overflow-hidden">
+                                            <!-- NAME -->
+                                            <div class="row">
+                                                <h2 class="col-12">#{licenseType.name}</h2>
+                                            </div>
+                                            <!-- DESCRIPTION + OPEN ACCESS + MOVING WALL + PDF QUOTA AND CONCURRENT VIEW NOTICE -->
+                                            <div class="row admin__boxed-entry-description">
+                                                <ui:fragment rendered="#{not empty licenseType.description}">
+                                                    <p class="col-12 mb-1">#{licenseType.description}</p>
+                                                </ui:fragment>
 
                                                 <ui:fragment rendered="#{licenseType.redirect == true}">
-                                                	<p class="col-12 mb-1">#{msg.admin__license_redirect_enabled_description}</p>
+                                                    <p class="col-12 mb-1">
+                                                        #{msg.admin__license_redirect_enabled_description}
+                                                    </p>
                                                 </ui:fragment>
-	                                            
-	                                            <ui:fragment rendered="#{licenseType.openAccess}">
-	                                            	<p class="col-12 mb-1">#{msg.admin__license_open_access_activated_info}</p>
-	                                        	</ui:fragment>
-												<ui:fragment rendered="#{licenseType.movingWall}">
-	                                            	<p class="col-12">#{msg.admin__license_moving_wall_activated_info}</p>
-	                                        	</ui:fragment>
+
+                                                <ui:fragment rendered="#{licenseType.openAccess}">
+                                                    <p class="col-12 mb-1">
+                                                        #{msg.admin__license_open_access_activated_info}
+                                                    </p>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{licenseType.movingWall}">
+                                                    <p class="col-12">
+                                                        #{msg.admin__license_moving_wall_activated_info}
+                                                    </p>
+                                                </ui:fragment>
                                                 <ui:fragment rendered="#{licenseType.accessTicketRequired}">
                                                     <p class="col-12">#{msg.admin__access_ticket_activated_info}</p>
                                                 </ui:fragment>
-                                                <ui:fragment rendered="#{licenseType.pdfDownloadQuota and (licenseType.hasPrivilege('DOWNLOAD_PDF') or licenseType.hasPrivilege('DOWNLOAD_PAGE_PDF')) and adminLicenseBean.getPdfQuotaRecordCountForLicenseType(licenseType.name) > 0}">
-                                                    <p class="col-12">#{msg.admin__license_pdf_download_quota_notice}</p>
+                                                <ui:fragment
+                                                    rendered="#{licenseType.pdfDownloadQuota and (licenseType.hasPrivilege('DOWNLOAD_PDF') or licenseType.hasPrivilege('DOWNLOAD_PAGE_PDF')) and adminLicenseBean.getPdfQuotaRecordCountForLicenseType(licenseType.name) > 0}">
+                                                    <p class="col-12">
+                                                        #{msg.admin__license_pdf_download_quota_notice}
+                                                    </p>
                                                 </ui:fragment>
-                                                <ui:fragment rendered="#{licenseType.concurrentViewsLimit and adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(licenseType.name) > 0}">
-                                                    <p class="col-12">#{msg.admin__license_concurrent_views_limit_notice}</p>
+                                                <ui:fragment
+                                                    rendered="#{licenseType.concurrentViewsLimit and adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(licenseType.name) > 0}">
+                                                    <p class="col-12">
+                                                        #{msg.admin__license_concurrent_views_limit_notice}
+                                                    </p>
                                                 </ui:fragment>
-                                                <ui:fragment rendered="#{licenseType.description eq '' and licenseType.openAccess eq '' and licenseType.movingWall eq '' and not (licenseType.pdfDownloadQuota and (licenseType.hasPrivilege('DOWNLOAD_PDF') or licenseType.hasPrivilege('DOWNLOAD_PAGE_PDF')) and adminLicenseBean.getPdfQuotaRecordCountForLicenseType(licenseType.name) > 0) and not (licenseType.concurrentViewsLimit and adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(licenseType.name) > 0)}">
-	                                                <p class="col-12 admin__boxed-entry-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</p>
-	                                            </ui:fragment>
-                                      		</div>
-	                                        <!-- DATA -->
-	                                        <dl class="row">
-	                                            <!-- NUMBER OF RECORDS -->
-	                                            <dt class="col-sm-4">#{msg.admin__licenses_record_number}:</dt>
-	                                            <dd class="col-sm-8">
-	                                            	#{adminLicenseBean.getRecordCountForLicenseType(licenseType)}
-	                                            </dd>
+                                                <ui:fragment
+                                                    rendered="#{licenseType.description eq '' and licenseType.openAccess eq '' and licenseType.movingWall eq '' and not (licenseType.pdfDownloadQuota and (licenseType.hasPrivilege('DOWNLOAD_PDF') or licenseType.hasPrivilege('DOWNLOAD_PAGE_PDF')) and adminLicenseBean.getPdfQuotaRecordCountForLicenseType(licenseType.name) > 0) and not (licenseType.concurrentViewsLimit and adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(licenseType.name) > 0)}">
+                                                    <p
+                                                        class="col-12 admin__boxed-entry-description-empty"
+                                                        aria-disabled="true">
+                                                        (#{msg.admin__label__no_description_available})
+                                                    </p>
+                                                </ui:fragment>
+                                            </div>
+                                            <!-- DATA -->
+                                            <dl class="row">
+                                                <!-- NUMBER OF RECORDS -->
+                                                <dt class="col-sm-4">#{msg.admin__licenses_record_number}:</dt>
+                                                <dd class="col-sm-8">
+                                                    #{adminLicenseBean.getRecordCountForLicenseType(licenseType)}
+                                                </dd>
                                                 <!-- CMS PAGES -->
                                                 <ui:fragment rendered="#{!licenseType.displayRecordSearchLink}">
                                                     <dt class="col-sm-4">#{msg.admin__licenses_cms_pages}:</dt>
                                                     <dd class="col-sm-8 d-flex flex-column">
-                                                        <ui:repeat var="cmsPage"
+                                                        <ui:repeat
+                                                            var="cmsPage"
                                                             value="#{adminLicenseBean.getCMSPagesUsingLicenseType(licenseType)}">
-                                                            <a href="#{cmsPage.pageUrl}" target="_blank">#{cmsPage.title}</a> 
+                                                            <a
+                                                                href="#{cmsPage.pageUrl}"
+                                                                target="_blank">
+                                                                #{cmsPage.title}
+                                                            </a>
                                                         </ui:repeat>
                                                     </dd>
                                                 </ui:fragment>
-	                                            <!-- OVERRIDDEN LICENSE TYPES -->
-	                                            <ui:fragment rendered="#{not empty licenseType.overriddenLicenseTypes}">
-                                                    <dt class="col-sm-4">#{msg.admin__license_overriding__overridden_licenses}:</dt>
+                                                <!-- OVERRIDDEN LICENSE TYPES -->
+                                                <ui:fragment rendered="#{not empty licenseType.overriddenLicenseTypes}">
+                                                    <dt class="col-sm-4">
+                                                        #{msg.admin__license_overriding__overridden_licenses}:
+                                                    </dt>
                                                     <dd class="col-sm-8">
-                                                        <ui:repeat var="oLicenseType" value="#{licenseType.overriddenLicenseTypes}">
-                                                            <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{oLicenseType.id}/"
-                                                                class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{oLicenseType.name}">
+                                                        <ui:repeat
+                                                            var="oLicenseType"
+                                                            value="#{licenseType.overriddenLicenseTypes}">
+                                                            <a
+                                                                href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{oLicenseType.id}/"
+                                                                class="admin__boxed-entry-actions-edit"
+                                                                aria-label="#{msg.edit}: #{oLicenseType.name}">
                                                                 #{oLicenseType.name}
-                                                             </a> 
+                                                            </a>
                                                         </ui:repeat>
                                                     </dd>
-	                                            </ui:fragment>
+                                                </ui:fragment>
                                                 <!-- LICENSE TYPES OVERRIDING THIS ONE -->
-                                                <ui:fragment rendered="#{not empty licenseType.licenseTypesOverridingThis}">
-                                                    <dt class="col-sm-4">#{msg.admin__license_overriding__licenses_overriding_this}:</dt>
+                                                <ui:fragment
+                                                    rendered="#{not empty licenseType.licenseTypesOverridingThis}">
+                                                    <dt class="col-sm-4">
+                                                        #{msg.admin__license_overriding__licenses_overriding_this}:
+                                                    </dt>
                                                     <dd class="col-sm-8">
-                                                        <ui:repeat var="oLicenseType" value="#{licenseType.licenseTypesOverridingThis}">
-                                                            <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{oLicenseType.id}/"
-                                                                class="admin__boxed-entry-actions-edit admin__licenses-override-link" aria-label="#{msg.edit}: #{oLicenseType.name}">
+                                                        <ui:repeat
+                                                            var="oLicenseType"
+                                                            value="#{licenseType.licenseTypesOverridingThis}">
+                                                            <a
+                                                                href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{oLicenseType.id}/"
+                                                                class="admin__boxed-entry-actions-edit admin__licenses-override-link"
+                                                                aria-label="#{msg.edit}: #{oLicenseType.name}">
                                                                 #{oLicenseType.name}
-                                                             </a> 
+                                                            </a>
                                                         </ui:repeat>
                                                     </dd>
                                                 </ui:fragment>
-	                                            
-                                                <ui:fragment rendered="#{adminLicenseBean.isLicenseTypeInUse(licenseType)}">
+
+                                                <ui:fragment
+                                                    rendered="#{adminLicenseBean.isLicenseTypeInUse(licenseType)}">
                                                     <dt class="col-sm-4">#{msg.admin__license_licensee}:</dt>
                                                     <dd class="col-sm-8">
-                                                        <ui:repeat var="license" value="#{adminLicenseBean.getLicenses(licenseType)}">
-                                                            <ui:fragment rendered="#{license.user != null}"><span class="admin__license-user"><h:outputText value="#{license.user.displayName}" /></span></ui:fragment>
-                                                            <ui:fragment rendered="#{license.userGroup != null}"><span class="admin__license-user">#{license.userGroup.name}</span></ui:fragment>
-                                                            <ui:fragment rendered="#{license.ipRange != null}"><span class="admin__license-user">#{license.ipRange.name} (#{license.ipRange.subnetMask})</span></ui:fragment>
-                                                        	<ui:fragment rendered="#{license.client != null}"><span class="admin__license-user">#{license.client.isAllClients() ? msg.admin__right_all_clients : license.client.name}</span></ui:fragment>
+                                                        <ui:repeat
+                                                            var="license"
+                                                            value="#{adminLicenseBean.getLicenses(licenseType)}">
+                                                            <ui:fragment rendered="#{license.user != null}">
+                                                                <span class="admin__license-user">
+                                                                    <h:outputText value="#{license.user.displayName}" />
+                                                                </span>
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{license.userGroup != null}">
+                                                                <span class="admin__license-user">
+                                                                    #{license.userGroup.name}
+                                                                </span>
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{license.ipRange != null}">
+                                                                <span class="admin__license-user">
+                                                                    #{license.ipRange.name}
+                                                                    (#{license.ipRange.subnetMask})
+                                                                </span>
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{license.client != null}">
+                                                                <span class="admin__license-user">
+                                                                    #{license.client.isAllClients() ?
+                                                                    msg.admin__right_all_clients : license.client.name}
+                                                                </span>
+                                                            </ui:fragment>
                                                         </ui:repeat>
                                                     </dd>
                                                 </ui:fragment>
-	
-	                                            <!-- FUNCTIONS -->
-	                                            <ui:fragment rendered="#{!licenseType.openAccess and licenseType.redirect == false}">
-	                                                <dt class="col-sm-4">#{msg.admin__license_functions}:</dt>
-	                                                <dd class="col-sm-8">
-	                                                    <ui:repeat var="priv" value="#{licenseType.getSortedPrivileges(licenseType.privileges)}">
-	                                                       <div class="admin__badge admin__badge-active" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
-	                                                    </ui:repeat>
-	                                                    <ui:repeat var="priv" value="#{licenseType.getAvailablePrivileges(licenseType.privileges)}">
-	                                                       <div class="admin__badge admin__badge-light -light" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}" aria-disabled="true">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
-	                                                    </ui:repeat>
-	                                                </dd>
-	                                            </ui:fragment>
 
-                                                <ui:fragment rendered="#{not empty licenseType.redirectUrl and licenseType.redirect == true}">
-                                                    <dt class="col-sm-4">#{msg.admin__license_functions_redirect}:</dt>
+                                                <!-- FUNCTIONS -->
+                                                <ui:fragment
+                                                    rendered="#{!licenseType.openAccess and licenseType.redirect == false}">
+                                                    <dt class="col-sm-4">#{msg.admin__license_functions}:</dt>
                                                     <dd class="col-sm-8">
-														<a href="#{licenseType.redirectUrl}" target="_blank">#{licenseType.redirectUrl}</a>
+                                                        <ui:repeat
+                                                            var="priv"
+                                                            value="#{licenseType.getSortedPrivileges(licenseType.privileges)}">
+                                                            <div
+                                                                class="admin__badge admin__badge-active"
+                                                                title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">
+                                                                #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
+                                                            </div>
+                                                        </ui:repeat>
+                                                        <ui:repeat
+                                                            var="priv"
+                                                            value="#{licenseType.getAvailablePrivileges(licenseType.privileges)}">
+                                                            <div
+                                                                class="admin__badge admin__badge-light -light"
+                                                                title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}"
+                                                                aria-disabled="true">
+                                                                #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
+                                                            </div>
+                                                        </ui:repeat>
                                                     </dd>
                                                 </ui:fragment>
 
-                                        </dl>
+                                                <ui:fragment
+                                                    rendered="#{not empty licenseType.redirectUrl and licenseType.redirect == true}">
+                                                    <dt class="col-sm-4">#{msg.admin__license_functions_redirect}:</dt>
+                                                    <dd class="col-sm-8">
+                                                        <a
+                                                            href="#{licenseType.redirectUrl}"
+                                                            target="_blank">
+                                                            #{licenseType.redirectUrl}
+                                                        </a>
+                                                    </dd>
+                                                </ui:fragment>
+                                            </dl>
 
-	                                        <!-- ACTIONS -->
-	                                        <div class="row justify-content-end admin__boxed-entry-actions">
-	                                            <div class="col-3 d-flex justify-content-end">
-	                                            	<!-- SHOW -->
-	                                            	<ui:fragment rendered="#{licenseType.displayRecordSearchLink}">
-													    <a href="#{navigationHelper.searchUrl}/-/#{adminLicenseBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/"
-													        target="_blank" class="admin__boxed-entry-actions-edit" aria-label="#{msg.show}">#{msg.show}</a>
-	                                                </ui:fragment>
-	                                                
-	                                                <!-- EDIT -->
-	                                                <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/"
-	                                                    class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{licenseType.name}">#{msg.edit}</a>
-	                                                
-			                                        <!-- DELETE -->
-		                                            <button
-		                                                class="admin__boxed-entry-actions-delete -redlink"
-		                                                data-require-confirmation="true"
-		                                                data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.license_licenseType_deleteConfirmationText, licenseType.name)}"
-		                                                jsf:rendered="#{!adminLicenseBean.isLicenseTypeInUse(licenseType)}"
-		                                                jsf:action="#{adminLicenseBean.deleteLicenseTypeAction(licenseType)}"
-		                                                aria-label="#{msg.delete}: #{licenseType.name}" >
-		                                                #{msg.delete}
-		                                            </button>
+                                            <!-- ACTIONS -->
+                                            <div class="row justify-content-end admin__boxed-entry-actions">
+                                                <div class="col-3 d-flex justify-content-end">
+                                                    <!-- SHOW -->
+                                                    <ui:fragment rendered="#{licenseType.displayRecordSearchLink}">
+                                                        <a
+                                                            href="#{navigationHelper.searchUrl}/-/#{adminLicenseBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/"
+                                                            target="_blank"
+                                                            class="admin__boxed-entry-actions-edit"
+                                                            aria-label="#{msg.show}">
+                                                            #{msg.show}
+                                                        </a>
+                                                    </ui:fragment>
 
-	                                            </div>
-	                                        </div>
-	                                    </div>
+                                                    <!-- EDIT -->
+                                                    <a
+                                                        href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/"
+                                                        class="admin__boxed-entry-actions-edit"
+                                                        aria-label="#{msg.edit}: #{licenseType.name}">
+                                                        #{msg.edit}
+                                                    </a>
+
+                                                    <!-- DELETE -->
+                                                    <button
+                                                        class="admin__boxed-entry-actions-delete -redlink"
+                                                        data-require-confirmation="true"
+                                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.license_licenseType_deleteConfirmationText, licenseType.name)}"
+                                                        jsf:rendered="#{!adminLicenseBean.isLicenseTypeInUse(licenseType)}"
+                                                        jsf:action="#{adminLicenseBean.deleteLicenseTypeAction(licenseType)}"
+                                                        aria-label="#{msg.delete}: #{licenseType.name}">
+                                                        #{msg.delete}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </ui:repeat>
                             </div>
                         </h:form>
                     </div>
                 </h:panelGroup>
-                
+
                 <ui:fragment rendered="#{!navigationHelper.solrIndexOnline}">
-                    <div class="alert alert-danger" role="alert">
-                        <h:outputText rendered="#{errMsg == null}" value="#{msg.errIndexUnreachableMsg}" />
+                    <div
+                        class="alert alert-danger"
+                        role="alert">
+                        <h:outputText
+                            rendered="#{errMsg == null}"
+                            value="#{msg.errIndexUnreachableMsg}" />
                     </div>
                 </ui:fragment>
             </div>
         </f:view>
     </ui:define>
-
 </ui:composition>

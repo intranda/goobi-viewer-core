@@ -1,35 +1,51 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <composite:interface>
+        <composite:attribute
+            name="object"
+            required="true"
+            type="io.goobi.viewer.model.translations.IPolyglott" />
+        <composite:attribute
+            name="styleClass"
+            required="false"
+            default="nav nav-tabs" />
+        <composite:attribute
+            name="render"
+            required="false"
+            default="@form"></composite:attribute>
+        <composite:attribute
+            name="execute"
+            required="false"
+            default="@form"></composite:attribute>
+    </composite:interface>
 
-	<composite:interface>
-		<composite:attribute name="object" required="true" type="io.goobi.viewer.model.translations.IPolyglott" />
-		<composite:attribute name="styleClass" required="false" default="nav nav-tabs"/>
-		<composite:attribute name="render" required="false" default="@form"></composite:attribute>
-		<composite:attribute name="execute" required="false" default="@form"></composite:attribute>
-	</composite:interface>
-
-	<composite:implementation>
-		<!-- NAV TABS -->
-		<ul class="#{cc.attrs.styleClass}" role="tablist">
-			<ui:repeat var="locale" value="#{cc.attrs.object.getLocales()}">
-				<li role="tab"
-					class="admin__language-tab
-						#{cc.attrs.object.isSelected(locale) ? 'active':''}
-						#{cc.attrs.object.isEmpty(locale) ? '' : (cc.attrs.object.isComplete(locale) ? '-already-translated' : '-partly-translated')}
-						#{cc.attrs.object.isDefaultLocaleSelected() ? '-default-language':''}">
-					<h:commandLink
-						role="button"
-						value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
-						action="#{cc.attrs.object.setSelectedLocale(locale)}"
-						immediate="false">
-						<f:ajax render="#{cc.attrs.render}" execute="#{cc.attrs.execute}"></f:ajax>
-					</h:commandLink>
-				</li>
-			</ui:repeat>
-		</ul>
-	</composite:implementation>
+    <composite:implementation>
+        <!-- NAV TABS -->
+        <ul
+            class="#{cc.attrs.styleClass}"
+            role="tablist">
+            <ui:repeat
+                var="locale"
+                value="#{cc.attrs.object.getLocales()}">
+                <li
+                    role="tab"
+                    class="admin__language-tab #{cc.attrs.object.isSelected(locale) ? 'active':''} #{cc.attrs.object.isEmpty(locale) ? '' : (cc.attrs.object.isComplete(locale) ? '-already-translated' : '-partly-translated')} #{cc.attrs.object.isDefaultLocaleSelected() ? '-default-language':''}">
+                    <h:commandLink
+                        role="button"
+                        value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
+                        action="#{cc.attrs.object.setSelectedLocale(locale)}"
+                        immediate="false">
+                        <f:ajax
+                            render="#{cc.attrs.render}"
+                            execute="#{cc.attrs.execute}"></f:ajax>
+                    </h:commandLink>
+                </li>
+            </ui:repeat>
+        </ul>
+    </composite:implementation>
 </ui:composition>

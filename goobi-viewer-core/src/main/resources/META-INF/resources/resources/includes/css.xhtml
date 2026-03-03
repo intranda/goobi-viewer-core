@@ -5,13 +5,14 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf">
-
     <!-- =======================
         all templates
     ======================== -->
     <!-- BASE LIBRARIES-->
 
-    <c:set var="cssPaths" value="#{[
+    <c:set
+        var="cssPaths"
+        value="#{[
 
       ['jqueryUI', '/resources/css/libs/jQueryUI-1.12.1/jquery-ui.min.css'],
       ['font-awesome', '/resources/css/libs/font-awesome/css/font-awesome.min.css'],
@@ -28,13 +29,16 @@
 
     ]}" />
 
-
-    <c:forEach var="path" items="#{cssPaths}">
-      <c:if test="#{!excludeCSS.contains(path[0])}">
-        <link type="text/css" rel="stylesheet" href="#{request.contextPath}#{path[1]}?${navigationHelper.buildVersion}" />
-      </c:if>
+    <c:forEach
+        var="path"
+        items="#{cssPaths}">
+        <c:if test="#{!excludeCSS.contains(path[0])}">
+            <link
+                type="text/css"
+                rel="stylesheet"
+                href="#{request.contextPath}#{path[1]}?${navigationHelper.buildVersion}" />
+        </c:if>
     </c:forEach>
-
 
     <!-- ===================
       THEME CSS
@@ -44,7 +48,6 @@
  	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css?${navigationHelper.buildVersion}" />
     </c:if>
     -->
-
 
     <!--
         ['themeCSS', '/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css']
@@ -68,31 +71,43 @@
         templateAdmin.html
     ======================== -->
     <ui:fragment rendered="#{templateName == 'templateAdmin.html'}">
+        <!-- ADDITIONAL LIBRARIES -->
+        <link
+            type="text/css"
+            rel="stylesheet"
+            href="#{request.contextPath}/resources/css/libs/sweetalert/sweetalert2.min.css?${navigationHelper.buildVersion}" />
+        <link
+            type="text/css"
+            rel="stylesheet"
+            href="#{request.contextPath}/resources/css/libs/swiper/swiper-bundle.min.css" />
 
-      <!-- ADDITIONAL LIBRARIES -->
-      <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/sweetalert/sweetalert2.min.css?${navigationHelper.buildVersion}" />
-      <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/libs/swiper/swiper-bundle.min.css" />
-
-      <!-- CORE CSS -->
-      <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/dist/viewer.min.css?${navigationHelper.buildVersion}" />
+        <!-- CORE CSS -->
+        <link
+            type="text/css"
+            rel="stylesheet"
+            href="#{request.contextPath}/resources/css/dist/viewer.min.css?${navigationHelper.buildVersion}" />
     </ui:fragment>
 
     <!-- =======================
         templateAdmin.html
     ======================== -->
     <ui:fragment rendered="#{templateName == 'templateBlank.html'}">
+        <!-- CORE CSS -->
+        <link
+            type="text/css"
+            rel="stylesheet"
+            href="#{request.contextPath}/resources/css/dist/viewer.min.css?${navigationHelper.buildVersion}" />
 
-      <!-- CORE CSS -->
-      <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/css/dist/viewer.min.css?${navigationHelper.buildVersion}" />
+        <!-- THEME CSS -->
+        <!-- EXCLUDED PREVENT MESSED UP STYLING FOR NEW MIRADOR AND SWAGGER API PAGE -->
 
-      <!-- THEME CSS -->
-      <!-- EXCLUDED PREVENT MESSED UP STYLING FOR NEW MIRADOR AND SWAGGER API PAGE -->
-
-      <!-- SUBTHEME CSS -->
-      <h:panelGroup rendered="#{navigationHelper.subthemeSelected and navigationHelper.subThemeDiscriminatorValue!='-' and navigationHelper.currentPage != 'API'}">
-          <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.subThemeDiscriminatorValue}.min.css?${navigationHelper.buildVersion}" />
-      </h:panelGroup>
-
+        <!-- SUBTHEME CSS -->
+        <h:panelGroup
+            rendered="#{navigationHelper.subthemeSelected and navigationHelper.subThemeDiscriminatorValue!='-' and navigationHelper.currentPage != 'API'}">
+            <link
+                type="text/css"
+                rel="stylesheet"
+                href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.subThemeDiscriminatorValue}.min.css?${navigationHelper.buildVersion}" />
+        </h:panelGroup>
     </ui:fragment>
-
 </ui:composition>

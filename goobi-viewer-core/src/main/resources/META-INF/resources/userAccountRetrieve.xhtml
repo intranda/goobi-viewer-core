@@ -8,15 +8,18 @@
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
- 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('userAccountRetrieve')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentView('userAccountRetrieve')}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="breadcrumbs">
-        <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
+        <viewerComponent:breadcrumbs
+            showIcon="false"
+            showStartText="true" />
     </ui:define>
 
     <ui:define name="content">
@@ -25,7 +28,7 @@
             encoding="utf-8">
             <h:panelGroup rendered="#{!userBean.loggedIn and userBean.userRegistrationEnabled}">
                 <div class="user-account-retrieve">
-                    <h1 >#{msg.user_retrieveAccountHeadline}</h1>
+                    <h1>#{msg.user_retrieveAccountHeadline}</h1>
                     <div class="user-account-retrieve__form">
                         <h:form
                             id="userAccountRetrieveForm"
@@ -34,7 +37,9 @@
                             <div class="form-group">
                                 <label
                                     for="userEMailToRetrieve"
-                                    class="col-12 col-sm-3 control-label">#{msg.email}:</label>
+                                    class="col-12 col-sm-3 control-label">
+                                    #{msg.email}:
+                                </label>
                                 <div class="col-12 col-sm-9">
                                     <h:inputText
                                         id="userEMailToRetrieve"
@@ -50,7 +55,10 @@
                             <p>#{msg.user_retrieveAccountDescription}</p>
 
                             <div class="user-account-retrieve__action">
-                                <h:commandButton styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.sendPasswordResetLinkAction}" />
+                                <h:commandButton
+                                    styleClass="btn btn--full"
+                                    value="#{msg.submit}"
+                                    action="#{userBean.sendPasswordResetLinkAction}" />
                             </div>
                         </h:form>
                     </div>
@@ -60,11 +68,14 @@
     </ui:define>
 
     <ui:define name="sidebar">
-        <c:forEach var="module" items="#{configurationBean.modules}">
-            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+        <c:forEach
+            var="module"
+            items="#{configurationBean.modules}">
+            <c:forEach
+                var="contribution"
+                items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
             </c:forEach>
         </c:forEach>
     </ui:define>
-
 </ui:composition>

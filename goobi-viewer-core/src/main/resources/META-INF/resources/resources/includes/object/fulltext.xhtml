@@ -1,21 +1,21 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-
     <!-- VIEW TEXT -->
-    <div id="fulltext-box" class="view-fulltext__box">
-                
-        <ui:fragment rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) == 'text/plain'}">  
-              
-	        <pre>
+    <div
+        id="fulltext-box"
+        class="view-fulltext__box">
+        <ui:fragment
+            rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) == 'text/plain'}">
+            <pre>
 	        	<!-- Single page mode -->
 	        	<ui:fragment rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
 	            	<h:outputText rendered="#{activeDocumentBean.viewManager.currentPage.fullText != null}"
@@ -43,71 +43,83 @@
 	            </ui:fragment>
 	        </pre>
         </ui:fragment>
-        
-        <ui:fragment rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) != 'text/plain'}">        
-	        <div class="view-fulltext__content">
 
-	            <!-- TEI files -->
-                <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextFromTEI}"> 
-                    <h:outputText escape="false" value="#{textBean.getTeiText(activeDocumentBean.viewManager.topStructElement, activeDocumentBean.selectedRecordLanguage)}" /> 
+        <ui:fragment
+            rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) != 'text/plain'}">
+            <div class="view-fulltext__content">
+                <!-- TEI files -->
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextFromTEI}">
+                    <h:outputText
+                        escape="false"
+                        value="#{textBean.getTeiText(activeDocumentBean.viewManager.topStructElement, activeDocumentBean.selectedRecordLanguage)}" />
                 </ui:fragment>
-	        
-	            <!-- Non-TEI -->
-	            <ui:fragment rendered="#{!activeDocumentBean.viewManager.fulltextFromTEI}"> 
+
+                <!-- Non-TEI -->
+                <ui:fragment rendered="#{!activeDocumentBean.viewManager.fulltextFromTEI}">
                     <!-- Single page mode -->
                     <ui:fragment rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
-                        <h:outputText rendered="#{activeDocumentBean.viewManager.currentPage.fullText != null}"
-                            value="#{activeDocumentBean.viewManager.currentPage.fullText}" escape="false" />
-                        <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentPage.fullText == null}" />
+                        <h:outputText
+                            rendered="#{activeDocumentBean.viewManager.currentPage.fullText != null}"
+                            value="#{activeDocumentBean.viewManager.currentPage.fullText}"
+                            escape="false" />
+                        <h:outputText
+                            value="#{msg.noFulltextAvailable}"
+                            rendered="#{activeDocumentBean.viewManager.currentPage.fullText == null}" />
                     </ui:fragment>
                     <!-- Double page mode -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.doublePageMode}">
                         <!-- Left page text -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.currentLeftPage != null}">
-                            <h:outputText rendered="#{activeDocumentBean.viewManager.currentLeftPage.fullText != null}"
-                                value="#{activeDocumentBean.viewManager.currentLeftPage.fullText}" escape="false" />
-                            <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentLeftPage.fullText == null}" />
+                            <h:outputText
+                                rendered="#{activeDocumentBean.viewManager.currentLeftPage.fullText != null}"
+                                value="#{activeDocumentBean.viewManager.currentLeftPage.fullText}"
+                                escape="false" />
+                            <h:outputText
+                                value="#{msg.noFulltextAvailable}"
+                                rendered="#{activeDocumentBean.viewManager.currentLeftPage.fullText == null}" />
                         </ui:fragment>
                         <!-- Separator -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentLeftPage != null and activeDocumentBean.viewManager.currentRightPage != null}">
+                        <ui:fragment
+                            rendered="#{activeDocumentBean.viewManager.currentLeftPage != null and activeDocumentBean.viewManager.currentRightPage != null}">
                             <hr />
                         </ui:fragment>
                         <!-- Right page text -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.currentRightPage != null}">
-                            <h:outputText rendered="#{activeDocumentBean.viewManager.currentRightPage.fullText != null}"
-                                value="#{activeDocumentBean.viewManager.currentRightPage.fullText}" escape="false" />
-                            <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.currentRightPage.fullText == null}" />
+                            <h:outputText
+                                rendered="#{activeDocumentBean.viewManager.currentRightPage.fullText != null}"
+                                value="#{activeDocumentBean.viewManager.currentRightPage.fullText}"
+                                escape="false" />
+                            <h:outputText
+                                value="#{msg.noFulltextAvailable}"
+                                rendered="#{activeDocumentBean.viewManager.currentRightPage.fullText == null}" />
                         </ui:fragment>
                     </ui:fragment>
                 </ui:fragment>
             </div>
         </ui:fragment>
-        
-        
+
         <!-- HIDDEN POPOVER ELEMENT FOR EVERY ENTITY TERM -->
         <script>
-			$( document ).ready(function() {
-
-		      	var fulltextActionsConfig = {
-		              	msg: {
-		              		fulltextPopoverActionsTermMsg: "#{msg.fulltext__ner_actions_term}",
-		              		fulltextPopoverAuthorityDataMsg: "#{msg.fulltext__ner_authority_data}",
-		              		fulltextPopoverTriggerSearchMsg: "#{msg.fulltext__ner_trigger_search}",
-		              	},
-		              	normdataConfig: {
-							path: "#{request.contextPath}",
-							lang: {
-								popoverTitle: "#{msg.normdataPopoverTitle}",
-								popoverClose: "#{msg.normdataPopoverClose}",
-								showNormdata: "#{msg.normdataExpand}"
-							},
-							linkSelector: "[data-remotecontent]",
-							elemWrapper: $("#view_fulltext_wrapp"),
-		              	},
-		              };
-		  		viewerJS.fulltextActions.init(fulltextActionsConfig);
-			});
+            $(document).ready(function () {
+                var fulltextActionsConfig = {
+                    msg: {
+                        fulltextPopoverActionsTermMsg: '#{msg.fulltext__ner_actions_term}',
+                        fulltextPopoverAuthorityDataMsg: '#{msg.fulltext__ner_authority_data}',
+                        fulltextPopoverTriggerSearchMsg: '#{msg.fulltext__ner_trigger_search}',
+                    },
+                    normdataConfig: {
+                        path: '#{request.contextPath}',
+                        lang: {
+                            popoverTitle: '#{msg.normdataPopoverTitle}',
+                            popoverClose: '#{msg.normdataPopoverClose}',
+                            showNormdata: '#{msg.normdataExpand}',
+                        },
+                        linkSelector: '[data-remotecontent]',
+                        elemWrapper: $('#view_fulltext_wrapp'),
+                    },
+                };
+                viewerJS.fulltextActions.init(fulltextActionsConfig);
+            });
         </script>
-
-	</div>
+    </div>
 </ui:composition>

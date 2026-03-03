@@ -5,10 +5,10 @@
 /* MOBILE TOGGLE WRAPPER */
 /* BLOCK */
 #mobileToggleWrapper {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     display: none;
     padding: 10px 24px;
     background-color: @white;
@@ -31,11 +31,11 @@
         &:hover,
         &:focus,
         &:active {
-        	outline: none;
+            outline: none;
         }
     }
     .btn-toggle.sidebar .icon-wrapper svg {
-        transition: transform .2s ease;
+        transition: transform 0.2s ease;
     }
     .btn-toggle.sidebar.in .icon-wrapper svg {
         transform: rotate(90deg);
@@ -48,14 +48,14 @@
         &.pull-right {
             margin-left: 5px;
         }
-    }    
-    .mobilenav {}
+    }
+    .mobilenav {
+    }
     .language,
     .search {
-        
         &.in {
             &:before {
-                content: "";
+                content: '';
                 display: block;
                 position: absolute;
                 bottom: -12px;
@@ -67,24 +67,32 @@
                 border-style: solid;
                 border-color: transparent transparent @lightgray transparent;
             }
-        }        
+        }
     }
-    .language {}
-    .search {}    
+    .language {
+    }
+    .search {
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    #mobileToggleWrapper { display: block; }
+    #mobileToggleWrapper {
+        display: block;
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-    #mobileToggleWrapper { padding: 10px 18px 10px 15px; }
+    #mobileToggleWrapper {
+        padding: 10px 18px 10px 15px;
+    }
 }

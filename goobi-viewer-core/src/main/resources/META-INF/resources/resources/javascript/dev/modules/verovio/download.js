@@ -42,7 +42,7 @@ export function generateMidiBlob(verovio, mei) {
  * @param {string} filename - Base filename (without extension)
  * @returns {string|null} MEI data or null if export fails
  */
-export function exportMEI(mei, filename = "untitled.xml") {
+export function exportMEI(mei, filename = 'untitled.xml') {
     if (!mei) {
         console.warn('No MEI data to export');
         return null;
@@ -71,7 +71,7 @@ export function exportMEI(mei, filename = "untitled.xml") {
  * @param {string} filename - Base filename (will be converted to .mid)
  * @returns {Blob|null} MIDI blob or null if export fails
  */
-export function exportMIDI(midiBlob, filename = "untitled.xml") {
+export function exportMIDI(midiBlob, filename = 'untitled.xml') {
     if (!midiBlob) {
         console.warn('No MIDI data to export');
         return null;
@@ -113,7 +113,7 @@ export function initializeDownloadControls(toolbar, callbacks) {
         downloadMEIBtn.disabled = false;
         downloadMEIBtn.addEventListener('click', () => {
             try {
-                const {mei, filename} = callbacks.onMEIExport();
+                const { mei, filename } = callbacks.onMEIExport();
                 exportMEI(mei, filename);
             } catch (error) {
                 console.error('Error in MEI export callback:', error);
@@ -125,7 +125,7 @@ export function initializeDownloadControls(toolbar, callbacks) {
         downloadMIDIBtn.disabled = false;
         downloadMIDIBtn.addEventListener('click', () => {
             try {
-                const {midiBlob, filename} = callbacks.onMIDIExport();
+                const { midiBlob, filename } = callbacks.onMIDIExport();
                 exportMIDI(midiBlob, filename);
             } catch (error) {
                 console.error('Error in MIDI export callback:', error);

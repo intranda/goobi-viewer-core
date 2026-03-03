@@ -5,40 +5,49 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <composite:interface>
+        <composite:attribute
+            name="slider"
+            required="true"
+            type="io.goobi.viewer.model.cms.CMSSlider" />
+        <composite:attribute
+            name="sourceElement"
+            required="false"
+            default="" />
+        <composite:attribute
+            name="linkTarget"
+            required="false"
+            default="_self" />
+        <composite:attribute
+            name="slides"
+            required="false"
+            default="" />
+        <composite:attribute
+            name="style"
+            required="false"
+            default="#{cc.attrs.slider !=  null ? cc.attrs.slider.style : 'base'}" />
+        <composite:attribute
+            name="paginator"
+            required="false"
+            default="none" />
+    </composite:interface>
 
-	<composite:interface>
-		<composite:attribute name="slider" required="true"
-			type="io.goobi.viewer.model.cms.CMSSlider" />
-		<composite:attribute name="sourceElement" required="false" default="" />
-		<composite:attribute name="linkTarget" required="false"
-			default="_self" />
-		<composite:attribute name="slides" required="false"
-			default="" />
-		<composite:attribute name="style" required="false"
-			default="#{cc.attrs.slider !=  null ? cc.attrs.slider.style : 'base'}" />
-		<composite:attribute name="paginator" required="false"
-			default="none" />
-	</composite:interface>
-
-	<composite:implementation>
-			<slider
-				source="#{request.contextPath}/api/v1/cms/slider/#{cc.attrs.slider != null ? cc.attrs.slider.id : '0'}/slides/"
-				slides="#{cc.attrs.slides}"
-				style="#{cc.attrs.style}"
-				sourceelement="#{cc.attrs.sourceElement}"
-				linkTarget="#{cc.attrs.linkTarget}"
-				language="#{navigationHelper.locale}"
-				defaultlanguage="#{navigationHelper.defaultLocale}"
-				paginationBulletMessage="#{msg.a11y__swiper__pagination_msg}"
-				firstSlideMessage="#{msg.a11y__swiper__first_slide_msg}"
-				prevSlideMessage="#{msg.a11y__swiper__prev_slide_msg}"
-				nextSlideMessage="#{msg.a11y__swiper__next_slide_msg}"
-				lastSlideMessage="#{msg.a11y__swiper__last_slide_msg}"
-				imageAltMsgKey="#{msg.a11y__swiper__img_alt}"
-				sliderInstanceID="#{cc.attrs.id}"
-				paginator="#{cc.attrs.paginator}"
-				>
-			</slider>
-
-	</composite:implementation>
+    <composite:implementation>
+        <slider
+            source="#{request.contextPath}/api/v1/cms/slider/#{cc.attrs.slider != null ? cc.attrs.slider.id : '0'}/slides/"
+            slides="#{cc.attrs.slides}"
+            style="#{cc.attrs.style}"
+            sourceelement="#{cc.attrs.sourceElement}"
+            linkTarget="#{cc.attrs.linkTarget}"
+            language="#{navigationHelper.locale}"
+            defaultlanguage="#{navigationHelper.defaultLocale}"
+            paginationBulletMessage="#{msg.a11y__swiper__pagination_msg}"
+            firstSlideMessage="#{msg.a11y__swiper__first_slide_msg}"
+            prevSlideMessage="#{msg.a11y__swiper__prev_slide_msg}"
+            nextSlideMessage="#{msg.a11y__swiper__next_slide_msg}"
+            lastSlideMessage="#{msg.a11y__swiper__last_slide_msg}"
+            imageAltMsgKey="#{msg.a11y__swiper__img_alt}"
+            sliderInstanceID="#{cc.attrs.id}"
+            paginator="#{cc.attrs.paginator}"></slider>
+    </composite:implementation>
 </ui:composition>

@@ -14,16 +14,14 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     xmlns:adminComponent="http://xmlns.jcp.org/jsf/composite/admin/components"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
->
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <!-- MESSAGES -->
     <div class="messages">
         <h:messages
             id="messages"
             globalOnly="false"
             infoClass="alert alert-success"
-            errorClass="alert alert-danger"
-        />
+            errorClass="alert alert-danger" />
     </div>
 
     <div class="admin__topbar-wrapper">
@@ -31,37 +29,57 @@
         <div
             class="admin__topbar-backend"
             role="navigation"
-            aria-label="#{msg.aria_label__nav_main}"
-        >
+            aria-label="#{msg.aria_label__nav_main}">
             <div class="admin__topbar-backend-logo-menu -dropdown">
-                <div class="admin__topbar-backend-logo" aria-hidden="true">
-                    <ui:include src="/resources/images/goobi_logo.svg" alt="Goobi Viewer" />
+                <div
+                    class="admin__topbar-backend-logo"
+                    aria-hidden="true">
+                    <ui:include
+                        src="/resources/images/goobi_logo.svg"
+                        alt="Goobi Viewer" />
                 </div>
-                <ul class="admin__topbar-backend-dropdown" aria-label="Topbar logo menu dropdown">
+                <ul
+                    class="admin__topbar-backend-dropdown"
+                    aria-label="Topbar logo menu dropdown">
                     <li>
-                        <a href="https://goobi.io" target="_blank" rel="noopener"
-                            >#{msg.admin__about_goobi}</a
-                        >
+                        <a
+                            href="https://goobi.io"
+                            target="_blank"
+                            rel="noopener">
+                            #{msg.admin__about_goobi}
+                        </a>
                     </li>
                     <li>
-                        <a href="https://docs.goobi.io/" target="_blank" rel="noopener"
-                            >#{msg.admin__documentation}</a
-                        >
+                        <a
+                            href="https://docs.goobi.io/"
+                            target="_blank"
+                            rel="noopener">
+                            #{msg.admin__documentation}
+                        </a>
                     </li>
                     <li>
-                        <a href="https://community.goobi.io/" target="_blank" rel="noopener"
-                            >#{msg.admin__community}</a
-                        >
+                        <a
+                            href="https://community.goobi.io/"
+                            target="_blank"
+                            rel="noopener">
+                            #{msg.admin__community}
+                        </a>
                     </li>
                     <li>
-                        <a href="https://github.com/intranda/" target="_blank" rel="noopener"
-                            >#{msg.admin__sourcecode}</a
-                        >
+                        <a
+                            href="https://github.com/intranda/"
+                            target="_blank"
+                            rel="noopener">
+                            #{msg.admin__sourcecode}
+                        </a>
                     </li>
                     <li>
-                        <a href="https://www.intranda.com/contact/" target="_blank" rel="noopener"
-                            >#{msg.admin__support}</a
-                        >
+                        <a
+                            href="https://www.intranda.com/contact/"
+                            target="_blank"
+                            rel="noopener">
+                            #{msg.admin__support}
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -71,13 +89,11 @@
                 class="admin__topbar-backend-view-frontend-link"
                 href="#{request.contextPath}/"
                 title="#{msg.admin__view_frontend}"
-                aria-label="#{msg.admin__view_frontend}"
-            >
+                aria-label="#{msg.admin__view_frontend}">
                 <util:icon-text
                     icon="home"
                     text="#{adminThemesBean.getThemeLabel(configurationBean.name)}"
-                    textClass="admin__topbar-backend-view-frontend-link-text"
-                />
+                    textClass="admin__topbar-backend-view-frontend-link-text" />
             </a>
 
             <!-- ADD SOMETHING NEW -->
@@ -87,42 +103,49 @@
                         icon="library-plus"
                         text="#{msg.admin__new}"
                         iconClass="icon--spin"
-                        textClass="admin__topbar-backend-add-text"
-                    />
+                        textClass="admin__topbar-backend-add-text" />
                     <ul class="admin__topbar-backend-dropdown">
                         <li>
                             <a
                                 href="#{request.contextPath}/admin/cms/pages/templates/"
-                                target="_self"
-                                >#{msg.page}</a
-                            >
+                                target="_self">
+                                #{msg.page}
+                            </a>
                         </li>
                         <li>
-                            <a href="#{request.contextPath}/admin/users/new/" target="_self"
-                                >#{msg.admin__user}</a
-                            >
+                            <a
+                                href="#{request.contextPath}/admin/users/new/"
+                                target="_self">
+                                #{msg.admin__user}
+                            </a>
                         </li>
                         <li>
-                            <a href="#{request.contextPath}/admin/groups/new/" target="_self"
-                                >#{msg.admin__group}</a
-                            >
+                            <a
+                                href="#{request.contextPath}/admin/groups/new/"
+                                target="_self">
+                                #{msg.admin__group}
+                            </a>
                         </li>
                         <li>
-                            <a href="#{request.contextPath}/admin/ipranges/new/" target="_self"
-                                >#{msg.admin__ip_range}</a
-                            >
+                            <a
+                                href="#{request.contextPath}/admin/ipranges/new/"
+                                target="_self">
+                                #{msg.admin__ip_range}
+                            </a>
                         </li>
                         <li>
-                            <a href="#{request.contextPath}/admin/rights/new/" target="_self"
-                                >#{msg.admin__right}</a
-                            >
+                            <a
+                                href="#{request.contextPath}/admin/rights/new/"
+                                target="_self">
+                                #{msg.admin__right}
+                            </a>
                         </li>
                         <li>
                             <a
                                 href="#{request.contextPath}/admin/cms/categories/new/"
-                                target="_self"
-                                >#{msg.admin__category}</a
-                            >
+                                target="_self">
+                                #{msg.admin__category}
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -134,29 +157,27 @@
 
                 <div class="admin__topbar-frontend-hotfolder">
                     <!-- COUNT FILES PROCESSING -->
-                    <h:panelGroup layout="block" id="hotfolderFileCountGroup">
-                        <ui:fragment
-                            rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}"
-                        >
-                        <div class="admin__topbar-frontend-hotfolder-files-action">
-                            <util:icon-text
-                                icon="loader-2"
-                                text="#{adminBean.hotfolderFileCount} #{msg.admin__files_in_hotfolder}..."
-                                iconSvgClass="icon icon-rotate icon-rotate--smooth icon-xl"
-                                styleClass="admin__topbar-hotfolder-files-action-icon-text"
-                                textClass="admin__topbar-hotfolder-files-action-text" />
-                        </div>
+                    <h:panelGroup
+                        layout="block"
+                        id="hotfolderFileCountGroup">
+                        <ui:fragment rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}">
+                            <div class="admin__topbar-frontend-hotfolder-files-action">
+                                <util:icon-text
+                                    icon="loader-2"
+                                    text="#{adminBean.hotfolderFileCount} #{msg.admin__files_in_hotfolder}..."
+                                    iconSvgClass="icon icon-rotate icon-rotate--smooth icon-xl"
+                                    styleClass="admin__topbar-hotfolder-files-action-icon-text"
+                                    textClass="admin__topbar-hotfolder-files-action-text" />
+                            </div>
                         </ui:fragment>
                     </h:panelGroup>
                     <o:socket
                         pt:data-jsf-update-type="ignore"
                         id="hotfolderFileCount"
-                        channel="backgroundTasksState"
-                    >
+                        channel="backgroundTasksState">
                         <f:ajax
                             event="update"
-                            render="hotfolderFileCountGroup :messageQueueStateWrapper :runningTasksQueueWrapper"
-                        />
+                            render="hotfolderFileCountGroup :messageQueueStateWrapper :runningTasksQueueWrapper" />
                     </o:socket>
                 </div>
                 <!-- CHANGE LANGUAGE -->
@@ -165,25 +186,20 @@
                         <util:icon-text
                             icon="world"
                             text="#{msg.MD_LANGUAGE}"
-                            textClass="admin__topbar-backend-language-text"
-                        />
-                        <h:form id="changeLocalForm1" prependId="false">
+                            textClass="admin__topbar-backend-language-text" />
+                        <h:form
+                            id="changeLocalForm1"
+                            prependId="false">
                             <ul class="admin__topbar-backend-dropdown">
                                 <ui:repeat
                                     var="lang"
-                                    value="#{navigationHelper.supportedLanguages}"
-                                >
-                                    <li
-                                        class="#{navigationHelper.localeString == lang ?'activeLang':''}"
-                                    >
+                                    value="#{navigationHelper.supportedLanguages}">
+                                    <li class="#{navigationHelper.localeString == lang ?'activeLang':''}">
                                         <h:commandLink>
-                                            <h:outputText
-                                                value="#{msg['changeLocal_long_' += lang]}"
-                                            />
+                                            <h:outputText value="#{msg['changeLocal_long_' += lang]}" />
                                             <f:setPropertyActionListener
                                                 target="#{navigationHelper.localeString}"
-                                                value="#{lang}"
-                                            />
+                                                value="#{lang}" />
                                         </h:commandLink>
                                     </li>
                                 </ui:repeat>
@@ -197,15 +213,13 @@
                     <h:form>
                         <h:commandLink
                             styleClass="admin__topbar-backend-logout-link"
-                            action="#{userBean.logout}"
-                        >
+                            action="#{userBean.logout}">
                             <util:icon-text
                                 icon="power"
                                 text="#{msg.logout}"
-								textPosition="left"
-								styleClass="icon-stroke icon-stroke-w1"
-								iconSvgClass="icon icon-xl"
-                            />
+                                textPosition="left"
+                                styleClass="icon-stroke icon-stroke-w1"
+                                iconSvgClass="icon icon-xl" />
                         </h:commandLink>
                     </h:form>
                 </div>
@@ -219,7 +233,10 @@
             <div class="admin__sidebar-background"></div>
 
             <!-- SIDEBAR -->
-            <aside id="adminSidebar" class="admin__sidebar" aria-label="Admin sidebar">
+            <aside
+                id="adminSidebar"
+                class="admin__sidebar"
+                aria-label="Admin sidebar">
                 <div class="admin__sidebar-inner -refreshHCsticky">
                     <div class="admin__sidebar-inner__title">
                         <a href="#{request.contextPath}/admin/">Goobi viewer</a>
@@ -230,15 +247,12 @@
                         <div class="admin__sidebar-dashboard admin-widget">
                             <div class="admin-widget__header">#{msg.admin__general_title}</div>
                             <ul>
-                                <li
-                                    class="#{navigationHelper.currentPage == 'adminDashboard' ? 'active' : ''}"
-                                >
+                                <li class="#{navigationHelper.currentPage == 'adminDashboard' ? 'active' : ''}">
                                     <a href="#{request.contextPath}/admin/">
                                         <util:icon-text
                                             icon="dashboard"
                                             text="#{msg.admin__dashboard}"
-                                            styleClass="icon-text--nav"
-                                        />
+                                            styleClass="icon-text--nav" />
                                     </a>
                                 </li>
                             </ul>
@@ -260,7 +274,9 @@
         <div class="admin__content-background"></div>
 
         <!-- CONTENT -->
-        <main id="adminContent" class="admin__content">
+        <main
+            id="adminContent"
+            class="admin__content">
             <div class="admin__content-inner -h100">
                 <ui:insert name="content" />
             </div>

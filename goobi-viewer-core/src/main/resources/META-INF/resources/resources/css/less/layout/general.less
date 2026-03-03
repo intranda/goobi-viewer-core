@@ -2,11 +2,11 @@
    General styling
    ==============================================================*/
 html {
-	width: 100vw;
+    width: 100vw;
     font-size: 62.5%;
     overflow-x: hidden;
     &.no-overflow {
-    	overflow: hidden;
+        overflow: hidden;
     }
 }
 
@@ -16,39 +16,56 @@ body {
 
     // Styling for fucussed elements
     &.using-keyboard :focus-visible {
-      .mx-focus-visible !important;
+        .mx-focus-visible !important;
     }
 }
 
 @{RTL} body {
-	text-align: right;
-	text-decoration-skip-ink: auto;
+    text-align: right;
+    text-decoration-skip-ink: auto;
 }
 
-h1, h2, h3, h4, h5, .h1, .h2, .h3, .h4, .h5 {}
+h1,
+h2,
+h3,
+h4,
+h5,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5 {
+}
 
-h1, .h1 {
+h1,
+.h1 {
     font-size: 2.8rem;
 }
 
-h1, .h1 {
+h1,
+.h1 {
     font-size: 2.1rem;
 }
 
-h2, .h2 {
+h2,
+.h2 {
     font-size: 1.8rem;
 }
 
-h3, .h3 {
+h3,
+.h3 {
     font-size: 1.8rem;
 }
 
-h4, h5,
-.h4, .h5 {
+h4,
+h5,
+.h4,
+.h5 {
     font-size: @fontNormal;
 }
 
-p {}
+p {
+}
 
 pre {
     padding: 1rem;
@@ -64,16 +81,23 @@ nav ul {
     margin: 0;
 }
 
-ul {}
+ul {
+}
 
-ol {}
+ol {
+}
 
-ul, ol {}
+ul,
+ol {
+}
 
 a {
-    &:hover {}
-    &:active {}
-    &:focus {}
+    &:hover {
+    }
+    &:active {
+    }
+    &:focus {
+    }
 }
 
 table,
@@ -82,31 +106,34 @@ table,
 }
 
 #ajaxloader_image {
-	width: 100%;
-	height: 100%;
-	background-color: #fff;
-	display: none;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    display: none;
 }
 
 #ajaxloader_image img {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	padding-top:-50px;
-	padding-left:-50px;
-	width: 100px;
-	height: 100px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    padding-top: -50px;
+    padding-left: -50px;
+    width: 100px;
+    height: 100px;
 }
 
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

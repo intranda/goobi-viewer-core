@@ -1,37 +1,47 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-    >
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <composite:interface>
+        <composite:attribute
+            name="tagMethod"
+            required="true" />
+        <composite:attribute
+            name="ariaLabel"
+            required="false" />
+    </composite:interface>
 
-	<composite:interface>
-		<composite:attribute name="tagMethod" required="true"/>
-		<composite:attribute name="ariaLabel" required="false"/>
-	</composite:interface>
-
-	<composite:implementation>
-
-		<h:panelGroup id="tagcloudWrapper" layout="block" styleClass="tag-cloud__wrapper">
-		<div class="tags">
-		
-			<h:form id="tagCloudForm" styleClass="formTagCloud tag-cloud__form" >
-			<h:panelGroup layout="block" id="tagcloud" styleClass="tag-cloud__inner">
-			
-				<ui:repeat value="#{cc.attrs.tagMethod}" var="tag">
-					<div class="tagcloudElement tag-cloud__element tag#{tag.css}">
-					<h:outputLink value="#{navigationHelper.searchUrl}/-/#{tag.field}:#{tag.escapedName}/1/-/-/-/">
-						<h:outputText value="#{tag.name}"/>	
-						<f:passThroughAttribute name="aria-label" value="#{cc.attrs.ariaLabel}: #{tag.name}"/>				
-					</h:outputLink>
-					</div>
-				</ui:repeat>
-				
-				</h:panelGroup>
-			</h:form>
-		
-		</div>
-		</h:panelGroup>
-	</composite:implementation>
-
+    <composite:implementation>
+        <h:panelGroup
+            id="tagcloudWrapper"
+            layout="block"
+            styleClass="tag-cloud__wrapper">
+            <div class="tags">
+                <h:form
+                    id="tagCloudForm"
+                    styleClass="formTagCloud tag-cloud__form">
+                    <h:panelGroup
+                        layout="block"
+                        id="tagcloud"
+                        styleClass="tag-cloud__inner">
+                        <ui:repeat
+                            value="#{cc.attrs.tagMethod}"
+                            var="tag">
+                            <div class="tagcloudElement tag-cloud__element tag#{tag.css}">
+                                <h:outputLink
+                                    value="#{navigationHelper.searchUrl}/-/#{tag.field}:#{tag.escapedName}/1/-/-/-/">
+                                    <h:outputText value="#{tag.name}" />
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{cc.attrs.ariaLabel}: #{tag.name}" />
+                                </h:outputLink>
+                            </div>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </h:form>
+            </div>
+        </h:panelGroup>
+    </composite:implementation>
 </ui:composition>

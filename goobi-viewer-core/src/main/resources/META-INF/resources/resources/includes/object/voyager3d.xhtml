@@ -1,84 +1,124 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:facelet="http://goobi.io/facelets"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-
     <!-- IMAGE CONTAINER -->
-    
+
     <style>
-    
-    #preloader {
-    	display: flex;
-    	width: 100%;
-    	height: 100%;
-    	justify-content: center;
- 		align-items: center;
-  		flex-direction: column;
-    }
-    #world canvas {
-    	display: none;
-    }
-    #world #loadingProgress {
-     	display: none; 
-    }    
-    #world #objectLoader {
-     	display: none; 
-    }  
+        #preloader {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #world canvas {
+            display: none;
+        }
+        #world #loadingProgress {
+            display: none;
+        }
+        #world #objectLoader {
+            display: none;
+        }
     </style>
-    
-    <link href="#{request.contextPath}/resources/javascript/libs/voyager/css/voyager-story.min.css" rel="stylesheet"></link>
-    <script defer="defer" src="#{request.contextPath}/resources/javascript/libs/voyager/js/voyager-story.min.js"></script>
-    <script defer="defer" src="#{request.contextPath}/resources/javascript/libs/voyager/js/voyager-explorer.min.js"></script>
-    
+
+    <link
+        href="#{request.contextPath}/resources/javascript/libs/voyager/css/voyager-story.min.css"
+        rel="stylesheet" />
+    <script
+        defer="defer"
+        src="#{request.contextPath}/resources/javascript/libs/voyager/js/voyager-story.min.js"></script>
+    <script
+        defer="defer"
+        src="#{request.contextPath}/resources/javascript/libs/voyager/js/voyager-explorer.min.js"></script>
+
     <div class="view-object__object-3d-voyager-editor-button-wrapper">
-    	<button jsf:id="loadStoryEditor" class="btn btn--default view-object__object-3d-voyager-open-editor-button" rendered="#{userBean.admin}"><span class="view-object__object-3d-voyager-editor-button-inside"><util:icon icon="edit" /><span>#{msg.voyager__open_editor}</span></span></button>
-    	<button jsf:id="closeStoryEditor" class="btn btn--default view-object__object-3d-voyager-close-editor-button" rendered="#{userBean.admin}" style="display:none;"><span class="view-object__object-3d-voyager-editor-button-inside"><util:icon icon="edit-off" /><span>#{msg.voyager__close_editor}</span></span></button>
+        <button
+            jsf:id="loadStoryEditor"
+            class="btn btn--default view-object__object-3d-voyager-open-editor-button"
+            rendered="#{userBean.admin}">
+            <span class="view-object__object-3d-voyager-editor-button-inside">
+                <util:icon icon="edit" />
+                <span>#{msg.voyager__open_editor}</span>
+            </span>
+        </button>
+        <button
+            jsf:id="closeStoryEditor"
+            class="btn btn--default view-object__object-3d-voyager-close-editor-button"
+            rendered="#{userBean.admin}"
+            style="display: none">
+            <span class="view-object__object-3d-voyager-editor-button-inside">
+                <util:icon icon="edit-off" />
+                <span>#{msg.voyager__close_editor}</span>
+            </span>
+        </button>
     </div>
-    
-    <div id="objectContainer" class="view-object__object-3d -setBorderTop">        
+
+    <div
+        id="objectContainer"
+        class="view-object__object-3d -setBorderTop">
         <!-- MAP -->
         <ui:fragment rendered="#{ activeDocumentBean.viewManager.currentPage.accessPermission3DObject }">
-        <div id="world" class="view-object__object-3d-world" data-resource-path="#{request.contextPath}/resources/javascript/libs/voyager/" data-object-url="#{activeDocumentBean.viewManager.currentObjectUrl}" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
-            <div id="preloader">
- 
-        		<p id="beforeLoad" class="before-load view-object__object-3d-world-before-load-text">
-        			<h:outputText value="#{msg.object_3d__before_load}" escape="false" /> 
-        		</p>
-        		<button id="startLoadButton" class="before-load btn btn--default" >#{msg.show}</button>
-		        <progress id="loadingProgress"  max="undefined" value="undefined"></progress>
-		        <img id="objectLoader" src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-
-        	</div>
-        </div>
+            <div
+                id="world"
+                class="view-object__object-3d-world"
+                data-resource-path="#{request.contextPath}/resources/javascript/libs/voyager/"
+                data-object-url="#{activeDocumentBean.viewManager.currentObjectUrl}"
+                data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
+                <div id="preloader">
+                    <p
+                        id="beforeLoad"
+                        class="before-load view-object__object-3d-world-before-load-text">
+                        <h:outputText
+                            value="#{msg.object_3d__before_load}"
+                            escape="false" />
+                    </p>
+                    <button
+                        id="startLoadButton"
+                        class="before-load btn btn--default">
+                        #{msg.show}
+                    </button>
+                    <progress
+                        id="loadingProgress"
+                        max="undefined"
+                        value="undefined"></progress>
+                    <img
+                        id="objectLoader"
+                        src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+                </div>
+            </div>
         </ui:fragment>
         <ui:fragment rendered="#{ !activeDocumentBean.viewManager.currentPage.accessPermission3DObject }">
-       		<div id="world" class="view-object__object-3d-world">
-       			<div class="view-object__access-denied">
-       				#{msg.noImage_accessDenied}
-       			</div>
-       		</div>
+            <div
+                id="world"
+                class="view-object__object-3d-world">
+                <div class="view-object__access-denied">#{msg.noImage_accessDenied}</div>
+            </div>
         </ui:fragment>
-        
+
         <!-- ACCESS DENIED DESCRIPTION TEXT -->
-        <h:panelGroup styleClass="view-object__access-denied-text"
+        <h:panelGroup
+            styleClass="view-object__access-denied-text"
             rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionObject and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForImage(navigationHelper.locale) != null}">
-            <h:outputText escape="false"
+            <h:outputText
+                escape="false"
                 value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForImage(navigationHelper.locale)}" />
         </h:panelGroup>
     </div>
 
     <!-- MOBILE IMAGE VIEW -->
-        <div id="imageContainerMobile" class="view-object__image-mobile">
-
-        </div>
-
+    <div
+        id="imageContainerMobile"
+        class="view-object__image-mobile"></div>
 </ui:composition>

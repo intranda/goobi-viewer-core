@@ -1,37 +1,47 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-    
-	<composite:interface>
-        <composite:attribute name="piwikBaseURL" required="true" />
-        <composite:attribute name="piwikSiteID" required="true" default="1" />
+    <composite:interface>
+        <composite:attribute
+            name="piwikBaseURL"
+            required="true" />
+        <composite:attribute
+            name="piwikSiteID"
+            required="true"
+            default="1" />
     </composite:interface>
 
     <composite:implementation>
-        <script type="text/javascript">        
+        <script type="text/javascript">
             var _paq = _paq || [];
             /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-            _paq.push(["setDoNotTrack", true]);
-            _paq.push(["trackPageView"]);
-            _paq.push(["enableLinkTracking"]);
-            var startPiwikTracking = function() {
-	              var u="//#{cc.attrs.piwikBaseURL}";
-	              _paq.push(["setTrackerUrl", u+"piwik.php"]);
-	              _paq.push(["setSiteId", "#{cc.attrs.piwikSiteID}"]);
-	              var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0];
-	              g.type="text/javascript"; g.async=true; g.defer=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
-            };  
-			
-            
+            _paq.push(['setDoNotTrack', true]);
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            var startPiwikTracking = function () {
+                var u = '//#{cc.attrs.piwikBaseURL}';
+                _paq.push(['setTrackerUrl', u + 'piwik.php']);
+                _paq.push(['setSiteId', '#{cc.attrs.piwikSiteID}']);
+                var d = document,
+                    g = d.createElement('script'),
+                    s = d.getElementsByTagName('script')[0];
+                g.type = 'text/javascript';
+                g.async = true;
+                g.defer = true;
+                g.src = u + 'piwik.js';
+                s.parentNode.insertBefore(g, s);
+            };
         </script>
-        
+
         <noscript>
             <p>
-                <img src="//#{cc.attrs.piwikBaseURL}/piwik.php?idsite=#{cc.attrs.piwikSiteID}&amp;rec=#{cc.attrs.piwikSiteID}" tyle="border: 0;" alt="" />
+                <img
+                    src="//#{cc.attrs.piwikBaseURL}/piwik.php?idsite=#{cc.attrs.piwikSiteID}&amp;rec=#{cc.attrs.piwikSiteID}"
+                    tyle="border: 0;"
+                    alt="" />
             </p>
         </noscript>
     </composite:implementation>

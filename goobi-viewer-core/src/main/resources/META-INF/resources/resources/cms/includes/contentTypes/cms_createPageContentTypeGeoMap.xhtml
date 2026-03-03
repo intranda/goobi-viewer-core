@@ -1,15 +1,18 @@
-<ui:composition 
+<ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- CONTENT TYPE SUBTHEME -->
-    <h:panelGroup id="contentGeoMapGroup" styleClass="cms-module__option-group" rendered="#{contentItem.type == 'GEOMAP'}" layout="block">
+    <h:panelGroup
+        id="contentGeoMapGroup"
+        styleClass="cms-module__option-group"
+        rendered="#{contentItem.type == 'GEOMAP'}"
+        layout="block">
         <div class="cms-module__option-label">
             <label for="geoMapSelect">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}:</label>
         </div>
@@ -18,30 +21,41 @@
             <h:panelGroup id="geoMapGroup">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <h:messages for="geoMapSelect" 
-                        infoClass="cms-module__option-message-status success" 
+                    <h:messages
+                        for="geoMapSelect"
+                        infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true"></i>
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true"></i>
                     </div>
                 </div>
-                
+
                 <!-- SELECT MENU -->
                 <div class="custom-control custom-control--select">
-                    <h:selectOneMenu 
-                        id="geoMapSelect" 
-                        styleClass="form-control" 
+                    <h:selectOneMenu
+                        id="geoMapSelect"
+                        styleClass="form-control"
                         value="#{contentItem.geoMapId}">
-                        <f:selectItem itemValue="#{null}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
-                        <f:selectItems 
+                        <f:selectItem
+                            itemValue="#{null}"
+                            itemLabel="#{msg.select}"
+                            itemDisabled="true"
+                            noSelectionOption="true"></f:selectItem>
+                        <f:selectItems
                             value="#{geoMapBean.allMaps}"
                             var="map"
                             itemValue="#{map.id}"
                             itemLabel="#{map.title}" />
-                        <f:ajax event="change" render="geoMapGroup" />
+                        <f:ajax
+                            event="change"
+                            render="geoMapGroup" />
                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
@@ -50,10 +64,13 @@
         </div>
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>
     </h:panelGroup>
 </ui:composition>
-

@@ -1,197 +1,197 @@
-.admin {	
-	/* CAMPAIGN STYLING */
-	#crowdAddCampaignView {
-		.campaign-statistics {
-			flex-wrap: wrap;
-			flex-direction: column-reverse;
-			progressbar {
-				width: 100%;
-			}
-		}
-		.campaign-statistics__text, .campaign-statistics__bar {
-			width: 100%;
-			margin-bottom: 2rem;
-		}
-		.goobi-progress-bar-wrapper {
-			border: none;
-			background: @grayBar;
-		}
-		.campaign-statistics__text dl {
-			grid-template-columns: minmax(180px, auto) auto;
-		}
-		
-	}
+.admin {
+    /* CAMPAIGN STYLING */
+    #crowdAddCampaignView {
+        .campaign-statistics {
+            flex-wrap: wrap;
+            flex-direction: column-reverse;
+            progressbar {
+                width: 100%;
+            }
+        }
+        .campaign-statistics__text,
+        .campaign-statistics__bar {
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .goobi-progress-bar-wrapper {
+            border: none;
+            background: @grayBar;
+        }
+        .campaign-statistics__text dl {
+            grid-template-columns: minmax(180px, auto) auto;
+        }
+    }
 
-	&__campaign-media-file-box {
-		.admin-cms-media__file-select, .admin-cms-media__file-bottom {
-			display: none;
-		}
-		.admin-cms-media__file {
-			background: @white !important;
-			border: none;
-			padding: 0;
-		}
-		.admin-cms-media__file-top {
-			margin-bottom: 0;
-		}
-		.admin-cms-media__file-image {
-			cursor: default;
-		}
-		.cms-module__actions {
-			.edit, .delete {
-				opacity: 0;
-				transition: all 0.2s ease;
-			}
-			a {
-				font-size: 1.4rem;
-				&:hover {
-					text-decoration: underline;
-				}
-			}
-		}
-		&:hover .cms-module__actions {
-			.edit, .delete {	
-				opacity: 1;
-				transition: all 0.2s ease;			
-			}
-		}
-	}
-	&__campaign-delete-question {
-		opacity: 0;
-		transition: all 0.2s ease;
-		.delete { 
-			font-size: 14px;
-		}
-	}
-	&__campaign-date-picker-group {}
-	&__campaign-date-picker {
-		width: 100%;
-		position: relative;
-		input {
-			width: 100%;
-			border: 1px solid #ced4da;
-			padding: 0.2rem 2.2rem 0.2rem 0.4rem;
-		}
-		&::after {
-			content: "";
-			position: absolute;
-			right: 0.7rem;
-			top: 50%;
-			transform: translate(0%, -50%);
-			width: 1.75rem;
-			height: 1.75rem;
-			background-color: currentColor;
-			mask: url("../../icons/outline/calendar.svg") center/100% 100% no-repeat;
-			-webkit-mask: url("../../icons/outline/calendar.svg") center/100% 100% no-repeat;
-			pointer-events: none;
-		}
-	}
+    &__campaign-media-file-box {
+        .admin-cms-media__file-select,
+        .admin-cms-media__file-bottom {
+            display: none;
+        }
+        .admin-cms-media__file {
+            background: @white !important;
+            border: none;
+            padding: 0;
+        }
+        .admin-cms-media__file-top {
+            margin-bottom: 0;
+        }
+        .admin-cms-media__file-image {
+            cursor: default;
+        }
+        .cms-module__actions {
+            .edit,
+            .delete {
+                opacity: 0;
+                transition: all 0.2s ease;
+            }
+            a {
+                font-size: 1.4rem;
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+        &:hover .cms-module__actions {
+            .edit,
+            .delete {
+                opacity: 1;
+                transition: all 0.2s ease;
+            }
+        }
+    }
+    &__campaign-delete-question {
+        opacity: 0;
+        transition: all 0.2s ease;
+        .delete {
+            font-size: 14px;
+        }
+    }
+    &__campaign-date-picker-group {
+    }
+    &__campaign-date-picker {
+        width: 100%;
+        position: relative;
+        input {
+            width: 100%;
+            border: 1px solid #ced4da;
+            padding: 0.2rem 2.2rem 0.2rem 0.4rem;
+        }
+        &::after {
+            content: '';
+            position: absolute;
+            right: 0.7rem;
+            top: 50%;
+            transform: translate(0%, -50%);
+            width: 1.75rem;
+            height: 1.75rem;
+            background-color: currentColor;
+            mask: url('../../icons/outline/calendar.svg') center/100% 100% no-repeat;
+            -webkit-mask: url('../../icons/outline/calendar.svg') center/100% 100% no-repeat;
+            pointer-events: none;
+        }
+    }
 }
 
-
 #createCampaign {
-	
-	h1 {
-		.btn {
-			margin-left: 25px;
-		}
-	}
-	
-   .edit-content-page {
-   
-   		&.edit-content-page-content {
-   			padding-bottom: 30px;
-  			border-bottom: 1px dotted #ddd; 
-   		}
-   		&.edit-content-page-single-question {
-		    margin-bottom: 4.3rem;
-		    border-bottom: 3px dashed @neutralgray;
-		    padding-bottom: 2.6rem;
-		    &:last-child {
-		    	margin-bottom: 0;
-		    	border-bottom: none;
-		    }
-		    &:hover {
-		    	.admin__campaign-delete-question {
-		    		opacity: 1;
-		    	}
-		    }
-   		}
-   		.cms-module__option-control {
-   			padding-left: 0;
-   			select {
-   				padding-left: 10px;
-   			}
-   		}
-   }
+    h1 {
+        .btn {
+            margin-left: 25px;
+        }
+    }
 
-	.create-page-right {
-		margin-bottom: 20px;
-	
-		#cmsCreatePageMetadataItemWrapper {
-			border: 1px solid #ccc;
-		}
-		
-		.page-metadata-item-status {
-			
-			>div {
-				margin-top: 2em;
-				&:nth-of-type(1) {
-					margin-top: 0;
-				}
-			}
-			.page-metadata-item-date-selector {
-				display: grid;
-				grid-template-columns: 25% auto;
-				h2 {
-					grid-column: span 2;
-				}
-				.cms-module__actions {
-					grid-column-start: 2;
-					justify-self: end;
-				}
-			}
-			.cms-module__actions {
-				float: right;
-			}
-			.form-control {
-	   			line-height: 21px;
-	   			text-align: left;
-			}
-		}
-	
-		.campaign-statistics {
-			margin-top: 10px;
-			border: 1px solid #ccc;
-			background-color: #fff;
-			flex-wrap: wrap;
-			&__text {
-				width: 100%;
-				padding: 10px;
-				dl {
-					dt {
-						&:after {
-						}
-					}
-					dd {
-					}
-				}
-			}
-			
-			&__bar {
-				width: 100%;
-				display: block;
-				padding: 0 10px 10px 10px;
-				progressBar {
-				height:50px;
-				}
-				.goobi-progress-bar-wrapper {					
-					.goobi-progress-bar {
-						&__bar {
-						}
-					}
-				}
-			}
-		}
-	}
+    .edit-content-page {
+        &.edit-content-page-content {
+            padding-bottom: 30px;
+            border-bottom: 1px dotted #ddd;
+        }
+        &.edit-content-page-single-question {
+            margin-bottom: 4.3rem;
+            border-bottom: 3px dashed @neutralgray;
+            padding-bottom: 2.6rem;
+            &:last-child {
+                margin-bottom: 0;
+                border-bottom: none;
+            }
+            &:hover {
+                .admin__campaign-delete-question {
+                    opacity: 1;
+                }
+            }
+        }
+        .cms-module__option-control {
+            padding-left: 0;
+            select {
+                padding-left: 10px;
+            }
+        }
+    }
+
+    .create-page-right {
+        margin-bottom: 20px;
+
+        #cmsCreatePageMetadataItemWrapper {
+            border: 1px solid #ccc;
+        }
+
+        .page-metadata-item-status {
+            > div {
+                margin-top: 2em;
+                &:nth-of-type(1) {
+                    margin-top: 0;
+                }
+            }
+            .page-metadata-item-date-selector {
+                display: grid;
+                grid-template-columns: 25% auto;
+                h2 {
+                    grid-column: span 2;
+                }
+                .cms-module__actions {
+                    grid-column-start: 2;
+                    justify-self: end;
+                }
+            }
+            .cms-module__actions {
+                float: right;
+            }
+            .form-control {
+                line-height: 21px;
+                text-align: left;
+            }
+        }
+
+        .campaign-statistics {
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            flex-wrap: wrap;
+            &__text {
+                width: 100%;
+                padding: 10px;
+                dl {
+                    dt {
+                        &:after {
+                        }
+                    }
+                    dd {
+                    }
+                }
+            }
+
+            &__bar {
+                width: 100%;
+                display: block;
+                padding: 0 10px 10px 10px;
+                progressBar {
+                    height: 50px;
+                }
+                .goobi-progress-bar-wrapper {
+                    .goobi-progress-bar {
+                        &__bar {
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

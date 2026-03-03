@@ -1,72 +1,104 @@
-<ui:composition 
+<ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:util="http://goobi.io/util"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" >
-
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- INTERFACE OPTIONS -->
     <composite:interface>
-        <composite:attribute name="geoMap" type="io.goobi.viewer.model.maps.GeoMap" required="true" />
-    	<composite:attribute name="title" required="false" default="#{cc.attrs.geoMap.title}"/>
-        <composite:attribute name="linkToSearch" required="false" default="true" />
-    	<composite:attribute name="allowFullscreen" required="false" default="true" />
-    	<composite:attribute name="showAnnotations" type="java.lang.Boolean" required="false" default="false"/>
-    	<composite:attribute name="popoverOnHover" type="java.lang.Boolean" required="false" default="false"/>
-    	<composite:attribute name="popoverClass" required="false" default="geomap_popover"/>
-    	<composite:attribute name="highlightDocumentId" required="false" default=""/>
-    	<composite:attribute name="currentPageNo" type="java.lang.Integer" required="false" default="#{null}"/>
+        <composite:attribute
+            name="geoMap"
+            type="io.goobi.viewer.model.maps.GeoMap"
+            required="true" />
+        <composite:attribute
+            name="title"
+            required="false"
+            default="#{cc.attrs.geoMap.title}" />
+        <composite:attribute
+            name="linkToSearch"
+            required="false"
+            default="true" />
+        <composite:attribute
+            name="allowFullscreen"
+            required="false"
+            default="true" />
+        <composite:attribute
+            name="showAnnotations"
+            type="java.lang.Boolean"
+            required="false"
+            default="false" />
+        <composite:attribute
+            name="popoverOnHover"
+            type="java.lang.Boolean"
+            required="false"
+            default="false" />
+        <composite:attribute
+            name="popoverClass"
+            required="false"
+            default="geomap_popover" />
+        <composite:attribute
+            name="highlightDocumentId"
+            required="false"
+            default="" />
+        <composite:attribute
+            name="currentPageNo"
+            type="java.lang.Integer"
+            required="false"
+            default="#{null}" />
     </composite:interface>
 
     <composite:implementation>
         <!-- WIDGET GEO LOCATIONS -->
         <h:panelGroup rendered="#{cc.attrs.geoMap != null}">
             <!-- STANDARD -->
-            <div id="widgetGeoMap_#{cc.attrs.geoMap.id}" class="widget widget-geomap">
-               	<div class="widget__topbar widget-geomap__topbar">
-               	    <ui:fragment rendered="#{not empty cc.attrs.title}">
-	                    <h2 class="widget__title widget-geomap__title">
-	                        #{cc.attrs.title}
-	                    </h2>
-					</ui:fragment>
-	               	<ui:fragment rendered="#{cc.attrs.allowFullscreen}">
-	               		<button id="expandMap_#{cc.attrs.geoMap.id}" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geomap__expand" aria-label="#{msg.fullscreen_enter}">
-							<util:icon icon="arrows-maximize" />
-	                     </button>
+            <div
+                id="widgetGeoMap_#{cc.attrs.geoMap.id}"
+                class="widget widget-geomap">
+                <div class="widget__topbar widget-geomap__topbar">
+                    <ui:fragment rendered="#{not empty cc.attrs.title}">
+                        <h2 class="widget__title widget-geomap__title">#{cc.attrs.title}</h2>
                     </ui:fragment>
-	            </div>
-	            
-                 <!-- MAP -->
-                 <div class="widget__body widget-geomap__body">
-                 	<viewerComponent:geoMap 
-                 		highlightDocumentId="#{cc.attrs.highlightDocumentId}" 
-                 		currentPageNo="#{cc.attrs.currentPageNo}"
-                 		showPopover="true" 
-                 		popoverOnHover="#{cc.attrs.popoverOnHover}" 
-                 		popoverClass="#{cc.attrs.popoverClass}"
-                 		showAnnotations="#{cc.attrs.showAnnotations}" 
-                 		geoMap="#{cc.attrs.geoMap}" 
-                 		featureClickHandling="#{cc.attrs.linkToSearch ? 'openSearch':'none'}" 
-                 		mapId="widget_geoMap_#{cc.attrs.geoMap.id}"
-                 	></viewerComponent:geoMap>
-                 </div>
-             </div>
-            <script type="text/javascript">	  
-	          //<![CDATA[
-	            $("#widgetGeoMap_#{cc.attrs.geoMap.id}").show();
-	            $(document).ready( () => {	
-	                $("#expandMap_#{cc.attrs.geoMap.id}").on("click", e => {
-	                    let oembedUrl = "#{cc.attrs.geoMap.getOEmbedURI('_parent')}";
-	                    viewerJS.oembed(oembedUrl)
-	                    .then( $node => {
-	                        viewerJS.overlay.open($node, true, true, () => $node.remove());
-	                    })
-	                })
-	            })
-	            //]]>
-	        </script>
+                    <ui:fragment rendered="#{cc.attrs.allowFullscreen}">
+                        <button
+                            id="expandMap_#{cc.attrs.geoMap.id}"
+                            data-toggle="tooltip"
+                            title="#{msg.fullscreen_enter}"
+                            class="widget-geomap__expand"
+                            aria-label="#{msg.fullscreen_enter}">
+                            <util:icon icon="arrows-maximize" />
+                        </button>
+                    </ui:fragment>
+                </div>
+
+                <!-- MAP -->
+                <div class="widget__body widget-geomap__body">
+                    <viewerComponent:geoMap
+                        highlightDocumentId="#{cc.attrs.highlightDocumentId}"
+                        currentPageNo="#{cc.attrs.currentPageNo}"
+                        showPopover="true"
+                        popoverOnHover="#{cc.attrs.popoverOnHover}"
+                        popoverClass="#{cc.attrs.popoverClass}"
+                        showAnnotations="#{cc.attrs.showAnnotations}"
+                        geoMap="#{cc.attrs.geoMap}"
+                        featureClickHandling="#{cc.attrs.linkToSearch ? 'openSearch':'none'}"
+                        mapId="widget_geoMap_#{cc.attrs.geoMap.id}"></viewerComponent:geoMap>
+                </div>
+            </div>
+            <script type="text/javascript">
+                //<![CDATA[
+                $('#widgetGeoMap_#{cc.attrs.geoMap.id}').show();
+                $(document).ready(() => {
+                    $('#expandMap_#{cc.attrs.geoMap.id}').on('click', (e) => {
+                        let oembedUrl = "#{cc.attrs.geoMap.getOEmbedURI('_parent')}";
+                        viewerJS.oembed(oembedUrl).then(($node) => {
+                            viewerJS.overlay.open($node, true, true, () => $node.remove());
+                        });
+                    });
+                });
+                //]]>
+            </script>
         </h:panelGroup>
     </composite:implementation>
 </ui:composition>

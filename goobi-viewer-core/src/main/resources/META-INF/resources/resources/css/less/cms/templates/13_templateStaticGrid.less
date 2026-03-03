@@ -5,69 +5,72 @@
 /* TPL STATIC GRID */
 /* BLOCK */
 .tpl-static-grid {
-    h1 {}
+    h1 {
+    }
     /* ELEMENT */
     &__text {
-    	margin-bottom: 30px;
+        margin-bottom: 30px;
     }
-    &__grid { 
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr 1fr;
-		gap: 30px;
-	}
+    &__grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 30px;
+    }
 }
 .grid-tile {
-	padding: 3px;
-	padding-top: 0;
-	border: 1px solid @middlegray;
-	background-color: @white;
-	&:hover {
-		text-decoration: none;
-	}
-	&__title {
-		height: 50px;
-		padding: 5px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-	&__image {
-		height: 150px;
-		overflow: hidden;
-		background-repeat: no-repeat;
-		background-position: center center;
-		background-size: cover;
-	}
-	&__text {
-		margin: 0;
-		font-size: @fontNormal;
-		line-height: 21px;
-		font-weight: 600;
-	}
+    padding: 3px;
+    padding-top: 0;
+    border: 1px solid @middlegray;
+    background-color: @white;
+    &:hover {
+        text-decoration: none;
+    }
+    &__title {
+        height: 50px;
+        padding: 5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    &__image {
+        height: 150px;
+        overflow: hidden;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+    }
+    &__text {
+        margin: 0;
+        font-size: @fontNormal;
+        line-height: 21px;
+        font-weight: 600;
+    }
 }
 
 /* MODIFICATION */
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
-	.tpl-static-grid {
-	    &__grid {
-			grid-template-columns: 1fr 1fr;
-			gap: 30px;
-		}
-	}
+    .tpl-static-grid {
+        &__grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+    }
 }
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.tpl-static-grid {
-	    &__grid {
-			grid-template-columns: 1fr;
-		}
-	}
+    .tpl-static-grid {
+        &__grid {
+            grid-template-columns: 1fr;
+        }
+    }
 }

@@ -3,40 +3,42 @@
    ==============================================================*/
 
 .download-ticket-modal {
-	&__actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: 20px;
-		margin-top: 20px;
-	}
-	[data-mode='passwordMode'] {
-		
-	}
-	[data-mode='ticketMode'] {
-		display: none;
-	}
-	&__object-title {
-		font-size: 18px;
-		font-weight: 700;
-		color: #222;
-	}
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 20px;
+        margin-top: 20px;
+    }
+    [data-mode='passwordMode'] {
+    }
+    [data-mode='ticketMode'] {
+        display: none;
+    }
+    &__object-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #222;
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOP */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.download-ticket-modal {
-		&__actions {
-			flex-direction: column;
-			align-items: flex-end;
-		}
-	}
+    .download-ticket-modal {
+        &__actions {
+            flex-direction: column;
+            align-items: flex-end;
+        }
+    }
 }

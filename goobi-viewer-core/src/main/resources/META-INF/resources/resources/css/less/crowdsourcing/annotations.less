@@ -1,68 +1,67 @@
-
-
 .annotation {
-	&__body {
-		&__content_wrapper {
-			display: none;
-		}
-		&__geomap {
-			width: 400px;
-			height: 150px;
-			max-width: 100%;
-		}
-		&__htmltext {
-			width: 400px;
-			max-width: 100%;
-			iframe {
-				border: none;
-			}
-		}
-		&__plaintext {
-  			word-break: break-word;
-		}
-		&__dataset,
-		&__authority {
-			dt {
-				min-width: 250px;
-			}
-		}
-		&__dataset__data_list,
-		&__authority__normdata_list {
-			display: flex;
-		}
-	}
+    &__body {
+        &__content_wrapper {
+            display: none;
+        }
+        &__geomap {
+            width: 400px;
+            height: 150px;
+            max-width: 100%;
+        }
+        &__htmltext {
+            width: 400px;
+            max-width: 100%;
+            iframe {
+                border: none;
+            }
+        }
+        &__plaintext {
+            word-break: break-word;
+        }
+        &__dataset,
+        &__authority {
+            dt {
+                min-width: 250px;
+            }
+        }
+        &__dataset__data_list,
+        &__authority__normdata_list {
+            display: flex;
+        }
+    }
 }
 
 // NEEDS TO BE REWORKED!
 #campaignAnnotationsTable {
-		.annotation__label {
-			word-wrap: break-word;
-			overflow: hidden;
-		}
-	 	.annotation__body__authority dd {
-			padding: 0;
-		}
-		.annotation__body__authority__normdata_list {
-			flex-wrap: wrap;
-		}
-
+    .annotation__label {
+        word-wrap: break-word;
+        overflow: hidden;
+    }
+    .annotation__body__authority dd {
+        padding: 0;
+    }
+    .annotation__body__authority__normdata_list {
+        flex-wrap: wrap;
+    }
 }
-
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
-	#campaignAnnotationsTable {
-		.admin__table-action-link {
-			opacity: 1;
-		}
-	}
-} 
+    #campaignAnnotationsTable {
+        .admin__table-action-link {
+            opacity: 1;
+        }
+    }
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

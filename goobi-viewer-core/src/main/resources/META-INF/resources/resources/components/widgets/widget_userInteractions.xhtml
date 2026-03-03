@@ -1,44 +1,72 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
-	<composite:interface />
+    <composite:interface />
 
     <composite:implementation>
         <h:panelGroup
             rendered="#{userBean.loggedIn and activeDocumentBean.recordLoaded and (userBean.user.superuser or (configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS') or userBean.user.cmsAdmin)}">
-            <div id="widgetUserInteractions" class="widget widget-user-interactions">
-                <h:form id="widgetUserInteractionsStandardForm" prependId="false">
-                    <h2 >#{msg.menuUser_workInteractions}</h2>
+            <div
+                id="widgetUserInteractions"
+                class="widget widget-user-interactions">
+                <h:form
+                    id="widgetUserInteractionsStandardForm"
+                    prependId="false">
+                    <h2>#{msg.menuUser_workInteractions}</h2>
                     <ul>
                         <h:panelGroup
                             rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}">
                             <li>
                                 <h:commandLink
                                     action="#{adminBean.setRepresantativeImageAction(activeDocumentBean.viewManager.pi, activeDocumentBean.topDocument.dataRepository, activeDocumentBean.viewManager.currentPage.fileIdRoot)}">
-                                        #{msg.setRepresentativeImage}
-                                    </h:commandLink>
+                                    #{msg.setRepresentativeImage}
+                                </h:commandLink>
                             </li>
                         </h:panelGroup>
 
                         <!-- TODO rendered=#{docstruct in allowed docType:} -->
                         <!-- TODO record already added to Transkribus -->
-                        <h:panelGroup rendered="#{configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}">
+                        <h:panelGroup
+                            rendered="#{configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}">
                             <li>
-                                <a href="#" data-toggle="modal" data-target="#transkribusModal" data-backdrop="false"> #{msg.transkribus_add} </a>
+                                <a
+                                    href="#"
+                                    data-toggle="modal"
+                                    data-target="#transkribusModal"
+                                    data-backdrop="false">
+                                    #{msg.transkribus_add}
+                                </a>
 
                                 <!-- TRANSKRIBUS MODAL -->
-                                <div class="modal fade" id="transkribusModal" tabindex="-1" role="dialog" aria-labelledby="transkribusModalLabel">
-                                    <div class="modal-dialog" role="document">
+                                <div
+                                    class="modal fade"
+                                    id="transkribusModal"
+                                    tabindex="-1"
+                                    role="dialog"
+                                    aria-labelledby="transkribusModalLabel">
+                                    <div
+                                        class="modal-dialog"
+                                        role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h3 class="modal-title" id="transkribusModalLabel">#{msg.transkribus_add}</h3>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <h3
+                                                    class="modal-title"
+                                                    id="transkribusModalLabel">
+                                                    #{msg.transkribus_add}
+                                                </h3>
+                                                <button
+                                                    type="button"
+                                                    class="close"
+                                                    data-dismiss="modal"
+                                                    aria-label="Close">
                                                     <span aria-hidden="true">
-                                                        <h:outputText value="&amp;times;" escape="false" />
+                                                        <h:outputText
+                                                            value="&amp;times;"
+                                                            escape="false" />
                                                     </span>
                                                 </button>
                                             </div>
@@ -49,24 +77,45 @@
                                                 <h:panelGroup rendered="#{userBean.user.transkribusSession == null}">
                                                     <div class="form-group">
                                                         <label for="transkribusEmail">#{msg.email}</label>
-                                                        <h:inputText class="form-control" id="transkribusEmail" value="#{userBean.transkribusUserName}" />
+                                                        <h:inputText
+                                                            class="form-control"
+                                                            id="transkribusEmail"
+                                                            value="#{userBean.transkribusUserName}" />
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="transkribusPassword">#{msg.password}</label>
-                                                        <h:inputSecret class="form-control" id="transkribusPassword" value="#{userBean.transkribusPassword}" />
+                                                        <h:inputSecret
+                                                            class="form-control"
+                                                            id="transkribusPassword"
+                                                            value="#{userBean.transkribusPassword}" />
                                                     </div>
                                                 </h:panelGroup>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
-                                                <h:commandButton rendered="#{userBean.user.transkribusSession == null}" type="submit" styleClass="btn btn--success"
-                                                    value="#{msg.transkribus_add}" action="#{activeDocumentBean.viewManager.addToTranskribusAction(true)}" />
-                                                <h:commandButton rendered="#{userBean.user.transkribusSession != null}" type="submit" styleClass="btn btn--success"
-                                                    value="#{msg.transkribus_add}" action="#{activeDocumentBean.viewManager.addToTranskribusAction(false)}" />
+                                                <button
+                                                    type="button"
+                                                    class="btn"
+                                                    data-dismiss="modal">
+                                                    #{msg.cancel}
+                                                </button>
+                                                <h:commandButton
+                                                    rendered="#{userBean.user.transkribusSession == null}"
+                                                    type="submit"
+                                                    styleClass="btn btn--success"
+                                                    value="#{msg.transkribus_add}"
+                                                    action="#{activeDocumentBean.viewManager.addToTranskribusAction(true)}" />
+                                                <h:commandButton
+                                                    rendered="#{userBean.user.transkribusSession != null}"
+                                                    type="submit"
+                                                    styleClass="btn btn--success"
+                                                    value="#{msg.transkribus_add}"
+                                                    action="#{activeDocumentBean.viewManager.addToTranskribusAction(false)}" />
                                             </div>
                                         </div>
                                     </div>
-									<div class="alt-backdrop" data-dismiss="modal"></div>
+                                    <div
+                                        class="alt-backdrop"
+                                        data-dismiss="modal"></div>
                                 </div>
                             </li>
                         </h:panelGroup>
@@ -79,48 +128,68 @@
                                 </h:commandLink>
                             </li>
                         </h:panelGroup>
-                        
+
                         <!-- CREATE CMS PAGE -->
-                         <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
+                        <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
                             <li>
-                            <a href="#{cmsPageEditBean.createAndOpenNewPage(msg.overviewPage, activeDocumentBean.viewManager.pi)}">#{msg.action__create_linked_cms_page__label}</a>
+                                <a
+                                    href="#{cmsPageEditBean.createAndOpenNewPage(msg.overviewPage, activeDocumentBean.viewManager.pi)}">
+                                    #{msg.action__create_linked_cms_page__label}
+                                </a>
                             </li>
                         </h:panelGroup>
-                        
-                         <!-- ADD RECORD NOTE -->
-                         <h:panelGroup  rendered="#{userBean.admin}">
+
+                        <!-- ADD RECORD NOTE -->
+                        <h:panelGroup rendered="#{userBean.admin}">
                             <li>
-                            	<a href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{activeDocumentBean.viewManager.pi}"> #{msg.cms__record_notes__add_note}</a>
+                                <a
+                                    href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{activeDocumentBean.viewManager.pi}">
+                                    #{msg.cms__record_notes__add_note}
+                                </a>
                             </li>
                         </h:panelGroup>
-                        
-                        
-                        
                     </ul>
-                    
+
                     <!-- CLEAR CACHE -->
                     <ui:fragment rendered="#{userBean.admin}">
                         <ul>
-                            <h3 >#{msg.cache_clear__title}</h3>
+                            <h3>#{msg.cache_clear__title}</h3>
                             <p class="widget-user-interactions__info-text">#{msg.cache_clear__info_text}</p>
                             <div class="widget-user-interactions__clear_cache">
                                 <div class="custom-control custom-control--select">
-                                    <h:selectOneMenu value="#{activeDocumentBean.clearCacheMode}" immediate="true">
-                                        <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" />
-                                        <f:selectItem itemLabel="#{msg.cache_clear__label_all}" itemValue="all" />
-                                        <f:selectItem itemLabel="#{msg.cache_clear__label_content}" itemValue="content" />
-                                        <f:selectItem itemLabel="#{msg.cache_clear__label_thumbs}" itemValue="thumbs" />
-                                        <f:selectItem itemLabel="#{msg.cache_clear__label_pdf}" itemValue="pdf" />
-                                        <f:passThroughAttribute name="aria-label" value="#{msg.select}"/>
+                                    <h:selectOneMenu
+                                        value="#{activeDocumentBean.clearCacheMode}"
+                                        immediate="true">
+                                        <f:selectItem
+                                            itemLabel="#{msg.select}"
+                                            itemValue="#{null}" />
+                                        <f:selectItem
+                                            itemLabel="#{msg.cache_clear__label_all}"
+                                            itemValue="all" />
+                                        <f:selectItem
+                                            itemLabel="#{msg.cache_clear__label_content}"
+                                            itemValue="content" />
+                                        <f:selectItem
+                                            itemLabel="#{msg.cache_clear__label_thumbs}"
+                                            itemValue="thumbs" />
+                                        <f:selectItem
+                                            itemLabel="#{msg.cache_clear__label_pdf}"
+                                            itemValue="pdf" />
+                                        <f:passThroughAttribute
+                                            name="aria-label"
+                                            value="#{msg.select}" />
                                         <f:ajax render="@form" />
                                     </h:selectOneMenu>
                                 </div>
-                                
+
                                 <!-- ACTION -->
                                 <!-- TODO: hide when no mode selected -->
-                                <ui:fragment rendered="#{activeDocumentBean.clearCacheMode != null and activeDocumentBean.clearCacheMode != ''}">
+                                <ui:fragment
+                                    rendered="#{activeDocumentBean.clearCacheMode != null and activeDocumentBean.clearCacheMode != ''}">
                                     <div class="widget-user-interactions__clear-cache-action">
-                                        <h:commandLink styleClass="btn btn--default" role="button"
+                                        <h:commandLink
+                                            styleClass="btn btn--default"
+                                            role="button"
                                             action="#{activeDocumentBean.clearCacheAction}">
                                             <f:passThroughAttribute
                                                 name="data-require-confirmation"
@@ -132,7 +201,6 @@
                                         </h:commandLink>
                                     </div>
                                 </ui:fragment>
-                                
                             </div>
                         </ul>
                     </ui:fragment>
@@ -140,53 +208,63 @@
                     <!-- DELETE RECORD -->
                     <ui:fragment rendered="#{userBean.admin and !activeDocumentBean.viewManager.hasVolumes}">
                         <ul class="widget-user-interactions__delete-record-wrapper">
-                        <h3 >#{msg.deleteRecord}</h3>
-                        <div class="widget-user-interactions__delete-record">
-                            <!-- HAS NO URNS -->
-<!--                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.hasUrns}"> -->
-<!--                                 <div class="widget-user-interactions__delete-record-action has-no-urn"> -->
-<!--                                     <h:commandLink  -->
-<!--                                         styleClass="btn"  -->
-<!--                                         role="button" -->
-<!--                                         onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };" -->
-<!--                                         action="#{activeDocumentBean.deleteRecordAction(false)}"> -->
-<!--                                         #{msg.deleteRecord} -->
-<!--                                     </h:commandLink> -->
-<!--                                 </div> -->
-<!--                             </ui:fragment> -->
+                            <h3>#{msg.deleteRecord}</h3>
+                            <div class="widget-user-interactions__delete-record">
+                                <!-- HAS NO URNS -->
+                                <!--                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.hasUrns}"> -->
+                                <!--                                 <div class="widget-user-interactions__delete-record-action has-no-urn"> -->
+                                <!--                                     <h:commandLink  -->
+                                <!--                                         styleClass="btn"  -->
+                                <!--                                         role="button" -->
+                                <!--                                         onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };" -->
+                                <!--                                         action="#{activeDocumentBean.deleteRecordAction(false)}"> -->
+                                <!--                                         #{msg.deleteRecord} -->
+                                <!--                                     </h:commandLink> -->
+                                <!--                                 </div> -->
+                                <!--                             </ui:fragment> -->
 
-                            <!-- HAS URNS -->
-                            
-                            <ui:fragment>
-                                <div class="custom-control custom-control--select">
-                                    <h:selectOneMenu value="#{activeDocumentBean.deleteRecordKeepTrace}">
-                                        <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" />
-                                        <c:if test="#{activeDocumentBean.viewManager.hasUrns}">
-                                        	<f:selectItem itemLabel="#{msg.deleteRecord_select_delete}" itemValue="#{true}"/>
-                                        </c:if>
-                                        <f:selectItem itemLabel="#{msg.deleteRecord_select_purge}" itemValue="#{false}" />
-                                        <f:passThroughAttribute name="aria-label" value="#{msg.select}"/>
-                                        <f:ajax render="@form" />
-                                    </h:selectOneMenu>
-                                </div>
+                                <!-- HAS URNS -->
 
-                                <!-- ACTION -->
-                                <ui:fragment rendered="#{activeDocumentBean.deleteRecordKeepTrace != null}">
-                                    <div class="widget-user-interactions__delete-record-action has-urn">
-                                        <h:commandLink styleClass="btn btn--danger" role="button"
-                                            action="#{activeDocumentBean.deleteRecordAction(activeDocumentBean.deleteRecordKeepTrace)}">
+                                <ui:fragment>
+                                    <div class="custom-control custom-control--select">
+                                        <h:selectOneMenu value="#{activeDocumentBean.deleteRecordKeepTrace}">
+                                            <f:selectItem
+                                                itemLabel="#{msg.select}"
+                                                itemValue="#{null}" />
+                                            <c:if test="#{activeDocumentBean.viewManager.hasUrns}">
+                                                <f:selectItem
+                                                    itemLabel="#{msg.deleteRecord_select_delete}"
+                                                    itemValue="#{true}" />
+                                            </c:if>
+                                            <f:selectItem
+                                                itemLabel="#{msg.deleteRecord_select_purge}"
+                                                itemValue="#{false}" />
                                             <f:passThroughAttribute
-                                                name="data-require-confirmation"
-                                                value="true" />
-                                            <f:passThroughAttribute
-                                                name="data-confirmation-text"
-                                                value="#{msg.deleteRecord_confirmationText}" />
-                                            #{msg.button__delete}
-                                        </h:commandLink>
+                                                name="aria-label"
+                                                value="#{msg.select}" />
+                                            <f:ajax render="@form" />
+                                        </h:selectOneMenu>
                                     </div>
+
+                                    <!-- ACTION -->
+                                    <ui:fragment rendered="#{activeDocumentBean.deleteRecordKeepTrace != null}">
+                                        <div class="widget-user-interactions__delete-record-action has-urn">
+                                            <h:commandLink
+                                                styleClass="btn btn--danger"
+                                                role="button"
+                                                action="#{activeDocumentBean.deleteRecordAction(activeDocumentBean.deleteRecordKeepTrace)}">
+                                                <f:passThroughAttribute
+                                                    name="data-require-confirmation"
+                                                    value="true" />
+                                                <f:passThroughAttribute
+                                                    name="data-confirmation-text"
+                                                    value="#{msg.deleteRecord_confirmationText}" />
+                                                #{msg.button__delete}
+                                            </h:commandLink>
+                                        </div>
+                                    </ui:fragment>
                                 </ui:fragment>
-                            </ui:fragment>
-                        </div>
+                            </div>
                         </ul>
                     </ui:fragment>
 
@@ -199,7 +277,7 @@
                     <!-- CANNOT DELETE ANCHOR DUE TO VOLUMES PRESENT -->
                     <ui:fragment rendered="#{userBean.admin and activeDocumentBean.viewManager.hasVolumes}">
                         <!-- TODO Marc -->
-<!--                         <h:outputText value="#{msg.deleteRecord_failure_volumes_present}" /> --> 
+                        <!--                         <h:outputText value="#{msg.deleteRecord_failure_volumes_present}" /> -->
                     </ui:fragment>
                 </h:form>
             </div>

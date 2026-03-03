@@ -7,48 +7,52 @@
 .search-list {
     /* ELEMENT */
     /* HITS */
-	&__hits {
-		&.list-view {
-			.search-list__hit-result-group-heading {
-				margin: 5px 0px;
-			}
-			.search-list__hits-list {
-				gap: 5px;
-			}
-			h2:nth-child(n + 2 of .search-list__hit-result-group-heading) {
-				margin-top: 15px;
-			}
-			.search-list__hit {
-				// margin-bottom: 5px;
-			}
-			.search-list__hit-header {
-			}
-			
-			.search-list__hit-thumbnail a,
-			.search-list__hit-content,
-			.search-list__hit-metadata-list {
-				.mx-hidden;
-			}
+    &__hits {
+        &.list-view {
+            .search-list__hit-result-group-heading {
+                margin: 5px 0px;
+            }
+            .search-list__hits-list {
+                gap: 5px;
+            }
+            h2:nth-child(n + 2 of .search-list__hit-result-group-heading) {
+                margin-top: 15px;
+            }
+            .search-list__hit {
+                // margin-bottom: 5px;
+            }
+            .search-list__hit-header {
+            }
 
-			.search-list--highlight {
-				display: inline;
-			}
-			a[data-toggle="hit-content"],
-			button[data-toggle="hit-content"] {
-				display: none; 
-			}
-		}
-	}
+            .search-list__hit-thumbnail a,
+            .search-list__hit-content,
+            .search-list__hit-metadata-list {
+                .mx-hidden;
+            }
+
+            .search-list--highlight {
+                display: inline;
+            }
+            a[data-toggle='hit-content'],
+            button[data-toggle='hit-content'] {
+                display: none;
+            }
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

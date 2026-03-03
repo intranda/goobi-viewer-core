@@ -266,10 +266,10 @@ export function createFloatingToolbar(verovioApp) {
             { id: 'verovioPauseMIDI', text: '⏸', title: 'Pause MIDI', className: 'd-none' },
             { id: 'verovioStopMIDI', text: '⏹', title: 'Stop MIDI' },
             { id: 'verovioDownloadMEI', text: 'MEI', title: 'Download MEI' },
-            { id: 'verovioDownloadMIDI', text: 'MIDI', title: 'Download MIDI' }
+            { id: 'verovioDownloadMIDI', text: 'MIDI', title: 'Download MIDI' },
         ];
 
-        buttons.forEach(btn => {
+        buttons.forEach((btn) => {
             const button = document.createElement('button');
             button.id = btn.id;
             button.textContent = btn.text;
@@ -293,7 +293,8 @@ export function createFloatingToolbar(verovioApp) {
         // Add page indicator
         const pageIndicator = document.createElement('span');
         pageIndicator.style.cssText = 'margin: 5px; font-size: 12px; align-self: center;';
-        pageIndicator.innerHTML = 'Page <span class="editor-page-current">1</span>/<span class="editor-page-count">1</span>';
+        pageIndicator.innerHTML =
+            'Page <span class="editor-page-current">1</span>/<span class="editor-page-count">1</span>';
         floatingToolbar.appendChild(pageIndicator);
 
         document.body.appendChild(floatingToolbar);

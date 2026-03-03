@@ -1,31 +1,48 @@
-<ui:composition 
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	>
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <composite:interface />
 
-	<composite:interface />
+    <composite:interface>
+        <composite:attribute
+            name="filters"
+            required="false"
+            default="#{browseBean.availableStringFilters}" />
+        <composite:attribute
+            name="currentStringFilter"
+            required="false"
+            default="#{browseBean.currentStringFilter}" />
+        <composite:attribute
+            name="baseUrl"
+            required="false"
+            default="#{navigationHelper.applicationUrl}term/#{browseBean.browsingMenuField}/#{browseBean.filterQuery}/" />
+        <composite:attribute
+            name="rtl"
+            required="false"
+            default="false" />
+    </composite:interface>
 
-	<composite:interface>
-		<composite:attribute name="filters" required="false" default="#{browseBean.availableStringFilters}" />
-		<composite:attribute name="currentStringFilter" required="false" default="#{browseBean.currentStringFilter}" />
-		<composite:attribute name="baseUrl" required="false" default="#{navigationHelper.applicationUrl}term/#{browseBean.browsingMenuField}/#{browseBean.filterQuery}/" />
-		<composite:attribute name="rtl" required="false" default="false" />
-	</composite:interface>
-
-	<composite:implementation>
-		<nav id="alphabeticPaginator" class="alphabetic-paginator #{cc.attrs.rtl ? '-rtl' : '-ltr'}" aria-label="#{msg.sortBy}">
-			<h:form id="alphabeticPaginatorForm" prependId="false">
-				<ul>
-					<ui:repeat value="#{cc.attrs.filters}" var="filter">
-						<li class="#{cc.attrs.currentStringFilter == filter ? 'active' : ''}">
-							<a href="#{cc.attrs.baseUrl}#{navigationHelper.urlEncode(filter)}/1/">#{filter}</a>
-						</li>
-					</ui:repeat>
-				</ul>
-			</h:form>
-		</nav>
-	</composite:implementation>
+    <composite:implementation>
+        <nav
+            id="alphabeticPaginator"
+            class="alphabetic-paginator #{cc.attrs.rtl ? '-rtl' : '-ltr'}"
+            aria-label="#{msg.sortBy}">
+            <h:form
+                id="alphabeticPaginatorForm"
+                prependId="false">
+                <ul>
+                    <ui:repeat
+                        value="#{cc.attrs.filters}"
+                        var="filter">
+                        <li class="#{cc.attrs.currentStringFilter == filter ? 'active' : ''}">
+                            <a href="#{cc.attrs.baseUrl}#{navigationHelper.urlEncode(filter)}/1/">#{filter}</a>
+                        </li>
+                    </ui:repeat>
+                </ul>
+            </h:form>
+        </nav>
+    </composite:implementation>
 </ui:composition>

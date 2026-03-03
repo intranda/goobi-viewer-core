@@ -9,26 +9,21 @@
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    <timematrix></timematrix>
 
-
-	<timematrix></timematrix>
-
-   	<script>
-	   		riot.mount('timematrix', {
-	      		msg: #{navigationHelper.getTranslationsAsJson(
-	      		        ["hitsZero", "timematrix__timePeriod", "aria_label__timeline_period_start", "timematrix__maxResults",
-	      		    	"aria_label__timeline_period_end", "aria_label__timeline_hits", "timematrix__calculate"])},
-	           	minYear: #{configurationBean.getTimeMatrixStartYear(subtheme)},
-	           	maxYear: #{configurationBean.getTimeMatrixEndYear(subtheme)},
-	           	contextPath: "#{request.contextPath}/",
-	           	maxHits: #{configurationBean.timeMatrixHits},
-	           	loading: $('.timematrix__loader'),
-	           	subtheme: "#{subtheme}",
-	           	thumbnailSize: "500,600",
-	           	language: "#{navigationHelper.localeString}"
-	         });
-   	</script>
-
-
-
+    <script>
+        riot.mount('timematrix', {
+         		msg: #{navigationHelper.getTranslationsAsJson(
+         		        ["hitsZero", "timematrix__timePeriod", "aria_label__timeline_period_start", "timematrix__maxResults",
+         		    	"aria_label__timeline_period_end", "aria_label__timeline_hits", "timematrix__calculate"])},
+              	minYear: #{configurationBean.getTimeMatrixStartYear(subtheme)},
+              	maxYear: #{configurationBean.getTimeMatrixEndYear(subtheme)},
+              	contextPath: "#{request.contextPath}/",
+              	maxHits: #{configurationBean.timeMatrixHits},
+              	loading: $('.timematrix__loader'),
+              	subtheme: "#{subtheme}",
+              	thumbnailSize: "500,600",
+              	language: "#{navigationHelper.localeString}"
+            });
+    </script>
 </ui:composition>

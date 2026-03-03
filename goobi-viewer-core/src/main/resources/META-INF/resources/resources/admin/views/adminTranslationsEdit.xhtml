@@ -1,39 +1,51 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:util="http://goobi.io/util"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:jsf="http://xmlns.jcp.org/jsf"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminTranslationsEdit', [[ adminBean.currentTranslationGroup.selectedEntry.newEntryMode ? 'admin__translations__add_new_entry':'admin__translations__translate_field', adminBean.currentTranslationGroup != null ? msg[adminBean.currentTranslationGroup.name] : '']])}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminTranslationsEdit', [[ adminBean.currentTranslationGroup.selectedEntry.newEntryMode ? 'admin__translations__add_new_entry':'admin__translations__translate_field', adminBean.currentTranslationGroup != null ? msg[adminBean.currentTranslationGroup.name] : '']])}" />
             <!-- reset TranslationGroup#fullyTranslatedEntryCount and TranslationGroup#untranslatedEntryCount to update progress bar. Gets called at every page reload and ajax call -->
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentTranslationGroupStatusCount()}" />
+            <f:event
+                type="preRenderView"
+                listener="#{adminBean.resetCurrentTranslationGroupStatusCount()}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">
+        <f:view
+            contentType="text/html"
+            encoding="utf-8">
             <div id="adminTranslationsEdit">
-                <h:outputText rendered="#{userBean.admin and adminBean.translationLocked}" value="#{msg.admin__translation_locked}" />
+                <h:outputText
+                    rendered="#{userBean.admin and adminBean.translationLocked}"
+                    value="#{msg.admin__translation_locked}" />
                 <h:panelGroup rendered="#{userBean.admin and !adminBean.translationLocked}">
-                    <h:form id="adminTranslationsEditForm" prependId="false">
+                    <h:form
+                        id="adminTranslationsEditForm"
+                        prependId="false">
                         <div class="admin__title-bar">
                             <!-- TITLE -->
                             <h1 class="admin__title">#{msg[adminBean.currentTranslationGroup.name]}</h1>
                         </div>
-						<viewerComponent:adminBreadcrumbs />
+                        <viewerComponent:adminBreadcrumbs />
 
                         <div class="admin__content-inner-content">
                             <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                 <!-- INFO TEXT -->
                                 <div class="admin__info-text">
-                                    <h:outputText value="#{msg.admin__translations_edit_description}" escape="false" />
+                                    <h:outputText
+                                        value="#{msg.admin__translations_edit_description}"
+                                        escape="false" />
                                 </div>
                             </ui:fragment>
 
@@ -41,45 +53,67 @@
                                 <div class="admin__content-main -sticky -refreshHCsticky">
                                     <h2>#{msg.admin__translations}</h2>
 
-                                    <ui:fragment rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+                                    <ui:fragment
+                                        rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                         <div class="admin__default-block">
                                             <div class="admin__translations-fields -firstField form-group form-row">
-                                                <div class="col-3 control-label admin__form-label #{value.displayHighlight ? 'admin__form-label-highlight' : ''}">
+                                                <div
+                                                    class="col-3 control-label admin__form-label #{value.displayHighlight ? 'admin__form-label-highlight' : ''}">
                                                     <label for="value">#{msg.admin__translations_key}:</label>
                                                 </div>
-                                                <div class="col-9 admin__form-input #{value.displayHighlight ? 'admin__form-input-highlight' : ''}">
-                                                    <h:outputText value="#{adminBean.currentTranslationGroup.selectedEntry.keyPrefix}" />
+                                                <div
+                                                    class="col-9 admin__form-input #{value.displayHighlight ? 'admin__form-input-highlight' : ''}">
+                                                    <h:outputText
+                                                        value="#{adminBean.currentTranslationGroup.selectedEntry.keyPrefix}" />
                                                     <h:inputText
                                                         value="#{adminBean.currentTranslationGroup.selectedEntry.keySuffix}"
                                                         id="key"
                                                         label="key"
                                                         immediate="true"
                                                         styleClass="form-control admin__translations-textarea">
-                                                        <f:ajax render="@form" event="blur" />
+                                                        <f:ajax
+                                                            render="@form"
+                                                            event="blur" />
                                                     </h:inputText>
                                                 </div>
-                                                <div class="col-3 control-label admin__form-label admin__translations-global-hint" />
-                                                <div class="col-9 admin__translations-global-key-wrapper admin__translations-global-hint">#{msg.admin__translations_global}: <span class="admin__translations-global-key">#{value.globalValue}</span></div>
+                                                <div
+                                                    class="col-3 control-label admin__form-label admin__translations-global-hint" />
+                                                <div
+                                                    class="col-9 admin__translations-global-key-wrapper admin__translations-global-hint">
+                                                    #{msg.admin__translations_global}:
+                                                    <span class="admin__translations-global-key">
+                                                        #{value.globalValue}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </ui:fragment>
 
                                     <div class="admin__default-block">
                                         <fieldset>
-                                            <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+                                            <ui:fragment
+                                                rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                                 <div class="form-group form-row">
                                                     <div class="col-3 control-label admin__form-label"></div>
                                                     <div class="col-9 admin__form-input">
-                                                        <strong>#{adminBean.currentTranslationGroup.selectedEntry.key}</strong>
+                                                        <strong>
+                                                            #{adminBean.currentTranslationGroup.selectedEntry.key}
+                                                        </strong>
                                                     </div>
                                                 </div>
                                             </ui:fragment>
-                                            <ui:repeat var="value" value="#{adminBean.currentTranslationGroup.selectedEntry.values}">
+                                            <ui:repeat
+                                                var="value"
+                                                value="#{adminBean.currentTranslationGroup.selectedEntry.values}">
                                                 <div class="admin__translations-fields form-group form-row">
-                                                    <div class="col-3 control-label admin__form-label #{value.displayHighlight ? 'admin__form-label-highlight' : ''}">
-                                                        <label for="value">#{msg['changeLocal_long_' += value.language]}:</label>
+                                                    <div
+                                                        class="col-3 control-label admin__form-label #{value.displayHighlight ? 'admin__form-label-highlight' : ''}">
+                                                        <label for="value">
+                                                            #{msg['changeLocal_long_' += value.language]}:
+                                                        </label>
                                                     </div>
-                                                    <div class="col-9 admin__form-input #{value.displayHighlight ? 'admin__form-input-highlight' : ''}">
+                                                    <div
+                                                        class="col-9 admin__form-input #{value.displayHighlight ? 'admin__form-input-highlight' : ''}">
                                                         <h:inputTextarea
                                                             value="#{value.value}"
                                                             id="value"
@@ -87,143 +121,184 @@
                                                             pt:placeholder="zzz"
                                                             immediate="true"
                                                             styleClass="form-control admin__translations-textarea">
-                                                            <f:ajax execute="@form" event="blur" />
+                                                            <f:ajax
+                                                                execute="@form"
+                                                                event="blur" />
                                                         </h:inputTextarea>
                                                     </div>
-                                                        <div class="col-3 control-label admin__form-label admin__translations-global-hint" />
-                                                        <div class="col-9 admin__translations-global-key-wrapper admin__translations-global-hint">#{msg.admin__translations_global}: <span class="admin__translations-global-key">#{value.globalValue}</span></div>
+                                                    <div
+                                                        class="col-3 control-label admin__form-label admin__translations-global-hint" />
+                                                    <div
+                                                        class="col-9 admin__translations-global-key-wrapper admin__translations-global-hint">
+                                                        #{msg.admin__translations_global}:
+                                                        <span class="admin__translations-global-key">
+                                                            #{value.globalValue}
+                                                        </span>
+                                                    </div>
                                                 </div>
-
                                             </ui:repeat>
                                         </fieldset>
                                     </div>
 
-
-
-		                            <div class="admin__final-actions">
-
-		                                <ui:fragment rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+                                    <div class="admin__final-actions">
+                                        <ui:fragment
+                                            rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                             <!-- CANCEL BUTTON -->
-                                             <h:commandButton styleClass="btn admin__cancel-button" value="#{msg.button__abort}"
-                                                action="#{adminBean.cancelSelectedMessageEntryAction}">
-                                            </h:commandButton>
+                                            <h:commandButton
+                                                styleClass="btn admin__cancel-button"
+                                                value="#{msg.button__abort}"
+                                                action="#{adminBean.cancelSelectedMessageEntryAction}"></h:commandButton>
                                             <!-- SAVE BUTTON -->
-                                            <h:commandButton styleClass="btn btn--default mr-3" value="#{msg.button__save}"
+                                            <h:commandButton
+                                                styleClass="btn btn--default mr-3"
+                                                value="#{msg.button__save}"
                                                 action="#{adminBean.saveSelectedMessageEntryAction}"
-                                                disabled="#{adminBean.currentTranslationGroup.selectedEntry.keySuffixBlank}">
+                                                disabled="#{adminBean.currentTranslationGroup.selectedEntry.keySuffixBlank}"></h:commandButton>
+                                        </ui:fragment>
+
+                                        <ui:fragment
+                                            rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+                                            <!-- RETURN BUTTON -->
+                                            <h:outputLink
+                                                styleClass="btn admin__cancel-button"
+                                                value="#{navigationHelper.applicationUrl}admin/translations/">
+                                                #{msg.admin__translations_return_to_overview}
+                                            </h:outputLink>
+                                            <!-- PREVIOUS BUTTON -->
+                                            <h:commandButton
+                                                styleClass="btn btn--default mr-3"
+                                                value="#{msg.admin__translations_entry_previous}"
+                                                action="#{adminBean.currentTranslationGroup.prevEntry}">
+                                                <f:ajax render="@form" />
                                             </h:commandButton>
-		                                </ui:fragment>
-
-		                                <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
-	                                       <!-- RETURN BUTTON -->
-	                                       <h:outputLink styleClass="btn admin__cancel-button" value="#{navigationHelper.applicationUrl}admin/translations/">
-	                                           #{msg.admin__translations_return_to_overview}
-	                                       </h:outputLink>
-	                                       <!-- PREVIOUS BUTTON -->
-	                                       <h:commandButton styleClass="btn btn--default mr-3" value="#{msg.admin__translations_entry_previous}"
-	                                           action="#{adminBean.currentTranslationGroup.prevEntry}">
-	                                           <f:ajax render="@form" />
-	                                       </h:commandButton>
-	                                       <!-- NEXT BUTTON -->
-	                                       <h:commandButton styleClass="btn btn--full" value="#{msg.admin__translations_entry_next}"
-	                                           action="#{adminBean.currentTranslationGroup.nextEntry}">
-	                                           <f:ajax render="@form" />
-	                                       </h:commandButton>
-
-	                                    </ui:fragment>
-		                            </div>
-
-                                </div>
-                            <div class="admin__content-side">
-
-                            <ui:fragment rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
-                                <!-- NEW KEY INFOBOX -->
-                                <div class="admin__default-block">
-                                    <h2>#{msg.title__did_you_know}</h2>
-                                    <div class="in mb-2">
-                                        <h:outputText value="#{msg.admin__translations_new_entry_info_text}" escape="false" />
+                                            <!-- NEXT BUTTON -->
+                                            <h:commandButton
+                                                styleClass="btn btn--full"
+                                                value="#{msg.admin__translations_entry_next}"
+                                                action="#{adminBean.currentTranslationGroup.nextEntry}">
+                                                <f:ajax render="@form" />
+                                            </h:commandButton>
+                                        </ui:fragment>
                                     </div>
-
                                 </div>
-                            </ui:fragment>
+                                <div class="admin__content-side">
+                                    <ui:fragment
+                                        rendered="#{adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+                                        <!-- NEW KEY INFOBOX -->
+                                        <div class="admin__default-block">
+                                            <h2>#{msg.title__did_you_know}</h2>
+                                            <div class="in mb-2">
+                                                <h:outputText
+                                                    value="#{msg.admin__translations_new_entry_info_text}"
+                                                    escape="false" />
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
 
-                            <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
-                                <div class="admin__default-block">
-                                	<div class="admin__sidebar-progress-wrapper">
-                                    	<span class="admin__sidebar-progress-header">#{msg.label__crowdsourcing_campaign_progress} </span>
-                                    	<span class="admin__sidebar-progress-count">(#{adminBean.currentTranslationGroup.fullyTranslatedEntryCount} #{msg.of} #{adminBean.currentTranslationGroup.entryCount})</span>
-                               		</div>
-                               		<div class="admin__sidebar-progressbar">
-										<div class="admin__sidebar-progressbar-complete" style="flex: 0 0 #{adminBean.currentTranslationGroup.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
-										<div class="admin__sidebar-progressbar-partially" style="flex: 0 0 #{adminBean.currentTranslationGroup.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
-									</div>
+                                    <ui:fragment
+                                        rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+                                        <div class="admin__default-block">
+                                            <div class="admin__sidebar-progress-wrapper">
+                                                <span class="admin__sidebar-progress-header">
+                                                    #{msg.label__crowdsourcing_campaign_progress}
+                                                </span>
+                                                <span class="admin__sidebar-progress-count">
+                                                    (#{adminBean.currentTranslationGroup.fullyTranslatedEntryCount}
+                                                    #{msg.of} #{adminBean.currentTranslationGroup.entryCount})
+                                                </span>
+                                            </div>
+                                            <div class="admin__sidebar-progressbar">
+                                                <div
+                                                    class="admin__sidebar-progressbar-complete"
+                                                    style="flex: 0 0 #{adminBean.currentTranslationGroup.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
+                                                <div
+                                                    class="admin__sidebar-progressbar-partially"
+                                                    style="flex: 0 0 #{adminBean.currentTranslationGroup.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
+                                            </div>
+                                        </div>
+                                        <div class="admin__default-block">
+                                            <h2>#{msg.admin__overview}</h2>
+                                            <div class="admin__form-help-text in mb-2">
+                                                #{msg.admin__translations_edit_overview_description}
+                                            </div>
+
+                                            <!-- FILTER/SEARCH MSG KEYS OF THIS GROUP -->
+                                            <div class="admin__translations-filter-wrapper">
+                                                <h:inputText
+                                                    styleClass="form-control admin__translations-search-input"
+                                                    pt:placeholder="#{msg.search}"
+                                                    value="#{adminBean.currentTranslationGroup.filterString}"
+                                                    immediate="true">
+                                                    <f:ajax
+                                                        execute="@form"
+                                                        render="overviewList" />
+                                                </h:inputText>
+                                                <div class="admin__translations-search-clear">x</div>
+                                                <div class="admin__translations-search-action">
+                                                    <button
+                                                        jsf:class="btn btn--icon btn-filter admin__translations-search-button">
+                                                        <util:icon icon="search" />
+                                                        <f:ajax
+                                                            execute="@form"
+                                                            render="overviewList" />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- LIST OF MSG KEYS IN THIS GROUP -->
+                                            <h:panelGroup
+                                                id="overviewList"
+                                                class="admin__translations-all-keys-list">
+                                                <ui:repeat
+                                                    var="entry"
+                                                    value="#{adminBean.currentTranslationGroup.filteredEntries}">
+                                                    <h:panelGroup
+                                                        layout="block"
+                                                        styleClass="admin__translations-not-translated #{entry eq adminBean.currentTranslationGroup.selectedEntry ? 'admin__translations-selected-key' : ''}"
+                                                        rendered="#{entry.translationStatus == 'NONE'}">
+                                                        <button
+                                                            class="btn btn--link"
+                                                            jsf:action="#{adminBean.currentTranslationGroup.setSelectedEntry(entry)}">
+                                                            <f:ajax render="@form" />
+                                                            #{entry.key}
+                                                        </button>
+                                                    </h:panelGroup>
+                                                    <h:panelGroup
+                                                        layout="block"
+                                                        styleClass="admin__translations-partially-translated #{entry eq adminBean.currentTranslationGroup.selectedEntry ? 'admin__translations-selected-key' : ''}"
+                                                        rendered="#{entry.translationStatus == 'PARTIAL'}">
+                                                        <button
+                                                            class="btn btn--link"
+                                                            jsf:action="#{adminBean.currentTranslationGroup.setSelectedEntry(entry)}">
+                                                            <f:ajax render="@form" />
+                                                            #{entry.key}
+                                                        </button>
+                                                    </h:panelGroup>
+                                                    <h:panelGroup
+                                                        layout="block"
+                                                        styleClass="admin__translations-fully-translated #{entry eq adminBean.currentTranslationGroup.selectedEntry ? 'admin__translations-selected-key' : ''}"
+                                                        rendered="#{entry.translationStatus == 'FULL'}">
+                                                        <button
+                                                            class="btn btn--link"
+                                                            jsf:action="#{adminBean.currentTranslationGroup.setSelectedEntry(entry)}">
+                                                            <f:ajax render="@form" />
+                                                            #{entry.key}
+                                                        </button>
+                                                    </h:panelGroup>
+                                                </ui:repeat>
+                                            </h:panelGroup>
+                                        </div>
+                                    </ui:fragment>
                                 </div>
-                                <div class="admin__default-block">
-                                    <h2>#{msg.admin__overview}</h2>
-									<div class="admin__form-help-text in mb-2">
-										#{msg.admin__translations_edit_overview_description}
-									</div>
-
-									<!-- FILTER/SEARCH MSG KEYS OF THIS GROUP -->
-			                        <div class="admin__translations-filter-wrapper">
-									   <h:inputText styleClass="form-control admin__translations-search-input" pt:placeholder="#{msg.search}" value="#{adminBean.currentTranslationGroup.filterString}" immediate="true">
-									       <f:ajax execute="@form" render="overviewList" />
-									   </h:inputText>
-									   <div class="admin__translations-search-clear">x</div>
-					                    <div class="admin__translations-search-action">
-				                            <button
-                                                jsf:class="btn btn--icon btn-filter admin__translations-search-button">
-                                                <util:icon icon="search" />
-				                                <f:ajax execute="@form" render="overviewList" />
-                                            </button>
-					                    </div>
-			                        </div>
-
-			                        <!-- LIST OF MSG KEYS IN THIS GROUP -->
-									<h:panelGroup id="overviewList" class="admin__translations-all-keys-list">
-	                                    <ui:repeat var="entry" value="#{adminBean.currentTranslationGroup.filteredEntries}">
-	                                        <h:panelGroup layout="block" styleClass="admin__translations-not-translated #{entry eq adminBean.currentTranslationGroup.selectedEntry ? 'admin__translations-selected-key' : ''}" rendered="#{entry.translationStatus == 'NONE'}">
-	                                            <button 
-                                                    class="btn btn--link"
-                                                    jsf:action="#{adminBean.currentTranslationGroup.setSelectedEntry(entry)}">
-	                                                <f:ajax render="@form" />
-                                                    #{entry.key}
-                                                </button>
-	                                        </h:panelGroup>
-	                                        <h:panelGroup layout="block" styleClass="admin__translations-partially-translated #{entry eq adminBean.currentTranslationGroup.selectedEntry ? 'admin__translations-selected-key' : ''}" rendered="#{entry.translationStatus == 'PARTIAL'}">
-	                                            <button 
-                                                    class="btn btn--link"
-                                                    jsf:action="#{adminBean.currentTranslationGroup.setSelectedEntry(entry)}">
-	                                                <f:ajax render="@form" />
-                                                    #{entry.key}
-                                                </button>
-	                                        </h:panelGroup>
-	                                        <h:panelGroup layout="block" styleClass="admin__translations-fully-translated #{entry eq adminBean.currentTranslationGroup.selectedEntry ? 'admin__translations-selected-key' : ''}" rendered="#{entry.translationStatus == 'FULL'}">
-	                                            <button 
-                                                    class="btn btn--link"
-                                                    jsf:action="#{adminBean.currentTranslationGroup.setSelectedEntry(entry)}">
-	                                                <f:ajax render="@form" />
-                                                    #{entry.key}
-                                                </button>
-	                                        </h:panelGroup>
-	                                    </ui:repeat>
-									</h:panelGroup>
-                                </div>
-                            </ui:fragment>
-
-                            </div>
                             </div>
                         </div>
-
                     </h:form>
                 </h:panelGroup>
                 <!-- REATTACH HC STICKY AFTER AJAX CALL -->
                 <script>
-                	adminJS.translationsEdit.init();
+                    adminJS.translationsEdit.init();
                 </script>
-
             </div>
         </f:view>
     </ui:define>
-
 </ui:composition>

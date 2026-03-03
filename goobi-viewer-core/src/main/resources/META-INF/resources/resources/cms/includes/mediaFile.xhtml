@@ -1,67 +1,88 @@
-<ui:composition 
+<ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    <ui:param
+        name="media"
+        value="#{item.value}" />
 
-	<ui:param name="media" value="#{item.value}"/>
-
-	<!-- FILE -->
-    <div class="admin-cms-media__file" tabindex="-1">
+    <!-- FILE -->
+    <div
+        class="admin-cms-media__file"
+        tabindex="-1">
         <!-- CLOSE -->
         <div class="admin-cms-media__file-close"><ui:include src="/resources/images/icons/icon_fs-close.svg" /></div>
 
         <!-- NAVIGATE -->
         <div class="admin-cms-media__file-prev"></div>
         <div class="admin-cms-media__file-next"></div>
-    
+
         <!-- TOP -->
         <div class="admin-cms-media__file-top">
             <!-- FILE SELECT -->
             <div class="admin-cms-media__file-select">
-                <label for="#{idPrefix}selectMediaItem#{idSuffix}" class="custom-control custom-control--checkbox">
-                    <h:selectBooleanCheckbox id="selectMediaItem#{idSuffix}" name="selectMediaItem" value="#{item.selected}">
-                        <f:ajax event="change" render="@none" execute="@this" />
+                <label
+                    for="#{idPrefix}selectMediaItem#{idSuffix}"
+                    class="custom-control custom-control--checkbox">
+                    <h:selectBooleanCheckbox
+                        id="selectMediaItem#{idSuffix}"
+                        name="selectMediaItem"
+                        value="#{item.selected}">
+                        <f:ajax
+                            event="change"
+                            render="@none"
+                            execute="@this" />
                     </h:selectBooleanCheckbox>
-              <span class="custom-control__icon">
-					<util:icon icon="square"
-						styleClass="custom-control__icon-state custom-control__icon-state--unchecked"
-						svgClass="icon" />
-					<util:icon icon="square-check"
-						styleClass="custom-control__icon-state custom-control__icon-state--checked"
-						svgClass="icon" />
-              </span>
+                    <span class="custom-control__icon">
+                        <util:icon
+                            icon="square"
+                            styleClass="custom-control__icon-state custom-control__icon-state--unchecked"
+                            svgClass="icon" />
+                        <util:icon
+                            icon="square-check"
+                            styleClass="custom-control__icon-state custom-control__icon-state--checked"
+                            svgClass="icon" />
+                    </span>
                 </label>
             </div>
 
             <!-- FILE IMAGE -->
             <ui:fragment rendered="#{cmsMediaBean.isImage(media)}">
-                <div class="admin-cms-media__file-image" style="background-image: url('#{cmsMediaBean.getMediaUrl(media, 300, 300)}')"></div>
+                <div
+                    class="admin-cms-media__file-image"
+                    style="background-image: url('#{cmsMediaBean.getMediaUrl(media, 300, 300)}')"></div>
             </ui:fragment>
             <ui:fragment rendered="#{cmsMediaBean.isVideo(media)}">
-                <div class="admin-cms-media__file-image" style="background-image: url('#{request.contextPath}/resources/cms/images/video_media_placeholder.jpg')">
-                    <div class="admin-cms-media__file-image-caption">
-                        #{media.fileName}
-                    </div>
+                <div
+                    class="admin-cms-media__file-image"
+                    style="
+                        background-image: url('#{request.contextPath}/resources/cms/images/video_media_placeholder.jpg');
+                    ">
+                    <div class="admin-cms-media__file-image-caption">#{media.fileName}</div>
                 </div>
             </ui:fragment>
             <ui:fragment rendered="#{cmsMediaBean.isAudio(media)}">
-                <div class="admin-cms-media__file-image" style="background-image: url('#{request.contextPath}/resources/cms/images/audio_media_placeholder.jpg')">
-                    <div class="admin-cms-media__file-image-caption">
-                        #{media.fileName}
-                    </div>
+                <div
+                    class="admin-cms-media__file-image"
+                    style="
+                        background-image: url('#{request.contextPath}/resources/cms/images/audio_media_placeholder.jpg');
+                    ">
+                    <div class="admin-cms-media__file-image-caption">#{media.fileName}</div>
                 </div>
             </ui:fragment>
             <ui:fragment rendered="#{cmsMediaBean.isText(media)}">
-                <div class="admin-cms-media__file-image" style="background-image: url('#{request.contextPath}/resources/cms/images/text_media_placeholder.png')">
-                    <div class="admin-cms-media__file-image-caption">
-                        #{media.fileName}
-                    </div>
+                <div
+                    class="admin-cms-media__file-image"
+                    style="
+                        background-image: url('#{request.contextPath}/resources/cms/images/text_media_placeholder.png');
+                    ">
+                    <div class="admin-cms-media__file-image-caption">#{media.fileName}</div>
                 </div>
             </ui:fragment>
 
@@ -74,25 +95,27 @@
                             <!-- TITLE -->
                             <dt>#{msg.admin__media_title}:</dt>
                             <dd>#{media.getMetadataForLocale(item.locale).name}</dd>
-                            
+
                             <!-- DESCRIPTION -->
                             <dt>#{msg.admin__media_description}:</dt>
                             <dd>#{media.getMetadataForLocale(item.locale).description}</dd>
-                            
+
                             <!-- LINKS TO -->
                             <ui:fragment rendered="#{media.link != '#' and media.link != null}">
                                 <dt>#{msg.admin__media_links_to}:</dt>
                                 <dd>#{media.link}</dd>
-                            </ui:fragment>     
-                                                   
+                            </ui:fragment>
+
                             <!-- CATEGORIES -->
                             <dt>#{msg.admin__categories}:</dt>
                             <dd>
-                                <ui:repeat var="category" value="#{media.categories}">
+                                <ui:repeat
+                                    var="category"
+                                    value="#{media.categories}">
                                     <span class="admin__badge admin__badge-violet">#{category.name}</span>
                                 </ui:repeat>
                             </dd>
-                            
+
                             <!-- FILENAME -->
                             <dt>#{msg.filename}:</dt>
                             <dd>#{media.fileName}</dd>
@@ -109,14 +132,24 @@
                                 <label for="editMediaTitle">#{msg.admin__media_title}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputText id="editMediaTitle#{idSuffix}" value="#{media.getMetadataForLocale(item.locale).name}"
+                                <h:inputText
+                                    id="editMediaTitle#{idSuffix}"
+                                    value="#{media.getMetadataForLocale(item.locale).name}"
                                     styleClass="form-control">
-                                    <f:passThroughAttribute name="aria-label" value="#{msg.admin__media_title}"/>
-                   				</h:inputText>
-                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_title}</span>
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.admin__media_title}" />
+                                </h:inputText>
+                                <span class="cms-module__option-control-helptext">
+                                    #{msg.inline_help__edit_media_title}
+                                </span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                                <button
+                                    type="button"
+                                    class="btn btn--clean"
+                                    data-toggle="helptext"
+                                    aria-label="#{msg.aria_label__help}">
                                     <util:icon icon="help" />
                                 </button>
                             </div>
@@ -128,14 +161,24 @@
                                 <label for="editMediaDescription">#{msg.admin__media_description}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputTextarea id="editMediaDescription#{idSuffix}" value="#{media.getMetadataForLocale(item.locale).description}"
+                                <h:inputTextarea
+                                    id="editMediaDescription#{idSuffix}"
+                                    value="#{media.getMetadataForLocale(item.locale).description}"
                                     styleClass="form-control">
-                                     <f:passThroughAttribute name="aria-label" value="#{msg.admin__media_description}"/>
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.admin__media_description}" />
                                 </h:inputTextarea>
-                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_description}</span>
+                                <span class="cms-module__option-control-helptext">
+                                    #{msg.inline_help__edit_media_description}
+                                </span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                                <button
+                                    type="button"
+                                    class="btn btn--clean"
+                                    data-toggle="helptext"
+                                    aria-label="#{msg.aria_label__help}">
                                     <util:icon icon="help" />
                                 </button>
                             </div>
@@ -147,59 +190,91 @@
                                 <label for="editMediaAltText">#{msg.admin__media_alt_text}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputText id="editMediaAltText#{idSuffix}" value="#{media.getMetadataForLocale(item.locale).alternativeText}"
+                                <h:inputText
+                                    id="editMediaAltText#{idSuffix}"
+                                    value="#{media.getMetadataForLocale(item.locale).alternativeText}"
                                     styleClass="form-control">
-                                	<f:passThroughAttribute name="aria-label" value="#{msg.admin__media_description}"/>
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.admin__media_description}" />
                                 </h:inputText>
-                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_alt_text}</span>
+                                <span class="cms-module__option-control-helptext">
+                                    #{msg.inline_help__edit_media_alt_text}
+                                </span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                                <button
+                                    type="button"
+                                    class="btn btn--clean"
+                                    data-toggle="helptext"
+                                    aria-label="#{msg.aria_label__help}">
                                     <util:icon icon="help" />
                                 </button>
                             </div>
                         </div>
 
-                        
-                        
                         <!-- EDIT DISPLAY ORDER -->
                         <div class="cms-module__option-group">
                             <div class="cms-module__option-label">
                                 <label for="editMediaDisplayOrder">#{msg.admin__media_display_order}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputText id="editMediaDisplayOrder#{idSuffix}" value="#{media.displayOrder}" styleClass="form-control">
-                                	<f:passThroughAttribute name="type" value="number"></f:passThroughAttribute>
-                                	<f:passThroughAttribute name="min" value="0"></f:passThroughAttribute>
-									<f:passThroughAttribute name="aria-label" value="#{msg.admin__media_display_order}"/>
+                                <h:inputText
+                                    id="editMediaDisplayOrder#{idSuffix}"
+                                    value="#{media.displayOrder}"
+                                    styleClass="form-control">
+                                    <f:passThroughAttribute
+                                        name="type"
+                                        value="number"></f:passThroughAttribute>
+                                    <f:passThroughAttribute
+                                        name="min"
+                                        value="0"></f:passThroughAttribute>
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.admin__media_display_order}" />
                                 </h:inputText>
-                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_display_order}</span>
+                                <span class="cms-module__option-control-helptext">
+                                    #{msg.inline_help__edit_media_display_order}
+                                </span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                                <button
+                                    type="button"
+                                    class="btn btn--clean"
+                                    data-toggle="helptext"
+                                    aria-label="#{msg.aria_label__help}">
                                     <util:icon icon="help" />
                                 </button>
                             </div>
                         </div>
-                        
+
                         <!-- EDIT PRIORITY ("IMPORTANT" ATTRIBUTE) -->
                         <div class="cms-module__option-group">
                             <div class="cms-module__option-label">
                                 <label for="editMediaPriority">#{msg.admin__media_important}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:selectBooleanCheckbox type="checkbox" value="#{media.important}">
-                                	<f:passThroughAttribute name="aria-label" value="#{msg.admin__media_important}"/>
-                                </h:selectBooleanCheckbox> 
-                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_important}</span>
+                                <h:selectBooleanCheckbox
+                                    type="checkbox"
+                                    value="#{media.important}">
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.admin__media_important}" />
+                                </h:selectBooleanCheckbox>
+                                <span class="cms-module__option-control-helptext">
+                                    #{msg.inline_help__edit_media_important}
+                                </span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                                <button
+                                    type="button"
+                                    class="btn btn--clean"
+                                    data-toggle="helptext"
+                                    aria-label="#{msg.aria_label__help}">
                                     <util:icon icon="help" />
                                 </button>
                             </div>
                         </div>
-                        
 
                         <!-- EDIT LINKS TO -->
                         <div class="cms-module__option-group">
@@ -207,13 +282,25 @@
                                 <label for="editMediaLinksTo">#{msg.admin__media_links_to}:</label>
                             </div>
                             <div class="cms-module__option-control">
-                                <h:inputText id="editMediaLinksTo#{idSuffix}" value="#{media.link}" validator="URISyntaxValidator" styleClass="form-control">
-                                	<f:passThroughAttribute name="aria-label" value="#{msg.admin__media_links_to}"/>
+                                <h:inputText
+                                    id="editMediaLinksTo#{idSuffix}"
+                                    value="#{media.link}"
+                                    validator="URISyntaxValidator"
+                                    styleClass="form-control">
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.admin__media_links_to}" />
                                 </h:inputText>
-                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_links_to}</span>
+                                <span class="cms-module__option-control-helptext">
+                                    #{msg.inline_help__edit_media_links_to}
+                                </span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                                <button
+                                    type="button"
+                                    class="btn btn--clean"
+                                    data-toggle="helptext"
+                                    aria-label="#{msg.aria_label__help}">
                                     <util:icon icon="help" />
                                 </button>
                             </div>
@@ -226,13 +313,23 @@
                             </div>
                             <div class="cms-module__option-control">
                                 <div class="cms-module__option-dropdown">
-                                    <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+                                    <div
+                                        class="cms-module__option-dropdown-trigger"
+                                        data-toggle="option-dropdown">
+                                        #{msg.admin__category_select}
+                                    </div>
                                     <ul>
-                                        <ui:repeat var="selectableCategory" value="#{item.categories}">
+                                        <ui:repeat
+                                            var="selectableCategory"
+                                            value="#{item.categories}">
                                             <li>
                                                 <label>
-                                                    <h:selectBooleanCheckbox type="checkbox" value="#{selectableCategory.selected}">
-                                                    	<f:passThroughAttribute name="aria-label" value="#{msg.admin__categories}"/>
+                                                    <h:selectBooleanCheckbox
+                                                        type="checkbox"
+                                                        value="#{selectableCategory.selected}">
+                                                        <f:passThroughAttribute
+                                                            name="aria-label"
+                                                            value="#{msg.admin__categories}" />
                                                     </h:selectBooleanCheckbox>
                                                     #{selectableCategory.value.name}
                                                 </label>
@@ -241,14 +338,22 @@
                                     </ul>
                                 </div>
                                 <div class="cms-module__option-selected">
-                                    <ui:repeat var="displayedCategory" value="#{media.categories}">
+                                    <ui:repeat
+                                        var="displayedCategory"
+                                        value="#{media.categories}">
                                         <span class="admin__badge admin__badge-violet">#{displayedCategory.name}</span>
                                     </ui:repeat>
                                 </div>
-                                <span class="cms-module__option-control-helptext">#{msg.inline_help__edit_media_categories}</span>
+                                <span class="cms-module__option-control-helptext">
+                                    #{msg.inline_help__edit_media_categories}
+                                </span>
                             </div>
                             <div class="cms-module__option-help">
-                                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                                <button
+                                    type="button"
+                                    class="btn btn--clean"
+                                    data-toggle="helptext"
+                                    aria-label="#{msg.aria_label__help}">
                                     <util:icon icon="help" />
                                 </button>
                             </div>
@@ -264,35 +369,58 @@
             <div class="admin-cms-media__file-actions">
                 <!-- ACTIONS VIEW -->
                 <div class="admin-cms-media__file-actions-view cms-module__actions in">
-                    <button type="button" class="btn btn--clean" data-action="edit">#{msg.button__edit}</button>
+                    <button
+                        type="button"
+                        class="btn btn--clean"
+                        data-action="edit">
+                        #{msg.button__edit}
+                    </button>
                     <button
                         class="btn btn--clean delete admin__boxed-entry-actions-delete -redlink delete"
                         data-require-confirmation="true"
                         data-confirmation-text="Delete this media file"
                         jsf:action="#{cmsMediaBean.deleteMedia(media)}"
-                        aria-label="#{msg.delete}" >
+                        aria-label="#{msg.delete}">
                         #{msg.delete}
-                    	<f:ajax render="adminCmsMediaFilesForm :messages" onevent="reload"></f:ajax>
-                    </button> 
-                    <button type="button" class="btn btn--clean" data-copy-value="#{imageDelivery.thumbs.getThumbnailUrl(media, 0, 0)}" 
-                        title="#{msg.cms_media_copyUrlToClipboard}">#{msg.admin__cms_media_copy_image_url}</button>
+                        <f:ajax
+                            render="adminCmsMediaFilesForm :messages"
+                            onevent="reload"></f:ajax>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn--clean"
+                        data-copy-value="#{imageDelivery.thumbs.getThumbnailUrl(media, 0, 0)}"
+                        title="#{msg.cms_media_copyUrlToClipboard}">
+                        #{msg.admin__cms_media_copy_image_url}
+                    </button>
                 </div>
 
                 <!-- ACTIONS EDIT -->
                 <div class="admin-cms-media__file-actions-edit cms-module__actions">
-                    <button type="button" class="btn btn--clean abort" data-action="cancel">#{msg.button__abort}</button>
+                    <button
+                        type="button"
+                        class="btn btn--clean abort"
+                        data-action="cancel">
+                        #{msg.button__abort}
+                    </button>
 
                     <button
                         class="btn btn--clean delete admin__boxed-entry-actions-delete -redlink delete"
                         data-require-confirmation="true"
                         data-confirmation-text="Delete this media file"
                         jsf:action="#{cmsMediaBean.deleteMedia(media)}"
-                        aria-label="#{msg.delete}" >
+                        aria-label="#{msg.delete}">
                         #{msg.delete}
                     </button>
-                    
-                    <h:commandLink actionListener="#{cmsMediaBean.saveMedia(media, item.categories)}" onclick="$(this).siblings('.abort').click()" value="#{msg.button__save}" styleClass="btn btn--clean">
-                        <f:ajax execute="edit-fields" render="display-fields edit-fields language-select :messages" />
+
+                    <h:commandLink
+                        actionListener="#{cmsMediaBean.saveMedia(media, item.categories)}"
+                        onclick="$(this).siblings('.abort').click()"
+                        value="#{msg.button__save}"
+                        styleClass="btn btn--clean">
+                        <f:ajax
+                            execute="edit-fields"
+                            render="display-fields edit-fields language-select :messages" />
                     </h:commandLink>
                 </div>
             </div>
@@ -301,18 +429,25 @@
             <div class="admin-cms-media__file-language">
                 <strong>#{msg.admin__available_languages}:</strong>
                 <h:panelGroup id="language-select#{idSuffix}">
-                  <ul>
-                    <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-                        <li class="#{media.isFinished(locale) ? 'finished' : ''} #{locale.equals(item.locale) ? 'active' : ''}">
-                        	<h:commandLink actionListener="#{item.setLocale(locale)}" value="#{locale.language}" styleClass="btn btn--clean">
-                        		<f:ajax execute="edit-fields" render="display-fields edit-fields language-select" />
-                        	</h:commandLink>
-                        </li>  
-                    </c:forEach>
-                  </ul>
-                </h:panelGroup>                                          
-            </div>    
+                    <ul>
+                        <c:forEach
+                            var="locale"
+                            items="#{cmsBean.getAllLocales()}">
+                            <li
+                                class="#{media.isFinished(locale) ? 'finished' : ''} #{locale.equals(item.locale) ? 'active' : ''}">
+                                <h:commandLink
+                                    actionListener="#{item.setLocale(locale)}"
+                                    value="#{locale.language}"
+                                    styleClass="btn btn--clean">
+                                    <f:ajax
+                                        execute="edit-fields"
+                                        render="display-fields edit-fields language-select" />
+                                </h:commandLink>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </h:panelGroup>
+            </div>
         </div>
     </div>
 </ui:composition>
-

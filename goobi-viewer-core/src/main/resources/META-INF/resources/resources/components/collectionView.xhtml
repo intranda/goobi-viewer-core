@@ -3,36 +3,48 @@
     xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
-
     <composite:interface>
-        <composite:attribute name="collection" required="true" type="io.goobi.viewer.model.viewer.collections.CollectionView" />
+        <composite:attribute
+            name="collection"
+            required="true"
+            type="io.goobi.viewer.model.viewer.collections.CollectionView" />
     </composite:interface>
 
     <composite:implementation>
-
-   		 <div class="collections">
-   		 	<h:form id="collectionsForm" prependId="false">
-   		 		<div class="collections__wrapper">
-                	<!-- COLLECTIONS -->
-                	<ul class="collection">
-                		<ui:repeat var="browseDcElement" value="#{cc.attrs.collection.visibleDcElements}">
-                            <li class="collection__item collection__item--level-#{browseDcElement.level}" style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
-                				<div class="row">
+        <div class="collections">
+            <h:form
+                id="collectionsForm"
+                prependId="false">
+                <div class="collections__wrapper">
+                    <!-- COLLECTIONS -->
+                    <ul class="collection">
+                        <ui:repeat
+                            var="browseDcElement"
+                            value="#{cc.attrs.collection.visibleDcElements}">
+                            <li
+                                class="collection__item collection__item--level-#{browseDcElement.level}"
+                                style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
+                                <div class="row">
                                     <div class="col-2 col-sm-1 collection__structure-col">
                                         <!-- STRUCTURE -->
-                                        <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
+                                        <h:panelGroup
+                                            rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
                                             <div class="collection__structure text-center">
                                                 <button
                                                     class="btn btn-link"
                                                     jsf:action="#{cc.attrs.collection.toggleChildren(browseDcElement)}">
-                                                	<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__show_details}"/>
-                                                    <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
+                                                    <f:passThroughAttribute
+                                                        name="aria-label"
+                                                        value="#{msg.aria_label__show_details}" />
+                                                    <h:panelGroup
+                                                        rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
                                                         <util:icon icon="square-rounded-plus" />
                                                     </h:panelGroup>
-                                                    <h:panelGroup rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
+                                                    <h:panelGroup
+                                                        rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
                                                         <util:icon icon="square-rounded-minus" />
                                                     </h:panelGroup>
                                                     <f:ajax render="@form" />
@@ -41,90 +53,105 @@
                                         </h:panelGroup>
                                     </div>
                                     <div class="col-7 col-sm-9">
-										<div class="collection__title">
-
-												<div class="row">
-                                                    <div class="col-12">
-														<!-- TITLE -->
-														<h:outputLink value="#{cc.attrs.collection.getCollectionUrl(browseDcElement)}">
-                                                            <h:outputText rendered="#{browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})" />
-                                                            <h:outputText rendered="#{!browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]}" />
-                                                            <f:ajax render="@form" />
-														</h:outputLink>
-													</div>
-												</div>
-										</div>
-									</div>
+                                        <div class="collection__title">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <!-- TITLE -->
+                                                    <h:outputLink
+                                                        value="#{cc.attrs.collection.getCollectionUrl(browseDcElement)}">
+                                                        <h:outputText
+                                                            rendered="#{browseDcElement.displayNumberOfVolumes}"
+                                                            value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})" />
+                                                        <h:outputText
+                                                            rendered="#{!browseDcElement.displayNumberOfVolumes}"
+                                                            value="#{msg[browseDcElement.label]}" />
+                                                        <f:ajax render="@form" />
+                                                    </h:outputLink>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="col-3 col-sm-2 collection__item-end">
-										<!-- TOGGLE DESCRIPTION -->
-										<h:panelGroup rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
-											<div class="collection__description-toggle">
-												<button
-													jsf:styleClass="btn btn-link"
-													title="#{msg[browseDcElement.label]}">
-													<h:panelGroup rendered="#{not browseDcElement.showDescription}">
-														<util:icon icon="chevron-down" />
-													</h:panelGroup>
+                                        <!-- TOGGLE DESCRIPTION -->
+                                        <h:panelGroup
+                                            rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
+                                            <div class="collection__description-toggle">
+                                                <button
+                                                    jsf:styleClass="btn btn-link"
+                                                    title="#{msg[browseDcElement.label]}">
+                                                    <h:panelGroup rendered="#{not browseDcElement.showDescription}">
+                                                        <util:icon icon="chevron-down" />
+                                                    </h:panelGroup>
 
-													<h:panelGroup rendered="#{browseDcElement.showDescription}">
-														<util:icon icon="chevron-up" />
-													</h:panelGroup>
+                                                    <h:panelGroup rendered="#{browseDcElement.showDescription}">
+                                                        <util:icon icon="chevron-up" />
+                                                    </h:panelGroup>
 
-													<f:setPropertyActionListener target="#{browseDcElement.showDescription}" value="#{not browseDcElement.showDescription}" />
-													<f:ajax render="@form" />
-												</button>
-											</div>
-										</h:panelGroup>
+                                                    <f:setPropertyActionListener
+                                                        target="#{browseDcElement.showDescription}"
+                                                        value="#{not browseDcElement.showDescription}" />
+                                                    <f:ajax render="@form" />
+                                                </button>
+                                            </div>
+                                        </h:panelGroup>
 
-										<!-- RSS FEED -->
-										<h:panelGroup rendered="#{configurationBean.displaySearchRssLinks}">
-											<div class="collection__rss">
-												<a href="#{browseDcElement.rssUrl}" title="#{msg[browseDcElement.label]}: #{msg.rssSubscribe}" target="_blank">
-													<util:icon icon="rss"/>
-												</a>
-											</div>
-										</h:panelGroup>
-									</div>
+                                        <!-- RSS FEED -->
+                                        <h:panelGroup rendered="#{configurationBean.displaySearchRssLinks}">
+                                            <div class="collection__rss">
+                                                <a
+                                                    href="#{browseDcElement.rssUrl}"
+                                                    title="#{msg[browseDcElement.label]}: #{msg.rssSubscribe}"
+                                                    target="_blank">
+                                                    <util:icon icon="rss" />
+                                                </a>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
 
-    								<!-- DESCRIPTION -->
+                                    <!-- DESCRIPTION -->
                                     <h:panelGroup rendered="#{browseDcElement.showDescription}">
-                                    	<div class="col-2 col-sm-1"></div>
+                                        <div class="col-2 col-sm-1"></div>
                                         <div class="col-12 col-sm-11">
                                             <div class="collection__description">
-                                                <h:outputText value="#{msg[browseDcElement.description]}" escape="false" />
+                                                <h:outputText
+                                                    value="#{msg[browseDcElement.description]}"
+                                                    escape="false" />
                                             </div>
                                             <h:panelGroup rendered="#{browseDcElement.hasIcon()}">
-                                                <img src="#{browseDcElement.icon}" alt="" class="img-fluid"
-                                                data-viewer-thumbnail="thumbnail"
-                                                data-viewer-access-denied-url="#{browseDcElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}"/>
+                                                <img
+                                                    src="#{browseDcElement.icon}"
+                                                    alt=""
+                                                    class="img-fluid"
+                                                    data-viewer-thumbnail="thumbnail"
+                                                    data-viewer-access-denied-url="#{browseDcElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
                                             </h:panelGroup>
                                         </div>
                                     </h:panelGroup>
                                 </div>
 
                                 <!-- CMS-INFO -->
-<!--                                 <h:panelGroup rendered="#{browseDcElement.hasCMSDescription()}"> -->
-<!--                                 	<div class="row"> -->
-<!--                                 		<div class="col-12 col-sm-11 col-sm-offset-1"> -->
-<!-- 		                                    <div class="collection__description"> -->
-<!-- 		                                        <h:outputText value="#{msg[browseDcElement.info.description]}" escape="false" rendered="#{browseDcElement.showDescription}" /> -->
-<!-- 		                                    </div> -->
-<!-- 		                                  	  <img src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid" /> -->
-<!--                                 		</div> -->
-<!--                                 	</div> -->
-<!--                                 </h:panelGroup> -->
-                			</li>
-                		</ui:repeat>
-                	</ul>
-   		 		</div>
+                                <!--                                 <h:panelGroup rendered="#{browseDcElement.hasCMSDescription()}"> -->
+                                <!--                                 	<div class="row"> -->
+                                <!--                                 		<div class="col-12 col-sm-11 col-sm-offset-1"> -->
+                                <!-- 		                                    <div class="collection__description"> -->
+                                <!-- 		                                        <h:outputText value="#{msg[browseDcElement.info.description]}" escape="false" rendered="#{browseDcElement.showDescription}" /> -->
+                                <!-- 		                                    </div> -->
+                                <!-- 		                                  	  <img src="#{browseDcElement.info.iconURI}" alt="" class="img-fluid" /> -->
+                                <!--                                 		</div> -->
+                                <!--                                 	</div> -->
+                                <!--                                 </h:panelGroup> -->
+                            </li>
+                        </ui:repeat>
+                    </ul>
+                </div>
                 <script type="text/javascript">
-                //<![CDATA[
-//                     if ( $( '.collection__structure-col' ).children( '.collection__structure' ).length < 1 ) {
-//                         $( '.collection__structure-col' ).hide();
-//                     }
-                //]]>
+                    //<![CDATA[
+                    //                     if ( $( '.collection__structure-col' ).children( '.collection__structure' ).length < 1 ) {
+                    //                         $( '.collection__structure-col' ).hide();
+                    //                     }
+                    //]]>
                 </script>
-   		 	</h:form>
-   		 </div>
+            </h:form>
+        </div>
     </composite:implementation>
 </ui:composition>

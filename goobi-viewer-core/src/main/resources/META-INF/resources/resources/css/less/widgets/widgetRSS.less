@@ -3,7 +3,8 @@
    style declarations for widget rss
    ==============================================================*/
 .widget-rss {
-    &__topbar {}
+    &__topbar {
+    }
     &__title {
         line-height: 1;
         display: flex;
@@ -15,32 +16,35 @@
         line-height: 1;
         text-decoration: none;
     }
-	&__entry-title {
-		margin-bottom: 2px;
-	}
-	&__entry-info {
-		margin-bottom: .5rem;
-		padding-bottom: 1rem;
-		
-		&:last-child {
-			padding-bottom: 0;
-		}
-	}
-	
-	&__entry-link {
-		font-weight: 400;
-	}
+    &__entry-title {
+        margin-bottom: 2px;
+    }
+    &__entry-info {
+        margin-bottom: 0.5rem;
+        padding-bottom: 1rem;
+
+        &:last-child {
+            padding-bottom: 0;
+        }
+    }
+
+    &__entry-link {
+        font-weight: 400;
+    }
 }
 
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

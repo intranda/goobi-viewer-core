@@ -1,77 +1,124 @@
-<ui:composition 
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-    
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-
-	<!-- ACTIONS -->
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    <!-- ACTIONS -->
     <div class="admin-cms-media__actions">
-      <!-- BULK ACTIONS -->
-	  <ui:fragment rendered="#{bulkaction == true}">
-      	<div class="admin-cms-media__bulk-actions">
-          <label for="selectAllMediaItems#{index}" class="custom-control custom-control--checkbox">
-          <h:selectBooleanCheckbox id="selectAllMediaItems#{index}" name="selectAllMediaItems#{index}" value="#{cmsMediaBean.allSelected}">
-	          <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__select_all}"/>
-	          <f:ajax render="@none" execute="@this"/>
-          </h:selectBooleanCheckbox>
-              <span class="custom-control__icon">
-					<util:icon icon="square"
-						styleClass="custom-control__icon-state custom-control__icon-state--unchecked"
-						svgClass="icon" />
-					<util:icon icon="square-check"
-						styleClass="custom-control__icon-state custom-control__icon-state--checked"
-						svgClass="icon" />
-              </span>
-	          </label>
-	
-	          <div class="custom-control custom-control--select">
-	              <select id="bulkActionSelect#{index}" name="bulkActionSelect#{index}" aria-label="#{msg.admin__media_bulk_actions}"> 
-	                  <option value="bulk">#{msg.admin__media_bulk_actions}</option>
-	                  <option value="edit">#{msg.admin__media_bulk_edit}</option>
-	                  <option value="delete">#{msg.admin__media_bulk_delete}</option>
-	              </select>
-	          </div>
-	          <h:commandLink id="deleteSelectedItemsButton#{index}" styleClass="d-none" action="#{cmsMediaBean.deleteSelectedItems}">
-	          	<f:ajax render="adminCmsMediaFilesForm :messages" onevent="reload"></f:ajax>
-	          </h:commandLink>
-      	</div>
-      </ui:fragment>
-  
-      <!-- VIEW SWITCH -->
-	      <ui:fragment rendered="#{ viewswitch == true}">
-      	  <div class="admin-cms-media__switch">
-	          <button type="button" class="btn btn--clean" data-switch="list" aria-label="#{msg.searchListDetailView}">
-	              <util:icon icon="layout-list" svgClass="icon" />
-	          </button>
-	          <button type="button" class="btn btn--clean" data-switch="grid" aria-label="#{msg.searchListTileView}">
-	              <util:icon icon="layout-grid" svgClass="icon" />
-	          </button>
-      	  </div>
-      </ui:fragment>
-      
-      <!-- FILTER -->
-      <div class="admin-cms-media__filter">
-              <label class="sr-only" for="adminCmsMediaFilter">#{msg.admin__media_filter}</label>
-              <h:inputText type="text" class="form-control" id="adminCmsMediaFilter#{index}" placeholder="#{msg.admin__media_filter}" value="#{cmsMediaBean.filter}">
-              	<f:passThroughAttribute name="placeholder" value="#{msg.admin__media_filter}"></f:passThroughAttribute>
-              </h:inputText>
-           <h:commandButton id="reloadButton#{index}" style="display:none" action="#{cmsMediaBean.reloadMediaList}">
-               <!-- Must not submit form, otherwise the CMSMediaItem-listing will become confused after file upload -->
-           	<f:ajax execute="adminCmsMediaFilter" render="@form" onevent="reload"></f:ajax>
-           </h:commandButton>
-      </div>
+        <!-- BULK ACTIONS -->
+        <ui:fragment rendered="#{bulkaction == true}">
+            <div class="admin-cms-media__bulk-actions">
+                <label
+                    for="selectAllMediaItems#{index}"
+                    class="custom-control custom-control--checkbox">
+                    <h:selectBooleanCheckbox
+                        id="selectAllMediaItems#{index}"
+                        name="selectAllMediaItems#{index}"
+                        value="#{cmsMediaBean.allSelected}">
+                        <f:passThroughAttribute
+                            name="aria-label"
+                            value="#{msg.aria_label__select_all}" />
+                        <f:ajax
+                            render="@none"
+                            execute="@this" />
+                    </h:selectBooleanCheckbox>
+                    <span class="custom-control__icon">
+                        <util:icon
+                            icon="square"
+                            styleClass="custom-control__icon-state custom-control__icon-state--unchecked"
+                            svgClass="icon" />
+                        <util:icon
+                            icon="square-check"
+                            styleClass="custom-control__icon-state custom-control__icon-state--checked"
+                            svgClass="icon" />
+                    </span>
+                </label>
 
-      <!-- PAGINATOR -->
-      <ui:fragment rendered="#{cmsMediaBean.needsPaginator()}">
-	      <div class="admin-cms-media__paginator">
-	          <viewerComponent:dataTablePaginator tableValues="#{cmsMediaBean.dataProvider}" onevent="reload"/>
-	      </div>
-      </ui:fragment>
-  </div>
-	
+                <div class="custom-control custom-control--select">
+                    <select
+                        id="bulkActionSelect#{index}"
+                        name="bulkActionSelect#{index}"
+                        aria-label="#{msg.admin__media_bulk_actions}">
+                        <option value="bulk">#{msg.admin__media_bulk_actions}</option>
+                        <option value="edit">#{msg.admin__media_bulk_edit}</option>
+                        <option value="delete">#{msg.admin__media_bulk_delete}</option>
+                    </select>
+                </div>
+                <h:commandLink
+                    id="deleteSelectedItemsButton#{index}"
+                    styleClass="d-none"
+                    action="#{cmsMediaBean.deleteSelectedItems}">
+                    <f:ajax
+                        render="adminCmsMediaFilesForm :messages"
+                        onevent="reload"></f:ajax>
+                </h:commandLink>
+            </div>
+        </ui:fragment>
+
+        <!-- VIEW SWITCH -->
+        <ui:fragment rendered="#{ viewswitch == true}">
+            <div class="admin-cms-media__switch">
+                <button
+                    type="button"
+                    class="btn btn--clean"
+                    data-switch="list"
+                    aria-label="#{msg.searchListDetailView}">
+                    <util:icon
+                        icon="layout-list"
+                        svgClass="icon" />
+                </button>
+                <button
+                    type="button"
+                    class="btn btn--clean"
+                    data-switch="grid"
+                    aria-label="#{msg.searchListTileView}">
+                    <util:icon
+                        icon="layout-grid"
+                        svgClass="icon" />
+                </button>
+            </div>
+        </ui:fragment>
+
+        <!-- FILTER -->
+        <div class="admin-cms-media__filter">
+            <label
+                class="sr-only"
+                for="adminCmsMediaFilter">
+                #{msg.admin__media_filter}
+            </label>
+            <h:inputText
+                type="text"
+                class="form-control"
+                id="adminCmsMediaFilter#{index}"
+                placeholder="#{msg.admin__media_filter}"
+                value="#{cmsMediaBean.filter}">
+                <f:passThroughAttribute
+                    name="placeholder"
+                    value="#{msg.admin__media_filter}"></f:passThroughAttribute>
+            </h:inputText>
+            <h:commandButton
+                id="reloadButton#{index}"
+                style="display: none"
+                action="#{cmsMediaBean.reloadMediaList}">
+                <!-- Must not submit form, otherwise the CMSMediaItem-listing will become confused after file upload -->
+                <f:ajax
+                    execute="adminCmsMediaFilter"
+                    render="@form"
+                    onevent="reload"></f:ajax>
+            </h:commandButton>
+        </div>
+
+        <!-- PAGINATOR -->
+        <ui:fragment rendered="#{cmsMediaBean.needsPaginator()}">
+            <div class="admin-cms-media__paginator">
+                <viewerComponent:dataTablePaginator
+                    tableValues="#{cmsMediaBean.dataProvider}"
+                    onevent="reload" />
+            </div>
+        </ui:fragment>
+    </div>
 </ui:composition>

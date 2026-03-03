@@ -5,539 +5,543 @@
 
 /* USER LOGIN MODAL */
 .user-login-modal {
-	font-family: @fontBackend;
-	&.active {
-		position: fixed;
-		display: flex;		
-		align-items: center;
-		justify-content: center;
-		top: 0;
-		width: 100vw;
-		height: 100vh;
-		background-color: @neutralgray;
-		overflow-y: auto;
-		z-index: 9999;
-	}
-	& > .fa {
-		position: absolute;
-		top: 5px;
-		right: 10px;
-		font-size: 2.4rem;
-		cursor: pointer;
-	}
-	/* WRAPPER */
-	&__wrapper {
-		width: 98%;
-		max-width: 400px;
-		padding: 10px;
-		background-color: @neutralgray;
-	}
-	/* HEADER / BODY */
-	&__header,
-	&__body {}
-	&__header,
-	&__body,
-	&__footer {
-		.btn--link {
-			&:active, 
-			&:focus, 
-			&:active:focus {
-				color: @black;
-			}
-		}
-		.btn--full {
-			&:active, 
-			&:focus, 
-			&:active:focus {
-				color: @white;
-			}
-		}
-	}
-	/* HEADER */
-	&__header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		h2 {
-			margin: 0;
-			font-size: @fontLarge;
-		}
-	}
-	&__header-logo {
-		align-self: normal;
-		flex: 0 0 6rem;
-		max-width: 6rem;
-		background-image: url("@{images}/goobi_logo-blue.png");
-		background-repeat: no-repeat;
-		background-position: right center;
-		background-size: contain;
-		}
-	&__header-title {
-		font-size: 2.4rem;
-	}
-	&__header-title-create-account {
-		display: none;
-	}
-	/* BODY */
-	&__body {
-		border-top: 0;
-		h3 {
-			font-size: @fontNormal;
-		}
-	}
-	.modal-body {
-		min-height: 275px;
-	}
-	&__body-login-select {}
-	&__body-login-type-wrapper {}
-	&__body-login-type {
-		position: relative;
-		background-color: @white;
-		&.local {
-			display: block;
-		}
-		&.external,
-		&.retrieve,
-		&.create {
-			display: none;
-		}
-		.form-group,
-		p {
-			margin-bottom: 1.6rem;
-		}
-		.form-group.lastname {
-			display: none;
-		}
-	}
-	&__lost-password {
-		button {
-			font-size: 1.3rem;
-			}
-	}
-	&__body-action {
-		padding-top: .5rem;
-		padding-bottom: 1.6rem;
-		.btn--link {
-			font-size: @fontSmall;
-		}
-		.btn--full {
-			width: 100%;
-		}
-	}
-	&__body-login-open-id {
-		max-width: 80%;	
-		min-width: 130px;
-	}
-	&__body-login-open-id, &__new-account  {
-		ul {
-			.mx-list-reset;
-			li {
-				margin-bottom: 0.8rem;
-				&:last-child {
-					margin-bottom: 0;
-				}
-				&.Google,
-				&.Facebook {
-					a {
-						&:before {
-							margin-right: 5px;
-							vertical-align: middle;
-						}
-					}
-				}
-				&.Google {
-					a {
-						&:before {
-							content: url("@{images}/icons/icon_google-logo.png");
-						}
-					}
-				}
-				&.Facebook {
-					a {
-						&:before {
-							content: url("@{images}/icons/icon_facebook-logo.png");
-						}
-					}
-				}
-			}
-			a {
-				display: block;
-				padding: 6px 12px;
-				font-weight: 700;
-				text-align: center;
-				color: @black;
-				background: @white;
-				&:hover,
-				&:active,
-				&focus {
-					text-decoration: none;
-					color: @black;
-				}
-			}
-		}
-	}
-	&__terms-text {
-		border: 1px solid @middlegray;
-		padding: 0.5rem 1rem;
-		height: 150px;
-		overflow-y: auto;
-	}
-	&__new-account-submit {
-		width: 100%;
-		color: @black;
-		background-color: transparent;
-		border: none;
-		&:hover {
-			background: transparent;
-		}
-	}
-	&__buttons-wrapper {
-		display: flex;
-		align-items: center;
-		margin-top: 2rem;
-	}
-	&__log-me-in-button {
-		flex: 0 0 170px;
-		max-width: 200px;
-		margin-right: 2rem;
-	}
-	/* FOOTER */
-	&__footer {
-		padding: 5px 0;
-		font-size: @fontSmall;
-		text-align: center;
-		color: @gray;
-		.btn {
-			font-size: inherit;
-			vertical-align: inherit;
-		}
-		button {
-			vertical-align: inherit;
-		}
-	}
-	
-	// NEW FANCY STUFF
-	&__outer-wrapper {
-		max-width: 700px;
-	}
-	&__inner {
-		flex-direction: row;
-		overflow: hidden;
-		background: transparent;
-	} 
-	&__left {
-		flex: 0 0 70%;
-		max-width: 70%;
-		background: @white;
-	}
-	&__right {
-		position: relative;
-		flex: 0 0 30%;
-		max-width: 30%;
-		background: @adminBackend-bg;
-		display: flex;
-		align-items: center;
-		justify-content: space-evenly;
-		flex-direction: column;
-		
-	}
-	.fancy-close {
-		top: 3.5rem;
-		right: 2.5rem;
-		background: transparent;
-		&::before,
-		&::after {
-		    background-color: #fff;
-		}
-	}
-	&__form-row {
-		position: relative;
-		margin-bottom: 1.8rem;
-	}
-	&__form-control {
-		height: 40px;
-		&.-valueEntered {
-			& + .effect-label {
-				font-size: 1.2rem;	
-				top: -10px;
-				left: 10px;
-				background-color: white;
-				padding: 0 0.25em 0 0.25em;
-			}
-		}
-	}
-	.effect-label {
-		color: #a3a3a3;
-		font-size: 1.4rem;
-		position: absolute;
-		pointer-events: none;
-		left: 1rem;
-		top: 9px;
-		transition: 0.2s ease all;
-	}
-	input:focus + .effect-label {
-		top: -10px;
-		left: 10px;
-		background-color: white;
-		padding: 0 0.25em 0 0.25em;
-		font-size: 1.2rem;
-	}
-	.modal-header {
-		border-bottom: none;
-		padding-bottom: 0;
-	}
-	// KEYBOARD ANIMATION
-	&__keyboard {
-		border: 5px solid rgb(255, 255, 255);
-		border-radius: 10px;
-		width: 87px;
-		height: 48px;
-		position: absolute;
-		bottom: 4rem;
-		left: 0;
-		right: 0;
-		margin: 0 auto;
-	}
-	
-	&__keyboard-space-button {
-	  width: 47px;
-	  height: 6px;
-	  background: rgb(255, 255, 255);
-	  position: absolute;
-	  left: 15px;
-	bottom: 5px;
-	  border-radius: 2px;
-	}
-	&__keyboard-single-key {
-	    width: 7px;
-	    height: 7px;
-	    background: rgb(255, 255, 255);
-	    position: absolute;
-	   border-radius: 1px;
-	   &-1 {
-	     top: 5px;
-	     left: 5px;
-	   }
-	   &-2 {
-	     top: 5px;
-	     left: 15px;
-	   }
-	   &-3 {
-	     top: 5px;
-	     left: 25px;
-	   }
-	   &-4 {
-	     top: 5px;
-	     left: 35px;
-	   }
-	   &-5 {
-	     top: 5px;
-	     left: 45px;
-	   }
-	   &-6 {
-	     top: 5px;
-	     left: 55px;
-	   }
-	   &-7 {
-	     top: 5px;
-	     left: 65px;
-	   }
-	   &-8 {
-	     top: 5px;
-	     left: 65px;
-	   }
-	   &-9 {
-	     top: 16px;
-	     left: 20px;
-	   }
-	   &-10 {
-	     top: 16px;
-	     left: 30px;
-	   }
-	   
-	  &-11 {
-	     top: 16px;
-	     left: 40px;
-	   }
-	  &-12 {
-	     top: 16px;
-	     left: 50px;
-	   }
-	  	&-13 {
-	     bottom: 5px;
-	     left: 65px;
-	   }
-	   &-14 {
-	     top: 16px;
-	     left: 60px;
-	     width: 12px;
-	   }
-	   &-15 {
-	     top: 16px;
-	     left: 5px;
-	     width: 12px;
-	   }
-	   &-16 {
-	     bottom: 5px;
-	     left: 5px;
-	   }
-	  }
-	.-keyPressAnimation {
-	  animation: scalor 0.4s ease;
-	  &.-delay1 {
-	    animation-delay: 0.1;
-	  }
-	    &.-delay2 {
-	    animation-delay: 0.2s;
-	  }
-	  &.-delay3 {
-	    animation-delay: 0.3s;
-	  }
-	  &.-delay4 {
-	    animation-delay: 0.4s;
-	  }
-	  &.-delay5 {
-	    animation-delay: 0.5s;
-	  }
-	  &.-delay6 {
-	    animation-delay: 0.8s;
-	  }
-	}
-	
-	@keyframes scalor {
-	    0% {
-	        transform: scale(1);
-	    }
-	    20% {
-	        transform: scale(0.8);
-	    }
-	    50% {
-	        transform: scale(1.4);
-	    }
-	    100% {
-	       transform: scale(1);
-	    }
-	}
-	.form-control {
-		transition: border-color 0.15s ease-in-out;
-	}
-	// REMOVES YELLOW AUTOCOMPLETE BACKGROUND
-	@media (prefers-color-scheme: light) {
-		:-webkit-autofill {
-			-webkit-text-fill-color: #212529;
-			box-shadow: 0 0 0 100px #ffffff inset !important;
-		}
-	}
-	@media (prefers-color-scheme: dark) {
-	  :-webkit-autofill {
-		-webkit-text-fill-color: #212529;
-		box-shadow: 0 0 0 100px #ffffff inset !important;
-	    }
-	}
-	:-webkit-autofill { 
-	    filter:none; /* needed for firefox! */
-	    box-shadow: 0 0 0 100px rgba(255, 255, 255, 1) inset;
-	}
-	// OVERRIDING BOOTSTRAP PADDING
-	.no-gutters input {
-		padding: 0.5rem 1rem;
-	}
+    font-family: @fontBackend;
+    &.active {
+        position: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: @neutralgray;
+        overflow-y: auto;
+        z-index: 9999;
+    }
+    & > .fa {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        font-size: 2.4rem;
+        cursor: pointer;
+    }
+    /* WRAPPER */
+    &__wrapper {
+        width: 98%;
+        max-width: 400px;
+        padding: 10px;
+        background-color: @neutralgray;
+    }
+    /* HEADER / BODY */
+    &__header,
+    &__body {
+    }
+    &__header,
+    &__body,
+    &__footer {
+        .btn--link {
+            &:active,
+            &:focus,
+            &:active:focus {
+                color: @black;
+            }
+        }
+        .btn--full {
+            &:active,
+            &:focus,
+            &:active:focus {
+                color: @white;
+            }
+        }
+    }
+    /* HEADER */
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        h2 {
+            margin: 0;
+            font-size: @fontLarge;
+        }
+    }
+    &__header-logo {
+        align-self: normal;
+        flex: 0 0 6rem;
+        max-width: 6rem;
+        background-image: url('@{images}/goobi_logo-blue.png');
+        background-repeat: no-repeat;
+        background-position: right center;
+        background-size: contain;
+    }
+    &__header-title {
+        font-size: 2.4rem;
+    }
+    &__header-title-create-account {
+        display: none;
+    }
+    /* BODY */
+    &__body {
+        border-top: 0;
+        h3 {
+            font-size: @fontNormal;
+        }
+    }
+    .modal-body {
+        min-height: 275px;
+    }
+    &__body-login-select {
+    }
+    &__body-login-type-wrapper {
+    }
+    &__body-login-type {
+        position: relative;
+        background-color: @white;
+        &.local {
+            display: block;
+        }
+        &.external,
+        &.retrieve,
+        &.create {
+            display: none;
+        }
+        .form-group,
+        p {
+            margin-bottom: 1.6rem;
+        }
+        .form-group.lastname {
+            display: none;
+        }
+    }
+    &__lost-password {
+        button {
+            font-size: 1.3rem;
+        }
+    }
+    &__body-action {
+        padding-top: 0.5rem;
+        padding-bottom: 1.6rem;
+        .btn--link {
+            font-size: @fontSmall;
+        }
+        .btn--full {
+            width: 100%;
+        }
+    }
+    &__body-login-open-id {
+        max-width: 80%;
+        min-width: 130px;
+    }
+    &__body-login-open-id,
+    &__new-account {
+        ul {
+            .mx-list-reset;
+            li {
+                margin-bottom: 0.8rem;
+                &:last-child {
+                    margin-bottom: 0;
+                }
+                &.Google,
+                &.Facebook {
+                    a {
+                        &:before {
+                            margin-right: 5px;
+                            vertical-align: middle;
+                        }
+                    }
+                }
+                &.Google {
+                    a {
+                        &:before {
+                            content: url('@{images}/icons/icon_google-logo.png');
+                        }
+                    }
+                }
+                &.Facebook {
+                    a {
+                        &:before {
+                            content: url('@{images}/icons/icon_facebook-logo.png');
+                        }
+                    }
+                }
+            }
+            a {
+                display: block;
+                padding: 6px 12px;
+                font-weight: 700;
+                text-align: center;
+                color: @black;
+                background: @white;
+                &:hover,
+                &:active,
+                &focus {
+                    text-decoration: none;
+                    color: @black;
+                }
+            }
+        }
+    }
+    &__terms-text {
+        border: 1px solid @middlegray;
+        padding: 0.5rem 1rem;
+        height: 150px;
+        overflow-y: auto;
+    }
+    &__new-account-submit {
+        width: 100%;
+        color: @black;
+        background-color: transparent;
+        border: none;
+        &:hover {
+            background: transparent;
+        }
+    }
+    &__buttons-wrapper {
+        display: flex;
+        align-items: center;
+        margin-top: 2rem;
+    }
+    &__log-me-in-button {
+        flex: 0 0 170px;
+        max-width: 200px;
+        margin-right: 2rem;
+    }
+    /* FOOTER */
+    &__footer {
+        padding: 5px 0;
+        font-size: @fontSmall;
+        text-align: center;
+        color: @gray;
+        .btn {
+            font-size: inherit;
+            vertical-align: inherit;
+        }
+        button {
+            vertical-align: inherit;
+        }
+    }
+
+    // NEW FANCY STUFF
+    &__outer-wrapper {
+        max-width: 700px;
+    }
+    &__inner {
+        flex-direction: row;
+        overflow: hidden;
+        background: transparent;
+    }
+    &__left {
+        flex: 0 0 70%;
+        max-width: 70%;
+        background: @white;
+    }
+    &__right {
+        position: relative;
+        flex: 0 0 30%;
+        max-width: 30%;
+        background: @adminBackend-bg;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        flex-direction: column;
+    }
+    .fancy-close {
+        top: 3.5rem;
+        right: 2.5rem;
+        background: transparent;
+        &::before,
+        &::after {
+            background-color: #fff;
+        }
+    }
+    &__form-row {
+        position: relative;
+        margin-bottom: 1.8rem;
+    }
+    &__form-control {
+        height: 40px;
+        &.-valueEntered {
+            & + .effect-label {
+                font-size: 1.2rem;
+                top: -10px;
+                left: 10px;
+                background-color: white;
+                padding: 0 0.25em 0 0.25em;
+            }
+        }
+    }
+    .effect-label {
+        color: #a3a3a3;
+        font-size: 1.4rem;
+        position: absolute;
+        pointer-events: none;
+        left: 1rem;
+        top: 9px;
+        transition: 0.2s ease all;
+    }
+    input:focus + .effect-label {
+        top: -10px;
+        left: 10px;
+        background-color: white;
+        padding: 0 0.25em 0 0.25em;
+        font-size: 1.2rem;
+    }
+    .modal-header {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    // KEYBOARD ANIMATION
+    &__keyboard {
+        border: 5px solid rgb(255, 255, 255);
+        border-radius: 10px;
+        width: 87px;
+        height: 48px;
+        position: absolute;
+        bottom: 4rem;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+    }
+
+    &__keyboard-space-button {
+        width: 47px;
+        height: 6px;
+        background: rgb(255, 255, 255);
+        position: absolute;
+        left: 15px;
+        bottom: 5px;
+        border-radius: 2px;
+    }
+    &__keyboard-single-key {
+        width: 7px;
+        height: 7px;
+        background: rgb(255, 255, 255);
+        position: absolute;
+        border-radius: 1px;
+        &-1 {
+            top: 5px;
+            left: 5px;
+        }
+        &-2 {
+            top: 5px;
+            left: 15px;
+        }
+        &-3 {
+            top: 5px;
+            left: 25px;
+        }
+        &-4 {
+            top: 5px;
+            left: 35px;
+        }
+        &-5 {
+            top: 5px;
+            left: 45px;
+        }
+        &-6 {
+            top: 5px;
+            left: 55px;
+        }
+        &-7 {
+            top: 5px;
+            left: 65px;
+        }
+        &-8 {
+            top: 5px;
+            left: 65px;
+        }
+        &-9 {
+            top: 16px;
+            left: 20px;
+        }
+        &-10 {
+            top: 16px;
+            left: 30px;
+        }
+
+        &-11 {
+            top: 16px;
+            left: 40px;
+        }
+        &-12 {
+            top: 16px;
+            left: 50px;
+        }
+        &-13 {
+            bottom: 5px;
+            left: 65px;
+        }
+        &-14 {
+            top: 16px;
+            left: 60px;
+            width: 12px;
+        }
+        &-15 {
+            top: 16px;
+            left: 5px;
+            width: 12px;
+        }
+        &-16 {
+            bottom: 5px;
+            left: 5px;
+        }
+    }
+    .-keyPressAnimation {
+        animation: scalor 0.4s ease;
+        &.-delay1 {
+            animation-delay: 0.1;
+        }
+        &.-delay2 {
+            animation-delay: 0.2s;
+        }
+        &.-delay3 {
+            animation-delay: 0.3s;
+        }
+        &.-delay4 {
+            animation-delay: 0.4s;
+        }
+        &.-delay5 {
+            animation-delay: 0.5s;
+        }
+        &.-delay6 {
+            animation-delay: 0.8s;
+        }
+    }
+
+    @keyframes scalor {
+        0% {
+            transform: scale(1);
+        }
+        20% {
+            transform: scale(0.8);
+        }
+        50% {
+            transform: scale(1.4);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    .form-control {
+        transition: border-color 0.15s ease-in-out;
+    }
+    // REMOVES YELLOW AUTOCOMPLETE BACKGROUND
+    @media (prefers-color-scheme: light) {
+        :-webkit-autofill {
+            -webkit-text-fill-color: #212529;
+            box-shadow: 0 0 0 100px #ffffff inset !important;
+        }
+    }
+    @media (prefers-color-scheme: dark) {
+        :-webkit-autofill {
+            -webkit-text-fill-color: #212529;
+            box-shadow: 0 0 0 100px #ffffff inset !important;
+        }
+    }
+    :-webkit-autofill {
+        filter: none; /* needed for firefox! */
+        box-shadow: 0 0 0 100px rgba(255, 255, 255, 1) inset;
+    }
+    // OVERRIDING BOOTSTRAP PADDING
+    .no-gutters input {
+        padding: 0.5rem 1rem;
+    }
 }
 
 .color-theme-light {
-	.user-login-modal {
-		:-webkit-autofill {
-			-webkit-text-fill-color: #212529;
-			box-shadow: 0 0 0 100px #ffffff inset !important;
-		}
-	}
+    .user-login-modal {
+        :-webkit-autofill {
+            -webkit-text-fill-color: #212529;
+            box-shadow: 0 0 0 100px #ffffff inset !important;
+        }
+    }
 }
 
 .color-theme-dark {
-	.user-login-modal {
-		:-webkit-autofill {
-			-webkit-text-fill-color: #212529;
-			box-shadow: 0 0 0 100px #ffffff inset !important;
-		}
-	}
+    .user-login-modal {
+        :-webkit-autofill {
+            -webkit-text-fill-color: #212529;
+            box-shadow: 0 0 0 100px #ffffff inset !important;
+        }
+    }
 }
 
 /* MODIFICATION */
 #login-body {
-	.user-login {
-		width: 100vw;
-		height: 100vh;
-		display: block;
-		align-items: center;
-	    justify-content: center;
-	    background-color: @neutralgray;
-	    & > .fa {
-	    	display: none;
-	    }	
-	}
-	.user-login-modal {
-		display: block;
-	}
+    .user-login {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+        align-items: center;
+        justify-content: center;
+        background-color: @neutralgray;
+        & > .fa {
+            display: none;
+        }
+    }
+    .user-login-modal {
+        display: block;
+    }
 }
 
-
-
 @{RTL} {
-	.user-login-modal {
-		&__terms-accept {
-			.mr-3 {
-				// BOOTSTRAP OVERRIDE
-				margin-right: unset !important;
-				margin-left: 1.6rem !important;
-			}
-		}
-	}
+    .user-login-modal {
+        &__terms-accept {
+            .mr-3 {
+                // BOOTSTRAP OVERRIDE
+                margin-right: unset !important;
+                margin-left: 1.6rem !important;
+            }
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.user-login-modal {
-		&.active {
-			align-items: flex-start;
-			padding-top: 25px;
-		}
-		&__inner {
-			flex-direction: row;
-			flex-wrap: wrap;
-		}
-		&__left {
-			max-width: 100%;
-			flex: 0 0 100%;
-		}
-		&__right {
-			max-width: 100%;
-			flex: 0 0 100%;
-			position: static;
-		}
-		&__keyboard {
-			display: none;
-		}
-		&__body-login-open-id {
-			margin-top: 2rem;
-			margin-bottom: 2rem;
-		}
-		.modal-header {
-			padding-right: 7rem;
-		}
-		.fancy-close {
-			&::before,
-			&::after {
-			    background-color: @black;
-			}
-		}
-	}
+    .user-login-modal {
+        &.active {
+            align-items: flex-start;
+            padding-top: 25px;
+        }
+        &__inner {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        &__left {
+            max-width: 100%;
+            flex: 0 0 100%;
+        }
+        &__right {
+            max-width: 100%;
+            flex: 0 0 100%;
+            position: static;
+        }
+        &__keyboard {
+            display: none;
+        }
+        &__body-login-open-id {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        .modal-header {
+            padding-right: 7rem;
+        }
+        .fancy-close {
+            &::before,
+            &::after {
+                background-color: @black;
+            }
+        }
+    }
 }

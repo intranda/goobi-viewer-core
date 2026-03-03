@@ -3,57 +3,61 @@
    ==============================================================*/
 
 .widget-record-notes {
-	// show edit link only on hover
-	&:hover {
-		.widget-record-notes__action-link {
-			opacity: 1;
-		}
-	}
-	.widget__title {
-	}
-	.widget__body {
-		a {
-			display: inline;
-			&:hover,
-			&:focus,
-			&:active {}
-		}
-		p {
-			margin-bottom: 1rem;
-			&:last-child {
-				margin-bottom: 0;
-			}
-		}
-	}
-	&__action-link {
-		transition: opacity 0.2s ease;
-		opacity: 0;
-		text-align: right;
-		a {
-			overflow: visible;
-			&:hover,
-			&:focus,
-			&:active {
-			}
-		}
-	}
+    // show edit link only on hover
+    &:hover {
+        .widget-record-notes__action-link {
+            opacity: 1;
+        }
+    }
+    .widget__title {
+    }
+    .widget__body {
+        a {
+            display: inline;
+            &:hover,
+            &:focus,
+            &:active {
+            }
+        }
+        p {
+            margin-bottom: 1rem;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+    &__action-link {
+        transition: opacity 0.2s ease;
+        opacity: 0;
+        text-align: right;
+        a {
+            overflow: visible;
+            &:hover,
+            &:focus,
+            &:active {
+            }
+        }
+    }
 }
 
 .using-keyboard {
-	.widget-record-notes__action-link {
-		opacity: 1;
-	}
+    .widget-record-notes__action-link {
+        opacity: 1;
+    }
 }
 
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}
