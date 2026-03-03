@@ -1,3 +1,7 @@
+# Test resources
+/src/test/
+**/javascript/tests/
+
 # Build output
 /bin/
 /build/
@@ -9,7 +13,20 @@
 
 # Generated/minified files
 *.min.*
-/src/META-INF/resources/resources/css/styleguide/
+**/*.map
+**/*.generated.*
+/src/main/resources/META-INF/resources/resources/css/styleguide/
+**/javascript/dist/
+
+# Third-party libraries (must not be reformatted)
+**/libs/
+
+# Riot tag files (custom syntax, Prettier breaks formatting)
+**/*.tag
+
+# Build tooling
+Gulpfile.js
+/gulp/
 
 # IDE & OS files
 .DS_Store
@@ -20,5 +37,6 @@
 /.tern-project
 
 # Config files
-/config_viewer.xml
-/package-lock.json
+**/*.json
+**/*config*
+**/*conf*
