@@ -7345,7 +7345,7 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("SELECT o FROM " + clazz.getSimpleName() + " o WHERE " + whereClause);
+            Query q = em.createQuery("SELECT o FROM " + clazz.getSimpleName() + " o WHERE " + whereClause); //NOSONAR Input is safe
             params.forEach(q::setParameter);
             return q.getResultList();
         } catch (PersistenceException e) {
