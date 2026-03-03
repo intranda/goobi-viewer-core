@@ -600,6 +600,9 @@ public final class FileTools {
                 case "epub":
                     mimeType = "application/epub+zip";
                     break;
+                case "mei":
+                    mimeType = "application/mei+xml";
+                    break;
                 default:
                     // use a default value, if file extension is not mapped
                     mimeType = "image/tiff";
