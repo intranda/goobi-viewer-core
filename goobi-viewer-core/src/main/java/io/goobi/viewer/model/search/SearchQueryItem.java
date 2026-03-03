@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -698,13 +700,23 @@ public class SearchQueryItem implements Serializable {
                         String useValue = value.trim();
                         this.proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
                         // logger.trace("proximity distance: {}", proximitySearchDistance); //NOSONAR Debug
-
                         sbItem.append(useField).append(':');
-                        if (useValue.charAt(0) != '"') {
+
+                        String unquoteValue = SearchHelper.unquoteValue(useValue, false);
+                        // Value already enclosed in double quotes, optionally followed by a tilde and a number
+                        boolean valueAlreadyInQuotes = !unquoteValue.equals(useValue);
+                        if (!valueAlreadyInQuotes) {
                             sbItem.append('"');
                         }
-                        sbItem.append(useValue);
-                        if (useValue.charAt(useValue.length() - 1) != '"' && proximitySearchDistance == 0) {
+                        if (valueAlreadyInQuotes && useValue.length() > 2) {
+                            sbItem.append('"').append(unquoteValue.replace("\"", "\\\"")).append('"');
+                            if (proximitySearchDistance > 0) {
+                                sbItem.append("~").append(proximitySearchDistance);
+                            }
+                        } else {
+                            sbItem.append(useValue.replace("\"", "\\\""));
+                        }
+                        if (!valueAlreadyInQuotes && proximitySearchDistance == 0) {
                             sbItem.append('"');
                         }
                         if (SolrConstants.FULLTEXT.equals(useField) || SolrConstants.SUPERFULLTEXT.equals(useField)) {
