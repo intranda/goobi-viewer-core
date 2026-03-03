@@ -160,14 +160,4 @@
     </suppress>
 
 
-
-    <!-- grunt is used only during development, i.e. to copy library updates -->
-    <suppress>
-        <notes><![CDATA[
-        file name: grunt-cli:1.4.3
-        ]]></notes>
-        <packageUrl regex="true">^pkg:npm/grunt\-cli@.*$</packageUrl>
-        <cve>CVE-2017-16058</cve>
-    </suppress>
-
 </suppressions>

@@ -1,11 +1,6 @@
 /*
 Static path definitions for Goobi viewer JS + CSS dependencies 
 They define what will be copied from node_modules to which Goobi viewer core lib directory
-
-They are fed into the copy tasks `copy:js` and `copy:css`,
-which can be called separately (`grunt copy:js` / `grunt copy:css`), or at once (`grunt copyDeps  [--verbose]`)
-Run these tasks after updating dependencies with `npm update`
-Add new definitions after installing new packages with `npm install [<@scope>/]<name>` 
 */
 
 
@@ -13,7 +8,7 @@ Add new definitions after installing new packages with `npm install [<@scope>/]<
  /////// JS  /////////
 /////////////////////
 
-// Path to node modules, relative to Gruntfile.js
+// Path to node modules, relative to gulpfile.js
 const nodeModules = 'node_modules/';
 
 // Goobi viewer keeps JS libraries here
@@ -246,7 +241,6 @@ const depsPathsJS = [
   },
 
   /* current versions are not compatible with viewer core
-   * => pdfJS will not be updated when running grunt copyDeps
   { // PDFJS
     expand: true,
     cwd: nodeModules,
