@@ -7323,12 +7323,15 @@ public class JPADAO implements IDAO {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private <T> List<T> getAllEntities(Class<T> clazz) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            return em.createQuery(String.format("SELECT o FROM %s o", clazz.getSimpleName())).getResultList();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<T> cq = cb.createQuery(clazz);
+            Root<T> root = cq.from(clazz);
+            cq.select(root);
+            return em.createQuery(cq).getResultList();
         } catch (PersistenceException e) {
             logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e, clazz.getSimpleName());
             return new ArrayList<>();
@@ -7342,8 +7345,8 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery(String.format("SELECT o FROM %s o WHERE %s", clazz.getSimpleName(), whereClause));
-            params.forEach((name, value) -> q.setParameter(name, value));
+            Query q = em.createQuery("SELECT o FROM " + clazz.getSimpleName() + " o WHERE " + whereClause);
+            params.forEach(q::setParameter);
             return q.getResultList();
         } catch (PersistenceException e) {
             logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e, clazz.getSimpleName());
