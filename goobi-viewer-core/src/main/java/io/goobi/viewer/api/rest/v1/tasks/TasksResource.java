@@ -100,82 +100,81 @@ public class TasksResource {
         if (desc == null || desc.getType() == null) {
             throw new WebApplicationException(new IllegalRequestException("Must provide job type"));
         }
-        if (isAuthorized(desc.getType(), Optional.empty(), request)) {
-
-            if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-                ViewerMessage message = null;
-                message = new ViewerMessage(desc.getType().name());
-                message.getProperties().put("taskType", desc.getType().toString());
-                switch (desc.getType()) {
-
-                    case UPDATE_SITEMAP:
-                        SitemapRequestParameters params = Optional.ofNullable(desc)
-                                .filter(SitemapRequestParameters.class::isInstance)
-                                .map(SitemapRequestParameters.class::cast)
-                                .orElse(null);
-
-                        String viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
-                        String outputPath = request.getServletContext().getRealPath("/");
-                        if (params != null && StringUtils.isNotBlank(params.getOutputPath())) {
-                            outputPath = params.getOutputPath();
-                        }
-                        message.getProperties().put("viewerRootUrl", viewerRootUrl);
-                        message.getProperties().put("baseurl", outputPath);
-                        break;
-
-                    case UPDATE_DATA_REPOSITORY_NAMES:
-                        ToolsRequestParameters tools = Optional.ofNullable(desc)
-                                .filter(ToolsRequestParameters.class::isInstance)
-                                .map(ToolsRequestParameters.class::cast)
-                                .orElse(null);
-                        if (tools == null) {
-                            return null;
-                        }
-                        String identifier = tools.getPi();
-                        String dataRepositoryName = tools.getDataRepositoryName();
-                        message.getProperties().put("identifier", identifier);
-                        message.getProperties().put("dataRepositoryName", dataRepositoryName);
-                        break;
-
-                    case PRERENDER_PDF:
-                        PrerenderPdfsRequestParameters prerenderParams = Optional.ofNullable(desc)
-                                .filter(PrerenderPdfsRequestParameters.class::isInstance)
-                                .map(PrerenderPdfsRequestParameters.class::cast)
-                                .orElse(null);
-                        if (prerenderParams == null) {
-                            return null;
-                        }
-                        String pi = prerenderParams.getPi();
-                        String variant = Optional.ofNullable(prerenderParams.getVariant()).orElse(ContentServerConfiguration.DEFAULT_CONFIG_VARIANT);
-                        boolean force = Optional.ofNullable(prerenderParams.getForce()).orElse(false);
-                        message.getProperties().put("pi", pi);
-                        message.getProperties().put("variant", variant);
-                        message.getProperties().put("force", Boolean.toString(force));
-                        break;
-
-                    default:
-                        // unknown type
-                        return null;
-                }
-
-                try {
-                    String messageId = this.messageBroker.addToQueue(message);
-                    message.setMessageId(messageId);
-                } catch (MessageQueueException e) {
-                    throw new WebApplicationException(e);
-                }
-
-                // TODO create useful response, containing the message id
-                return Response.ok(message).build();
-            }
-            Task job = new Task(desc, TaskManager.createTask(desc.getType()));
-            logger.debug("Created new task REST API task '{}'", job);
-            DataManager.getInstance().getRestApiJobManager().addTask(job);
-            DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.getId(), request);
-            return Response.ok(job).build();
+        if (!isAuthorized(desc.getType(), Optional.empty(), request)) {
+            throw new WebApplicationException(new AccessDeniedException("Not authorized to create this type of job"));
         }
 
-        throw new WebApplicationException(new AccessDeniedException("Not authorized to create this type of job"));
+        if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
+            ViewerMessage message = null;
+            message = new ViewerMessage(desc.getType().name());
+            message.getProperties().put("taskType", desc.getType().toString());
+            switch (desc.getType()) {
+
+                case UPDATE_SITEMAP:
+                    SitemapRequestParameters params = Optional.ofNullable(desc)
+                            .filter(SitemapRequestParameters.class::isInstance)
+                            .map(SitemapRequestParameters.class::cast)
+                            .orElse(null);
+
+                    String viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
+                    String outputPath = request.getServletContext().getRealPath("/");
+                    if (params != null && StringUtils.isNotBlank(params.getOutputPath())) {
+                        outputPath = params.getOutputPath();
+                    }
+                    message.getProperties().put("viewerRootUrl", viewerRootUrl);
+                    message.getProperties().put("baseurl", outputPath);
+                    break;
+
+                case UPDATE_DATA_REPOSITORY_NAMES:
+                    ToolsRequestParameters tools = Optional.ofNullable(desc)
+                            .filter(ToolsRequestParameters.class::isInstance)
+                            .map(ToolsRequestParameters.class::cast)
+                            .orElse(null);
+                    if (tools == null) {
+                        return null;
+                    }
+                    String identifier = tools.getPi();
+                    String dataRepositoryName = tools.getDataRepositoryName();
+                    message.getProperties().put("identifier", identifier);
+                    message.getProperties().put("dataRepositoryName", dataRepositoryName);
+                    break;
+
+                case PRERENDER_PDF:
+                    PrerenderPdfsRequestParameters prerenderParams = Optional.ofNullable(desc)
+                            .filter(PrerenderPdfsRequestParameters.class::isInstance)
+                            .map(PrerenderPdfsRequestParameters.class::cast)
+                            .orElse(null);
+                    if (prerenderParams == null) {
+                        return null;
+                    }
+                    String pi = prerenderParams.getPi();
+                    String variant = Optional.ofNullable(prerenderParams.getVariant()).orElse(ContentServerConfiguration.DEFAULT_CONFIG_VARIANT);
+                    boolean force = Optional.ofNullable(prerenderParams.getForce()).orElse(false);
+                    message.getProperties().put("pi", pi);
+                    message.getProperties().put("variant", variant);
+                    message.getProperties().put("force", Boolean.toString(force));
+                    break;
+
+                default:
+                    // unknown type
+                    return null;
+            }
+
+            try {
+                String messageId = this.messageBroker.addToQueue(message);
+                message.setMessageId(messageId);
+            } catch (MessageQueueException e) {
+                throw new WebApplicationException(e);
+            }
+
+            // TODO create useful response, containing the message id
+            return Response.ok(message).build();
+        }
+        Task job = new Task(desc, TaskManager.createTask(desc.getType()));
+        logger.debug("Created new task REST API task '{}'", job);
+        DataManager.getInstance().getRestApiJobManager().addTask(job);
+        DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.getId(), request);
+        return Response.ok(job).build();
     }
 
     @GET
