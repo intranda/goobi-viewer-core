@@ -11,63 +11,69 @@
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-
     <!-- VIEW -->
-    <div id="fullscreenView" class="fullscreen__view #{activeDocumentBean.viewManager.cssClass}">
-
+    <div
+        id="fullscreenView"
+        class="fullscreen__view #{activeDocumentBean.viewManager.cssClass}">
         <!-- FULLSCREEN HEADER -->
         <ui:include src="/resources/includes/fullscreen/fs_header.xhtml" />
 
         <!-- IMAGE -->
-        <main id="fullscreenViewImage" class="fullscreen__view-image">
-			
-			
-			<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE'}">
-				<!-- Update pagenumber and all relevant html areas with ajax when changing image in sequence mode -->
-				<h:form>
-					<h:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
-					onevent="onPageUpdateEvent" onerror="onPageUpdateEvent"
-					render=":sidebarMetadata :sidebarMetadataTech :sidebarDownloads:pageDownloads :sidebarFormatLinks:widgetSectionLinks :sidebarCitation:pageCitations :sidebarFulltext :sidebarGeomap"></h:commandScript>
-					
-					<script>
-						function onPageUpdateEvent(data) {
-							if(data.status === "begin") {
-								document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.remove('-hidden'))
-							} else {
-								document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.add('-hidden'))
-							}
-						}
-					</script>
-				
-				</h:form>
-			</ui:fragment>
+        <main
+            id="fullscreenViewImage"
+            class="fullscreen__view-image">
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE'}">
+                <!-- Update pagenumber and all relevant html areas with ajax when changing image in sequence mode -->
+                <h:form>
+                    <h:commandScript
+                        name="setCurrentImageOrder"
+                        action="#{activeDocumentBean.setCurrentImageOrderPerScript}"
+                        onevent="onPageUpdateEvent"
+                        onerror="onPageUpdateEvent"
+                        render=":sidebarMetadata :sidebarMetadataTech :sidebarDownloads:pageDownloads :sidebarFormatLinks:widgetSectionLinks :sidebarCitation:pageCitations :sidebarFulltext :sidebarGeomap"></h:commandScript>
 
-        	<!-- heading for screen readers -->
-        	<!--
+                    <script>
+                        function onPageUpdateEvent(data) {
+                            if (data.status === 'begin') {
+                                document
+                                    .querySelectorAll('.ajax_loader__image_update')
+                                    .forEach((loader) => loader.classList.remove('-hidden'));
+                            } else {
+                                document
+                                    .querySelectorAll('.ajax_loader__image_update')
+                                    .forEach((loader) => loader.classList.add('-hidden'));
+                            }
+                        }
+                    </script>
+                </h:form>
+            </ui:fragment>
+
+            <!-- heading for screen readers -->
+            <!--
         	<h1 class="-sr-only">Goobi viewer</h1>
  			-->
             <div class="fullscreen__view-image-inner">
                 <!-- VIEW IMAGE -->
-                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
                     <ui:include src="/resources/includes/object/image.xhtml" />
                 </ui:fragment>
 
                 <!-- VIEW VIDEO -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'video'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.video}">
                     <ui:insert name="viewVideo">
                         <ui:include src="/resources/includes/object/video.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
 
                 <!-- VIEW AUDIO -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'audio'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.audio}">
                     <ui:insert name="viewAudio">
                         <ui:include src="/resources/includes/object/audio.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
 
                 <!-- VIEW 3D OBJECT -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'object' or activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'model'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.is3DModel()}">
                     <ui:insert name="viewObject3d">
                         <ui:include src="/resources/includes/object/object3d.xhtml" />
                     </ui:insert>
@@ -75,111 +81,153 @@
 
                 <!-- THUMBNAILS -->
                 <h:panelGroup layout="block">
-	                <c:if test="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
-	                    <f:attribute name="styleClass" value="fullscreen__view-image-thumbs-wrapper -ltr"/>
-	                </c:if>
-	                <c:if test="#{activeDocumentBean.viewManager.topStructElement.rtl}">
-	                    <f:attribute name="styleClass" value="fullscreen__view-image-thumbs-wrapper -rtl"/>
-	                </c:if>
+                    <c:if test="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
+                        <f:attribute
+                            name="styleClass"
+                            value="fullscreen__view-image-thumbs-wrapper -ltr" />
+                    </c:if>
+                    <c:if test="#{activeDocumentBean.viewManager.topStructElement.rtl}">
+                        <f:attribute
+                            name="styleClass"
+                            value="fullscreen__view-image-thumbs-wrapper -rtl" />
+                    </c:if>
                     <fsThumbnails></fsThumbnails>
                 </h:panelGroup>
 
                 <!-- OPEN SIDEBAR -->
-                <div id="viewSidebarOpen" class="fullscreen__view-sidebar-open">
-                    <button class="btn btn--clean" data-open="fs-sidebar" tabindex='-1'>
+                <div
+                    id="viewSidebarOpen"
+                    class="fullscreen__view-sidebar-open">
+                    <button
+                        class="btn btn--clean"
+                        data-open="fs-sidebar"
+                        tabindex="-1">
                         <span>#{msg.fullscreen_openSidebar}</span>
                     </button>
                 </div>
-
             </div>
         </main>
         <!-- SIDEBAR -->
-        <aside id="fullscreenViewSidebar" class="fullscreen__view-sidebar" tabindex="-1">
+        <aside
+            id="fullscreenViewSidebar"
+            class="fullscreen__view-sidebar"
+            tabindex="-1">
             <!-- SIDEBAR PANEL CONTROLS -->
-            <div id="fullscreenSidebarPanelControls" class="fullscreen__view-sidebar-panel-controls">
-                <button class="btn btn--clean" data-close="all-tabs" title="#{msg.allClose}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allClose}">
-                	<ui:include src="/resources/images/icons/icon_fs-minus.svg"/>
+            <div
+                id="fullscreenSidebarPanelControls"
+                class="fullscreen__view-sidebar-panel-controls">
+                <button
+                    class="btn btn--clean"
+                    data-close="all-tabs"
+                    title="#{msg.allClose}"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    aria-label="#{msg.allClose}">
+                    <ui:include src="/resources/images/icons/icon_fs-minus.svg" />
                 </button>
-                <button class="btn btn--clean" data-open="all-tabs" title="#{msg.allOpen}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.allOpen}">
-                	<ui:include src="/resources/images/icons/icon_fs-plus.svg"/>
-				</button>
+                <button
+                    class="btn btn--clean"
+                    data-open="all-tabs"
+                    title="#{msg.allOpen}"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    aria-label="#{msg.allOpen}">
+                    <ui:include src="/resources/images/icons/icon_fs-plus.svg" />
+                </button>
             </div>
 
             <div class="fullscreen__view-sidebar-inner">
                 <!-- SIDEBAR CONTROLS -->
                 <div class="fullscreen__view-sidebar-controls">
-                    <button class="btn btn--clean" title="#{msg.fullscreen_hideSidebar}" data-close="fs-sidebar" data-toggle="tooltip" data-placement="right" aria-label="#{msg.fullscreen_hideSidebar}"></button>
+                    <button
+                        class="btn btn--clean"
+                        title="#{msg.fullscreen_hideSidebar}"
+                        data-close="fs-sidebar"
+                        data-toggle="tooltip"
+                        data-placement="right"
+                        aria-label="#{msg.fullscreen_hideSidebar}"></button>
                 </div>
 
                 <!-- SIDEBAR WORK TITLE -->
                 <div class="fullscreen__view-sidebar-work-title">
-                    <h1 >#{activeDocumentBean.titleBarLabel}</h1>
-                    
+                    <h1>#{activeDocumentBean.titleBarLabel}</h1>
+
                     <ui:fragment rendered="#{configurationBean.displaySocialMediaShareLinks}">
-               			<div class="fullscreen__view-sidebar-share">
-               				<widgetComponent:widget_socialMedia_share />
-               			</div>
+                        <div class="fullscreen__view-sidebar-share">
+                            <widgetComponent:widget_socialMedia_share />
+                        </div>
                     </ui:fragment>
-                    
+
                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
-						<viewerComponent:copyrightIndicator />
-					</ui:fragment>
-					
-			        <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'widget'}">
-			        	<widgetComponent:widget_copyrightInfo />
-			        </ui:fragment>
-					
+                        <viewerComponent:copyrightIndicator />
+                    </ui:fragment>
+
+                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'widget'}">
+                        <widgetComponent:widget_copyrightInfo />
+                    </ui:fragment>
                 </div>
 
-               <!-- SEARCH IN CURRENT ITEM -->
-               <div class="fullscreen__view-sidebar-search-in-current-item">
-               		<widgetComponent:widget_searchInCurrentItem />
-               </div>
+                <!-- SEARCH IN CURRENT ITEM -->
+                <div class="fullscreen__view-sidebar-search-in-current-item">
+                    <widgetComponent:widget_searchInCurrentItem />
+                </div>
 
                 <!-- SIDEBAR ACCORDEON -->
                 <div class="fullscreen__view-sidebar-accordeon">
-
                     <!-- METADATA -->
-                    <div id="panel-1" class="fullscreen__view-sidebar-accordeon-panel fs-metadata">
-                        <h2 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                    <div
+                        id="panel-1"
+                        class="fullscreen__view-sidebar-accordeon-panel fs-metadata">
+                        <h2
+                            class="fullscreen__view-sidebar-accordeon-panel-title"
+                            tabindex="0">
                             <span>#{msg.bibData}</span>
                             <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
-								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-							</div>
+                                <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+                            </div>
                         </h2>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                        	<div jsf:id="sidebarMetadata">
-	                            <ui:include src="/resources/includes/metadata/metadata.xhtml" />
-                        	</div>
+                            <div jsf:id="sidebarMetadata">
+                                <ui:include src="/resources/includes/metadata/metadata.xhtml" />
+                            </div>
                         </div>
                     </div>
                     <!-- METADATA TECH -->
                     <ui:fragment rendered="#{fn:length(activeDocumentBean.viewManager.currentPage.metadata) > 0}">
-	                    <div id="panel-12" class="fullscreen__view-sidebar-accordeon-panel fs-metadata-tech">
-	                        <h2 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
-	                            <span>#{msg.metadataTech}</span>
-	                            <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
-									<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-								</div>
-	                        </h2>
-	
-	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
-								<div jsf:id="sidebarMetadataTech">
-									<widgetComponent:widget_metadataTech />
-								</div>
-	                        </div>
-	                    </div>
+                        <div
+                            id="panel-12"
+                            class="fullscreen__view-sidebar-accordeon-panel fs-metadata-tech">
+                            <h2
+                                class="fullscreen__view-sidebar-accordeon-panel-title"
+                                tabindex="0">
+                                <span>#{msg.metadataTech}</span>
+                                <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+                                    <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+                                </div>
+                            </h2>
+
+                            <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                                <div jsf:id="sidebarMetadataTech">
+                                    <widgetComponent:widget_metadataTech />
+                                </div>
+                            </div>
+                        </div>
                     </ui:fragment>
 
                     <!-- TOC -->
-					<ui:fragment rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen and (activeDocumentBean.toc.hasChildren)}">
-                        <div id="panel-2" class="fullscreen__view-sidebar-accordeon-panel fs-toc">
-                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                    <ui:fragment
+                        rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen and (activeDocumentBean.toc.hasChildren)}">
+                        <div
+                            id="panel-2"
+                            class="fullscreen__view-sidebar-accordeon-panel fs-toc">
+                            <h3
+                                class="fullscreen__view-sidebar-accordeon-panel-title"
+                                tabindex="0">
                                 <span>#{msg.sidebarToc}</span>
-	                            <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
-									<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-								</div>
+                                <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+                                    <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+                                </div>
                             </h3>
 
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
@@ -190,18 +238,22 @@
 
                     <!-- FULLTEXT -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable}">
-                        <div id="panel-3" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext">
-                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                        <div
+                            id="panel-3"
+                            class="fullscreen__view-sidebar-accordeon-panel fs-fulltext">
+                            <h3
+                                class="fullscreen__view-sidebar-accordeon-panel-title"
+                                tabindex="0">
                                 <span>#{msg.fulltext}</span>
                                 <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
-									<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-								</div>
+                                    <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+                                </div>
                             </h3>
 
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            	<div jsf:id="sidebarFulltext">
-	                                <ui:include src="/resources/includes/object/fulltext.xhtml" />
-                            	</div>
+                                <div jsf:id="sidebarFulltext">
+                                    <ui:include src="/resources/includes/object/fulltext.xhtml" />
+                                </div>
                             </div>
                         </div>
                     </ui:fragment>
@@ -209,169 +261,242 @@
                     <!-- GEOMAP -->
                     <!-- NOT SHOWN BECAUSE OF RENDERING PROBLEMS WHEN MAP PANEL IS NOT OPENED AT PAGE LOAD -->
                     <ui:fragment rendered="#{false and activeDocumentBean.geoMap.hasFeatures()}">
-                        <div id="panel-11" class="fullscreen__view-sidebar-accordeon-panel fs-location">
-                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                        <div
+                            id="panel-11"
+                            class="fullscreen__view-sidebar-accordeon-panel fs-location">
+                            <h3
+                                class="fullscreen__view-sidebar-accordeon-panel-title"
+                                tabindex="0">
                                 <span>#{msg.NORM_LOCATION}</span>
                                 <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
-									<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-								</div>
+                                    <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+                                </div>
                             </h3>
-							<div class="fullscreen__view-sidebar-accordeon-panel-body in">
-							        <widgetComponent:widget_geoMap id="sidebarGeomap"
-								        geoMap="#{activeDocumentBean.geoMap}" 
-								        title="" 
-								        allowFullscreen="false" 
-								        linkToSearch="false" 
-								        showAnnotations="true"
-								        popoverOnHover="true"
-								        popoverClass="record_geomap_popover"
-								        highlightDocumentId="#{activeDocumentBean.logid}"/>
-								        </div>
+                            <div class="fullscreen__view-sidebar-accordeon-panel-body in">
+                                <widgetComponent:widget_geoMap
+                                    id="sidebarGeomap"
+                                    geoMap="#{activeDocumentBean.geoMap}"
+                                    title=""
+                                    allowFullscreen="false"
+                                    linkToSearch="false"
+                                    showAnnotations="true"
+                                    popoverOnHover="true"
+                                    popoverClass="record_geomap_popover"
+                                    highlightDocumentId="#{activeDocumentBean.logid}" />
+                            </div>
                         </div>
                     </ui:fragment>
 
-					<ui:fragment rendered="#{!configurationBean.displayUserGeneratedContentBelowImage and not empty contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).stream().filter(content -> !content.isEmpty() and content.type != 'GEOLOCATION').toList()}">
-	                <!-- ANNOTATIONS -->
-	                    <div id="panel-9" class="fullscreen__view-sidebar-accordeon-panel fs-annotations">
-	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
-	                            <span>#{msg.admin__crowdsourcing_annotations}</span>
-	                            <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
-									<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-								</div>
-	                        </h3>
+                    <ui:fragment
+                        rendered="#{!configurationBean.displayUserGeneratedContentBelowImage and not empty contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).stream().filter(content -> !content.isEmpty() and content.type != 'GEOLOCATION').toList()}">
+                        <!-- ANNOTATIONS -->
+                        <div
+                            id="panel-9"
+                            class="fullscreen__view-sidebar-accordeon-panel fs-annotations">
+                            <h3
+                                class="fullscreen__view-sidebar-accordeon-panel-title"
+                                tabindex="0">
+                                <span>#{msg.admin__crowdsourcing_annotations}</span>
+                                <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+                                    <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+                                </div>
+                            </h3>
 
-	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
-	                            <widgetComponent:widget_annotations id="sidebarAnnotations" collapsible="false" />
-	                        </div>
-	                    </div>
-					</ui:fragment>
-					
-						<c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.archiveEntryIdentifier != null}">
-		                <!-- ARCHIVE -->
-		                <div id="panel-10" class="fullscreen__view-sidebar-accordeon-panel fs-archives">
-	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
-	                        <span>#{msg.archives}</span>
-	                    <span class="fullscreen__view-sidebar-accordeon-panel-title-actions">   
-		                <a class="widget-archives__prev #{neighbours.left != null ? '':'-disabled'}" 
-                           disabled="disabled"
-                           title="#{msg.previousHit}"
-                           data-toggle="tooltip"
-                           data-placement="top"
-                           aria-label="#{msg.previousHit}"
-		                   href="#{neighbours.left != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left).concat('/')) : '#'}">
-                            <util:icon icon="circle-arrow-left" svgClass="icon" />
-                        </a>
-	                	<a class="widget-archives__next #{neighbours.right != null ? '':'-disabled'}"
-                           title="#{msg.nextHit}"
-                           data-toggle="tooltip"
-                           data-placement="top"
-                           aria-label="#{msg.nextHit}"                           
-	                	   href="#{neighbours.right != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right).concat('/')) : '#'}">
-                            <util:icon icon="circle-arrow-right" svgClass="icon" />
-                        </a>
-                        </span>
-	                        </h3>
+                            <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                                <widgetComponent:widget_annotations
+                                    id="sidebarAnnotations"
+                                    collapsible="false" />
+                            </div>
+                        </div>
+                    </ui:fragment>
 
-	                        <!-- neighbours is a pair of optionals holding the ids of the previous and succeeding archives entry. This format is used to avoid querying solr more than once -->
-					    	<c:set scope="view" var="neighbours" value="#{activeDocumentBean.viewManager.getArchiveTreeNeighbours()}"/>
-				            
-				            <div class="fullscreen__view-sidebar-accordeon-panel-body">
-				            	<div id="widgetArchives" class="widget widget-archives">
+                    <c:if
+                        test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.archiveEntryIdentifier != null}">
+                        <!-- ARCHIVE -->
+                        <div
+                            id="panel-10"
+                            class="fullscreen__view-sidebar-accordeon-panel fs-archives">
+                            <h3
+                                class="fullscreen__view-sidebar-accordeon-panel-title"
+                                tabindex="0">
+                                <span>#{msg.archives}</span>
+                                <span class="fullscreen__view-sidebar-accordeon-panel-title-actions">
+                                    <a
+                                        class="widget-archives__prev #{neighbours.left != null ? '':'-disabled'}"
+                                        disabled="disabled"
+                                        title="#{msg.previousHit}"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        aria-label="#{msg.previousHit}"
+                                        href="#{neighbours.left != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left).concat('/')) : '#'}">
+                                        <util:icon
+                                            icon="circle-arrow-left"
+                                            svgClass="icon" />
+                                    </a>
+                                    <a
+                                        class="widget-archives__next #{neighbours.right != null ? '':'-disabled'}"
+                                        title="#{msg.nextHit}"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        aria-label="#{msg.nextHit}"
+                                        href="#{neighbours.right != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right).concat('/')) : '#'}">
+                                        <util:icon
+                                            icon="circle-arrow-right"
+                                            svgClass="icon" />
+                                    </a>
+                                </span>
+                            </h3>
 
-					                <ul>
-						                <ui:repeat var="entry" value="#{activeDocumentBean.viewManager.getArchiveHierarchyForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">
-										    <li class="widget-archives__entry">#{entry.label}</li>
-										</ui:repeat>
-										<li class="widget-archives__archives-link">
-										    <h:outputLink
-										        value="#{navigationHelper.applicationUrl}#{activeDocumentBean.viewManager.getArchiveUrlForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">#{msg.openArchiveView}</h:outputLink>
-										</li>
-									</ul>
-								</div>
-				            </div>
-		                    </div>
-						</c:if>
-					
-						<!-- RECORD NOTES -->
-					<c:set var="recordNotes" value="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}"/>
+                            <!-- neighbours is a pair of optionals holding the ids of the previous and succeeding archives entry. This format is used to avoid querying solr more than once -->
+                            <c:set
+                                scope="view"
+                                var="neighbours"
+                                value="#{activeDocumentBean.viewManager.getArchiveTreeNeighbours()}" />
+
+                            <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                                <div
+                                    id="widgetArchives"
+                                    class="widget widget-archives">
+                                    <ul class="widget-archives__entry-list">
+                                        <ui:repeat
+                                            var="entry"
+                                            value="#{activeDocumentBean.viewManager.getArchiveHierarchyForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">
+                                            <li class="widget-archives__entry">#{entry.label}</li>
+                                        </ui:repeat>
+                                        <li class="widget-archives__archives-link">
+                                            <h:outputLink
+                                                value="#{navigationHelper.applicationUrl}#{activeDocumentBean.viewManager.getArchiveUrlForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">
+                                                #{msg.openArchiveView}
+                                            </h:outputLink>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <!-- RECORD NOTES -->
+                    <c:set
+                        var="recordNotes"
+                        value="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
                     <c:if test="#{not empty recordNotes}">
-	                    <ui:repeat var="note" varStatus="status" value="#{recordNotes}">
-		                    <div id="panel-note-#{status.index+1}" class="fullscreen__view-sidebar-accordeon-panel fs-record-note">
-		                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
-		                            <span>#{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}</span>
-		                        </h3>
+                        <ui:repeat
+                            var="note"
+                            varStatus="status"
+                            value="#{recordNotes}">
+                            <div
+                                id="panel-note-#{status.index+1}"
+                                class="fullscreen__view-sidebar-accordeon-panel fs-record-note">
+                                <h3
+                                    class="fullscreen__view-sidebar-accordeon-panel-title"
+                                    tabindex="0">
+                                    <span>
+                                        #{note.noteTitle.getTextOrDefault(navigationHelper.locale,
+                                        navigationHelper.defaultLocale)}
+                                    </span>
+                                </h3>
 
-		                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
-		                            <h:outputText escape="false" value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}" />
-			                    	<ui:fragment rendered="#{userBean.admin}">
-					                    <div class="widget-record-notes__action-link">
-					                        	<a href="#{request.contextPath}/admin/cms/recordnotes/edit/#{note.id}">#{msg.edit}</a>
-					                    </div>
-				                    </ui:fragment>
-		                        </div>
-		                    </div>
-	                    </ui:repeat>
+                                <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                                    <h:outputText
+                                        escape="false"
+                                        value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}" />
+                                    <ui:fragment rendered="#{userBean.admin}">
+                                        <div class="widget-record-notes__action-link">
+                                            <a href="#{request.contextPath}/admin/cms/recordnotes/edit/#{note.id}">
+                                                #{msg.edit}
+                                            </a>
+                                        </div>
+                                    </ui:fragment>
+                                </div>
+                            </div>
+                        </ui:repeat>
                     </c:if>
 
                     <!-- DOWNLOADS -->
-                    <div id="panel-4" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
-                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                    <div
+                        id="panel-4"
+                        class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
+                        <h3
+                            class="fullscreen__view-sidebar-accordeon-panel-title"
+                            tabindex="0">
                             <span>#{msg.downloads}</span>
                             <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
-								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-							</div>
+                                <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+                            </div>
                         </h3>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            <widgetComponent:widget_downloads id="sidebarDownloads" collapsible="false" />
+                            <widgetComponent:widget_downloads
+                                id="sidebarDownloads"
+                                collapsible="false" />
                         </div>
                     </div>
-                    
+
                     <!-- FORMAT LINKS -->
-                    <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-formatlinks">
-                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                    <div
+                        id="panel-5"
+                        class="fullscreen__view-sidebar-accordeon-panel fs-formatlinks">
+                        <h3
+                            class="fullscreen__view-sidebar-accordeon-panel-title"
+                            tabindex="0">
                             <span>#{msg.widget_formatsLinks}</span>
                             <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
-								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-							</div>
+                                <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+                            </div>
                         </h3>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                             <widgetComponent:widget_formatsLinks id="sidebarFormatLinks" collapsible="false"/>
+                            <widgetComponent:widget_formatsLinks
+                                id="sidebarFormatLinks"
+                                collapsible="false" />
                         </div>
                     </div>
-                    
+
                     <!-- CITATION -->
-                    <div id="panel-6" class="fullscreen__view-sidebar-accordeon-panel fs-citation">
-                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                    <div
+                        id="panel-6"
+                        class="fullscreen__view-sidebar-accordeon-panel fs-citation">
+                        <h3
+                            class="fullscreen__view-sidebar-accordeon-panel-title"
+                            tabindex="0">
                             <span>#{msg.widget_citation}</span>
                             <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
-								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-							</div>
+                                <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+                            </div>
                         </h3>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            <widgetComponent:widget_citation id="sidebarCitation" collapsible="false"/>
+                            <widgetComponent:widget_citation
+                                id="sidebarCitation"
+                                collapsible="false" />
                         </div>
                     </div>
-                    
+
                     <!-- STATISTICS -->
-					<ui:fragment rendered="#{statisticsBean.usageStatisticsActive and userBean.admin}">
-	                    <div id="panel-7" class="fullscreen__view-sidebar-accordeon-panel fs-statistics">
-	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
-	                            <span>#{msg.widget_usage_statistics__title}</span>
-	                        </h3>
-	
-	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
-	                            <widgetComponent:widget_statistics_usage />
-	                        </div>
-	                    </div>
+                    <ui:fragment rendered="#{statisticsBean.usageStatisticsActive and userBean.admin}">
+                        <div
+                            id="panel-7"
+                            class="fullscreen__view-sidebar-accordeon-panel fs-statistics">
+                            <h3
+                                class="fullscreen__view-sidebar-accordeon-panel-title"
+                                tabindex="0">
+                                <span>#{msg.widget_usage_statistics__title}</span>
+                            </h3>
+
+                            <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                                <widgetComponent:widget_statistics_usage />
+                            </div>
+                        </div>
                     </ui:fragment>
 
                     <!-- SEARCH HIT NAVIGATION -->
                     <ui:fragment rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
-                        <div id="panel-8" class="fullscreen__view-sidebar-accordeon-panel fs-search-hit-navigation">
-                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                        <div
+                            id="panel-8"
+                            class="fullscreen__view-sidebar-accordeon-panel fs-search-hit-navigation">
+                            <h3
+                                class="fullscreen__view-sidebar-accordeon-panel-title"
+                                tabindex="0">
                                 <span>#{msg.searchHitNavigation}</span>
                             </h3>
 
@@ -383,76 +508,93 @@
 
                     <!-- IMAGE FILTER -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.hasPages}">
-                        <div id="panel-9" class="fullscreen__view-sidebar-accordeon-panel fs-imagefilters">
-                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                        <div
+                            id="panel-9"
+                            class="fullscreen__view-sidebar-accordeon-panel fs-imagefilters">
+                            <h3
+                                class="fullscreen__view-sidebar-accordeon-panel-title"
+                                tabindex="0">
                                 <span>#{msg.label__image_filter_toolkit}</span>
                             </h3>
 
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            	<span class="fullscreen__view-sidebar-accordeon-panel-error">
-                            		#{msg.label__image_filter_toolkit__error}
-                            	</span>
-                           		<imageFilters/>
+                                <span class="fullscreen__view-sidebar-accordeon-panel-error">
+                                    #{msg.label__image_filter_toolkit__error}
+                                </span>
+                                <imageFilters />
                             </div>
                         </div>
                     </ui:fragment>
 
                     <!-- SHARE IMAGE AREA -->
-                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode and !activeDocumentBean.viewManager.sequenceMode}">
-                        <div id="panel-10" class="fullscreen__view-sidebar-accordeon-panel share-image-area">
-                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                    <ui:fragment
+                        rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView and !activeDocumentBean.viewManager.doublePageMode and !activeDocumentBean.viewManager.sequenceMode}">
+                        <div
+                            id="panel-10"
+                            class="fullscreen__view-sidebar-accordeon-panel share-image-area">
+                            <h3
+                                class="fullscreen__view-sidebar-accordeon-panel-title"
+                                tabindex="0">
                                 <span>#{msg.action__share_image_region}</span>
                             </h3>
                             <div class="fullscreen__view-sidebar-accordeon-panel-body share-image-area">
-								<div class="share-image-area__instructions">#{msg.help__share_image_area__select}</div>
+                                <div class="share-image-area__instructions">#{msg.help__share_image_area__select}</div>
 
-								<div class="share-image-area__links">
-								<div>#{msg.help__share_image_area__share}</div>
-									<ul>
-										<li>
-											<a data-copy-share-image="image-region-page" data-copy-done-msg="#{msg.copyUrlDone}"
-											data-fragment-link="page"
-												title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_page}</a>
-										</li>
-										<li>
-											<a	data-copy-share-image="image-region-image"
-												data-copy-done-msg="#{msg.copyUrlDone}"
-												data-fragment-link="iiif"
-												title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_image}</a>
-										</li>
-									</ul>
-								</div>
+                                <div class="share-image-area__links">
+                                    <div>#{msg.help__share_image_area__share}</div>
+                                    <ul>
+                                        <li>
+                                            <a
+                                                data-copy-share-image="image-region-page"
+                                                data-copy-done-msg="#{msg.copyUrlDone}"
+                                                data-fragment-link="page"
+                                                title="#{msg.bookmarkList_shareLink_copy}">
+                                                #{msg.label__share_image_region_page}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a
+                                                data-copy-share-image="image-region-image"
+                                                data-copy-done-msg="#{msg.copyUrlDone}"
+                                                data-fragment-link="iiif"
+                                                title="#{msg.bookmarkList_shareLink_copy}">
+                                                #{msg.label__share_image_region_image}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
 
-								<div class="share-image-area__controls">
-									<button type="button" data-popover="close" class="btn btn--full">#{msg.closeWindow}</button>
-								</div>
-							</div>
+                                <div class="share-image-area__controls">
+                                    <button
+                                        type="button"
+                                        data-popover="close"
+                                        class="btn btn--full">
+                                        #{msg.closeWindow}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </ui:fragment>
-
-
                 </div>
             </div>
         </aside>
-
-
     </div>
 
-	<script type="text/javascript">
-       $(function () {
-       		$('[data-toggle="popover"]').popover()
-       })
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="popover"]').popover();
+        });
 
         //init imageFilters
-		zoomableImageLoaded.subscribe(image => {
-				image.updateMargins();
-       	 	    let originClean = image.viewer.isOriginClean();
-       	 	    if(originClean) {
-       	 	    	$(".fullscreen__view-sidebar-accordeon-panel.fs-imagefilters .fullscreen__view-sidebar-accordeon-panel-error").hide();
-       	 	        $("imageFilters").css("display", "block");
-       	 	    }
-
-   	 	});
+        zoomableImageLoaded.subscribe((image) => {
+            image.updateMargins();
+            let originClean = image.viewer.isOriginClean();
+            if (originClean) {
+                $(
+                    '.fullscreen__view-sidebar-accordeon-panel.fs-imagefilters .fullscreen__view-sidebar-accordeon-panel-error'
+                ).hide();
+                $('imageFilters').css('display', 'block');
+            }
+        });
     </script>
-
 </ui:composition>

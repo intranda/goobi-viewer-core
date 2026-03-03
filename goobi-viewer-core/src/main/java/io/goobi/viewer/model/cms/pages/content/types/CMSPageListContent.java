@@ -240,9 +240,10 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     }
 
     /**
-     * <p>
-     * Getter for the field <code>nestedPagesCount</code>.
-     * </p>
+     * @
+     *   <p>
+     *   Getter for the field <code>nestedPagesCount</code>.
+     *   </p>
      *
      * @return a int.
      */
@@ -305,7 +306,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @deprecated use {@link #getSortedCategories(boolean, CMSTemplateManager)} instead
      */
-    @Deprecated
+    @Deprecated(since = "26.02")
     public List<CMSCategory> getSortedCategories(int pageNo, boolean random, boolean paged, CMSTemplateManager templateManager) throws DAOException {
         return getSortedCategories(random, templateManager);
     }

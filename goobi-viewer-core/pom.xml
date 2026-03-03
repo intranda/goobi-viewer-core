@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>26.01.1</version>
+	<version>26.02-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Goobi viewer - Core</name>
 	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
@@ -79,17 +79,17 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.7.0</alto.version>
-		<ics.version>4.1.1</ics.version>
+		<ics.version>4.1.2</ics.version>
 		<tei-conversion.version>1.3.4</tei-conversion.version>
-		<intranda-content-view.version>0.3.7</intranda-content-view.version>
+		<intranda-content-view.version>0.3.9</intranda-content-view.version>
 		<iiif-api-model.version>3.2.0</iiif-api-model.version>
 		<normdataimporter.version>2.1.3</normdataimporter.version>
 
 		<!-- other libraries -->
-		<activemq.version>6.2.0</activemq.version>
+		<activemq.version>6.2.1</activemq.version>
 		<angus-mail.version>2.0.5</angus-mail.version>
-		<citationstyles.version>26.1.1</citationstyles.version>
-		<citeproc-java.version>3.4.1</citeproc-java.version>
+		<citationstyles.version>26.2</citationstyles.version>
+		<citeproc-java.version>3.5.0</citeproc-java.version>
 		<commons-collections4.version>4.5.0</commons-collections4.version>
 		<commons-configuration2.version>2.13.0</commons-configuration2.version>
 		<commons-io.version>2.21.0</commons-io.version>
@@ -105,7 +105,7 @@
 		<httpcore.version>4.4.16</httpcore.version>
 		<httpmime.version>4.5.14</httpmime.version>
 		<icu.version>78.2</icu.version>
-		<jackson.version>2.21.0</jackson.version>
+		<jackson.version>2.21.1</jackson.version>
 		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
 		<jakarta.enterprise.version>4.1.0</jakarta.enterprise.version>
@@ -119,7 +119,7 @@
 		<jakarta.websocket.version>2.2.0</jakarta.websocket.version>
 		<jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
 		<jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
-		<java-jwt.version>4.5.0</java-jwt.version>
+		<java-jwt.version>4.5.1</java-jwt.version>
 		<jwks-rsa.version>0.23.0</jwks-rsa.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<jaxb-runtime.version>4.0.6</jaxb-runtime.version>
@@ -129,7 +129,7 @@
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20251224</json.version>
 		<jsoup.version>1.22.1</jsoup.version>
-		<junit.version>6.0.2</junit.version>
+		<junit.version>6.0.3</junit.version>
 		<log4j.version>2.25.3</log4j.version>
 		<mariadb-java-client.version>3.5.7</mariadb-java-client.version>
 		<mockito.version>5.21.0</mockito.version>
@@ -141,10 +141,10 @@
 		<quartz.version>2.5.2</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
-		<spring.version>6.2.15</spring.version>
+		<spring.version>6.2.16</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.10.1</solr.version>
-		<swagger.version>2.2.42</swagger.version>
+		<swagger.version>2.2.43</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
 		<weld-servlet-shaded.version>5.1.7.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -1051,7 +1051,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.4</version>
+				<version>3.5.5</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
 					<excludes>

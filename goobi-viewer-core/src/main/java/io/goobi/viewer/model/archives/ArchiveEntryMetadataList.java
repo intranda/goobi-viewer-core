@@ -35,6 +35,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ArchiveMetadataBean;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Metadata list for {@link ArchiveEntry archive entries}. This is delegated to its own class so it can live in a different scope than the actual
@@ -98,6 +100,12 @@ public class ArchiveEntryMetadataList {
     //    Date(s) of descriptions
     private final List<Metadata> descriptionControlAreaList = new ArrayList<>();
 
+    /**
+     * 
+     * @param id
+     * @param doc Archive node Solr doc
+     * @param metadataList Metadata configuration list
+     */
     public ArchiveEntryMetadataList(String id, SolrDocument doc, List<Metadata> metadataList) {
         if (StringUtils.isBlank(id)) {
             throw new IllegalArgumentException("Id of archive entry metadata list may not be null or empty");
@@ -108,10 +116,10 @@ public class ArchiveEntryMetadataList {
         logger.trace("loadMetadata ({})", doc);
         try {
             // Collect metadata
-            if (doc != null && metadataList != null && !metadataList.isEmpty()) {
+            if (metadataList != null && !metadataList.isEmpty()) {
                 StructElement se = new StructElement(doc);
                 for (Metadata md : metadataList) {
-                    if (md.populate(se, null, null, null)) {
+                    if (md.populate(se, SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), null, null)) {
                         addMetadataField(md);
                     }
                 }

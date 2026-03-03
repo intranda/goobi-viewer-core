@@ -45,7 +45,8 @@ public class RecordDataProvider extends AbstractFeatureDataProvider {
         this.includeMetadataGroups = includeMetadataGroups;
     }
 
-    public List<MetadataDocument> getResults(String query, int maxResults) throws PresentationException, IndexUnreachableException {
+    public List<MetadataDocument> getResults(String query, List<String> facetFilterQueries, int maxResults)
+            throws PresentationException, IndexUnreachableException {
 
         if (StringUtils.isBlank(query)) {
             return Collections.emptyList();
@@ -57,7 +58,7 @@ public class RecordDataProvider extends AbstractFeatureDataProvider {
         String expandQuery = "+DOCTYPE:METADATA";
         Map<String, String> paramMap = this.includeMetadataGroups ? SearchHelper.getExpandQueryParams(expandQuery, null) : Collections.emptyMap();
 
-        return search(maxResults, finalQuery, paramMap);
+        return search(maxResults, finalQuery, facetFilterQueries, paramMap);
     }
 
     protected MetadataDocument getMetadataDocument(QueryResponse response, SolrDocument mainDoc) {

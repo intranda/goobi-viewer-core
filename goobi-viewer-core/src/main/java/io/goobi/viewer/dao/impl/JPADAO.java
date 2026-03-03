@@ -61,6 +61,7 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSProperty;
@@ -4280,6 +4281,124 @@ public class JPADAO implements IDAO {
         }
     }
 
+    // CMS archive configurations
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<CMSArchiveConfig> getCmsArchiveConfigForArchive(String pi) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT a FROM CMSArchiveConfig a WHERE a.pi = :pi");
+            q.setParameter("pi", pi);
+            // q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
+            return getSingleResult(q);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<CMSArchiveConfig> getCMSArchiveConfigs(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM CMSArchiveConfig a");
+            Map<String, String> params = new HashMap<>();
+            String filterQuery = createFilterQuery(null, filters, params);
+            if (StringUtils.isEmpty(filterQuery)) {
+                sbQuery.append(QUERY_ELEMENT_WHERE);
+            } else {
+                sbQuery.append(filterQuery).append(QUERY_ELEMENT_AND);
+            }
+            if (StringUtils.isNotBlank(sortField)) {
+                String[] sortFields = sortField.split("_");
+                sbQuery.append(" ORDER BY ");
+                for (String sf : sortFields) {
+                    sbQuery.append("a.").append(sf);
+                    if (descending) {
+                        sbQuery.append(QUERY_ELEMENT_DESC);
+                    }
+                    sbQuery.append(",");
+                }
+                sbQuery.deleteCharAt(sbQuery.length() - 1);
+            }
+
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+            return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getCMSArchiveConfigCount(Map<String, String> filters) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM CMSArchiveConfig a");
+            Map<String, String> params = new HashMap<>();
+            String filterQuery = createFilterQuery(null, filters, params);
+            if (StringUtils.isEmpty(filterQuery)) {
+                sbQuery.append(QUERY_ELEMENT_WHERE);
+            } else {
+                sbQuery.append(filterQuery).append(QUERY_ELEMENT_AND);
+            }
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean saveCMSArchiveConfig(CMSArchiveConfig config) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            if (config.getId() == null) {
+                em.persist(config);
+            } else {
+                em.merge(config);
+            }
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error(e.toString(), e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteCMSArchiveConfig(CMSArchiveConfig config) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            Role o = em.getReference(Role.class, config.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
     /**
      * Helper method to get the only result of a query. In contrast to {@link jakarta.persistence.Query#getSingleResult()} this does not throw an
      * exception if no results are found. Instead, it returns an empty Optional
@@ -7204,12 +7323,15 @@ public class JPADAO implements IDAO {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private <T> List<T> getAllEntities(Class<T> clazz) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            return em.createQuery(String.format("SELECT o FROM %s o", clazz.getSimpleName())).getResultList();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<T> cq = cb.createQuery(clazz);
+            Root<T> root = cq.from(clazz);
+            cq.select(root);
+            return em.createQuery(cq).getResultList();
         } catch (PersistenceException e) {
             logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e, clazz.getSimpleName());
             return new ArrayList<>();
@@ -7223,8 +7345,8 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery(String.format("SELECT o FROM %s o WHERE %s", clazz.getSimpleName(), whereClause));
-            params.forEach((name, value) -> q.setParameter(name, value));
+            Query q = em.createQuery("SELECT o FROM " + clazz.getSimpleName() + " o WHERE " + whereClause); //NOSONAR Input is safe
+            params.forEach(q::setParameter);
             return q.getResultList();
         } catch (PersistenceException e) {
             logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e, clazz.getSimpleName());

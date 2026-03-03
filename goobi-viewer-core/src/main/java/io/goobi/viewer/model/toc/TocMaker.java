@@ -36,9 +36,6 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jakarta.faces.context.FacesContext;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -73,6 +70,8 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -492,6 +491,8 @@ public final class TocMaker {
         }
 
         List<String> volumeFieldList = getSolrFieldsToFetch("_VOLUMES");
+        //add group fields to display connections to groups (convolutes, series,...)
+        volumeFieldList.addAll(DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields());
         // Add TOC volume grouping field for the given volume docstruct type to the list of fields to return
         String tocGroupField = DataManager.getInstance().getConfiguration().getTocVolumeGroupFieldForTemplate(anchorDocstructType);
         if (tocGroupField != null) {
@@ -579,7 +580,9 @@ public final class TocMaker {
                 for (String fieldName : volumeDoc.getFieldNames()) {
                     if (fieldName.startsWith(SolrConstants.PREFIX_GROUPID)) {
                         for (Object objValue : volumeDoc.getFieldValues(fieldName)) {
-                            groupIds.add((String) objValue);
+                            if (!objValue.equals(topStructPiLocal)) {
+                                groupIds.add((String) objValue);
+                            }
                         }
                     }
                 }

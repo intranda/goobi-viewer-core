@@ -150,7 +150,7 @@ public class CanvasBuilder extends AbstractBuilder {
         Canvas3 canvas = new Canvas3(canvasUri);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
 
-        if (page.getMimeType().matches("(?i)image(\\/.*)?")) {
+        if (page.getMediaType().isAllowsImageView()) {
             addImageResource(canvas, page);
         }
 
@@ -287,7 +287,7 @@ public class CanvasBuilder extends AbstractBuilder {
             }
         }
 
-        if (page.isHasImage()) {
+        if (page.getMediaType().isAllowsImageView() && StringUtils.isNotBlank(page.getFileName())) {
             String filename = page.getFileName();
             URI mediaId = imageUrlManager.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_MEDIA).params(page.getPi(), page.getOrder()).buildURI();
             if (ImageHandler.isExternalUrl(filename)) {

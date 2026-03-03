@@ -30,6 +30,7 @@
         <class>io.goobi.viewer.model.annotation.comments.CommentGroup</class>
 		<class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
+        <class>io.goobi.viewer.model.cms.CMSArchiveConfig</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
         <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
         <class>io.goobi.viewer.model.cms.CMSProperty</class>
@@ -155,6 +156,7 @@
         <class>io.goobi.viewer.model.annotation.comments.CommentGroup</class>
 		<class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
+        <class>io.goobi.viewer.model.cms.CMSArchiveConfig</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
         <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
         <class>io.goobi.viewer.model.cms.CMSProperty</class>

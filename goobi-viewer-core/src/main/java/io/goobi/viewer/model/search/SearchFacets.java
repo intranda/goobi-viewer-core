@@ -192,7 +192,7 @@ public class SearchFacets implements Serializable {
         }
 
         List<String> ret = new ArrayList<>();
-        Map<String, StringBuilder> queries = new LinkedHashMap<>(activeFacets.size());
+        Map<String, StringBuilder> queries = LinkedHashMap.newLinkedHashMap(activeFacets.size());
 
         for (IFacetItem facetItem : getActiveFacetsCopy()) {
             if (facetItem.isHierarchial() || facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)
@@ -200,7 +200,7 @@ public class SearchFacets implements Serializable {
                 continue;
             }
             StringBuilder sbQuery = queries.computeIfAbsent(facetItem.getField(), k -> new StringBuilder());
-            if (sbQuery.length() > 0) {
+            if (!sbQuery.isEmpty()) {
                 if ("OR".equalsIgnoreCase(DataManager.getInstance().getConfiguration().getMultiValueOperatorForField(facetItem.getField()))) {
                     sbQuery.append(' ');
                 } else {

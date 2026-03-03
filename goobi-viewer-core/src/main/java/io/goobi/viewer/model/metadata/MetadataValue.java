@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.undercouch.citeproc.CSL;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -46,6 +47,7 @@ import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.variables.VariableReplacer;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -86,6 +88,7 @@ public class MetadataValue implements Serializable {
     private transient CSL citationProcessor = null;
     private transient CitationDataProvider citationItemDataProvider = null;
     private String citationString = null;
+    private final VariableReplacer replacer = new VariableReplacer(DataManager.getInstance().getConfiguration());
 
     /**
      * Package-private constructor.
@@ -125,6 +128,10 @@ public class MetadataValue implements Serializable {
         return true;
     }
 
+    public String getDisplayParamValue(int index) {
+        return replacer.replaceFirst(getComboValueShort(index));
+    }
+
     /**
      * <p>
      * getComboValueShort.
@@ -142,7 +149,7 @@ public class MetadataValue implements Serializable {
      * @should use master value fragment correctly
      * @return a {@link java.lang.String} object.
      */
-    public String getComboValueShort(int index) {
+    String getComboValueShort(int index) {
         if (paramValues.size() <= index || paramValues.get(index) == null || paramValues.get(index).isEmpty()) {
             return "";
         }
@@ -516,7 +523,9 @@ public class MetadataValue implements Serializable {
                 .flatMap(List::stream)
                 .toArray(String[]::new);
 
-        return ViewerResourceBundle.getTranslationWithParameters(getMasterValue(), locale, true, comboValues);
+        String displayValue = ViewerResourceBundle.getTranslationWithParameters(getMasterValue(), locale, true, comboValues);
+        displayValue = replacer.replaceFirst(displayValue);
+        return displayValue;
     }
 
     /**

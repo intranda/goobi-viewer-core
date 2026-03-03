@@ -45,7 +45,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
-import io.goobi.viewer.model.viewer.BaseMimeType;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 
@@ -61,6 +61,7 @@ public enum FileType {
     ALTO,
     TEXT,
     TEI,
+    MEI,
     PDF,
     EPUB;
 
@@ -73,25 +74,28 @@ public enum FileType {
 
         Map<String, List<String>> filenames = viewManager.getFilenamesByMimeType(localFilesOnly);
 
-        List<BaseMimeType> baseTypes = filenames.keySet().stream().map(BaseMimeType::getByName).collect(Collectors.toList());
+        List<MimeType> baseTypes = filenames.keySet().stream().map(MimeType::new).collect(Collectors.toList());
 
-        if (baseTypes.contains(BaseMimeType.AUDIO)) {
+        if (baseTypes.stream().anyMatch(MimeType::isAudio)) {
             types.add(FileType.AUDIO);
         }
-        if (baseTypes.contains(BaseMimeType.VIDEO)) {
+        if (baseTypes.stream().anyMatch(MimeType::isVideo)) {
             types.add(FileType.VIDEO);
         }
-        if (baseTypes.contains(BaseMimeType.IMAGE)) {
+        if (baseTypes.stream().anyMatch(MimeType::isImage)) {
             types.add(FileType.IMAGE);
         }
-        if (baseTypes.contains(BaseMimeType.MODEL)) {
+        if (baseTypes.stream().anyMatch(MimeType::is3DModel)) {
             types.add(FileType.MODEL);
         }
-        if (filenames.keySet().contains("application/pdf")) {
+        if (baseTypes.stream().anyMatch(MimeType::isPdf)) {
             types.add(FileType.PDF);
         }
-        if (filenames.keySet().contains("application/epub+zip")) {
+        if (baseTypes.stream().anyMatch(MimeType::isEpub)) {
             types.add(FileType.EPUB);
+        }
+        if (baseTypes.stream().anyMatch(MimeType::isMEI) || viewManager.getTopStructElement().isHasMei()) {
+            types.add(FileType.MEI);
         }
         if (viewManager.getTopStructElement().isHasTei()) {
             types.add(FileType.TEI);
@@ -222,9 +226,8 @@ public enum FileType {
     }
 
     public static FileType fromMimeType(String mimeType) {
-        BaseMimeType baseType = BaseMimeType.getByName(mimeType);
         try {
-            return FileType.valueOf(baseType.name());
+            return FileType.valueOf(new MimeType(mimeType).getType().toUpperCase());
         } catch (IllegalArgumentException e) {
             return null;
         }

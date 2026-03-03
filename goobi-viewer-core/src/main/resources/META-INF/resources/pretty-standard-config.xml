@@ -99,7 +99,7 @@
     <!-- ARCHIVES -->
     <url-mapping id="archives">
         <pattern value="/archives/" />
-        <view-id value="/archivesContent.xhtml" />
+        <view-id value="/archivesList.xhtml" />
         <action onPostback="false">#{archiveBean.reset()}</action>
     </url-mapping>
     <url-mapping id="archives1">
@@ -1031,6 +1031,17 @@
 		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+    <url-mapping id="adminCmsArchives">
+        <pattern value="/admin/cms/archives/" />
+        <view-id value="/resources/cms/adminCmsArchives.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsArchiveEdit">
+        <pattern value="/admin/cms/archives/edit/#{resourceId}/" />
+        <view-id value="/resources/cms/adminCmsArchiveEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsArchivesBean.setSelectedResourceId(resourceId)}</action>
+    </url-mapping>
 	<url-mapping id="adminCmsOverview">
 		<pattern value="/admin/cms/pages/" />
 		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
@@ -1402,7 +1413,23 @@
 		<pattern value="/errorTest/" />
 		<view-id value="/errorTest.xhtml" />
 	</url-mapping>
-    
+	<url-mapping id="errorHttp400">
+		<pattern value="/error/400/" />
+		<view-id value="/errorHttp400.xhtml" />
+	</url-mapping>
+	<url-mapping id="errorHttp403">
+		<pattern value="/error/403/" />
+		<view-id value="/errorHttp403.xhtml" />
+	</url-mapping>
+	<url-mapping id="errorHttp404">
+		<pattern value="/error/404/" />
+		<view-id value="/errorHttp404.xhtml" />
+	</url-mapping>
+	<url-mapping id="errorHttp500">
+		<pattern value="/error/500/" />
+		<view-id value="/errorHttp500.xhtml" />
+	</url-mapping>
+
     <!-- Close tab -->
    <url-mapping id="logincomplete">
         <pattern value="/logincomplete/" />

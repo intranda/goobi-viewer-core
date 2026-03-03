@@ -28,12 +28,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ocpsoft.pretty.PrettyContext;
 
@@ -45,6 +44,7 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * This class offers static methods to create {@link ViewerPath ViewerPaths} from a http request.
@@ -52,6 +52,8 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  * @author Florian Alpers
  */
 public final class ViewerPathBuilder {
+
+    private static final Logger logger = LogManager.getLogger(ViewerPathBuilder.class);
 
     private ViewerPathBuilder() {
         //
@@ -158,7 +160,8 @@ public final class ViewerPathBuilder {
         } else {
             Optional<PageType> pageType = getPageType(servicePath);
             if (pageType.isPresent()) {
-                currentPath.setPagePath(URI.create(pageType.get().getName()));
+                // Use the PageType's true name, without config remapping, otherwise the final path can contain ../image/object/..
+                currentPath.setPagePath(URI.create(pageType.get().getRawName()));
                 currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
                 currentPath.setPageType(pageType.get());
                 if (pageType.get().isHandledWithCms()) {
@@ -242,12 +245,12 @@ public final class ViewerPathBuilder {
      * @return a {@link java.util.Optional} object.
      */
     public static Optional<PageType> getPageType(final URI servicePath) {
+        // logger.trace("getPageType: {}", servicePath); //NOSONAR Debug
         List<PageType> matchingTypes =
                 EnumSet.complementOf(EnumSet.of(PageType.other)).stream().filter(type -> type.matches(servicePath)).collect(Collectors.toList());
         matchingTypes.sort((type1, type2) -> Integer.compare(type2.getName().length(), type1.getName().length()));
 
         return matchingTypes.stream().findFirst();
-
     }
 
     /**

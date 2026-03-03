@@ -4,111 +4,113 @@
    ==============================================================*/
 /* WIDGET ARCHIVES INTERACTIONS */
 #widgetArchivesInteractions {
-	width: 320px;
-	background: @adminBackend-bg;
-	.modal-title {
-		color: @black;
-	}
-	h2, h3 {
-		color: @white;
-		font-weight: 700;
-		margin-bottom: 1rem;
-		font-family: @fontBackend;
-	}
-	h2 {
-		background: transparent;
-		font-weight: 700;
-		font-size: 2.2rem;
-		border: none;
-		text-transform: none;
-	}
-	h3 {}
-	ul {
-		background: @adminBackend-bg;
-		border: none;
-		margin-bottom: 0rem;
-		li {
-			a, button {
-				padding: 0.3rem 0;
-				color: @white;
-				background: transparent;
-				border: none;
-				line-height: 1.2;
-				display: flex;
-				font-size: 14px;
-				font-weight: 400;
-				&:hover,
-				&:focus,
-				&:active {
-					color: @white;
-					text-decoration: underline;
-				}
-			}
-			&:first-of-type {
-				a {
-		    		padding-top: 0;
-				}
-			}
-		}
-	}
+    width: 320px;
 }
 
-.widget-archives-interactions {
-	font-family: @fontBackend;
-	padding: 2rem;
-	background-color: @adminBackend-bg;
-	&__info-text {
-		font-size: 1.2rem;
-		font-style: italic;
-		margin-bottom: 1rem;
-		color: @white;
-	}
-	&__delete-button {
+#widgetArchivesInteractions,
+#widgetArchivesListActions {
+    background: @adminBackend-bg;
+    .modal-title {
+        color: @black;
+    }
+    h2,
+    h3 {
+        color: @white;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-family: @fontBackend;
+    }
+    h2 {
+        background: transparent;
+        font-weight: 700;
+        font-size: 2.2rem;
+        border: none;
+        text-transform: none;
+    }
+    ul {
+        background: @adminBackend-bg;
+        border: none;
+        margin-bottom: 0;
+        li {
+            a,
+            button {
+                padding: 0.3rem 0;
+                color: @white;
+                background: transparent;
+                border: none;
+                line-height: 1.2;
+                display: flex;
+                font-size: 14px;
+                font-weight: 400;
+                &:hover,
+                &:focus,
+                &:active {
+                    color: @white;
+                    text-decoration: underline;
+                }
+            }
+            &:first-of-type {
+                a {
+                    padding-top: 0;
+                }
+            }
+        }
+    }
+}
 
-	}
-	&__delete-record {}
-	&__delete-record-message {
-		padding: 1.5rem;
-		padding-top: 5px;
-		border-top: 0;
-		span {
-			display: inline-block;
-			padding: 10px;
-			font-size: @fontMedium;
-			line-height: 1.4rem;
-			color: @black;
-			border: 1px solid @validWarning;
-			background-color: @btnWarningBgc;
-		}
-	}
-	&__delete-record-action,
-	&__clear-cache-action {
-		.btn {
-			display: block;
-			padding: 8px 12px;
-			color: #555;
-		}
-		padding: 5px 0 10px 0;
-		&.has-no-urn {
-			padding-top: 0;
-			.btn {
-				text-align: left;
-				display: block;
-			}
-			a {
-				padding-top: 0;
-			}
-		}
-		&.has-urn {
-			.btn {
-				width: 100%;
-				display: block;
-			}			
-		}
-	}
-	.custom-control--select {
-		font-size: 1.3rem;
-	}
+.widget-archives-interactions,
+.widget-archives-list-actions {
+    font-family: @fontBackend;
+    padding: 2rem;
+    background-color: @adminBackend-bg;
+    &__info-text {
+        font-size: 1.2rem;
+        font-style: italic;
+        margin-bottom: 1rem;
+        color: @white;
+    }
+    &__delete-record-message {
+        padding: 1.5rem;
+        padding-top: 5px;
+        border-top: 0;
+        span {
+            display: inline-block;
+            padding: 10px;
+            font-size: @fontMedium;
+            line-height: 1.4rem;
+            color: @black;
+            border: 1px solid @validWarning;
+            background-color: @btnWarningBgc;
+        }
+    }
+    &__delete-record-action,
+    &__clear-cache-action {
+        .btn {
+            display: block;
+            padding: 8px 12px;
+            color: @lowerblack;
+        }
+        padding: 5px 0 10px 0;
+        &.has-no-urn {
+            padding-top: 0;
+            .btn {
+                text-align: left;
+                display: block;
+            }
+            a {
+                padding-top: 0;
+            }
+        }
+        &.has-urn {
+            .btn {
+                width: 100%;
+                display: block;
+            }
+        }
+    }
+    .custom-control--select {
+        font-size: 1.3rem;
+    }
 }
 
 //@{RTL} {
@@ -124,13 +126,17 @@
 //}
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

@@ -35,6 +35,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
@@ -47,6 +49,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.Dataset;
 
 public class PdfDownloadJob extends DownloadJob {
+
+    private static final Logger logger = LogManager.getLogger(PdfDownloadJob.class);
 
     public static final String TYPE = "pdf";
 
@@ -70,6 +74,14 @@ public class PdfDownloadJob extends DownloadJob {
         this.configVariant = configVariant;
         this.usePdfSource = usePdfSource;
         this.path = generatePath();
+    }
+
+    public PdfDownloadJob(String pi, String logId, String configVariant, boolean usePdfSource, Path targetFolder) {
+        super(pi);
+        this.logId = logId;
+        this.configVariant = configVariant;
+        this.usePdfSource = usePdfSource;
+        this.path = targetFolder.resolve(generateFilename());
     }
 
     public PdfDownloadJob(Path path) {
@@ -161,13 +173,22 @@ public class PdfDownloadJob extends DownloadJob {
 
     private static MetsPdfRequest createPdfRequest(Dataset work, Optional<String> divId, boolean usePdfSource, String configVariant)
             throws URISyntaxException {
+
+        boolean usePdfFiles = usePdfSource;
+        Path pdfFolder = work.getPdfFolderPath();
+        //If media folder contains PDFs, make sure the the contentServer may use them and set the pdf folder to the media folder
+        if (containsPdfs(work.getMediaFolderPath())) {
+            usePdfFiles = true;
+            pdfFolder = work.getMediaFolderPath();
+        }
+
         Map<String, String> params = new HashMap<>();
         params.put("metsFile", work.getMetadataFilePath().toString());
         params.put("imageSource", work.getMediaFolderPath().getParent().toUri().toString());
         divId.ifPresent(id -> params.put("divID", id));
 
-        if (usePdfSource && work.getPdfFolderPath() != null) {
-            params.put("pdfSource", work.getPdfFolderPath().getParent().toUri().toString());
+        if (usePdfFiles && Files.exists(pdfFolder)) {
+            params.put("pdfSource", pdfFolder.getParent().toUri().toString());
         }
         if (work.getAltoFolderPath() != null) {
             params.put("altoSource", work.getAltoFolderPath().getParent().toUri().toString());
@@ -179,6 +200,18 @@ public class PdfDownloadJob extends DownloadJob {
         params.put("goobiMetsFile", "false");
         MetsPdfRequest request = new MetsPdfRequest(params);
         return request;
+    }
+
+    static boolean containsPdfs(Path folder) {
+        if (folder == null || !Files.exists(folder)) {
+            return false;
+        }
+        try (Stream<Path> files = Files.list(folder)) {
+            return files.anyMatch(f -> f.getFileName().toString().matches("(?i).*\\.pdf"));
+        } catch (IOException e) {
+            logger.error("Error parsing folder {} to look for existing pdf files ", folder);
+            return false;
+        }
     }
 
     public static int removeFilesForRecord(String pi) {

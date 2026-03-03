@@ -38,7 +38,7 @@ import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.toc.TOC;
-import io.goobi.viewer.model.viewer.BaseMimeType;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -55,7 +55,7 @@ public class VisibilityCondition {
 
     private final AnyMatchCondition<String> sourceFormat;
 
-    private final AnyMatchCondition<BaseMimeType> mimeType;
+    private final AnyMatchCondition<String> mimeType;
 
     private final Condition<String> accessCondition;
 
@@ -84,8 +84,9 @@ public class VisibilityCondition {
                         info.getMimeType()
                                 .stream()
                                 .filter(s -> !s.equals("!"))
-                                .map(BaseMimeType::getByName)
-                                .filter(type -> type != BaseMimeType.NONE)
+                                .map(MimeType::new)
+                                .map(MimeType::getType)
+                                .filter(StringUtils::isNotBlank)
                                 .toList(),
                         !info.getMimeType().contains("!")),
                 new Condition<>(getValue(info.getAccessCondition()), !isNegated(info.getAccessCondition())),
@@ -100,7 +101,7 @@ public class VisibilityCondition {
     }
 
     public VisibilityCondition(AnyMatchCondition<FileType> fileTypes, AnyMatchCondition<String> sourceFormat,
-            AnyMatchCondition<BaseMimeType> mimeType,
+            AnyMatchCondition<String> mimeType,
             Condition<String> accessCondition, AnyMatchCondition<PageType> views, AnyMatchCondition<String> docTypes,
             ComparisonCondition<Integer> numPages,
             ComparisonCondition<Integer> tocSize) {
@@ -157,7 +158,7 @@ public class VisibilityCondition {
         Collection<FileType> existingFileTypes = properties.getFileTypesForRecord(viewManager, true);
 
         PageType usePageType = pageType != null ? pageType : PageType.other;
-        BaseMimeType baseMimeType = BaseMimeType.getByName(viewManager.getTopStructElement().getMetadataValue(SolrConstants.MIMETYPE));
+        MimeType baseMimeType = new MimeType(viewManager.getTopStructElement().getMetadataValue(SolrConstants.MIMETYPE));
         return checkAccess(viewManager, request, properties)
                 && this.fileTypes.matches(existingFileTypes)
                 && this.sourceFormat.matches(Optional.ofNullable(viewManager)
@@ -165,7 +166,7 @@ public class VisibilityCondition {
                         .map(StructElement::getSourceDocFormat)
                         .map(List::of)
                         .orElse(Collections.emptyList()))
-                && this.mimeType.matches(List.of(baseMimeType))
+                && this.mimeType.matches(List.of(baseMimeType.getType()))
                 && this.views.matches(List.of(Optional.ofNullable(usePageType).orElse(PageType.other)))
                 && this.docTypes.matches(docTypesLocal)
                 && this.numPages.matches(viewManager.getPageLoader().getNumPages())
@@ -208,10 +209,10 @@ public class VisibilityCondition {
         }
 
         Collection<FileType> existingFileTypes = properties.getFileTypesForPage(page, true);
-        BaseMimeType baseMimeType = page.getBaseMimeType();
+        MimeType baseMimeType = page.getMediaType();
         return checkAccess(page, request, properties)
                 && this.fileTypes.matches(existingFileTypes)
-                && this.mimeType.matches(List.of(baseMimeType))
+                && this.mimeType.matches(List.of(baseMimeType.getType()))
                 && this.views.matches(List.of(Optional.ofNullable(pageType).orElse(PageType.other)));
     }
 
@@ -236,7 +237,7 @@ public class VisibilityCondition {
         return docTypes;
     }
 
-    public AnyMatchCondition<BaseMimeType> getMimeType() {
+    public AnyMatchCondition<String> getMimeType() {
         return mimeType;
     }
 

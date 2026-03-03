@@ -440,4 +440,24 @@ public class ViewerPath implements Serializable {
         return getCmsPage() != null;
     }
 
+    /**
+     * Depending on the page type, a page is considered the same in the context of the navigation history if its base pagePath is the same vs also
+     * considering page parameters for certain pagesPath values.
+     * 
+     * @param other {@link ViewerPath} to compare
+     * @return true if navigationally equivalent; false otherwise
+     */
+    public boolean isNavigationallyEquivalent(ViewerPath other) {
+        if (other == null) {
+            return false;
+        }
+
+        if (PageType.archives.getName().equals(pagePath.toString())) {
+            return pagePath.equals(other.getPagePath())
+                    && ((parameterPath == null && other.getParameterPath() == null)
+                            || (parameterPath != null && parameterPath.equals(other.getParameterPath())));
+        }
+
+        return pagePath.equals(other.getPagePath());
+    }
 }

@@ -28,10 +28,16 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.solr.SolrConstants;
 
-class DataFileToolsTest extends AbstractTest {
+class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see DataFileTools#getSourceFilePath(String,String,String)
@@ -178,5 +184,31 @@ class DataFileToolsTest extends AbstractTest {
         String tei = DataFileTools.loadTei("DE_2013_Riedel_PolitikUndCo_241__248", "eng");
         Assertions.assertNotNull(tei);
         Assertions.assertTrue(tei.contains("<TEI xmlns="));
+    }
+
+    /**
+     * @see DataFileTools#loadTei(String,String)
+     * @verifies throw RecordNotFoundException if pi not found
+     */
+    @Test
+    void loadMei_shouldThrowRecordNotFoundExceptionIfPiNotDound() {
+        Assertions.assertThrows(RecordNotFoundException.class, () -> DataFileTools.loadMei("no_such_pi", null));
+    }
+
+    /**
+     * @throws IOException
+     * @throws RecordNotFoundException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws AccessDeniedException
+     * @see DataFileTools#loadTei(String,String)
+     * @verifies return null if record has no mei
+     */
+    @Test
+    void loadMei_shouldReturnNullIfRecordHasNoMei()
+            throws AccessDeniedException, DAOException, IOException, IndexUnreachableException, PresentationException, RecordNotFoundException {
+        String mei = DataFileTools.loadMei(AbstractSolrEnabledTest.PI_KLEIUNIV, null);
+        Assertions.assertNull(mei);
     }
 }

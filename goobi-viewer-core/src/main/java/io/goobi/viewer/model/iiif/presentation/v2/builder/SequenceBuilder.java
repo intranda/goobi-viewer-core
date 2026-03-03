@@ -84,7 +84,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
-import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -339,7 +338,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 canvas.setHeight(size.height);
             }
 
-            if (page.getMimeType().toLowerCase().startsWith("image") && StringUtils.isNotBlank(page.getFilepath())) {
+            if (page.getMediaType().isAllowsImageView() && StringUtils.isNotBlank(page.getFileName())) {
                 String thumbnailUrl = page.getThumbnailUrl();
                 ImageContent resource = new ImageContent(new URI(thumbnailUrl));
                 if (size.getWidth() * size.getHeight() > 0) {
@@ -394,7 +393,7 @@ public class SequenceBuilder extends AbstractBuilder {
         if (target.equals(LinkingTarget.ALTO) && StringUtils.isBlank(page.getAltoFileName())) {
             return null;
         }
-        if (target.equals(LinkingTarget.PDF) && !(BaseMimeType.IMAGE.equals(page.getBaseMimeType()))) {
+        if (target.equals(LinkingTarget.PDF) && !(page.getMediaType().isImage())) {
             return null;
         }
 
@@ -495,7 +494,7 @@ public class SequenceBuilder extends AbstractBuilder {
             }
         }
 
-        if (BaseMimeType.AUDIO.getName().equals(page.getMimeType())) {
+        if (page.getMediaType().isAudio()) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, true));
             annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.AUDIO.name()));
             OpenAnnotation annotation = new OpenAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, 1));
@@ -517,7 +516,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
         AnnotationList videoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, true));
         videoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.VIDEO.name()));
-        if (BaseMimeType.VIDEO.getName().equals(page.getMimeType())) {
+        if (page.getMediaType().isVideo()) {
             OpenAnnotation annotation = new OpenAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
             annotation.setMotivation(Motivation.PAINTING);
             annotation.setTarget(canvas);
@@ -533,7 +532,7 @@ public class SequenceBuilder extends AbstractBuilder {
             }
 
         }
-        if (BaseMimeType.SANDBOXED_HTML.getName().equals(page.getMimeType())) {
+        if (page.getMediaType().isSandboxedHtml()) {
             try {
                 OpenAnnotation annotation = new OpenAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
                 annotation.setMotivation(Motivation.PAINTING);
@@ -575,9 +574,9 @@ public class SequenceBuilder extends AbstractBuilder {
      */
     private Dimension getSize(PhysicalElement page) throws PresentationException, IndexUnreachableException {
         Dimension size = new Dimension(0, 0);
-        if (page.getMimeType().toLowerCase().startsWith("video") || page.getMimeType().toLowerCase().startsWith("text")) {
+        if (page.getMediaType().isVideo() || page.getMediaType().isSandboxedHtml()) {
             size.setSize(page.getVideoWidth(), page.getVideoHeight());
-        } else if (page.getMimeType().toLowerCase().startsWith("image")) {
+        } else if (page.getMediaType().isAllowsImageView()) {
             if (page.hasIndividualSize()) {
                 size.setSize(page.getImageWidth(), page.getImageHeight());
             } else {

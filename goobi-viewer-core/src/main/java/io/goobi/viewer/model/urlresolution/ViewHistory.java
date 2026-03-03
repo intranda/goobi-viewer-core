@@ -107,7 +107,7 @@ public final class ViewHistory {
             ViewerPath previousPath = (ViewerPath) session.getAttribute(CURRENT_URL);
             session.setAttribute(CURRENT_URL, currentPath);
             // logger.trace("Set session attribute {} to {}", CURRENT_URL, currentPath);
-            if (previousPath != null && !currentPath.getPagePath().equals(previousPath.getPagePath())) {
+            if (previousPath != null && !currentPath.isNavigationallyEquivalent(previousPath)) {
                 //different page
                 session.setAttribute(PREVIOUS_URL, previousPath);
                 logger.trace("Set session attribute {} to {}", PREVIOUS_URL, previousPath);

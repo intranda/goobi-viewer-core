@@ -591,6 +591,15 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     * Return the layout type for TOCs of anchor records. Dafaults to 'list'
+     * 
+     * @return a string
+     */
+    public String getTocAnchorLayout() {
+        return DataManager.getInstance().getConfiguration().getTocAnchorLayout();
+    }
+
+    /**
      * <p>
      * isDisplayTitleBreadcrumbs.
      * </p>

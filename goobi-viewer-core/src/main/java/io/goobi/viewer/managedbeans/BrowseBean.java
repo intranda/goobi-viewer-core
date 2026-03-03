@@ -224,6 +224,7 @@ public class BrowseBean implements Serializable {
      * @throws IllegalRequestException
      */
     public List<BrowseDcElement> getList(String field, int depth) throws IndexUnreachableException {
+        logger.trace("getlist: {}", field);
         try {
             if (collections.get(field) == null) {
                 initializeCollection(field, null);
@@ -231,8 +232,9 @@ public class BrowseBean implements Serializable {
             }
             if (collections.get(field) != null) {
                 CollectionView collection = collections.get(field);
-                collection.expandAll(depth);
-                collection.calculateVisibleDcElements();
+                // Loading CMS collection descriptions is expensive, therefore 'false'
+                collection.expandAll(depth, false);
+                collection.calculateVisibleDcElements(false);
                 return new ArrayList<>(collection.getVisibleDcElements());
             }
         } catch (IllegalRequestException e) {

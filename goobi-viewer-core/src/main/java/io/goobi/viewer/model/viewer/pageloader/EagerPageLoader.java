@@ -88,18 +88,12 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
         return pages.size();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.pageloader.IPageLoader#getFirstPageOrder()
-     */
     /** {@inheritDoc} */
     @Override
     public int getFirstPageOrder() {
         return firstPageOrder;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.pageloader.IPageLoader#getLastPageOrder()
-     */
     /** {@inheritDoc} */
     @Override
     public int getLastPageOrder() {

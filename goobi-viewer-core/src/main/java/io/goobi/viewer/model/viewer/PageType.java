@@ -106,6 +106,8 @@ public enum PageType {
     adminTranslationsEdit("admin/translations/new", "admin__translations__add_new_entry", adminTranslations),
     //admin/cms
     adminCms("admin/cms", "admin__cms", adminDashboard),
+    adminCmsArchives("admin/cms/archives", "admin__cms_archives", adminDashboard),
+    adminCmsArchiveEdit("admin/cms/archives/edit", "admin__cms_archives_edit", adminCmsArchives),
     adminCmsOverview("admin/cms/pages", "cms_menu_pages", adminDashboard),
     adminCmsSelectTemplate("admin/cms/pages/templates", "admin__cms__select_template", adminCmsOverview),
     adminCmsNewPage("admin/cms/pages/new", "cms_createPage", adminCmsSelectTemplate),
@@ -438,23 +440,24 @@ public enum PageType {
      * @should return medatata page type if nothing else matches
      * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
-    public static PageType determinePageType(String docStructType, String mimeType, Boolean anchorOrGroup, Boolean hasImages,
+    public static PageType determinePageType(String docStructType, String mimeType, Boolean anchorOrGroup, boolean hasImages,
             boolean pageResolverUrl) {
         // Determine preferred target for the docstruct
         //         logger.trace("determinePageType: docstrct: {} / mime type: {} / anchor: {} / images: {} / resolver: {}", //NOSONAR Debug
         //         docStructType, mimeType, anchorOrGroup, hasImages, pageResolverUrl);
         PageType configuredPageType = PageType.getPageTypeForDocStructType(docStructType);
+        MimeType mediaType = new MimeType(mimeType);
         if (configuredPageType != null && !pageResolverUrl) {
             return configuredPageType;
         }
 
-        if (BaseMimeType.APPLICATION.equals(BaseMimeType.getByName(mimeType))) {
-            return PageType.viewMetadata;
-        }
         if (Boolean.TRUE.equals(anchorOrGroup)) {
             return PageType.viewToc;
-        }
-        if (Boolean.TRUE.equals(hasImages)) {
+        } else if (!hasImages) {
+            return PageType.viewMetadata;
+        } else if (mediaType.isAllowsImageView() || mediaType.is3DModel() || mediaType.isAudio() || mediaType.isVideo()) {
+            return PageType.viewObject;
+        } else if (hasImages) {
             return PageType.viewObject;
         }
 

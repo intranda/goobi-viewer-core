@@ -5,76 +5,99 @@
 /* BREADCRUMBS */
 /* BLOCK */
 .breadcrumbs {
-	&__wrapper { 
-		margin-top: 2rem;
-		font-size: @fontSmall;
-	}
+    &__wrapper {
+        margin-top: 2rem;
+        font-size: @fontSmall;
+    }
+    &__list {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        flex-wrap: wrap;
+        width: 100%;
+
+        li {
+            display: flex;
+            align-items: center;
+        }
+    }
     /* ELEMENTS */
-    ul {}
-    li {}
-    a, span {
+    ul {
+    }
+    li {
+    }
+    a,
+    span {
         display: inline-block;
         padding: 5px;
-		max-width: 220px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+        max-width: 220px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
-    a {}
-    span {}
+    a {
+    }
+    span {
+    }
     &__starttext {
-        a, span {
+        a,
+        span {
             padding: 5px 0;
         }
     }
     &__starttext + li {
-        a, span {
+        a,
+        span {
             padding-left: 5px;
         }
     }
-	&__crumb {
-		display: inline-flex;
-		align-items: center;
-	}
+    &__crumb {
+        display: inline-flex;
+        align-items: center;
+    }
     &__crumb + li:before {
-        content: "";
+        content: '';
         display: inline-block;
         width: 1rem;
         height: 1rem;
         background-color: currentColor;
-        mask: url("../../icons/outline/chevron-right.svg") center/100% 100% no-repeat;
-        -webkit-mask: url("../../icons/outline/chevron-right.svg") center/100% 100% no-repeat;
+        mask: url('../../icons/outline/chevron-right.svg') center/100% 100% no-repeat;
+        -webkit-mask: url('../../icons/outline/chevron-right.svg') center/100% 100% no-repeat;
     }
-	&__first-crumb-icon {
-		&:before {
-		}
-	}
+    &__first-crumb-icon {
+        &:before {
+        }
+    }
 }
 
 @{RTL} .breadcrumbs {
-	&__crumb + li:before {
-		display: none;
-	}
-	&__crumb + li:after {
-		content: "";
-		display: inline-block;
-		width: 1.2rem;
-		height: 1.2rem;
-		vertical-align: middle;
-		margin: 0 0.5rem;
-		background-color: currentColor;
-		mask: url("../../icons/outline/chevron-left.svg") center/100% 100% no-repeat;
-		-webkit-mask: url("../../icons/outline/chevron-left.svg") center/100% 100% no-repeat;
-	}
+    &__crumb + li:before {
+        display: none;
+    }
+    &__crumb + li:after {
+        content: '';
+        display: inline-block;
+        width: 1.2rem;
+        height: 1.2rem;
+        vertical-align: middle;
+        margin: 0 0.5rem;
+        background-color: currentColor;
+        mask: url('../../icons/outline/chevron-left.svg') center/100% 100% no-repeat;
+        -webkit-mask: url('../../icons/outline/chevron-left.svg') center/100% 100% no-repeat;
+    }
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

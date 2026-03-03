@@ -94,6 +94,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private StructElement topStruct = null;
     /** True if this record has a right-to-left reading direction. */
     private boolean rtl = false;
+    private MimeType mimeType = new MimeType();
+    private boolean hasImages = false;
 
     /**
      * Empty constructor for unit tests.
@@ -251,6 +253,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     label = getMetadataValue(SolrConstants.DOCSTRCT);
                 }
             }
+            hasImages = Boolean.valueOf(getMetadataValue(SolrConstants.BOOL_IMAGEAVAILABLE));
+            mimeType = new MimeType(getMetadataValue(SolrConstants.MIMETYPE));
             // Determine the ancestor and group field names and identifiers
             for (String fieldName : doc.getFieldNames()) {
                 if (DataManager.getInstance().getConfiguration().getAncestorIdentifierFields().contains(fieldName)) {
@@ -784,6 +788,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return getMetadataFields().keySet().stream().anyMatch(k -> k.startsWith(SolrConstants.FILENAME_TEI));
     }
 
+    public boolean isHasMei() {
+        return getMetadataFields().keySet().stream().anyMatch(k -> k.startsWith(SolrConstants.FILENAME_MEI));
+    }
+
     /**
      * Returns a stub representation of this object that only contains simple members to conserve memory.
      *
@@ -1139,6 +1147,15 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             logger.error(e.toString());
             return null;
         }
+    }
+
+    @Override
+    public boolean isHasImages() {
+        return this.hasImages;
+    }
+
+    public MimeType getMimeType() {
+        return mimeType;
     }
 
 }

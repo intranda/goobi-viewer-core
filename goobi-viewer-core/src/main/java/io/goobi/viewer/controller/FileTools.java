@@ -66,7 +66,6 @@ import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
-import io.goobi.viewer.model.viewer.BaseMimeType;
 
 /**
  * File I/O utilities.
@@ -601,6 +600,9 @@ public final class FileTools {
                 case "epub":
                     mimeType = "application/epub+zip";
                     break;
+                case "mei":
+                    mimeType = "application/mei+xml";
+                    break;
                 default:
                     // use a default value, if file extension is not mapped
                     mimeType = "image/tiff";
@@ -609,20 +611,6 @@ public final class FileTools {
         }
 
         return mimeType;
-    }
-
-    /**
-     * @param mimeType Full mime type
-     * @return First part of the mime type
-     * @should return correct base mime type
-     * @should return image if base mime type not found
-     */
-    public static BaseMimeType getBaseMimeType(String mimeType) {
-        BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
-        if (BaseMimeType.UNKNOWN.equals(baseMimeType)) {
-            return BaseMimeType.IMAGE;
-        }
-        return baseMimeType;
     }
 
     /**
@@ -804,7 +792,7 @@ public final class FileTools {
         }
 
         final String sanitizedFileName = Paths.get(fileName).getFileName().toString();
-        if (sanitizedFileName == null || !sanitizedFileName.matches("[a-zA-Z0-9._-]+")) {
+        if (sanitizedFileName == null || !sanitizedFileName.matches("[\\w.\\- ]+")) {
             throw new IllegalArgumentException("Illegal fileName: " + fileName);
         }
 

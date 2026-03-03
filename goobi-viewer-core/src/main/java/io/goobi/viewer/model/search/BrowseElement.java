@@ -68,8 +68,8 @@ import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.EventElement;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -394,11 +394,11 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
             }
         }
 
-        BaseMimeType baseMimeType = BaseMimeType.getByName(this.mimeType);
+        MimeType mimeType = new MimeType(this.mimeType);
         //check if we have images
-        hasImages = !isAnchor() && (BaseMimeType.IMAGE.equals(baseMimeType) || structElement.isHasImages());
+        hasImages = !isAnchor() && (mimeType.isImage() || structElement.isHasImages());
         //..or if we have video or audio or a 3d-object
-        hasMedia = !hasImages && !isAnchor() && baseMimeType.isMediaType();
+        hasMedia = !hasImages && !isAnchor() && mimeType.isMediaType();
 
         // MEI file
         hasMeiFile = StringUtils.isNotEmpty(structElement.getMetadataValue(SolrConstants.FILENAME_MEI));

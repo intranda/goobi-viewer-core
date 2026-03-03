@@ -29,7 +29,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
+import java.util.stream.Stream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,6 +49,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.PdfDownloadJob;
 import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
@@ -117,6 +120,26 @@ public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageSt
     @Override
     public String getMessageHandlerName() {
         return TaskType.DOWNLOAD_PDF.name();
+    }
+
+    /**
+     * remove all creating.lock files so pdf generation can be picked up after restart
+     */
+    @Override
+    public void onStartup() {
+        Path targetFolder = Path.of(DataManager.getInstance().getConfiguration().getDownloadFolder(PdfDownloadJob.TYPE));
+        if (Files.isDirectory(targetFolder)) {
+            try (Stream<Path> paths = Files.list(targetFolder)) {
+                paths.filter(f -> f.getFileName().toString().endsWith(DownloadJob.FILE_EXTENSION_CREATING_LOCK))
+                        .map(Path::toFile)
+                        .forEach(FileUtils::deleteQuietly);
+            } catch (IOException e) {
+                logger.error(
+                        "Error checking pdf download folder '{}' for file locks."
+                                + " PDF generation may not be able to continue if files ending with '{}' exist in the folder",
+                        targetFolder, DownloadJob.FILE_EXTENSION_CREATING_LOCK);
+            }
+        }
     }
 
 }
