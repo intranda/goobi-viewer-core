@@ -247,7 +247,7 @@
                         var="hasPrerenderedPagePdfs"
                         value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
                     <ui:fragment
-                        rendered="#{displayConditions.matchRecord('{contentType:[IMAGE, PDF], numPages:1, pageType:[viewObject, viewFullscreen], accessCondition:DOWNLOAD_PDF}')}">
+                        rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], contentType:[IMAGE, PDF], numPages:1, pageType:[viewObject, viewFullscreen], accessCondition:DOWNLOAD_PDF}')}">
                         <ui:fragment
                             visibility-class="widget-element"
                             rendered="#{!configurationBean.generatePdfInMessageQueue and hasPrerenderedPagePdfs}">
