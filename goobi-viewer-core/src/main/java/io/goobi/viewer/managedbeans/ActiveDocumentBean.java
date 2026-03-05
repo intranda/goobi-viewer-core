@@ -66,6 +66,7 @@ import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.model.ImageViewCondition;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IllegalUrlParameterException;
@@ -466,8 +467,9 @@ public class ActiveDocumentBean implements Serializable {
 
                 PageType pageType = Optional.ofNullable(this.navigationHelper).map(NavigationHelper::getCurrentPageType).orElse(PageType.other);
                 String mimeType = topStructElement.getMetadataValue(SolrConstants.MIMETYPE);
-                PageNavigation pageNavigation = this.calculateCurrentPageNavigation(pageType, mimeType);
-                boolean showThumbnailGallery = DataManager.getInstance().getConfiguration().showImageThumbnailGallery(pageType, mimeType);
+                PageNavigation pageNavigation = this.calculateCurrentPageNavigation(pageType);
+                boolean showThumbnailGallery =
+                        DataManager.getInstance().getConfiguration().showImageThumbnailGallery(new ImageViewCondition(viewManager, pageType));
                 viewManager = new ViewManager(topStructElement,
                         AbstractPageLoader.create(topStructElement, true, PageNavigation.SEQUENCE.equals(pageNavigation) || showThumbnailGallery),
                         topDocumentIddoc,
@@ -871,8 +873,7 @@ public class ActiveDocumentBean implements Serializable {
                     .map(pageNavigation -> PageNavigation.DOUBLE == pageNavigation)
                     .orElse(DataManager.getInstance()
                             .getConfiguration()
-                            .isDoublePageNavigationDefault(this.navigationHelper.getCurrentPageType(),
-                                    Optional.ofNullable(this.getViewManager()).map(ViewManager::getMimeType).orElse(null)));
+                            .isDoublePageNavigationDefault(new ImageViewCondition(this.viewManager, this.navigationHelper.getCurrentPageType())));
             if (isDoublePageNavigation) {
                 image = String.format("%s-%s", image, image);
             }
@@ -2827,12 +2828,15 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public void updatePageNavigation(PageType pageType) {
-        Optional.ofNullable(this.viewManager).ifPresent(vm -> vm.setPageNavigation(calculateCurrentPageNavigation(pageType, vm.getMimeType())));
+        if (this.viewManager != null) {
+            this.viewManager.setPageNavigation(calculateCurrentPageNavigation(pageType));
+        }
     }
 
-    protected PageNavigation calculateCurrentPageNavigation(PageType pageType, String mimeType) {
+    protected PageNavigation calculateCurrentPageNavigation(PageType pageType) {
         try {
-            PageNavigation defaultPageNavigation = getDefaultPageNavigation(pageType, mimeType);
+            ImageViewCondition viewAttributes = new ImageViewCondition(viewManager, pageType);
+            PageNavigation defaultPageNavigation = getDefaultPageNavigation(viewAttributes);
             PageNavigation currentPageNavigation =
                     Optional.ofNullable(this.viewManager).map(ViewManager::getPageNavigation).orElse(PageNavigation.SINGLE);
             if (currentPageNavigation == defaultPageNavigation) {
@@ -2842,7 +2846,7 @@ public class ActiveDocumentBean implements Serializable {
             } else if (currentPageNavigation == PageNavigation.SINGLE) {
                 return currentPageNavigation;
             } else if (currentPageNavigation == PageNavigation.DOUBLE
-                    && DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(pageType, mimeType)) {
+                    && DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(viewAttributes)) {
                 return currentPageNavigation;
             } else {
                 return defaultPageNavigation;
@@ -2854,11 +2858,11 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
-    protected PageNavigation getDefaultPageNavigation(PageType pageType, String mimeType) {
+    protected PageNavigation getDefaultPageNavigation(ImageViewCondition viewAttributes) {
         try {
-            if (DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(pageType, mimeType)) {
+            if (DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(viewAttributes)) {
                 return PageNavigation.SEQUENCE;
-            } else if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, mimeType)) {
+            } else if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(viewAttributes)) {
                 return PageNavigation.DOUBLE;
             } else {
                 return PageNavigation.SINGLE;

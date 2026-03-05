@@ -1,0 +1,70 @@
+package io.goobi.viewer.controller.model;
+
+import java.io.StringReader;
+
+import org.apache.commons.configuration2.XMLConfiguration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.io.FileHandler;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import io.goobi.viewer.model.viewer.MimeType;
+import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.ViewManager;
+
+class ImageViewConditionTest {
+
+    ImageViewCondition condition;
+
+    @BeforeEach
+    void setup() {
+
+        PageType pageType = PageType.viewFullscreen;
+        MimeType mimeType = new MimeType("image/jpeg");
+        String docStructType = "volume";
+        String collection = "dc.image";
+        int pageCount = 10;
+
+        ViewManager viewManager = Mockito.mock(ViewManager.class);
+        PhysicalElement page = Mockito.mock(PhysicalElement.class);
+        StructElement docStruct = Mockito.mock(StructElement.class);
+
+        Mockito.when(viewManager.getCurrentPage()).thenReturn(page);
+        Mockito.when(viewManager.getTopStructElement()).thenReturn(docStruct);
+        Mockito.when(page.getMediaType()).thenReturn(mimeType);
+        Mockito.when(docStruct.getNumPages()).thenReturn(pageCount);
+        Mockito.when(docStruct.getCollection()).thenReturn(collection);
+        Mockito.when(docStruct.getDocStructType()).thenReturn(docStructType);
+
+        condition = new ImageViewCondition(viewManager, pageType);
+    }
+
+    @Test
+    public void testMimeTypeAndPageCount() throws ConfigurationException {
+        XMLConfiguration node = loadConfig("<condition><mimeType>image/jpeg</mimeType><pageCount>[10,20]</pageCount></condition>");
+        Assertions.assertTrue(condition.matchesConfiguration(node));
+    }
+
+    @Test
+    public void testPageTypeAndDocType() throws ConfigurationException {
+        XMLConfiguration node = loadConfig("<condition><view>viewFullscreen</view><docType>volume</docType></condition>");
+        Assertions.assertTrue(condition.matchesConfiguration(node));
+    }
+
+    @Test
+    public void testNoCondition() throws ConfigurationException {
+        XMLConfiguration node = loadConfig("<condition></condition>");
+        Assertions.assertTrue(condition.matchesConfiguration(node));
+    }
+
+    XMLConfiguration loadConfig(String configString) throws ConfigurationException {
+        XMLConfiguration node = new XMLConfiguration();
+        new FileHandler(node).load(new StringReader(configString));
+        return node;
+    }
+
+}

@@ -43,9 +43,8 @@ public interface IPageLoader extends Serializable {
      * </p>
      *
      * @return a int.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public int getNumPages() throws IndexUnreachableException;
+    public int getNumPages();
 
     /**
      * <p>

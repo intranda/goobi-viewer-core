@@ -32,13 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.container.ContainerResponseContext;
-import jakarta.ws.rs.container.ContainerResponseFilter;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.ext.Provider;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,6 +47,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageIn
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.imaging.WatermarkHandler;
+import io.goobi.viewer.controller.model.ImageViewCondition;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -61,12 +55,19 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * <p>
@@ -291,11 +292,10 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @throws ViewerConfigurationException
      */
     private List<Integer> getImageSizesFromConfig(boolean mayZoom) throws ViewerConfigurationException {
-
+        ImageViewCondition viewAttributes = new ImageViewCondition(pageType, getMediaType(), null, null, null);
         List<String> sizeStrings = DataManager.getInstance()
                 .getConfiguration()
-                .getImageViewZoomScales(pageType,
-                        Optional.ofNullable(imageType).map(ImageType::getFormat).map(ImageFileFormat::getMimeType).orElse(""));
+                .getImageViewZoomScales(viewAttributes);
         List<Integer> sizes = new ArrayList<>();
         int maxWidth = mayZoom ? Integer.MAX_VALUE : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
         for (String string : sizeStrings) {
@@ -314,18 +314,23 @@ public class ImageInformationFilter implements ContainerResponseFilter {
         return sizes;
     }
 
+    private MimeType getMediaType() {
+        return Optional.ofNullable(imageType).map(ImageType::getFormat).map(ImageFileFormat::getMimeType).map(MimeType::new).orElse(null);
+    }
+
     /**
      * @return List<ImageTile>
      * @throws ViewerConfigurationException
      */
     private List<ImageTile> getTileSizesFromConfig() throws ViewerConfigurationException {
+        ImageViewCondition viewAttributes = new ImageViewCondition(pageType, getMediaType(), null, null, null);
         Map<Integer, List<Integer>> configSizes = Collections.emptyMap();
         if (DataManager.getInstance()
                 .getConfiguration()
-                .useTiles(pageType, Optional.ofNullable(imageType).map(ImageType::getFormat).map(ImageFileFormat::getMimeType).orElse(""))) {
+                .useTiles(viewAttributes)) {
             configSizes = DataManager.getInstance()
                     .getConfiguration()
-                    .getTileSizes(pageType, Optional.ofNullable(imageType).map(ImageType::getFormat).map(ImageFileFormat::getMimeType).orElse(""));
+                    .getTileSizes(viewAttributes);
         }
         List<ImageTile> tiles = new ArrayList<>();
         for (Integer size : configSizes.keySet()) {

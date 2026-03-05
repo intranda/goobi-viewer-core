@@ -34,13 +34,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocumentList;
 
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.ImageViewCondition;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -113,7 +112,8 @@ public class WatermarkHandler implements Serializable {
      */
     public Optional<String> getWatermarkUrl(Optional<PhysicalElement> page, Optional<StructElement> doc, Optional<PageType> pageType)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException {
-        return getWatermarkUrl(Scale.MAX, pageType, page.map(p -> p.getImageType()), doc.map(d -> getFooterIdIfExists(d).orElse(null)),
+        ImageViewCondition viewAttributes = new ImageViewCondition(page.orElse(null), doc.orElse(null), pageType.orElse(null));
+        return getWatermarkUrl(Scale.MAX, viewAttributes, doc.map(d -> getFooterIdIfExists(d).orElse(null)),
                 page.map(p -> getWatermarkTextIfExists(p).orElse(null)));
     }
 
@@ -133,12 +133,12 @@ public class WatermarkHandler implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Optional<String> getWatermarkUrl(Scale scale, Optional<PageType> pageType, Optional<ImageType> imageType, Optional<String> watermarkId,
+    public Optional<String> getWatermarkUrl(Scale scale, ImageViewCondition viewAttributes, Optional<String> watermarkId,
             Optional<String> watermarkText) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
 
         int footerHeight = DataManager.getInstance()
                 .getConfiguration()
-                .getFooterHeight(pageType.orElse(null), imageType.map(ImageType::getFormat).map(ImageFileFormat::getMimeType).orElse(""));
+                .getFooterHeight(viewAttributes);
         if (footerHeight > 0) {
             String format = DataManager.getInstance().getConfiguration().getWatermarkFormat();
 
