@@ -27,6 +27,7 @@ import java.util.Optional;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.IntegerRange;
+import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.viewer.MimeType;
@@ -34,7 +35,6 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
-import software.amazon.awssdk.utils.StringUtils;
 
 /**
  * Used to check whether a zoomImageView configuration block should be applied to the image view represented by the given viewManager and pageType
