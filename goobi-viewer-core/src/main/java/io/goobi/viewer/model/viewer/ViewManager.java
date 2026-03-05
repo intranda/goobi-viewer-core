@@ -94,7 +94,7 @@ import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
-import io.goobi.viewer.controller.model.ImageViewCondition;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.controller.sorting.AlphanumCollatorComparator;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.ArchiveException;
@@ -610,7 +610,7 @@ public class ViewManager implements Serializable {
 
         int size = DataManager.getInstance()
                 .getConfiguration()
-                .getImageViewZoomScales(new ImageViewCondition(this, view))
+                .getImageViewZoomScales(new ViewAttributes(this, view))
                 .stream()
                 .map(string -> "max".equalsIgnoreCase(string) ? 0 : Integer.parseInt(string))
                 .sorted((s1, s2) -> s1 == 0 ? -1 : (s2 == 0 ? 1 : Integer.compare(s2, s1)))
@@ -655,7 +655,7 @@ public class ViewManager implements Serializable {
         try {
             if (DataManager.getInstance()
                     .getConfiguration()
-                    .getFooterHeight(new ImageViewCondition(this, pageType)) > 0) {
+                    .getFooterHeight(new ViewAttributes(this, pageType)) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(page).map(text -> {
                     try {
@@ -695,7 +695,7 @@ public class ViewManager implements Serializable {
         try {
             if (DataManager.getInstance()
                     .getConfiguration()
-                    .getFooterHeight(new ImageViewCondition(this, pageType)) > 0) {
+                    .getFooterHeight(new ViewAttributes(this, pageType)) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter()
                         .getWatermarkTextIfExists(page)
@@ -724,7 +724,7 @@ public class ViewManager implements Serializable {
     private String getCurrentImageUrl(PageType view, int size) {
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), size, size));
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(new ImageViewCondition(this, view)) > 0) {
+            if (DataManager.getInstance().getConfiguration().getFooterHeight(new ViewAttributes(this, view)) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> {
                     try {
@@ -4319,13 +4319,13 @@ public class ViewManager implements Serializable {
     public boolean isDoublePageNavigationEnabled(PageType pageType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .isDoublePageNavigationEnabled(new ImageViewCondition(this, pageType));
+                .isDoublePageNavigationEnabled(new ViewAttributes(this, pageType));
     }
 
     public boolean showImageThumbnailGallery(PageType pageType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .showImageThumbnailGallery(new ImageViewCondition(this, pageType));
+                .showImageThumbnailGallery(new ViewAttributes(this, pageType));
 
     }
 

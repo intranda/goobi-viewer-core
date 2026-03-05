@@ -65,6 +65,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -1785,7 +1786,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     public int getFooterHeight() throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .getFooterHeight(PageType.getByName(PageType.viewImage.name()), getImageType().getFormat().getMimeType());
+                .getFooterHeight(new ViewAttributes(this, PageType.getByName(PageType.viewImage.name())));
     }
 
     /**
@@ -1798,7 +1799,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int getFooterHeight(String pageType) throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getMimeType());
+        return DataManager.getInstance().getConfiguration().getFooterHeight(new ViewAttributes(this, PageType.getByName(pageType)));
     }
 
     /**

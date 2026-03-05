@@ -47,7 +47,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageIn
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.imaging.WatermarkHandler;
-import io.goobi.viewer.controller.model.ImageViewCondition;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -292,7 +292,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @throws ViewerConfigurationException
      */
     private List<Integer> getImageSizesFromConfig(boolean mayZoom) throws ViewerConfigurationException {
-        ImageViewCondition viewAttributes = new ImageViewCondition(pageType, getMediaType(), null, null, null);
+        ViewAttributes viewAttributes = new ViewAttributes(pageType, getMediaType(), null, null, null);
         List<String> sizeStrings = DataManager.getInstance()
                 .getConfiguration()
                 .getImageViewZoomScales(viewAttributes);
@@ -323,7 +323,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @throws ViewerConfigurationException
      */
     private List<ImageTile> getTileSizesFromConfig() throws ViewerConfigurationException {
-        ImageViewCondition viewAttributes = new ImageViewCondition(pageType, getMediaType(), null, null, null);
+        ViewAttributes viewAttributes = new ViewAttributes(pageType, getMediaType(), null, null, null);
         Map<Integer, List<Integer>> configSizes = Collections.emptyMap();
         if (DataManager.getInstance()
                 .getConfiguration()

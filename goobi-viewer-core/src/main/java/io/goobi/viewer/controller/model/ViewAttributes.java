@@ -39,7 +39,7 @@ import software.amazon.awssdk.utils.StringUtils;
 /**
  * Used to check whether a zoomImageView configuration block should be applied to the image view represented by the given viewManager and pageType
  */
-public class ImageViewCondition {
+public class ViewAttributes {
 
     private final PageType pageType;
     private final MimeType mimeType;
@@ -47,7 +47,7 @@ public class ImageViewCondition {
     private final String docStructType;
     private final String collection;
 
-    public ImageViewCondition(PageType pageType, MimeType mimeType, Integer recordPageCount, String docStructType, String collection) {
+    public ViewAttributes(PageType pageType, MimeType mimeType, Integer recordPageCount, String docStructType, String collection) {
         this.pageType = pageType;
         this.mimeType = mimeType;
         this.recordPageCount = recordPageCount;
@@ -55,7 +55,7 @@ public class ImageViewCondition {
         this.collection = collection;
     }
 
-    public ImageViewCondition(PhysicalElement page, StructElement structElement, PageType pageType) {
+    public ViewAttributes(PhysicalElement page, StructElement structElement, PageType pageType) {
         this.pageType = pageType;
         this.mimeType = Optional.ofNullable(page).map(PhysicalElement::getMediaType).orElse(null);
         this.docStructType = Optional.ofNullable(structElement).map(StructElement::getDocStructType).orElse(null);
@@ -63,17 +63,17 @@ public class ImageViewCondition {
         this.recordPageCount = Optional.ofNullable(structElement).map(StructElement::getNumPages).orElse(null);
     }
 
-    public ImageViewCondition(ViewManager viewManager, PageType pageType) {
+    public ViewAttributes(ViewManager viewManager, PageType pageType) {
         this(Optional.ofNullable(viewManager).map(ViewManager::getCurrentPage).orElse(null),
                 Optional.ofNullable(viewManager).map(ViewManager::getTopStructElement).orElse(null),
                 pageType);
     }
 
-    public ImageViewCondition(PhysicalElement page, PageType pageType) {
+    public ViewAttributes(PhysicalElement page, PageType pageType) {
         this(page, null, pageType);
     }
 
-    public ImageViewCondition(PageType pageType) {
+    public ViewAttributes(PageType pageType) {
         this(pageType, null, null, null, null);
     }
 

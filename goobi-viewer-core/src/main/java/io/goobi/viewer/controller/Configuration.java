@@ -67,7 +67,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
 import io.goobi.viewer.controller.model.FeatureSetConfiguration;
-import io.goobi.viewer.controller.model.ImageViewCondition;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
@@ -4311,7 +4311,7 @@ public class Configuration extends AbstractConfiguration {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTiles() throws ViewerConfigurationException {
-        return useTiles(new ImageViewCondition(PageType.viewImage));
+        return useTiles(new ViewAttributes(PageType.viewImage));
     }
 
     /**
@@ -4324,7 +4324,7 @@ public class Configuration extends AbstractConfiguration {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTilesFullscreen() throws ViewerConfigurationException {
-        return useTiles(new ImageViewCondition(PageType.viewFullscreen));
+        return useTiles(new ViewAttributes(PageType.viewFullscreen));
     }
 
     /**
@@ -4337,7 +4337,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public boolean useTiles(ImageViewCondition viewAttributes) throws ViewerConfigurationException {
+    public boolean useTiles(ViewAttributes viewAttributes) throws ViewerConfigurationException {
         return getZoomImageViewConfig(viewAttributes).getBoolean("[@tileImage]", false);
     }
 
@@ -4349,11 +4349,11 @@ public class Configuration extends AbstractConfiguration {
      * @return true if navigator should be shown
      * @throws ViewerConfigurationException
      */
-    public boolean showImageNavigator(ImageViewCondition viewAttributes) throws ViewerConfigurationException {
+    public boolean showImageNavigator(ViewAttributes viewAttributes) throws ViewerConfigurationException {
         return getZoomImageViewConfig(viewAttributes).getBoolean("navigator[@enabled]", false);
     }
 
-    public boolean showImageThumbnailGallery(ImageViewCondition viewAttributes) throws ViewerConfigurationException {
+    public boolean showImageThumbnailGallery(ViewAttributes viewAttributes) throws ViewerConfigurationException {
         return getZoomImageViewConfig(viewAttributes).getBoolean("thumbnailGallery[@enabled]", false);
     }
 
@@ -4366,7 +4366,7 @@ public class Configuration extends AbstractConfiguration {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int getFooterHeight() throws ViewerConfigurationException {
-        return getFooterHeight(new ImageViewCondition(PageType.viewImage));
+        return getFooterHeight(new ViewAttributes(PageType.viewImage));
     }
 
     /**
@@ -4378,7 +4378,7 @@ public class Configuration extends AbstractConfiguration {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int getFullscreenFooterHeight() throws ViewerConfigurationException {
-        return getFooterHeight(new ImageViewCondition(PageType.viewFullscreen));
+        return getFooterHeight(new ViewAttributes(PageType.viewFullscreen));
     }
 
     /**
@@ -4391,7 +4391,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public int getFooterHeight(ImageViewCondition viewAttributes) throws ViewerConfigurationException {
+    public int getFooterHeight(ViewAttributes viewAttributes) throws ViewerConfigurationException {
         return getZoomImageViewConfig(viewAttributes).getInt("[@footerHeight]", 50);
     }
 
@@ -4404,7 +4404,7 @@ public class Configuration extends AbstractConfiguration {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getImageViewZoomScales() throws ViewerConfigurationException {
-        return getImageViewZoomScales(new ImageViewCondition(PageType.viewImage));
+        return getImageViewZoomScales(new ViewAttributes(PageType.viewImage));
     }
 
     /**
@@ -4417,7 +4417,7 @@ public class Configuration extends AbstractConfiguration {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getImageViewZoomScales(String view) throws ViewerConfigurationException {
-        return getImageViewZoomScales(new ImageViewCondition(PageType.valueOf(view)));
+        return getImageViewZoomScales(new ViewAttributes(PageType.valueOf(view)));
     }
 
     /**
@@ -4430,7 +4430,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public List<String> getImageViewZoomScales(ImageViewCondition viewAttributes) throws ViewerConfigurationException {
+    public List<String> getImageViewZoomScales(ViewAttributes viewAttributes) throws ViewerConfigurationException {
         List<String> defaultList = new ArrayList<>();
         BaseHierarchicalConfiguration zoomImageViewConfig = getZoomImageViewConfig(viewAttributes);
         if (zoomImageViewConfig != null) {
@@ -4451,7 +4451,7 @@ public class Configuration extends AbstractConfiguration {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Map<Integer, List<Integer>> getTileSizes() throws ViewerConfigurationException {
-        return getTileSizes(new ImageViewCondition(PageType.viewImage));
+        return getTileSizes(new ViewAttributes(PageType.viewImage));
     }
 
     /**
@@ -4464,7 +4464,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Map<Integer, List<Integer>> getTileSizes(ImageViewCondition viewAttributes) throws ViewerConfigurationException {
+    public Map<Integer, List<Integer>> getTileSizes(ViewAttributes viewAttributes) throws ViewerConfigurationException {
         Map<Integer, List<Integer>> map = new HashMap<>();
         List<HierarchicalConfiguration<ImmutableNode>> sizes = getZoomImageViewConfig(viewAttributes).configurationsAt("tileSize");
         if (sizes != null && !sizes.isEmpty()) {
@@ -4499,19 +4499,19 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link org.apache.commons.configuration2.SubnodeConfiguration} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public BaseHierarchicalConfiguration getZoomImageViewConfig(ImageViewCondition viewAttributes) throws ViewerConfigurationException {
+    public BaseHierarchicalConfiguration getZoomImageViewConfig(ViewAttributes viewAttributes) throws ViewerConfigurationException {
         List<HierarchicalConfiguration<ImmutableNode>> configs = new ArrayList<>();
         configs.addAll(getLocalConfigurationsAt("viewer.zoomImageView"));
         configs.addAll(getConfig().configurationsAt("viewer.zoomImageView"));
 
         for (HierarchicalConfiguration<ImmutableNode> subConfig : configs) {
 
-            if (subConfig.containsKey("condition")) {
+            if (!subConfig.configurationsAt("condition").isEmpty()) {
                 HierarchicalConfiguration<ImmutableNode> condition = subConfig.configurationAt("condition");
                 if (viewAttributes.matchesConfiguration(condition)) {
                     return (BaseHierarchicalConfiguration) subConfig;
                 }
-            } else if (subConfig.containsKey("useFor")) { //fallback for old setup
+            } else if (!subConfig.configurationsAt("useFor").isEmpty()) { //fallback for old setup
                 HierarchicalConfiguration<ImmutableNode> condition = subConfig.configurationAt("useFor");
                 if (viewAttributes.matchesConfiguration(condition)) {
                     return (BaseHierarchicalConfiguration) subConfig;
@@ -5539,7 +5539,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
-    public boolean isDoublePageNavigationEnabled(ImageViewCondition viewAttributes) throws ViewerConfigurationException {
+    public boolean isDoublePageNavigationEnabled(ViewAttributes viewAttributes) throws ViewerConfigurationException {
         return !isSequencePageNavigationEnabled(viewAttributes)
                 && getZoomImageViewConfig(viewAttributes).getBoolean("doublePageNavigation[@enabled]", false);
     }
@@ -5553,7 +5553,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
-    public boolean isDoublePageNavigationDefault(ImageViewCondition viewAttributes) throws ViewerConfigurationException {
+    public boolean isDoublePageNavigationDefault(ViewAttributes viewAttributes) throws ViewerConfigurationException {
         return isDoublePageNavigationEnabled(viewAttributes)
                 && getZoomImageViewConfig(viewAttributes).getBoolean("doublePageNavigation[@default]", false);
     }
@@ -5567,7 +5567,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
-    public boolean isSequencePageNavigationEnabled(ImageViewCondition viewAttributes) throws ViewerConfigurationException {
+    public boolean isSequencePageNavigationEnabled(ViewAttributes viewAttributes) throws ViewerConfigurationException {
         return getZoomImageViewConfig(viewAttributes).getString("[@type]", "default").equalsIgnoreCase("sequence");
     }
 

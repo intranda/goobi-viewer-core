@@ -39,7 +39,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.model.ImageViewCondition;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -112,7 +112,7 @@ public class WatermarkHandler implements Serializable {
      */
     public Optional<String> getWatermarkUrl(Optional<PhysicalElement> page, Optional<StructElement> doc, Optional<PageType> pageType)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException {
-        ImageViewCondition viewAttributes = new ImageViewCondition(page.orElse(null), doc.orElse(null), pageType.orElse(null));
+        ViewAttributes viewAttributes = new ViewAttributes(page.orElse(null), doc.orElse(null), pageType.orElse(null));
         return getWatermarkUrl(Scale.MAX, viewAttributes, doc.map(d -> getFooterIdIfExists(d).orElse(null)),
                 page.map(p -> getWatermarkTextIfExists(p).orElse(null)));
     }
@@ -133,7 +133,7 @@ public class WatermarkHandler implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Optional<String> getWatermarkUrl(Scale scale, ImageViewCondition viewAttributes, Optional<String> watermarkId,
+    public Optional<String> getWatermarkUrl(Scale scale, ViewAttributes viewAttributes, Optional<String> watermarkId,
             Optional<String> watermarkText) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
 
         int footerHeight = DataManager.getInstance()

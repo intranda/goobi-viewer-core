@@ -35,6 +35,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -48,6 +49,7 @@ import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.translations.language.Language;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
@@ -124,7 +126,9 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTiles(String pageType, String mimeType) throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().useTiles(PageType.getByName(pageType), getImageType(mimeType).getFormat().getMimeType());
+        return DataManager.getInstance()
+                .getConfiguration()
+                .useTiles(getImageViewAttributes(PageType.getByName(pageType), getImageType(mimeType).getFormat().getMimeType()));
     }
 
     /**
@@ -138,7 +142,7 @@ public class ConfigurationBean implements Serializable {
     public boolean showImageNavigator(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .showImageNavigator(PageType.getByName(pageType), mimeType);
+                .showImageNavigator(getImageViewAttributes(PageType.getByName(pageType), mimeType));
     }
 
     /**
@@ -154,7 +158,7 @@ public class ConfigurationBean implements Serializable {
     public int getFooterHeight(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .getFooterHeight(PageType.getByName(pageType), mimeType);
+                .getFooterHeight(getImageViewAttributes(PageType.getByName(pageType), mimeType));
     }
 
     /**
@@ -170,7 +174,7 @@ public class ConfigurationBean implements Serializable {
     public List<String> getImageSizes(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .getImageViewZoomScales(PageType.getByName(pageType), mimeType);
+                .getImageViewZoomScales(getImageViewAttributes(PageType.getByName(pageType), mimeType));
     }
 
     /**
@@ -186,7 +190,7 @@ public class ConfigurationBean implements Serializable {
     public Map<Integer, List<Integer>> getTileSizes(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .getTileSizes(PageType.getByName(pageType), mimeType);
+                .getTileSizes(getImageViewAttributes(PageType.getByName(pageType), mimeType));
     }
 
     /**
@@ -210,7 +214,7 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTilesFullscreen() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().useTiles(PageType.viewFullscreen, null);
+        return DataManager.getInstance().getConfiguration().useTiles(getImageViewAttributes(PageType.viewFullscreen, null));
     }
 
     /**
@@ -222,7 +226,7 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTilesCrowd() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().useTiles(PageType.editContent, null);
+        return DataManager.getInstance().getConfiguration().useTiles(getImageViewAttributes(PageType.editContent, null));
     }
 
     /**
@@ -246,7 +250,7 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int getFooterHeightFullscreen() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.viewFullscreen, null);
+        return DataManager.getInstance().getConfiguration().getFooterHeight(getImageViewAttributes(PageType.viewFullscreen, null));
     }
 
     /**
@@ -258,7 +262,7 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int getFooterHeightCrowd() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.editContent, null);
+        return DataManager.getInstance().getConfiguration().getFooterHeight(getImageViewAttributes(PageType.editContent, null));
     }
 
     /**
@@ -1588,5 +1592,9 @@ public class ConfigurationBean implements Serializable {
 
     public Integer getGeomapDisableClusteringAtZoom() {
         return DataManager.getInstance().getConfiguration().getGeomapDisableClusteringAtZoom();
+    }
+
+    private ViewAttributes getImageViewAttributes(PageType pageType, String mimeType) {
+        return new ViewAttributes(pageType, new MimeType(mimeType), null, null, null);
     }
 }

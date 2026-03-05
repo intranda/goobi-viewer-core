@@ -18,7 +18,7 @@ import io.goobi.viewer.model.viewer.ViewManager;
 
 class ImageViewConditionTest {
 
-    ImageViewCondition condition;
+    ViewAttributes condition;
 
     @BeforeEach
     void setup() {
@@ -40,7 +40,7 @@ class ImageViewConditionTest {
         Mockito.when(docStruct.getCollection()).thenReturn(collection);
         Mockito.when(docStruct.getDocStructType()).thenReturn(docStructType);
 
-        condition = new ImageViewCondition(viewManager, pageType);
+        condition = new ViewAttributes(viewManager, pageType);
     }
 
     @Test
