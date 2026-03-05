@@ -52,6 +52,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.IntegerRange;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.similarity.FuzzyScore;
@@ -916,7 +917,7 @@ public final class StringTools {
         if (index == -1) {
             return text;
         }
-        
+
         return text.substring(0, index)
                 + replacement
                 + text.substring(index + target.length());
@@ -944,6 +945,24 @@ public final class StringTools {
         }
 
         return text.substring(0, end) + "...";
+    }
+
+    public static IntegerRange parseIntRange(String input) {
+
+        Pattern p = Pattern.compile("([\\[(])\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*([\\])])");
+        Matcher m = p.matcher(input.trim());
+
+        if (!m.matches()) {
+            throw new IllegalArgumentException("Ungültiges Format: " + input);
+        }
+
+        boolean startInclusive = m.group(1).equals("[");
+        int start = Integer.parseInt(m.group(2));
+        boolean endInclusive = m.group(4).equals("]");
+        int end = Integer.parseInt(m.group(3));
+
+        return IntegerRange.of(startInclusive ? start : start + 1, endInclusive ? end : end - 1);
+
     }
 
     public static boolean isInteger(String s) {

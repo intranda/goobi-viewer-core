@@ -55,6 +55,7 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.RestApiManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.model.ImageViewCondition;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -195,10 +196,11 @@ public class ImageHandler {
             apiUri = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), PathConverter.getPath(fileUri).getFileName().toString()).buildURI();
         }
 
-        Map<Integer, List<Integer>> tileSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, page.getMimeType());
+        ImageViewCondition viewAttributes = new ImageViewCondition(page, pageType);
+        Map<Integer, List<Integer>> tileSizes = DataManager.getInstance().getConfiguration().getTileSizes(viewAttributes);
         List<Integer> sizes = DataManager.getInstance()
                 .getConfiguration()
-                .getImageViewZoomScales(pageType, page.getMimeType())
+                .getImageViewZoomScales(viewAttributes)
                 .stream()
                 .filter(s -> s.matches("\\d{1,9}"))
                 .map(Integer::parseInt)
