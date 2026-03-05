@@ -16,9 +16,11 @@ export default class Voyager3dView {
     constructor(config) {
         this.config = jQuery.extend(true, {}, _default, config);
         this.container = document.querySelector(this.config.container);
-        console.log("init voyager3d", this);
-        if(this.isVisible()) { 
-            this.loaded = this.initView().then(() => {if(_debug)console.log("object data loaded")});
+       // console.log('init voyager3d', this);
+        if (this.isVisible()) {
+            this.loaded = this.initView().then(() => {
+                if (_debug) console.log('object data loaded');
+            });
         }
     }
 
