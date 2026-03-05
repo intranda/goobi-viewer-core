@@ -67,10 +67,10 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
 import io.goobi.viewer.controller.model.FeatureSetConfiguration;
-import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.DownloadBean;
@@ -4332,8 +4332,7 @@ public class Configuration extends AbstractConfiguration {
      * useTiles.
      * </p>
      *
-     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param imageMimeType the mimetype to which the configuration should apply.
+     * @param viewAttributes a {@link ViewAttributes} object
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4344,8 +4343,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * whether to show a navigator element in the openseadragon viewe
      * 
-     * @param view get settings for this pageType
-     * @param imageMimeType the mimetype to which the configuration should apply.
+     * @param viewAttributes a {@link ViewAttributes} object
      * @return true if navigator should be shown
      * @throws ViewerConfigurationException
      */
@@ -4353,6 +4351,13 @@ public class Configuration extends AbstractConfiguration {
         return getZoomImageViewConfig(viewAttributes).getBoolean("navigator[@enabled]", false);
     }
 
+    /**
+     * whether to show thumbnail gallery in image view
+     * 
+     * @param viewAttributes a {@link ViewAttributes} object
+     * @return
+     * @throws ViewerConfigurationException
+     */
     public boolean showImageThumbnailGallery(ViewAttributes viewAttributes) throws ViewerConfigurationException {
         return getZoomImageViewConfig(viewAttributes).getBoolean("thumbnailGallery[@enabled]", false);
     }
@@ -4386,8 +4391,7 @@ public class Configuration extends AbstractConfiguration {
      * getFooterHeight.
      * </p>
      *
-     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param imageMimeType the mimetype to which the configuration should apply.
+     * @param viewAttributes a {@link ViewAttributes} object
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4425,8 +4429,7 @@ public class Configuration extends AbstractConfiguration {
      * getImageViewZoomScales.
      * </p>
      *
-     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param imageMimeType the mimetype to which the configuration should apply.
+     * @param viewAttributes a {@link ViewAttributes} object
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4459,8 +4462,7 @@ public class Configuration extends AbstractConfiguration {
      * getTileSizes.
      * </p>
      *
-     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param imageMimeType the mimetype to which the configuration should apply.
+     * @param viewAttributes a {@link ViewAttributes} object
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4494,8 +4496,7 @@ public class Configuration extends AbstractConfiguration {
      * getZoomImageViewConfig.
      * </p>
      *
-     * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param imageMimeType the mimetype to which the configuration should apply.
+     * @param viewAttributes a {@link ViewAttributes} object
      * @return a {@link org.apache.commons.configuration2.SubnodeConfiguration} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -5534,8 +5535,7 @@ public class Configuration extends AbstractConfiguration {
      * Return true if double page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is false
      *
      * @should return correct value
-     * @param pageType The type of viewer page to which the configuration should apply
-     * @param imageMimeType the mimetype to which the configuration should apply.
+     * @param viewAttributes a {@link ViewAttributes} object
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
@@ -5548,8 +5548,7 @@ public class Configuration extends AbstractConfiguration {
      * Return true if double page navigation should be used per default for the given {@link PageType} and {@link ImageType}. Default is false
      *
      * @should return correct value
-     * @param pageType The type of viewer page to which the configuration should apply
-     * @param imageMimeType the mimetype to which the configuration should apply.
+     * @param viewAttributes a {@link ViewAttributes} object
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
@@ -5562,8 +5561,7 @@ public class Configuration extends AbstractConfiguration {
      * Return true if sequence page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is false
      *
      * @should return correct value
-     * @param pageType The type of viewer page to which the configuration should apply
-     * @param imageMimeType the mimetype to which the configuration should apply.
+     * @param viewAttributes a {@link ViewAttributes} object
      * @return a boolean.
      * @throws ViewerConfigurationException
      */

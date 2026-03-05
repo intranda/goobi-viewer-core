@@ -123,9 +123,8 @@ public class WatermarkHandler implements Serializable {
      * {@link io.goobi.viewer.model.viewer.PhysicalElement} page. If the watermark height of the given pageType and image is 0, an empty optional is
      * returned.
      *
-     * @param pageType The pageType of the currentView. Taken into consideration for footer height, if not null
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
-     * @param imageType a {@link java.util.Optional} object.
+     * @param viewAttributes a {@link ViewAttributes} object
      * @param watermarkId a {@link java.util.Optional} object.
      * @param watermarkText a {@link java.util.Optional} object.
      * @return a {@link java.util.Optional} object.
