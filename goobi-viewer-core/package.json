@@ -50,6 +50,7 @@
     "postcss": "^8.4.47",
     "postcss-reporter": "^7.1.0",
     "prettier": "^3.7.4",
+	"@prettier/plugin-xml": "^3.4.1",
     "rollup": "^4.55.3",
     "rollup-plugin-cleanup": "^3.2.1",
     "through2": "^4.0.2"

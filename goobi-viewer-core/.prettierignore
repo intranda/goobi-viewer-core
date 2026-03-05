@@ -11,12 +11,13 @@
 # Dependencies
 /node_modules/
 
-# Generated/minified files
+# Generated/minified files and icons
 *.min.*
 **/*.map
 **/*.generated.*
 /src/main/resources/META-INF/resources/resources/css/styleguide/
 **/javascript/dist/
+**/resources/icons/
 
 # Third-party libraries (must not be reformatted)
 **/libs/
