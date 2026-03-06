@@ -121,13 +121,19 @@ describe("Pre-Commit Formatter", () => {
   // ============================================================
 
   describe("Command Building", () => {
-    test("Prettier command includes --write and all files", () => {
+    test("Prettier command includes --write and absolute file paths", () => {
       const mockExec = jest.fn();
-      runPrettier(["a.js", "b.css"], "/bin/prettier", mockExec);
+      runPrettier(
+        ["a.js", "b.css"],
+        "/project/inner/node_modules/.bin/prettier",
+        mockExec,
+        "/repo",
+      );
 
+      const cwd = "/project/inner";
       expect(mockExec).toHaveBeenCalledWith(
-        '"/bin/prettier" --write "a.js" "b.css"',
-        { stdio: "inherit" },
+        '"/project/inner/node_modules/.bin/prettier" --write "/repo/a.js" "/repo/b.css"',
+        { stdio: "inherit", cwd },
       );
     });
 
@@ -140,7 +146,7 @@ describe("Pre-Commit Formatter", () => {
 
     test("empty file list does nothing", () => {
       const mockExec = jest.fn();
-      runPrettier([], "/bin/prettier", mockExec);
+      runPrettier([], "/bin/prettier", mockExec, "/repo");
       stageFiles([], mockExec);
 
       expect(mockExec).not.toHaveBeenCalled();
