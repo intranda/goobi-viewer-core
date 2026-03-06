@@ -21,9 +21,11 @@
  */
 package io.goobi.viewer.controller.model;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.IntegerRange;
@@ -35,9 +37,12 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Used to check whether a zoomImageView configuration block should be applied to the image view represented by the given viewManager and pageType
+ * Stores {@link PageType} (the type of view, like fullscreen or viewImage), {@link MimeType} of the current page, the number of pages in the record,
+ * the main DocStructType of the record and the collections (based on {@link SolrConstants#DC}) of the record
  */
 public class ViewAttributes {
 
@@ -45,24 +50,47 @@ public class ViewAttributes {
     private final MimeType mimeType;
     private final Integer recordPageCount;
     private final String docStructType;
-    private final String collection;
+    private final List<String> collections;
 
-    public ViewAttributes(PageType pageType, MimeType mimeType, Integer recordPageCount, String docStructType, String collection) {
-        this.pageType = pageType;
+    /**
+     * create an instance based on individual values. All values may be null if they can be ignored for the check
+     * 
+     * @param mimeType the media mimeType of the page
+     * @param recordPageCount the number of pages in the record
+     * @param docStructType The DocStructType of the record
+     * @param collections the {@link SolrConstants#DC} collections of the record
+     * @param pageType the type of view, one of the values of {@link PageType}
+     */
+    public ViewAttributes(MimeType mimeType, Integer recordPageCount, String docStructType, List<String> collections, PageType pageType) {
         this.mimeType = mimeType;
         this.recordPageCount = recordPageCount;
         this.docStructType = docStructType;
-        this.collection = collection;
+        this.collections = collections == null ? Collections.emptyList() : collections;
+        this.pageType = pageType;
     }
 
+    /**
+     * create an instance based on a {@link PhysicalElement page} and {@link StructElement}, along with a {@link PageType}. All values may be null if
+     * they can be ignored for the check
+     * 
+     * @param page the page to consider
+     * @param structElement the structural element to consider
+     * @param pageType the type of view, one of the values of {@link PageType}
+     */
     public ViewAttributes(PhysicalElement page, StructElement structElement, PageType pageType) {
         this.pageType = pageType;
         this.mimeType = Optional.ofNullable(page).map(PhysicalElement::getMediaType).orElse(null);
         this.docStructType = Optional.ofNullable(structElement).map(StructElement::getDocStructType).orElse(null);
-        this.collection = Optional.ofNullable(structElement).map(StructElement::getCollection).orElse(null);
         this.recordPageCount = Optional.ofNullable(structElement).map(StructElement::getNumPages).orElse(null);
+        this.collections = Optional.ofNullable(structElement).map(StructElement::getCollections).orElse(Collections.emptyList());
     }
 
+    /**
+     * Create an instance from a {@link ViewManager} All values may be null if they can be ignored for the check
+     * 
+     * @param viewManager the {@link ViewManager}
+     * @param pageType the type of view, one of the values of {@link PageType}
+     */
     public ViewAttributes(ViewManager viewManager, PageType pageType) {
         this(Optional.ofNullable(viewManager).map(ViewManager::getCurrentPage).orElse(null),
                 Optional.ofNullable(viewManager).map(ViewManager::getTopStructElement).orElse(null),
@@ -74,7 +102,7 @@ public class ViewAttributes {
     }
 
     public ViewAttributes(PageType pageType) {
-        this(pageType, null, null, null, null);
+        this(null, null, null, null, pageType);
     }
 
     public boolean matchesConfiguration(HierarchicalConfiguration<ImmutableNode> conditionConfigNode) {
@@ -84,11 +112,12 @@ public class ViewAttributes {
         List<String> collections = conditionConfigNode.getList("collection").stream().map(Object::toString).toList();
         List<IntegerRange> pageRanges = conditionConfigNode.getList("pageCount").stream().map(Object::toString).map(this::parseIntRange).toList();
 
-        return (views.isEmpty() || this.pageType == null || views.stream().anyMatch(view -> this.pageType.matches(view))) &&
-                (mimeTypes.isEmpty() || this.mimeType == null || mimeTypes.stream().anyMatch(type -> type.equals(this.mimeType.toString()))) &&
-                (docTypes.isEmpty() || StringUtils.isBlank(this.docStructType) || docTypes.contains(this.docStructType)) &&
-                (collections.isEmpty() || StringUtils.isBlank(this.collection) || collections.contains(this.collection)) &&
-                (pageRanges.isEmpty() || this.recordPageCount == null || pageRanges.stream().anyMatch(range -> range.contains(this.recordPageCount)));
+        return (views.isEmpty() || this.pageType == null || views.stream().anyMatch(view -> this.pageType.matches(view)))
+                && (mimeTypes.isEmpty() || this.mimeType == null || mimeTypes.stream().anyMatch(type -> type.equals(this.mimeType.toString())))
+                && (docTypes.isEmpty() || StringUtils.isBlank(this.docStructType) || docTypes.contains(this.docStructType))
+                && (collections.isEmpty() || this.collections.isEmpty() || !CollectionUtils.intersection(collections, this.collections).isEmpty())
+                && (pageRanges.isEmpty() || this.recordPageCount == null
+                        || pageRanges.stream().anyMatch(range -> range.contains(this.recordPageCount)));
 
     }
 
@@ -116,8 +145,8 @@ public class ViewAttributes {
         return docStructType;
     }
 
-    public String getCollection() {
-        return collection;
+    public List<String> getCollection() {
+        return collections;
     }
 
 }
