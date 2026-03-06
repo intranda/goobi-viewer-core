@@ -15,7 +15,7 @@ services:
       DB_PORT: 3306
       DB_PASSWORD: CHANGEME
       SOLR_HOST: solr
-      VIEWER_DOMAIN: localhost
+      VIEWER_DOMAIN: localhost:8080
       USE_SSL: false
       TOMCAT_SAMESITECOOKIES: strict
       STOPWORDS_LANG: "de"
