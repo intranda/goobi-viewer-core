@@ -15,7 +15,7 @@ module.exports = {
     endOfLine: 'lf',
 
     // Plugins
-    plugins: ['@prettier/plugin-xml'],
+    plugins: [require.resolve('@prettier/plugin-xml')],
 
     // === File-specific overrides ===
     overrides: [
