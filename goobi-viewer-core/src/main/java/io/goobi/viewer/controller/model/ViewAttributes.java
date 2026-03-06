@@ -79,13 +79,13 @@ public class ViewAttributes {
 
     public boolean matchesConfiguration(HierarchicalConfiguration<ImmutableNode> conditionConfigNode) {
         List<String> views = conditionConfigNode.getList("view").stream().map(Object::toString).toList();
-        List<String> mimeTypes = conditionConfigNode.getList("mimeTypes").stream().map(Object::toString).toList();
+        List<String> mimeTypes = conditionConfigNode.getList("mimeType").stream().map(Object::toString).toList();
         List<String> docTypes = conditionConfigNode.getList("docType").stream().map(Object::toString).toList();
         List<String> collections = conditionConfigNode.getList("collection").stream().map(Object::toString).toList();
         List<IntegerRange> pageRanges = conditionConfigNode.getList("pageCount").stream().map(Object::toString).map(this::parseIntRange).toList();
 
         return (views.isEmpty() || this.pageType == null || views.stream().anyMatch(view -> this.pageType.matches(view))) &&
-                (mimeTypes.isEmpty() || this.mimeType == null || mimeTypes.stream().anyMatch(type -> type.equals(this.mimeType))) &&
+                (mimeTypes.isEmpty() || this.mimeType == null || mimeTypes.stream().anyMatch(type -> type.equals(this.mimeType.toString()))) &&
                 (docTypes.isEmpty() || StringUtils.isBlank(this.docStructType) || docTypes.contains(this.docStructType)) &&
                 (collections.isEmpty() || StringUtils.isBlank(this.collection) || collections.contains(this.collection)) &&
                 (pageRanges.isEmpty() || this.recordPageCount == null || pageRanges.stream().anyMatch(range -> range.contains(this.recordPageCount)));
