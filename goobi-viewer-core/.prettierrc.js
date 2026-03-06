@@ -5,8 +5,8 @@
 module.exports = {
     // === Global defaults ===
     useTabs: false,
-    tabWidth: 4, // exakt wie vorher
-    printWidth: 120, // exakt wie vorher
+    tabWidth: 4,
+    printWidth: 120,
     singleQuote: true,
     semi: true,
     trailingComma: 'es5',
@@ -15,7 +15,7 @@ module.exports = {
     endOfLine: 'lf',
 
     // Plugins
-    plugins: ['@prettier/plugin-xml'],
+    plugins: [require.resolve('@prettier/plugin-xml')],
 
     // === File-specific overrides ===
     overrides: [
@@ -52,8 +52,9 @@ module.exports = {
                 parser: 'xml',
                 xmlSelfClosingSpace: true,
                 singleAttributePerLine: true,
+                bracketSameLine: true,
                 xmlWhitespaceSensitivity: 'ignore',
-                useTabs: false, // genau wie vorher
+                useTabs: false,
                 tabWidth: 4,
                 printWidth: 120,
                 semi: true,

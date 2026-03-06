@@ -29,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -150,8 +151,8 @@ public class DefaultURLBuilder implements IURLBuilder {
                 .append('/');
         if (!topStruct || imageNo > 1) {
             try {
-                if (!DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(pageType, null)
-                        && DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, null)) {
+                if (!DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(new ViewAttributes(pageType))
+                        && DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(new ViewAttributes(pageType))) {
                     sb.append(imageNo).append("-").append(imageNo).append("/");
                 } else {
                     sb.append(imageNo)

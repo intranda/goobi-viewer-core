@@ -62,23 +62,12 @@ function filterPrettierFiles(files, pattern = SUPPORTED_EXTENSIONS) {
  * @param {string} prettierBin - Path to Prettier binary
  * @param {Function} execFn - Function to execute shell commands
  */
-function getGitRoot() {
-  return execSync("git rev-parse --show-toplevel", { encoding: "utf8" }).trim();
-}
-
-function runPrettier(
-  files,
-  prettierBin,
-  execFn = execSync,
-  gitRoot = getGitRoot(),
-) {
+function runPrettier(files, prettierBin, execFn = execSync) {
   if (files.length === 0) return;
 
-  const fileArgs = files.map((f) => `"${path.resolve(gitRoot, f)}"`).join(" ");
-  const cwd = path.resolve(path.dirname(prettierBin), "../..");
+  const fileArgs = files.map((f) => `"${f}"`).join(" ");
   execFn(`"${prettierBin}" --write ${fileArgs}`, {
     stdio: "inherit",
-    cwd,
   });
 }
 
@@ -148,7 +137,6 @@ module.exports = {
   SUPPORTED_EXTENSIONS,
   getPrettierBinPath,
   prettierExists,
-  getGitRoot,
   getStagedFiles,
   filterPrettierFiles,
   runPrettier,

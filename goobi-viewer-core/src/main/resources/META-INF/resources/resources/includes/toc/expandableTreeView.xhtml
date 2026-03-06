@@ -8,12 +8,10 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
->
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- EXPANDABLE TREEVIEW -->
     <h:panelGroup
-        rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}"
-    >
+        rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
         <div id="expandableToc">
             <!-- EXPAND ALL -->
             <div class="toc__list-expandable-all">
@@ -24,8 +22,7 @@
                     title="#{msg.allClose}"
                     data-toggle="tooltip"
                     data-placement="top"
-                    aria-label="#{msg.allClose}"
-                >
+                    aria-label="#{msg.allClose}">
                     <util:icon icon="square-rounded-minus" />
                 </button>
                 <button
@@ -35,8 +32,7 @@
                     title="#{msg.allOpen}"
                     data-toggle="tooltip"
                     data-placement="top"
-                    aria-label="#{msg.allOpen}"
-                >
+                    aria-label="#{msg.allOpen}">
                     <util:icon icon="square-rounded-plus" />
                 </button>
             </div>
@@ -45,14 +41,12 @@
                 <ul class="toc__list-outer-list">
                     <ui:repeat
                         var="tocElement"
-                        value="#{activeDocumentBean.toc.treeView}"
-                    >
+                        value="#{activeDocumentBean.toc.treeView}">
                         <li
                             class="toc__list-expandable-elem #{tocElement.hasChild == true ? 'parent' : 'child' } #{!tocElement.visible ? 'toc__list-expandable-elem--hidden' : ''} #{tocElement.expanded ? 'toc__list-expandable-elem--expanded' : ''}"
                             data-iddoc="iddoc_#{tocElement.iddoc}"
                             data-level="#{tocElement.level}"
-                            style="padding-left: #{tocElement.level * indent}px"
-                        >
+                            style="padding-left: #{tocElement.level * indent}px">
                             <div class="row">
                                 <div class="col-12 col-sm-1">
                                     <ui:fragment rendered="#{tocElement.hasChild}">
@@ -62,16 +56,13 @@
                                                 type="button"
                                                 class="btn btn--clean toc__list-expandable-toggle"
                                                 aria-expanded="#{tocElement.expanded}"
-                                                aria-label="#{tocElement.expanded ? msg.allClose : msg.allOpen}"
-                                            >
+                                                aria-label="#{tocElement.expanded ? msg.allClose : msg.allOpen}">
                                                 <util:icon
                                                     icon="square-rounded-plus"
-                                                    svgClass="icon toc__icon-expand"
-                                                />
+                                                    svgClass="icon toc__icon-expand" />
                                                 <util:icon
                                                     icon="square-rounded-minus"
-                                                    svgClass="icon toc__icon-collapse"
-                                                />
+                                                    svgClass="icon toc__icon-collapse" />
                                             </button>
                                         </div>
                                     </ui:fragment>
@@ -82,15 +73,13 @@
                                         <h:outputLink
                                             rendered="#{tocElement.pageNo == null}"
                                             title="#{tocElement.label}"
-                                            value="#{tocElement.url}"
-                                        >
+                                            value="#{tocElement.url}">
                                             #{tocElement.label}
                                         </h:outputLink>
                                         <h:outputLink
                                             rendered="#{tocElement.pageNo != null}"
                                             title="#{tocElement.label}"
-                                            value="#{tocElement.url}"
-                                        >
+                                            value="#{tocElement.url}">
                                             #{tocElement.label}
                                         </h:outputLink>
                                     </div>
@@ -102,8 +91,7 @@
                                             <a
                                                 href="#{tocElement.url}"
                                                 title="#{tocElement.label}"
-                                                aria-label="#{tocElement.label}"
-                                            >
+                                                aria-label="#{tocElement.label}">
                                                 #{tocElement.pageNoLabel}
                                             </a>
                                         </h:panelGroup>
@@ -114,13 +102,11 @@
                                         <!-- PDF DOWNLOAD -->
                                         <h:panelGroup
                                             rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and
-																	                          tocElement.pageNo != null and tocElement.accessPermissionPdf}"
-                                        >
+																	                          tocElement.pageNo != null and tocElement.accessPermissionPdf}">
                                             <h:panelGroup rendered="#{!configurationBean.generatePdfInMessageQueue}">
                                                 <a
                                                     href="#{tocElement.contentServerPdfUrl}"
-                                                    title="#{msg.label__pdf_download}"
-                                                >
+                                                    title="#{msg.label__pdf_download}">
                                                     <util:icon icon="file-type-pdf" />
                                                 </a>
                                             </h:panelGroup>
@@ -128,13 +114,11 @@
                                                 <button
                                                     class="btn btn--clean toc__list-expandable-download-button"
                                                     aria-label="#{msg.label__pdf_download}"
-                                                    jsf:action="#{viewBean.put('title', tocElement.label).put('logId', tocElement.logId).put('fileSize', activeDocumentBean.getPdfSize(tocElement.logId))}"
-                                                >
+                                                    jsf:action="#{viewBean.put('title', tocElement.label).put('logId', tocElement.logId).put('fileSize', activeDocumentBean.getPdfSize(tocElement.logId))}">
                                                     <util:icon icon="file-type-pdf" />
                                                     <f:ajax
                                                         render="modalDownloadWrapper"
-                                                        onevent="data => {if(data.status == 'success') $('#downloadModal').modal()}"
-                                                    />
+                                                        onevent="data => {if(data.status == 'success') $('#downloadModal').modal()}" />
                                                 </button>
                                             </h:panelGroup>
                                         </h:panelGroup>

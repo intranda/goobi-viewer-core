@@ -211,28 +211,40 @@ public class BreadcrumbBean implements Serializable {
                 tempBreadcrumbs.add(0, link);
             }
 
+            boolean abort = false;
             while (currentPage != null) {
                 if (linkedPages.contains(currentPage)) {
                     //encountered a breadcrumb loop. Simply break here
                     break;
                 }
                 linkedPages.add(currentPage);
-                if (DataManager.getInstance()
+                for (CMSStaticPage staticPage : DataManager.getInstance()
                         .getDao()
-                        .getStaticPageForCMSPage(currentPage)
-                        .stream()
-                        .findFirst()
-                        .map(CMSStaticPage::getPageName)
-                        .filter(name -> PageType.index.name().equals(name))
-                        .isPresent()) {
-                    logger.trace("CMS index page found");
-                    // The current page is the start page, which is already the breadcrumb root
+                        .getStaticPageForCMSPage(currentPage)) {
+                    if (PageType.index.name().equals(staticPage.getPageName())) {
+                        // The current page is the start page, which is already the breadcrumb root
+                        logger.trace("CMS index page found");
+                        abort = true;
+                        break;
+                    } else if (PageType.search.name().equals(staticPage.getPageName())) {
+                        // Use search result URL here instead of search 
+                        logger.trace("Overriding search page");
+                        SearchBean searchBean = BeanUtils.getSearchBean();
+                        if (searchBean != null && StringUtils.isNotEmpty(searchBean.getLastUsedSearchUrl())) {
+                            addStaticLinkToBreadcrumb("searchHitNavigation", searchBean.getLastUsedSearchUrl(), WEIGHT_SEARCH_RESULTS);
+                        }
+                        abort = true;
+                        break;
+                    }
+                }
+                if (abort) {
                     break;
                 }
                 LabeledLink pageLink =
                         new LabeledLink(StringUtils.isNotBlank(currentPage.getMenuTitle()) ? currentPage.getMenuTitle() : currentPage.getTitle(),
                                 currentPage.getPageUrl(), weight);
                 tempBreadcrumbs.add(0, pageLink);
+                logger.trace("Added CMS page to breadcrumbs: {} ({})", currentPage.getTitle(), weight);
                 if (StringUtils.isNotBlank(currentPage.getParentPageId())) {
                     try {
                         Long cmsPageId = Long.parseLong(currentPage.getParentPageId());
@@ -244,7 +256,6 @@ public class BreadcrumbBean implements Serializable {
                 } else {
                     currentPage = null;
                 }
-
             }
         } finally {
             //            List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);

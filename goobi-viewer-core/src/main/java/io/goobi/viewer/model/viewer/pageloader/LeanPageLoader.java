@@ -82,7 +82,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
 
     /** {@inheritDoc} */
     @Override
-    public int getNumPages() throws IndexUnreachableException {
+    public int getNumPages() {
         if (numPages < 0) {
             numPages = topElement.getNumPages();
         }

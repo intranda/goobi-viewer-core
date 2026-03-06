@@ -50,6 +50,7 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
@@ -2482,7 +2483,7 @@ class ConfigurationTest extends AbstractTest {
 
     @Test
     void getFullscreenViewZoomScalesTest() throws ViewerConfigurationException {
-        List<String> scales = DataManager.getInstance().getConfiguration().getImageViewZoomScales(PageType.viewFullscreen, null);
+        List<String> scales = DataManager.getInstance().getConfiguration().getImageViewZoomScales(new ViewAttributes(PageType.viewFullscreen));
         assertEquals("1000", scales.get(0));
         assertEquals("2000", scales.get(1));
         assertEquals("3000", scales.get(2));
@@ -2500,7 +2501,8 @@ class ConfigurationTest extends AbstractTest {
 
     @Test
     void getFullscreenTileSizesTest() throws ViewerConfigurationException {
-        Map<Integer, List<Integer>> tiles = DataManager.getInstance().getConfiguration().getTileSizes(PageType.viewFullscreen, null);
+        Map<Integer, List<Integer>> tiles =
+                DataManager.getInstance().getConfiguration().getTileSizes(new ViewAttributes(PageType.viewFullscreen));
         assertEquals(1024, tiles.keySet().iterator().next(), 0);
         assertEquals(3, tiles.get(1024).size());
         assertEquals(2, tiles.get(1024).get(0), 0);
@@ -2515,7 +2517,7 @@ class ConfigurationTest extends AbstractTest {
 
     @Test
     void getCrowdsourcingFooterHeightTest() throws ViewerConfigurationException {
-        assertEquals(0, DataManager.getInstance().getConfiguration().getFooterHeight(PageType.editContent, null));
+        assertEquals(0, DataManager.getInstance().getConfiguration().getFooterHeight(new ViewAttributes(PageType.editContent)));
     }
 
     /**
@@ -2858,12 +2860,12 @@ class ConfigurationTest extends AbstractTest {
 
     @Test
     void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
-        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(null, null));
+        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(new ViewAttributes(null)));
     }
 
     @Test
     void isSequencePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
-        assertFalse(DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(null, null));
+        assertFalse(DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(new ViewAttributes(null)));
     }
 
     /**
