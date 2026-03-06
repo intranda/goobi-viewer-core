@@ -1595,6 +1595,6 @@ public class ConfigurationBean implements Serializable {
     }
 
     private ViewAttributes getImageViewAttributes(PageType pageType, String mimeType) {
-        return new ViewAttributes(pageType, new MimeType(mimeType), null, null, null);
+        return new ViewAttributes(new MimeType(mimeType), null, null, null, pageType);
     }
 }

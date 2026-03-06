@@ -292,7 +292,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @throws ViewerConfigurationException
      */
     private List<Integer> getImageSizesFromConfig(boolean mayZoom) throws ViewerConfigurationException {
-        ViewAttributes viewAttributes = new ViewAttributes(pageType, getMediaType(), null, null, null);
+        ViewAttributes viewAttributes = new ViewAttributes(getMediaType(), null, null, null, pageType);
         List<String> sizeStrings = DataManager.getInstance()
                 .getConfiguration()
                 .getImageViewZoomScales(viewAttributes);
@@ -323,7 +323,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @throws ViewerConfigurationException
      */
     private List<ImageTile> getTileSizesFromConfig() throws ViewerConfigurationException {
-        ViewAttributes viewAttributes = new ViewAttributes(pageType, getMediaType(), null, null, null);
+        ViewAttributes viewAttributes = new ViewAttributes(getMediaType(), null, null, null, pageType);
         Map<Integer, List<Integer>> configSizes = Collections.emptyMap();
         if (DataManager.getInstance()
                 .getConfiguration()
