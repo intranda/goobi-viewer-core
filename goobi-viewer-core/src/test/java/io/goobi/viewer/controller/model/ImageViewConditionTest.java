@@ -1,6 +1,7 @@
 package io.goobi.viewer.controller.model;
 
 import java.io.StringReader;
+import java.util.List;
 
 import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -37,7 +38,7 @@ class ImageViewConditionTest {
         Mockito.when(viewManager.getTopStructElement()).thenReturn(docStruct);
         Mockito.when(page.getMediaType()).thenReturn(mimeType);
         Mockito.when(docStruct.getNumPages()).thenReturn(pageCount);
-        Mockito.when(docStruct.getCollection()).thenReturn(collection);
+        Mockito.when(docStruct.getCollections()).thenReturn(List.of(collection));
         Mockito.when(docStruct.getDocStructType()).thenReturn(docStructType);
 
         condition = new ViewAttributes(viewManager, pageType);
@@ -46,6 +47,13 @@ class ImageViewConditionTest {
     @Test
     public void testMimeTypeAndPageCount() throws ConfigurationException {
         XMLConfiguration node = loadConfig("<condition><mimeType>image/jpeg</mimeType><pageCount>[10,20]</pageCount></condition>");
+        Assertions.assertTrue(condition.matchesConfiguration(node));
+    }
+
+    @Test
+    public void testPageTypeAndCollection() throws ConfigurationException {
+        XMLConfiguration node =
+                loadConfig("<condition><view>viewFullscreen</view><collection>dc.image</collection><collection>dc.pdf</collection></condition>");
         Assertions.assertTrue(condition.matchesConfiguration(node));
     }
 
