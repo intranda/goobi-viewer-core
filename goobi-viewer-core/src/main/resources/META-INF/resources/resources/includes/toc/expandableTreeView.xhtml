@@ -12,83 +12,60 @@
     <!-- EXPANDABLE TREEVIEW -->
     <h:panelGroup
         rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
-        <!-- EXPAND ALL -->
-        <div class="toc__list-expandable-all">
-            <button
-                type="button"
-                class="btn btn--link"
-                jsf:action="#{activeDocumentBean.toc.collapseAll}"
-                title="#{msg.allClose}">
-                <util:icon icon="square-rounded-minus" />
-                <f:passThroughAttribute
-                    name="data-toggle"
-                    value="tooltip" />
-                <f:passThroughAttribute
-                    name="data-placement"
-                    value="top" />
-                <f:passThroughAttribute
-                    name="aria-label"
-                    value="#{msg.allClose}" />
-                <f:ajax render="tocForm" />
-            </button>
-            <button
-                type="button"
-                class="btn btn--link"
-                jsf:action="#{activeDocumentBean.toc.expandAll}"
-                title="#{msg.allOpen}">
-                <util:icon icon="square-rounded-plus" />
-                <f:passThroughAttribute
-                    name="data-toggle"
-                    value="tooltip" />
-                <f:passThroughAttribute
-                    name="data-placement"
-                    value="top" />
-                <f:passThroughAttribute
-                    name="aria-label"
-                    value="#{msg.allOpen}" />
-                <f:ajax render="tocForm" />
-            </button>
-        </div>
+        <div id="expandableToc">
+            <!-- EXPAND ALL -->
+            <div class="toc__list-expandable-all">
+                <button
+                    type="button"
+                    class="btn btn--clean"
+                    data-action="collapse-all"
+                    title="#{msg.allClose}"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    aria-label="#{msg.allClose}">
+                    <util:icon icon="square-rounded-minus" />
+                </button>
+                <button
+                    type="button"
+                    class="btn btn--clean"
+                    data-action="expand-all"
+                    title="#{msg.allOpen}"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    aria-label="#{msg.allOpen}">
+                    <util:icon icon="square-rounded-plus" />
+                </button>
+            </div>
 
-        <nav class="toc__list-expandable">
-            <ul class="toc__list-outer-list">
-                <ui:repeat
-                    var="tocElement"
-                    value="#{activeDocumentBean.toc.treeView}">
-                    <h:panelGroup rendered="#{tocElement.visible}">
+            <nav class="toc__list-expandable">
+                <ul class="toc__list-outer-list">
+                    <ui:repeat
+                        var="tocElement"
+                        value="#{activeDocumentBean.toc.treeView}">
                         <li
-                            class="toc__list-expandable-elem #{tocElement.hasChild == true ? 'parent' : 'child' }"
+                            class="toc__list-expandable-elem #{tocElement.hasChild == true ? 'parent' : 'child' } #{!tocElement.visible ? 'toc__list-expandable-elem--hidden' : ''} #{tocElement.expanded ? 'toc__list-expandable-elem--expanded' : ''}"
                             data-iddoc="iddoc_#{tocElement.iddoc}"
+                            data-level="#{tocElement.level}"
                             style="padding-left: #{tocElement.level * indent}px">
                             <div class="row">
                                 <div class="col-12 col-sm-1">
-                                    <h:panelGroup rendered="#{tocElement.hasChild}">
+                                    <ui:fragment rendered="#{tocElement.hasChild}">
                                         <!-- EXPAND -->
                                         <div class="toc__list-expandable-expand">
                                             <button
                                                 type="button"
-                                                class="btn btn--clean toc__list-expandable-expand-button"
-                                                jsf:action="#{activeDocumentBean.setChildrenVisible(tocElement)}"
-                                                rendered="#{!tocElement.expanded}">
-                                                <util:icon icon="square-rounded-plus" />
-                                                <f:passThroughAttribute
-                                                    name="aria-label"
-                                                    value="#{msg.allOpen}" />
-                                                <f:ajax render="@form" />
-                                            </button>
-                                            <button
-                                                type="button"
-                                                class="btn btn--clean toc__list-expandable-expand-button"
-                                                jsf:action="#{activeDocumentBean.setChildrenInvisible(tocElement)}"
-                                                rendered="#{tocElement.expanded}">
-                                                <util:icon icon="square-rounded-minus" />
-                                                <f:passThroughAttribute
-                                                    name="aria-label"
-                                                    value="#{msg.all}" />
-                                                <f:ajax render="@form" />
+                                                class="btn btn--clean toc__list-expandable-toggle"
+                                                aria-expanded="#{tocElement.expanded}"
+                                                aria-label="#{tocElement.expanded ? msg.allClose : msg.allOpen}">
+                                                <util:icon
+                                                    icon="square-rounded-plus"
+                                                    svgClass="icon toc__icon-expand" />
+                                                <util:icon
+                                                    icon="square-rounded-minus"
+                                                    svgClass="icon toc__icon-collapse" />
                                             </button>
                                         </div>
-                                    </h:panelGroup>
+                                    </ui:fragment>
                                 </div>
                                 <div class="col-12 col-sm-8 col-md-9 toc__list-expandable-title-wrapper">
                                     <!-- TITLE -->
@@ -124,7 +101,7 @@
 
                                         <!-- PDF DOWNLOAD -->
                                         <h:panelGroup
-                                            rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
+                                            rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and
 																	                          tocElement.pageNo != null and tocElement.accessPermissionPdf}">
                                             <h:panelGroup rendered="#{!configurationBean.generatePdfInMessageQueue}">
                                                 <a
@@ -135,7 +112,7 @@
                                             </h:panelGroup>
                                             <h:panelGroup rendered="#{configurationBean.generatePdfInMessageQueue}">
                                                 <button
-                                                    class="btn btn--link toc__list-expandable-download-button"
+                                                    class="btn btn--clean toc__list-expandable-download-button"
                                                     aria-label="#{msg.label__pdf_download}"
                                                     jsf:action="#{viewBean.put('title', tocElement.label).put('logId', tocElement.logId).put('fileSize', activeDocumentBean.getPdfSize(tocElement.logId))}">
                                                     <util:icon icon="file-type-pdf" />
@@ -149,9 +126,13 @@
                                 </div>
                             </div>
                         </li>
-                    </h:panelGroup>
-                </ui:repeat>
-            </ul>
-        </nav>
+                    </ui:repeat>
+                </ul>
+            </nav>
+        </div>
+
+        <script type="text/javascript">
+viewerJS.expandableToc.init();
+        </script>
     </h:panelGroup>
 </ui:composition>

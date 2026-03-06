@@ -17,10 +17,10 @@
  * program. If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @module viewerJS.widgetToc
- * @description Client-side expand/collapse for the sidebar TOC widget (used in both
- * sidebar and fullscreen views). Uses a flat list of <li> elements with data-level
- * attributes. On init, scrolls to the currently active TOC entry.
+ * @module viewerJS.expandableToc
+ * @description Client-side expand/collapse for the full-page expandable tree view TOC.
+ * Uses a flat list of <li> elements with data-level attributes to represent the tree
+ * hierarchy. Visibility is toggled via CSS classes (--hidden/--expanded).
  * @requires jQuery
  */
 var viewerJS = (function (viewer) {
@@ -28,27 +28,36 @@ var viewerJS = (function (viewer) {
 
     var _debug = false;
 
-    viewer.widgetToc = {
+    var _selectors = {
+        element: '.toc__list-expandable-elem',
+        toggle: '.toc__list-expandable-toggle',
+        hidden: 'toc__list-expandable-elem--hidden',
+        expanded: 'toc__list-expandable-elem--expanded',
+        iconExpand: '.toc__icon-expand',
+        iconCollapse: '.toc__icon-collapse',
+    };
+
+    viewer.expandableToc = {
         /**
-         * @description Initializes the widget TOC. Attaches a delegated click listener
-         * for toggle, expand-all, and collapse-all actions, then scrolls to the active element.
+         * @description Initializes the expandable TOC. Attaches a single delegated click
+         * listener on the container for toggle, expand-all, and collapse-all actions.
          * @method init
          */
         init: function () {
             if (_debug) {
                 console.log('##############################');
-                console.log('viewer.widgetToc.init');
+                console.log('viewer.expandableToc.init');
                 console.log('##############################');
             }
 
-            var container = document.getElementById('widgetToc');
+            var container = document.getElementById('expandableToc');
             if (!container) return;
 
             container.addEventListener('click', function (e) {
-                var toggle = e.target.closest('.widget-toc__toggle');
+                var toggle = e.target.closest(_selectors.toggle);
                 if (toggle) {
-                    var li = toggle.closest('.widget-toc__element');
-                    if (li.classList.contains('widget-toc__element--expanded')) {
+                    var li = toggle.closest(_selectors.element);
+                    if (li.classList.contains(_selectors.expanded)) {
                         _collapseElement(li);
                     } else {
                         _expandElement(li);
@@ -66,8 +75,6 @@ var viewerJS = (function (viewer) {
                     return;
                 }
             });
-
-            _scrollToActive(container);
         },
     };
 
@@ -86,7 +93,7 @@ var viewerJS = (function (viewer) {
      * @param {boolean} expanded - Whether the element is expanded.
      */
     function _updateToggle(li, expanded) {
-        var btn = li.querySelector('.widget-toc__toggle');
+        var btn = li.querySelector(_selectors.toggle);
         if (btn) {
             btn.setAttribute('aria-expanded', String(expanded));
         }
@@ -104,8 +111,8 @@ var viewerJS = (function (viewer) {
             var nextLevel = _getLevel(next);
             if (nextLevel <= level) break;
             if (nextLevel === level + 1) {
-                next.classList.remove('widget-toc__element--hidden');
-                if (next.classList.contains('widget-toc__element--expanded')) {
+                next.classList.remove(_selectors.hidden);
+                if (next.classList.contains(_selectors.expanded)) {
                     _showDirectChildren(next);
                 }
             }
@@ -122,7 +129,7 @@ var viewerJS = (function (viewer) {
         var next = parentLi.nextElementSibling;
         while (next) {
             if (_getLevel(next) <= level) break;
-            next.classList.add('widget-toc__element--hidden');
+            next.classList.add(_selectors.hidden);
             next = next.nextElementSibling;
         }
     }
@@ -133,7 +140,7 @@ var viewerJS = (function (viewer) {
      * @param {HTMLElement} li - The TOC list item to expand.
      */
     function _expandElement(li) {
-        li.classList.add('widget-toc__element--expanded');
+        li.classList.add(_selectors.expanded);
         _updateToggle(li, true);
         _showDirectChildren(li);
     }
@@ -144,7 +151,7 @@ var viewerJS = (function (viewer) {
      * @param {HTMLElement} li - The TOC list item to collapse.
      */
     function _collapseElement(li) {
-        li.classList.remove('widget-toc__element--expanded');
+        li.classList.remove(_selectors.expanded);
         _updateToggle(li, false);
         _hideDescendants(li);
     }
@@ -154,12 +161,12 @@ var viewerJS = (function (viewer) {
      * @param {HTMLElement} container - The TOC container element.
      */
     function _expandAll(container) {
-        container.querySelectorAll('.widget-toc__element.parent').forEach(function (li) {
-            li.classList.add('widget-toc__element--expanded');
+        container.querySelectorAll(_selectors.element + '.parent').forEach(function (li) {
+            li.classList.add(_selectors.expanded);
             _updateToggle(li, true);
         });
-        container.querySelectorAll('.widget-toc__element--hidden').forEach(function (li) {
-            li.classList.remove('widget-toc__element--hidden');
+        container.querySelectorAll('.' + _selectors.hidden).forEach(function (li) {
+            li.classList.remove(_selectors.hidden);
         });
     }
 
@@ -169,60 +176,14 @@ var viewerJS = (function (viewer) {
      * @param {HTMLElement} container - The TOC container element.
      */
     function _collapseAll(container) {
-        container.querySelectorAll('.widget-toc__element').forEach(function (li) {
+        container.querySelectorAll(_selectors.element).forEach(function (li) {
             if (_getLevel(li) > 0) {
-                li.classList.add('widget-toc__element--hidden');
+                li.classList.add(_selectors.hidden);
             }
             if (li.classList.contains('parent')) {
-                li.classList.remove('widget-toc__element--expanded');
+                li.classList.remove(_selectors.expanded);
                 _updateToggle(li, false);
             }
-        });
-    }
-
-    /**
-     * @description Ensures a TOC element is visible by removing the hidden class and
-     * expanding all ancestor elements up to the root.
-     * @param {HTMLElement} li - The TOC list item to make visible.
-     */
-    function _ensureVisible(li) {
-        if (!li.classList.contains('widget-toc__element--hidden')) return;
-        li.classList.remove('widget-toc__element--hidden');
-        var level = _getLevel(li);
-        if (level === 0) return;
-        var prev = li.previousElementSibling;
-        while (prev) {
-            var prevLevel = _getLevel(prev);
-            if (prevLevel < level) {
-                prev.classList.add('widget-toc__element--expanded');
-                _updateToggle(prev, true);
-                prev.classList.remove('widget-toc__element--hidden');
-                if (prevLevel === 0) break;
-                level = prevLevel;
-            }
-            prev = prev.previousElementSibling;
-        }
-    }
-
-    /**
-     * @description Scrolls the TOC container so the currently active element is visible.
-     * Expands ancestor elements if the active element is hidden.
-     * @param {HTMLElement} container - The TOC container element.
-     */
-    function _scrollToActive(container) {
-        var active = container.querySelector('.widget-toc__element.active');
-        if (!active) return;
-        _ensureVisible(active);
-        var scrollParent = container.querySelector('.widget-toc__elements');
-        if (!scrollParent || scrollParent.scrollHeight <= scrollParent.clientHeight) return;
-        requestAnimationFrame(function () {
-            var top = active.offsetTop;
-            var el = active.offsetParent;
-            while (el && el !== scrollParent) {
-                top += el.offsetTop;
-                el = el.offsetParent;
-            }
-            scrollParent.scrollTop = top - scrollParent.clientHeight / 2;
         });
     }
 
