@@ -26,7 +26,8 @@ var viewerJS = (function (viewer) {
     'use strict';
 
     var _debug = false;
-    var _parentPos = 0;
+    var _savedScrollTop = -1;
+    var _overlayTimer = null;
 
     viewer.widgetToc = {
         /**
@@ -40,26 +41,30 @@ var viewerJS = (function (viewer) {
                 console.log('##############################');
             }
 
-            // hide loader and overlay after successful ajax request
             viewerJS.jsfAjax.begin.subscribe((e) => {
-                var widgetToc = $(e.source).parents('#widgetToc');
-                if (widgetToc.length) {
+                if ($(e.source).closest('#widgetToc').length) {
+                    let scrollEl = document.querySelector('.widget-toc__elements');
+                    if (scrollEl) {
+                        _savedScrollTop = scrollEl.scrollTop;
+                    }
                     $('[data-iddoc*="iddoc"]').removeClass('active');
-                    $('.widget-toc__loader, .widget-toc__overlay').show();
-
-                    // hide all tooltips on ajax load
                     $('[data-toggle="tooltip"]').tooltip('dispose');
+                    _overlayTimer = setTimeout(() => {
+                        $('.widget-toc__loader, .widget-toc__overlay').show();
+                    }, 150);
                 }
             });
 
-            viewerJS.jsfAjax.begin.subscribe((e) => {
-                var iddoc = $(e.source).parents('.widget-toc__element').attr('data-iddoc');
-                if (iddoc !== undefined) {
-                    _parentPos = $('[data-iddoc="' + iddoc + '"]').position().top;
-                    $('[data-iddoc="' + iddoc + '"]').addClass('active');
-                    $('.widget-toc__elements').scrollTop(_parentPos);
+            viewerJS.jsfAjax.success.subscribe(() => {
+                if (_savedScrollTop >= 0) {
+                    clearTimeout(_overlayTimer);
+                    $('.widget-toc__loader, .widget-toc__overlay').hide();
+                    let scrollEl = document.querySelector('.widget-toc__elements');
+                    if (scrollEl) {
+                        scrollEl.scrollTop = _savedScrollTop;
+                    }
+                    _savedScrollTop = -1;
                 }
-                $('.widget-toc__loader, .widget-toc__overlay').hide();
             });
         },
     };
