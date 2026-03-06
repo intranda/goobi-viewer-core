@@ -26,7 +26,8 @@
         display: flex;
         align-items: center;
         margin-left: auto;
-        a {
+        a,
+        button {
             margin-left: 10px;
             &:first-child {
                 margin: 0;
@@ -45,7 +46,7 @@
         align-items: center;
         padding-left: 3px;
         &:hover {
-            background-color: @lightgray;
+            background-color: @widget-toc-hover-bg;
         }
         a {
             display: flex;
@@ -61,6 +62,17 @@
     }
     &__element-expand {
         max-width: 20px;
+    }
+    &__toggle {
+        padding: 0;
+        display: flex;
+        align-items: center;
+        .icon-wrapper svg {
+            color: @widget-toc-toggle-icon-color;
+        }
+        &:hover .icon-wrapper svg {
+            color: @widget-toc-toggle-icon-color-hover;
+        }
     }
     &__element-link {
         width: calc(~'100% - 20px');
@@ -81,12 +93,27 @@
         }
         a {
             padding: 2px 0;
+            &:hover,
+            &:focus,
+            &:active {
+                color: @widget-toc-link-color-hover;
+            }
         }
         &.active {
             a {
                 font-weight: 700;
+                color: @widget-toc-active-color;
             }
         }
+    }
+    &__element--hidden {
+        display: none;
+    }
+    &__element--expanded .icon-wrapper:has(.widget-toc__icon-expand) {
+        display: none;
+    }
+    &__element:not(.widget-toc__element--expanded) .icon-wrapper:has(.widget-toc__icon-collapse) {
+        display: none;
     }
     &__element-pagenumber {
         width: 45px;

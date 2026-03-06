@@ -85,9 +85,6 @@ var viewerJS = (function () {
         // init mobile Toggles for old responisive themes
         viewerJS.mobileToggles.init();
 
-        // init save scroll positions
-        viewerJS.scrollPositions.init();
-
         viewerJS.helper.initNumberOnlyInput();
 
         // init user login
