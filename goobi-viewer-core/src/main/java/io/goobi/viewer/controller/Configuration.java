@@ -4355,7 +4355,7 @@ public class Configuration extends AbstractConfiguration {
      * whether to show thumbnail gallery in image view
      * 
      * @param viewAttributes a {@link ViewAttributes} object
-     * @return
+     * @return true if thumbnail gallery should be visible
      * @throws ViewerConfigurationException
      */
     public boolean showImageThumbnailGallery(ViewAttributes viewAttributes) throws ViewerConfigurationException {
