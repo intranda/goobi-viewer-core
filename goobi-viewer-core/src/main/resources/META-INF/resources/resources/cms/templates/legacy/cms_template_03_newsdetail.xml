@@ -1,30 +1,93 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<cms_page_template id="template_newsdetail" version="2015-01-14">
+<cms_page_template
+    id="template_newsdetail"
+    version="2015-01-14">
     <name>cms__template_03__title</name>
     <description>cms__template_03__description</description>
     <icon>cms_template_03_newsdetail.png</icon>
-    <html>cms_template_03_newsdetail.xhtml</html>
+    <html>
+cms_template_03_newsdetail.xhtml
+    </html>
     <content>
-        <item order="1" id="A0" label="cms__template_03__date__label" type="TEXT"/>
-        <item order="2" id="A1" label="cms__template_03__header__label" type="TEXT"/>
-        <item order="3" id="A2" label="cms__template_03__text_section__label" type="HTML"/>
-        <item order="4" id="preview01" preview="true" label="cms__template_03__text_section_preview__label" type="HTML"/>
-        <item order="5" id="image01" label="cms__template_03__image__label" type="MEDIA" />
-        
-        <item order="6" id="B1" label="cms__template_03__header__label" type="TEXT"/>
-        <item order="7" id="B2" label="cms__template_03__text_section__label" type="HTML"/>
-        <item order="8" id="image02" label="cms__template_03__image__label" type="MEDIA" />
-        
-        <item order="9" id="C1" label="cms__template_03__header__label" type="TEXT"/>
-        <item order="10" id="C2" label="cms__template_03__text_section__label" type="HTML"/>
-        <item order="11" id="image03" label="cms__template_03__image__label" type="MEDIA" />
-        
-        <item order="12" id="D1" label="cms__template_03__header__label" type="TEXT"/>
-        <item order="13" id="D2" label="cms__template_03__text_section__label" type="HTML"/>
-        <item order="14" id="image04" label="cms__template_03__image__label" type="MEDIA" />
-        
-        <item order="15" id="gallery" label="cms__template_03__galery__label" type="SOLRQUERY"/>
-        
-        
+        <item
+            order="1"
+            id="A0"
+            label="cms__template_03__date__label"
+            type="TEXT" />
+        <item
+            order="2"
+            id="A1"
+            label="cms__template_03__header__label"
+            type="TEXT" />
+        <item
+            order="3"
+            id="A2"
+            label="cms__template_03__text_section__label"
+            type="HTML" />
+        <item
+            order="4"
+            id="preview01"
+            preview="true"
+            label="cms__template_03__text_section_preview__label"
+            type="HTML" />
+        <item
+            order="5"
+            id="image01"
+            label="cms__template_03__image__label"
+            type="MEDIA" />
+
+        <item
+            order="6"
+            id="B1"
+            label="cms__template_03__header__label"
+            type="TEXT" />
+        <item
+            order="7"
+            id="B2"
+            label="cms__template_03__text_section__label"
+            type="HTML" />
+        <item
+            order="8"
+            id="image02"
+            label="cms__template_03__image__label"
+            type="MEDIA" />
+
+        <item
+            order="9"
+            id="C1"
+            label="cms__template_03__header__label"
+            type="TEXT" />
+        <item
+            order="10"
+            id="C2"
+            label="cms__template_03__text_section__label"
+            type="HTML" />
+        <item
+            order="11"
+            id="image03"
+            label="cms__template_03__image__label"
+            type="MEDIA" />
+
+        <item
+            order="12"
+            id="D1"
+            label="cms__template_03__header__label"
+            type="TEXT" />
+        <item
+            order="13"
+            id="D2"
+            label="cms__template_03__text_section__label"
+            type="HTML" />
+        <item
+            order="14"
+            id="image04"
+            label="cms__template_03__image__label"
+            type="MEDIA" />
+
+        <item
+            order="15"
+            id="gallery"
+            label="cms__template_03__galery__label"
+            type="SOLRQUERY" />
     </content>
 </cms_page_template>

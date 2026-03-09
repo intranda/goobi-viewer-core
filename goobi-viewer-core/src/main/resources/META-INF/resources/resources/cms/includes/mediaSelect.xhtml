@@ -40,7 +40,7 @@
                 role="tabpanel"
                 class="tab-pane"
                 id="fileUpload#{index}">
-                <adminMediaUpload></adminMediaUpload>
+                <adminMediaUpload />
 
                 <!-- ACTION -->
                 <div class="admin-cms-media__select-action">
@@ -107,7 +107,7 @@
                                             <div class="admin-cms-media__item-select-frame-checkmark">
                                                 <i
                                                     class="fa fa-check"
-                                                    aria-hidden="true"></i>
+                                                    aria-hidden="true" />
                                             </div>
                                         </div>
                                         <h:commandLink
@@ -173,52 +173,52 @@
     </div>
 
     <script type="text/javascript">
-        var adminMediaConfig = {
-            postUrl: '#{navigationHelper.applicationUrl}api/v1/cms/media/files/',
-            fileTypes: '#{fileTypes}',
-            fileTypeValidator: /#{fileTypeValidator.replace("(?i)", "")}/i,
-            index: '#{index}',
-            msg: {
-                buttonUpload: '#{msg.button__upload}',
-                uploadText: '#{msg.admin__media_upload_text}',
-                allowedFileTypes: '#{msg.admin__media_upload_filetypes}',
-                mediaUploading: '#{msg.admin__media_upload_uploading}',
-                mediaFinished: '#{msg.admin__media_upload_finished}',
-                mediaError: '#{msg.admin__media_upload_error}',
-                bulkDeleteConfirm: '#{msg.admin__media_bulk_delete_confirm}',
-                overwriteFileConfirm: '#{msg.admin__media_overwrite_file_confirm}',
-                overwriteFileRefused: '#{msg.admin__media_overwrite_file_refused}',
-                button__overwrite: '#{msg.button__overwrite}',
-            },
-            onUploadSuccess: function () {
-                console.log('upload successful');
-                $('#reloadButton#{index}').click();
-                $("[aria-controls='fileSelect#{index}']").click();
-            },
-            forceGrid: true,
-            allowEdit: false,
-            isMediaSelectModal: true,
-        };
+var adminMediaConfig = {
+    postUrl: '#{navigationHelper.applicationUrl}api/v1/cms/media/files/',
+    fileTypes: '#{fileTypes}',
+    fileTypeValidator: /#{fileTypeValidator.replace("(?i)", "")}/i,
+    index: '#{index}',
+    msg: {
+        buttonUpload: '#{msg.button__upload}',
+        uploadText: '#{msg.admin__media_upload_text}',
+        allowedFileTypes: '#{msg.admin__media_upload_filetypes}',
+        mediaUploading: '#{msg.admin__media_upload_uploading}',
+        mediaFinished: '#{msg.admin__media_upload_finished}',
+        mediaError: '#{msg.admin__media_upload_error}',
+        bulkDeleteConfirm: '#{msg.admin__media_bulk_delete_confirm}',
+        overwriteFileConfirm: '#{msg.admin__media_overwrite_file_confirm}',
+        overwriteFileRefused: '#{msg.admin__media_overwrite_file_refused}',
+        button__overwrite: '#{msg.button__overwrite}',
+    },
+    onUploadSuccess: function () {
+        console.log('upload successful');
+        $('#reloadButton#{index}').click();
+        $("[aria-controls='fileSelect#{index}']").click();
+    },
+    forceGrid: true,
+    allowEdit: false,
+    isMediaSelectModal: true,
+};
 
-        viewerJS.clipboard.init('[data-copy]');
-        cmsJS.media.init(adminMediaConfig);
+viewerJS.clipboard.init('[data-copy]');
+cmsJS.media.init(adminMediaConfig);
+riot.mount('adminMediaUpload', adminMediaConfig);
+
+function reload(data) {
+    cmsJS.media.onReload(data);
+
+    if (!data || data.status == 'begin') {
         riot.mount('adminMediaUpload', adminMediaConfig);
 
-        function reload(data) {
-            cmsJS.media.onReload(data);
+        if (data) {
+            var alreadySelected = $(data.source).prev().hasClass('in');
+            $('.admin-cms-media__item-select-frame.in').removeClass('in');
 
-            if (!data || data.status == 'begin') {
-                riot.mount('adminMediaUpload', adminMediaConfig);
-
-                if (data) {
-                    var alreadySelected = $(data.source).prev().hasClass('in');
-                    $('.admin-cms-media__item-select-frame.in').removeClass('in');
-
-                    if (!alreadySelected) {
-                        $(data.source).prev().addClass('in');
-                    }
-                }
+            if (!alreadySelected) {
+                $(data.source).prev().addClass('in');
             }
         }
+    }
+}
     </script>
 </ui:composition>

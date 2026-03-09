@@ -10,7 +10,7 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
-    <composite:interface></composite:interface>
+    <composite:interface />
 
     <composite:implementation>
         <div
@@ -173,9 +173,7 @@
                     </ui:repeat>
 
                     <!-- ACTIVATE CLIPBOARD (TOOLTIPS + COPY URL)  -->
-                    <script>
-                        viewerJS.clipboard.init();
-                    </script>
+                    <script>viewerJS.clipboard.init();</script>
                 </div>
 
                 <viewerComponent:citationRecommendation

@@ -1,12 +1,30 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<cms_page_template id="template_solrQuery_list" version="2015-01-14">
-  <name>cms__template_06__title</name>
-  <description>cms__template_06__description</description>
-  <icon>cms_template_06_solrquery.png</icon>
-  <html>cms_template_06_solrquery.xhtml</html>
-  <content>
-    <item id="preview01" preview="true" order="1" label="cms__template_06__text_section__label" type="HTML" />
-    <item id="text01" order="2" label="cms__template_06__content__label" type="HTML" mandatory="false"/>
-    <item id="queryList01" order="3" label="cms__template_06__works__label" type="SOLRQUERY"/>
-  </content>
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template
+    id="template_solrQuery_list"
+    version="2015-01-14">
+    <name>cms__template_06__title</name>
+    <description>cms__template_06__description</description>
+    <icon>cms_template_06_solrquery.png</icon>
+    <html>
+cms_template_06_solrquery.xhtml
+    </html>
+    <content>
+        <item
+            id="preview01"
+            preview="true"
+            order="1"
+            label="cms__template_06__text_section__label"
+            type="HTML" />
+        <item
+            id="text01"
+            order="2"
+            label="cms__template_06__content__label"
+            type="HTML"
+            mandatory="false" />
+        <item
+            id="queryList01"
+            order="3"
+            label="cms__template_06__works__label"
+            type="SOLRQUERY" />
+    </content>
 </cms_page_template>

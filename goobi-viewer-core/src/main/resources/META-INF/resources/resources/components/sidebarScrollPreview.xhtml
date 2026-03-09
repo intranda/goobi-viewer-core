@@ -77,7 +77,7 @@
         </div>
 
         <script>
-             // fade in lazy loaded images
+            // fade in lazy loaded images
              $('[data-script="fadeIn"]').on('load', function(){
                 $(this).addClass('-loaded');
              });
@@ -87,7 +87,8 @@
 
                // DEFINE PREVIEW SIDEBAR VARIABLES AND SIMPLEBAR SCROLLBAR
             		const sidebarScrollPreviewContainer = $('[data-target="sidebarScrollPreviewContainer"]');
-               const loadPageSelector = '[data-target="pageNumber-' + #{activeDocumentBean.viewManager.currentImageOrder} + '"]';
+               const
+            loadPageSelector = '[data-target="pageNumber-' + #{activeDocumentBean.viewManager.currentImageOrder} + '"]';
             new SimpleBar($(sidebarScrollPreviewContainer)[0], { autoHide: false, scrollbarMinSize: 30, });
             const sidebarScrollPreviewSimplebarContainer = $('.simplebar-content-wrapper');
 

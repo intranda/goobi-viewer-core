@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<cms_page_template id="templateSearch" version="2018-11-28">
+<cms_page_template
+    id="templateSearch"
+    version="2018-11-28">
     <name>cms__template_23__title</name>
     <description>cms__template_23__description</description>
     <icon>cms_template_23_search.png</icon>
-    <html>cms_template_23_search.xhtml</html>
-    
+    <html>
+cms_template_23_search.xhtml
+    </html>
+
     <content>
-        <item id="text" order="1" label="cms__template_23__text__label" type="TEXT" />
-        <item id="search" order="2" label="cms_displayEmptySearchResults" type="SEARCH" />
+        <item
+            id="text"
+            order="1"
+            label="cms__template_23__text__label"
+            type="TEXT" />
+        <item
+            id="search"
+            order="2"
+            label="cms_displayEmptySearchResults"
+            type="SEARCH" />
     </content>
 </cms_page_template>
