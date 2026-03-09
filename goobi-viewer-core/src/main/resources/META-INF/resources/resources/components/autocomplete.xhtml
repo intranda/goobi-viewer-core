@@ -1,80 +1,96 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <composite:interface>
+        <composite:attribute
+            name="value"
+            required="true" />
+        <composite:attribute
+            name="items"
+            required="false"
+            method-signature="java.util.List complete(java.lang.String)" />
+        <composite:attribute
+            name="placeholder"
+            default="" />
+        <composite:attribute
+            name="id"
+            default="#{cc.attrs.id}" />
+        <composite:attribute
+            name="arialabel"
+            default="#{msg.search}" />
+        <composite:attribute
+            name="styleclass"
+            default="" />
+    </composite:interface>
 
-	<composite:interface>
-		<composite:attribute name="value" required="true"/>
-		<composite:attribute name="items" required="false" method-signature="java.util.List complete(java.lang.String)" />
-		<composite:attribute name="placeholder" default=""/>
-		<composite:attribute name="id" default="#{cc.attrs.id}"/>
-		<composite:attribute name="arialabel" default="#{msg.search}"/>
-		<composite:attribute name="styleclass" default=""/>
-	</composite:interface>
+    <composite:implementation>
+        <div class="ui-autocomplete ui-inputwrapper-filled search-input-wrapper">
+            <input
+                class="#{cc.attrs.styleclass} ui-autocomplete-input ui-inputfield ui-widget ui-state-default ui-corner-all -no-outline -active-border ui-state-filled"
+                type="text"
+                jsf:id="#{cc.attrs.id}"
+                id="#{cc.attrs.id}"
+                value="#{cc.attrs.value}"
+                placeholder="#{cc.attrs.placeholder}"
+                aria-label="#{cc.attrs.arialabel}" />
+            <script>
+                function initAutocomplete() {
 
+                	//Observable for ajax responses of automcompleteRequest commandScript
+                	const autocompleteResponseListener_#{cc.attrs.id} = new rxjs.Subject();
+                	const socket = new
+                viewerJS.WebSocket(window.location.host, "#{request.contextPath}", viewerJS.WebSocket.PATH_SEARCH_AUTOCOMPLETE);
+                	const input = document.getElementById("#{cc.attrs.id}");
 
-	<composite:implementation>
-		<div class="ui-autocomplete ui-inputwrapper-filled search-input-wrapper"> 
-			<input class="#{cc.attrs.styleclass} ui-autocomplete-input ui-inputfield ui-widget ui-state-default ui-corner-all -no-outline -active-border ui-state-filled" 
-             type="text" jsf:id="#{cc.attrs.id}" id="#{cc.attrs.id}" value="#{cc.attrs.value}" placeholder="#{cc.attrs.placeholder}" aria-label="#{cc.attrs.arialabel}"/>
-		<script>
-		
-			function initAutocomplete() {
-				
-				//Observable for ajax responses of automcompleteRequest commandScript
-				const autocompleteResponseListener_#{cc.attrs.id} = new rxjs.Subject();
-				const socket = new viewerJS.WebSocket(window.location.host, "#{request.contextPath}", viewerJS.WebSocket.PATH_SEARCH_AUTOCOMPLETE);
-				const input = document.getElementById("#{cc.attrs.id}");
-				
-				socket.onMessage.subscribe( (event) => {
-					//console.log("autosuggest-event ", event);
-					if(event.data) {					
-						autocompleteResponseListener_#{cc.attrs.id}.next(JSON.parse(event.data));
-					}
-				});
-				
-				//jquery autocomplete
-				let autocomplete__#{cc.attrs.id} = $("##{cc.attrs.id}").autocomplete( {
-				    source: function( request, response ) {
-				    	//console.log("request autocomplete ", request.term);
-				        //pass entered term to commandScript
-				        socket.sendMessage(JSON.stringify({term:request.term}));
-				        //subscribe to ajax response listener of commandscript to fill autocomplete options
-				        autocompleteResponseListener_#{cc.attrs.id}.pipe(rxjs.operators.first()).subscribe(resp => {
-				            response(resp);
-				        });
-				    },
-			        minLength: 3,
-			        delay: 300, //ms
-			        //appendTo: $("##{cc.attrs.id}").parent(),
-			        change: function(event, ui) {
-			            //console.log("change ", event, ui);
-			            //refocus input field after other javascript has finished because jquery will defocus the element first
-			            setTimeout( () => $("##{cc.attrs.id}").focus(), 0);
-			        },
-				});
-				
-			}
-			
-			initAutocomplete();
-			
-			//Trigger form submit button when pressing enter
-			$("##{cc.attrs.id}").on("keyup", e => {
-			    if(e.originalEvent.key == "Enter") {
-			        let $button = $(event.target).closest("form").find('input[type=submit]:first');
-		            //console.log("submit button", $button);
-		            $button.click();
-			    }
-			})
-		
-		</script>
-		</div>
-	
-	</composite:implementation>
-	
+                	socket.onMessage.subscribe( (event) => {
+                		//console.log("autosuggest-event ", event);
+                		if(event.data) {
+                			autocompleteResponseListener_#{cc.attrs.id}.next(JSON.parse(event.data));
+                		}
+                	});
+
+                	//jquery autocomplete
+                	let autocomplete__#{cc.attrs.id} = $("##{cc.attrs.id}").autocomplete( {
+                	    source: function( request, response ) {
+                	    	//console.log("request autocomplete ", request.term);
+                	        //pass entered term to commandScript
+                	        socket.sendMessage(JSON.stringify({term:request.term}));
+                	        //subscribe to ajax response listener of commandscript to fill autocomplete options
+                	        autocompleteResponseListener_#{cc.attrs.id}.pipe(rxjs.operators.first()).subscribe(resp => {
+                	            response(resp);
+                	        });
+                	    },
+                        minLength: 3,
+                        delay: 300, //ms
+                        //appendTo: $("##{cc.attrs.id}").parent(),
+                        change: function(event, ui) {
+                            //console.log("change ", event, ui);
+                            //refocus input field after other javascript has finished because jquery will defocus the
+                element first
+                            setTimeout( () => $("##{cc.attrs.id}").focus(), 0);
+                        },
+                	});
+
+                }
+
+                initAutocomplete();
+
+                //Trigger form submit button when pressing enter
+                $("##{cc.attrs.id}").on("keyup", e => {
+                    if(e.originalEvent.key == "Enter") {
+                        let $button = $(event.target).closest("form").find('input[type=submit]:first');
+                           //console.log("submit button", $button);
+                           $button.click();
+                    }
+                })
+            </script>
+        </div>
+    </composite:implementation>
 </ui:composition>

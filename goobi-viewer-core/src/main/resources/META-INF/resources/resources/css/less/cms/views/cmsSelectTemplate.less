@@ -5,80 +5,87 @@
 /* CMS SELECT TEMPLATE */
 /* BLOCK */
 .cms-select-template {
-	/* ELEMENT */
-	h1 {}
-	&__wrapper {
-		transition: 0.2s ease all;
-		opacity: 0;
-		&.-fadeIn {
-			opacity: 1;
-		}
-	}
-	&__filters {
-		margin-bottom: 15px;
-	}
-	&__template {
-		.mx-clearfloats;
-		margin-bottom: 14px;
-		padding: 15px;
-		border: 1px solid #ddd;
-		background-color: @white;
-		&:hover{
-			box-shadow: 0 0 3px rgba(0,0,0,0.3)
-		}
-	}
-	&__image {
-		position: relative;
-		overflow: hidden;
-		img {
-			width: 100%;
-		}
-	}
-	&__description {
-		h2 {
-			margin: 0 0 21px 0;
-		}
-	}
-	&__theme-template-marker {}
-	&__action {
-		padding: 5px 0 15px 0;
-	}
-	&__theme-template-marker {
-		font-size: @fontSmall;
-		text-align: right;
-		color: @blue;
-	}
-	&__action {
-		text-align: right;
-		.btn {}
-		.btn-theme-template {
-			font-weight: normal;
-			color: @blue;
-			border: 1px solid @blue;
-			background-color: @white;
-			&:hover,
-			&:active,
-			&:focus {
-				color: @white;
-				background-color: @blue;
-			}
-		}
-	}
-	&__single {
-	}
-	&__title {
-		display: none;
-	}
+    /* ELEMENT */
+    h1 {
+    }
+    &__wrapper {
+        transition: 0.2s ease all;
+        opacity: 0;
+        &.-fadeIn {
+            opacity: 1;
+        }
+    }
+    &__filters {
+        margin-bottom: 15px;
+    }
+    &__template {
+        .mx-clearfloats;
+        margin-bottom: 14px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        background-color: @white;
+        &:hover {
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+        }
+    }
+    &__image {
+        position: relative;
+        overflow: hidden;
+        img {
+            width: 100%;
+        }
+    }
+    &__description {
+        h2 {
+            margin: 0 0 21px 0;
+        }
+    }
+    &__theme-template-marker {
+    }
+    &__action {
+        padding: 5px 0 15px 0;
+    }
+    &__theme-template-marker {
+        font-size: @fontSmall;
+        text-align: right;
+        color: @blue;
+    }
+    &__action {
+        text-align: right;
+        .btn {
+        }
+        .btn-theme-template {
+            font-weight: normal;
+            color: @blue;
+            border: 1px solid @blue;
+            background-color: @white;
+            &:hover,
+            &:active,
+            &:focus {
+                color: @white;
+                background-color: @blue;
+            }
+        }
+    }
+    &__single {
+    }
+    &__title {
+        display: none;
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

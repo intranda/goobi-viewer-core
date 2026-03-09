@@ -1,240 +1,344 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-
-
-	<composite:interface />
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <composite:interface />
     <composite:implementation>
+        <!-- Modal -->
+        <div
+            class="modal fade view-feedback-modal show"
+            id="feedbackModal"
+            tabindex="-1"
+            role="dialog"
+            aria-label="#msg.feedbackTitle"
+            aria-hidden="true">
+            <div
+                class="modal-dialog modal-dialog-centered"
+                role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title">#{msg.feedbackTitle}</h1>
+                        <button
+                            type="button"
+                            class="fancy-close"
+                            data-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
 
-			<!-- Modal -->
-		<div 
-      class="modal fade view-feedback-modal show" 
-      id="feedbackModal"
-			tabindex="-1" 
-      role="dialog" 
-      aria-label="#msg.feedbackTitle"
-			aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h1 class="modal-title">#{msg.feedbackTitle}</h1>
-						<button type="button" class="fancy-close" data-dismiss="modal"
-							aria-label="Close">
-							<span aria-hidden="true">x</span>
-						</button>
-					</div>
+                    <div class="modal-body">
+                        <p>
+                            <h:outputText value="#{msg.feedbackDescription}" />
+                        </p>
 
-					<div class="modal-body">
-						<p>
-							<h:outputText value="#{msg.feedbackDescription}" />
-						</p>
-
-						<h:form id="feedbackModal__feedbackForm" styleClass="form-horizontal"
-							prependId="false">
-							<div id="feedbackModal__feedback" class="feedback-modal">
-
-								<!-- RECIPIENT -->    
-								<ui:fragment rendered="#{configurationBean.feedbackEmailRecipients.size() gt 1}">
-				                <div class="form-group form-row">
-				                    <label id="feedbackModal__labelFeedbackRecipient" for="feedbackModal__feedbackRecipient" class="col-lg-3 control-label">#{msg.recipient}:</label>
-				                    <div class="col-12 col-lg-9">
-									   <h:selectOneMenu styleClass="custom-control custom-control--select feedback-modal__recipient-dropdown" id="feedbackModal__feedbackRecipient" value="#{feedbackBean.feedback.recipientAddress}" immediate="true">
-									       <c:forEach var="recipient" items="#{configurationBean.feedbackEmailRecipients}">
-									       	<f:selectItem itemLabel="#{recipient.label}" itemValue="#{recipient.emailAddress}" pt:data-recipient-id="#{recipient.id}" ></f:selectItem>
-									       </c:forEach>
-									   </h:selectOneMenu>
-				                    </div>
-				                </div>
-				                </ui:fragment>
-
-								<!-- NAME -->
-								<div class="form-group form-row">
-									<label id="feedbackModal__labelFeedbackName" for="feedbackModal__feedbackName"
-										class="col-lg-3 control-label">
-										<span class="feedback-modal__label-span">#{msg.name}:</span>
-										<span class="feedback-modal__label-required-field">(#{msg.form__required_field})</span>
-									</label>
-									
-									<div class="col-12 col-lg-9">
-										<h:inputText id="feedbackModal__feedbackName" styleClass="form-control"
-											value="#{feedbackBean.feedback.name}" required="true"
-											requiredMessage="#{msg.errFeedbackNameRequired}"
-											aria-labelledby="labelFeedbackName" pt:data-require-input-text="feedbackInput">
-											<f:passThroughAttribute name="aria-labelledby"
-												value="feedbackModal__labelFeedbackName" />
-										</h:inputText>
-									</div>
-								</div>
-
-								<!-- LAST NAME -->
-								<div class="form-group form-row lastname">
-									<label id="feedbackModal__labelFeedbackLastName" for="feedbackModal__feedbackLastName"
-										class="control-label">#{msg.nameLast}:</label>
-									<h:inputText id="feedbackModal__feedbackLastName" styleClass="form-control"
-										value="#{feedbackBean.lastName}"
-										aria-labelledby="feedbackModal__labelFeedbackLastName" />
-								</div>
-
-
-								<!-- E-MAIL FOR NOT LOGGED IN USERS -->
-								<h:panelGroup rendered="#{!feedbackBean.loggedIn}" layout="block" 
-									styleClass="form-group form-row" id="emailGroup">
-									<label id="feedbackModal__labelFeedbackEmail" for="feedback-modal__feedbackEmail"
-										class="col-lg-3 control-label">
-										<span class="feedback-modal__label-span">#{msg.email}:</span>
-										<span class="feedback-modal__label-required-field">(#{msg.form__required_field})</span>
-									</label>
-									<div class="cms-module__option-control col-12 col-lg-9">
-										<div class="cms-module__option-message">
-											<h:messages for="feedbackEmail"
-												styleClass="m-0 p-0 pb-1 list-unstyled"
-												infoClass="cms-module__option-message-status success"
-												warnClass="cms-module__option-message-status warning"
-												errorClass="cms-module__option-message-status danger" />
-											<div class="cms-module__option-message-mark">
-												<i class="fa fa-check" aria-hidden="true"></i> <i
-													class="fa fa-exclamation" aria-hidden="true"></i>
-											</div>
-										</div>
-										<h:inputText id="feedbackModal__feedbackEmail" label="feedbackEmail" pt:type="email"
-											immediate="true" required="true" pt:data-require-input-text="feedbackInput"
-											value="#{feedbackBean.feedback.senderAddress}" styleClass="form-control">
-											<f:passThroughAttribute name="aria-labelledby"
-												value="feedbackModal__labelFeedbackEmail" />
-<!-- 											<f:validator validatorId="emailValidator" for="feedbackModal:feedbackEmail" /> -->
-<!-- 											<f:ajax event="change" render="feedbackModal:feedbackModal__feedbackEmail" /> -->
-										</h:inputText>
-									</div>
-								</h:panelGroup>
-
-								<!-- E-MAIL FOR LOGGED IN USERS -->
-								<h:panelGroup rendered="#{feedbackBean.loggedIn}" layout="block"
-									styleClass="form-group form-row" id="emailGroup2">
-									<label id="labelFeedbackEmail2" for="feedbackEmail2"
-										class="col-lg-3 control-label">#{msg.email}:</label>
-									<div class="cms-module__option-control col-12 col-lg-9">
-										<div class="cms-module__option-message">
-											<h:messages for="feedbackEmail2"
-												styleClass="m-0 p-0 pb-1 list-unstyled"
-												infoClass="cms-module__option-message-status success"
-												warnClass="cms-module__option-message-status warning"
-												errorClass="cms-module__option-message-status danger" />
-											<div class="cms-module__option-message-mark">
-												<i class="fa fa-check" aria-hidden="true"></i> 
-												<i class="fa fa-exclamation" aria-hidden="true"></i>
-											</div>
-										</div>
-										<h:inputText id="feedbackEmail2" label="feedbackEmail2"
-											immediate="true" required="true" disabled="true" pt:data-require-input-text="feedbackInput"
-											value="#{feedbackBean.feedback.senderAddress}" styleClass="form-control">
-											<f:passThroughAttribute name="aria-labelledby"
-												value="labelFeedbackEmail2" />
-											<f:validator validatorId="emailValidator"
-												for="feedbackEmail2" />
-											<f:ajax render="feedbackModal:emailGroup2" />
-										</h:inputText>
-									</div>
-								</h:panelGroup>
-
-								<!-- MESSAGE -->
-								<div class="form-group form-row">
-									<label id="feedback-modal__labelFeedbackMessage" for="feedback-modal__feedbackMessage"
-										class="col-lg-3 control-label">
-										<span class="feedback-modal__label-span">#{msg.message}:</span>
-										<span class="feedback-modal__label-required-field">(#{msg.form__required_field})</span>
-										</label>
-									
-									<div class="col-12 col-lg-9">
-										<h:inputTextarea id="feedback-modal__feedbackMessage"
-											styleClass="form-control"
-											value="#{feedbackBean.feedback.message}" required="true"
-											pt:data-require-input-text="feedbackInput"
-											requiredMessage="#{msg.errFeedbackMessageRequired}">
-											<f:passThroughAttribute name="aria-labelledby"
-												value="feedback-modal__labelFeedbackMessage" />
-										</h:inputTextarea>
-									</div>
-								</div>
-
-								<!-- SECURITY QUESTION -->
-								<ui:fragment
-									rendered="#{feedbackBean.captchaBean.resetSecurityQuestion() and feedbackBean.captchaBean.securityQuestion != null}">
-									<div class="form-group form-row mb-0">
-										<label id="feedback-modal__feedbackSecurityQuestion" for="feedback-modal__feedbackSecurityQuestion"
-											class="col-lg-3 control-label">#{msg.user__security_question}:</label>
-										<div class="col-12 col-12 col-lg-9 composite-control pt-0">
-											<span class="control-label d-block pb-1">#{msg[feedbackBean.captchaBean.securityQuestion.questionKey]}:</span>
-											<h:messages for="feedbackSecurityQuestion"
-												styleClass="m-0 p-0 pb-1 list-unstyled"
-												infoClass="cms-module__option-message-status success"
-												warnClass="cms-module__option-message-status warning"
-												errorClass="cms-module__option-message-status danger" />
-											<h:inputText id="feedbackSecurityQuestion"
-												styleClass="form-control" autocomplete="off"
-												pt:data-require-input-text="feedbackInput"
-												pt:aria-labelledby="feedback-modal__feedbackSecurityQuestion"
-												pt:autocomplete="new-password"
-												value="#{feedbackBean.captchaBean.securityAnswer}" required="true"
-												requiredMessage="#{msg.user__security_question_required_msg}">
-						                	</h:inputText>
-										</div>
-									</div>
-								</ui:fragment>
-							</div>
-								<!-- REQUIRED CHECKBOX FOR USAGE OF PERSONAL DATA OR ANYTHING ELSE -->
-								<!-- TO DO: CONFIG SWITCH FOR THIS RENDERED CONDITION CHECKBOX, VALUE + ADDITIONAL TEXT WHICH IS SEND BY FORM(?) -->
-<!-- 								<ui:fragment rendered="#{feedbackBean.userFeedbackAdditionalCheckbox()"> -->
-									<div class="feedback-modal__required-checkbox-wrapper">
-									  
-									  	<div class="form-row">
-										  	<p class="col-12 feedback-modal__accept-terms-text"><h:outputText escape="false" value="#{msg.feedbackAcceptingTerms}" /></p>
-										  
-										  
-						  					<div id="sendContactFormAcceptTerms" class="col-12 col-sm-3 feedback-modal__accept-terms-label">
-												<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
-											</div>	
-	                                       
-	                                       
-	                                        <div class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch">
-	                                            <h:selectOneRadio group="requiredFeedbackTerms" value="false"
-	                                                immediate="true" checked="false"
-	                                                pt:data-require-input-checkbox="uncheckedChecker">
-	                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-	                                            </h:selectOneRadio>
-	                                            <h:selectOneRadio id="requiredTermsCheckbox2" group="requiredFeedbackTerms" value="true"
-	                                                immediate="true" checked="true"
-	                                                pt:data-require-input-checkbox="feedbackInput">
-	                                                <f:selectItem itemValue="#{feedbackModalAcceptedTerms}" itemLabel="#{msg.yes}" />
-	                                            </h:selectOneRadio>
-	                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
-	                                        </div>
+                        <h:form
+                            id="feedbackModal__feedbackForm"
+                            styleClass="form-horizontal"
+                            prependId="false">
+                            <div
+                                id="feedbackModal__feedback"
+                                class="feedback-modal">
+                                <!-- RECIPIENT -->
+                                <ui:fragment rendered="#{configurationBean.feedbackEmailRecipients.size() gt 1}">
+                                    <div class="form-group form-row">
+                                        <label
+                                            id="feedbackModal__labelFeedbackRecipient"
+                                            for="feedbackModal__feedbackRecipient"
+                                            class="col-lg-3 control-label">
+                                            #{msg.recipient}:
+                                        </label>
+                                        <div class="col-12 col-lg-9">
+                                            <h:selectOneMenu
+                                                styleClass="custom-control custom-control--select feedback-modal__recipient-dropdown"
+                                                id="feedbackModal__feedbackRecipient"
+                                                value="#{feedbackBean.feedback.recipientAddress}"
+                                                immediate="true">
+                                                <c:forEach
+                                                    var="recipient"
+                                                    items="#{configurationBean.feedbackEmailRecipients}">
+                                                    <f:selectItem
+                                                        itemLabel="#{recipient.label}"
+                                                        itemValue="#{recipient.emailAddress}"
+                                                        pt:data-recipient-id="#{recipient.id}" />
+                                                </c:forEach>
+                                            </h:selectOneMenu>
                                         </div>
+                                    </div>
+                                </ui:fragment>
 
-									</div>
+                                <!-- NAME -->
+                                <div class="form-group form-row">
+                                    <label
+                                        id="feedbackModal__labelFeedbackName"
+                                        for="feedbackModal__feedbackName"
+                                        class="col-lg-3 control-label">
+                                        <span class="feedback-modal__label-span">#{msg.name}:</span>
+                                        <span class="feedback-modal__label-required-field">
+                                            (#{msg.form__required_field})
+                                        </span>
+                                    </label>
 
-<!-- 								</ui:fragment> -->
+                                    <div class="col-12 col-lg-9">
+                                        <h:inputText
+                                            id="feedbackModal__feedbackName"
+                                            styleClass="form-control"
+                                            value="#{feedbackBean.feedback.name}"
+                                            required="true"
+                                            requiredMessage="#{msg.errFeedbackNameRequired}"
+                                            aria-labelledby="labelFeedbackName"
+                                            pt:data-require-input-text="feedbackInput">
+                                            <f:passThroughAttribute
+                                                name="aria-labelledby"
+                                                value="feedbackModal__labelFeedbackName" />
+                                        </h:inputText>
+                                    </div>
+                                </div>
 
-							<!-- ACTION -->
-							<div class="form-group form-row feedback-modal__action">
-								<div class="col-sm-12 d-flex justify-content-end">
-									<h:commandButton styleClass="btn btn--full"
-										value="#{msg.submit}" pt:data-require-input="feedbackInput"
-										action="#{feedbackBean.submitFeedbackAction(true)}" />
-								</div>
-							</div>
+                                <!-- LAST NAME -->
+                                <div class="form-group form-row lastname">
+                                    <label
+                                        id="feedbackModal__labelFeedbackLastName"
+                                        for="feedbackModal__feedbackLastName"
+                                        class="control-label">
+                                        #{msg.nameLast}:
+                                    </label>
+                                    <h:inputText
+                                        id="feedbackModal__feedbackLastName"
+                                        styleClass="form-control"
+                                        value="#{feedbackBean.lastName}"
+                                        aria-labelledby="feedbackModal__labelFeedbackLastName" />
+                                </div>
 
-						</h:form>
+                                <!-- E-MAIL FOR NOT LOGGED IN USERS -->
+                                <h:panelGroup
+                                    rendered="#{!feedbackBean.loggedIn}"
+                                    layout="block"
+                                    styleClass="form-group form-row"
+                                    id="emailGroup">
+                                    <label
+                                        id="feedbackModal__labelFeedbackEmail"
+                                        for="feedback-modal__feedbackEmail"
+                                        class="col-lg-3 control-label">
+                                        <span class="feedback-modal__label-span">#{msg.email}:</span>
+                                        <span class="feedback-modal__label-required-field">
+                                            (#{msg.form__required_field})
+                                        </span>
+                                    </label>
+                                    <div class="cms-module__option-control col-12 col-lg-9">
+                                        <div class="cms-module__option-message">
+                                            <h:messages
+                                                for="feedbackEmail"
+                                                styleClass="m-0 p-0 pb-1 list-unstyled"
+                                                infoClass="cms-module__option-message-status success"
+                                                warnClass="cms-module__option-message-status warning"
+                                                errorClass="cms-module__option-message-status danger" />
+                                            <div class="cms-module__option-message-mark">
+                                                <i
+                                                    class="fa fa-check"
+                                                    aria-hidden="true" />
+                                                <i
+                                                    class="fa fa-exclamation"
+                                                    aria-hidden="true" />
+                                            </div>
+                                        </div>
+                                        <h:inputText
+                                            id="feedbackModal__feedbackEmail"
+                                            label="feedbackEmail"
+                                            pt:type="email"
+                                            immediate="true"
+                                            required="true"
+                                            pt:data-require-input-text="feedbackInput"
+                                            value="#{feedbackBean.feedback.senderAddress}"
+                                            styleClass="form-control">
+                                            <f:passThroughAttribute
+                                                name="aria-labelledby"
+                                                value="feedbackModal__labelFeedbackEmail" />
+                                            <!-- 											<f:validator validatorId="emailValidator" for="feedbackModal:feedbackEmail" /> -->
+                                            <!-- 											<f:ajax event="change" render="feedbackModal:feedbackModal__feedbackEmail" /> -->
+                                        </h:inputText>
+                                    </div>
+                                </h:panelGroup>
 
-					</div>
-				</div>
-			</div>
-		</div>
+                                <!-- E-MAIL FOR LOGGED IN USERS -->
+                                <h:panelGroup
+                                    rendered="#{feedbackBean.loggedIn}"
+                                    layout="block"
+                                    styleClass="form-group form-row"
+                                    id="emailGroup2">
+                                    <label
+                                        id="labelFeedbackEmail2"
+                                        for="feedbackEmail2"
+                                        class="col-lg-3 control-label">
+                                        #{msg.email}:
+                                    </label>
+                                    <div class="cms-module__option-control col-12 col-lg-9">
+                                        <div class="cms-module__option-message">
+                                            <h:messages
+                                                for="feedbackEmail2"
+                                                styleClass="m-0 p-0 pb-1 list-unstyled"
+                                                infoClass="cms-module__option-message-status success"
+                                                warnClass="cms-module__option-message-status warning"
+                                                errorClass="cms-module__option-message-status danger" />
+                                            <div class="cms-module__option-message-mark">
+                                                <i
+                                                    class="fa fa-check"
+                                                    aria-hidden="true" />
+                                                <i
+                                                    class="fa fa-exclamation"
+                                                    aria-hidden="true" />
+                                            </div>
+                                        </div>
+                                        <h:inputText
+                                            id="feedbackEmail2"
+                                            label="feedbackEmail2"
+                                            immediate="true"
+                                            required="true"
+                                            disabled="true"
+                                            pt:data-require-input-text="feedbackInput"
+                                            value="#{feedbackBean.feedback.senderAddress}"
+                                            styleClass="form-control">
+                                            <f:passThroughAttribute
+                                                name="aria-labelledby"
+                                                value="labelFeedbackEmail2" />
+                                            <f:validator
+                                                validatorId="emailValidator"
+                                                for="feedbackEmail2" />
+                                            <f:ajax render="feedbackModal:emailGroup2" />
+                                        </h:inputText>
+                                    </div>
+                                </h:panelGroup>
 
-	</composite:implementation>
+                                <!-- MESSAGE -->
+                                <div class="form-group form-row">
+                                    <label
+                                        id="feedback-modal__labelFeedbackMessage"
+                                        for="feedback-modal__feedbackMessage"
+                                        class="col-lg-3 control-label">
+                                        <span class="feedback-modal__label-span">#{msg.message}:</span>
+                                        <span class="feedback-modal__label-required-field">
+                                            (#{msg.form__required_field})
+                                        </span>
+                                    </label>
+
+                                    <div class="col-12 col-lg-9">
+                                        <h:inputTextarea
+                                            id="feedback-modal__feedbackMessage"
+                                            styleClass="form-control"
+                                            value="#{feedbackBean.feedback.message}"
+                                            required="true"
+                                            pt:data-require-input-text="feedbackInput"
+                                            requiredMessage="#{msg.errFeedbackMessageRequired}">
+                                            <f:passThroughAttribute
+                                                name="aria-labelledby"
+                                                value="feedback-modal__labelFeedbackMessage" />
+                                        </h:inputTextarea>
+                                    </div>
+                                </div>
+
+                                <!-- SECURITY QUESTION -->
+                                <ui:fragment
+                                    rendered="#{feedbackBean.captchaBean.resetSecurityQuestion() and feedbackBean.captchaBean.securityQuestion != null}">
+                                    <div class="form-group form-row mb-0">
+                                        <label
+                                            id="feedback-modal__feedbackSecurityQuestion"
+                                            for="feedback-modal__feedbackSecurityQuestion"
+                                            class="col-lg-3 control-label">
+                                            #{msg.user__security_question}:
+                                        </label>
+                                        <div class="col-12 col-12 col-lg-9 composite-control pt-0">
+                                            <span class="control-label d-block pb-1">
+                                                #{msg[feedbackBean.captchaBean.securityQuestion.questionKey]}:
+                                            </span>
+                                            <h:messages
+                                                for="feedbackSecurityQuestion"
+                                                styleClass="m-0 p-0 pb-1 list-unstyled"
+                                                infoClass="cms-module__option-message-status success"
+                                                warnClass="cms-module__option-message-status warning"
+                                                errorClass="cms-module__option-message-status danger" />
+                                            <h:inputText
+                                                id="feedbackSecurityQuestion"
+                                                styleClass="form-control"
+                                                autocomplete="off"
+                                                pt:data-require-input-text="feedbackInput"
+                                                pt:aria-labelledby="feedback-modal__feedbackSecurityQuestion"
+                                                pt:autocomplete="new-password"
+                                                value="#{feedbackBean.captchaBean.securityAnswer}"
+                                                required="true"
+                                                requiredMessage="#{msg.user__security_question_required_msg}" />
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+                            </div>
+                            <!-- REQUIRED CHECKBOX FOR USAGE OF PERSONAL DATA OR ANYTHING ELSE -->
+                            <!-- TO DO: CONFIG SWITCH FOR THIS RENDERED CONDITION CHECKBOX, VALUE + ADDITIONAL TEXT WHICH IS SEND BY FORM(?) -->
+                            <!-- 								<ui:fragment rendered="#{feedbackBean.userFeedbackAdditionalCheckbox()"> -->
+                            <div class="feedback-modal__required-checkbox-wrapper">
+                                <div class="form-row">
+                                    <p class="col-12 feedback-modal__accept-terms-text">
+                                        <h:outputText
+                                            escape="false"
+                                            value="#{msg.feedbackAcceptingTerms}" />
+                                    </p>
+
+                                    <div
+                                        id="sendContactFormAcceptTerms"
+                                        class="col-12 col-sm-3 feedback-modal__accept-terms-label">
+                                        <label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
+                                    </div>
+
+                                    <div
+                                        class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch">
+                                        <h:selectOneRadio
+                                            group="requiredFeedbackTerms"
+                                            value="false"
+                                            immediate="true"
+                                            checked="false"
+                                            pt:data-require-input-checkbox="uncheckedChecker">
+                                            <f:selectItem
+                                                itemValue="#{false}"
+                                                itemLabel="#{msg.no}" />
+                                        </h:selectOneRadio>
+                                        <h:selectOneRadio
+                                            id="requiredTermsCheckbox2"
+                                            group="requiredFeedbackTerms"
+                                            value="true"
+                                            immediate="true"
+                                            checked="true"
+                                            pt:data-require-input-checkbox="feedbackInput">
+                                            <f:selectItem
+                                                itemValue="#{feedbackModalAcceptedTerms}"
+                                                itemLabel="#{msg.yes}" />
+                                        </h:selectOneRadio>
+                                        <span class="toggle-outside">
+                                            <span class="toggle-inside" />
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 								</ui:fragment> -->
+
+                            <!-- ACTION -->
+                            <div class="form-group form-row feedback-modal__action">
+                                <div class="col-sm-12 d-flex justify-content-end">
+                                    <h:commandButton
+                                        styleClass="btn btn--full"
+                                        value="#{msg.submit}"
+                                        pt:data-require-input="feedbackInput"
+                                        action="#{feedbackBean.submitFeedbackAction(true)}" />
+                                </div>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </composite:implementation>
 </ui:composition>

@@ -3,196 +3,206 @@
    style declarations for widget_chronology.xhtml
    ==============================================================*/
 /* WIDGET CHRONOLOGY */
-/* BLOCK */ 
+/* BLOCK */
 .widget-chronology-slider {
-	overflow: hidden; 
-	color: @black;
-	&__topbar {
-		flex: 0 0 100%;
-		display: flex;
-	}
-	&__body {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-	}
-	&__description-text{
-		grid-column: 1 / 3; 
-	}
-	&__item {
-		&.chronology-slider-label,
-		&.chronology-slider-actions {
-			display: flex;
-		}
-		&.chronology-slider-label {
-			margin-right: auto;
-			word-break: break-word;
-		}
-		&.chronology-slider-actions {
-			gap: 10px;
-		}
+    overflow: hidden;
+    color: @black;
+    &__topbar {
+        flex: 0 0 100%;
+        display: flex;
+    }
+    &__body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    &__description-text {
+        grid-column: 1 / 3;
+    }
+    &__item {
+        &.chronology-slider-label,
+        &.chronology-slider-actions {
+            display: flex;
+        }
+        &.chronology-slider-label {
+            margin-right: auto;
+            word-break: break-word;
+        }
+        &.chronology-slider-actions {
+            gap: 10px;
+        }
 
-		&.chronology-slider-actions {
-			ul {
-				.mx-list-reset;
-				display: flex;
-				justify-content: flex-end;
-			}
-			li {
-				text-align: right;
-			}
-			img {
-				width: 20px;
-				height: 20px;
-			}
-			[data-reset="chrono-slider"] {} 
-		}
-		&.chronology-slider-action-loader,
-		&.chronology-slider-action-reset {
-			display: flex;
-			flex-wrap: nowrap;
-			z-index: 200;
-			justify-content: center;
-			align-items: center;
-			visibility: hidden;
-			&.active {
-				visibility: visible;
-			}
-		}
-		&.chronology-slider-action-loader {}
-		&.chronology-slider-action-reset {}
-		&.chronology-slider-start,
-		&.chronology-slider-end {
-			font-size: @fontMedium; 
-		}
-		&.chronology-slider-start {}
-		&.chronology-slider-end {
-			text-align: right;
-		}
-		&.chronology-slider {
-			padding: 0.6rem 0 1rem 0;
-			grid-column: 1 / 3;
-		}
-	}
-	&__item-input {
-	/* &::selection {
+        &.chronology-slider-actions {
+            ul {
+                .mx-list-reset;
+                display: flex;
+                justify-content: flex-end;
+            }
+            li {
+                text-align: right;
+            }
+            img {
+                width: 20px;
+                height: 20px;
+            }
+            [data-reset='chrono-slider'] {
+            }
+        }
+        &.chronology-slider-action-loader,
+        &.chronology-slider-action-reset {
+            display: flex;
+            flex-wrap: nowrap;
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            &.active {
+                visibility: visible;
+            }
+        }
+        &.chronology-slider-action-loader {
+        }
+        &.chronology-slider-action-reset {
+        }
+        &.chronology-slider-start,
+        &.chronology-slider-end {
+            font-size: @fontMedium;
+        }
+        &.chronology-slider-start {
+        }
+        &.chronology-slider-end {
+            text-align: right;
+        }
+        &.chronology-slider {
+            padding: 0.6rem 0 1rem 0;
+            grid-column: 1 / 3;
+        }
+    }
+    &__item-input {
+        /* &::selection {
 	    	background: rgba(201, 102, 102, 0.6);
 	    	color: white;
 		} */
-			background: transparent;
-			width: 4em;
-			border: 1px solid transparent;
-			border-radius: 0;
-			text-align: inherit;
-			padding: 0.3rem;
-		&:focus {
-			background-color: rgba(0, 0, 0, 0.06);
-		}
-	}
-	&__action-reset-button {
-		font-size: 1.2rem;
-		border: none;
-		background: none;
-		padding: 0;
-	}
+        background: transparent;
+        width: 4em;
+        border: 1px solid transparent;
+        border-radius: 0;
+        text-align: inherit;
+        padding: 0.3rem;
+        &:focus {
+            background-color: rgba(0, 0, 0, 0.06);
+        }
+    }
+    &__action-reset-button {
+        font-size: 1.2rem;
+        border: none;
+        background: none;
+        padding: 0;
+    }
 }
 
 .widget-chronology-slider {
-	&__slider {
-		height: 1rem;
-		border: none;
-		border-radius: 5px;
-		border-color: @lightgray;
-		background-image: none;
-		background-color: @lightgray;
-		.ui-slider-range,
-		.ui-slider-handle {
-		    border-radius: 4px;
-			background-image: none;
-	        &:focus {
-	        	outline: none;
-	        }
-		}
-		.ui-slider-range {
-		    border-color: @blue;
-			background-color: @blue;		
-		}
-		.ui-slider-handle {
-			width: 1rem;
-		    height: 1rem;
-		    top: 0;
-		    margin: 0;
-		    border-color: @gray;
-		    background-color: @middlegray;
-		    cursor: pointer;
-		}
-	}
+    &__slider {
+        height: 1rem;
+        border: none;
+        border-radius: 5px;
+        border-color: @lightgray;
+        background-image: none;
+        background-color: @lightgray;
+        .ui-slider-range,
+        .ui-slider-handle {
+            border-radius: 4px;
+            background-image: none;
+            &:focus {
+                outline: none;
+            }
+        }
+        .ui-slider-range {
+            border-color: @blue;
+            background-color: @blue;
+        }
+        .ui-slider-handle {
+            width: 1rem;
+            height: 1rem;
+            top: 0;
+            margin: 0;
+            border-color: @gray;
+            background-color: @middlegray;
+            cursor: pointer;
+        }
+    }
 }
 
 .chronology-slider {
-	.widget-chronology-slider__slider {
-		border: none;
-	}
-	&__input-wrapper {
-		display: flex;
-		margin-top: 10px;
-		align-items: center;
-		input {
-			width: 40px;
-			font-size: 12px;
-		}
-	}
-	&__input-start,
-	&__input-end {
-		flex-grow: 1;
-		align-self: stretch;
-		padding: 0.3rem;
-		height: unset;
-	}
-	&__input-start {}
-	&__input-end {}
-	&__ok-button {
-		min-width: unset;
-		margin-left: 15px;
-	}
-	&__between-year-symbol {
-		margin: 0 5px;
-	}
-	&__graph {
-		height: 150px;
-		&-line {  
-			color: rgba(200,89,153,1);
-		}
-		&-area {
-			color: rgba(200,89,153,0.3);
-		}
-		&-range {
-			color: @blue;
-			background-color: @blue;
-			opacity: 0.1;
-		}
-	}
+    .widget-chronology-slider__slider {
+        border: none;
+    }
+    &__input-wrapper {
+        display: flex;
+        margin-top: 10px;
+        align-items: center;
+        input {
+            width: 40px;
+            font-size: 12px;
+        }
+    }
+    &__input-start,
+    &__input-end {
+        flex-grow: 1;
+        align-self: stretch;
+        padding: 0.3rem;
+        height: unset;
+    }
+    &__input-start {
+    }
+    &__input-end {
+    }
+    &__ok-button {
+        min-width: unset;
+        margin-left: 15px;
+    }
+    &__between-year-symbol {
+        margin: 0 5px;
+    }
+    &__graph {
+        height: 150px;
+        &-line {
+            color: rgba(200, 89, 153, 1);
+        }
+        &-area {
+            color: rgba(200, 89, 153, 0.3);
+        }
+        &-range {
+            color: @blue;
+            background-color: @blue;
+            opacity: 0.1;
+        }
+    }
 }
 
 @{RTL} .widget-chronology-slider {
-	&__item {
-		&.chronology-slider-label,
-		&.chronology-slider-actions {
-		}
-		&.chronology-slider-label {
-			margin-right: unset;
-			margin-left: auto;
-		}
-	}
+    &__item {
+        &.chronology-slider-label,
+        &.chronology-slider-actions {
+        }
+        &.chronology-slider-label {
+            margin-right: unset;
+            margin-left: auto;
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

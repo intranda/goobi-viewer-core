@@ -1,292 +1,336 @@
-<ui:composition 
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCollections')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{cmsBean.init()}" />
+            <f:event
+                type="preRenderView"
+                listener="#{cmsCollectionsBean.initSolrField}" />
+        </f:metadata>
+    </ui:define>
 
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCollections')}" />
-			<f:event type="preRenderView" listener="#{cmsBean.init()}" />
-			<f:event type="preRenderView" listener="#{cmsCollectionsBean.initSolrField}" />
-		</f:metadata>
-	</ui:define>
+    <!-- CONTENT -->
+    <ui:define name="content">
+        <ui:fragment
+            id="cmsCollectionsAccessControl"
+            rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
+            <div
+                id="adminCMSCollections"
+                class="admin__cms-collections">
+                <!-- TITLE -->
+                <div class="admin__title-bar">
+                    <h1 class="admin__title">#{msg.admin__cms_collections}</h1>
+                </div>
 
-	<!-- CONTENT -->
-	<ui:define name="content">
-		<ui:fragment id="cmsCollectionsAccessControl"
-			rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
-			<div id="adminCMSCollections" class="admin__cms-collections">
+                <viewerComponent:adminBreadcrumbs />
 
-				<!-- TITLE -->
-				<div class="admin__title-bar">
-					<h1 class="admin__title">#{msg.admin__cms_collections}</h1>
-				</div>
-				
-				<viewerComponent:adminBreadcrumbs />
+                <div class="admin__content-inner-content">
+                    <!-- GENERAL DESCRIPTION -->
+                    <div class="admin__info-text">#{msg.admin__cms_collections_desc}</div>
 
-				<div class="admin__content-inner-content">
+                    <!-- COLLECTIONS TREE/FORM -->
+                    <h:form
+                        id="cmsCollectionsForm"
+                        prependId="false">
+                        <div class="admin__content-wrapper">
+                            <div class="admin__content-main -sticky -refreshHCsticky">
+                                <h2>#{msg.admin__cms_collections_collection_tree}</h2>
 
-				<!-- GENERAL DESCRIPTION -->
-				<div class="admin__info-text">#{msg.admin__cms_collections_desc}</div>
-
-					<!-- COLLECTIONS TREE/FORM -->
-					<h:form id="cmsCollectionsForm" prependId="false">
-
-						<div class="admin__content-wrapper">
-
-							<div class="admin__content-main -sticky -refreshHCsticky">
-								<h2>#{msg.admin__cms_collections_collection_tree}</h2>
-
-                                <h:panelGroup layout="block" id="collectionTreeGroup">
-
+                                <h:panelGroup
+                                    layout="block"
+                                    id="collectionTreeGroup">
                                     <!-- LANGUAGE TABS -->
                                     <div class="admin__language-tabs">
                                         <viewerComponent:localeSelector
                                             object="#{cmsCollectionsBean.currentTab}"
                                             render="collectionTreeGroup"
-                                            execute="collectionTreeGroup"/>
+                                            execute="collectionTreeGroup" />
                                     </div>
 
-								    <div class="admin__default-block">
+                                    <div class="admin__default-block">
+                                        <ul class="admin__cms-collections-tree-listing">
+                                            <ui:repeat
+                                                var="browseDcElement"
+                                                value="#{browseBean.getCollection(cmsCollectionsBean.solrField).visibleDcElements}">
+                                                <li
+                                                    class="row no-gutters admin__cms-collections-entry admin__cms-collections-entry -level-#{browseDcElement.level}"
+                                                    style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
+                                                    <div class="col-1 collection__structure-col">
+                                                        <!-- STRUCTURE -->
+                                                        <h:panelGroup
+                                                            rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
+                                                            <div class="collection__structure text-center">
+                                                                <button
+                                                                    class="btn btn--link"
+                                                                    jsf:action="#{browseBean.getCollection(cmsCollectionsBean.solrField).toggleChildren(browseDcElement)}">
+                                                                    <f:passThroughAttribute
+                                                                        name="aria-label"
+                                                                        value="#{msg.aria_label__show_details}" />
+                                                                    <h:panelGroup
+                                                                        rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
+                                                                        <util:icon
+                                                                            icon="square-rounded-plus"
+                                                                            svgClass="icon icon-md" />
+                                                                    </h:panelGroup>
+                                                                    <h:panelGroup
+                                                                        rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
+                                                                        <util:icon
+                                                                            icon="square-rounded-minus"
+                                                                            svgClass="icon icon-md" />
+                                                                    </h:panelGroup>
+                                                                    <f:ajax render="collectionTreeGroup" />
+                                                                </button>
+                                                            </div>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                    <div class="col-9">
+                                                        <div class="collection__title">
+                                                            <!-- TITLE -->
+                                                            <h:outputLink
+                                                                value="#{navigationHelper.applicationUrl}admin/cms/collections/edit/#{browseDcElement.name}/">
+                                                                <h:outputText
+                                                                    rendered="#{browseDcElement.displayNumberOfVolumes}"
+                                                                    value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)} (#{browseDcElement.numberOfVolumes})" />
+                                                                <h:outputText
+                                                                    rendered="#{!browseDcElement.displayNumberOfVolumes}"
+                                                                    value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)}" />
+                                                                <f:passThroughAttribute
+                                                                    name="data-toggle"
+                                                                    value="tooltip" />
+                                                                <f:passThroughAttribute
+                                                                    name="data-placement"
+                                                                    value="top" />
+                                                                <f:passThroughAttribute
+                                                                    name="title"
+                                                                    value="#{msg.edit}" />
+                                                                <f:ajax render="collectionTreeGroup" />
+                                                            </h:outputLink>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-2 admin__cms-collections-entry-end">
+                                                        <!-- TOGGLE DESCRIPTION -->
+                                                        <h:panelGroup
+                                                            rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
+                                                            <div class="admin__cms-collections-description-toggle">
+                                                                <h:commandLink title="#{msg[browseDcElement.label]}">
+                                                                    <h:panelGroup
+                                                                        rendered="#{not browseDcElement.showDescription}">
+                                                                        <util:icon
+                                                                            icon="chevron-down"
+                                                                            aria-hidden="true" />
+                                                                    </h:panelGroup>
 
-                                            <ul class="admin__cms-collections-tree-listing">
-                                                <ui:repeat var="browseDcElement" value="#{browseBean.getCollection(cmsCollectionsBean.solrField).visibleDcElements}">
-                                                    <li class="row no-gutters admin__cms-collections-entry admin__cms-collections-entry -level-#{browseDcElement.level}"
-                                                        style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
-													<div class="col-1 collection__structure-col">
-														<!-- STRUCTURE -->
-														<h:panelGroup
-															rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
-															<div class="collection__structure text-center">
-																<button
-																	class="btn btn--link"
-																	jsf:action="#{browseBean.getCollection(cmsCollectionsBean.solrField).toggleChildren(browseDcElement)}">
-																	<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__show_details}" />
-																	<h:panelGroup
-																		rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
-																		<util:icon icon="square-rounded-plus" svgClass="icon icon-md"  />
-																	</h:panelGroup>
-																	<h:panelGroup
-																		rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
-																		<util:icon icon="square-rounded-minus" svgClass="icon icon-md" />
-																	</h:panelGroup>
-																	<f:ajax render="collectionTreeGroup" />
-																</button>
-															</div>
-														</h:panelGroup>
-													</div>
-													<div class="col-9">
-														<div class="collection__title">
-															<!-- TITLE -->
-															<h:outputLink
-																value="#{navigationHelper.applicationUrl}admin/cms/collections/edit/#{browseDcElement.name}/">
-																<h:outputText
-																	rendered="#{browseDcElement.displayNumberOfVolumes}"
-																	value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)} (#{browseDcElement.numberOfVolumes})" />
-																<h:outputText
-																	rendered="#{!browseDcElement.displayNumberOfVolumes}"
-																	value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)}" />
-																<f:passThroughAttribute name="data-toggle" value="tooltip" />
-																<f:passThroughAttribute name="data-placement" value="top" />
-																<f:passThroughAttribute name="title" value="#{msg.edit}" />
-																<f:ajax render="collectionTreeGroup" />
-															</h:outputLink>
-														</div>
-													</div>
-													<div class="col-2 admin__cms-collections-entry-end">
-														<!-- TOGGLE DESCRIPTION -->
-														<h:panelGroup
-															rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
-															<div class="admin__cms-collections-description-toggle">
-																<h:commandLink title="#{msg[browseDcElement.label]}">
-																	<h:panelGroup
-																		rendered="#{not browseDcElement.showDescription}">
-																		<util:icon icon="chevron-down" aria-hidden="true" />
-																	</h:panelGroup>
+                                                                    <h:panelGroup
+                                                                        rendered="#{browseDcElement.showDescription}">
+                                                                        <util:icon
+                                                                            icon="chevron-up"
+                                                                            aria-hidden="true" />
+                                                                    </h:panelGroup>
 
-																	<h:panelGroup
-																		rendered="#{browseDcElement.showDescription}">
-																		<util:icon icon="chevron-up" aria-hidden="true" />
-																	</h:panelGroup>
-
-																	<f:setPropertyActionListener
-																		target="#{browseDcElement.showDescription}"
-																		value="#{not browseDcElement.showDescription}" />
-																	<f:ajax render="collectionTreeGroup" />
-																</h:commandLink>
-															</div>
-														</h:panelGroup>
-													</div>
-
-													<!-- DESCRIPTION -->
-													<h:panelGroup rendered="#{browseDcElement.hasCMSDescription() and browseDcElement.showDescription}">
-														<div class="col-1"></div>
-														<div class="col-8 pb-3">
-															<div class="collection__description">
-																<h:outputText
-																	value="#{browseDcElement.getDescription(cmsCollectionsBean.currentTab.selectedLocale.language)}"
-																	escape="false" />
-															</div>
-															<h:panelGroup rendered="#{browseDcElement.hasIcon()}">
-																<img src="#{browseDcElement.icon}" alt=""
-																	class="img-fluid" data-viewer-thumbnail="thumbnail" />
-															</h:panelGroup>
-														</div>
-
-													</h:panelGroup>
-
-											</li>
-										</ui:repeat>
-									</ul>
-								</div>
-
-								</h:panelGroup>
-							</div>
-
-
-							<!-- SIDEBAR -->
-							<div class="admin__content-side -sticky -refreshHCsticky">
-							<h:panelGroup id="collectionsTranslationProgress" layout="block">
-
-							    <!-- IMPORT -->
-                                <ui:fragment rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}">
-                                    <div class="admin__default-block -danger">
-                                        <h2>#{msg.admin__cms_collections_import}</h2>
-                                        <div class="admin__form-help-text in mb-2">
-                                            #{msg.admin__cms_collections_import_desc}
-                                        </div>
-                                        <div class="col-12 d-flex justify-content-center">
-                                            <h:commandButton
-                                                styleClass="btn btn--full"
-                                                value="#{msg.admin__cms_collections_import_start}"
-                                                action="#{cmsCollectionsBean.importDescriptionsAction(cmsCollectionsBean.solrField)}">
-                                            </h:commandButton>
-                                        </div>
-                                    </div>
-                                </ui:fragment>
-
-
-							<!-- TRANSLATIONS -->
-							<ui:fragment rendered="#{cmsCollectionsBean.displayTranslationWidget}">
-								<c:choose>
-									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles}">
-											<ui:repeat var="group"
-												value="#{adminBean.getTranslationGroupsForSolrField(cmsCollectionsBean.solrField)}">
-												<div class="admin__default-block -warning">
-
-													<!-- GROUP TITLE -->
-													<h2>#{msg.admin__cms_collections_translation}</h2>
-
-                                                    <div class="admin__form-help-text in mb-2">
-														#{msg.admin__cms_collections_translation_desc}
+                                                                    <f:setPropertyActionListener
+                                                                        target="#{browseDcElement.showDescription}"
+                                                                        value="#{not browseDcElement.showDescription}" />
+                                                                    <f:ajax render="collectionTreeGroup" />
+                                                                </h:commandLink>
+                                                            </div>
+                                                        </h:panelGroup>
                                                     </div>
 
-													<!-- PROGRESS BAR FOR COLLECTION NAMES-->
-													<div class="admin__cms-collections-progress-bar-wrapper mb-4">
+                                                    <!-- DESCRIPTION -->
+                                                    <h:panelGroup
+                                                        rendered="#{browseDcElement.hasCMSDescription() and browseDcElement.showDescription}">
+                                                        <div class="col-1" />
+                                                        <div class="col-8 pb-3">
+                                                            <div class="collection__description">
+                                                                <h:outputText
+                                                                    value="#{browseDcElement.getDescription(cmsCollectionsBean.currentTab.selectedLocale.language)}"
+                                                                    escape="false" />
+                                                            </div>
+                                                            <h:panelGroup rendered="#{browseDcElement.hasIcon()}">
+                                                                <img
+                                                                    src="#{browseDcElement.icon}"
+                                                                    alt=""
+                                                                    class="img-fluid"
+                                                                    data-viewer-thumbnail="thumbnail" />
+                                                            </h:panelGroup>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </li>
+                                            </ui:repeat>
+                                        </ul>
+                                    </div>
+                                </h:panelGroup>
+                            </div>
 
-														<div class="admin__cms-collections-progress-bar-info">
-			                                                <span class="admin__cms-collections-progress-heading">
-			                                                	#{msg.label__crowdsourcing_campaign_progress}
-			                                                </span>
-															<div class="admin__cms-collections-progress-bar-numbers">
-																<span>(#{group.fullyTranslatedEntryCount} #{msg.of} #{group.entryCount})</span>
-															</div>
-														</div>
+                            <!-- SIDEBAR -->
+                            <div class="admin__content-side -sticky -refreshHCsticky">
+                                <h:panelGroup
+                                    id="collectionsTranslationProgress"
+                                    layout="block">
+                                    <!-- IMPORT -->
+                                    <ui:fragment rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}">
+                                        <div class="admin__default-block -danger">
+                                            <h2>#{msg.admin__cms_collections_import}</h2>
+                                            <div class="admin__form-help-text in mb-2">
+                                                #{msg.admin__cms_collections_import_desc}
+                                            </div>
+                                            <div class="col-12 d-flex justify-content-center">
+                                                <h:commandButton
+                                                    styleClass="btn btn--full"
+                                                    value="#{msg.admin__cms_collections_import_start}"
+                                                    action="#{cmsCollectionsBean.importDescriptionsAction(cmsCollectionsBean.solrField)}" />
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
 
-			                                        	<div class="admin__cms-collections-progress-bar">
-															<div class="admin__dashboard-translations-progress-complete"
-																style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
-															<div class="admin__dashboard-translations-progress-partially"
-																style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
-														</div>
+                                    <!-- TRANSLATIONS -->
+                                    <ui:fragment rendered="#{cmsCollectionsBean.displayTranslationWidget}">
+                                        <c:choose>
+                                            <c:when test="#{adminBean.hasAccessPermissingForTranslationFiles}">
+                                                <ui:repeat
+                                                    var="group"
+                                                    value="#{adminBean.getTranslationGroupsForSolrField(cmsCollectionsBean.solrField)}">
+                                                    <div class="admin__default-block -warning">
+                                                        <!-- GROUP TITLE -->
+                                                        <h2>#{msg.admin__cms_collections_translation}</h2>
 
-													</div>
+                                                        <div class="admin__form-help-text in mb-2">
+                                                            #{msg.admin__cms_collections_translation_desc}
+                                                        </div>
 
-													<!-- TRANSLATION ACTION -->
-													<div class="row">
-														<div class="col-12 d-flex justify-content-center">
-                                                            <ui:fragment rendered="#{!adminBean.translationLocked}">
-                                                                <!-- TRANSLATIONS INCOMPLETE - SHOW TRANSLATE BUTTON -->
-                                                                <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
-                                                                    <a class="btn btn--full"
-                                                                        href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
-                                                                        aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__cms_collections_translation_translate}</a>
+                                                        <!-- PROGRESS BAR FOR COLLECTION NAMES-->
+                                                        <div class="admin__cms-collections-progress-bar-wrapper mb-4">
+                                                            <div class="admin__cms-collections-progress-bar-info">
+                                                                <span class="admin__cms-collections-progress-heading">
+                                                                    #{msg.label__crowdsourcing_campaign_progress}
+                                                                </span>
+                                                                <div
+                                                                    class="admin__cms-collections-progress-bar-numbers">
+                                                                    <span>
+                                                                        (#{group.fullyTranslatedEntryCount} #{msg.of}
+                                                                        #{group.entryCount})
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="admin__cms-collections-progress-bar">
+                                                                <div
+                                                                    class="admin__dashboard-translations-progress-complete"
+                                                                    style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;" />
+                                                                <div
+                                                                    class="admin__dashboard-translations-progress-partially"
+                                                                    style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;" />
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- TRANSLATION ACTION -->
+                                                        <div class="row">
+                                                            <div class="col-12 d-flex justify-content-center">
+                                                                <ui:fragment rendered="#{!adminBean.translationLocked}">
+                                                                    <!-- TRANSLATIONS INCOMPLETE - SHOW TRANSLATE BUTTON -->
+                                                                    <ui:fragment
+                                                                        rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
+                                                                        <a
+                                                                            class="btn btn--full"
+                                                                            href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+                                                                            aria-label="#{msg.edit}: #{msg[group.name]}">
+                                                                            #{msg.admin__cms_collections_translation_translate}
+                                                                        </a>
+                                                                    </ui:fragment>
+
+                                                                    <!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
+                                                                    <ui:fragment
+                                                                        rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
+                                                                        <a
+                                                                            class="btn btn--default"
+                                                                            href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+                                                                            aria-label="#{msg.edit}: #{msg[group.name]}">
+                                                                            #{msg.show}
+                                                                        </a>
+                                                                    </ui:fragment>
                                                                 </ui:fragment>
 
-                                                                <!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
-                                                                <ui:fragment rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
-                                                                    <a class="btn btn--default"
-                                                                        href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
-                                                                        aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.show}</a>
-                                                                </ui:fragment>
-                                                            </ui:fragment>
+                                                                <!-- TRANSLATIONS LOCKED -->
+                                                                <h:outputText
+                                                                    rendered="#{adminBean.translationLocked}"
+                                                                    value="#{msg.admin__translation_locked}" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ui:repeat>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div class="admin__boxed-entry -danger">
+                                                    <h2>
+                                                        #{msg.admin__translations__missing_write_permissions__title}
+                                                    </h2>
+                                                    <h:outputText
+                                                        escape="false"
+                                                        value="#{msg.admin__translations__missing_write_permissions__description}" />
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </ui:fragment>
 
-															<!-- TRANSLATIONS LOCKED -->
-															<h:outputText rendered="#{adminBean.translationLocked}" value="#{msg.admin__translation_locked}" />
-														</div>
-													</div>
-												</div>
-											</ui:repeat>
-									</c:when>
-									<c:otherwise>
-										<div class="admin__boxed-entry -danger">
-											<h2>#{msg.admin__translations__missing_write_permissions__title}</h2>
-											<h:outputText escape="false"
-												value="#{msg.admin__translations__missing_write_permissions__description}"></h:outputText>
-										</div>
-									</c:otherwise>
-								</c:choose>
-							</ui:fragment>
+                                    <!-- COLLECTION INDEX FIELD -->
+                                    <ui:fragment rendered="#{cmsCollectionsBean.displaySolrFieldSelectionWidget}">
+                                        <div class="admin__default-block">
+                                            <h2>#{msg.admin__cms_collections_solr_field}</h2>
+                                            <div class="admin__form-help-text in mb-4">
+                                                #{msg.admin__cms_collections_solr_field_desc}
+                                            </div>
+                                            <div class="d-flex">
+                                                <h:selectOneMenu
+                                                    id="SolrFieldSelect"
+                                                    name="SolrFieldSelect"
+                                                    value="#{cmsCollectionsBean.solrField}"
+                                                    styleClass="form-control">
+                                                    <f:selectItems value="#{cmsCollectionsBean.allCollectionFields}" />
+                                                    <f:ajax render="collectionTreeGroup" />
+                                                    <f:ajax render="collectionsTranslationProgress" />
+                                                </h:selectOneMenu>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
 
-                                <!-- COLLECTION INDEX FIELD -->
-                                <ui:fragment rendered="#{cmsCollectionsBean.displaySolrFieldSelectionWidget}">
+                                    <!-- PREVIEW -->
                                     <div class="admin__default-block">
-                                        <h2>#{msg.admin__cms_collections_solr_field}</h2>
-                                        <div class="admin__form-help-text in mb-4">#{msg.admin__cms_collections_solr_field_desc}</div>
-                                        <div class="d-flex">
-                                            <h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect"
-                                                value="#{cmsCollectionsBean.solrField}" styleClass="form-control">
-                                                <f:selectItems value="#{cmsCollectionsBean.allCollectionFields}" />
-                                                    <f:ajax render="collectionTreeGroup"></f:ajax>
-                                                    <f:ajax render="collectionsTranslationProgress"></f:ajax>
-                                            </h:selectOneMenu>
+                                        <h2>#{msg.admin__cms_collections_preview}</h2>
+                                        <div class="admin__form-help-text in mb-4">
+                                            #{msg.admin__cms_collections_preview_description}
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 d-flex justify-content-center">
+                                                <h:outputLink
+                                                    styleClass="btn btn--default"
+                                                    target="_blank"
+                                                    value="#{navigationHelper.browseUrl}">
+                                                    <h:outputText value="#{msg.admin__cms_collections_preview}" />
+                                                </h:outputLink>
+                                            </div>
                                         </div>
                                     </div>
-								</ui:fragment>
-
-								<!-- PREVIEW -->
-								<div class="admin__default-block">
-									<h2>#{msg.admin__cms_collections_preview}</h2>
-									<div class="admin__form-help-text in mb-4">
-										#{msg.admin__cms_collections_preview_description}
-									</div>
-									<div class="row">
-										<div class="col-12 d-flex justify-content-center">
-				                             <h:outputLink styleClass="btn btn--default" target="_blank" value="#{navigationHelper.browseUrl}">
-				                                 <h:outputText value="#{msg.admin__cms_collections_preview}" />
-				                             </h:outputLink>
-			                             </div>
-									</div>
-								</div>
-
-							</h:panelGroup>
-							</div>
-
-						</div>
-					</h:form>
-				</div>
-			</div>
-		</ui:fragment>
-
-	</ui:define>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </ui:fragment>
+    </ui:define>
 </ui:composition>
-

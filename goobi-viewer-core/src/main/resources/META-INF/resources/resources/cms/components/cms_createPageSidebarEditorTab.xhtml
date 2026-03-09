@@ -1,158 +1,207 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:t="http://myfaces.apache.org/tomahawk"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-	xmlns:util="http://goobi.io/util"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:t="http://myfaces.apache.org/tomahawk"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:util="http://goobi.io/util"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <composite:interface>
+        <composite:attribute
+            name="page"
+            required="true" />
+    </composite:interface>
 
-	<composite:interface>
-		<composite:attribute name="page" required="true" />
-	</composite:interface>
+    <composite:implementation>
+        <!-- sidebar editor -->
 
-	<composite:implementation>
-		
+        <h:panelGroup
+            id="sidebarEditorWrapper"
+            styleClass="sidebar-editor"
+            layout="block">
+            <h:panelGroup rendered="#{!cc.attrs.page.useDefaultSidebar}">
+                <h:panelGroup
+                    layout="block"
+                    id="selectedWidgetsGroup"
+                    class="sidebar-editor__left">
+                    <h3>#{msg.cms_pageSidebar}</h3>
 
-			<!-- sidebar editor -->
+                    <div class="sidebar-editor__left-inner">
+                        <ui:repeat
+                            var="element"
+                            varStatus="status"
+                            value="#{cc.attrs.page.sidebarElements}">
+                            <div
+                                class="sidebar-editor__widget-item #{element.contentType.isAllowedForPage(page) ? '' : '-disabled'}"
+                                data-toggle="tooltip"
+                                title="#{element.contentType.isAllowedForPage(page) ? '' : msg.info__disabled__search_page_only}">
+                                <!-- MOVE ITEM UP OR DOWN -->
+                                <div class="sidebar-editor__move-wrapper">
+                                    <button
+                                        class="btn btn--clean sidebar-editor__move-up -deactivated"
+                                        type="button"
+                                        rendered="#{status.first}"
+                                        jsf:action="false">
+                                        <util:icon
+                                            icon="chevron-up"
+                                            svgClass="icon icon-xxl" />
+                                    </button>
 
-				<h:panelGroup id="sidebarEditorWrapper" styleClass="sidebar-editor" layout="block">
-					<h:panelGroup rendered="#{!cc.attrs.page.useDefaultSidebar}">
+                                    <button
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="#{msg.cms__tooltip__move_up}"
+                                        class="btn btn--clean sidebar-editor__move-up"
+                                        rendered="#{!status.first}"
+                                        jsf:action="#{cc.attrs.page.moveUpSidebarElement(element)}">
+                                        <util:icon
+                                            icon="chevron-up"
+                                            svgClass="icon icon-xxl" />
+                                        <f:ajax render="sidebar_editor_component:selectedWidgetsGroup" />
+                                    </button>
 
+                                    <button
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="#{msg.cms__tooltip__move_down}"
+                                        class="btn btn--clean sidebar-editor__move-down"
+                                        rendered="#{!status.last}"
+                                        jsf:action="#{cc.attrs.page.moveDownSidebarElement(element)}">
+                                        <util:icon
+                                            icon="chevron-down"
+                                            svgClass="icon icon-xxl" />
+                                        <f:ajax render="sidebar_editor_component:selectedWidgetsGroup" />
+                                    </button>
 
-							<h:panelGroup layout="block" id="selectedWidgetsGroup" class="sidebar-editor__left">
-								<h3>#{msg.cms_pageSidebar}</h3>
+                                    <button
+                                        class="btn btn--clean sidebar-editor__move-down -deactivated"
+                                        type="button"
+                                        rendered="#{status.last}"
+                                        jsf:action="false">
+                                        <util:icon
+                                            icon="chevron-down"
+                                            svgClass="icon icon-xxl" />
+                                    </button>
+                                </div>
 
-								<div class="sidebar-editor__left-inner">
+                                <util:icon-text
+                                    icon="#{element.contentType.iconName}"
+                                    text="#{element.title.textOrDefault}"
+                                    styleClass="sidebar-editor__widget-item-title"
+                                    iconClass="sidebar-editor__widget-item-title-icon"
+                                    iconSvgClass="icon icon-lg"
+                                    textClass="sidebar-editor__widget-item-label" />
 
-									<ui:repeat var="element" varStatus="status"
-										value="#{cc.attrs.page.sidebarElements}">
+                                <h:outputText
+                                    rendered="#{!element.description.isEmpty()}"
+                                    class="sidebar-editor__widget-item-description"
+                                    value="#{'('.concat(element.description.textOrDefault).concat(')')}" />
 
-										<div class="sidebar-editor__widget-item #{element.contentType.isAllowedForPage(page) ? '' : '-disabled'}" 
-										data-toggle="tooltip" title="#{element.contentType.isAllowedForPage(page) ? '' : msg.info__disabled__search_page_only}">
-											<!-- MOVE ITEM UP OR DOWN -->
-											<div class="sidebar-editor__move-wrapper">
+                                <!-- ITEM EDIT AND DELETE -->
+                                <!-- 											<div jsf:id="widgetEditLink" rendered="#{element.canEdit()}" > -->
+                                <div class="sidebar-editor__widget-item-actions-wrapper">
+                                    <ui:fragment rendered="#{element.canEdit()}">
+                                        <a
+                                            href="#{element.adminBackendUrl}"
+                                            class="admin__table-action-link sidebar-editor__widget-item-delete-button -bluelink">
+                                            #{msg.edit}
+                                        </a>
+                                    </ui:fragment>
+                                    <button
+                                        class="admin__table-action-link sidebar-editor__widget-item-delete-button -redlink"
+                                        jsf:action="#{cc.attrs.page.removeSidebarElement(element)}"
+                                        aria-label="#{msg.delete}">
+                                        <f:ajax render="@form" />
+                                        #{msg.delete}
+                                    </button>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </h:panelGroup>
 
-												<button class="btn btn--clean sidebar-editor__move-up -deactivated" type="button" rendered="#{status.first}" jsf:action="false">
-													<util:icon icon="chevron-up" svgClass="icon icon-xxl"/>
-												</button>
+                <h:panelGroup
+                    layout="block"
+                    id="availableWidgetsGroup"
+                    class="sidebar-editor__right">
+                    <h3>#{msg.cms_menu_availableComponents}</h3>
 
-												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_up}"
-													class="btn btn--clean sidebar-editor__move-up" rendered="#{!status.first}"
-													jsf:action="#{cc.attrs.page.moveUpSidebarElement(element)}">
-													<util:icon icon="chevron-up" svgClass="icon icon-xxl"/>
-													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
-												</button>
+                    <div class="sidebar-editor__right-inner">
+                        <ui:repeat
+                            var="widget"
+                            value="#{cmsPageEditBean.sidebarWidgets.keySet().stream().sorted().toList()}"
+                            varStatus="status">
+                            <ui:fragment rendered="#{!cc.attrs.page.containsSidebarElement(widget)}">
+                                <div
+                                    class="sidebar-editor__choose-widget-item #{widget.contentType.isAllowedForPage(page) ? '' : '-disabled'}"
+                                    data-toggle="tooltip"
+                                    title="#{widget.contentType.isAllowedForPage(page) ? '' : msg.info__disabled__search_page_only}">
+                                    <input
+                                        styleClass="sidebar-editor__choose-widget-item-checkbox"
+                                        type="checkbox"
+                                        id="scales#{status.index}"
+                                        name="scales#{status.index}"
+                                        jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
+                                        <f:ajax event="change" />
+                                    </input>
 
-												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_down}" 
-													class="btn btn--clean sidebar-editor__move-down" rendered="#{!status.last}"
-													jsf:action="#{cc.attrs.page.moveDownSidebarElement(element)}">
-													<util:icon icon="chevron-down" svgClass="icon icon-xxl"/>
-													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
-												</button>
-												
-												<button class="btn btn--clean sidebar-editor__move-down -deactivated" type="button" rendered="#{status.last}"  jsf:action="false">
-													<util:icon icon="chevron-down" svgClass="icon icon-xxl"/>
-												</button>
+                                    <label
+                                        class="sidebar-editor__choose-widget-item-label"
+                                        for="scales#{status.index}">
+                                        <util:icon-text
+                                            icon="#{widget.contentType.iconName}"
+                                            text="#{widget.title.textOrDefault}"
+                                            styleClass="sidebar-editor__choose-widget-item-content"
+                                            iconClass="sidebar-editor__choose-widget-item-icon"
+                                            iconSvgClass="icon icon-lg"
+                                            textClass="sidebar-editor__choose-widget-item-title" />
+                                        <h:outputText
+                                            rendered="#{!widget.description.isEmpty()}"
+                                            class="sidebar-editor__choose-widget-item-desc"
+                                            value="#{'('.concat(widget.description).concat(')')}" />
+                                    </label>
+                                </div>
+                            </ui:fragment>
+                        </ui:repeat>
 
-											</div>
-											
-											<util:icon-text
-												icon="#{element.contentType.iconName}"
-												text="#{element.title.textOrDefault}"
-												styleClass="sidebar-editor__widget-item-title"
-												iconClass="sidebar-editor__widget-item-title-icon"
-												iconSvgClass="icon icon-lg"
-												textClass="sidebar-editor__widget-item-label" />
-											
-											<h:outputText rendered="#{!element.description.isEmpty()}" class="sidebar-editor__widget-item-description" value="#{'('.concat(element.description.textOrDefault).concat(')')}"/>
+                        <!-- NOT WORKING FUNCTIONALITY -->
+                        <ui:repeat
+                            var="widget"
+                            value="#{selectedWidgets}">
+                            <h:selectBooleanCheckbox value="#{selectedWidgets[widget]}" />
+                        </ui:repeat>
 
-											<!-- ITEM EDIT AND DELETE -->						
-<!-- 											<div jsf:id="widgetEditLink" rendered="#{element.canEdit()}" > -->
-												<div class="sidebar-editor__widget-item-actions-wrapper">
-													<ui:fragment rendered="#{element.canEdit()}">
-														<a href="#{element.adminBackendUrl}" class="admin__table-action-link sidebar-editor__widget-item-delete-button -bluelink">#{msg.edit}</a>
-													</ui:fragment>
-													<button
-															class="admin__table-action-link sidebar-editor__widget-item-delete-button -redlink"
-															jsf:action="#{cc.attrs.page.removeSidebarElement(element)}"
-															aria-label="#{msg.delete}">
-															<f:ajax render="@form"/>
-															#{msg.delete}
-													</button>
-												</div>
+                        <button
+                            class="btn btn--default sidebar-editor__add-widgets-button"
+                            jsf:action="#{cc.attrs.page.addToSidebar(cmsPageEditBean.getAndResetSelectedWidgets())}">
+                            #{msg.action__add_to_sidebar}
+                            <f:ajax render="@form" />
+                        </button>
+                    </div>
+                </h:panelGroup>
+            </h:panelGroup>
+        </h:panelGroup>
 
-											
-											
-
-										</div>
-									</ui:repeat>
-								</div>
-							</h:panelGroup>
-
-							<h:panelGroup layout="block" id="availableWidgetsGroup" class="sidebar-editor__right">
-
-								<h3>#{msg.cms_menu_availableComponents}</h3>
-
-								<div class="sidebar-editor__right-inner">
-
-									<ui:repeat var="widget" value="#{cmsPageEditBean.sidebarWidgets.keySet().stream().sorted().toList()}" varStatus="status">
-										<ui:fragment rendered="#{!cc.attrs.page.containsSidebarElement(widget)}">
-											<div class="sidebar-editor__choose-widget-item #{widget.contentType.isAllowedForPage(page) ? '' : '-disabled'}"
-											data-toggle="tooltip" title="#{widget.contentType.isAllowedForPage(page) ? '' : msg.info__disabled__search_page_only}">
-											  <input styleClass="sidebar-editor__choose-widget-item-checkbox" type="checkbox" id="scales#{status.index}" name="scales#{status.index}" jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
-											  	<f:ajax event="change"></f:ajax>
-											  </input>
-
-											  	<label class="sidebar-editor__choose-widget-item-label" for="scales#{status.index}">
-													<util:icon-text
-														icon="#{widget.contentType.iconName}"
-														text="#{widget.title.textOrDefault}"
-														styleClass="sidebar-editor__choose-widget-item-content"
-														iconClass="sidebar-editor__choose-widget-item-icon"
-														iconSvgClass="icon icon-lg"
-														textClass="sidebar-editor__choose-widget-item-title" />
-													<h:outputText rendered="#{!widget.description.isEmpty()}" class="sidebar-editor__choose-widget-item-desc" value="#{'('.concat(widget.description).concat(')')}"/>
-												</label>
- 
-											</div>
-										</ui:fragment>
-									</ui:repeat>
-
-
-									<!-- NOT WORKING FUNCTIONALITY -->
-									<ui:repeat var="widget" value="#{selectedWidgets}">
-										<h:selectBooleanCheckbox value="#{selectedWidgets[widget]}"/>
-									</ui:repeat>
-
-
-									<button class="btn btn--default sidebar-editor__add-widgets-button" jsf:action="#{cc.attrs.page.addToSidebar(cmsPageEditBean.getAndResetSelectedWidgets())}">
-										#{msg.action__add_to_sidebar}
-										<f:ajax render="@form"/>
-									</button>
-
-								</div>
-
-							</h:panelGroup>
-					</h:panelGroup>
-				</h:panelGroup>
-				
-				<!-- choose standard sidebar for current page -->
-				<div class="sidebar-editor__choose-standard">
-					<h:selectBooleanCheckbox id="checkboxUseDefaultSidebar"
-						value="#{cc.attrs.page.useDefaultSidebar}"
-						onclick="cmsJS.createPage.disablePreview();">
-						<span><h:outputText value="#{msg.cms_pageSidebarUseDefault}" /></span>
-						<f:ajax event="change" render="sidebarEditorWrapper" />
-						<f:passThroughAttribute name="aria-label"
-							value="#{msg.cms_pageSidebarUseDefault}" />
-					</h:selectBooleanCheckbox>
-				</div>
-				
-	</composite:implementation>
-
-
+        <!-- choose standard sidebar for current page -->
+        <div class="sidebar-editor__choose-standard">
+            <h:selectBooleanCheckbox
+                id="checkboxUseDefaultSidebar"
+                value="#{cc.attrs.page.useDefaultSidebar}"
+                onclick="cmsJS.createPage.disablePreview()">
+                <span>
+                    <h:outputText value="#{msg.cms_pageSidebarUseDefault}" />
+                </span>
+                <f:ajax
+                    event="change"
+                    render="sidebarEditorWrapper" />
+                <f:passThroughAttribute
+                    name="aria-label"
+                    value="#{msg.cms_pageSidebarUseDefault}" />
+            </h:selectBooleanCheckbox>
+        </div>
+    </composite:implementation>
 </ui:composition>

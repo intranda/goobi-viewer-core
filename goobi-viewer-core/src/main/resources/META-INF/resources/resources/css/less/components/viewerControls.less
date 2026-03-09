@@ -6,26 +6,62 @@
     display: inline-block;
     width: 1.75rem;
     height: 1.75rem;
-    background-image: url("../@{images}/icons/viewer-controls-sprite.png");
+    background-image: url('../@{images}/icons/viewer-controls-sprite.png');
     background-repeat: no-repeat;
-    &.viewer-control-start        { background-position:    0px   0px; }
-    &.viewer-control-back         { background-position:  -28px   0px; }
-    &.viewer-control-back5        { background-position:  -56px   0px; }
-    &.viewer-control-back20       { background-position:  -84px   0px; }
-    &.viewer-control-back50       { background-position: -112px   0px; }
-    &.viewer-control-reset        { background-position: -140px   0px; }
-    &.viewer-control-rotate-left  { background-position: -168px   0px; }
-    &.viewer-control-rotate-right { background-position: -196px   0px; }
-    &.viewer-control-end          { background-position:    0px -28px; }
-    &.viewer-control-forward      { background-position:  -28px -28px; }
-    &.viewer-control-forward5     { background-position:  -56px -28px; }
-    &.viewer-control-forward20    { background-position:  -84px -28px; }
-    &.viewer-control-forward50    { background-position: -112px -28px; }
-    &.viewer-control-fullscreen   { background-position: -140px -28px; }
-    &.viewer-control-toc          { background-position: -168px -28px; }
-    &.viewer-control-single-page  { background-position: -224px   0px; }
-    &.viewer-control-double-page  { background-position: -252px   0px; }
-    &.viewer-control-switch-page  { background-position: -224px -28px; }
+    &.viewer-control-start {
+        background-position: 0px 0px;
+    }
+    &.viewer-control-back {
+        background-position: -28px 0px;
+    }
+    &.viewer-control-back5 {
+        background-position: -56px 0px;
+    }
+    &.viewer-control-back20 {
+        background-position: -84px 0px;
+    }
+    &.viewer-control-back50 {
+        background-position: -112px 0px;
+    }
+    &.viewer-control-reset {
+        background-position: -140px 0px;
+    }
+    &.viewer-control-rotate-left {
+        background-position: -168px 0px;
+    }
+    &.viewer-control-rotate-right {
+        background-position: -196px 0px;
+    }
+    &.viewer-control-end {
+        background-position: 0px -28px;
+    }
+    &.viewer-control-forward {
+        background-position: -28px -28px;
+    }
+    &.viewer-control-forward5 {
+        background-position: -56px -28px;
+    }
+    &.viewer-control-forward20 {
+        background-position: -84px -28px;
+    }
+    &.viewer-control-forward50 {
+        background-position: -112px -28px;
+    }
+    &.viewer-control-fullscreen {
+        background-position: -140px -28px;
+    }
+    &.viewer-control-toc {
+        background-position: -168px -28px;
+    }
+    &.viewer-control-single-page {
+        background-position: -224px 0px;
+    }
+    &.viewer-control-double-page {
+        background-position: -252px 0px;
+    }
+    &.viewer-control-switch-page {
+        background-position: -224px -28px;
+    }
     &.viewer-control-pdf,
     &.page-browse {
         font-size: @fontMedium;
@@ -42,7 +78,7 @@
         font-size: @fontNormal;
     }
     &.viewer-control-togglepageorientation {
-    	background-position: -140px   0px;
+        background-position: -140px 0px;
     }
 }
 
@@ -66,7 +102,9 @@
             height: 1.75rem;
             line-height: 1.75rem;
             margin-right: 0.4375rem;
-            span, a {}
+            span,
+            a {
+            }
             a {
                 cursor: pointer;
             }
@@ -77,7 +115,7 @@
                 select {
                     height: 1.625rem;
                     border: none;
-                }                
+                }
             }
             #slider-id {
                 width: 9.375rem;
@@ -87,10 +125,10 @@
                 .zoom-slider-handle {
                     position: relative;
                     display: block;
-	                top: -7px;
-	                height: 1.75rem; 
-	                width: 0.875rem; 
-	                background-color: @gray;                	
+                    top: -7px;
+                    height: 1.75rem;
+                    width: 0.875rem;
+                    background-color: @gray;
                 }
                 a {
                     width: 1.45rem;
@@ -104,13 +142,17 @@
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

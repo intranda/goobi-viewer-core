@@ -1,31 +1,30 @@
 /**
  * This file is part of the Goobi viewer - a content presentation and management
  * application for digitized objects.
- * 
+ *
  * Visit these websites for more information. - http://www.intranda.com -
  * http://digiverso.com
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
- * 
- * @description Base-Module which initialize the global admin object. * 
+ *
+ * @description Base-Module which initialize the global admin object. *
  * @version 3.4.0
  * @module Crowdsourcing.js
  * @requires jQuery
  */
-var Crowdsourcing = ( function(crowdsourcing) {
+var Crowdsourcing = (function (crowdsourcing) {
     'use strict';
 
-    crowdsourcing.AreaSelector = function(item, multiple, colors) {
-        
+    crowdsourcing.AreaSelector = function (item, multiple, colors) {
         this.drawer = null;
         this.transformer = null;
         this.rects = [];
@@ -35,94 +34,102 @@ var Crowdsourcing = ( function(crowdsourcing) {
 
         this.drawActive = true;
         this.transformActive = true;
-        
+
         this.crowdsourcingItem = item;
         this.multiRect = multiple;
-        this.colors = colors ? new ImageView.ColorIterator(colors) : new ImageView.ColorIterator(ImageView.ColorIterator.randomColor);
-    }
-    
-    crowdsourcing.AreaSelector.prototype.init = function() {
-        this.crowdsourcingItem.onImageOpen( (imageView) => {
-            if(!this.drawer) {
+        this.colors = colors
+            ? new ImageView.ColorIterator(colors)
+            : new ImageView.ColorIterator(ImageView.ColorIterator.randomColor);
+    };
+
+    crowdsourcing.AreaSelector.prototype.init = function () {
+        this.crowdsourcingItem.onImageOpen((imageView) => {
+            if (!this.drawer) {
                 this.createDrawer(imageView);
             }
         });
-        
-    }
+    };
 
     crowdsourcing.AreaSelector.prototype.createDrawer = function (imageView) {
         window.imageView = imageView;
-        this.drawer = new ImageView.Draw(imageView, this.getStyle("red"), e => e.shiftKey && this.allowDrawing());
-        this.drawer.finishedDrawing().subscribe( rect => {
-            if(this.rect && !this.multiRect) {
-                this.removeOverlay(this.rect)
+        this.drawer = new ImageView.Draw(imageView, this.getStyle('red'), (e) => e.shiftKey && this.allowDrawing());
+        this.drawer.finishedDrawing().subscribe((rect) => {
+            if (this.rect && !this.multiRect) {
+                this.removeOverlay(this.rect);
             }
 
             const overlayConfig = {
-        		style: this.drawer.config.style,
-                startCondition: this.allowTransforming()
-        	}
+                style: this.drawer.config.style,
+                startCondition: this.allowTransforming(),
+            };
             const overlay = new ImageView.Overlay(rect.bounds.viewport, overlayConfig, this.getNextId());
             this.drawer.config.style = this.getStyle();
-    		overlay.draw(imageView)
-            .then(o => {
+            overlay.draw(imageView).then((o) => {
                 overlay.transformer = this.createTransformer(imageView, overlay);
                 this.rect = overlay;
                 this.rects.push(this.rect);
                 this.finishedDrawing.next(_getResultObject(overlay, imageView));
             });
-    	});
-    }
-    
-    crowdsourcing.AreaSelector.prototype.allowDrawing = function() {
+        });
+    };
+
+    crowdsourcing.AreaSelector.prototype.allowDrawing = function () {
         return this.drawActive;
-    }
+    };
 
-    crowdsourcing.AreaSelector.prototype.allowTransforming = function() {
+    crowdsourcing.AreaSelector.prototype.allowTransforming = function () {
         return this.transformActive;
-    }
-    
-    crowdsourcing.AreaSelector.prototype.reset = function() {
+    };
+
+    crowdsourcing.AreaSelector.prototype.reset = function () {
         this.colors.index = 0;
-        this.rects.forEach(function(rect) {
-            rect.transformer?.close();
-            rect.remove();
-        }.bind(this));
+        this.rects.forEach(
+            function (rect) {
+                rect.transformer?.close();
+                rect.remove();
+            }.bind(this)
+        );
         this.rects = [];
-    }
+    };
 
-    crowdsourcing.AreaSelector.prototype.createTransformer = function(imageView, overlay) {
+    crowdsourcing.AreaSelector.prototype.createTransformer = function (imageView, overlay) {
         const config = {
-            startCondition: (e) => !e.shiftKey
-        }
-        const transformer = new ImageView.Transform(imageView, overlay, config); 
-        transformer.finishedTransforming().pipe(rxjs.operators.map((overlay) => _getResultObject(overlay, imageView))).subscribe(this.finishedTransforming);
+            startCondition: (e) => !e.shiftKey,
+        };
+        const transformer = new ImageView.Transform(imageView, overlay, config);
+        transformer
+            .finishedTransforming()
+            .pipe(rxjs.operators.map((overlay) => _getResultObject(overlay, imageView)))
+            .subscribe(this.finishedTransforming);
         return transformer;
+    };
 
-    }
-
-    crowdsourcing.AreaSelector.prototype.getStyle = function(color) {
+    crowdsourcing.AreaSelector.prototype.getStyle = function (color) {
         let style = {
-        		borderWidth: 2,
-        		borderColor: color ? color : this.colors.next()
-        }
+            borderWidth: 2,
+            borderColor: color ? color : this.colors.next(),
+        };
         return style;
-    }
-    
-    crowdsourcing.AreaSelector.prototype.getRect = function(id) {
-        return this.rects.find( rect => rect.id == id);
-    }
+    };
 
-    crowdsourcing.AreaSelector.prototype.getNextId = function(){
+    crowdsourcing.AreaSelector.prototype.getRect = function (id) {
+        return this.rects.find((rect) => rect.id == id);
+    };
+
+    crowdsourcing.AreaSelector.prototype.getNextId = function () {
         const idCount = ++this.lastRectangleId;
         return `image_area_${idCount}`;
-    }
-    
-    crowdsourcing.AreaSelector.prototype.addOverlay = function(annotation, viewer) {
-        if(annotation.getRegion()) {            
-            let rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(annotation.getRegion(), viewer.openseadragon, viewer.openseadragon.world.getItemAt(0).source)
+    };
+
+    crowdsourcing.AreaSelector.prototype.addOverlay = function (annotation, viewer) {
+        if (annotation.getRegion()) {
+            let rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(
+                annotation.getRegion(),
+                viewer.openseadragon,
+                viewer.openseadragon.world.getItemAt(0).source
+            );
             //rect = rect.rotate(-viewer.openseadragon.viewport.getRotation());
-            const overlay = new ImageView.Overlay(rect, {style: this.getStyle()}, this.getNextId());
+            const overlay = new ImageView.Overlay(rect, { style: this.getStyle() }, this.getNextId());
             annotation.setColor(overlay.config.style.borderColor);
             annotation.overlayId = overlay.id;
             this.lastRectangleId = overlay.id;
@@ -130,62 +137,62 @@ var Crowdsourcing = ( function(crowdsourcing) {
             overlay.transformer = this.createTransformer(viewer, overlay);
             this.rects.push(overlay);
         }
-    } 
+    };
 
-    crowdsourcing.AreaSelector.prototype.removeOverlay = function(object) {
-        let rect = this.rects.find(rect => rect.id == object.overlayId);
-        if(rect) {
+    crowdsourcing.AreaSelector.prototype.removeOverlay = function (object) {
+        let rect = this.rects.find((rect) => rect.id == object.overlayId);
+        if (rect) {
             rect.transformer?.close();
             rect.remove();
             let index = this.rects.indexOf(rect);
-            if(index > -1) {                
+            if (index > -1) {
                 this.rects.splice(index, 1);
             }
-            if(this.rect == rect) {
+            if (this.rect == rect) {
                 this.rect = undefined;
             }
         }
-    }
-    
-    crowdsourcing.AreaSelector.prototype.setDrawingStyle = function(style) {
-        if(this.drawer) {
+    };
+
+    crowdsourcing.AreaSelector.prototype.setDrawingStyle = function (style) {
+        if (this.drawer) {
             this.drawer.style = style;
         }
-    }
+    };
 
-    
-    crowdsourcing.AreaSelector.prototype.disableDrawer = function() {
+    crowdsourcing.AreaSelector.prototype.disableDrawer = function () {
         this.drawActive = false;
-    }
-    
-    crowdsourcing.AreaSelector.prototype.enableDrawer = function() {
+    };
+
+    crowdsourcing.AreaSelector.prototype.enableDrawer = function () {
         this.drawActive = true;
-    }
-    
-    crowdsourcing.AreaSelector.prototype.disableTransformer = function() {
+    };
+
+    crowdsourcing.AreaSelector.prototype.disableTransformer = function () {
         this.transformActive = false;
-    }
-    
-    crowdsourcing.AreaSelector.prototype.enableTransformer = function() {
+    };
+
+    crowdsourcing.AreaSelector.prototype.enableTransformer = function () {
         this.transformActive = true;
-    }
-    
+    };
+
     function _getResultObject(overlay, image) {
         //let region = overlay.bounds.rotate(-image.getRotation());
         let region = overlay.bounds;
-        let scaledRegion = ImageView.CoordinateConversion.scaleToImage(region, image.openseadragon, image.openseadragon.world.getItemAt(0).source);
+        let scaledRegion = ImageView.CoordinateConversion.scaleToImage(
+            region,
+            image.openseadragon,
+            image.openseadragon.world.getItemAt(0).source
+        );
         scaledRegion.x = Math.max(0, scaledRegion.x);
         scaledRegion.y = Math.max(0, scaledRegion.y);
         let result = {
-                id: overlay.id,
-                color: overlay.config.style.borderColor,
-                region: scaledRegion
-        }
+            id: overlay.id,
+            color: overlay.config.style.borderColor,
+            region: scaledRegion,
+        };
         return result;
     }
 
-return crowdsourcing;
-
-} )( Crowdsourcing );
-
-
+    return crowdsourcing;
+})(Crowdsourcing);

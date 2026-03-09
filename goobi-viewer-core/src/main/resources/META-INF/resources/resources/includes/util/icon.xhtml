@@ -2,24 +2,40 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core">
-
-    <c:set var="variant" value="#{filled == 'true' ? 'filled' : 'outline'}" />
-    <ui:param name="contextPath" value="#{facesContext.externalContext.requestContextPath}" />
-    <ui:param name="iconPath" value="#{contextPath}/resources/icons/#{variant}/#{icon}.svg#icon" />
-    <ui:param name="wrapperClass" value="icon-wrapper#{styleClass != null ? ' ' : ''}#{styleClass}" />
+    <c:set
+        var="variant"
+        value="#{filled == 'true' ? 'filled' : 'outline'}" />
+    <ui:param
+        name="contextPath"
+        value="#{facesContext.externalContext.requestContextPath}" />
+    <ui:param
+        name="iconPath"
+        value="#{contextPath}/resources/icons/#{variant}/#{icon}.svg#icon" />
+    <ui:param
+        name="wrapperClass"
+        value="icon-wrapper#{styleClass != null ? ' ' : ''}#{styleClass}" />
 
     <c:choose>
         <c:when test="#{empty ariaLabel}">
             <ui:fragment rendered="#{empty color}">
-                <span class="#{wrapperClass}" aria-hidden="true">
-                    <svg class="#{svgClass}" focusable="false">
+                <span
+                    class="#{wrapperClass}"
+                    aria-hidden="true">
+                    <svg
+                        class="#{svgClass}"
+                        focusable="false">
                         <use href="#{iconPath}" />
                     </svg>
                 </span>
             </ui:fragment>
             <ui:fragment rendered="#{not empty color}">
-                <span class="#{wrapperClass}" style="color: #{color}" aria-hidden="true">
-                    <svg class="#{svgClass}" focusable="false">
+                <span
+                    class="#{wrapperClass}"
+                    style="color: #{color}"
+                    aria-hidden="true">
+                    <svg
+                        class="#{svgClass}"
+                        focusable="false">
                         <use href="#{iconPath}" />
                     </svg>
                 </span>
@@ -27,7 +43,10 @@
         </c:when>
         <c:otherwise>
             <ui:fragment rendered="#{empty color}">
-                <span class="#{wrapperClass}" role="img" aria-label="#{ariaLabel}">
+                <span
+                    class="#{wrapperClass}"
+                    role="img"
+                    aria-label="#{ariaLabel}">
                     <svg class="#{svgClass}">
                         <title>#{ariaLabel}</title>
                         <use href="#{iconPath}" />
@@ -35,7 +54,11 @@
                 </span>
             </ui:fragment>
             <ui:fragment rendered="#{not empty color}">
-                <span class="#{wrapperClass}" style="color: #{color}" role="img" aria-label="#{ariaLabel}">
+                <span
+                    class="#{wrapperClass}"
+                    style="color: #{color}"
+                    role="img"
+                    aria-label="#{ariaLabel}">
                     <svg class="#{svgClass}">
                         <title>#{ariaLabel}</title>
                         <use href="#{iconPath}" />

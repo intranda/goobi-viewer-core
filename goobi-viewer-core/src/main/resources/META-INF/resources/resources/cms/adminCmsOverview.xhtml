@@ -1,37 +1,48 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:util="http://goobi.io/util"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-   				xmlns:jsf="http://xmlns.jcp.org/jsf"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsOverview')}" />
-            <f:event type="preRenderView" listener="#{cmsBean.init()}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminCmsOverview')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{cmsBean.init()}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <div id="cmsOverview" class="cms-pages-overview">
-            <h:panelGroup id="cmsOverviewAccessControl" rendered="#{userBean.user.cmsAdmin}">
-                <h:form id="cmsOverviewForm" prependId="false">
-
+        <div
+            id="cmsOverview"
+            class="cms-pages-overview">
+            <h:panelGroup
+                id="cmsOverviewAccessControl"
+                rendered="#{userBean.user.cmsAdmin}">
+                <h:form
+                    id="cmsOverviewForm"
+                    prependId="false">
                     <div class="admin__title-bar">
                         <!-- TITLE -->
                         <h1 class="admin__title">#{msg.cms_overview}</h1>
                         <!-- CREATE NEW PAGE -->
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
-                            <a href="#{navigationHelper.getPageUrl('adminCmsSelectTemplate')}/" class="btn btn--default admin__title-bar-action">
+                            <a
+                                href="#{navigationHelper.getPageUrl('adminCmsSelectTemplate')}/"
+                                class="btn btn--default admin__title-bar-action">
                                 <span>#{msg.add}</span>
                             </a>
                         </ui:fragment>
                     </div>
-                    
+
                     <viewerComponent:adminBreadcrumbs />
 
                     <div class="admin__content-inner-content">
@@ -40,138 +51,198 @@
                             <div class="admin__table-paginator">
                                 <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
                             </div>
-                            
+
                             <!-- FILTER -->
                             <!-- TODO add categories and subtheme to this filter, too -->
                             <div class="admin__table-filter">
-                                <viewerComponent:dataTableColumnFilter key="admin__cms_page_search"
-                                filter="#{cmsBean.lazyModelPages.getFilter(cmsBean.cmsPagesFilter)}"/>
+                                <viewerComponent:dataTableColumnFilter
+                                    key="admin__cms_page_search"
+                                    filter="#{cmsBean.lazyModelPages.getFilter(cmsBean.cmsPagesFilter)}" />
                             </div>
                         </div>
 
-
                         <!-- ALL PAGES TABLE -->
-                        <div id="cmsOverviewWrapper" class="admin__table-content" role="grid" aria-label="#{msg.cms_overview}: #{msg.aria_label__table__actions}">
+                        <div
+                            id="cmsOverviewWrapper"
+                            class="admin__table-content"
+                            role="grid"
+                            aria-label="#{msg.cms_overview}: #{msg.aria_label__table__actions}">
                             <!-- TITLE ROW -->
-                            <div class="row no-gutters admin__table-title" role="row">
+                            <div
+                                class="row no-gutters admin__table-title"
+                                role="row">
                                 <!-- PAGE COL -->
-                                <div class="col-6 d-flex" role="columnheader">#{msg.page}</div>
+                                <div
+                                    class="col-6 d-flex"
+                                    role="columnheader">
+                                    #{msg.page}
+                                </div>
 
                                 <!-- CLASSIFICATIONS COL -->
-                                <div class="col-2 d-flex" role="columnheader">
+                                <div
+                                    class="col-2 d-flex"
+                                    role="columnheader">
                                     #{msg.admin__cms_categories}
                                 </div>
 
                                 <!-- DATE COL -->
-	                            <div class="col-2 d-flex">
-	                                <viewerComponent:sortingArrow filterType="dateUpdated" colHeading="#{msg.cms_pageMetadata_lastEdited}" list="#{cmsBean.lazyModelPages}" />
-	                            </div>
+                                <div class="col-2 d-flex">
+                                    <viewerComponent:sortingArrow
+                                        filterType="dateUpdated"
+                                        colHeading="#{msg.cms_pageMetadata_lastEdited}"
+                                        list="#{cmsBean.lazyModelPages}" />
+                                </div>
 
                                 <!-- TRANSLATIONS COL -->
                                 <div class="col-2">
-	                                <div class="row no-gutters" role="columnheader" aria-label="Shows available language versions of a page">
-
-	                                        <div class=" d-flex">#{msg.admin__translations}</div>
-	                                    
-	                                    
-	                                    
-	                                    
-	                                </div>
+                                    <div
+                                        class="row no-gutters"
+                                        role="columnheader"
+                                        aria-label="Shows available language versions of a page">
+                                        <div class="d-flex">#{msg.admin__translations}</div>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- INDIVIDUAL PAGE ROWS -->
-                            <ui:repeat var="page" value="#{cmsBean.displayedPages}">
-                                <div class="row no-gutters admin__table-entry #{page.published == true ? '' : '-unpublished'}" role="row">
+                            <ui:repeat
+                                var="page"
+                                value="#{cmsBean.displayedPages}">
+                                <div
+                                    class="row no-gutters admin__table-entry #{page.published == true ? '' : '-unpublished'}"
+                                    role="row">
                                     <div class="col-6 d-flex">
+                                        <div
+                                            class="admin__table-data"
+                                            role="gridcell">
+                                            <!-- PAGE TITLE -->
+                                            <div class="cms-pages-overview__title-wrapper">
+                                                <span
+                                                    class="admin__table-name #{page.published == true ? '' : '-unpublished'}">
+                                                    #{page.title}
+                                                </span>
+                                                <ui:fragment rendered="#{page.accessCondition != null}">
+                                                    <span class="cms-pages-overview__access-condition-wrapper">
+                                                        <span
+                                                            class="cms-pages-overview__access-condition"
+                                                            data-toggle="tooltip"
+                                                            title="#{page.accessCondition}">
+                                                            <util:icon icon="key" />
+                                                        </span>
+                                                    </span>
+                                                </ui:fragment>
+                                            </div>
 
-                                        <div class="admin__table-data" role="gridcell">
-                                        
-                                        	<!-- PAGE TITLE -->
-                                        	<div class="cms-pages-overview__title-wrapper">
-	                                            <span class="admin__table-name #{page.published == true ? '' : '-unpublished'}">#{page.title}</span>
-	                                            <ui:fragment rendered="#{page.accessCondition != null}">
-	                                            	<span class="cms-pages-overview__access-condition-wrapper">
-		                                            	<span class="cms-pages-overview__access-condition" data-toggle="tooltip" title="#{page.accessCondition}"><util:icon icon="key" /></span> 
-	                                        		</span> 
-	                                        	</ui:fragment>
-                                        	</div>
-                                            
                                             <!-- PAGE MENU TITLE -->
                                             <ui:fragment rendered="#{page.title != page.menuTitle}">
                                                 <span class="admin__table-additional-info">#{page.menuTitle}</span>
                                             </ui:fragment>
-                                            <ui:fragment rendered="#{page.subThemeDiscriminatorValue != '' and page.subThemeDiscriminatorValue != null}">
+                                            <ui:fragment
+                                                rendered="#{page.subThemeDiscriminatorValue != '' and page.subThemeDiscriminatorValue != null}">
                                                 <span class="font-italic">(#{page.subThemeDiscriminatorValue})</span>
                                             </ui:fragment>
                                             <div>
                                                 <!-- EDIT -->
-                                                <a href="#{navigationHelper.applicationUrl}admin/cms/pages/edit/#{page.id}/" class="admin__table-action-link" aria-label="#{msg.edit}: #{page.title}">#{msg.edit}</a>
+                                                <a
+                                                    href="#{navigationHelper.applicationUrl}admin/cms/pages/edit/#{page.id}/"
+                                                    class="admin__table-action-link"
+                                                    aria-label="#{msg.edit}: #{page.title}">
+                                                    #{msg.edit}
+                                                </a>
                                                 <!-- PREVIEW -->
                                                 <ui:fragment rendered="#{page.published}">
-                                                    <a href="#{cmsBean.getUrl(page)}" target="_blank" class="admin__table-action-link" aria-label="#{msg.cms_pageView}: #{page.title}">#{msg.cms_pagePreview}</a>
+                                                    <a
+                                                        href="#{cmsBean.getUrl(page)}"
+                                                        target="_blank"
+                                                        class="admin__table-action-link"
+                                                        aria-label="#{msg.cms_pageView}: #{page.title}">
+                                                        #{msg.cms_pagePreview}
+                                                    </a>
                                                 </ui:fragment>
 
-												<!-- DELETE -->
-	                                           <button
-	                                           	   type="button"
-	                                               class="admin__table-action-link -redlink"
-	                                               title="#{messagesBean.addMessageParams(msg.cms_pageMetadata_delete, page.title)}"
-	                                               data-require-confirmation="true"
-	                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms_pageMetadata_delete, page.title)}"
-	                                               jsf:rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}"
-	                                               jsf:action="#{cmsPageEditBean.deletePage(page)}"
-	                                               aria-label="#{msg.delete}" >
-	                                               #{msg.delete}
-	                                                <f:ajax render="@all" />
-	                                           </button>
-	                                           
-                                                
+                                                <!-- DELETE -->
+                                                <button
+                                                    type="button"
+                                                    class="admin__table-action-link -redlink"
+                                                    title="#{messagesBean.addMessageParams(msg.cms_pageMetadata_delete, page.title)}"
+                                                    data-require-confirmation="true"
+                                                    data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms_pageMetadata_delete, page.title)}"
+                                                    jsf:rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}"
+                                                    jsf:action="#{cmsPageEditBean.deletePage(page)}"
+                                                    aria-label="#{msg.delete}">
+                                                    #{msg.delete}
+                                                    <f:ajax render="@all" />
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-2 d-flex align-items-center align-content-center flex-wrap" role="gridcell">
+                                    <div
+                                        class="col-2 d-flex align-items-center align-content-center flex-wrap"
+                                        role="gridcell">
                                         <ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
-                                            <span class="admin__badge admin__badge-warning">#{msg.admin__cms_static_page}</span>
+                                            <span class="admin__badge admin__badge-warning">
+                                                #{msg.admin__cms_static_page}
+                                            </span>
                                         </ui:fragment>
                                         <ui:fragment rendered="#{page.published == false}">
-                                            <span class="admin__badge admin__badge-gray">#{msg.cms_pageMetadata_private}</span>
+                                            <span class="admin__badge admin__badge-gray">
+                                                #{msg.cms_pageMetadata_private}
+                                            </span>
                                         </ui:fragment>
-                                        <ui:repeat value="#{page.categories}" var="category">
+                                        <ui:repeat
+                                            value="#{page.categories}"
+                                            var="category">
                                             <div class="admin__badge admin__badge-violet">#{category.name}</div>
                                         </ui:repeat>
                                     </div>
-                                     <div class="col-2 d-flex align-items-center" role="gridcell">
+                                    <div
+                                        class="col-2 d-flex align-items-center"
+                                        role="gridcell">
                                         <h:outputText value="#{page.dateUpdated}">
                                             <f:converter converterId="localDateTimeConverter" />
-                                            <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+                                            <f:attribute
+                                                name="pattern"
+                                                value="#{navigationHelper.dateTimePattern}" />
                                         </h:outputText>
                                     </div>
-                                    <div class="col-2 d-flex flex-column justify-content-center" role="gridcell" aria-label="#{cmsBean.getAllLocales()}">
-	                                    <div class="row no-gutters" role="presentation">
-	                                    
-	                                    <div class="cms-pages-overview__single-row-translation-indicator">
-	                                    	<viewerComponent:translationState object="#{page}" styleClass="nav nav-tabs admin__translation-indicator-list" />
-	                                    </div>
-
-	                                    </div>
+                                    <div
+                                        class="col-2 d-flex flex-column justify-content-center"
+                                        role="gridcell"
+                                        aria-label="#{cmsBean.getAllLocales()}">
+                                        <div
+                                            class="row no-gutters"
+                                            role="presentation">
+                                            <div class="cms-pages-overview__single-row-translation-indicator">
+                                                <viewerComponent:translationState
+                                                    object="#{page}"
+                                                    styleClass="nav nav-tabs admin__translation-indicator-list" />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </ui:repeat>
-                            
-
 
                             <!-- delete page modal -->
                             <!-- TODO remove modal and replace confirmation with javascript browser confirm -->
-                            <div id="deletePageModal" class="modal fade" tabindex="-1" role="dialog">
+                            <div
+                                id="deletePageModal"
+                                class="modal fade"
+                                tabindex="-1"
+                                role="dialog">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h3 class="modal-title">#{msg.cms_deletePage_agree}</h3>
-                                            <h:commandLink action="#{cmsBean.setSelectedPage(null)}" styleClass="close">
-                                                <f:passThroughAttribute name="data-dismiss" value="modal" />
+                                            <h:commandLink
+                                                action="#{cmsBean.setSelectedPage(null)}"
+                                                styleClass="close">
+                                                <f:passThroughAttribute
+                                                    name="data-dismiss"
+                                                    value="modal" />
                                                 <span aria-hidden="true">
-                                                    <h:outputText value="&amp;times;" escape="false" />
+                                                    <h:outputText
+                                                        value="&amp;times;"
+                                                        escape="false" />
                                                 </span>
                                                 <span class="sr-only">Close</span>
                                                 <f:ajax render="@none" />
@@ -179,12 +250,22 @@
                                         </div>
                                         <div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
                                         <div class="modal-footer">
-                                            <h:commandLink action="#{cmsBean.setSelectedPage(null)}" value="#{msg.cancel}" styleClass="btn">
-                                                <f:passThroughAttribute name="data-dismiss" value="modal" />
+                                            <h:commandLink
+                                                action="#{cmsBean.setSelectedPage(null)}"
+                                                value="#{msg.cancel}"
+                                                styleClass="btn">
+                                                <f:passThroughAttribute
+                                                    name="data-dismiss"
+                                                    value="modal" />
                                                 <f:ajax render="@none" />
                                             </h:commandLink>
-                                            <h:commandLink action="#{cmsBean.deletePage(cmsBean.selectedPage)}" value="#{msg.cms_deletePage_agree}" styleClass="btn btn--danger">
-                                                <f:passThroughAttribute name="data-dismiss" value="modal" />
+                                            <h:commandLink
+                                                action="#{cmsBean.deletePage(cmsBean.selectedPage)}"
+                                                value="#{msg.cms_deletePage_agree}"
+                                                styleClass="btn btn--danger">
+                                                <f:passThroughAttribute
+                                                    name="data-dismiss"
+                                                    value="modal" />
                                                 <f:ajax render="@all" />
                                             </h:commandLink>
                                         </div>
@@ -192,45 +273,43 @@
                                 </div>
                             </div>
                         </div>
-                       
+
                         <div class="admin__table-tools">
                             <!-- BOTTOM PAGINATOR -->
                             <div class="admin__table-paginator">
                                 <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
                             </div>
                         </div>
-                        
                     </div>
                 </h:form>
             </h:panelGroup>
         </div>
 
         <script type="text/javascript">
-            $( document ).ready( function() {
+            $(document).ready(function () {
                 var displayDateUpdated = true;
-                if ( !displayDateUpdated ) {
-                    $( ".column_date_updated" ).hide();
+                if (!displayDateUpdated) {
+                    $('.column_date_updated').hide();
                 }
 
                 var dataTableConfig = {
-                    dataTablePaginator: "#dataTablePaginator",
-                    txtField1: "#txtMoveTo1",
-                    txtField2: "#txtMoveTo2",
-                    totalCount: "#totalCount",
+                    dataTablePaginator: '#dataTablePaginator',
+                    txtField1: '#txtMoveTo1',
+                    txtField2: '#txtMoveTo2',
+                    totalCount: '#totalCount',
                     reloadBtn: 'input[id*="cmdMoveTo"]',
                 };
 
-                viewerJS.dataTable.init( dataTableConfig );
-            } );
-            
+                viewerJS.dataTable.init(dataTableConfig);
+            });
+
             // Create no entries found message
-			if($('.admin__table-entry').length == 0) {
-				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
-			}    
-
-            </script>
-        
+            if ($('.admin__table-entry').length == 0) {
+                $('.admin__table-content').append('
+            <br />
+            <p>#{msg.hitsZero}</p>
+            ');
+            }
+        </script>
     </ui:define>
-
 </ui:composition>
-

@@ -1,68 +1,86 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- INPUT MODULE TEMPLATE -->
     <div class="crowdsourcing-campaigns-overview">
-    <h:form>
-		<ui:repeat var="campaign" value="#{crowdsourcingBean.getAllowedCampaigns(userBean.user)}">
-			<ui:fragment rendered="#{!campaign.hasEnded and campaign.ready}">
-				<div class="crowdsourcing-campaigns-overview__campaign">
-					<ui:fragment rendered="#{campaign.hasMediaItem()}"> 
-						<div class="crowdsourcing-campaigns-overview__campaign__image">
-							<img srcset="#{campaign.mediaItem.getIconURI(1200,600)} 1200w,
+        <h:form>
+            <ui:repeat
+                var="campaign"
+                value="#{crowdsourcingBean.getAllowedCampaigns(userBean.user)}">
+                <ui:fragment rendered="#{!campaign.hasEnded and campaign.ready}">
+                    <div class="crowdsourcing-campaigns-overview__campaign">
+                        <ui:fragment rendered="#{campaign.hasMediaItem()}">
+                            <div class="crowdsourcing-campaigns-overview__campaign__image">
+                                <img
+                                    srcset="#{campaign.mediaItem.getIconURI(1200,600)} 1200w,
 										 #{campaign.mediaItem.getIconURI(900,400)} 900w,
 						    			 #{campaign.mediaItem.getIconURI(600,450)} 600w,
 						    			 #{campaign.mediaItem.getIconURI(400,300)} 400w"
-						     sizes="(max-width: 1200px) 660px,
+                                    sizes="(max-width: 1200px) 660px,
 						            300px"
-						     src="#{campaign.mediaItem.getIconURI(200,300)}"
-						     alt="#{campaign.mediaItem.alternativeText != '' ? campaign.mediaItem.alternativeText : '' }" />
-						</div>
-					</ui:fragment>
-					<div class="crowdsourcing-campaigns-overview__campaign__text">
-						<h2 class="crowdsourcing-campaigns-overview__campaign__text__title">#{campaign.getTitle(navigationHelper.localeString, true)}</h2>
-						<div class="crowdsourcing-campaigns-overview__campaign__text__description">
-							#{campaign.getDescription(navigationHelper.localeString, true)}
-						</div>
-					</div>
-					<div class="crowdsourcing-campaigns-overview__campaign__actions">
-					    <!-- Current campaigns only -->
-					    <ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded}">
-						    <h:commandLink rendered="#{campaign.hasRecordsToAnnotate(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'ANNOTATE')}"
-						        action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign)}"
-						        styleClass="btn btn--full">#{msg.action__crowdsourcing_participate}</h:commandLink>
-						    <h:commandLink rendered="#{campaign.reviewModeActive and campaign.hasRecordsToReview(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
-						        action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
-						        styleClass="btn btn--default">#{msg.action__crowdsourcing_review}</h:commandLink>
-                            <h:outputLink rendered="#{campaign.hasAnnotations}"
-                                value="#{navigationHelper.applicationUrl}campaigns/#{campaign.id}/annotations/"
-                                styleClass="btn btn--default">#{msg.annotations}</h:outputLink>
-						</ui:fragment>
-					</div>
-						<div class="crowdsourcing-campaigns-overview__campaign__statistics">
-							<ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount > 0}">
-								<ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml"></ui:include>
-							</ui:fragment>
-							<!-- Future campaign: days left counter -->
-							<span class="crowdsourcing-campaigns-overview__campaign__statistics__message">
-								<h:outputFormat rendered="#{!campaign.hasStarted}" value="#{msg.label__crowdsourcing_campaign_days_before_start}" escape="false">
-				                    <f:param value="#{campaign.daysBeforeStart}" />
-				                </h:outputFormat>
-				                <!-- Current campaign: motivational message-->
-				                <h:outputText rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount == 0}" value="#{msg.label__crowdsourcing_campaign_contribute}" />
-							</span>
-						</div>
-				</div>
-			</ui:fragment>
-		</ui:repeat>
-	</h:form>
-	<script>
-		riot.mount("progressBar");
-	</script>
+                                    src="#{campaign.mediaItem.getIconURI(200,300)}"
+                                    alt="#{campaign.mediaItem.alternativeText != '' ? campaign.mediaItem.alternativeText : '' }" />
+                            </div>
+                        </ui:fragment>
+                        <div class="crowdsourcing-campaigns-overview__campaign__text">
+                            <h2 class="crowdsourcing-campaigns-overview__campaign__text__title">
+                                #{campaign.getTitle(navigationHelper.localeString, true)}
+                            </h2>
+                            <div class="crowdsourcing-campaigns-overview__campaign__text__description">
+                                #{campaign.getDescription(navigationHelper.localeString, true)}
+                            </div>
+                        </div>
+                        <div class="crowdsourcing-campaigns-overview__campaign__actions">
+                            <!-- Current campaigns only -->
+                            <ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded}">
+                                <h:commandLink
+                                    rendered="#{campaign.hasRecordsToAnnotate(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'ANNOTATE')}"
+                                    action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign)}"
+                                    styleClass="btn btn--full">
+                                    #{msg.action__crowdsourcing_participate}
+                                </h:commandLink>
+                                <h:commandLink
+                                    rendered="#{campaign.reviewModeActive and campaign.hasRecordsToReview(userBean.user) and campaign.isUserAllowedAction(userBean.user, 'REVIEW')}"
+                                    action="#{crowdsourcingBean.forwardToCrowdsourcingReview(campaign)}"
+                                    styleClass="btn btn--default">
+                                    #{msg.action__crowdsourcing_review}
+                                </h:commandLink>
+                                <h:outputLink
+                                    rendered="#{campaign.hasAnnotations}"
+                                    value="#{navigationHelper.applicationUrl}campaigns/#{campaign.id}/annotations/"
+                                    styleClass="btn btn--default">
+                                    #{msg.annotations}
+                                </h:outputLink>
+                            </ui:fragment>
+                        </div>
+                        <div class="crowdsourcing-campaigns-overview__campaign__statistics">
+                            <ui:fragment
+                                rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount > 0}">
+                                <ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml" />
+                            </ui:fragment>
+                            <!-- Future campaign: days left counter -->
+                            <span class="crowdsourcing-campaigns-overview__campaign__statistics__message">
+                                <h:outputFormat
+                                    rendered="#{!campaign.hasStarted}"
+                                    value="#{msg.label__crowdsourcing_campaign_days_before_start}"
+                                    escape="false">
+                                    <f:param value="#{campaign.daysBeforeStart}" />
+                                </h:outputFormat>
+                                <!-- Current campaign: motivational message-->
+                                <h:outputText
+                                    rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount == 0}"
+                                    value="#{msg.label__crowdsourcing_campaign_contribute}" />
+                            </span>
+                        </div>
+                    </div>
+                </ui:fragment>
+            </ui:repeat>
+        </h:form>
+        <script>riot.mount('progressBar');</script>
     </div>
 </ui:composition>

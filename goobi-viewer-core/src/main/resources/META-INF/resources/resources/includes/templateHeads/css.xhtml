@@ -5,7 +5,6 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf">
-
     <!-- =======================
         BASE LIBRARIES
     ======================== -->
@@ -21,7 +20,9 @@
           path/to/lib
         ]
     -->
-    <c:set var="cssPaths" value="#{[
+    <c:set
+        var="cssPaths"
+        value="#{[
 
       ['bootstrap', [], 'resources/css/libs/bs/bootstrap.custom.css'],
       ['jqueryUI', [], 'resources/css/libs/jQueryUi/jquery-ui.min.css'],
@@ -46,29 +47,38 @@
     ]}" />
 
     <!-- INCLUDE CSS IF CONDITIONS ARE MET -->
-    <c:forEach var="path" items="#{cssPaths}">
-      <!-- include file, if it is not explicitly excluded -->
-      <!-- (either above, or in the excludeCSS variable, which can be set in template files) -->
-      <c:if test="#{!path[1].contains(templateName) and !excludeCSS.contains(path[0])}">
-        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}&amp;#{cacheBuster}" />
-      </c:if>
+    <c:forEach
+        var="path"
+        items="#{cssPaths}">
+        <!-- include file, if it is not explicitly excluded -->
+        <!-- (either above, or in the excludeCSS variable, which can be set in template files) -->
+        <c:if test="#{!path[1].contains(templateName) and !excludeCSS.contains(path[0])}">
+            <link
+                type="text/css"
+                rel="stylesheet"
+                href="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}&amp;#{cacheBuster}" />
+        </c:if>
     </c:forEach>
 
     <!-- ===================
       THEME CSS
     ==================== -->
     <c:if test="#{!excludeCSS.contains('themeCSS')}">
- 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css?${navigationHelper.buildVersion}&amp;#{cacheBuster}" />
+        <link
+            type="text/css"
+            rel="stylesheet"
+            href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css?${navigationHelper.buildVersion}&amp;#{cacheBuster}" />
     </c:if>
 
     <!-- SHOW CSS NAMES IN CONSOLE -->
     <!-- an easy way to log library names to the console, just pass `showCSS` to the excludeCSS variable in a template file -->
     <c:if test="#{excludeCSS.contains('showCSS')}">
-      <c:forEach var="path" items="#{cssPaths}">
-        <script>
-          console.log('%c#{path[0]}', 'background: #3365a9; color: #fff; padding: 2px 6px; border-radius: 2px;');
-        </script>
-      </c:forEach>
+        <c:forEach
+            var="path"
+            items="#{cssPaths}">
+            <script>
+                console.log('%c#{path[0]}', 'background: #3365a9; color: #fff; padding: 2px 6px; border-radius: 2px;');
+            </script>
+        </c:forEach>
     </c:if>
-
 </ui:composition>

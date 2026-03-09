@@ -104,12 +104,12 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         List<Metadata> mdList1 = be.getMetadataList("MD_TITLE");
         Assertions.assertFalse(mdList1.get(0).getValues().isEmpty());
         Assertions.assertEquals("FROM <mark class=\"search-list--highlight\">FOO</mark> TO <mark class=\"search-list--highlight\">BAR</mark>",
-                mdList1.get(0).getValues().get(0).getComboValueShort(0));
+                mdList1.get(0).getValues().get(0).getDisplayParamValue(0));
         Assertions.assertNotNull(be.getMetadataList("MD_YEARPUBLISH"));
 
         List<Metadata> mdList2 = be.getMetadataList("MD_YEARPUBLISH");
         Assertions.assertFalse(mdList2.get(0).getValues().isEmpty());
-        Assertions.assertEquals("ca. <mark class=\"search-list--highlight\">1984</mark>", mdList2.get(0).getValues().get(0).getComboValueShort(0));
+        Assertions.assertEquals("ca. <mark class=\"search-list--highlight\">1984</mark>", mdList2.get(0).getValues().get(0).getDisplayParamValue(0));
     }
 
     /**
@@ -259,12 +259,12 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals(1, be.getMetadataList("MD_COUNT_EN").size());
         Assertions.assertEquals(
                 "<mark class=\"search-list--highlight\">one</mark>, <mark class=\"search-list--highlight\">three</mark>",
-                be.getMetadataList("MD_COUNT_EN").get(0).getValues().get(0).getComboValueShort(0));
+                be.getMetadataList("MD_COUNT_EN").get(0).getValues().get(0).getDisplayParamValue(0));
 
         // Via DEFAULT
         Assertions.assertEquals(1, be.getMetadataList("MD_COUNT_JP").size());
         Assertions.assertEquals("<mark class=\"search-list--highlight\">ichi</mark>, <mark class=\"search-list--highlight\">ni</mark>",
-                be.getMetadataList("MD_COUNT_JP").get(0).getValues().get(0).getComboValueShort(0));
+                be.getMetadataList("MD_COUNT_JP").get(0).getValues().get(0).getDisplayParamValue(0));
     }
 
     /**
@@ -301,24 +301,24 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
 
         // Via DEFAULT
         Assertions.assertEquals(1, be.getMetadataList("MD_DESCRIPTION").size());
-        Assertions.assertTrue(be.getMetadataList("MD_DESCRIPTION").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 56);
+        Assertions.assertTrue(be.getMetadataList("MD_DESCRIPTION").get(0).getValues().get(0).getDisplayParamValue(0).length() <= maxLength + 56);
         // Truncated snippet is randomized, so cannot test the exact value
         Assertions.assertTrue(be.getMetadataList("MD_DESCRIPTION")
                 .get(0)
                 .getValues()
                 .get(0)
-                .getComboValueShort(0)
+                .getDisplayParamValue(0)
                 .contains("ut <mark class=\"search-list--highlight\">labore</mark> et"));
 
         // Via explicit term field
         Assertions.assertEquals(1, be.getMetadataList("MD_SOMETEXT").size());
-        Assertions.assertTrue(be.getMetadataList("MD_SOMETEXT").get(0).getValues().get(0).getComboValueShort(0).length() <= maxLength + 56);
+        Assertions.assertTrue(be.getMetadataList("MD_SOMETEXT").get(0).getValues().get(0).getDisplayParamValue(0).length() <= maxLength + 56);
         // Truncated snippet is randomized, so cannot test the exact value
         Assertions.assertTrue(be.getMetadataList("MD_SOMETEXT")
                 .get(0)
                 .getValues()
                 .get(0)
-                .getComboValueShort(0)
+                .getDisplayParamValue(0)
                 .contains("<mark class=\"search-list--highlight\">ipsum</mark> dolor"));
     }
 
@@ -351,6 +351,6 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
         }
 
         Assertions.assertEquals(1, be.getMetadataList("MD_IDENTIFIER").size());
-        Assertions.assertEquals("id10T", be.getMetadataList("MD_IDENTIFIER").get(0).getValues().get(0).getComboValueShort(0));
+        Assertions.assertEquals("id10T", be.getMetadataList("MD_IDENTIFIER").get(0).getValues().get(0).getDisplayParamValue(0));
     }
 }

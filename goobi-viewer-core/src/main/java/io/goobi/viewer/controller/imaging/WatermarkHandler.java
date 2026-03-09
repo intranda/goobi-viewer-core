@@ -34,13 +34,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocumentList;
 
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -113,7 +112,8 @@ public class WatermarkHandler implements Serializable {
      */
     public Optional<String> getWatermarkUrl(Optional<PhysicalElement> page, Optional<StructElement> doc, Optional<PageType> pageType)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException {
-        return getWatermarkUrl(Scale.MAX, pageType, page.map(p -> p.getImageType()), doc.map(d -> getFooterIdIfExists(d).orElse(null)),
+        ViewAttributes viewAttributes = new ViewAttributes(page.orElse(null), doc.orElse(null), pageType.orElse(null));
+        return getWatermarkUrl(Scale.MAX, viewAttributes, doc.map(d -> getFooterIdIfExists(d).orElse(null)),
                 page.map(p -> getWatermarkTextIfExists(p).orElse(null)));
     }
 
@@ -123,9 +123,8 @@ public class WatermarkHandler implements Serializable {
      * {@link io.goobi.viewer.model.viewer.PhysicalElement} page. If the watermark height of the given pageType and image is 0, an empty optional is
      * returned.
      *
-     * @param pageType The pageType of the currentView. Taken into consideration for footer height, if not null
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
-     * @param imageType a {@link java.util.Optional} object.
+     * @param viewAttributes a {@link ViewAttributes} object
      * @param watermarkId a {@link java.util.Optional} object.
      * @param watermarkText a {@link java.util.Optional} object.
      * @return a {@link java.util.Optional} object.
@@ -133,12 +132,12 @@ public class WatermarkHandler implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Optional<String> getWatermarkUrl(Scale scale, Optional<PageType> pageType, Optional<ImageType> imageType, Optional<String> watermarkId,
+    public Optional<String> getWatermarkUrl(Scale scale, ViewAttributes viewAttributes, Optional<String> watermarkId,
             Optional<String> watermarkText) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
 
         int footerHeight = DataManager.getInstance()
                 .getConfiguration()
-                .getFooterHeight(pageType.orElse(null), imageType.map(ImageType::getFormat).map(ImageFileFormat::getMimeType).orElse(""));
+                .getFooterHeight(viewAttributes);
         if (footerHeight > 0) {
             String format = DataManager.getInstance().getConfiguration().getWatermarkFormat();
 

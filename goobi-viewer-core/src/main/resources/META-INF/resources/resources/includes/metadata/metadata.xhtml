@@ -1,173 +1,211 @@
-<ui:composition 
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-
-	<!-- CHANGE RECORD LOCALE -->
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    <!-- CHANGE RECORD LOCALE -->
     <viewerComponent:changeRecordLocale />
 
     <!-- METADATA -->
-    <div id="metadataElementWrapper" class="metadata">
-        
+    <div
+        id="metadataElementWrapper"
+        class="metadata">
         <!-- force reload if current metadata elements here and use this value for the entire request -->
-        <c:set scope="request" var="metadataElementList" value="#{metadataBean.getMetadataElementList(metadataViewIndex, true)}"/>
-    
-	    <div class="metadata__title-wrapper">
-	    	<div id="title" class="title">
-	    		<!-- TITLE HEADER -->
-				<div class="title__header">
-					<h1 class="h2">
-	
-						<!-- FA* is this still needed? What is the purpose? -->
-						<!-- PAGE TYPE -->
-						<span class="title__header-page-type">
-							<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />:
-						</span>
-	
-						<!-- NAME OF THE RECORD -->
-						<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
-	
-			            <!-- ADD TO BOOKMARK -->
-	            <ui:fragment rendered="#{configurationBean.bookmarksEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
-	                    <button type="button" class="btn btn--icon metadata__bookmark-button bookmark-toggle__button" aria-label="#{msg.bookmarkList_addToBookmarkList}"
-	                        data-bookmark-list-type="add" 
-	                        data-pi="#{activeDocumentBean.viewManager.pi}"
-	                        data-page="#{activeDocumentBean.viewManager.currentImageOrder}">
-			                        <span class="bookmark-toggle" data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip">
-	                            <util:icon icon="bookmark" svgClass="icon icon-lg" styleClass="bookmark-toggle__icon bookmark-toggle__icon--outline" />
-	                            <util:icon icon="bookmark" filled="true" svgClass="icon icon-lg" styleClass="bookmark-toggle__icon bookmark-toggle__icon--filled" />
-	                        </span>
-	                    </button>
-	            </ui:fragment>
-	
-	                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
-							<viewerComponent:copyrightIndicator />
-						</ui:fragment>
-	
-					</h1>
-				</div>
-			</div>
-	    </div>
-	    
+        <c:set
+            scope="request"
+            var="metadataElementList"
+            value="#{metadataBean.getMetadataElementList(metadataViewIndex, true)}" />
+
+        <div class="metadata__title-wrapper">
+            <div
+                id="title"
+                class="title">
+                <!-- TITLE HEADER -->
+                <div class="title__header">
+                    <h1 class="h2">
+                        <!-- FA* is this still needed? What is the purpose? -->
+                        <!-- PAGE TYPE -->
+                        <span class="title__header-page-type">
+                            <h:outputText
+                                value="#{msg[navigationHelper.currentView]}"
+                                escape="false" />
+                            :
+                        </span>
+
+                        <!-- NAME OF THE RECORD -->
+                        <span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
+
+                        <!-- ADD TO BOOKMARK -->
+                        <ui:fragment
+                            rendered="#{configurationBean.bookmarksEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
+                            <button
+                                type="button"
+                                class="btn btn--icon metadata__bookmark-button bookmark-toggle__button"
+                                aria-label="#{msg.bookmarkList_addToBookmarkList}"
+                                data-bookmark-list-type="add"
+                                data-pi="#{activeDocumentBean.viewManager.pi}"
+                                data-page="#{activeDocumentBean.viewManager.currentImageOrder}">
+                                <span
+                                    class="bookmark-toggle"
+                                    data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
+                                    data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
+                                    data-toggle="tooltip">
+                                    <util:icon
+                                        icon="bookmark"
+                                        svgClass="icon icon-lg"
+                                        styleClass="bookmark-toggle__icon bookmark-toggle__icon--outline" />
+                                    <util:icon
+                                        icon="bookmark"
+                                        filled="true"
+                                        svgClass="icon icon-lg"
+                                        styleClass="bookmark-toggle__icon bookmark-toggle__icon--filled" />
+                                </span>
+                            </button>
+                        </ui:fragment>
+
+                        <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+                            <viewerComponent:copyrightIndicator />
+                        </ui:fragment>
+                    </h1>
+                </div>
+            </div>
+        </div>
+
         <!-- BORN DIGITAL MATERIALS -->
-        <h:panelGroup rendered="#{activeDocumentBean.viewManager.hasDownloadResources or activeDocumentBean.viewManager.hasExternalResources}">
+        <h:panelGroup
+            rendered="#{activeDocumentBean.viewManager.hasDownloadResources or activeDocumentBean.viewManager.hasExternalResources}">
             <viewerComponent:bornDigital />
             <viewerComponent:modalDownloadTicket />
-            <div class="clearfix"></div>
+            <div class="clearfix" />
         </h:panelGroup>
 
-
-        <c:forEach items="#{metadataElementList}" var="metadataElement" varStatus="status">
+        <c:forEach
+            items="#{metadataElementList}"
+            var="metadataElement"
+            varStatus="status">
             <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
-            	<ui:param name="metadataElement" value="#{metadataElement}"/>
+                <ui:param
+                    name="metadataElement"
+                    value="#{metadataElement}" />
             </ui:include>
         </c:forEach>
 
         <!-- EVENT METADATA -->
-        <c:forEach items="#{metadataBean.events}" var="event">
+        <c:forEach
+            items="#{metadataBean.events}"
+            var="event">
             <div class="metadata__events">
                 <div class="metadata__elements metadata__elements-level-0 metadata__grouped-wrapper">
-            
-                <h3 class="metadata__heading level-0">
-                    <h:outputText value="#{msg[event.label]}" escape="false" />
-                </h3>
-            
-                <c:forEach items="#{event.metadata}" var="metadata">
-                    <ui:fragment rendered="#{!metadata.blank}">
-                        <div class="metadata__event-inside-wrapper">
-                            <dl class="dl-horizontal metadata__event-dl">
-                                <dt title="#{metadata.label}">
-                                    <h:outputText value="#{msg[metadata.label]}:" escape="false" />
-                                </dt>
-                                
-								<!-- STANDARD STRUCTURE FOR METADATA -->
-								<ui:fragment>
+                    <h3 class="metadata__heading level-0">
+                        <h:outputText
+                            value="#{msg[event.label]}"
+                            escape="false" />
+                    </h3>
 
-	                                <!-- grouped="true" -->
-										<ui:fragment rendered="#{metadata.group}">
-											<c:forEach items="#{metadata.values}" var="val">
-												<dd>
+                    <c:forEach
+                        items="#{event.metadata}"
+                        var="metadata">
+                        <ui:fragment rendered="#{!metadata.blank}">
+                            <div class="metadata__event-inside-wrapper">
+                                <dl class="dl-horizontal metadata__event-dl">
+                                    <dt title="#{metadata.label}">
+                                        <h:outputText
+                                            value="#{msg[metadata.label]}:"
+                                            escape="false" />
+                                    </dt>
+
+                                    <!-- STANDARD STRUCTURE FOR METADATA -->
+                                    <ui:fragment>
+                                        <!-- grouped="true" -->
+                                        <ui:fragment rendered="#{metadata.group}">
+                                            <c:forEach
+                                                items="#{metadata.values}"
+                                                var="val">
+                                                <dd>
                                                     <ui:fragment rendered="#{val.accessRestricted}">
-                                                        <span class="metadata__locked-value-icon" data-toggle="tooltip" title="#{msg.metadata__restricted_value_tooltip}">
-															<util:icon icon="lock-open-2" />
-														</span>
+                                                        <span
+                                                            class="metadata__locked-value-icon"
+                                                            data-toggle="tooltip"
+                                                            title="#{msg.metadata__restricted_value_tooltip}">
+                                                            <util:icon icon="lock-open-2" />
+                                                        </span>
                                                     </ui:fragment>
-													<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}"
-														escape="false">
-													</h:outputFormat>
-												</dd>
-											</c:forEach>
-										</ui:fragment>
-	
-									<!-- grouped="false" -->
-	                                <ui:fragment rendered="#{!metadata.group}">
-	                                    <c:forEach items="#{metadata.values}" var="val">
-	                                    	<dd>
-	                                            <span class="metadata__element-value">
-	                                                <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
-	                                                </h:outputFormat>
-	                                            </span>
-	                                    	</dd>
-	                                    </c:forEach>
-	                                </ui:fragment>
-                                
-                                </ui:fragment>
-                                
-								<!-- STRUCTURE FOR METADATA VALUES IN ONE LINE -->
-<!-- 								<ui:fragment> -->
+                                                    <h:outputFormat
+                                                        value="#{val.getDisplayValue(navigationHelper.locale, true)}"
+                                                        escape="false" />
+                                                </dd>
+                                            </c:forEach>
+                                        </ui:fragment>
 
-	                                <!-- grouped="true" -->
-<!-- 										<ui:fragment rendered="#{metadata.group}"> -->
-<!-- 											<dd> -->
-<!-- 												<c:forEach items="#{metadata.values}" var="val"> -->
-<!-- 													<h:outputFormat value="#{msg[val.masterValue]}" -->
-<!-- 														escape="false"> -->
-<!-- 														<c:forEach begin="0" end="#{metadata.paramCount - 0}" -->
-<!-- 															var="ind"> -->
-<!-- 															<f:param value="#{val.getParamLabelWithColon(ind)}" /> -->
-<!-- 															<f:param value="#{val.getComboValueShort(ind)}" /> -->
-<!-- 														</c:forEach> -->
-<!-- 													</h:outputFormat> -->
-<!-- 													<h:outputText value="delimiter" escape="false" /> -->
-<!-- 												</c:forEach> -->
-<!-- 											</dd> -->
-<!-- 										</ui:fragment> -->
-	
-									<!-- grouped="false" -->
-<!-- 	                                <ui:fragment rendered="#{!metadata.group}"> -->
-<!-- 	                                    <dd> -->
-<!-- 		                                    <c:forEach items="#{metadata.values}" var="val"> -->
-<!-- 		                                            <span class="metadata__element-value"> -->
-<!-- 		                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false"> -->
-<!-- 		                                                    <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind"> -->
-<!-- 		                                                        <f:param value="#{val.getComboValueShort(ind)}" /> -->
-<!-- 		                                                    </c:forEach> -->
-<!-- 		                                                </h:outputFormat> -->
-<!-- 		                                                <h:outputText value="delimiter" escape="false" /> -->
-<!-- 		                                            </span> -->
-<!-- 		                                    </c:forEach> -->
-<!-- 	                                    </dd> -->
-<!-- 	                                </ui:fragment> -->
-                                
-<!--                                 </ui:fragment> -->
-                                
-                            </dl>
-                        </div>
-                    </ui:fragment>
-                </c:forEach>
+                                        <!-- grouped="false" -->
+                                        <ui:fragment rendered="#{!metadata.group}">
+                                            <c:forEach
+                                                items="#{metadata.values}"
+                                                var="val">
+                                                <dd>
+                                                    <span class="metadata__element-value">
+                                                        <h:outputFormat
+                                                            value="#{val.getDisplayValue(navigationHelper.locale)}"
+                                                            escape="false" />
+                                                    </span>
+                                                </dd>
+                                            </c:forEach>
+                                        </ui:fragment>
+                                    </ui:fragment>
+
+                                    <!-- STRUCTURE FOR METADATA VALUES IN ONE LINE -->
+                                    <!-- 								<ui:fragment> -->
+
+                                    <!-- grouped="true" -->
+                                    <!-- 										<ui:fragment rendered="#{metadata.group}"> -->
+                                    <!-- 											<dd> -->
+                                    <!-- 												<c:forEach items="#{metadata.values}" var="val"> -->
+                                    <!-- 													<h:outputFormat value="#{msg[val.masterValue]}" -->
+                                    <!-- 														escape="false"> -->
+                                    <!-- 														<c:forEach begin="0" end="#{metadata.paramCount - 0}" -->
+                                    <!-- 															var="ind"> -->
+                                    <!-- 															<f:param value="#{val.getParamLabelWithColon(ind)}" /> -->
+                                    <!-- 															<f:param value="#{val.getDisplayParamValue(ind)}" /> -->
+                                    <!-- 														</c:forEach> -->
+                                    <!-- 													</h:outputFormat> -->
+                                    <!-- 													<h:outputText value="delimiter" escape="false" /> -->
+                                    <!-- 												</c:forEach> -->
+                                    <!-- 											</dd> -->
+                                    <!-- 										</ui:fragment> -->
+
+                                    <!-- grouped="false" -->
+                                    <!-- 	                                <ui:fragment rendered="#{!metadata.group}"> -->
+                                    <!-- 	                                    <dd> -->
+                                    <!-- 		                                    <c:forEach items="#{metadata.values}" var="val"> -->
+                                    <!-- 		                                            <span class="metadata__element-value"> -->
+                                    <!-- 		                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false"> -->
+                                    <!-- 		                                                    <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind"> -->
+                                    <!-- 		                                                        <f:param value="#{val.getDisplayParamValue(ind)}" /> -->
+                                    <!-- 		                                                    </c:forEach> -->
+                                    <!-- 		                                                </h:outputFormat> -->
+                                    <!-- 		                                                <h:outputText value="delimiter" escape="false" /> -->
+                                    <!-- 		                                            </span> -->
+                                    <!-- 		                                    </c:forEach> -->
+                                    <!-- 	                                    </dd> -->
+                                    <!-- 	                                </ui:fragment> -->
+
+                                    <!--                                 </ui:fragment> -->
+                                </dl>
+                            </div>
+                        </ui:fragment>
+                    </c:forEach>
                 </div>
             </div>
         </c:forEach>
     </div>
 
-    <div class="clearfix"></div>
+    <div class="clearfix" />
 </ui:composition>

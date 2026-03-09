@@ -22,98 +22,89 @@
  * @module viewerJS.accessibility
  */
 var viewerJS = (function (viewer) {
-  "use strict";
+    'use strict';
 
-  // Default variables
-  var _debug = false;
+    // Default variables
+    var _debug = false;
 
-  viewer.accessibility = {
-    // Detect if a user uses the tab key to navigate
-    // And add/remove a class to the body accordingly
-    // The class helps adding styles specific to keyboard navigation
-    detectKeyboardUsage: function () {
-      // Keyboard is used
-      document.body.addEventListener("keydown", function (e) {
-        // Check if tab key was pressed
-        if (e.keyCode === 9 || e.key == "Tab") {
-          document.body.classList.add("using-keyboard");
-        }
-      });
-      // Mouse is used
-      document.body.addEventListener("mousedown", function () {
-        document.body.classList.remove("using-keyboard");
-      });
-    },
+    viewer.accessibility = {
+        // Detect if a user uses the tab key to navigate
+        // And add/remove a class to the body accordingly
+        // The class helps adding styles specific to keyboard navigation
+        detectKeyboardUsage: function () {
+            // Keyboard is used
+            document.body.addEventListener('keydown', function (e) {
+                // Check if tab key was pressed
+                if (e.keyCode === 9 || e.key == 'Tab') {
+                    document.body.classList.add('using-keyboard');
+                }
+            });
+            // Mouse is used
+            document.body.addEventListener('mousedown', function () {
+                document.body.classList.remove('using-keyboard');
+            });
+        },
 
-    // Jump to footer if link or button in footer is focused with keyboard (tab)
-    jumpToFooter: function () {
-      if ($("#pageFooter").length) {
-        $(document).on("keydown", function (e) {
-          if (e.which == 9) {
-            setTimeout(function () {
-              if (
-                $("#pageFooter a").is(":focus") ||
-                $("#pageFooter button").is(":focus")
-              ) {
-                window.scrollTo(0, document.body.scrollHeight);
-              }
-            }, 20);
-          }
-        });
-      }
-    },
+        // Jump to footer if link or button in footer is focused with keyboard (tab)
+        jumpToFooter: function () {
+            if ($('#pageFooter').length) {
+                $(document).on('keydown', function (e) {
+                    if (e.which == 9) {
+                        setTimeout(function () {
+                            if ($('#pageFooter a').is(':focus') || $('#pageFooter button').is(':focus')) {
+                                window.scrollTo(0, document.body.scrollHeight);
+                            }
+                        }, 20);
+                    }
+                });
+            }
+        },
 
-    // ###########################
-    // WHAT: Make certain elements behave like buttons
-    // Condition: Elements must have a role="button" attribute
-    // WHY: Sometimes click events are assigned to non interactive elements (like <span>) or <a> tags should actually be marked up as buttons
-    // if this markup cannot be changed, these fns create the same ux as a native <button> element when using keyboard navigation or assistive techonlogy
+        // ###########################
+        // WHAT: Make certain elements behave like buttons
+        // Condition: Elements must have a role="button" attribute
+        // WHY: Sometimes click events are assigned to non interactive elements (like <span>) or <a> tags should actually be marked up as buttons
+        // if this markup cannot be changed, these fns create the same ux as a native <button> element when using keyboard navigation or assistive techonlogy
 
-    // Find elements (role="button")
-    // Assign an event listener + fire triggerClick()
-    findPseudoBtns: function () {
-      const interactiveEls = document.querySelectorAll('[role="button"]');
-      interactiveEls.forEach((el) =>
-        el.addEventListener("keydown", this.triggerClick)
-      );
-    },
+        // Find elements (role="button")
+        // Assign an event listener + fire triggerClick()
+        findPseudoBtns: function () {
+            const interactiveEls = document.querySelectorAll('[role="button"]');
+            interactiveEls.forEach((el) => el.addEventListener('keydown', this.triggerClick));
+        },
 
-    // Trigger a click when pressing the space bar or Enter on a Pseudo button
-    triggerClick: function (e) {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        this.click();
-      }
-    },
+        // Trigger a click when pressing the space bar or Enter on a Pseudo button
+        triggerClick: function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        },
 
-    // ###########################
-    // WHAT: Show/hide "skip to sidebar" link depending on sidebar content
-    // CONDITION: Only display if #sidebarGroup contains any child elements or text
-    // WHY: Avoid rendering a useless skip link if sidebar is empty
-    checkSidebar: function () {
-      const sidebar = document.getElementById("sidebarGroup");
-      const skipLink = document.getElementById("skip-to-sidebar");
+        // ###########################
+        // WHAT: Show/hide "skip to sidebar" link depending on sidebar content
+        // CONDITION: Only display if #sidebarGroup contains any child elements or text
+        // WHY: Avoid rendering a useless skip link if sidebar is empty
+        checkSidebar: function () {
+            const sidebar = document.getElementById('sidebarGroup');
+            const skipLink = document.getElementById('skip-to-sidebar');
 
-      if (!sidebar || !skipLink) return;
+            if (!sidebar || !skipLink) return;
 
-      if (
-        sidebar.children?.length > 0 ||
-        sidebar.textContent?.trim()?.length > 0
-      )
-        skipLink.style.display = "";
-      else skipLink.style.display = "none";
-    },
+            if (sidebar.children?.length > 0 || sidebar.textContent?.trim()?.length > 0) skipLink.style.display = '';
+            else skipLink.style.display = 'none';
+        },
 
-    // ###########################
+        // ###########################
 
-    init: function () {
-      if (_debug) console.log("init `viewerJS.accessibility`");
-      this.detectKeyboardUsage();
-      this.jumpToFooter();
-      this.findPseudoBtns();
-      this.checkSidebar();
-    },
-  };
+        init: function () {
+            if (_debug) console.log('init `viewerJS.accessibility`');
+            this.detectKeyboardUsage();
+            this.jumpToFooter();
+            this.findPseudoBtns();
+            this.checkSidebar();
+        },
+    };
 
-  return viewer;
+    return viewer;
 })(viewerJS);

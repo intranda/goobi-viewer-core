@@ -1,119 +1,192 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:util="http://goobi.io/util"
-				xmlns:c="http://java.sun.com/jsp/jstl/core"
-				xmlns:h="http://xmlns.jcp.org/jsf/html"
-				xmlns:f="http://xmlns.jcp.org/jsf/core"
-				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-				xmlns:jsf="http://xmlns.jcp.org/jsf"
-				xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminDashboard')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminDashboard')}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">
+        <f:view
+            contentType="text/html"
+            encoding="utf-8">
             <ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
                 <div id="adminDashboard">
                     <div class="admin__title-bar">
                         <h1 class="admin__title">#{msg.admin__dashboard}</h1>
                     </div>
-                    	
-                    	<!-- NO BREADCRUMB FOR ADMIN BACKEND START PAGE -->
-<!--                     <viewerComponent:adminBreadcrumbs /> -->
-                    
+
+                    <!-- NO BREADCRUMB FOR ADMIN BACKEND START PAGE -->
+                    <!--                     <viewerComponent:adminBreadcrumbs /> -->
+
                     <div class="admin__content-inner-content">
                         <div class="admin__entry-list -w33">
-
                             <!-- WELCOME -->
                             <div class="admin__boxed-entry -no-actions -w33">
                                 <div class="admin__dashboard-user-welcome">
-                                	<div class="admin__dashboard-user-welcome-left">
-	                                    <h2>#{msg.admin__dashboard_hello}<h:outputText value=" #{userBean.user.nickName}" escape="true" /></h2>
-	                                    <p>#{msg.admin__dashboard_documentation}:<br/>
-	                                        <a class="-bluelink" href="https://docs.goobi.io" target="_blank" rel="noopener">https://docs.goobi.io</a>
-	                                    </p>
-	                                    <p>#{msg.admin__dashboard_community_board}:<br/>
-	                                        <a class="-bluelink" href="https://community.goobi.io" target="_blank" rel="noopener">https://community.goobi.io</a>
-	                                    </p>
-	                            	</div>
-                                	<div class="admin__dashboard-user-welcome-right">
-	                                	<div class="admin__dashboard-user-icon-wrapper">
-		                                	<img src="#{user.getAvatarUrl(230)}" class="rounded-circle admin__dashboard-user-icon" alt="User Avatar" />
-										</div>
-                                	</div>
+                                    <div class="admin__dashboard-user-welcome-left">
+                                        <h2>
+                                            #{msg.admin__dashboard_hello}
+                                            <h:outputText
+                                                value=" #{userBean.user.nickName}"
+                                                escape="true" />
+                                        </h2>
+                                        <p>
+                                            #{msg.admin__dashboard_documentation}:
+                                            <br />
+                                            <a
+                                                class="-bluelink"
+                                                href="https://docs.goobi.io"
+                                                target="_blank"
+                                                rel="noopener">
+                                                https://docs.goobi.io
+                                            </a>
+                                        </p>
+                                        <p>
+                                            #{msg.admin__dashboard_community_board}:
+                                            <br />
+                                            <a
+                                                class="-bluelink"
+                                                href="https://community.goobi.io"
+                                                target="_blank"
+                                                rel="noopener">
+                                                https://community.goobi.io
+                                            </a>
+                                        </p>
+                                    </div>
+                                    <div class="admin__dashboard-user-welcome-right">
+                                        <div class="admin__dashboard-user-icon-wrapper">
+                                            <img
+                                                src="#{user.getAvatarUrl(230)}"
+                                                class="rounded-circle admin__dashboard-user-icon"
+                                                alt="User Avatar" />
+                                        </div>
+                                    </div>
                                 </div>
-                                
-                                <p><h:outputText value="#{msg.admin__dashboard_support}" escape="false" /></p>
 
+                                <p>
+                                    <h:outputText
+                                        value="#{msg.admin__dashboard_support}"
+                                        escape="false" />
+                                </p>
                             </div>
-
 
                             <!-- CMS PAGES -->
                             <ui:fragment rendered="#{userBean.admin}">
-                            <div class="admin__boxed-entry pb-0 -no-actions -w66">
-								<h2>#{msg.cms_overview}</h2>
-								<div id="last-CMS-pages-table" class="admin__grid-table -columns-2-2-1-1 admin__table-content -slim" role="grid" aria-label="#{msg.cms_overview}: #{msg.aria_label__table__actions}">
-                                    
-                                    <!-- TITLE ROW -->
-                                    <div class="row no-gutters admin__table-title" role="row">
-                                        <div class="col-6 d-flex" role="columnheader">
-                                            <span>#{msg.page}</span>
-                                        </div>
-                                        <div class="col-4 d-flex" role="columnheader">
-                                            <span>#{msg.admin__cms_categories}</span>
-                                        </div>
-                                        <div class="col-2 d-flex" role="columnheader">
-                                            <span>#{msg.cms_pageMetadata_lastEdited}</span>
-                                        </div>
-                                    </div>
-                                    <!-- INDIVIDUAL ENTRIES -->
-                                    <ui:repeat var="page" value="#{cmsBean.getMostRecentlyEditedPages(3)}">
-                                    <div class="row no-gutters admin__table-entry" role="row">
-                                        <div class="col-6 d-flex flex-column" role="gridcell">
-                                            <!-- PAGE TITLE -->
-                                            <span class="admin__last-pages-title">
-                                                <h:outputText value="#{page.title}" escape="true" />
-                                            </span>
-                                            <!-- ACTIONS -->
-                                            <div>
-                                                <!-- SHOW -->
-                                                <a href="#{page.url}" class="admin__table-action-link" target="_blank" rel="noopener"
-                                                    aria-label="#{msg.show}: #{page.title}">#{msg.show}</a>
-                                                <!-- EDIT -->
-                                                <a href="#{navigationHelper.applicationUrl}admin/cms/pages/edit/#{page.id}/"
-                                                   class="admin__table-action-link" aria-label="#{msg.edit}: #{page.title}">#{msg.edit}</a>
+                                <div class="admin__boxed-entry pb-0 -no-actions -w66">
+                                    <h2>#{msg.cms_overview}</h2>
+                                    <div
+                                        id="last-CMS-pages-table"
+                                        class="admin__grid-table -columns-2-2-1-1 admin__table-content -slim"
+                                        role="grid"
+                                        aria-label="#{msg.cms_overview}: #{msg.aria_label__table__actions}">
+                                        <!-- TITLE ROW -->
+                                        <div
+                                            class="row no-gutters admin__table-title"
+                                            role="row">
+                                            <div
+                                                class="col-6 d-flex"
+                                                role="columnheader">
+                                                <span>#{msg.page}</span>
+                                            </div>
+                                            <div
+                                                class="col-4 d-flex"
+                                                role="columnheader">
+                                                <span>#{msg.admin__cms_categories}</span>
+                                            </div>
+                                            <div
+                                                class="col-2 d-flex"
+                                                role="columnheader">
+                                                <span>#{msg.cms_pageMetadata_lastEdited}</span>
                                             </div>
                                         </div>
-                                        <div class="col-4" role="gridcell">
-                                            <ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
-                                            <span class="admin__badge admin__badge-warning">#{msg.admin__cms_static_page}</span>
-                                            </ui:fragment>
-	    									<ui:repeat value="#{page.categories}" var="category">
-	                                            <div class="admin__badge admin__badge-violet">#{category.name}</div>
-	                                        </ui:repeat>
-                                        </div>
-                                        <div class="col-2 d-flex" role="gridcell">
-                                        	<h:outputText value="#{page.dateUpdated}">
-                                                <f:converter converterId="localDateTimeConverter" />
-                                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
-                                            </h:outputText>
-                                        </div>
+                                        <!-- INDIVIDUAL ENTRIES -->
+                                        <ui:repeat
+                                            var="page"
+                                            value="#{cmsBean.getMostRecentlyEditedPages(3)}">
+                                            <div
+                                                class="row no-gutters admin__table-entry"
+                                                role="row">
+                                                <div
+                                                    class="col-6 d-flex flex-column"
+                                                    role="gridcell">
+                                                    <!-- PAGE TITLE -->
+                                                    <span class="admin__last-pages-title">
+                                                        <h:outputText
+                                                            value="#{page.title}"
+                                                            escape="true" />
+                                                    </span>
+                                                    <!-- ACTIONS -->
+                                                    <div>
+                                                        <!-- SHOW -->
+                                                        <a
+                                                            href="#{page.url}"
+                                                            class="admin__table-action-link"
+                                                            target="_blank"
+                                                            rel="noopener"
+                                                            aria-label="#{msg.show}: #{page.title}">
+                                                            #{msg.show}
+                                                        </a>
+                                                        <!-- EDIT -->
+                                                        <a
+                                                            href="#{navigationHelper.applicationUrl}admin/cms/pages/edit/#{page.id}/"
+                                                            class="admin__table-action-link"
+                                                            aria-label="#{msg.edit}: #{page.title}">
+                                                            #{msg.edit}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="col-4"
+                                                    role="gridcell">
+                                                    <ui:fragment rendered="#{cmsBean.isMappedToStaticPage(page)}">
+                                                        <span class="admin__badge admin__badge-warning">
+                                                            #{msg.admin__cms_static_page}
+                                                        </span>
+                                                    </ui:fragment>
+                                                    <ui:repeat
+                                                        value="#{page.categories}"
+                                                        var="category">
+                                                        <div class="admin__badge admin__badge-violet">
+                                                            #{category.name}
+                                                        </div>
+                                                    </ui:repeat>
+                                                </div>
+                                                <div
+                                                    class="col-2 d-flex"
+                                                    role="gridcell">
+                                                    <h:outputText value="#{page.dateUpdated}">
+                                                        <f:converter converterId="localDateTimeConverter" />
+                                                        <f:attribute
+                                                            name="pattern"
+                                                            value="#{navigationHelper.dateTimePattern}" />
+                                                    </h:outputText>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
                                     </div>
-                                    </ui:repeat>
                                 </div>
-                            </div>
                             </ui:fragment>
 
                             <!-- LICENSES -->
-                            <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty adminLicenseBean.notConfiguredAccessConditions}">
-                                <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
+                            <ui:fragment
+                                rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty adminLicenseBean.notConfiguredAccessConditions}">
+                                <h:form
+                                    prependId="false"
+                                    styleClass="admin__boxed-entry -no-actions -w33 -danger">
                                     <div class="row">
                                         <h2 class="col-9">#{msg.admin__licenses}</h2>
                                     </div>
@@ -121,15 +194,18 @@
                                         <div class="col-12">
                                             <!-- NOT CONFIGURED LICENSES -->
                                             <div class="row">
-                                                <div class="col-12">#{msg.admin__dashboard_licenses_not_configured}:</div>
+                                                <div class="col-12">
+                                                    #{msg.admin__dashboard_licenses_not_configured}:
+                                                </div>
                                             </div>
-                                            <ui:repeat var="accessCondition" value="#{adminLicenseBean.notConfiguredAccessConditions}">
-                                                <h:commandLink action="pretty:adminLicenseNew"
+                                            <ui:repeat
+                                                var="accessCondition"
+                                                value="#{adminLicenseBean.notConfiguredAccessConditions}">
+                                                <h:commandLink
+                                                    action="pretty:adminLicenseNew"
                                                     actionListener="#{adminLicenseBean.newCurrentLicenseTypeAction(accessCondition)}"
                                                     styleClass="row admin__license-unconfigured-entry my-3 pr-3">
-                                                    <div class="pl-5 -textlink">
-                                                        #{accessCondition}
-                                                    </div>
+                                                    <div class="pl-5 -textlink">#{accessCondition}</div>
                                                     <div class="d-flex justify-content-end ml-auto">
                                                         <span>#{msg.admin__licenses_configure_license_now}</span>
                                                     </div>
@@ -144,172 +220,210 @@
                             </ui:fragment>
 
                             <!-- ACCESS TICKETS -->
-                            <ui:fragment rendered="#{userBean.admin and fn:length(adminLicenseBean.ticketRequests) > 0}">
+                            <ui:fragment
+                                rendered="#{userBean.admin and fn:length(adminLicenseBean.ticketRequests) > 0}">
                                 <div class="admin__boxed-entry -no-actions -w33 -warning">
                                     <div class="row">
                                         <!-- TICKET REQUESTS -->
                                         <h2 class="col-9">#{msg.admin__dashboard_access_ticket_requests_title}</h2>
-                                        <p class="col-12">#{msg.admin__dashboard_access_ticket_requests_desc}:</p> 
+                                        <p class="col-12">#{msg.admin__dashboard_access_ticket_requests_desc}:</p>
                                     </div>
-                                    
+
                                     <div class="row">
                                         <div class="col-12">
-                                        
-											<!-- LIMIT TICKETS TO A MAXIMUM OF X IN DASHBOARD -->
-                                        	<ui:param name="limitTickets" value="4"/>
-                                            <ui:repeat var="ticket" varStatus="status" value="#{adminLicenseBean.ticketRequests}">
-    											<ui:fragment rendered="#{status.index lt limitTickets}">
-								                    <a href="#{navigationHelper.applicationUrl}admin/rights/"
-								                        class="row -textlink admin__license-unconfigured-entry mb-2">
-								                            <div class="col-12 admin__tickets-dashboard-row">
-																<div class="admin__tickets-dashboard-row-key">#{msg.title}:</div>
-																<div class="admin__tickets-dashboard-row-value">#{ticket.title.length() gt 50 ? ticket.title.substring(0,50).concat('...') : ticket.title}</div>
-                                                                <div class="admin__tickets-dashboard-row-key">#{msg.type}:</div>
-                                                                <div class="admin__tickets-dashboard-row-value">#{msg[ticket.type]}</div>
-																<div class="admin__tickets-dashboard-row-key">#{msg.email}:</div>
-																<div class="admin__tickets-dashboard-row-value">#{ticket.email}</div>
-																
-																<ui:fragment rendered="#{ticket.requestMessage != null}">
-																	<div class="admin__tickets-dashboard-row-key">#{msg.message}:</div>
-																	<div class="admin__tickets-dashboard-row-value">
-																	     <h:outputText value="#{ticket.requestMessage.length() gt 100 ? ticket.requestMessage.substring(0,100).concat('...') : ticket.requestMessage}"
-																	         escape="true" />
-																	</div>
-								                            	</ui:fragment>
-								                            </div>
-<!-- 								                            <div class="col-3 d-flex justify-content-end"> -->
-<!-- 								                            	<span>#{msg.admin__dashboard_download_ticket_requests_configure}</span> -->
-<!-- 								                            </div> -->
-								                 	</a>
-								                 </ui:fragment>
+                                            <!-- LIMIT TICKETS TO A MAXIMUM OF X IN DASHBOARD -->
+                                            <ui:param
+                                                name="limitTickets"
+                                                value="4" />
+                                            <ui:repeat
+                                                var="ticket"
+                                                varStatus="status"
+                                                value="#{adminLicenseBean.ticketRequests}">
+                                                <ui:fragment rendered="#{status.index lt limitTickets}">
+                                                    <a
+                                                        href="#{navigationHelper.applicationUrl}admin/rights/"
+                                                        class="row -textlink admin__license-unconfigured-entry mb-2">
+                                                        <div class="col-12 admin__tickets-dashboard-row">
+                                                            <div class="admin__tickets-dashboard-row-key">
+                                                                #{msg.title}:
+                                                            </div>
+                                                            <div class="admin__tickets-dashboard-row-value">
+                                                                #{ticket.title.length() gt 50 ?
+                                                                ticket.title.substring(0,50).concat('...') :
+                                                                ticket.title}
+                                                            </div>
+                                                            <div class="admin__tickets-dashboard-row-key">
+                                                                #{msg.type}:
+                                                            </div>
+                                                            <div class="admin__tickets-dashboard-row-value">
+                                                                #{msg[ticket.type]}
+                                                            </div>
+                                                            <div class="admin__tickets-dashboard-row-key">
+                                                                #{msg.email}:
+                                                            </div>
+                                                            <div class="admin__tickets-dashboard-row-value">
+                                                                #{ticket.email}
+                                                            </div>
+
+                                                            <ui:fragment rendered="#{ticket.requestMessage != null}">
+                                                                <div class="admin__tickets-dashboard-row-key">
+                                                                    #{msg.message}:
+                                                                </div>
+                                                                <div class="admin__tickets-dashboard-row-value">
+                                                                    <h:outputText
+                                                                        value="#{ticket.requestMessage.length() gt 100 ? ticket.requestMessage.substring(0,100).concat('...') : ticket.requestMessage}"
+                                                                        escape="true" />
+                                                                </div>
+                                                            </ui:fragment>
+                                                        </div>
+                                                        <!-- 								                            <div class="col-3 d-flex justify-content-end"> -->
+                                                        <!-- 								                            	<span>#{msg.admin__dashboard_download_ticket_requests_configure}</span> -->
+                                                        <!-- 								                            </div> -->
+                                                    </a>
+                                                </ui:fragment>
                                             </ui:repeat>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <a href=""></a>
+                                        <a href="" />
                                     </div>
                                 </div>
                             </ui:fragment>
-                            
-                            <!-- CLIENTS -->
-							<c:set scope="view"
-								value="#{adminClientsBean.notConfiguredClients}"
-								var="notConfiguredClients"></c:set> 
-                            <ui:fragment rendered="#{not empty notConfiguredClients}">
 
- 								<div class="admin__boxed-entry -no-actions -w33 -warning">
-				                    <div class="row">
-				                      <h2 class="col-12">
-				                          #{msg.admin__clients}
-				                      </h2>
-				                      <p class="col-12">#{msg.admin__dashboard_clients_text}:</p> 
-				                    </div>
-				                    <ui:repeat var="client" value="#{notConfiguredClients}">
-					                    <a href="#{request.contextPath}/admin/clients/edit/#{client.id}/"
-					                        class="row admin__license-unconfigured-entry">
-					                            <div class="col-8 -textlink">
-													#{client.clientIdentifier} (IP: #{client.clientIp})
-					                            </div>
-					                            <div class="col-4 d-flex justify-content-end">
-					                            	<span>#{msg.admin__clients__configure_client}</span>
-					                            </div>
-					                            
-					                            
-					                            
-					                 	</a>
-				                 	</ui:repeat>
-                                
+                            <!-- CLIENTS -->
+                            <c:set
+                                scope="view"
+                                value="#{adminClientsBean.notConfiguredClients}"
+                                var="notConfiguredClients" />
+                            <ui:fragment rendered="#{not empty notConfiguredClients}">
+                                <div class="admin__boxed-entry -no-actions -w33 -warning">
+                                    <div class="row">
+                                        <h2 class="col-12">#{msg.admin__clients}</h2>
+                                        <p class="col-12">#{msg.admin__dashboard_clients_text}:</p>
+                                    </div>
+                                    <ui:repeat
+                                        var="client"
+                                        value="#{notConfiguredClients}">
+                                        <a
+                                            href="#{request.contextPath}/admin/clients/edit/#{client.id}/"
+                                            class="row admin__license-unconfigured-entry">
+                                            <div class="col-8 -textlink">
+                                                #{client.clientIdentifier} (IP: #{client.clientIp})
+                                            </div>
+                                            <div class="col-4 d-flex justify-content-end">
+                                                <span>#{msg.admin__clients__configure_client}</span>
+                                            </div>
+                                        </a>
+                                    </ui:repeat>
                                 </div>
-                                
                             </ui:fragment>
 
                             <!-- COLLECTION DESCRIPTION IMPORT -->
-                            <h:panelGroup layout="block" rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}" id="collectionImportWidget" styleClass="admin__boxed-entry -no-actions -w33 -danger" >
-                                    <h:form prependId="false">
-                                        <h2>#{msg.admin__cms_collections_import}</h2>
-                                        <div class="admin__form-help-text in mb-2">
-                                            #{msg.admin__cms_collections_import_desc}
-                                        </div>
-                                        <div class="col-12 mt-3 d-flex justify-content-center">
-                                            <h:commandButton
-                                                styleClass="btn btn--full"
-                                                value="#{msg.admin__cms_collections_import_start}"
-                                                action="#{cmsCollectionsBean.importDescriptionsAction('DC')}">
-                                                <f:ajax render="collectionImportWidget" />
-                                            </h:commandButton>
-                                        </div>
-                                    </h:form>
+                            <h:panelGroup
+                                layout="block"
+                                rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}"
+                                id="collectionImportWidget"
+                                styleClass="admin__boxed-entry -no-actions -w33 -danger">
+                                <h:form prependId="false">
+                                    <h2>#{msg.admin__cms_collections_import}</h2>
+                                    <div class="admin__form-help-text in mb-2">
+                                        #{msg.admin__cms_collections_import_desc}
+                                    </div>
+                                    <div class="col-12 mt-3 d-flex justify-content-center">
+                                        <h:commandButton
+                                            styleClass="btn btn--full"
+                                            value="#{msg.admin__cms_collections_import_start}"
+                                            action="#{cmsCollectionsBean.importDescriptionsAction('DC')}">
+                                            <f:ajax render="collectionImportWidget" />
+                                        </h:commandButton>
+                                    </div>
+                                </h:form>
                             </h:panelGroup>
 
                             <!-- TRANSLATIONS -->
-							<ui:fragment rendered="#{userBean.admin and adminBean.displayTranslationsDashboardWidget}">
-                            	<c:choose>
-									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles}">
-                                		<h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 #{adminBean.configuredTranslationGroups.stream().anyMatch(g -> g.loadError).get() ? '-danger':'-warning'}">
-		                                    <div class="row">
-		                                        <h2 class="col-9">#{msg.admin__translations}</h2>
-		                                    </div>
-		                                    <div class="row">
-		                                        <div class="col-12">
-		                                            <!-- NOT TRANSLATED GROUPS -->
-		                                            <div class="row">
-		                                                <div class="col-12">#{msg.admin__translations_not_translated}:</div>
-		                                            </div>
+                            <ui:fragment rendered="#{userBean.admin and adminBean.displayTranslationsDashboardWidget}">
+                                <c:choose>
+                                    <c:when test="#{adminBean.hasAccessPermissingForTranslationFiles}">
+                                        <h:form
+                                            prependId="false"
+                                            styleClass="admin__boxed-entry -no-actions -w33 #{adminBean.configuredTranslationGroups.stream().anyMatch(g -> g.loadError).get() ? '-danger':'-warning'}">
+                                            <div class="row">
+                                                <h2 class="col-9">#{msg.admin__translations}</h2>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <!-- NOT TRANSLATED GROUPS -->
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            #{msg.admin__translations_not_translated}:
+                                                        </div>
+                                                    </div>
 
-		                                            <ui:repeat var="group" value="#{adminBean.configuredTranslationGroups}">
-			                                            <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount and !group.loadError}">
-			                                            	<a href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
-			                                                	class="row admin__translations-not-translated-entry"
-			                                                    aria-label="#{msg.edit}: #{msg[group.name]}">
-			                                                    <div class="col-8 pl-5 -textlink">
-			                                                       #{msg[group.name]}
-			                                                    </div>
-			                                                    <div class="col-4 d-flex justify-content-end">
-			                                                        <span>#{msg.admin__translations_translate}</span>
-			                                                    </div>
-			                                                </a>
-				                                        	<div class="admin__dashboard-translations-progress">
-																<div class="admin__dashboard-translations-progress-complete"
-																	style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
-																<div class="admin__dashboard-translations-progress-partially"
-																	style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
-															</div>
-			                                            </ui:fragment>
-			                                            <ui:fragment rendered="#{group.loadError}">
-			                                            	<div class="row admin__translations-not-translated-entry"
-			                                                    aria-label="#{msg.edit}: #{msg[group.name]}">
-			                                                    <div class="col-8 pl-5">
-			                                                       #{msg[group.name]}: #{msg.errIndexUnreachableTitle}
-			                                                    </div>
-			                                                    <div class="col-4 d-flex justify-content-end align-items-center">
+                                                    <ui:repeat
+                                                        var="group"
+                                                        value="#{adminBean.configuredTranslationGroups}">
+                                                        <ui:fragment
+                                                            rendered="#{group.fullyTranslatedEntryCount != group.entryCount and !group.loadError}">
+                                                            <a
+                                                                href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+                                                                class="row admin__translations-not-translated-entry"
+                                                                aria-label="#{msg.edit}: #{msg[group.name]}">
+                                                                <div class="col-8 pl-5 -textlink">
+                                                                    #{msg[group.name]}
+                                                                </div>
+                                                                <div class="col-4 d-flex justify-content-end">
+                                                                    <span>#{msg.admin__translations_translate}</span>
+                                                                </div>
+                                                            </a>
+                                                            <div class="admin__dashboard-translations-progress">
+                                                                <div
+                                                                    class="admin__dashboard-translations-progress-complete"
+                                                                    style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;" />
+                                                                <div
+                                                                    class="admin__dashboard-translations-progress-partially"
+                                                                    style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;" />
+                                                            </div>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{group.loadError}">
+                                                            <div
+                                                                class="row admin__translations-not-translated-entry"
+                                                                aria-label="#{msg.edit}: #{msg[group.name]}">
+                                                                <div class="col-8 pl-5">
+                                                                    #{msg[group.name]}: #{msg.errIndexUnreachableTitle}
+                                                                </div>
+                                                                <div
+                                                                    class="col-4 d-flex justify-content-end align-items-center">
                                                                     <util:icon icon="alert-triangle" />
-			                                                    </div>
-			                                                </div>
-				                                        	<div class="admin__dashboard-translations-progress">
-																<div class="admin__dashboard-translations-progress-error"></div>
-															</div>
-			                                            </ui:fragment>
-		                                            </ui:repeat>
-		                                        </div>
-		                                    </div>
-                                		</h:form>
-                                   	</c:when>
-                            		<c:otherwise>
-                            			<h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
-			                            	<div class="row">
-		                                        <h2 class="col-9">#{msg.admin__translations}</h2>
-		                                    </div>
-			                            	<div class="row">
-			                            		<div class="col-12">
-				                            		<h:outputText escape="false" value="#{msg.admin__translations__missing_write_permissions__description}"></h:outputText>
-			                            		</div>
-			                            	</div>
-		                            	</h:form>
-		                            </c:otherwise>
-	                            </c:choose>
+                                                                </div>
+                                                            </div>
+                                                            <div class="admin__dashboard-translations-progress">
+                                                                <div
+                                                                    class="admin__dashboard-translations-progress-error" />
+                                                            </div>
+                                                        </ui:fragment>
+                                                    </ui:repeat>
+                                                </div>
+                                            </div>
+                                        </h:form>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <h:form
+                                            prependId="false"
+                                            styleClass="admin__boxed-entry -no-actions -w33 -danger">
+                                            <div class="row">
+                                                <h2 class="col-9">#{msg.admin__translations}</h2>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <h:outputText
+                                                        escape="false"
+                                                        value="#{msg.admin__translations__missing_write_permissions__description}" />
+                                                </div>
+                                            </div>
+                                        </h:form>
+                                    </c:otherwise>
+                                </c:choose>
                             </ui:fragment>
-
-
 
                             <!-- VERSIONS -->
                             <div class="admin__boxed-entry -no-actions -w33">
@@ -331,14 +445,15 @@
 
                                     <dt class="col-sm-5 mb-3">#{msg.admin__dashboard_versions_contentserver}:</dt>
                                     <dd class="col-sm-7 mb-3">#{msg[statisticsBean.contentServerVersion]}</dd>
-
                                 </dl>
                                 <ui:fragment rendered="#{fn:length(configurationBean.modules) > 0}">
                                     <div class="row">
                                         <h3 class="col-9">#{msg.admin__dashboard_versions_modules}</h3>
                                     </div>
                                     <dl class="row">
-                                        <ui:repeat var="module" value="#{configurationBean.modules}">
+                                        <ui:repeat
+                                            var="module"
+                                            value="#{configurationBean.modules}">
                                             <dt class="col-sm-5 mb-3">#{module.name}:</dt>
                                             <dd class="col-sm-7 mb-3">#{module.version}</dd>
                                         </ui:repeat>
@@ -346,14 +461,13 @@
                                 </ui:fragment>
                             </div>
 
-
                             <!-- RSS FEED -->
-                            <ui:fragment rendered="#{searchBean.solrIndexReachable and configurationBean.displaySidebarRssFeed}">
-	                            <div class="admin__boxed-entry -no-actions -w33">
-	                            	<widgetComponent:widget_rssFeed/>
-	                            </div>
+                            <ui:fragment
+                                rendered="#{searchBean.solrIndexReachable and configurationBean.displaySidebarRssFeed}">
+                                <div class="admin__boxed-entry -no-actions -w33">
+                                    <widgetComponent:widget_rssFeed />
+                                </div>
                             </ui:fragment>
-
 
                             <!-- MATOMO -->
                             <ui:fragment rendered="#{userBean.admin and configurationBean.piwikTrackingEnabled}">
@@ -366,54 +480,58 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-12">
-                                            <a class="-bluelink" href="//#{configurationBean.piwikBaseURL}" target="_blank" rel="noopener">#{msg.admin__dashboard_matomo_link}</a>
+                                            <a
+                                                class="-bluelink"
+                                                href="//#{configurationBean.piwikBaseURL}"
+                                                target="_blank"
+                                                rel="noopener">
+                                                #{msg.admin__dashboard_matomo_link}
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
                             </ui:fragment>
-                            
+
                             <!-- TASK QUEUE WARNING -->
-                            <h:panelGroup rendered="#{userBean.admin and messageQueueBean.paused or userBean.admin and quartzBean.paused}" styleClass="admin__boxed-entry -no-actions -w33 -warning" layout="block" id="runningTasksDashboardWarning">
-	                            <div class="row">
-	                                <h2 class="col-12">#{msg.admin__tasks__title}</h2>
-	                            </div>
-	                            <div class="row">
-	                                <div class="col-12">
-	                                <p>#{msg.admin__tasks__currently_paused}:</p>
-										<ui:fragment
-											rendered="#{userBean.admin and messageQueueBean.paused}">
+                            <h:panelGroup
+                                rendered="#{userBean.admin and messageQueueBean.paused or userBean.admin and quartzBean.paused}"
+                                styleClass="admin__boxed-entry -no-actions -w33 -warning"
+                                layout="block"
+                                id="runningTasksDashboardWarning">
+                                <div class="row">
+                                    <h2 class="col-12">#{msg.admin__tasks__title}</h2>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p>#{msg.admin__tasks__currently_paused}:</p>
+                                        <ui:fragment rendered="#{userBean.admin and messageQueueBean.paused}">
+                                            <a
+                                                href="#{request.contextPath}/admin/tasks"
+                                                class="row admin__translations-not-translated-entry"
+                                                aria-label="Bearbeiten: Solr-Feldnamen">
+                                                <div class="col-8 pl-5 -textlink">
+                                                    #{msg.admin__tasks__running_tasks_off}
+                                                </div>
+                                                <div class="col-4 d-flex justify-content-end">
+                                                    <span>#{msg.show}</span>
+                                                </div>
+                                            </a>
+                                        </ui:fragment>
 
-											<a
-												href="#{request.contextPath}/admin/tasks"
-												class="row admin__translations-not-translated-entry"
-												aria-label="Bearbeiten: Solr-Feldnamen">
-												<div class="col-8 pl-5 -textlink">
-													#{msg.admin__tasks__running_tasks_off}</div>
-												<div class="col-4 d-flex justify-content-end">
-													<span> #{msg.show}</span>
-												</div>
-											</a>
-
-										</ui:fragment>
-
-										<ui:fragment rendered="#{userBean.admin and quartzBean.paused}">
-											<a
-												href="#{request.contextPath}/admin/tasks"
-												class="row admin__translations-not-translated-entry"
-												aria-label="Bearbeiten: Solr-Feldnamen">
-												<div class="col-8 pl-5 -textlink">
-													#{msg.admin__tasks__quartz_off}</div>
-												<div class="col-4 d-flex justify-content-end">
-													<span> #{msg.show}</span>
-												</div>
-											</a>
-										</ui:fragment>
-	
-	                                </div>
-	                            </div>
-							</h:panelGroup>
-                            
-                            
+                                        <ui:fragment rendered="#{userBean.admin and quartzBean.paused}">
+                                            <a
+                                                href="#{request.contextPath}/admin/tasks"
+                                                class="row admin__translations-not-translated-entry"
+                                                aria-label="Bearbeiten: Solr-Feldnamen">
+                                                <div class="col-8 pl-5 -textlink">#{msg.admin__tasks__quartz_off}</div>
+                                                <div class="col-4 d-flex justify-content-end">
+                                                    <span>#{msg.show}</span>
+                                                </div>
+                                            </a>
+                                        </ui:fragment>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
                         </div>
                     </div>
                 </div>

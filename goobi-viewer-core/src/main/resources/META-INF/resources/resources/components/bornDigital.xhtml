@@ -1,89 +1,111 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <!-- interface options -->
     <composite:interface />
 
     <!-- component content -->
-	<composite:implementation>
-        <div id="bornDigital" class="born-digital">
-            <h2 ><h:outputText value="#{msg.bornDigital_fileList}" /></h2>
-            
+    <composite:implementation>
+        <div
+            id="bornDigital"
+            class="born-digital">
+            <h2>
+                <h:outputText value="#{msg.bornDigital_fileList}" />
+            </h2>
+
             <!-- ACCESS DENIED -->
-            <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital and !activeDocumentBean.viewManager.accessPermissionExternalResources}">
-                <div class="born-digital__no-access-box"><p><h:outputText value="#{msg.bornDigital_accessConditionText}" escape="false" /></p></div>
+            <ui:fragment
+                rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital and !activeDocumentBean.viewManager.accessPermissionExternalResources}">
+                <div class="born-digital__no-access-box">
+                    <p>
+                        <h:outputText
+                            value="#{msg.bornDigital_accessConditionText}"
+                            escape="false" />
+                    </p>
+                </div>
             </ui:fragment>
 
             <!-- ACCESS GRANTED -->
-            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital or activeDocumentBean.viewManager.accessPermissionExternalResources}">
+            <ui:fragment
+                rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital or activeDocumentBean.viewManager.accessPermissionExternalResources}">
                 <div class="born-digital__box">
-                <ui:fragment rendered="#{activeDocumentBean.viewManager.hasDownloadResources}">
-                    <div class="born-digital__head-wrapper">
-                		<div class="born-digital__head">
-                			<span>#{msg.label__born_digital__filename}</span>
-                		</div>
-                		<div class="born-digital__head">
-                			<span>#{msg.label__born_digital__filedescription}</span>
-                		</div>
-                		<div class="born-digital__head">
-                			<span>#{msg.label__born_digital__filesize}</span>
-                		</div>
-                		<div class="born-digital__head">
-                			<span>#{msg.label__born_digital__fileformat}</span>
-                		</div>
-                		<div class="born-digital__head"></div>
-                	</div>
-                	<div class="born-digital__internal-resources-wrapper">
-	                    <ui:repeat var="page" value="#{activeDocumentBean.viewManager.downloadResources}">
-	                        <div class="born-digital__items-wrapper"> 
-		                		<div class="born-digital__head-mobile">
-		                			<span>#{msg.label__born_digital__filename}</span>
-		                		</div>
-		                        <div class="born-digital__item">
-		                       		<span>#{page.fileName}</span>
-		                        </div>
-		                		<div class="born-digital__head-mobile">
-		                			<span>#{msg.label__born_digital__filedescription}</span>
-		                		</div>
-		                        <div class="born-digital__item">#{page.orderLabel}</div>
-		                		<div class="born-digital__head-mobile">
-		                			<span>#{msg.label__born_digital__filesize}</span>
-		                		</div>
-		                        <div class="born-digital__item">
-		                        	<span>#{page.fileSizeAsString}</span>
-		                        </div>
-		                		<div class="born-digital__head-mobile">
-		                			<span>#{msg.label__born_digital__fileformat}</span>
-		                		</div>
-		                        <div class="born-digital__item">
-		                        	<span>#{msg[page.mimeType]}</span>
-		                        </div>
-		                        <div class="born-digital__item-download-last">
-		                            <!-- Ticket required for download -->
-	                                <ui:fragment rendered="#{page.downloadTicketRequired}">
-	                                    <button class="btn btn--full" data-toggle="modal"
-	                                        data-target="#downloadTicketModal">#{msg.action__born_digital__unlock}</button>
-	                                </ui:fragment>
-	                                <!-- Download allowed -->
-		                            <ui:fragment rendered="#{!page.downloadTicketRequired}">
-		                      	        <a class="born-digital__item__download btn btn--full" href="#{page.url}" target="_blank">#{msg.action__born_digital__download}</a>
-		                      	    </ui:fragment>
-		                        </div>
-		                    </div>
-	                    </ui:repeat>
-                    </div>
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.hasDownloadResources}">
+                        <div class="born-digital__head-wrapper">
+                            <div class="born-digital__head">
+                                <span>#{msg.label__born_digital__filename}</span>
+                            </div>
+                            <div class="born-digital__head">
+                                <span>#{msg.label__born_digital__filedescription}</span>
+                            </div>
+                            <div class="born-digital__head">
+                                <span>#{msg.label__born_digital__filesize}</span>
+                            </div>
+                            <div class="born-digital__head">
+                                <span>#{msg.label__born_digital__fileformat}</span>
+                            </div>
+                            <div class="born-digital__head" />
+                        </div>
+                        <div class="born-digital__internal-resources-wrapper">
+                            <ui:repeat
+                                var="page"
+                                value="#{activeDocumentBean.viewManager.downloadResources}">
+                                <div class="born-digital__items-wrapper">
+                                    <div class="born-digital__head-mobile">
+                                        <span>#{msg.label__born_digital__filename}</span>
+                                    </div>
+                                    <div class="born-digital__item">
+                                        <span>#{page.fileName}</span>
+                                    </div>
+                                    <div class="born-digital__head-mobile">
+                                        <span>#{msg.label__born_digital__filedescription}</span>
+                                    </div>
+                                    <div class="born-digital__item">#{page.orderLabel}</div>
+                                    <div class="born-digital__head-mobile">
+                                        <span>#{msg.label__born_digital__filesize}</span>
+                                    </div>
+                                    <div class="born-digital__item">
+                                        <span>#{page.fileSizeAsString}</span>
+                                    </div>
+                                    <div class="born-digital__head-mobile">
+                                        <span>#{msg.label__born_digital__fileformat}</span>
+                                    </div>
+                                    <div class="born-digital__item">
+                                        <span>#{msg[page.mimeType]}</span>
+                                    </div>
+                                    <div class="born-digital__item-download-last">
+                                        <!-- Ticket required for download -->
+                                        <ui:fragment rendered="#{page.downloadTicketRequired}">
+                                            <button
+                                                class="btn btn--full"
+                                                data-toggle="modal"
+                                                data-target="#downloadTicketModal">
+                                                #{msg.action__born_digital__unlock}
+                                            </button>
+                                        </ui:fragment>
+                                        <!-- Download allowed -->
+                                        <ui:fragment rendered="#{!page.downloadTicketRequired}">
+                                            <a
+                                                class="born-digital__item__download btn btn--full"
+                                                href="#{page.url}"
+                                                target="_blank">
+                                                #{msg.action__born_digital__download}
+                                            </a>
+                                        </ui:fragment>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
                     </ui:fragment>
-                    
-					<ui:fragment rendered="#{activeDocumentBean.viewManager.hasExternalResources}">
-						<div class="download-external-resource__wrapper">
-							<div class="download-external-resource__heading">#{msg.bornDigital_external_resources}</div>
-				            <ui:include src="/resources/includes/metadata/externalResourceDownload.xhtml"></ui:include>
-						</div>
-					</ui:fragment>
-            
+
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.hasExternalResources}">
+                        <div class="download-external-resource__wrapper">
+                            <div class="download-external-resource__heading">#{msg.bornDigital_external_resources}</div>
+                            <ui:include src="/resources/includes/metadata/externalResourceDownload.xhtml" />
+                        </div>
+                    </ui:fragment>
                 </div>
             </ui:fragment>
         </div>

@@ -162,8 +162,8 @@ public final class SearchHelper {
     private static final Pattern PATTERN_NOT_BRACKETS = Pattern.compile("NOT\\([^()]*\\)");
     /** Regex pattern for negations not followed by brackets */
     private static final Pattern PATTERN_NOT = Pattern.compile("NOT [a-zA-Z_]+:[a-zA-Z0-9\\*]+");
-    /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code>. */
-    public static final String REGEX_QUOTATION_MARKS = "@?+\"[^()\"]*\"@?+";
+    /** Constant that matches strings enclosed by double quotes (and optional replacement tags @). May contain escaped double quotes. */
+    public static final String REGEX_QUOTATION_MARKS = "@?+\"(?:[^()\"\\\\]|\\\\.)*\"@?+"; //NOSONAR Supposedly safe?
     /** Constant <code>PATTERN_FIELD_PHRASE</code> */
     private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]++:" + REGEX_QUOTATION_MARKS); //NOSONAR Checked and fixed potential CB
     /** Constant <code>PATTERN_PHRASE</code> */
@@ -2300,6 +2300,7 @@ public final class SearchHelper {
      * @return a {@link java.util.Map} object.
      * @should extract all values from query except from NOT blocks
      * @should handle multiple phrases in query correctly
+     * @should handle escaped double quotes correctly
      * @should skip discriminator value
      * @should not remove truncation
      * @should throw IllegalArgumentException if query is null
@@ -2351,6 +2352,7 @@ public final class SearchHelper {
         Matcher mPhrases = PATTERN_FIELD_PHRASE.matcher(queryCopy);
         while (mPhrases.find()) {
             String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
+            // logger.trace("phrase: {}", phrase);
             String[] phraseSplit = phrase.split(":", 2);
             String field = phraseSplit[0];
             switch (field) {
@@ -2373,7 +2375,8 @@ public final class SearchHelper {
                     break;
             }
 
-            String phraseWithoutQuotation = phraseSplit[1].replace("@", "").replace("\"", "");
+            String phraseWithoutQuotation = phraseSplit[1].replace("@", "");
+            phraseWithoutQuotation = unquoteValue(phraseWithoutQuotation, true); // remove outer double quotes
             if (!phraseWithoutQuotation.isEmpty() && !stopwords.contains(phraseWithoutQuotation)) {
                 if (ret.get(field) == null) {
                     ret.put(field, new HashSet<>());
@@ -2454,7 +2457,7 @@ public final class SearchHelper {
                         }
                     }
                 }
-            } else if (s.length() > 0 && !stopwords.contains(s)) {
+            } else if (!s.isEmpty() && !stopwords.contains(s)) {
                 // single values w/o a field
 
                 // Skip duplicates for fuzzy search
@@ -2475,6 +2478,33 @@ public final class SearchHelper {
         }
 
         return ret;
+    }
+
+    /**
+     * Removes outer double quotes from the given value.
+     * 
+     * @param value
+     * @param containsEscapedDoubleQuotes Use true if inner double quotes are already backslash-escaped, false otherwise
+     * @return value without surrounding quotation marks
+     * @should return value if blank
+     * @should return value if not in quotes
+     * @should unquote value correctly
+     */
+    public static String unquoteValue(String value, boolean containsEscapedDoubleQuotes) {
+        if (StringUtils.isNotBlank(value)) {
+            int start = 0;
+            int end = value.length();
+            int tildeIndex = value.lastIndexOf('~');
+            if (tildeIndex > 0 && value.substring(tildeIndex + 1).matches("\\d+")) {
+                end = tildeIndex;
+            }
+
+            if (end - start >= 2 && value.charAt(start) == '"' && value.charAt(end - 1) == '"') {
+                return value.substring(start + 1, end - 1);
+            }
+        }
+
+        return value;
     }
 
     /**
@@ -3333,7 +3363,8 @@ public final class SearchHelper {
         // Construct inner query part
         StringBuilder sbInner = new StringBuilder();
         for (String term : searchTerms) {
-            if (sbInner.length() > 0) {
+            // logger.trace("term: {}", term);
+            if (!sbInner.isEmpty()) {
                 if (addOperators) {
                     sbInner.append(SolrConstants.SOLR_QUERY_AND);
                 } else {
@@ -3398,7 +3429,12 @@ public final class SearchHelper {
 
         // Boosting
         if (boostTopLevelDocstructs) {
-            String template = "+(" + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString().replace("\"", "\\\"")) + ")";
+            String template = "+(" + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString()
+                    // All backslaches in the boost query are escaped here (not sure why anymore)
+                    // However, escaped double quotes must be preserved, hence the crude temporary replacement
+                    .replace("\\\"", "$$$")
+                    .replace("\"", "\\\"")
+                    .replace("$$$", "\\\"")) + ")";
             sbQuery = new StringBuilder(template);
         }
 
@@ -3809,7 +3845,11 @@ public final class SearchHelper {
             return false;
         }
 
-        Matcher m = PATTERN_PHRASE.matcher(s.trim());
+        String phraseCheckUnquoteValue = SearchHelper.unquoteValue(s, false);
+        if (!phraseCheckUnquoteValue.equals(s)) {
+            phraseCheckUnquoteValue = '"' + phraseCheckUnquoteValue.replace("\"", "\\\"") + '"'; // escape double quotes
+        }
+        Matcher m = PATTERN_PHRASE.matcher(phraseCheckUnquoteValue);
         return m.find();
     }
 

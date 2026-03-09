@@ -4,57 +4,61 @@
    ==============================================================*/
 #widgetMetadata {
     dl {
-        dt {}
-        dd {
-        	a, button {
-        		display: inline;
-        	}
+        dt {
         }
-    } 
+        dd {
+            a,
+            button {
+                display: inline;
+            }
+        }
+    }
 }
- 
+
 .widget-metadata {
-	&__topbar {
-		margin-top: 20px;
-	}
-	&__topbar:first-child {
-		margin-top: none;
-	} 
-	&__body {
-		a {
-			display: inline;
-		}
-	}
-	&__key-value-group {
-		dd {
-			margin-bottom: 0;
-		}
-		margin-bottom: 1rem;
-		&:last-child {
-			margin-bottom: 0;
-//			dd:last-child {
-//				margin-bottom: 0;
-//			}
-		}
-	}
-
+    &__topbar {
+        margin-top: 20px;
+    }
+    &__topbar:first-child {
+        margin-top: none;
+    }
+    &__body {
+        a {
+            display: inline;
+        }
+    }
+    &__key-value-group {
+        dd {
+            margin-bottom: 0;
+        }
+        margin-bottom: 1rem;
+        &:last-child {
+            margin-bottom: 0;
+            //			dd:last-child {
+            //				margin-bottom: 0;
+            //			}
+        }
+    }
 }
-
 
 @{RTL} #widgetMetadata {
-	dl dd {
-		margin-right: 0;
-	}
+    dl dd {
+        margin-right: 0;
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

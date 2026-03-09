@@ -10,7 +10,7 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
-    <composite:interface></composite:interface>
+    <composite:interface />
 
     <composite:implementation>
         <div
@@ -247,7 +247,7 @@
                         var="hasPrerenderedPagePdfs"
                         value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
                     <ui:fragment
-                        rendered="#{displayConditions.matchRecord('{contentType:[IMAGE, PDF], numPages:1, pageType:[viewObject, viewFullscreen], accessCondition:DOWNLOAD_PDF}')}">
+                        rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], contentType:[IMAGE, PDF], numPages:1, pageType:[viewObject, viewFullscreen], accessCondition:DOWNLOAD_PDF}')}">
                         <ui:fragment
                             visibility-class="widget-element"
                             rendered="#{!configurationBean.generatePdfInMessageQueue and hasPrerenderedPagePdfs}">
@@ -340,8 +340,8 @@
                             data-trigger="hover"
                             rel="nofollow noopener"
                             target="_blank"
-                            aria-label=" #{msg.MEI}">
-                            #{msg.MEI}
+                            aria-label=" #{msg.metadata_dl_mei}">
+                            #{msg.download__label_mei}
                         </a>
                     </ui:fragment>
 

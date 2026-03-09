@@ -1,13 +1,12 @@
-<ui:composition 
+<ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- CONTENT TYPE RELATED PI -->
     <div class="cms-module__option-group">
         <div class="cms-module__option-label">
@@ -18,35 +17,51 @@
             <h:panelGroup id="relatedPiInputGroup">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <h:messages for="relatedPiInput" 
-                        infoClass="cms-module__option-message-status success" 
+                    <h:messages
+                        for="relatedPiInput"
+                        infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true" />
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true" />
                     </div>
                 </div>
-                
+
                 <!-- INPUT TEXT -->
-                <h:inputText id="relatedPiInput" value="#{cmsBean.selectedPage.relatedPI}" styleClass="form-control">
-                    <f:validator validatorId="relatedPiValidator" for="relatedPiInput" />
-                    <f:ajax event="blur" render="relatedPiInputGroup useAsDefaultRecordViewGroup" />
+                <h:inputText
+                    id="relatedPiInput"
+                    value="#{cmsBean.selectedPage.relatedPI}"
+                    styleClass="form-control">
+                    <f:validator
+                        validatorId="relatedPiValidator"
+                        for="relatedPiInput" />
+                    <f:ajax
+                        event="blur"
+                        render="relatedPiInputGroup useAsDefaultRecordViewGroup" />
                 </h:inputText>
             </h:panelGroup>
-            
+
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext">#{msg.cms_page_related_pi_help}</span>
         </div>
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>
     </div>
-    
+
     <!-- USE AS DEFAULT RECORD VIEW CHECKBOX -->
     <div class="cms-module__option-group">
         <div class="cms-module__option-label">
@@ -54,36 +69,49 @@
         </div>
         <div class="cms-module__option-control align-self-center">
             <!-- AREA FOR AJAX REFRESH -->
-            <h:panelGroup id="useAsDefaultRecordViewGroup" layout="block" styleClass="cms-module__option-checkbox">
+            <h:panelGroup
+                id="useAsDefaultRecordViewGroup"
+                layout="block"
+                styleClass="cms-module__option-checkbox">
                 <!-- VALIDATION MESSAGE -->
                 <div class="cms-module__option-message">
-                    <h:messages for="useAsDefaultRecordView" 
-                        infoClass="cms-module__option-message-status success" 
+                    <h:messages
+                        for="useAsDefaultRecordView"
+                        infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
 
                     <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        <i
+                            class="fa fa-check"
+                            aria-hidden="true" />
+                        <i
+                            class="fa fa-exclamation"
+                            aria-hidden="true" />
                     </div>
                 </div>
-                
+
                 <!-- CHECKBOX -->
-                <h:selectBooleanCheckbox 
-                    id="useAsDefaultRecordView" 
-                    value="#{cmsBean.selectedPage.useAsDefaultRecordView}" 
+                <h:selectBooleanCheckbox
+                    id="useAsDefaultRecordView"
+                    value="#{cmsBean.selectedPage.useAsDefaultRecordView}"
                     disabled="#{empty cmsBean.selectedPage.relatedPI}"
-                    onclick="cmsJS.createPage.disablePreview();" />
+                    onclick="cmsJS.createPage.disablePreview()" />
             </h:panelGroup>
             <!-- INLINE HELP -->
-            <span class="cms-module__option-control-helptext inline">#{msg.cms_page_use_as_default_record_view_help}</span>
+            <span class="cms-module__option-control-helptext inline">
+                #{msg.cms_page_use_as_default_record_view_help}
+            </span>
         </div>
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+            <button
+                type="button"
+                class="btn btn--clean"
+                data-toggle="helptext"
+                aria-label="#{msg.aria_label__help}">
                 <util:icon icon="help" />
             </button>
         </div>
     </div>
-    
 </ui:composition>

@@ -3,49 +3,52 @@
    ==============================================================*/
 
 .content-component {
-	&__image {
-		display: block;
-		&-link {
-			display: block;
-		}
-		&-lightbox-link {
-			display: block;
-			&:hover {
-				text-decoration: none;
-			}
-		}
-		&-img {
-			max-width: 100%;
-		}
-		&-text {
-			display: block;
-			margin-top: 10px;
-			color: #6e6e6e;
-			text-align: center;
-			&:hover
-			&:focus,
-			&:active {
-				text-decoration: none;
-				color: #6e6e6e;
-			}
-		}
-	}
-	&__video {
-		max-width: 100%;
-		.video-file-element {
-			max-width: 100%;
-		}
-	}
+    &__image {
+        display: block;
+        &-link {
+            display: block;
+        }
+        &-lightbox-link {
+            display: block;
+            &:hover {
+                text-decoration: none;
+            }
+        }
+        &-img {
+            max-width: 100%;
+        }
+        &-text {
+            display: block;
+            margin-top: 10px;
+            color: #6e6e6e;
+            text-align: center;
+            &:hover &:focus,
+            &:active {
+                text-decoration: none;
+                color: #6e6e6e;
+            }
+        }
+    }
+    &__video {
+        max-width: 100%;
+        .video-file-element {
+            max-width: 100%;
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

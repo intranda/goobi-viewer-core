@@ -1,53 +1,56 @@
 /* ==============================================================
    Resets for CSS Libs
    ==============================================================*/
- /* BOOTSTRAP */
+/* BOOTSTRAP */
 
 /* Default color-scheme for native form controls. */
 :root {
-	color-scheme: light;
+    color-scheme: light;
 }
 
 /* .modal-open .modal {
     overflow-y: hidden;
 } */
 form {
-	margin: 0;
+    margin: 0;
 }
 .alert-danger {
-	word-wrap: break-word;
+    word-wrap: break-word;
 }
 
-.modal-dialog { 
-	z-index: 2031; 
+.modal-dialog {
+    z-index: 2031;
 }
 
 a {
-	color: @blue;
-	&:hover {
-		color: @hoverblue;
-		text-decoration: underline;
-	}
-	&:active {
-		color: @activeblue;
-	}
-	&:focus {}
+    color: @blue;
+    &:hover {
+        color: @hoverblue;
+        text-decoration: underline;
+    }
+    &:active {
+        color: @activeblue;
+    }
+    &:focus {
+    }
 }
 
-button, .btn {
-	color: @lowerblack;
-	&:hover {
-		color: @lowerblack;
-		text-decoration: none;
-	}
-	&:active {
-		color: @lowerblack;
-	}
-	&:focus {}
+button,
+.btn {
+    color: @lowerblack;
+    &:hover {
+        color: @lowerblack;
+        text-decoration: none;
+    }
+    &:active {
+        color: @lowerblack;
+    }
+    &:focus {
+    }
 }
 
 .nav-tabs li a:hover {
-	text-decoration: none;
+    text-decoration: none;
 }
 
 .modal {
@@ -57,7 +60,7 @@ button, .btn {
 }
 
 .modal.fade .modal-dialog {
-	transform: translate(0, 0);
+    transform: translate(0, 0);
 }
 
 .modal-open[style] {
@@ -65,7 +68,7 @@ button, .btn {
 }
 
 .modal-backdrop.show {
-	opacity: 0.8;
+    opacity: 0.8;
 }
 
 .modal-backdrop {
@@ -73,25 +76,25 @@ button, .btn {
 }
 
 @media screen and (min-width: 576px) {
-	.modal-dialog {
-		max-width: 550px;
-	}
+    .modal-dialog {
+        max-width: 550px;
+    }
 }
 
 .modal-header {
-	padding: 3rem 3rem 2rem 3rem;
-	.fancy-close {
-		position: relative;
-		padding: 1.3rem;
-		margin: 0;
-		opacity: 0.75;
-		align-self: start;
-		background: transparent;
-		margin: 0rem 0rem 0rem 1rem;
-		&:hover {
-			opacity: 1;
-		}
-	}
+    padding: 3rem 3rem 2rem 3rem;
+    .fancy-close {
+        position: relative;
+        padding: 1.3rem;
+        margin: 0;
+        opacity: 0.75;
+        align-self: start;
+        background: transparent;
+        margin: 0rem 0rem 0rem 1rem;
+        &:hover {
+            opacity: 1;
+        }
+    }
 }
 
 .modal-body {
@@ -99,87 +102,87 @@ button, .btn {
 }
 
 .fancy-close {
-	position: absolute;
-	top: auto;
-	margin-top: -12px;
-	width: 24px;
-	height: 24px;
-	border: 1px solid transparent;
-	border-radius: 25%;
-	font-size: 0;
-	color: transparent;
-	-webkit-transform: rotate(45deg);
-	transform: rotate(45deg);
-	cursor: pointer;
-	-webkit-transition: all 150ms ease-out;
-	transition: all 150ms ease-out;
-	right: 0;
-  &:hover {
-    transition: all 150ms 100ms ease-in;
-  }
-
-  &:before, &:after {
-    content: '';
     position: absolute;
-    left: 50%;
-    top: 50%;
-    display: block;
-    background-color: @black;
-    transition: all 150ms ease-in;
-  }
-  &:hover:before, &:hover:after {
+    top: auto;
+    margin-top: -12px;
+    width: 24px;
+    height: 24px;
+    border: 1px solid transparent;
+    border-radius: 25%;
+    font-size: 0;
+    color: transparent;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    cursor: pointer;
+    -webkit-transition: all 150ms ease-out;
     transition: all 150ms ease-out;
-    transform: rotate(90deg);
-  }
-  &:before {
-	width: 26px;
-	height: 2px;
-	margin: -1px auto auto -13px;
-  }
-  &:after {
-	width: 2px;
-	height: 26px;
-	margin: -13px auto auto -1px;
-  }
+    right: 0;
+    &:hover {
+        transition: all 150ms 100ms ease-in;
+    }
 
-//  &:hover:before {
-//    width: 12px;
-//    height: 2px;
-//    margin: -1px auto auto -6px;
-//  }
-//  &:hover:after {
-//    width: 2px;
-//    height: 12px;
-//    margin: -6px auto auto -1px;
-//  }
+    &:before,
+    &:after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        display: block;
+        background-color: @black;
+        transition: all 150ms ease-in;
+    }
+    &:hover:before,
+    &:hover:after {
+        transition: all 150ms ease-out;
+        transform: rotate(90deg);
+    }
+    &:before {
+        width: 26px;
+        height: 2px;
+        margin: -1px auto auto -13px;
+    }
+    &:after {
+        width: 2px;
+        height: 26px;
+        margin: -13px auto auto -1px;
+    }
 
+    //  &:hover:before {
+    //    width: 12px;
+    //    height: 2px;
+    //    margin: -1px auto auto -6px;
+    //  }
+    //  &:hover:after {
+    //    width: 2px;
+    //    height: 12px;
+    //    margin: -6px auto auto -1px;
+    //  }
 }
 
-
 pre {
-	font-size: 13px;
-	line-height: 1.42857143;
+    font-size: 13px;
+    line-height: 1.42857143;
 }
 
 .tooltip {
-	font-size: 1.2rem;
+    font-size: 1.2rem;
 }
 
 button:focus {
-	outline: none;
+    outline: none;
 }
 
 .badge {
-	padding: .2em .6em .3em;
+    padding: 0.2em 0.6em 0.3em;
 }
 
 .badge-active {
-	background-color: @badge-active;
-	@badge-active: #008a00;
+    background-color: @badge-active;
+    @badge-active: #008a00;
 }
 .badge-info {
-	background-color: @badge-info;
-	@badge-info: #008295;
+    background-color: @badge-info;
+    @badge-info: #008295;
 }
 
 .page-header {
@@ -188,58 +191,58 @@ button:focus {
     border-bottom: none;
 }
 .nav-tabs {
-	& > li > a:hover {
-		border-color: @middlegray @middlegray @middlegray;
-		background-color: @white;
-	}
-	li {
-		a {
-			display: inline-block;
-			padding: 1rem 1.5rem;
-//			border: 1px solid @middlegray;
-			background-color: @lightgray;
-//			border-radius: 0;
-//			border-color: @middlegray;
-			margin-right: 0.2rem;
-//			border-bottom: none;
-		}
-		span {
-			display: block;
-			position: relative;
-			line-height: 1.42857;
-			margin-right: 2px;
-			padding: 10px 15px;
-			border: 1px solid transparent;
-			border-bottom: none;
-			border-radius: 0;
-		}
-		&.active {
-			a {
-				border-color: @middlegray;
-				border-bottom: 1px solid @white;
-				background-color: @white;
-			}
-		}
-		&.nav-tabs__sidebar-button {
-			margin-left: auto;
-			a {
-				margin-right: 0;
-			}
-		}
-	}
-	.active.nav-tabs__sidebar-button {
-		border-bottom: none;
-		margin-bottom: -1px;
-	}
+    & > li > a:hover {
+        border-color: @middlegray @middlegray @middlegray;
+        background-color: @white;
+    }
+    li {
+        a {
+            display: inline-block;
+            padding: 1rem 1.5rem;
+            //			border: 1px solid @middlegray;
+            background-color: @lightgray;
+            //			border-radius: 0;
+            //			border-color: @middlegray;
+            margin-right: 0.2rem;
+            //			border-bottom: none;
+        }
+        span {
+            display: block;
+            position: relative;
+            line-height: 1.42857;
+            margin-right: 2px;
+            padding: 10px 15px;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 0;
+        }
+        &.active {
+            a {
+                border-color: @middlegray;
+                border-bottom: 1px solid @white;
+                background-color: @white;
+            }
+        }
+        &.nav-tabs__sidebar-button {
+            margin-left: auto;
+            a {
+                margin-right: 0;
+            }
+        }
+    }
+    .active.nav-tabs__sidebar-button {
+        border-bottom: none;
+        margin-bottom: -1px;
+    }
 }
 .tab-content {
-	background-color: @white;
+    background-color: @white;
 }
 .tab-pane {
-	padding: 10px;
-	border-right: 1px solid @middlegray;
-	border-bottom: 1px solid @middlegray;
-	border-left: 1px solid @middlegray;
+    padding: 10px;
+    border-right: 1px solid @middlegray;
+    border-bottom: 1px solid @middlegray;
+    border-left: 1px solid @middlegray;
 }
 .form-control {
     border-radius: 0;
@@ -247,7 +250,7 @@ button:focus {
     &:focus {
         border-color: @blue;
         box-shadow: none;
-		outline: none;
+        outline: none;
     }
 }
 /*
@@ -264,72 +267,112 @@ button:focus {
 */
 
 .popover-content {
-	color: @black;
+    color: @black;
 }
 .table > tbody > tr > td {
-	word-break: break-word;
+    word-break: break-word;
 }
 /* LABELS */
 .label-default {
-	background-color: @labelGray;
+    background-color: @labelGray;
 }
 /* BS GRID RESETS */
 .row {
-	&.no-margin {
-		margin: 0;
-	}
+    &.no-margin {
+        margin: 0;
+    }
 }
-.col-1, .col-2, .col-3, .col-4, .col-5, .col-6,
-.col-7, .col-8, .col-9, .col-10, .col-11, .col-12,
-.col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6,
-.col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12,
-.col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6,
-.col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12,
-.col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6,
-.col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12 {
-	&.no-padding {
-		padding:0;
-	}
+.col-1,
+.col-2,
+.col-3,
+.col-4,
+.col-5,
+.col-6,
+.col-7,
+.col-8,
+.col-9,
+.col-10,
+.col-11,
+.col-12,
+.col-sm-1,
+.col-sm-2,
+.col-sm-3,
+.col-sm-4,
+.col-sm-5,
+.col-sm-6,
+.col-sm-7,
+.col-sm-8,
+.col-sm-9,
+.col-sm-10,
+.col-sm-11,
+.col-sm-12,
+.col-md-1,
+.col-md-2,
+.col-md-3,
+.col-md-4,
+.col-md-5,
+.col-md-6,
+.col-md-7,
+.col-md-8,
+.col-md-9,
+.col-md-10,
+.col-md-11,
+.col-md-12,
+.col-lg-1,
+.col-lg-2,
+.col-lg-3,
+.col-lg-4,
+.col-lg-5,
+.col-lg-6,
+.col-lg-7,
+.col-lg-8,
+.col-lg-9,
+.col-lg-10,
+.col-lg-11,
+.col-lg-12 {
+    &.no-padding {
+        padding: 0;
+    }
 }
 .no-gutters {
-	margin-right: 0;
-	margin-left: 0;
-	> [class*="col-"] {
-		padding-right : 0;
-		padding-left: 0;
-	}
+    margin-right: 0;
+    margin-left: 0;
+    > [class*='col-'] {
+        padding-right: 0;
+        padding-left: 0;
+    }
 }
 
 .tooltip {
-	z-index: 9999;
+    z-index: 9999;
 }
 
 a {
-	&.badge-dark:focus,
-	&.badge-dark.focus {
-		box-shadow: none;
-	}
-	&.badge {
-		&:hover,
-		&:focus {
-			cursor: pointer;
-		}
-	}
+    &.badge-dark:focus,
+    &.badge-dark.focus {
+        box-shadow: none;
+    }
+    &.badge {
+        &:hover,
+        &:focus {
+            cursor: pointer;
+        }
+    }
 }
 .input-group-addon {
-padding: 6px 12px;
-font-size: 14px;
-font-weight: 400;
-line-height: 1;
-color: #555;
-text-align: center;
-background-color: #eee;
-border: 1px solid #ccc;
-border-radius: 4px;
-display: flex;
-	&:last-child {
-		border-left: 0;
-	}
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    color: #555;
+    text-align: center;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: flex;
+    &:last-child {
+        border-left: 0;
+    }
 }
 
 .caret {
@@ -348,8 +391,8 @@ display: flex;
     display: none !important;
 }
 
-[role=button] {
-	cursor: pointer;
+[role='button'] {
+    cursor: pointer;
 }
 
 .dl-horizontal dt {
@@ -364,70 +407,69 @@ display: flex;
 
 /* CHROME RESETS */
 button {
-	border-radius: 0;
+    border-radius: 0;
 }
 
 *:focus {
-	outline: none;
+    outline: none;
 }
 
 /* default styling for leaflet map markers font */
 .leaflet-marker-icon {
-	.fa-number {
-	    font-family: @fontFamily, sans-serif !important;
-	    font-weight: 700 !important;
-	    font-size: 13px !important;
-	    padding-top: 2px;
-	}
-	i:not([number]) {
-		margin-left: 2px;
-	}
+    .fa-number {
+        font-family: @fontFamily, sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        padding-top: 2px;
+    }
+    i:not([number]) {
+        margin-left: 2px;
+    }
 }
 
 // prevent tinymce dropdowns from overlapping backend components
 .tox.tox-tinymce-aux {
-	z-index: 1250;
+    z-index: 1250;
 }
 
 // TinyMCE fullscreen editor below admin topbar
 .admin .tox.tox-tinymce.tox-fullscreen {
-	top: 35px !important;
-	// Rule is important, because tinyMCE applies inline styles in chrome browser (overriding needed)
+    top: 35px !important;
+    // Rule is important, because tinyMCE applies inline styles in chrome browser (overriding needed)
 }
 
 // SWEET ALERT 2 OVERRIDES
 
 .swal2-container {
-	z-index: 2401;
+    z-index: 2401;
 }
 
 // Move swal notification a bit away from top so admin topbar is visible
 
-body.swal2-toast-shown .swal2-container.swal2-top-end, 
+body.swal2-toast-shown .swal2-container.swal2-top-end,
 body.swal2-toast-shown .swal2-container.swal2-top-right,
 body.swal2-toast-shown .swal2-container.swal2-top {
-	top: 40px;
+    top: 40px;
 }
 body.swal2-toast-shown .swal2-container.swal2-top-end {
-	right: 40px;
+    right: 40px;
 }
-body.swal2-toast-shown .swal2-container.swal2-bottom-end, 
+body.swal2-toast-shown .swal2-container.swal2-bottom-end,
 body.swal2-toast-shown .swal2-container.swal2-bottom-right,
 body.swal2-toast-shown .swal2-container.swal2-bottom {
-	bottom: 90px;
+    bottom: 90px;
 }
 
-
 .swal2-header {
-	h1 {
-		font-size: 1.5rem;
-	}
+    h1 {
+        font-size: 1.5rem;
+    }
 }
 
 .swal2-popup {
-	width: auto;
-	min-width: 32em;
-	max-width: min(90vw, 44em);
+    width: auto;
+    min-width: 32em;
+    max-width: min(90vw, 44em);
 }
 .swal2-actions {
     display: flex;
@@ -455,47 +497,62 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
         flex-wrap: wrap;
     }
 }
-.swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+.swal2-container.swal2-backdrop-show,
+.swal2-container.swal2-noanimation {
     // background: rgba(0,0,0,.8);
 }
 
 .swal2-popup.swal2-toast {
-	border-left: 4px solid @adminBackend-bg;;
-	border-radius: 5px;
+    border-left: 4px solid @adminBackend-bg;
+    border-radius: 5px;
 }
 
 .swal2-popup.swal2-toast.swal2-show {
-	animation: flashForSwal2Toast 0.95s ease, swal2-toast-show .4s;
+    animation:
+        flashForSwal2Toast 0.95s ease,
+        swal2-toast-show 0.4s;
 }
 
 .swal2-popup.swal2-toast .swal2-title {
-	font-size: 1.3rem;
-	font-family: "Inter", Arial, sans-serif;
-	color: white;
+    font-size: 1.3rem;
+    font-family: 'Inter', Arial, sans-serif;
+    color: white;
 }
 
 // SHORT FLASH FOR NOTIFICATION
 @keyframes flashForSwal2Toast {
-  from {border-left: 4px solid yellow;}
-  to {border-left: 4px solid @adminBackend-bg;}
+    from {
+        border-left: 4px solid yellow;
+    }
+    to {
+        border-left: 4px solid @adminBackend-bg;
+    }
 }
- 
+
 .-sweetAlertShowAnimation {
-	animation: swalAnimShow 0.2s ease;
+    animation: swalAnimShow 0.2s ease;
 }
 
 .-sweetAlertHideAnimation {
-	animation: swalAnimHide 0.2s ease;
+    animation: swalAnimHide 0.2s ease;
 }
 
 @keyframes swalAnimShow {
-  0% {opacity: 0;}
-  100% { opacity: 1; }
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 @keyframes swalAnimHide {
-  0% {opacity: 1;}
-  100% { opacity: 0; }
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 //@keyframes swal2-toast-show {
@@ -514,28 +571,28 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
 //}
 
 @keyframes swal2-toast-show {
- 0% {
-  opacity: 0;
- }
- 100% {
-  opacity: 1;
- }
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 @keyframes swal2-toast-hide {
- 100% {
-  transform:rotateZ(0deg);
-  opacity:0
- }
+    100% {
+        transform: rotateZ(0deg);
+        opacity: 0;
+    }
 }
 
 // Simple light box z-index changes
 
 #viewer .slbOverlay {
-	z-index: 2100;
+    z-index: 2100;
 }
 #viewer .slbWrapOuter {
-	z-index: 2105;
+    z-index: 2105;
 }
 
 /* add a focus ring for better accessibility */

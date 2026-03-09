@@ -4,58 +4,62 @@
 /* CLIENT APPLICATION STATUS */
 
 .client-status {
-	&__icon-wrapper {
-		position: relative;
-		display: flex;
-		align-items: center;
-	}
-	&__icon-client {
-		display: inline-flex;
-		color: inherit;
-		svg {
-			width: 20px;
-			height: 20px;
-			stroke: currentColor;
-		}
-	}
-	&__icon-status {
-		position: absolute;
-		right: -6px;
-		top: -5px;
-		z-index: 1111;
-		width: 14px;
-		height: 14px;
-		border-radius: 50%;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		color: @white;
-		background-color: @redBar;
-		.icon {
-			width: 8px;
-			height: 8px;
-			stroke: currentColor;
-		}
-		&.-accepted {
-			background-color: @greenBar;
-		}
-		&.-wrongNetwork {
-			background-color: @yellowBar;
-		}
-		&.-rejected {
-			background-color: @redBar;
-		}
-	}
+    &__icon-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    &__icon-client {
+        display: inline-flex;
+        color: inherit;
+        svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+        }
+    }
+    &__icon-status {
+        position: absolute;
+        right: -6px;
+        top: -5px;
+        z-index: 1111;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: @white;
+        background-color: @redBar;
+        .icon {
+            width: 8px;
+            height: 8px;
+            stroke: currentColor;
+        }
+        &.-accepted {
+            background-color: @greenBar;
+        }
+        &.-wrongNetwork {
+            background-color: @yellowBar;
+        }
+        &.-rejected {
+            background-color: @redBar;
+        }
+    }
 }
-		
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

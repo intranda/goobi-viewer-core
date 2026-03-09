@@ -93,7 +93,7 @@ export class NavigationController {
             pageHeight: 2970 * (scale / 100),
             pageWidth: 2100 * (scale / 100),
             spacingStaff: 12 * (scale / 100),
-            spacingSystem: 12 * (scale / 100)
+            spacingSystem: 12 * (scale / 100),
         });
 
         // Force layout recalculation after scale change
@@ -139,7 +139,7 @@ export class NavigationController {
             min: this.minScale,
             max: this.maxScale,
             current: this.currentScale,
-            step: this.scaleStep
+            step: this.scaleStep,
         };
     }
 
@@ -263,7 +263,7 @@ export class NavigationController {
             current: this.currentPage,
             total: this.pageCount,
             hasPrevious: this.currentPage > 1,
-            hasNext: this.currentPage < this.pageCount
+            hasNext: this.currentPage < this.pageCount,
         };
     }
 

@@ -1,0 +1,191 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @module viewerJS.expandableToc
+ * @description Client-side expand/collapse for the full-page expandable tree view TOC.
+ * Uses a flat list of <li> elements with data-level attributes to represent the tree
+ * hierarchy. Visibility is toggled via CSS classes (--hidden/--expanded).
+ * @requires jQuery
+ */
+var viewerJS = (function (viewer) {
+    'use strict';
+
+    var _debug = false;
+
+    var _selectors = {
+        element: '.toc__list-expandable-elem',
+        toggle: '.toc__list-expandable-toggle',
+        hidden: 'toc__list-expandable-elem--hidden',
+        expanded: 'toc__list-expandable-elem--expanded',
+        iconExpand: '.toc__icon-expand',
+        iconCollapse: '.toc__icon-collapse',
+    };
+
+    viewer.expandableToc = {
+        /**
+         * @description Initializes the expandable TOC. Attaches a single delegated click
+         * listener on the container for toggle, expand-all, and collapse-all actions.
+         * @method init
+         */
+        init: function () {
+            if (_debug) {
+                console.log('##############################');
+                console.log('viewer.expandableToc.init');
+                console.log('##############################');
+            }
+
+            var container = document.getElementById('expandableToc');
+            if (!container) return;
+
+            container.addEventListener('click', function (e) {
+                var toggle = e.target.closest(_selectors.toggle);
+                if (toggle) {
+                    var li = toggle.closest(_selectors.element);
+                    if (li.classList.contains(_selectors.expanded)) {
+                        _collapseElement(li);
+                    } else {
+                        _expandElement(li);
+                    }
+                    return;
+                }
+
+                if (e.target.closest('[data-action="expand-all"]')) {
+                    _expandAll(container);
+                    return;
+                }
+
+                if (e.target.closest('[data-action="collapse-all"]')) {
+                    _collapseAll(container);
+                    return;
+                }
+            });
+        },
+    };
+
+    /**
+     * @description Returns the nesting level of a TOC element from its data-level attribute.
+     * @param {HTMLElement} li - The TOC list item.
+     * @returns {number} The nesting level (0 = root).
+     */
+    function _getLevel(li) {
+        return parseInt(li.dataset.level, 10);
+    }
+
+    /**
+     * @description Updates the aria-expanded attribute on the toggle button of a TOC element.
+     * @param {HTMLElement} li - The TOC list item.
+     * @param {boolean} expanded - Whether the element is expanded.
+     */
+    function _updateToggle(li, expanded) {
+        var btn = li.querySelector(_selectors.toggle);
+        if (btn) {
+            btn.setAttribute('aria-expanded', String(expanded));
+        }
+    }
+
+    /**
+     * @description Shows the direct children (level + 1) of a parent element.
+     * Recursively shows children of already-expanded descendants.
+     * @param {HTMLElement} parentLi - The parent TOC list item.
+     */
+    function _showDirectChildren(parentLi) {
+        var level = _getLevel(parentLi);
+        var next = parentLi.nextElementSibling;
+        while (next) {
+            var nextLevel = _getLevel(next);
+            if (nextLevel <= level) break;
+            if (nextLevel === level + 1) {
+                next.classList.remove(_selectors.hidden);
+                if (next.classList.contains(_selectors.expanded)) {
+                    _showDirectChildren(next);
+                }
+            }
+            next = next.nextElementSibling;
+        }
+    }
+
+    /**
+     * @description Hides all descendant elements of a parent by adding the hidden class.
+     * @param {HTMLElement} parentLi - The parent TOC list item.
+     */
+    function _hideDescendants(parentLi) {
+        var level = _getLevel(parentLi);
+        var next = parentLi.nextElementSibling;
+        while (next) {
+            if (_getLevel(next) <= level) break;
+            next.classList.add(_selectors.hidden);
+            next = next.nextElementSibling;
+        }
+    }
+
+    /**
+     * @description Expands a single TOC element: marks it as expanded, updates the toggle
+     * button, and reveals its direct children.
+     * @param {HTMLElement} li - The TOC list item to expand.
+     */
+    function _expandElement(li) {
+        li.classList.add(_selectors.expanded);
+        _updateToggle(li, true);
+        _showDirectChildren(li);
+    }
+
+    /**
+     * @description Collapses a single TOC element: removes the expanded state, updates the
+     * toggle button, and hides all descendants.
+     * @param {HTMLElement} li - The TOC list item to collapse.
+     */
+    function _collapseElement(li) {
+        li.classList.remove(_selectors.expanded);
+        _updateToggle(li, false);
+        _hideDescendants(li);
+    }
+
+    /**
+     * @description Expands all parent elements and reveals all hidden items in the TOC.
+     * @param {HTMLElement} container - The TOC container element.
+     */
+    function _expandAll(container) {
+        container.querySelectorAll(_selectors.element + '.parent').forEach(function (li) {
+            li.classList.add(_selectors.expanded);
+            _updateToggle(li, true);
+        });
+        container.querySelectorAll('.' + _selectors.hidden).forEach(function (li) {
+            li.classList.remove(_selectors.hidden);
+        });
+    }
+
+    /**
+     * @description Collapses all elements: hides all non-root items and removes the
+     * expanded state from all parents.
+     * @param {HTMLElement} container - The TOC container element.
+     */
+    function _collapseAll(container) {
+        container.querySelectorAll(_selectors.element).forEach(function (li) {
+            if (_getLevel(li) > 0) {
+                li.classList.add(_selectors.hidden);
+            }
+            if (li.classList.contains('parent')) {
+                li.classList.remove(_selectors.expanded);
+                _updateToggle(li, false);
+            }
+        });
+    }
+
+    return viewer;
+})(viewerJS || {}, jQuery);

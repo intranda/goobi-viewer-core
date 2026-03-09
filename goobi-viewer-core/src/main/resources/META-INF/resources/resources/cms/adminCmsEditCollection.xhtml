@@ -1,312 +1,401 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-    xmlns:c="http://java.sun.com/jsp/jstl/core" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets" 
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsEditCollection')}" />
-            <f:event type="preRenderView" listener="#{cmsBean.init()}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminCmsEditCollection')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{cmsBean.init()}" />
         </f:metadata>
     </ui:define>
 
     <!-- CONTENT -->
     <ui:define name="content">
-        <ui:fragment id="cmsCollectionsAccessControl" rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
-            
-            <div id="cmsEditCollection" class="cms-edit-collection">
-            <div class="admin__title-bar">
-				<h1 class="admin__title">#{msg.cms_collection_edit}</h1>
-			</div>
-			
-			<viewerComponent:adminBreadcrumbs />
-			
-			<div class="admin__content-inner-content">
-            <div class="admin__content-wrapper">
-            <div class="admin__content-main">
-                    
-                <h:form id="cmsEditCollectionForm" prependId="false">
+        <ui:fragment
+            id="cmsCollectionsAccessControl"
+            rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
+            <div
+                id="cmsEditCollection"
+                class="cms-edit-collection">
+                <div class="admin__title-bar">
+                    <h1 class="admin__title">#{msg.cms_collection_edit}</h1>
+                </div>
 
-                    <h2>#{msg.cms_collections_description}</h2>
- 
-                    <div class="admin__cms-edit-collection-translation-box">
-                        <h:panelGroup id="descriptionGroup">
+                <viewerComponent:adminBreadcrumbs />
 
-                            <!-- LANGUAGE TABS -->
-                            <div class="admin__language-tabs">
-                                <viewerComponent:localeSelector 
-                                    object="#{cmsCollectionsBean.currentCollection}"
-                                        render="descriptionGroup"
-                                        execute="descriptionGroup"/>
-                            </div> 
+                <div class="admin__content-inner-content">
+                    <div class="admin__content-wrapper">
+                        <div class="admin__content-main">
+                            <h:form
+                                id="cmsEditCollectionForm"
+                                prependId="false">
+                                <h2>#{msg.cms_collections_description}</h2>
+
+                                <div class="admin__cms-edit-collection-translation-box">
+                                    <h:panelGroup id="descriptionGroup">
+                                        <!-- LANGUAGE TABS -->
+                                        <div class="admin__language-tabs">
+                                            <viewerComponent:localeSelector
+                                                object="#{cmsCollectionsBean.currentCollection}"
+                                                render="descriptionGroup"
+                                                execute="descriptionGroup" />
+                                        </div>
+
+                                        <div class="admin__default-block">
+                                            <div class="form-group form-row">
+                                                <div class="col-2">#{msg.description}:</div>
+                                                <div class="col-10">
+                                                    <div
+                                                        class="#{status.index == 0 ? 'active' : ''}"
+                                                        id="descriptionLanguage-#{status.index}">
+                                                        <h:inputTextarea
+                                                            value="#{cmsCollectionsBean.currentCollection.descriptionAsTranslation.translationValue}"
+                                                            styleClass="form-control tinyMCE -validation-input">
+                                                            <f:passThroughAttribute
+                                                                name="aria-label"
+                                                                value="#{msg.aria_label__collections_description}" />
+                                                            <f:ajax
+                                                                execute="@this"
+                                                                event="valueChange" />
+                                                        </h:inputTextarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+
+                                <!-- LINK -->
+                                <h2>#{msg.cms_collections_link}</h2>
+                                <div class="admin__default-block">
+                                    <p class="admin__boxed-entry-description">
+                                        #{msg.admin__cms_collections_link_desc}
+                                    </p>
+                                    <h:inputText
+                                        id="textControlUrl"
+                                        styleClass="form-control"
+                                        value="#{cmsCollectionsBean.currentCollection.collectionUrl}">
+                                        <f:ajax
+                                            execute="@this"
+                                            event="valueChange" />
+                                    </h:inputText>
+                                </div>
+
+                                <!-- IMAGE -->
+                                <h2>#{msg.cms_collections_image}</h2>
+                                <div class="admin__default-block">
+                                    <p class="admin__boxed-entry-description">
+                                        #{msg.admin__cms_collections_image_desc}
+                                    </p>
+
+                                    <h:panelGroup
+                                        layout="block"
+                                        id="imageModeGroup"
+                                        styleClass="admin__cms-edit-collection-image-actions-wrapper">
+                                        <div class="form-group admin__cms-edit-collection-connected-radio-buttons">
+                                            <div class="connected-top">
+                                                <h:selectOneRadio
+                                                    group="imageModeRadio"
+                                                    value="#{cmsCollectionsBean.imageMode}"
+                                                    immediate="true">
+                                                    <f:selectItem
+                                                        itemValue="NONE"
+                                                        itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
+                                                    <f:ajax render="imageModeGroup" />
+                                                </h:selectOneRadio>
+                                            </div>
+                                            <div class="connected-middle">
+                                                <h:selectOneRadio
+                                                    group="imageModeRadio"
+                                                    value="#{cmsCollectionsBean.imageMode}"
+                                                    immediate="true">
+                                                    <f:selectItem
+                                                        itemValue="IMAGE"
+                                                        itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
+                                                    <f:ajax render="imageModeGroup" />
+                                                </h:selectOneRadio>
+                                            </div>
+                                            <div class="connected-bottom">
+                                                <h:selectOneRadio
+                                                    group="imageModeRadio"
+                                                    value="#{cmsCollectionsBean.imageMode}"
+                                                    immediate="true">
+                                                    <f:selectItem
+                                                        itemValue="PI"
+                                                        itemLabel="#{msg.admin__cms_collections_image_mode_record}" />
+                                                    <f:ajax render="imageModeGroup" />
+                                                </h:selectOneRadio>
+                                            </div>
+                                        </div>
+
+                                        <h:panelGroup
+                                            layout="block"
+                                            styleClass="admin__cms-edit-collection-wrapper-choose-image"
+                                            id="mediaGroup"
+                                            rendered="#{cmsCollectionsBean.imageMode == 'IMAGE'}">
+                                            <!-- THUMBNAIL -->
+                                            <div class="admin__cms-edit-collection-image-thumbnail">
+                                                <ui:fragment
+                                                    rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
+                                                    <img
+                                                        src="#{cmsCollectionsBean.currentCollection.iconURI}"
+                                                        class="img-fluid"
+                                                        alt="" />
+                                                </ui:fragment>
+                                                <ui:fragment
+                                                    rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
+                                                    <img
+                                                        src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
+                                                        data-viewer-thumbnail="thumbnail"
+                                                        class="img-fluid"
+                                                        alt="" />
+                                                </ui:fragment>
+                                            </div>
+
+                                            <!-- ACTIONS -->
+                                            <div class="admin__cms-edit-collection-image-actions">
+                                                <h:commandLink
+                                                    action="#{cmsBean.setSelectedMediaHolder(cmsCollectionsBean.currentCollection)}"
+                                                    value="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
+                                                    class="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? 'btn btn--default' : ''}"
+                                                    role="button">
+                                                    <f:ajax
+                                                        execute="@form"
+                                                        render="mediaSelectPanel" />
+                                                </h:commandLink>
+                                                <h:commandLink
+                                                    rendered="#{cmsCollectionsBean.currentCollection.getMediaItem() != null}"
+                                                    action="#{cmsCollectionsBean.currentCollection.setMediaItem(null)}"
+                                                    value="#{msg.cms_selectMediaItem_deselect}"
+                                                    class="-redlink"
+                                                    role="button">
+                                                    <f:ajax render="mediaGroup" />
+                                                </h:commandLink>
+                                            </div>
+                                        </h:panelGroup>
+
+                                        <h:panelGroup
+                                            layout="block"
+                                            styleClass="admin__cms-collections-wrapper-identifier"
+                                            id="piGroup"
+                                            rendered="#{cmsCollectionsBean.imageMode == 'PI'}">
+                                            <div class="cms-edit-collection__text-control">
+                                                <h:inputText
+                                                    id="workPI"
+                                                    styleClass="form-control"
+                                                    validator="#{cmsCollectionsBean.validatePI}"
+                                                    value="#{cmsCollectionsBean.currentCollection.representativeWorkPI}">
+                                                    <!--                                 validator="piInSolrValidator" -->
+                                                    <f:ajax render="@all" />
+                                                </h:inputText>
+                                            </div>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+                                </div>
+
+                                <div class="admin__final-actions mb-0">
+                                    <!-- CANCEL -->
+                                    <h:commandLink
+                                        id="cmsEditCollectionBack"
+                                        styleClass="btn"
+                                        value="#{msg.cancel}"
+                                        immediate="true"
+                                        action="#{cmsCollectionsBean.resetCurrentCollection}" />
+                                    <!-- SAVE -->
+                                    <h:commandButton
+                                        disabled="#{!cmsCollectionsBean.currentCollectionValid}"
+                                        styleClass="btn btn--success"
+                                        id="saveCollection"
+                                        value="#{msg.save}"
+                                        action="#{cmsCollectionsBean.saveCurrentCollection()}" />
+                                </div>
+                            </h:form>
+
+                            <h:panelGroup id="mediaSelectPanel">
+                                <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+                                    <div class="admin-cms-media-select-overlay">
+                                        <!-- SELECT MEDIA ITEM OVERLAY -->
+                                        <div class="admin-cms-media__select-overlay" />
+
+                                        <!-- SELECT MEDIA ITEM -->
+                                        <div class="admin-cms-media__select">
+                                            <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+                                                <ui:param
+                                                    name="mediaDisplayPanel"
+                                                    value="mediaGroup" />
+                                                <ui:param
+                                                    name="fileTypes"
+                                                    value="#{cmsMediaBean.getImageTypes()}" />
+                                                <ui:param
+                                                    name="fileTypeValidator"
+                                                    value="#{cmsCollectionsBean.currentCollection.getMediaFilter()}" />
+                                            </ui:include>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+                            </h:panelGroup>
+                        </div>
+
+                        <div class="admin__content-side -sticky -refreshHCsticky">
+                            <ui:fragment rendered="#{cmsCollectionsBean.displayTranslationWidgetEdit}">
+                                <div class="admin__default-block -warning">
+                                    <!-- GROUP TITLE -->
+                                    <h2>#{msg.admin__cms_collections_translation}</h2>
+
+                                    <!-- DESCRIPTION AVAILABLE -->
+                                    <div class="admin__form-help-text in mb-3">
+                                        #{msg.admin__cms_collections_translation_desc}
+                                    </div>
+
+                                    <!-- NO DESCRIPTION AVAILABLE -->
+                                    <ui:fragment rendered="#{group.description eq ''}">
+                                        <div
+                                            class="admin__form-help-text in mb-2"
+                                            aria-disabled="true">
+                                            (#{msg.admin__label__no_description_available})
+                                        </div>
+                                    </ui:fragment>
+
+                                    <!-- TRANSLATION ACTION -->
+                                    <div class="row">
+                                        <div class="col-12 d-flex justify-content-center">
+                                            <ui:fragment rendered="#{!adminBean.translationLocked}">
+                                                ´
+                                                <!-- TRANSLATIONS INCOMPLETE - SHOW TRANSLATE BUTTON -->
+                                                <ui:fragment
+                                                    rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
+                                                    <a
+                                                        class="btn btn--full"
+                                                        data-trigger="displayTranslations"
+                                                        href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/#{cmsCollectionsBean.currentCollection.solrFieldValue}/"
+                                                        aria-label="#{msg.edit}: #{msg[group.name]}">
+                                                        #{msg.admin__cms_collections_translation_translate}
+                                                    </a>
+                                                </ui:fragment>
+
+                                                <!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
+                                                <ui:fragment
+                                                    rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
+                                                    <a
+                                                        class="btn btn--full"
+                                                        data-trigger="displayTranslations"
+                                                        href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/#{cmsCollectionsBean.currentCollection.solrFieldValue}/"
+                                                        aria-label="#{msg.edit}: #{msg[group.name]}">
+                                                        #{msg.admin__translations_translate}
+                                                    </a>
+                                                </ui:fragment>
+                                            </ui:fragment>
+
+                                            <!-- TRANSLATIONS LOCKED -->
+                                            <h:outputText
+                                                rendered="#{adminBean.translationLocked}"
+                                                value="#{msg.admin__translation_locked}" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:fragment>
 
                             <div class="admin__default-block">
-                                <div class="form-group form-row">
-                                    <div class="col-2">#{msg.description}:</div>
-                                    <div class="col-10">
-		                                <div class="#{status.index == 0 ? 'active' : ''}" id="descriptionLanguage-#{status.index}">
-		                                    <h:inputTextarea value="#{cmsCollectionsBean.currentCollection.descriptionAsTranslation.translationValue}"
-		                                        styleClass="form-control tinyMCE -validation-input">
-                                                <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__collections_description}"/>
-		                                    	<f:ajax execute="@this" event="valueChange"/>
-		                                    </h:inputTextarea>
-		                                </div>
-	                                </div>
+                                <h2>#{msg.admin__cms_collections_information}</h2>
+                                <div class="admin__cms-edit-collection-info-box">
+                                    <div class="admin__cms-edit-collection-data-wrapper">
+                                        <div class="admin__cms-edit-collection-data-type mb-4">
+                                            #{msg.admin__cms_collections_info_internal_name}
+                                        </div>
+                                        <div class="admin__cms-edit-collection-data-value mb-4">
+                                            #{cmsCollectionsBean.currentCollection.name}
+                                        </div>
+                                    </div>
+                                    <ui:repeat
+                                        var="value"
+                                        value="#{cmsCollectionsBean.messageEntryForFieldValue.values}">
+                                        <div class="admin__cms-edit-collection-data-wrapper">
+                                            <div class="admin__cms-edit-collection-data-type">
+                                                #{msg[value.language]}
+                                            </div>
+                                            <div class="admin__cms-edit-collection-data-value">
+                                                #{value.value != null ? value.value : '-/-'}
+                                            </div>
+                                        </div>
+                                    </ui:repeat>
+
+                                    <!-- 				    <div class="admin__cms-edit-collection-data-wrapper"> -->
+                                    <!-- 				    	<h:outputFormat value="#{msg.admin__cms_collections__link_search_results}" escape="false"> -->
+                                    <!-- 				    		<f:param value="#{cmsCollectionsBean.getSearchUrl(cmsCollectionsBean.currentCollection)}"/> -->
+                                    <!-- 				    	</h:outputFormat> -->
+                                    <!-- 					</div> -->
+
+                                    <!-- SHOW ALL RECORDS OF COLLECTION IN SEARCH HIT LIST -->
+                                    <div class="admin__form-help-text in mb-3 mt-4">
+                                        #{msg.admin__cms_collections__link_search_results}
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 d-flex justify-content-center">
+                                            <h:outputLink
+                                                styleClass="btn btn--default"
+                                                target="_blank"
+                                                value="#{cmsCollectionsBean.getSearchUrl(cmsCollectionsBean.currentCollection)}">
+                                                <h:outputText value="#{msg.admin__cms_collections_preview}" />
+                                            </h:outputLink>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                                 
-                         </h:panelGroup>
-                     </div>
-
-    
-                        <!-- LINK -->
-                        <h2>#{msg.cms_collections_link}</h2>
-                        <div class="admin__default-block">
-                            <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_link_desc}</p>
-                            <h:inputText id="textControlUrl" styleClass="form-control" value="#{cmsCollectionsBean.currentCollection.collectionUrl}">
-                            	<f:ajax execute="@this" event="valueChange"/>
-                            </h:inputText>
-                        </div>
-    
-                        <!-- IMAGE -->
-                        <h2>#{msg.cms_collections_image}</h2>
-                        <div class="admin__default-block">
-                            <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_image_desc}</p>
-                            
-                            <h:panelGroup layout="block" id="imageModeGroup" styleClass="admin__cms-edit-collection-image-actions-wrapper">
-                            
-                            	<div class="form-group admin__cms-edit-collection-connected-radio-buttons">
-                            		<div class="connected-top">
-		                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
-		                                	<f:selectItem itemValue="NONE" itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
-		                                	<f:ajax render="imageModeGroup" />
-		                            	</h:selectOneRadio>
-	                            	</div>
-	                            	<div class="connected-middle">
-		                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
-		                                	<f:selectItem itemValue="IMAGE" itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
-		                                	<f:ajax render="imageModeGroup" />
-		                            	</h:selectOneRadio>
-	                            	</div>
-	                            	<div class="connected-bottom">
-		                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
-		                                	<f:selectItem itemValue="PI" itemLabel="#{msg.admin__cms_collections_image_mode_record}" />
-		                                	<f:ajax render="imageModeGroup" />
-		                            	</h:selectOneRadio>
-	                            	</div>
-								</div>
-                            	
-                            
-                                <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image" id="mediaGroup" rendered="#{cmsCollectionsBean.imageMode == 'IMAGE'}">
-                                <!-- THUMBNAIL -->
-                                <div class="admin__cms-edit-collection-image-thumbnail">
-                                    <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
-                                        <img src="#{cmsCollectionsBean.currentCollection.iconURI}" class="img-fluid" alt="" />
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
-                                        <img src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
-                                        data-viewer-thumbnail="thumbnail"
-                                            class="img-fluid" alt="" />
-                                    </ui:fragment>
-                                </div>
-                                
-				                <!-- ACTIONS -->
-				                <div class="admin__cms-edit-collection-image-actions">
-				                    <h:commandLink 
-				                        action="#{cmsBean.setSelectedMediaHolder(cmsCollectionsBean.currentCollection)}" 
-				                        value="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}" 
-				                        class="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? 'btn btn--default' : ''}" 
-				                        role="button">
-				                        <f:ajax execute="@form" render="mediaSelectPanel" />
-				                    </h:commandLink>
-				                    <h:commandLink 
-				                        rendered="#{cmsCollectionsBean.currentCollection.getMediaItem() != null}" 
-				                        action="#{cmsCollectionsBean.currentCollection.setMediaItem(null)}" 
-				                        value="#{msg.cms_selectMediaItem_deselect}" 
-				                        class="-redlink"
-				                        role="button">
-				                        <f:ajax render="mediaGroup" />
-				                    </h:commandLink>                    
-				                </div>
-                                
-                                </h:panelGroup>	
-                            
-                            <h:panelGroup layout="block" styleClass="admin__cms-collections-wrapper-identifier" id="piGroup" rendered="#{cmsCollectionsBean.imageMode == 'PI'}">
-                            	<div class="cms-edit-collection__text-control">
-                                	<h:inputText id="workPI" styleClass="form-control" validator="#{cmsCollectionsBean.validatePI}" value="#{cmsCollectionsBean.currentCollection.representativeWorkPI}">
-                                   		<!--                                 validator="piInSolrValidator" -->
-                                    	<f:ajax render="@all"></f:ajax>
-                                	</h:inputText>
-                            	</div>
-                            </h:panelGroup>
-                            
-                            </h:panelGroup>
-                        </div>
-    
-          
-                        <div class="admin__final-actions mb-0">
-                        	<!-- CANCEL -->
-                            <h:commandLink id="cmsEditCollectionBack" styleClass="btn" value="#{msg.cancel}" immediate="true"
-                                action="#{cmsCollectionsBean.resetCurrentCollection}" />
-                            <!-- SAVE -->
-                            <h:commandButton disabled="#{!cmsCollectionsBean.currentCollectionValid}" styleClass="btn btn--success" id="saveCollection"
-                                value="#{msg.save}" action="#{cmsCollectionsBean.saveCurrentCollection()}" />
                         </div>
 
-                </h:form>
+                        <h:form
+                            prependId="false"
+                            id="dirtyEvaluatorForm">
+                            <h:commandScript
+                                id="dirtyEvaluator"
+                                name="checkDirtyStatus"
+                                render="@form" />
+                            <h:inputHidden
+                                id="dirtyMessage"
+                                value="#{cmsCollectionsBean.dirty}" />
+                        </h:form>
+                        <script>
+                            //Click on link to translations checks dirty status of current collection and ask for
+                            confirmation
+                            //before following link if status is dirty
+                            $("[data-trigger='displayTranslations']").on('click', (e) => {
+                                let target = e.target.href;
+                                viewerJS.jsfAjax.success
+                                    .pipe(
+                                        rxjs.operators.filter((e) => e.source.id == 'dirtyEvaluator'),
+                                        rxjs.operators.first()
+                                    )
+                                    .subscribe((e) => {
+                                        let dirty = document.getElementById('dirtyMessage').value === 'true';
 
-            
-            <h:panelGroup id="mediaSelectPanel">
-				<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
-	                   <div class="admin-cms-media-select-overlay">
-	                    
-	                    <!-- SELECT MEDIA ITEM OVERLAY -->
-                            <div class="admin-cms-media__select-overlay"></div>
-                            
-                            <!-- SELECT MEDIA ITEM -->
-                            <div class="admin-cms-media__select">                            
-                                 <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
-                                 	<ui:param name="mediaDisplayPanel" value="mediaGroup" />
-                                 	<ui:param name="fileTypes" value="#{cmsMediaBean.getImageTypes()}"/>
-        							<ui:param name="fileTypeValidator" value="#{cmsCollectionsBean.currentCollection.getMediaFilter()}"/>
-                                </ui:include>
-                            </div>
-	                   </div>
-				</ui:fragment>
-	        </h:panelGroup>
-	    </div>
-
-	        
-	    <div class="admin__content-side -sticky -refreshHCsticky">
-			<ui:fragment rendered="#{cmsCollectionsBean.displayTranslationWidgetEdit}">
-				<div class="admin__default-block -warning">
-		
-					<!-- GROUP TITLE -->
-					<h2>#{msg.admin__cms_collections_translation}</h2>
-		
-					<!-- DESCRIPTION AVAILABLE -->
-					<div class="admin__form-help-text in mb-3">
-						#{msg.admin__cms_collections_translation_desc}
-					</div>
-
-					<!-- NO DESCRIPTION AVAILABLE -->
-					<ui:fragment rendered="#{group.description eq ''}">
-						<div class="admin__form-help-text in mb-2" aria-disabled="true">
-							(#{msg.admin__label__no_description_available})</div>
-					</ui:fragment>
-		
-					<!-- TRANSLATION ACTION -->
-					<div class="row">
-						<div class="col-12 d-flex justify-content-center">
-                            <ui:fragment rendered="#{!adminBean.translationLocked}">
-´                               <!-- TRANSLATIONS INCOMPLETE - SHOW TRANSLATE BUTTON -->
-                                <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
-                                    <a class="btn btn--full"
-                                        data-trigger="displayTranslations"
-                                        href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/#{cmsCollectionsBean.currentCollection.solrFieldValue}/"
-                                        aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__cms_collections_translation_translate}</a>
-                                </ui:fragment>
-		
-                                <!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
-                                <ui:fragment rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
-                                    <a class="btn btn--full" data-trigger="displayTranslations"
-                                        href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.getTranslationGroupForFieldAndKey(cmsCollectionsBean.solrField, cmsCollectionsBean.solrFieldValue).id}/#{cmsCollectionsBean.currentCollection.solrFieldValue}/"
-                                        aria-label="#{msg.edit}: #{msg[group.name]}">#{msg.admin__translations_translate}</a>
-                                </ui:fragment>
-                            </ui:fragment>
-							
-                            <!-- TRANSLATIONS LOCKED -->
-                            <h:outputText rendered="#{adminBean.translationLocked}" value="#{msg.admin__translation_locked}" />
-						</div>
-					</div>
-				</div>
-			</ui:fragment>
-		
-
-			<div class="admin__default-block">
-				<h2>#{msg.admin__cms_collections_information}</h2>
-				<div class="admin__cms-edit-collection-info-box">
-					<div class="admin__cms-edit-collection-data-wrapper">
-						<div class="admin__cms-edit-collection-data-type mb-4">#{msg.admin__cms_collections_info_internal_name}</div>
-						<div class="admin__cms-edit-collection-data-value mb-4">#{cmsCollectionsBean.currentCollection.name}</div>
-					</div>
-				    <ui:repeat var="value" value="#{cmsCollectionsBean.messageEntryForFieldValue.values}">
-				    	<div class="admin__cms-edit-collection-data-wrapper">
-				        	<div class="admin__cms-edit-collection-data-type">#{msg[value.language]}</div>
-				        	<div class="admin__cms-edit-collection-data-value">#{value.value != null ? value.value : '-/-'}</div>
-				        </div>
-				    </ui:repeat>
-				    
-				    
-<!-- 				    <div class="admin__cms-edit-collection-data-wrapper"> -->
-<!-- 				    	<h:outputFormat value="#{msg.admin__cms_collections__link_search_results}" escape="false"> -->
-<!-- 				    		<f:param value="#{cmsCollectionsBean.getSearchUrl(cmsCollectionsBean.currentCollection)}"/> -->
-<!-- 				    	</h:outputFormat> -->
-<!-- 					</div> -->
-					
-					<!-- SHOW ALL RECORDS OF COLLECTION IN SEARCH HIT LIST -->
-					<div class="admin__form-help-text in mb-3 mt-4">
-						#{msg.admin__cms_collections__link_search_results}
-					</div>
-					<div class="row">
-						<div class="col-12 d-flex justify-content-center">
-						
-							<h:outputLink styleClass="btn btn--default" target="_blank" value="#{cmsCollectionsBean.getSearchUrl(cmsCollectionsBean.currentCollection)}">
-								<h:outputText value="#{msg.admin__cms_collections_preview}" />
-							</h:outputLink>
-                       	</div>
-					</div>
-
-					
-				</div>
-			</div>
-
-		</div>
-
-		<h:form prependId="false" id="dirtyEvaluatorForm">
-			<h:commandScript id="dirtyEvaluator" name="checkDirtyStatus" render="@form"></h:commandScript>
-		    <h:inputHidden id="dirtyMessage" value="#{cmsCollectionsBean.dirty}"></h:inputHidden>
-		</h:form>
-	    <script>
-	    
-	    //Click on link to translations checks dirty status of current collection and ask for confirmation
-	    //before following link if status is dirty
-	  	    $("[data-trigger='displayTranslations']").on("click", e => {
-	  	        let target = e.target.href;
-	  	        viewerJS.jsfAjax.success
-	  	        .pipe(rxjs.operators.filter(e => e.source.id == "dirtyEvaluator"),
-	  	              rxjs.operators.first())
-	  	        .subscribe(e => {
-  	  	             let dirty = document.getElementById("dirtyMessage").value === 'true';
-	  	            
-		  	         let promise = Promise.resolve();
-		  		     if(dirty) {
-		  		     	promise = viewerJS.notifications.confirm("#{msg.crowdsourcing__confirm_skip_page}")
-		  		     }
-		  		     promise.then( () => {
-		  		     	window.location.assign(target);
-		  		     })
-		  		     .catch((e) => {
-		  		     });
-	  	        })
-	  	        checkDirtyStatus();
-	  	        return false;
-	  	    })
-	  	    
-	    </script>
-	    
-	    
-						</div>
-	  	    
-	    </div>
-	    </div>
-            
+                                        let promise = Promise.resolve();
+                                        if (dirty) {
+                                            promise = viewerJS.notifications.confirm(
+                                                '#{msg.crowdsourcing__confirm_skip_page}'
+                                            );
+                                        }
+                                        promise
+                                            .then(() => {
+                                                window.location.assign(target);
+                                            })
+                                            .catch((e) => {});
+                                    });
+                                checkDirtyStatus();
+                                return false;
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
         </ui:fragment>
     </ui:define>
 </ui:composition>

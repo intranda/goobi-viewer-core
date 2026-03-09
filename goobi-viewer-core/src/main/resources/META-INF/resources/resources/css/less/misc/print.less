@@ -10,34 +10,40 @@
         filter: none !important;
         -ms-filter: none !important;
     }
-    a, a:visited {
+    a,
+    a:visited {
         color: #444 !important;
         text-decoration: underline;
     }
     a:link:after {
-        content: "";
+        content: '';
     }
     abbr[title]:after {
-        content: "";
+        content: '';
     }
-    pre, blockquote {
+    pre,
+    blockquote {
         border: 1px solid #999;
         page-break-inside: avoid;
     }
     thead {
         display: table-header-group;
     }
-    tr, img {
+    tr,
+    img {
         page-break-inside: avoid;
     }
     @page {
         margin: 0.5cm;
     }
-    p, h1, h2 {
+    p,
+    h1,
+    h2 {
         orphans: 3;
         widows: 3;
     }
-    h1, h2 {
+    h1,
+    h2 {
         page-break-after: avoid;
     }
 }

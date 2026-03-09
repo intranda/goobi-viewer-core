@@ -5,32 +5,31 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
-
     <composite:interface>
         <composite:attribute
             name="metadata"
             required="true"
             type="io.goobi.viewer.model.metadata.Metadata" />
-       <composite:attribute name="displayLabel" type="java.lang.Boolean" required="false" default="true"/>
+        <composite:attribute
+            name="displayLabel"
+            type="java.lang.Boolean"
+            required="false"
+            default="true" />
     </composite:interface>
-
-
 
     <composite:implementation>
         <ui:fragment rendered="#{!cc.attrs.metadata.blank}">
-                <ui:fragment rendered="#{cc.attrs.displayLabel}">
-                    <label>#{msg[cc.attrs.metadata.label]}:</label>
-                </ui:fragment>
-                        <ui:repeat
-                            value="#{cc.attrs.metadata.values}"
-                            var="val">
-                            <h:outputFormat
-                                value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                escape="false">
-                            </h:outputFormat>
-                            <br />
-                        </ui:repeat>
+            <ui:fragment rendered="#{cc.attrs.displayLabel}">
+                <label>#{msg[cc.attrs.metadata.label]}:</label>
+            </ui:fragment>
+            <ui:repeat
+                value="#{cc.attrs.metadata.values}"
+                var="val">
+                <h:outputFormat
+                    value="#{val.getDisplayValue(navigationHelper.locale)}"
+                    escape="false" />
+                <br />
+            </ui:repeat>
         </ui:fragment>
-
     </composite:implementation>
 </ui:composition>

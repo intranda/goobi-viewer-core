@@ -94,11 +94,11 @@ public enum FileType {
         if (baseTypes.stream().anyMatch(MimeType::isEpub)) {
             types.add(FileType.EPUB);
         }
+        if (baseTypes.stream().anyMatch(MimeType::isMEI) || viewManager.getTopStructElement().isHasMei()) {
+            types.add(FileType.MEI);
+        }
         if (viewManager.getTopStructElement().isHasTei()) {
             types.add(FileType.TEI);
-        }
-        if (viewManager.getTopStructElement().isHasMei()) {
-            types.add(FileType.MEI);
         }
 
         try {

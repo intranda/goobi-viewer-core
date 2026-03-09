@@ -6,48 +6,50 @@
 .search-calendar {
     /* ELEMENT */
     &__title {
-        h1 {}
+        h1 {
+        }
     }
     &__century-outer {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-	}
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
     &__century-grid {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
-		margin-bottom: 12px;
-		padding-inline-start: 0;
-		list-style: none;
-	}
-	&__century-year {
-		display: inline-flex;
-  		justify-content: center;
-  		align-items: center;
-		& span, a {
-			display: inline-flex;
-	  		justify-content: center;
-	  		align-items: center;
-	  		width: 53px;
-		}
-	}
-	&__century-year-link a,
-	&__century-year-text {
-		padding: 4px 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 12px;
+        padding-inline-start: 0;
+        list-style: none;
+    }
+    &__century-year {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        & span,
+        a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 53px;
+        }
+    }
+    &__century-year-link a,
+    &__century-year-text {
+        padding: 4px 8px;
         border: 1px solid @gray;
-		line-height: 1;
-		font-size: 14px;
-	}
-	&__century-year-link a {
-		font-weight: 700;
-	}
-	&__century-year-text {
-		opacity: 0.4;
-	}
-	&__century-separator-heading {
-		margin-bottom: 0;
-	}
+        line-height: 1;
+        font-size: 14px;
+    }
+    &__century-year-link a {
+        font-weight: 700;
+    }
+    &__century-year-text {
+        opacity: 0.4;
+    }
+    &__century-separator-heading {
+        margin-bottom: 0;
+    }
     &__input {
         padding: 21px;
         border: 1px solid @middlegray;
@@ -55,14 +57,19 @@
         input {
             box-shadow: none;
         }
-        .form-horizontal {}
-        .form-group {
-        	margin: 0;
+        .form-horizontal {
         }
-        .col-sm-4 {}
-        .col-sm-8 {}
-        .control-label {}
-        .form-control {}
+        .form-group {
+            margin: 0;
+        }
+        .col-sm-4 {
+        }
+        .col-sm-8 {
+        }
+        .control-label {
+        }
+        .form-control {
+        }
     }
     &__months {
         margin-bottom: 21px;
@@ -87,7 +94,7 @@
         max-width: calc(100% / 7);
     }
     &__month-days {
-    	display: flex;
+        display: flex;
         span {
             display: block;
             padding: 5px;
@@ -96,7 +103,7 @@
         }
     }
     &__month-week {
-    	display: flex;
+        display: flex;
     }
     &__month-day {
         text-align: center;
@@ -110,44 +117,45 @@
         }
         a,
         button {
-        	width: 100%;
-        	color: @blue;
-        	text-decoration: none;
+            width: 100%;
+            color: @blue;
+            text-decoration: none;
             background-color: @lightgray;
-        	&:hover,
-        	&:focus,
-        	&:active {
-        		text-decoration: none;
-        		color: @white;
-        		background-color: @blue;
-        	}
+            &:hover,
+            &:focus,
+            &:active {
+                text-decoration: none;
+                color: @white;
+                background-color: @blue;
+            }
         }
         .popover-title {
-        	line-height: normal;
-        	color: @black;
+            line-height: normal;
+            color: @black;
         }
         .popover-content {
-        	a {
-        		background-color: transparent;
-        		&:hover,
-        		&:active,
-        		&:focus {
-        			color: @black;
-        			background-color: transparent;
-        		}
-        	}
+            a {
+                background-color: transparent;
+                &:hover,
+                &:active,
+                &:focus {
+                    color: @black;
+                    background-color: transparent;
+                }
+            }
         }
     }
     &__month-day-empty {
         min-height: 1px;
     }
-    &__action {}
+    &__action {
+    }
     &__incomplete {
         padding-top: 15px;
         padding-bottom: 15px;
         .label {
             padding: 7px 15px;
-            font-size: .9rem;
+            font-size: 0.9rem;
         }
     }
     /* MODIFICATION */
@@ -159,17 +167,20 @@
             }
         }
     }
-
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

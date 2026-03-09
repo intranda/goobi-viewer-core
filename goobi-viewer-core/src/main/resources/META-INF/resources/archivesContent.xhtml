@@ -47,9 +47,8 @@
                 </ui:fragment>
                 <div class="archives__hero-content">
                     <h1 class="archives__hero-title">
-                        #{archiveBean.archiveConfig != null and not empty archiveBean.archiveConfig.title.textOrDefault ?
-                        archiveBean.archiveConfig.title.textOrDefault :
-                        archiveBean.displayEntry.label}
+                        #{archiveBean.archiveConfig != null and not empty archiveBean.archiveConfig.title.textOrDefault
+                        ? archiveBean.archiveConfig.title.textOrDefault : archiveBean.displayEntry.label}
                     </h1>
                     <ui:fragment
                         rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.description.isValid(navigationHelper.locale)}">
@@ -85,11 +84,11 @@
                                             value="#{archiveBean.filteredDatabases}"
                                             var="database"
                                             itemValue="#{database.resourceId}"
-                                            itemLabel="#{database.resourceName}"></f:selectItems>
+                                            itemLabel="#{database.resourceName}" />
                                     </h:selectOneMenu>
                                     <h:commandButton
                                         styleClass="d-none"
-                                        action="pretty:archives1"></h:commandButton>
+                                        action="pretty:archives1" />
                                 </div>
                             </div>
                         </h:form>
@@ -135,7 +134,7 @@
                                 <h:commandButton
                                     styleClass="archives__search-submit-button"
                                     value="#{msg.search}"
-                                    action="#{archiveBean.searchAction}"></h:commandButton>
+                                    action="#{archiveBean.searchAction}" />
                             </h:form>
                         </div>
                         <ui:include src="/resources/includes/archives/archiveTreeView.xhtml">

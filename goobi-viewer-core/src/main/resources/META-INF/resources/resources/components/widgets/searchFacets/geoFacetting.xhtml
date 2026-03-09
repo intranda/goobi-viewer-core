@@ -1,133 +1,198 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-	xmlns:util="http://goobi.io/util"
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-
-
-
     <!-- INTERFACE OPTIONS -->
     <composite:interface />
 
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
-    <ui:param name="search" value="#{cc.attrs.search != null ? cc.attrs.search : searchBean}"></ui:param>
+        <ui:param
+            name="search"
+            value="#{cc.attrs.search != null ? cc.attrs.search : searchBean}" />
         <!--  WIDGET Geo facetting -->
         <ui:fragment rendered="#{searchBean.showGeoFacetMap}">
-        <h:form>
-	        <div class="widget widget-geofacetting">
-				<div class="widget__topbar widget-geofacetting__topbar">
-					<h2 class="widget__title widget-geofacetting__title">#{msg.widget_geofacetting__label}</h2> 
-					<div class="widget-geofacetting__item widget-geofacetting__actions">
-			            <button type="button" id="toggleMarkers" data-toggle="tooltip" data-geofacet="toggleMarkers" title="#{msg.action__toggle_map_markers}" class="widget-geofacetting__action-toggle-markers" aria-label="#{msg.action__toggle_map_markers}">
-							<util:icon icon="map-pin" styleClass="icon icon--pad-bottom"/>
-			            </button>
-						<button type="button" id="resetFacetMap" data-toggle="tooltip" data-geofacet="reset" title="#{msg.removeFacet}" class="widget-geofacetting__action-reset" aria-label="#{msg.fullscreen_enter}">
-							<util:icon icon="x" styleClass="icon icon--pad-bottom"/>
-			            </button>
-		            </div>
-				</div>
-				<div class="widget__body widget-geofacetting__body">
-					<div id="geoFacettingMap" class="geo-map">
-			            <!-- OVERLAY ON HOVER -->
-			            <div id="expandFacetMap" class="widget-geofacetting__action-overlay">
-			              <button type="button" class="widget-geofacetting__action-expand" aria-label="#{msg.widget_geofacetting__area_facetting}">
-			                <div class="widget-geofacetting__action-expand-hint">#{msg.widget_geofacetting__area_facetting}</div>
-			              </button>
-			            </div>
-					</div>
-				</div>
-				<h:commandButton id="submitGeoFacet" type="submit" styleClass="d-none" action="#{search.searchSimple}" value="#{msg.search}">
-                   	<f:setPropertyActionListener target="#{search.activeSearchType}" value="0" />
-                   	<f:passThroughAttribute name="data-geofacet" value="execute"/>
-               	</h:commandButton>
-				<h:inputHidden id="searchInput" value="#{searchBean.facets.geoFacetFeature}">
-	        		<f:passThroughAttribute name="data-geofacet" value="feature"/>
-	        	</h:inputHidden>
-				<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
-					<div data-loader="geoFacet" class="ajax_loader widget-geofacetting__loader-wrapper">
-						<img src="#{request.contextPath}/resources/images/infinity_loader.svg" class="img-responsive widget-geofacetting__loader-animated-image" alt="Waiting..." />
-						<div class="modal-backdrop show"></div>
-					</div>
-					<div class="widget-geofacetting__overlay-buttons-wrapper">
-						<button  type="button" data-geofacet="toggleMarkersFullscreen" data-placement="right" data-toggle="tooltip" title="#{msg.action__toggle_map_markers}" class="btn btn--icon geo-map__toggle-markers" aria-label="#{msg.action__toggle_map_markers}">
-	           				<util:icon icon="map-pin" />
-	        			</button>
-						<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="cancel">#{msg.cancel}</button>
-						<button class="btn btn--full widget-geofacetting__overlay-submit-search" data-geofacet="trigger-execute">#{msg.widget_geofacetting__area_facetting}</button>
-					</div>	
-			        <div id="geoFacettingOverlayMap" class="overlay__geomap"></div>
-				</div>
-			</div>
-	          <script type="text/javascript">	
-					$(document).ready(e => {	
-				    let config = {
-				      		areaString: '#{searchBean.facets.geoFacetFeature}',
-				      		map: {
-				      			mapId: "geoFacettingMap",
-				      			language: "#{navigationHelper.localeString}",
-				      			iconPath: "/resources/images/map",
-				      			hitsLayer: {
-				      				allowMovingFeatures: false,
-				      				popoverOnHover: true,
-				      				popover: $( '<div><p data-metadata="title"></p></div>' ),
-				      				clusterMarkers: true,
-				      				style: {
-				      					fillOpacity: 0.02,
-				      					color: "#{configurationBean.markerForFacetting.markerColor}"
-				      				},
-									markerIcon: (icon => icon)(#{configurationBean.markerForFacetting.toJSONString()})
-				      			},
-				      			areaLayer: {
-				      				style : {
-				      					fillColor : "#{configurationBean.selectionColorForFacetting}",
-				      					color : "#{configurationBean.selectionColorForFacetting}",
-				      					fillOpacity : 0.3,
-				      				}
-				      			}
-				      		},
-				      		heatmap: {
-				      			enabled: #{configurationBean.useHeatmapForFacetting()},
-				      			heatmapUrl: "#{request.contextPath}/api/v1/index/spatial/heatmap/{solrField}",
-				      			featureUrl: "#{request.contextPath}/api/v1/index/spatial/search/{solrField}",
-				      			mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",
-				      			facetQuery: "#{searchBean.getCombinedFilterQueryEscaped()}",
-				      			labelField: "LABEL",
-				      		}, 
-				      		search: {
-				      			$loader: $( "[data-loader='geoFacet']" ),
-				      			$searchButton: $( "[data-geofacet='execute']" )
-				      		},
-				      		buttons: {
-				      			$searchWithFacets: $( "[data-geofacet='trigger-execute']" ),
-				      			$resetFacets: $( "[data-geofacet='reset']" ),
-				      			$cancelEditMode: $( "[data-geofacet='cancel']" ),
-				      			$facetInput: $( "[data-geofacet='feature']" ),
-				      			$toggleMarkers: $( "[data-geofacet='toggleMarkers']" ),
-				      			$toggleMarkersEditMode: $( "[data-geofacet='toggleMarkersFullscreen']" ),
-				      			$openEditMode: $("#expandFacetMap"),
-				      		},
-				      		editMode: {
-				      			$editModeWrapper: $('#widgetGeoFacettingOverlay'),
-				      			$editModeMap: $("#geoFacettingOverlayMap"),
-				      			enableAddressSearch : true,
-				      			addressSearchPlaceholder : "#{msg.ADDRESS}"
-				      		}
-				      	}
-					    
-					    let facetMap = new viewerJS.GeoMapFacet(config);
-				    	let features = #{searchBean.getHitsLocations()};
-				    	facetMap.init(features, {
-	                            zoom: 1,
-	                            center: [0,0] //long, lat
-                        	})
-					})				    
-	          
-		        </script>
-        </h:form>
-        
+            <h:form>
+                <div class="widget widget-geofacetting">
+                    <div class="widget__topbar widget-geofacetting__topbar">
+                        <h2 class="widget__title widget-geofacetting__title">#{msg.widget_geofacetting__label}</h2>
+                        <div class="widget-geofacetting__item widget-geofacetting__actions">
+                            <button
+                                type="button"
+                                id="toggleMarkers"
+                                data-toggle="tooltip"
+                                data-geofacet="toggleMarkers"
+                                title="#{msg.action__toggle_map_markers}"
+                                class="widget-geofacetting__action-toggle-markers"
+                                aria-label="#{msg.action__toggle_map_markers}">
+                                <util:icon
+                                    icon="map-pin"
+                                    styleClass="icon icon--pad-bottom" />
+                            </button>
+                            <button
+                                type="button"
+                                id="resetFacetMap"
+                                data-toggle="tooltip"
+                                data-geofacet="reset"
+                                title="#{msg.removeFacet}"
+                                class="widget-geofacetting__action-reset"
+                                aria-label="#{msg.fullscreen_enter}">
+                                <util:icon
+                                    icon="x"
+                                    styleClass="icon icon--pad-bottom" />
+                            </button>
+                        </div>
+                    </div>
+                    <div class="widget__body widget-geofacetting__body">
+                        <div
+                            id="geoFacettingMap"
+                            class="geo-map">
+                            <!-- OVERLAY ON HOVER -->
+                            <div
+                                id="expandFacetMap"
+                                class="widget-geofacetting__action-overlay">
+                                <button
+                                    type="button"
+                                    class="widget-geofacetting__action-expand"
+                                    aria-label="#{msg.widget_geofacetting__area_facetting}">
+                                    <div class="widget-geofacetting__action-expand-hint">
+                                        #{msg.widget_geofacetting__area_facetting}
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <h:commandButton
+                        id="submitGeoFacet"
+                        type="submit"
+                        styleClass="d-none"
+                        action="#{search.searchSimple}"
+                        value="#{msg.search}">
+                        <f:setPropertyActionListener
+                            target="#{search.activeSearchType}"
+                            value="0" />
+                        <f:passThroughAttribute
+                            name="data-geofacet"
+                            value="execute" />
+                    </h:commandButton>
+                    <h:inputHidden
+                        id="searchInput"
+                        value="#{searchBean.facets.geoFacetFeature}">
+                        <f:passThroughAttribute
+                            name="data-geofacet"
+                            value="feature" />
+                    </h:inputHidden>
+                    <div
+                        id="widgetGeoFacettingOverlay"
+                        class="widget-geofacetting__overlay">
+                        <div
+                            data-loader="geoFacet"
+                            class="ajax_loader widget-geofacetting__loader-wrapper">
+                            <img
+                                src="#{request.contextPath}/resources/images/infinity_loader.svg"
+                                class="img-responsive widget-geofacetting__loader-animated-image"
+                                alt="Waiting..." />
+                            <div class="modal-backdrop show" />
+                        </div>
+                        <div class="widget-geofacetting__overlay-buttons-wrapper">
+                            <button
+                                type="button"
+                                data-geofacet="toggleMarkersFullscreen"
+                                data-placement="right"
+                                data-toggle="tooltip"
+                                title="#{msg.action__toggle_map_markers}"
+                                class="btn btn--icon geo-map__toggle-markers"
+                                aria-label="#{msg.action__toggle_map_markers}">
+                                <util:icon icon="map-pin" />
+                            </button>
+                            <button
+                                class="btn btn--default widget-geofacetting__overlay-reset-search"
+                                data-geofacet="cancel">
+                                #{msg.cancel}
+                            </button>
+                            <button
+                                class="btn btn--full widget-geofacetting__overlay-submit-search"
+                                data-geofacet="trigger-execute">
+                                #{msg.widget_geofacetting__area_facetting}
+                            </button>
+                        </div>
+                        <div
+                            id="geoFacettingOverlayMap"
+                            class="overlay__geomap" />
+                    </div>
+                </div>
+                <script type="text/javascript">
+                    $(document).ready(e => {
+                       let config = {
+                         		areaString: '#{searchBean.facets.geoFacetFeature}',
+                         		map: {
+                         			mapId: "geoFacettingMap",
+                         			language: "#{navigationHelper.localeString}",
+                         			iconPath: "/resources/images/map",
+                         			hitsLayer: {
+                         				allowMovingFeatures: false,
+                         				popoverOnHover: true,
+                         				popover: $( '
+                    <div>
+                        <p data-metadata="title" />
+                    </div>
+                    ' ),
+                         				clusterMarkers: true,
+                         				style: {
+                         					fillOpacity: 0.02,
+                         					color: "#{configurationBean.markerForFacetting.markerColor}"
+                         				},
+                    				markerIcon: (icon => icon)(#{configurationBean.markerForFacetting.toJSONString()})
+                         			},
+                         			areaLayer: {
+                         				style : {
+                         					fillColor : "#{configurationBean.selectionColorForFacetting}",
+                         					color : "#{configurationBean.selectionColorForFacetting}",
+                         					fillOpacity : 0.3,
+                         				}
+                         			}
+                         		},
+                         		heatmap: {
+                         			enabled: #{configurationBean.useHeatmapForFacetting()},
+                         			heatmapUrl: "#{request.contextPath}/api/v1/index/spatial/heatmap/{solrField}",
+                         			featureUrl: "#{request.contextPath}/api/v1/index/spatial/search/{solrField}",
+                         			mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",
+                         			facetQuery: "#{searchBean.getCombinedFilterQueryEscaped()}",
+                         			labelField: "LABEL",
+                         		},
+                         		search: {
+                         			$loader: $( "[data-loader='geoFacet']" ),
+                         			$searchButton: $( "[data-geofacet='execute']" )
+                         		},
+                         		buttons: {
+                         			$searchWithFacets: $( "[data-geofacet='trigger-execute']" ),
+                         			$resetFacets: $( "[data-geofacet='reset']" ),
+                         			$cancelEditMode: $( "[data-geofacet='cancel']" ),
+                         			$facetInput: $( "[data-geofacet='feature']" ),
+                         			$toggleMarkers: $( "[data-geofacet='toggleMarkers']" ),
+                         			$toggleMarkersEditMode: $( "[data-geofacet='toggleMarkersFullscreen']" ),
+                         			$openEditMode: $("#expandFacetMap"),
+                         		},
+                         		editMode: {
+                         			$editModeWrapper: $('#widgetGeoFacettingOverlay'),
+                         			$editModeMap: $("#geoFacettingOverlayMap"),
+                         			enableAddressSearch : true,
+                         			addressSearchPlaceholder : "#{msg.ADDRESS}"
+                         		}
+                         	}
+
+                        let facetMap = new viewerJS.GeoMapFacet(config);
+                       	let features = #{searchBean.getHitsLocations()};
+                       	facetMap.init(features, {
+                                            zoom: 1,
+                                            center: [0,0] //long, lat
+                                       	})
+                    })
+                </script>
+            </h:form>
         </ui:fragment>
     </composite:implementation>
 </ui:composition>

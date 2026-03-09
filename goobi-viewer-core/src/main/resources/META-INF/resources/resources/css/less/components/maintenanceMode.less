@@ -5,104 +5,106 @@
 
 /* MAINTENANCE BANNER */
 .maintenance-banner {
-	position: relative;
-	z-index: 2400;
-	display: none;
+    position: relative;
+    z-index: 2400;
+    display: none;
 
-	&__outer {
-		min-height: 45px;
-		padding: 10px 0;
-		width: 100%;
-		background: #fed44c;
-		position: relative;
-	}
+    &__outer {
+        min-height: 45px;
+        padding: 10px 0;
+        width: 100%;
+        background: #fed44c;
+        position: relative;
+    }
 
-	&__wrapper {
-		display: flex;
-		gap: 40px;
-		align-items: center;
-		color: black;
-		padding-right: 40px;
-	}
+    &__wrapper {
+        display: flex;
+        gap: 40px;
+        align-items: center;
+        color: black;
+        padding-right: 40px;
+    }
 
-	&__icon {
-		align-self: flex-start;
-	}
+    &__icon {
+        align-self: flex-start;
+    }
 
-	&__text {
+    &__text {
+        p,
+        a {
+            color: black;
+            font-size: 16px;
+            line-height: 1.4;
 
-		p,
-		a {
-			color: black;
-			font-size: 16px;
-			line-height: 1.4;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
 
-			&:last-child {
-				margin-bottom: 0;
-			}
-		}
+        a {
+            text-decoration: underline;
 
-		a {
-			text-decoration: underline;
+            &:hover,
+            &:focus,
+            &:active {
+                color: #333;
+            }
+        }
+    }
 
-			&:hover,
-			&:focus,
-			&:active {
-				color: #333;
-			}
-		}
-	}
+    &__close-button {
+        display: flex;
+        position: absolute;
+        right: 28px;
+        top: 30px;
+        font-size: 22px;
+        background: transparent;
+        padding: 0;
+        border: none;
+        color: black;
 
-	&__close-button {
-		display: flex;
-		position: absolute;
-		right: 28px;
-		top: 30px;
-		font-size: 22px;
-		background: transparent;
-		padding: 0;
-		border: none;
-		color: black;
-
-		&:hover,
-		&:focus,
-		&:active {
-			color: #333;
-		}
-	}
+        &:hover,
+        &:focus,
+        &:active {
+            color: #333;
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.maintenance-banner {
-		&__close-button {
-			top: 16px;
-			right: 8px;
+    .maintenance-banner {
+        &__close-button {
+            top: 16px;
+            right: 8px;
 
-			&:before {
-				width: 20px;
-				height: 2px;
-				margin: -1px auto auto -10px;
-			}
+            &:before {
+                width: 20px;
+                height: 2px;
+                margin: -1px auto auto -10px;
+            }
 
-			&:after {
-				width: 2px;
-				height: 20px;
-				margin: -10px auto auto -1px;
-			}
-		}
+            &:after {
+                width: 2px;
+                height: 20px;
+                margin: -10px auto auto -1px;
+            }
+        }
 
-		&__icon {
-			display: none;
-		}
-	}
+        &__icon {
+            display: none;
+        }
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

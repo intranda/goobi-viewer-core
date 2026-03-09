@@ -1,65 +1,95 @@
-<ui:composition 
+<ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-
     <ui:define name="metadata">
         <f:metadata>
-            <f:event  type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin( (adminBean.currentIpRange.id == null) ? 'adminIpRangeNew' : 'adminIpRange')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin( (adminBean.currentIpRange.id == null) ? 'adminIpRangeNew' : 'adminIpRange')}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <f:view contentType="text/html" encoding="utf-8">
+        <f:view
+            contentType="text/html"
+            encoding="utf-8">
             <div id="adminIpRange">
                 <h:panelGroup rendered="#{userBean.admin == true and adminBean.currentIpRange != null}">
                     <div class="admin__title-bar">
                         <h1 class="admin__title">
-                            <h:outputText value="#{msg.admin__ip_range_new}" rendered="#{adminBean.currentIpRange.id == null}" />
-                            <h:outputText value="#{msg.admin__ip_range_edit}" rendered="#{adminBean.currentIpRange.id != null}" />
+                            <h:outputText
+                                value="#{msg.admin__ip_range_new}"
+                                rendered="#{adminBean.currentIpRange.id == null}" />
+                            <h:outputText
+                                value="#{msg.admin__ip_range_edit}"
+                                rendered="#{adminBean.currentIpRange.id != null}" />
                         </h1>
                     </div>
-                    
+
                     <viewerComponent:adminBreadcrumbs />
-                    
-                    <div class="admin__content-inner-content" role="form">
-                        <h:form id="editIpRangeGeneralForm" styleClass="form-horizontal" prependId="false">
+
+                    <div
+                        class="admin__content-inner-content"
+                        role="form">
+                        <h:form
+                            id="editIpRangeGeneralForm"
+                            styleClass="form-horizontal"
+                            prependId="false">
                             <h2>#{msg.general}</h2>
                             <div class="admin__default-block">
                                 <fieldset>
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
                                             <label for="ipRangeName">#{msg.name}:</label>
-                                            <span class="admin__label-required-field">(#{msg.form__required_field})</span>
+                                            <span class="admin__label-required-field">
+                                                (#{msg.form__required_field})
+                                            </span>
                                         </div>
-                                        
+
                                         <div class="col-9 cms-module__option-control admin__form-input">
                                             <h:panelGroup id="ipRangeNameGroup">
-                                            <div class="cms-module__option-message">
-                                                <h:messages for="nameGroup"
-                                                    infoClass="cms-module__option-message-status success"
-                                                    warnClass="cms-module__option-message-status warning"
-                                                    errorClass="cms-module__option-message-status danger" />
-                                                <div class="cms-module__option-message-mark">
-                                                    <i class="fa fa-check" aria-hidden="true"></i>
-                                                    <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                <div class="cms-module__option-message">
+                                                    <h:messages
+                                                        for="nameGroup"
+                                                        infoClass="cms-module__option-message-status success"
+                                                        warnClass="cms-module__option-message-status warning"
+                                                        errorClass="cms-module__option-message-status danger" />
+                                                    <div class="cms-module__option-message-mark">
+                                                        <i
+                                                            class="fa fa-check"
+                                                            aria-hidden="true" />
+                                                        <i
+                                                            class="fa fa-exclamation"
+                                                            aria-hidden="true" />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <h:inputText value="#{adminBean.currentIpRange.name}" id="ipRangeName" required="true" styleClass="form-control" >
-                                                <f:ajax event="blur" render="ipRangeNameGroup" />
-                                            </h:inputText>
+                                                <h:inputText
+                                                    value="#{adminBean.currentIpRange.name}"
+                                                    id="ipRangeName"
+                                                    required="true"
+                                                    styleClass="form-control">
+                                                    <f:ajax
+                                                        event="blur"
+                                                        render="ipRangeNameGroup" />
+                                                </h:inputText>
                                             </h:panelGroup>
-                                            <span class="admin__form-help-text">#{msg.admin__ip_range_subnet_mask__help}</span>
+                                            <span class="admin__form-help-text">
+                                                #{msg.admin__ip_range_subnet_mask__help}
+                                            </span>
                                         </div>
-                                        
+
                                         <div class="col-1 admin__form-help-icon">
-                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                            <button
+                                                type="button"
+                                                class="btn btn--clean"
+                                                data-toggle="helptext"
+                                                aria-label="inline help icon">
                                                 <util:icon icon="help" />
                                             </button>
                                         </div>
@@ -67,29 +97,50 @@
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
                                             <label for="subnetMask">#{msg.admin__ip_range_subnetMask}:</label>
-                                            <span class="admin__label-required-field">(#{msg.form__required_field})</span>
+                                            <span class="admin__label-required-field">
+                                                (#{msg.form__required_field})
+                                            </span>
                                         </div>
                                         <div class="col-9 cms-module__option-control admin__form-input">
                                             <h:panelGroup id="subnetMaskGroup">
-                                            <div class="cms-module__option-message">
-                                                <h:messages for="subnetMask"
-                                                    infoClass="cms-module__option-message-status success"
-                                                    warnClass="cms-module__option-message-status warning"
-                                                    errorClass="cms-module__option-message-status danger" />
-                                                <div class="cms-module__option-message-mark">
-                                                    <i class="fa fa-check" aria-hidden="true"></i>
-                                                    <i class="fa fa-exclamation" aria-hidden="true"></i>
+                                                <div class="cms-module__option-message">
+                                                    <h:messages
+                                                        for="subnetMask"
+                                                        infoClass="cms-module__option-message-status success"
+                                                        warnClass="cms-module__option-message-status warning"
+                                                        errorClass="cms-module__option-message-status danger" />
+                                                    <div class="cms-module__option-message-mark">
+                                                        <i
+                                                            class="fa fa-check"
+                                                            aria-hidden="true" />
+                                                        <i
+                                                            class="fa fa-exclamation"
+                                                            aria-hidden="true" />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <h:inputText value="#{adminBean.currentIpRange.subnetMask}" id="subnetMask" required="true" styleClass="form-control">
-                                                <f:validator validatorId="subnetMaskValidator" for="subnetMask" />
-                                                <f:ajax event="blur" render="subnetMaskGroup" />
-                                            </h:inputText>
+                                                <h:inputText
+                                                    value="#{adminBean.currentIpRange.subnetMask}"
+                                                    id="subnetMask"
+                                                    required="true"
+                                                    styleClass="form-control">
+                                                    <f:validator
+                                                        validatorId="subnetMaskValidator"
+                                                        for="subnetMask" />
+                                                    <f:ajax
+                                                        event="blur"
+                                                        render="subnetMaskGroup" />
+                                                </h:inputText>
                                             </h:panelGroup>
-                                            <span class="admin__form-help-text">#{msg.admin__ip_range_subnet_mask__help}</span>
+                                            <span class="admin__form-help-text">
+                                                #{msg.admin__ip_range_subnet_mask__help}
+                                            </span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
-                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                            <button
+                                                type="button"
+                                                class="btn btn--clean"
+                                                data-toggle="helptext"
+                                                aria-label="inline help icon">
                                                 <util:icon icon="help" />
                                             </button>
                                         </div>
@@ -99,11 +150,20 @@
                                             <label for="ipRangeDescription">#{msg.description}:</label>
                                         </div>
                                         <div class="col-9 admin__form-input">
-                                            <h:inputTextarea value="#{adminBean.currentIpRange.description}" id="ipRangeDescription" styleClass="form-control" />
-                                            <span class="admin__form-help-text">#{msg.admin__ip_range_description__help}</span>
+                                            <h:inputTextarea
+                                                value="#{adminBean.currentIpRange.description}"
+                                                id="ipRangeDescription"
+                                                styleClass="form-control" />
+                                            <span class="admin__form-help-text">
+                                                #{msg.admin__ip_range_description__help}
+                                            </span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
-                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                            <button
+                                                type="button"
+                                                class="btn btn--clean"
+                                                data-toggle="helptext"
+                                                aria-label="inline help icon">
                                                 <util:icon icon="help" />
                                             </button>
                                         </div>
@@ -112,10 +172,16 @@
                             </div>
 
                             <!-- ACTION -->
-                            <div
-								class="admin__final-actions">
-                                <h:commandLink action="pretty:adminIpRanges" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
-                                <h:commandButton action="#{adminBean.saveIpRangeAction}" value="#{msg.save}" styleClass="btn btn--success" />
+                            <div class="admin__final-actions">
+                                <h:commandLink
+                                    action="pretty:adminIpRanges"
+                                    value="#{msg.cancel}"
+                                    styleClass="btn admin__cancel-button"
+                                    immediate="true" />
+                                <h:commandButton
+                                    action="#{adminBean.saveIpRangeAction}"
+                                    value="#{msg.save}"
+                                    styleClass="btn btn--success" />
                             </div>
                         </h:form>
                     </div>
@@ -123,5 +189,4 @@
             </div>
         </f:view>
     </ui:define>
-
 </ui:composition>

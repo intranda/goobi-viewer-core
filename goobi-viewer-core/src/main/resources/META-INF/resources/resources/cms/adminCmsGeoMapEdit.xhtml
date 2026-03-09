@@ -1,566 +1,715 @@
-<ui:composition 
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:o="http://omnifaces.org/ui"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
-	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:o="http://omnifaces.org/ui"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin( (geoMapBean.currentMapId == null) ? 'adminCmsGeoMapNew' : 'adminCmsGeoMapEdit')}" />
+        </f:metadata>
+    </ui:define>
 
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin( (geoMapBean.currentMapId == null) ? 'adminCmsGeoMapNew' : 'adminCmsGeoMapEdit')}" />
-		</f:metadata>
-	</ui:define>
+    <!-- CONTENT -->
+    <ui:define name="content">
+        <script>
+            var mapEditor = new cmsJS.GeoMapEditor({
+            	mapId: "geomap",
+                displayLanguage : "#{navigationHelper.localeString}",
+                supportedLanguages: #{navigationHelper.supportedLanguagesAsJson},
+              	popover: "#geoMapPopoverTemplate",
+             	allowEditFeatures: false,
+             	loader: ".ajax_loader",
+            msg: {
+                  	emptyMarker: "#{msg.request__insert_metadata}",
+                  	titleLabel: "#{msg.title}",
+                      titleHelp: "#{msg.cms__geomaps__feature_title__help}",
+                      descLabel: "#{msg.description}",
+                      descHelp: "#{msg.cms__geomaps__feature_description__help}",
+                      deleteLabel: "#{msg.delete}"
+                  }
+            })
+        </script>
 
-	<!-- CONTENT -->
-	<ui:define name="content">
+        <ui:fragment
+            id="cmsGeoMaps"
+            rendered="#{userBean.user.isHasCmsPrivilege('CMS_GEOMAPS')}">
+            <div id="cmsGeoMaps">
+                <div class="admin__title-bar">
+                    <h1 class="admin__title">
+                        #{geoMapBean.currentMapId == null ? msg.cms__geomap_new__title : msg.cms__geomap_edit__title}
+                    </h1>
+                </div>
 
-		<script>
-	
-	   		var mapEditor = new cmsJS.GeoMapEditor({
-	   			mapId: "geomap",
-	   		    displayLanguage : "#{navigationHelper.localeString}",
-	   		    supportedLanguages: #{navigationHelper.supportedLanguagesAsJson},
-	   		  	popover: "#geoMapPopoverTemplate",
-	 	    	allowEditFeatures: false,
-	 	    	loader: ".ajax_loader",
-		  		msg: {
-		          	emptyMarker: "#{msg.request__insert_metadata}",
-		          	titleLabel: "#{msg.title}",
-		              titleHelp: "#{msg.cms__geomaps__feature_title__help}",
-		              descLabel: "#{msg.description}",
-		              descHelp: "#{msg.cms__geomaps__feature_description__help}",
-		              deleteLabel: "#{msg.delete}"
-		          }
-	   		})
-	
-	    </script>
+                <viewerComponent:adminBreadcrumbs />
+
+                <div class="admin__content-inner-content">
+                    <div class="admin__info-text">
+                        <h:outputText
+                            escape="false"
+                            value="#{msg.cms__geomap_edit__description}" />
+                    </div>
+
+                    <h:form
+                        id="geoMapEditForm"
+                        prependId="false">
+                        <h2>#{msg.cms__geomaps__metadata__title}</h2>
+                        <h:panelGroup
+                            layout="block"
+                            id="metadataPanel">
+                            <div class="admin__language-tabs">
+                                <viewerComponent:localeSelector
+                                    object="#{geoMapBean}"
+                                    render="metadataPanel" />
+                            </div>
+
+                            <div class="admin__default-block">
+                                <ui:param
+                                    name="language"
+                                    value="de" />
+                                <!--                         	<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status"> -->
+                                <div id="nameLanguage-#{geoMapBean.selectedLanguage}">
+                                    <!-- TITLE -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="mapTitle">
+                                                #{msg.name}:
+                                                <ui:fragment
+                                                    rendered="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}">
+                                                    <span class="admin__label-required-field">
+                                                        (#{msg.form__required_field})
+                                                    </span>
+                                                </ui:fragment>
+                                            </label>
+                                        </div>
+
+                                        <div class="col-9 admin__form-input cms-module__option-control">
+                                            <h:inputText
+                                                id="mapTitle"
+                                                styleClass="form-control"
+                                                value="#{geoMapBean.currentMap.getTitle(geoMapBean.selectedLanguage).translationValue}"
+                                                required="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}"
+                                                requiredMessage="#{msg.error__title_required}" />
+                                            <div
+                                                id="titleHelp"
+                                                class="admin__form-help-text">
+                                                #{msg.cms__geomaps__metadata_title__help}
+                                            </div>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button
+                                                type="button"
+                                                class="btn btn--clean"
+                                                data-toggle="helptext"
+                                                aria-label="inline help icon">
+                                                <util:icon icon="help" />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- DESCRIPTION -->
+                                    <div class="form-group form-row">
+                                        <div class="col-2 control-label admin__form-label">
+                                            <label for="mapDesc">#{msg.description}:</label>
+                                        </div>
+                                        <div class="col-9 admin__form-input cms-module__option-control">
+                                            <h:inputTextarea
+                                                id="mapDesc"
+                                                styleClass="form-control"
+                                                value="#{geoMapBean.currentMap.getDescription(geoMapBean.selectedLanguage).translationValue}">
+                                                <f:passThroughAttribute
+                                                    name="aria-label"
+                                                    value="#{msg.description}" />
+                                            </h:inputTextarea>
+                                            <div
+                                                id="descHelp"
+                                                class="admin__form-help-text">
+                                                #{msg.cms__geomaps__metadata_description__help}
+                                            </div>
+                                        </div>
+                                        <div class="col-1 admin__form-help-icon">
+                                            <button
+                                                type="button"
+                                                class="btn btn--clean"
+                                                data-toggle="helptext"
+                                                aria-label="inline help icon">
+                                                <util:icon icon="help" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                        <h2>#{msg.cms__geomaps__map__content}</h2>
+
+                        <h:panelGroup id="featureSetsPanel">
+                            <div class="admin__default-block">
+                                <p class="admin__boxed-entry-description">#{msg.cms__geomaps__featuresets_desc}</p>
+                                <ui:repeat
+                                    var="featureSet"
+                                    value="#{geoMapBean.currentMap.featureSets}"
+                                    varStatus="status">
+                                    <div class="admin__language-tabs">
+                                        <viewerComponent:localeSelector
+                                            object="#{featureSet.name}"
+                                            render="featureSetsPanel" />
+                                    </div>
+                                    <div
+                                        id="panelFeatureSet_#{status.index}"
+                                        class="cms__geomap__featureset_panel #{geoMapBean.isActiveFeatureSet(featureSet) ? '-active' : '' }">
+                                        <div>
+                                            <h4>Featureset #{status.index+1}</h4>
+
+                                            <button
+                                                class="d-none"
+                                                aria-hidden="true"
+                                                jsf:action="#{geoMapBean.removeFeatureSet(geoMapBean.currentMap, featureSet)}"
+                                                data-delete-button-index="#{status.index}">
+                                                <o:skipValidators />
+                                                <f:ajax
+                                                    execute="featureSetsPanel"
+                                                    render="mapPanel featureSetsPanel" />
+                                            </button>
+                                        </div>
+
+                                        <!-- FEATURESET NAME -->
+                                        <div class="form-group form-row">
+                                            <div class="col-2 control-label admin__form-label">
+                                                <label for="featureset_#{status.index}_name">#{msg.name}:</label>
+                                            </div>
+                                            <div class="col-9 admin__form-input cms-module__option-control">
+                                                <h:inputText
+                                                    id="featureset_#{status.index}_name"
+                                                    styleClass="form-control"
+                                                    value="#{featureSet.name.text}" />
+                                                <div
+                                                    id="titleHelp"
+                                                    class="admin__form-help-text">
+                                                    #{msg.cms__geomaps__featureset_name__help}
+                                                </div>
+                                            </div>
+                                            <div class="col-1 admin__form-help-icon">
+                                                <button
+                                                    type="button"
+                                                    class="btn btn--clean"
+                                                    data-toggle="helptext"
+                                                    aria-label="inline help icon">
+                                                    <util:icon icon="help" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <!-- MARKER -->
+                                        <div class="form-group form-row">
+                                            <!-- LABEL -->
+                                            <div class="col-2 control-label admin__form-label">
+                                                <label for="mapMarker">
+                                                    #{msg.cms__geomaps__marker__label}:
+                                                    <span class="admin__label-required-field">
+                                                        (#{msg.form__required_field})
+                                                    </span>
+                                                </label>
+                                            </div>
+                                            <!-- INPUT -->
+                                            <div class="col-9 admin__form-input cms-module__option-control">
+                                                <div class="custom-control custom-control--select">
+                                                    <h:selectOneMenu
+                                                        id="mapMarker"
+                                                        styleClass="form-control"
+                                                        value="#{featureSet.marker}"
+                                                        required="false"
+                                                        requiredMessage="#{msg.error__type_required}">
+                                                        <f:selectItems
+                                                            value="#{geoMapBean.possibleMarkers}"
+                                                            var="marker"
+                                                            itemValue="#{marker.name}"
+                                                            itemLabel="#{msg[marker.name]}" />
+                                                        <f:ajax
+                                                            execute="mapPanel"
+                                                            render="mapPanel" />
+                                                    </h:selectOneMenu>
+                                                </div>
+                                                <!-- HELP TEXT -->
+                                                <div
+                                                    id="markerHelp"
+                                                    class="admin__form-help-text">
+                                                    #{msg.cms__geomaps__marker__help}
+                                                </div>
+                                            </div>
+
+                                            <!-- HELP BUTTON -->
+                                            <div class="col-1 admin__form-help-icon">
+                                                <button
+                                                    type="button"
+                                                    class="btn btn--clean"
+                                                    data-toggle="helptext"
+                                                    aria-label="inline help icon">
+                                                    <util:icon icon="help" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group form-row">
+                                            <!-- LABEL -->
+                                            <div class="col-2 control-label admin__form-label">
+                                                <label for="mapMarker">#{msg.cms__geomaps__heatmap__label}:</label>
+                                            </div>
+
+                                            <div class="col-9 admin__form-input cms-module__option-control">
+                                                <div class="admin__radio-switch">
+                                                    <input
+                                                        type="radio"
+                                                        jsf:id="useHeatmap_no"
+                                                        pt:name="#{useHeatmap.clientId}"
+                                                        value="#{false}"
+                                                        pt:checked="#{featureSet.useHeatmap ? null : 'false'}" />
+                                                    <h:outputLabel
+                                                        for="useHeatmap_no"
+                                                        value="#{msg.no}" />
+                                                    <input
+                                                        type="radio"
+                                                        jsf:id="useHeatmap_yes"
+                                                        pt:name="#{useHeatmap.clientId}"
+                                                        value="#{true}"
+                                                        pt:checked="#{featureSet.useHeatmap ? 'false' : null}" />
+                                                    <h:outputLabel
+                                                        for="useHeatmap_yes"
+                                                        value="#{msg.yes}" />
+                                                    <h:inputHidden
+                                                        id="useHeatmap_input"
+                                                        binding="#{useHeatmap}"
+                                                        value="#{featureSet.useHeatmap}"
+                                                        rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
+                                                    <span class="toggle-outside">
+                                                        <span class="toggle-inside" />
+                                                    </span>
+                                                </div>
+                                                <!-- HELP TEXT -->
+                                                <div
+                                                    id="heatmapHelp"
+                                                    class="admin__form-help-text">
+                                                    #{msg.cms__geomaps__heatmap__help}
+                                                </div>
+                                            </div>
+
+                                            <!-- HELP BUTTON -->
+                                            <div class="col-1 admin__form-help-icon">
+                                                <button
+                                                    type="button"
+                                                    class="btn btn--clean"
+                                                    data-toggle="helptext"
+                                                    aria-label="inline help icon">
+                                                    <util:icon icon="help" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- SOLR QUERY -->
+                                        <ui:fragment rendered="#{featureSet.queryResultSet}">
+                                            <div class="form-group form-row">
+                                                <div
+                                                    jsf:id="queryLabel_solrQuery"
+                                                    rendered="#{featureSet.type == 'SOLR_QUERY'}"
+                                                    class="col-2 control-label admin__form-label">
+                                                    <label for="solrQueryInput">
+                                                        #{msg.cms__geomaps__solrquery__label}:
+                                                        <span class="admin__label-required-field">
+                                                            (#{msg.form__required_field})
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div
+                                                    jsf:id="queryLabel_searchResults"
+                                                    rendered="#{featureSet.type == 'SEARCH_RESULTS'}"
+                                                    class="col-2 control-label admin__form-label">
+                                                    <label for="solrQueryInput">
+                                                        #{msg.cms__geomaps__searchresults__label}:
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-9 admin__form-input cms-module__option-control">
+                                                    <div class="input_form__option-message">
+                                                        <h:messages
+                                                            for="solrQueryInput"
+                                                            infoClass="cms-module__option-message-status success"
+                                                            warnClass="cms-module__option-message-status warning"
+                                                            errorClass="cms-module__option-message-status danger" />
+
+                                                        <div class="input_form__option-message-mark">
+                                                            <util:icon icon="check" />
+                                                            <util:icon icon="exclamation-mark" />
+                                                        </div>
+                                                    </div>
+                                                    <h:inputText
+                                                        id="solrQueryInput"
+                                                        styleClass="form-control"
+                                                        value="#{featureSet.solrQuery}"
+                                                        required="true"
+                                                        requiredMessage="#{msg.error__query_required}">
+                                                        <f:validator
+                                                            validatorId="solrQueryValidator"
+                                                            for="solrQueryInput" />
+                                                        <f:ajax
+                                                            event="blur"
+                                                            render="mapPanel" />
+                                                    </h:inputText>
+                                                    <div
+                                                        id="queryHelp"
+                                                        class="admin__form-help-text">
+                                                        #{msg.cms__geomaps__solrquery__help}
+                                                    </div>
+                                                </div>
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn--clean"
+                                                        data-toggle="helptext"
+                                                        aria-label="inline help icon">
+                                                        <util:icon icon="help" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <!-- POPUP CONTENT -->
+                                            <div class="form-group form-row">
+                                                <div class="col-2 control-label admin__form-label">
+                                                    <label for="popupContent">
+                                                        #{msg.cms__geomaps__popup_content__label}:
+                                                        <span class="admin__label-required-field">
+                                                            (#{msg.form__required_field})
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-9 admin__form-input cms-module__option-control">
+                                                    <div class="custom-control custom-control--select">
+                                                        <h:selectOneMenu
+                                                            id="popupContent"
+                                                            styleClass="form-control"
+                                                            value="#{featureSet.markerTitleField}"
+                                                            required="false">
+                                                            <f:selectItems
+                                                                var="option"
+                                                                value="#{configurationBean.geomapFeatureTitleOptions}" />
+                                                            <f:ajax
+                                                                execute="mapPanel"
+                                                                render="mapPanel" />
+                                                        </h:selectOneMenu>
+                                                    </div>
+                                                    <div
+                                                        id="popupContentHelp_#{status.index}"
+                                                        class="admin__form-help-text">
+                                                        #{msg.cms__geomaps__popup_content__help}
+                                                    </div>
+                                                </div>
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn--clean"
+                                                        data-toggle="helptext"
+                                                        aria-label="inline help icon">
+                                                        <util:icon icon="help" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <!-- AGGREGATE RESULTS -->
+                                            <div class="form-group form-row">
+                                                <div class="col-2 control-label admin__form-label">
+                                                    <label for="featureset_#{status.index}_aggregation">
+                                                        #{msg.cms__geomaps__search_scope__label}:
+                                                    </label>
+                                                </div>
+                                                <div class="input_form__option_marker" />
+                                                <div class="col-9 admin__form-input cms-module__option-control">
+                                                    <div class="d-flex admin__geomap-radio-group-wrapper" />
+
+                                                    <!-- NEW STRUCTURES -->
+                                                    <div class="radio-button-tree">
+                                                        <o:importConstants
+                                                            type="io.goobi.viewer.model.maps.SolrSearchScope" />
+
+                                                        <h:commandScript
+                                                            name="changeSearchScope"
+                                                            action="#{featureSetBean.updateSearchScope}"
+                                                            render="@form">
+                                                            <f:param
+                                                                name="newScope"
+                                                                value="" />
+                                                        </h:commandScript>
+
+                                                        <ul class="custom-radio-group">
+                                                            <ui:repeat
+                                                                id="items"
+                                                                value="#{SolrSearchScope.values()}"
+                                                                var="scope"
+                                                                varStatus="status">
+                                                                <li
+                                                                    class="#{status.first ? 'radio-button-tree__connected-top' : ''} #{!status.first and !status.last ? 'radio-button-tree__connected-middle' : ''} #{status.last ? 'radio-button-tree__connected-bottom' : ''}">
+                                                                    <h:selectOneRadio
+                                                                        group="searchScopeGroup#{featureSet.id}"
+                                                                        value="#{featureSet.searchScope}">
+                                                                        <f:selectItem
+                                                                            itemValue="#{scope}"
+                                                                            itemLabel="#{msg[scope.label]}" />
+                                                                    </h:selectOneRadio>
+                                                                </li>
+                                                            </ui:repeat>
+                                                        </ul>
+                                                    </div>
+
+                                                    <div
+                                                        id="titleHelp"
+                                                        class="admin__form-help-text">
+                                                        #{msg.cms__geomaps__filter_type__help}
+                                                    </div>
+                                                </div>
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn--clean"
+                                                        data-toggle="helptext"
+                                                        for="titleHelp"
+                                                        aria-label="inline help icon">
+                                                        <util:icon icon="help" />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- ITEM FILTER -->
+                                            <div
+                                                class="form-group form-row"
+                                                jsf:id="item-filter-group"
+                                                jsf:rendered="#{not empty configurationBean.geomapFilters}">
+                                                <div class="col-2 control-label admin__form-label">
+                                                    <label for="featureset_#{status.index}_aggregation">
+                                                        #{msg.cms__geomaps__item_filter__label}:
+                                                    </label>
+                                                </div>
+                                                <div class="input_form__option_marker" />
+                                                <div class="col-9 admin__form-input cms-module__option-control">
+                                                    <h:selectOneMenu
+                                                        id="itemFilterSelect"
+                                                        styleClass="form-control"
+                                                        value="#{featureSet.itemFilterName}"
+                                                        required="false">
+                                                        <f:selectItem
+                                                            itemValue=""
+                                                            itemLabel="" />
+                                                        <f:selectItems
+                                                            var="option"
+                                                            value="#{configurationBean.geomapFilters}" />
+                                                    </h:selectOneMenu>
+                                                    <div
+                                                        id="titleHelp"
+                                                        class="admin__form-help-text">
+                                                        #{msg.cms__geomaps__item_filters__help}
+                                                    </div>
+                                                </div>
+                                                <div class="col-1 admin__form-help-icon">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn--clean"
+                                                        data-toggle="helptext"
+                                                        for="titleHelp"
+                                                        aria-label="inline help icon">
+                                                        <util:icon icon="help" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </ui:fragment>
+
+                                        <div class="admin__geomap-edit-delete-wrapper">
+                                            <div class="admin__geomap-edit-active-marker">
+                                                <span class="-activeFont">#{msg.cms__geomap__add_markers}</span>
+                                            </div>
+                                            <button
+                                                class="admin__content-component-delete -redlink"
+                                                data-require-confirmation="true"
+                                                data-confirmation-text="#{msg.cms__geomap__delete_featureset__confirm}"
+                                                data-confirmation-target="[data-delete-button-index='#{status.index}']">
+                                                #{msg.delete}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+
+                                <!-- ADD FEATURESET -->
+
+                                <div class="admin__content-component-add-area">
+                                    <ui:param
+                                        name="featureSetType"
+                                        value="#{MANUAL}" />
+
+                                    <div class="admin__content-component-add-area-label">
+                                        #{msg.cms__geomap__add_featureset}:
+                                    </div>
+                                    <div class="input_form__option_marker in" />
+
+                                    <div class="admin__content-component-add-select-wrapper">
+                                        <div class="custom-control custom-control--select">
+                                            <h:selectOneMenu
+                                                class="form-control"
+                                                value="#{featureSetType}">
+                                                <f:selectItem
+                                                    itemValue="MANUAL"
+                                                    itemLabel="#{msg.select__geomap_type__MANUAL}" />
+                                                <f:selectItem
+                                                    itemValue="SOLR_QUERY"
+                                                    itemLabel="#{msg.select__geomap_type__SOLR_QUERY}" />
+                                                <f:selectItem
+                                                    itemValue="SEARCH_RESULTS"
+                                                    itemLabel="#{msg.select__geomap_type__SEARCH_RESULTS}" />
+                                            </h:selectOneMenu>
+                                        </div>
+                                        <button
+                                            class="btn btn--full"
+                                            jsf:action="#{geoMapBean.addFeatureSet(geoMapBean.currentMap, featureSetType)}">
+                                            #{msg.add}
+                                            <f:ajax
+                                                execute="featureSetsPanel mapPanel"
+                                                render="mapPanel featureSetsPanel" />
+                                            <o:skipValidators />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                        <h:commandScript
+                            name="setActiveFeatureSet"
+                            action="#{geoMapBean.setActiveFeatureSet}"
+                            execute="viewInput featuresInput"
+                            render="featureSetsPanel mapPanel" />
+
+                        <h2>#{msg.cms__geomaps__map__title}</h2>
+                        <h:panelGroup
+                            layout="block"
+                            id="mapPanel">
+                            <div class="admin__default-block">
+                                <div>#{msg.cms__geomaps__map__help}</div>
+                                <map
+                                    class="input_form__geomap"
+                                    id="geomap" />
+                                <popover id="geoMapPopoverTemplate">
+                                    <h3 data-metadata="title" />
+                                    <span data-metadata="description" />
+                                </popover>
+                                <div>#{msg.cms__geomaps__map_token__help}</div>
+                                <h:inputHidden
+                                    id="featuresInput"
+                                    value="#{geoMapBean.activeFeatureSetAsString}" />
+                                <h:inputHidden
+                                    id="viewInput"
+                                    value="#{geoMapBean.currentMap.initialView}" />
+
+                                <metadataEditor class="admin__geopmap-edit-metadata-editor-wrapper" />
+                            </div>
+                            <br />
+                            <div
+                                class="admin__content-inner-content__empty_form"
+                                id="featureForm">
+                                <script>
+                                    $( document ).ready(function() {
+                                    	$('.-activeFont').click(function () {
+                                    	    $('html, body').animate({
+                                    	        scrollTop: $(document).height()
+                                    	    }, 'slow');
+                                    	    return false;
+                                    	});
+                                    });
 
 
-		<ui:fragment id="cmsGeoMaps"
-			rendered="#{userBean.user.isHasCmsPrivilege('CMS_GEOMAPS')}">
-			<div id="cmsGeoMaps">
-				<div class="admin__title-bar">
-					<h1 class="admin__title">#{geoMapBean.currentMapId
-					== null ? msg.cms__geomap_new__title : msg.cms__geomap_edit__title}
-					</h1>
-				</div>
 
-				<viewerComponent:adminBreadcrumbs />
+                                            	$(document).ready(() => {
+                                            	    if($("#geomap").length > 0) {
+                                             	    mapEditor.init(window.storedView);
+                                             	    mapEditor.setAllowEditFeatures(true);
+                                    <ui:repeat
+                                        var="featureSet"
+                                        value="#{geoMapBean.currentMap.featureSets}"
+                                        varStatus="status">
+                                        {
+                                             	    	let config = {
+                                             	    			clusterMarkers : #{featureSet.queryResultSet},
+                                             	    			popoverOnHover : #{featureSet.queryResultSet},
+                                             	    			popover: "#geoMapPopoverTemplate",
+                                             	    			markerIcon : #{featureSet.markerAsJSON},
+                                             	    			allowMovingFeatures: #{geoMapBean.isActiveFeatureSet(featureSet)},
+                                        <ui:fragment rendered="#{featureSet.queryResultSet}">
+                                            heatmap: {
+                                             	                	enabled: #{configurationBean.useHeatmapForCMSMaps()},
+                                             	                	heatmapUrl:  "#{geoMapBean.heatmapUrl}",
+                                        		          	featureUrl:  "#{geoMapBean.featureUrl}",
+                                             	    		        filterQuery: "#{featureSet.solrQueryEncoded}",
+                                        		      	    labelField:  "#{featureSet.markerTitleField}",
+                                             	                },
+                                        </ui:fragment>
 
-				<div class="admin__content-inner-content">
-					<div class="admin__info-text">
-						<h:outputText escape="false"
-							value="#{msg.cms__geomap_edit__description}"></h:outputText>
-					</div>
+                                        }
+                                             	    	if(#{featureSet.queryResultSet and
+                                        configurationBean.useHeatmapForCMSMaps()}) {
+                                             	    		mapEditor.geoMap.addFeatureGroup(config, []);
+                                             	    	} else {
+                                             	    		let
+                                        featureGroup = mapEditor.addFeatureGroup(config, #{featureSet.featuresAsString});
+                                             	    		if(#{geoMapBean.isActiveFeatureSet(featureSet)}) {
+                                             	    				mapEditor.activeFeatureGroup = featureGroup;
+                                             	    		}
+                                             	    	}
+                                             	    	//change active featureSet
+                                             	    	//trigger on body because the panelFeatureSets can be swapped per ajax
+                                        on langauge change
+                                             	    	if(!#{featureSet.queryResultSet}) {
+                                             	    		$("body").off("click.setactive", "#panelFeatureSet_#{status.index}");
+                                             	    		$("body").on("click.setactive", "#panelFeatureSet_#{status.index}", e => {
+                                              	    		let
+                                        inputElement = $(e.target).closest("button, input, select").length > 0;
+                                              	    		if(!inputElement) {
+                                              	    			setActiveFeatureSet({index: #{status.index}});
+                                              	    		}
+                                              	    	});
+                                             	    	}
+                                             	    }
+                                    </ui:repeat>
 
-					<h:form id="geoMapEditForm" prependId="false">
-						<h2>#{msg.cms__geomaps__metadata__title}</h2>
-						<h:panelGroup layout="block" id="metadataPanel">
-						
-						<div class="admin__language-tabs">
-							<viewerComponent:localeSelector object="#{geoMapBean}" render="metadataPanel" />
-						</div>
-													
-							<div class="admin__default-block">
-								<ui:param name="language" value="de"></ui:param>
-								<!--                         	<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status"> -->
-								<div id="nameLanguage-#{geoMapBean.selectedLanguage}">
-
-
-										<!-- TITLE -->
-										<div class="form-group form-row">
-											<div class="col-2 control-label admin__form-label">
-												<label for="mapTitle">#{msg.name}:<ui:fragment rendered="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}"><span class="admin__label-required-field">(#{msg.form__required_field})</span></ui:fragment></label>
-											</div>
-
-											<div class="col-9 admin__form-input cms-module__option-control">
-												<h:inputText id="mapTitle" styleClass="form-control"
-													value="#{geoMapBean.currentMap.getTitle(geoMapBean.selectedLanguage).translationValue}"
-													required="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}"
-													requiredMessage="#{msg.error__title_required}" />
-												<div id="titleHelp"
-													class="admin__form-help-text">#{msg.cms__geomaps__metadata_title__help}</div>
-											</div>
-											<div class="col-1 admin__form-help-icon">
-												<button type="button" class="btn btn--clean"
-													data-toggle="helptext" 
-													aria-label="inline help icon">
-													<util:icon icon="help" />
-												</button>
-											</div>
-
-										</div>
-
-										<!-- DESCRIPTION -->
-										<div class="form-group form-row">
-											<div class="col-2 control-label admin__form-label">
-												<label for="mapDesc">#{msg.description}:</label>
-											</div>
-											<div class="col-9 admin__form-input cms-module__option-control">
-												<h:inputTextarea id="mapDesc" styleClass="form-control"
-													value="#{geoMapBean.currentMap.getDescription(geoMapBean.selectedLanguage).translationValue}">
-													<f:passThroughAttribute name="aria-label"
-														value="#{msg.description}" />
-												</h:inputTextarea>
-											<div id="descHelp"
-												class="admin__form-help-text">#{msg.cms__geomaps__metadata_description__help}</div>
-											</div>
-											<div class="col-1 admin__form-help-icon">
-												<button type="button" class="btn btn--clean"
-													data-toggle="helptext" 
-													aria-label="inline help icon">
-													<util:icon icon="help" />
-												</button>
-											</div>
-
-										</div>
-
-								</div>
-							</div>
-						</h:panelGroup>
-							<h2>#{msg.cms__geomaps__map__content}</h2>
-
-						<h:panelGroup id="featureSetsPanel">
-							<div class="admin__default-block">
-							<p class="admin__boxed-entry-description">#{msg.cms__geomaps__featuresets_desc}</p>
-								<ui:repeat var="featureSet"
-									value="#{geoMapBean.currentMap.featureSets}" varStatus="status">
-									<div class="admin__language-tabs">
-										<viewerComponent:localeSelector object="#{featureSet.name}" render="featureSetsPanel"></viewerComponent:localeSelector>
-									</div>
-									<div id="panelFeatureSet_#{status.index}"
-										class="cms__geomap__featureset_panel #{geoMapBean.isActiveFeatureSet(featureSet) ? '-active' : '' }">
-										<div>
-											<h4>Featureset #{status.index+1}</h4>
-
-											<button class="d-none" aria-hidden="true"
-												jsf:action="#{geoMapBean.removeFeatureSet(geoMapBean.currentMap, featureSet)}"
-												data-delete-button-index='#{status.index}'>
-												<o:skipValidators />
-												<f:ajax execute="featureSetsPanel"
-													render="mapPanel featureSetsPanel"></f:ajax>
-											</button>
-										</div>
-
-											<!-- FEATURESET NAME -->
-											<div class="form-group form-row">
-												<div class="col-2 control-label admin__form-label">
-													<label for="featureset_#{status.index}_name">#{msg.name}:</label>
-												</div>
-												<div class="col-9 admin__form-input cms-module__option-control">
-													
-													<h:inputText id="featureset_#{status.index}_name" styleClass="form-control" value="#{featureSet.name.text}"/>
-													<div id="titleHelp" class="admin__form-help-text">#{msg.cms__geomaps__featureset_name__help}</div>
-												</div>
-												<div class="col-1 admin__form-help-icon">
-													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" 
-														aria-label="inline help icon">
-														<util:icon icon="help" />
-													</button>
-												</div>
-
-											</div>
-											<!-- MARKER -->
-											<div class="form-group form-row">
-												<!-- LABEL -->
-												<div class="col-2 control-label admin__form-label">
-													<label for="mapMarker">#{msg.cms__geomaps__marker__label}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
-												</div>
-												<!-- INPUT -->
-												<div class="col-9 admin__form-input cms-module__option-control">
-													<div class="custom-control custom-control--select">
-														<h:selectOneMenu id="mapMarker" styleClass="form-control"
-															value="#{featureSet.marker}" required="false"
-															requiredMessage="#{msg.error__type_required}">
-															<f:selectItems value="#{geoMapBean.possibleMarkers}"
-																var="marker" itemValue="#{marker.name}"
-																itemLabel="#{msg[marker.name]}" />
-															<f:ajax execute="mapPanel" render="mapPanel" />
-														</h:selectOneMenu>
-													</div>
-													<!-- HELP TEXT -->
-													<div id="markerHelp" class="admin__form-help-text">#{msg.cms__geomaps__marker__help}</div>
-												</div>
-												
-												<!-- HELP BUTTON -->
-												<div class="col-1 admin__form-help-icon">
-													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" 
-														aria-label="inline help icon">
-														<util:icon icon="help" />
-													</button>
-												</div>
-											
-											</div>
-											
-											<div class="form-group form-row">
-											
-												<!-- LABEL -->
-												<div class="col-2 control-label admin__form-label">
-													<label for="mapMarker">#{msg.cms__geomaps__heatmap__label}:</label>
-												</div>
-												
-												<div class="col-9 admin__form-input cms-module__option-control">
-													<div class="admin__radio-switch">
-											            <input type="radio" jsf:id="useHeatmap_no" pt:name="#{useHeatmap.clientId}"
-											                value="#{false}" pt:checked="#{featureSet.useHeatmap ? null : 'false'}"/>
-														<h:outputLabel for="useHeatmap_no" value="#{msg.no}" />
-											         	<input type="radio" jsf:id="useHeatmap_yes" pt:name="#{useHeatmap.clientId}"
-											         	    value="#{true}" pt:checked="#{featureSet.useHeatmap ? 'false' : null}"/>
-											         	<h:outputLabel for="useHeatmap_yes" value="#{msg.yes}" />
-														<h:inputHidden id="useHeatmap_input" binding="#{useHeatmap}" value="#{featureSet.useHeatmap}"
-									        				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
-											             <span class="toggle-outside"><span class="toggle-inside"></span></span>
-											         </div>
-										         	<!-- HELP TEXT -->
-													<div id="heatmapHelp" class="admin__form-help-text">#{msg.cms__geomaps__heatmap__help}</div>
-												</div>
-												
-												<!-- HELP BUTTON -->
-												<div class="col-1 admin__form-help-icon">
-													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" 
-														aria-label="inline help icon">
-														<util:icon icon="help" />
-													</button>
-												</div>
-											
-											</div>
-											
-
-										<!-- SOLR QUERY -->
-										<ui:fragment rendered="#{featureSet.queryResultSet}">
-											<div class="form-group form-row">
-												<div jsf:id="queryLabel_solrQuery" rendered="#{featureSet.type == 'SOLR_QUERY'}" class="col-2 control-label admin__form-label">
-													<label for="solrQueryInput">#{msg.cms__geomaps__solrquery__label}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
-												</div>
-												<div jsf:id="queryLabel_searchResults" rendered="#{featureSet.type == 'SEARCH_RESULTS'}" class="col-2 control-label admin__form-label">
-													<label for="solrQueryInput">#{msg.cms__geomaps__searchresults__label}:</label>
-												</div>
-
-												<div class="col-9 admin__form-input cms-module__option-control">
-													<div class="input_form__option-message">
-														<h:messages for="solrQueryInput"
-															infoClass="cms-module__option-message-status success"
-															warnClass="cms-module__option-message-status warning"
-															errorClass="cms-module__option-message-status danger" />
-
-														<div class="input_form__option-message-mark">
-															<util:icon icon="check" />
-															<util:icon icon="exclamation-mark" />
-														</div>
-													</div>
-													<h:inputText id="solrQueryInput" styleClass="form-control"
-														value="#{featureSet.solrQuery}" required="true"
-														requiredMessage="#{msg.error__query_required}">
-														<f:validator validatorId="solrQueryValidator"
-															for="solrQueryInput" />
-														<f:ajax event="blur" render="mapPanel" />
-													</h:inputText>
-													<div id="queryHelp"
-														class="admin__form-help-text">#{msg.cms__geomaps__solrquery__help}</div>
-													</div>
-												<div class="col-1 admin__form-help-icon">
-													<button type="button" class="btn btn--clean"
-														data-toggle="helptext"
-														aria-label="inline help icon">
-														<util:icon icon="help" />
-													</button>
-												</div>
-
-											</div>
-											<!-- POPUP CONTENT -->
-											<div class="form-group form-row">
-												<div class="col-2 control-label admin__form-label">
-													<label for="popupContent">#{msg.cms__geomaps__popup_content__label}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
-												</div>
-												<div class="col-9 admin__form-input cms-module__option-control">
-													<div class="custom-control custom-control--select">
-														<h:selectOneMenu id="popupContent"
-															styleClass="form-control"
-															value="#{featureSet.markerTitleField}" required="false">
-															<f:selectItems var="option" value="#{configurationBean.geomapFeatureTitleOptions}"></f:selectItems>
-															<f:ajax execute="mapPanel" render="mapPanel" />
-														</h:selectOneMenu>
-													</div>
-													<div id="popupContentHelp_#{status.index}"
-														class="admin__form-help-text">#{msg.cms__geomaps__popup_content__help}</div>
-												</div>
-												<div class="col-1 admin__form-help-icon">
-													<button type="button" class="btn btn--clean"
-														data-toggle="helptext"
-														
-														aria-label="inline help icon">
-														<util:icon icon="help" />
-													</button>
-												</div>
-
-											</div>
-											<!-- AGGREGATE RESULTS -->
-											<div class="form-group form-row">
-												<div class="col-2 control-label admin__form-label">
-													<label for="featureset_#{status.index}_aggregation">#{msg.cms__geomaps__search_scope__label}:</label>
-												</div>
-												<div class="input_form__option_marker"></div>
-												<div class="col-9 admin__form-input cms-module__option-control">
-													
-													<div class="d-flex admin__geomap-radio-group-wrapper">
-													</div>
-													
-													
-													
-													
-													<!-- NEW STRUCTURES -->
-											<div class="radio-button-tree">
-
-
-											<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope" />
-											
-
-											    <h:commandScript name="changeSearchScope"
-											                     action="#{featureSetBean.updateSearchScope}"
-											                     render="@form">
-											        <f:param name="newScope" value="" />
-											    </h:commandScript>
-
-
-													<ul class="custom-radio-group">
-													    <ui:repeat id="items" value="#{SolrSearchScope.values()}" var="scope" varStatus="status">
-													        <li class="#{status.first ? 'radio-button-tree__connected-top' : ''} 
-											                        #{!status.first and !status.last ? 'radio-button-tree__connected-middle' : ''}
-											                        #{status.last ? 'radio-button-tree__connected-bottom' : ''}">
-													            <h:selectOneRadio group="searchScopeGroup#{featureSet.id}" value="#{featureSet.searchScope}">
-													                <f:selectItem itemValue="#{scope}" itemLabel="#{msg[scope.label]}"/>
-													            </h:selectOneRadio>
-													        </li>
-													    </ui:repeat>
-													</ul>
-
-
-										    </div>
-
-													
-													
-													
-													
-													
-													
-												<div id="titleHelp"
-													class="admin__form-help-text">#{msg.cms__geomaps__filter_type__help}</div>
-											</div>
-												<div class="col-1 admin__form-help-icon">
-													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" for="titleHelp"
-														aria-label="inline help icon">
-														<util:icon icon="help" />
-													</button>
-												</div>
-
-											</div>
-											
-											<!-- ITEM FILTER -->
-											<div class="form-group form-row" jsf:id="item-filter-group" jsf:rendered="#{not empty configurationBean.geomapFilters}">
-												<div class="col-2 control-label admin__form-label">
-													<label for="featureset_#{status.index}_aggregation">#{msg.cms__geomaps__item_filter__label}:</label>
-												</div>
-												<div class="input_form__option_marker"></div>
-												<div class="col-9 admin__form-input cms-module__option-control">
-														<h:selectOneMenu id="itemFilterSelect"
-															styleClass="form-control" 
-															value="#{featureSet.itemFilterName}" required="false">
-															<f:selectItem itemValue="" itemLabel=""/>
-															<f:selectItems var="option" value="#{configurationBean.geomapFilters}"></f:selectItems>
-														</h:selectOneMenu>
-													<div id="titleHelp"
-													class="admin__form-help-text">#{msg.cms__geomaps__item_filters__help}</div>
-												</div>
-												<div class="col-1 admin__form-help-icon">
-													<button type="button" class="btn btn--clean"
-														data-toggle="helptext" for="titleHelp"
-														aria-label="inline help icon">
-														<util:icon icon="help" />
-													</button>
-												</div>
-
-											</div>
-										</ui:fragment>
-										
-										<div class="admin__geomap-edit-delete-wrapper">
-											<div class="admin__geomap-edit-active-marker"><span class="-activeFont">#{msg.cms__geomap__add_markers}</span></div>
-											<button class="admin__content-component-delete -redlink" data-require-confirmation="true"
-												data-confirmation-text="#{msg.cms__geomap__delete_featureset__confirm}"
-												data-confirmation-target="[data-delete-button-index='#{status.index}']">
-												#{msg.delete}
-											</button>
-										</div>
-											
-											
-									</div>
-								</ui:repeat>
-
-									<!-- ADD FEATURESET -->
-									
-									<div class="admin__content-component-add-area">
-									
-									
-										<ui:param name="featureSetType" value="#{MANUAL}" />
-										
-										<div class="admin__content-component-add-area-label">#{msg.cms__geomap__add_featureset}:</div>
-										<div class="input_form__option_marker in"></div>
-										
-										
-										<div class="admin__content-component-add-select-wrapper">
-												<div class="custom-control custom-control--select">
-													<h:selectOneMenu class="form-control" value="#{featureSetType}">
-														<f:selectItem itemValue="MANUAL"
-															itemLabel="#{msg.select__geomap_type__MANUAL}" />
-														<f:selectItem itemValue="SOLR_QUERY"
-															itemLabel="#{msg.select__geomap_type__SOLR_QUERY}" />
-														<f:selectItem itemValue="SEARCH_RESULTS"
-															itemLabel="#{msg.select__geomap_type__SEARCH_RESULTS}" />
-													</h:selectOneMenu>
-												</div>
-											<button class="btn btn--full"
-												jsf:action="#{geoMapBean.addFeatureSet(geoMapBean.currentMap, featureSetType)}">
-												#{msg.add}
-												<f:ajax execute="featureSetsPanel mapPanel"
-													render="mapPanel featureSetsPanel"></f:ajax>
-												<o:skipValidators />
-											</button>
-										</div>
-
-									
-									</div>
-									
-									
-
-								</div>
-						</h:panelGroup>
-						<h:commandScript name="setActiveFeatureSet"
-							action="#{geoMapBean.setActiveFeatureSet}"
-							execute="viewInput featuresInput"
-							render="featureSetsPanel mapPanel" />
-							
-							
-							
-							<h2>#{msg.cms__geomaps__map__title}</h2>
-						<h:panelGroup layout="block" id="mapPanel">
-
-							<div class="admin__default-block">
-
-								<div>#{msg.cms__geomaps__map__help}</div>
-								<map class="input_form__geomap" id="geomap"></map>
-								<popover id="geoMapPopoverTemplate">
-								<h3 data-metadata="title"></h3>
-								<span data-metadata="description"></span> </popover>
-								<div>#{msg.cms__geomaps__map_token__help}</div>
-								<h:inputHidden id="featuresInput"
-									value="#{geoMapBean.activeFeatureSetAsString}"></h:inputHidden>
-								<h:inputHidden id="viewInput"
-									value="#{geoMapBean.currentMap.initialView}"></h:inputHidden>
-									
-								<metadataEditor class="admin__geopmap-edit-metadata-editor-wrapper" />
-							</div>
-							<br />
-							<div class="admin__content-inner-content__empty_form"
-								id="featureForm">
-								
-								<script>
-								$( document ).ready(function() {
-									$('.-activeFont').click(function () {
-									    $('html, body').animate({
-									        scrollTop: $(document).height()
-									    }, 'slow');
-									    return false;
-									});
-								});
-								
-								
-								
-				            	$(document).ready(() => {
-				            	    if($("#geomap").length > 0) {				            	        
-					            	    mapEditor.init(window.storedView);
-					            	    mapEditor.setAllowEditFeatures(true);
-
-					            	    <ui:repeat var="featureSet" value="#{geoMapBean.currentMap.featureSets}" varStatus="status">
-					            	    {
-					            	    	let config = {
-					            	    			clusterMarkers : #{featureSet.queryResultSet},
-					            	    			popoverOnHover : #{featureSet.queryResultSet},
-					            	    			popover: "#geoMapPopoverTemplate",
-					            	    			markerIcon : #{featureSet.markerAsJSON},
-					            	    			allowMovingFeatures: #{geoMapBean.isActiveFeatureSet(featureSet)},
-					            	    			<ui:fragment rendered="#{featureSet.queryResultSet}">
-					            	    			heatmap: {
-					            	                	enabled: #{configurationBean.useHeatmapForCMSMaps()},
-					            	                	heatmapUrl:  "#{geoMapBean.heatmapUrl}",
-								    		          	featureUrl:  "#{geoMapBean.featureUrl}",
-					            	    		        filterQuery: "#{featureSet.solrQueryEncoded}",
-								    		      	    labelField:  "#{featureSet.markerTitleField}",
-					            	                },
-							    		      	    </ui:fragment>
-
-					            	    	}
-					            	    	if(#{featureSet.queryResultSet and configurationBean.useHeatmapForCMSMaps()}) {	
-					            	    		mapEditor.geoMap.addFeatureGroup(config, []);
-					            	    	} else {
-					            	    		let featureGroup = mapEditor.addFeatureGroup(config, #{featureSet.featuresAsString});
-					            	    		if(#{geoMapBean.isActiveFeatureSet(featureSet)}) {
-					            	    				mapEditor.activeFeatureGroup = featureGroup;
-					            	    		}
-					            	    	}
-					            	    	//change active featureSet
-					            	    	//trigger on body because the panelFeatureSets can be swapped per ajax on langauge change
-					            	    	if(!#{featureSet.queryResultSet}) {			
-					            	    		$("body").off("click.setactive", "#panelFeatureSet_#{status.index}");
-					            	    		$("body").on("click.setactive", "#panelFeatureSet_#{status.index}", e => {
-						            	    		let inputElement = $(e.target).closest("button, input, select").length > 0;
-						            	    		if(!inputElement) {						            	    			
-						            	    			setActiveFeatureSet({index: #{status.index}});
-						            	    		}
-						            	    	});
-					            	    	}
-					            	    }
-					            	    
-					            	    </ui:repeat>
-					            	    
-					            	    viewerJS.jsfAjax.begin.subscribe((e) => {
-					            	        if(e.source.id === "mapMarker" || e.source.id === "popupContent") {					            	            
-					            	            window.storedView = mapEditor.geoMap.getView();
-					            	        } else {
-					            	            window.storedView = undefined;
-					            	        }
-					            	    })
-				            	    }
-				            	})
-	                        	</script>
-							</div>
-						</h:panelGroup>
-						<br />
-						<div class="admin__content-inner-content__controls">
-                            <a id="cancelMapEdit" class="btn btn--cancel"
+                                    viewerJS.jsfAjax.begin.subscribe((e) => {
+                                             	        if(e.source.id === "mapMarker" || e.source.id === "popupContent") {
+                                             	            window.storedView = mapEditor.geoMap.getView();
+                                             	        } else {
+                                             	            window.storedView = undefined;
+                                             	        }
+                                             	    })
+                                            	    }
+                                            	})
+                                </script>
+                            </div>
+                        </h:panelGroup>
+                        <br />
+                        <div class="admin__content-inner-content__controls">
+                            <a
+                                id="cancelMapEdit"
+                                class="btn btn--cancel"
                                 href="#{navigationHelper.getPageUrl('adminCmsGeoMaps')}">
-                                #{msg.cancel} </a>
-							<h:commandButton styleClass="btn btn--success"
-								value="#{msg.save}" action="#{geoMapBean.saveCurrentMap}">
-								<f:ajax execute="@all" render=":messages" />
-							</h:commandButton>
-						</div>
-
-					</h:form>
-				</div>
-			</div>
-		</ui:fragment>
-	</ui:define>
-
+                                #{msg.cancel}
+                            </a>
+                            <h:commandButton
+                                styleClass="btn btn--success"
+                                value="#{msg.save}"
+                                action="#{geoMapBean.saveCurrentMap}">
+                                <f:ajax
+                                    execute="@all"
+                                    render=":messages" />
+                            </h:commandButton>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </ui:fragment>
+    </ui:define>
 </ui:composition>

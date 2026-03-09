@@ -1,92 +1,92 @@
 .geomap {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	.geomap_popover {
-	}
-	.ajax_loader {
-		display: none;
-		z-index: 2000;
-	}
-	.record_geomap_popover {
-		font-size: 10px;
-		h3 {
-			font-size: 12px;
-		}
-	}
-	&__featurelist {
-		display: none;
-		position: absolute;
-		top: 0px;
-		left: 0;
-		width: 200px;
-		height: 100%;
-		background-color: white;
-		opacity: 0.8;	
-		font-size: 12px;
-		z-index: 500;
-		.custom-map {
-			&__sidebar-inner-wrapper {
-				overflow-y: auto;
-				height: 100%
-			}
-		}
-		ul {
-			list-style: none;
-			li {
-				padding: 5px 0;
-			}
-		}
-	}
-	&__options_wrapper {
-		width: 100%;
-		z-index: 500;
-		background-color: white;	
-		li {
-			display: flex;
-			gap: 20px;
-		}
-	}
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .geomap_popover {
+    }
+    .ajax_loader {
+        display: none;
+        z-index: 2000;
+    }
+    .record_geomap_popover {
+        font-size: 10px;
+        h3 {
+            font-size: 12px;
+        }
+    }
+    &__featurelist {
+        display: none;
+        position: absolute;
+        top: 0px;
+        left: 0;
+        width: 200px;
+        height: 100%;
+        background-color: white;
+        opacity: 0.8;
+        font-size: 12px;
+        z-index: 500;
+        .custom-map {
+            &__sidebar-inner-wrapper {
+                overflow-y: auto;
+                height: 100%;
+            }
+        }
+        ul {
+            list-style: none;
+            li {
+                padding: 5px 0;
+            }
+        }
+    }
+    &__options_wrapper {
+        width: 100%;
+        z-index: 500;
+        background-color: white;
+        li {
+            display: flex;
+            gap: 20px;
+        }
+    }
 }
-	
+
 .marker-circle {
-	background-clip: padding-box;
-	border-radius: 20px;
-	&-blue {
-		background-color: #144A4D;		
-		color: white;	
-	}
-	&-red {
-		background-color: #FF8A1D;		
-		color: black;	
-	}
-	div {
-		width: 30px;
-		height: 30px;
-		margin-left: 5px;
-		margin-top: 5px;
-		text-align: center;
-		border-radius: 15px;
-		font-size: 16px;
-		font-weight: bold;
-		span {
-			line-height: 30px;
-		}
-	}
+    background-clip: padding-box;
+    border-radius: 20px;
+    &-blue {
+        background-color: #144a4d;
+        color: white;
+    }
+    &-red {
+        background-color: #ff8a1d;
+        color: black;
+    }
+    div {
+        width: 30px;
+        height: 30px;
+        margin-left: 5px;
+        margin-top: 5px;
+        text-align: center;
+        border-radius: 15px;
+        font-size: 16px;
+        font-weight: bold;
+        span {
+            line-height: 30px;
+        }
+    }
 }
 
 .leaflet-container {
-	.leaflet-marker-pane {
-		.leaflet-marker-icon {
-			&.extra-marker-svg {
-				.fa {
-					&.fa-circle {
-						font-size: 12px;
-						width: 32px;
-						top: 1px;
-					}
-				}
-			}
-		}
-	}	
+    .leaflet-marker-pane {
+        .leaflet-marker-icon {
+            &.extra-marker-svg {
+                .fa {
+                    &.fa-circle {
+                        font-size: 12px;
+                        width: 32px;
+                        top: 1px;
+                    }
+                }
+            }
+        }
+    }
 }

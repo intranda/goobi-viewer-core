@@ -7,16 +7,32 @@ import {
     namePatterns,
     instrumentCategories,
     getInstrumentFromMidiProgram,
-    getInstrumentFromTrackName
+    getInstrumentFromTrackName,
 } from './instruments.js';
 
 // Legacy MIDI instrument mapping for backwards compatibility
 const MIDI_INSTRUMENTS = {
-    'piano': 1, 'voice': 54, 'violin': 41, 'viola': 42, 'cello': 43,
-    'double-bass': 44, 'strings': 49, 'harp': 47, 'flute': 74,
-    'oboe': 69, 'clarinet': 72, 'bassoon': 71, 'saxophone': 67,
-    'trumpet': 57, 'horn': 61, 'trombone': 58, 'tuba': 59,
-    'drums': 1, 'organ': 20, 'harpsichord': 7, 'default': 1
+    piano: 1,
+    voice: 54,
+    violin: 41,
+    viola: 42,
+    cello: 43,
+    'double-bass': 44,
+    strings: 49,
+    harp: 47,
+    flute: 74,
+    oboe: 69,
+    clarinet: 72,
+    bassoon: 71,
+    saxophone: 67,
+    trumpet: 57,
+    horn: 61,
+    trombone: 58,
+    tuba: 59,
+    drums: 1,
+    organ: 20,
+    harpsichord: 7,
+    default: 1,
 };
 
 // Track characteristics analysis
@@ -34,36 +50,36 @@ const TRACK_CHARACTERISTICS = {
         // Low (C2-B2) - bass voice, bassoon
         low: { min: 36, max: 47, instruments: ['voice', 'cello', 'bassoon'] },
         // Very low (below C2) - double bass, tuba, bass voice
-        very_low: { max: 35, instruments: ['double-bass', 'tuba', 'voice'] }
-    }
+        very_low: { max: 35, instruments: ['double-bass', 'tuba', 'voice'] },
+    },
 };
 
 // Sound synthesis configurations for different instrument types
 const SYNTH_CONFIGS = {
     piano: {
         oscillator: { type: 'triangle' },
-        envelope: { attack: 0.02, decay: 0.3, sustain: 0.1, release: 0.8 }
+        envelope: { attack: 0.02, decay: 0.3, sustain: 0.1, release: 0.8 },
     },
     voice: {
         oscillator: { type: 'sine' },
-        envelope: { attack: 0.1, decay: 0.2, sustain: 0.7, release: 1.2 }
+        envelope: { attack: 0.1, decay: 0.2, sustain: 0.7, release: 1.2 },
     },
     strings: {
         oscillator: { type: 'sawtooth' },
-        envelope: { attack: 0.1, decay: 0.1, sustain: 0.8, release: 1.0 }
+        envelope: { attack: 0.1, decay: 0.1, sustain: 0.8, release: 1.0 },
     },
     brass: {
         oscillator: { type: 'square' },
-        envelope: { attack: 0.05, decay: 0.1, sustain: 0.6, release: 0.8 }
+        envelope: { attack: 0.05, decay: 0.1, sustain: 0.6, release: 0.8 },
     },
     woodwinds: {
         oscillator: { type: 'triangle' },
-        envelope: { attack: 0.05, decay: 0.2, sustain: 0.5, release: 1.0 }
+        envelope: { attack: 0.05, decay: 0.2, sustain: 0.5, release: 1.0 },
     },
     default: {
         oscillator: { type: 'triangle' },
-        envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.8 }
-    }
+        envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.8 },
+    },
 };
 
 /**
@@ -77,7 +93,7 @@ export function analyzeMIDITrack(midiTrack) {
     }
 
     const notes = midiTrack.notes;
-    const midiNumbers = notes.map(note => note.midi);
+    const midiNumbers = notes.map((note) => note.midi);
 
     const analysis = {
         noteCount: notes.length,
@@ -88,10 +104,10 @@ export function analyzeMIDITrack(midiTrack) {
         density: notes.length / (midiTrack.duration || 1), // notes per second
         hasChords: hasSimultaneousNotes(notes),
         velocity: {
-            min: Math.min(...notes.map(n => n.velocity || 0.7)),
-            max: Math.max(...notes.map(n => n.velocity || 0.7)),
-            avg: notes.reduce((sum, n) => sum + (n.velocity || 0.7), 0) / notes.length
-        }
+            min: Math.min(...notes.map((n) => n.velocity || 0.7)),
+            max: Math.max(...notes.map((n) => n.velocity || 0.7)),
+            avg: notes.reduce((sum, n) => sum + (n.velocity || 0.7), 0) / notes.length,
+        },
     };
 
     // Determine suggested instrument based on characteristics
@@ -121,7 +137,7 @@ export function analyzeMIDITrack(midiTrack) {
     return {
         ...analysis,
         suggestedInstrument,
-        confidence
+        confidence,
     };
 }
 
@@ -149,9 +165,12 @@ function hasSimultaneousNotes(notes) {
             const note2 = notes[j];
 
             // Check if notes overlap in time
-            const overlap = Math.max(0, Math.min(note1.time + note1.duration, note2.time + note2.duration) -
-                                     Math.max(note1.time, note2.time));
-            if (overlap > 0.01) { // Small threshold for floating point precision
+            const overlap = Math.max(
+                0,
+                Math.min(note1.time + note1.duration, note2.time + note2.duration) - Math.max(note1.time, note2.time)
+            );
+            if (overlap > 0.01) {
+                // Small threshold for floating point precision
                 return true;
             }
         }
@@ -286,12 +305,12 @@ export function createMIDIBasedSoundMapping(midiData) {
             confidence: confidence,
             source: source,
             trackName: track.name || `Track ${index}`,
-            synth: createSynthForInstrument(instrumentType)
+            synth: createSynthForInstrument(instrumentType),
         };
     });
 
     return {
-        tracks: trackMappings
+        tracks: trackMappings,
     };
 }
 

@@ -5,82 +5,89 @@
 /* TPL RSS FEED */
 /* BLOCK */
 .tpl-rss {
-    h1 {}
+    h1 {
+    }
     /* ELEMENT */
     &__text {
-    	margin-bottom: 15px;
+        margin-bottom: 15px;
     }
-	&__grid {
-		display: grid;
-		grid-template-columns: 1.5fr 4fr;
-		gap: 20px;
-	}
-    &__feed {}
+    &__grid {
+        display: grid;
+        grid-template-columns: 1.5fr 4fr;
+        gap: 20px;
+    }
+    &__feed {
+    }
     &__item {
-    	padding: 10px;
-    	border: 1px solid @middlegray;
-    	margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid @middlegray;
+        margin-bottom: 15px;
     }
     &__item-title {
-    	margin-bottom: 10px;
-    	padding-bottom: 10px;
-    	h2 {}
-    	a {}
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        h2 {
+        }
+        a {
+        }
     }
     &__item-image {
-    	img {
-			max-width: 100%;
-		}
+        img {
+            max-width: 100%;
+        }
     }
     &__item-date {
-    	margin-bottom: 10px;
+        margin-bottom: 10px;
     }
     &__item-metadata {
-		display: grid;
-		grid-template-columns: 175px 1fr;
-		gap: 0 10px;
-    	dt {
-			grid-column-start: 1;
-			min-width: 0;
-			text-overflow: ellipsis;
-			overflow: hidden;
-    	}
-    	dd {
-			min-width: 0;
-			grid-column-start: 2;
-			overflow-wrap: break-word;
-		}
+        display: grid;
+        grid-template-columns: 175px 1fr;
+        gap: 0 10px;
+        dt {
+            grid-column-start: 1;
+            min-width: 0;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        dd {
+            min-width: 0;
+            grid-column-start: 2;
+            overflow-wrap: break-word;
+        }
     }
 }
 
 /* MODIFICATION */
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.tpl-rss {
-		&__item-tilte {
-			margin-top: 15px;
-		}
-		&__grid {
-			grid-template-columns: 1fr;
-		}
-		&__item-metadata {
-			grid-template-columns: 1fr;
-			dt {
-				grid-column-start: unset;
-			}
-			dd {
-				grid-column-start: unset;
-			}
-		}
-	}
+    .tpl-rss {
+        &__item-tilte {
+            margin-top: 15px;
+        }
+        &__grid {
+            grid-template-columns: 1fr;
+        }
+        &__item-metadata {
+            grid-template-columns: 1fr;
+            dt {
+                grid-column-start: unset;
+            }
+            dd {
+                grid-column-start: unset;
+            }
+        }
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+}

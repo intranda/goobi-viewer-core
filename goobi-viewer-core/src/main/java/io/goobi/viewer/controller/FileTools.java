@@ -600,6 +600,9 @@ public final class FileTools {
                 case "epub":
                     mimeType = "application/epub+zip";
                     break;
+                case "mei":
+                    mimeType = "application/mei+xml";
+                    break;
                 default:
                     // use a default value, if file extension is not mapped
                     mimeType = "image/tiff";
@@ -789,7 +792,7 @@ public final class FileTools {
         }
 
         final String sanitizedFileName = Paths.get(fileName).getFileName().toString();
-        if (sanitizedFileName == null || !sanitizedFileName.matches("[a-zA-Z0-9._-]+")) {
+        if (sanitizedFileName == null || !sanitizedFileName.matches("[\\w.\\- ]+")) {
             throw new IllegalArgumentException("Illegal fileName: " + fileName);
         }
 

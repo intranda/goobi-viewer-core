@@ -7,58 +7,100 @@
     xmlns:t="http://myfaces.apache.org/tomahawk"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-
     <composite:interface>
-        <composite:attribute name="field" required="true" />
-        <composite:attribute name="options" required="true" />
-        <composite:attribute name="label" required="true" />
-        <composite:attribute name="help" required="false" default="" />
-        <composite:attribute name="render" required="false" default="@none" />
-        <composite:attribute name="defaultItemLabel" required="false" />
-        <composite:attribute name="defaultItemValue" required="false" />
-        <composite:attribute name="item" default="item" />
-        <composite:attribute name="itemValue" default="#{item}" />
-        <composite:attribute name="itemLabel" default="#{msg[item]}" />
-        <composite:attribute name="disabled" default="false" />
-        <composite:attribute name="required" default="false" />
-        <composite:attribute name="requiredMessage" default="" />
+        <composite:attribute
+            name="field"
+            required="true" />
+        <composite:attribute
+            name="options"
+            required="true" />
+        <composite:attribute
+            name="label"
+            required="true" />
+        <composite:attribute
+            name="help"
+            required="false"
+            default="" />
+        <composite:attribute
+            name="render"
+            required="false"
+            default="@none" />
+        <composite:attribute
+            name="defaultItemLabel"
+            required="false" />
+        <composite:attribute
+            name="defaultItemValue"
+            required="false" />
+        <composite:attribute
+            name="item"
+            default="item" />
+        <composite:attribute
+            name="itemValue"
+            default="#{item}" />
+        <composite:attribute
+            name="itemLabel"
+            default="#{msg[item]}" />
+        <composite:attribute
+            name="disabled"
+            default="false" />
+        <composite:attribute
+            name="required"
+            default="false" />
+        <composite:attribute
+            name="requiredMessage"
+            default="" />
     </composite:interface>
 
     <composite:implementation>
         <div class="cms-module__option-group">
             <div class="cms-module__option-label">
-                <label for="#{cc.attrs.defaultItemValue == '' and cc.attrs.defaultItemLabel == '' ? cc.attrs.id.concat(':input1') : cc.attrs.id.concat(':input2')}">#{cc.attrs.label}</label>
+                <label
+                    for="#{cc.attrs.defaultItemValue == '' and cc.attrs.defaultItemLabel == '' ? cc.attrs.id.concat(':input1') : cc.attrs.id.concat(':input2')}">
+                    #{cc.attrs.label}
+                </label>
             </div>
             <div class="cms-module__option-control">
                 <div class="custom-control custom-control--select">
                     <ui:fragment rendered="#{cc.attrs.defaultItemValue == '' and cc.attrs.defaultItemLabel == ''}">
-                        <h:messages for="input1" infoClass="cms-module__option-message success" errorClass="cms-module__option-message danger" />
-                        <h:selectOneMenu 
-                            id="input1" 
-                            styleClass="form-control" 
-                            value="#{cc.attrs.field}" 
-                            disabled="#{cc.attrs.disabled}" 
+                        <h:messages
+                            for="input1"
+                            infoClass="cms-module__option-message success"
+                            errorClass="cms-module__option-message danger" />
+                        <h:selectOneMenu
+                            id="input1"
+                            styleClass="form-control"
+                            value="#{cc.attrs.field}"
+                            disabled="#{cc.attrs.disabled}"
                             required="#{cc.attrs.required}"
                             requiredMessage="#{cc.attrs.requiredMessage}">
-                            <f:selectItems 
-                                value="#{cc.attrs.options}" 
-                                var="#{cc.attrs.item}" 
-                                itemValue="#{cc.attrs.itemValue}" 
+                            <f:selectItems
+                                value="#{cc.attrs.options}"
+                                var="#{cc.attrs.item}"
+                                itemValue="#{cc.attrs.itemValue}"
                                 itemLabel="#{cc.attrs.itemLabel}" />
                             <f:ajax render="#{cc.attrs.render}" />
                         </h:selectOneMenu>
                     </ui:fragment>
                     <ui:fragment rendered="#{cc.attrs.defaultItemValue != '' or cc.attrs.defaultItemLabel != ''}">
-                        <h:messages for="input2" infoClass="cms-module__option-message success" errorClass="cms-module__option-message danger" />
-                        <h:selectOneMenu 
-                            id="input2" 
-                            styleClass="form-control" 
-                            value="#{cc.attrs.field}" 
-                            disabled="#{cc.attrs.disabled}" 
+                        <h:messages
+                            for="input2"
+                            infoClass="cms-module__option-message success"
+                            errorClass="cms-module__option-message danger" />
+                        <h:selectOneMenu
+                            id="input2"
+                            styleClass="form-control"
+                            value="#{cc.attrs.field}"
+                            disabled="#{cc.attrs.disabled}"
                             required="#{cc.attrs.required}"
                             requiredMessage="#{cc.attrs.requiredMessage}">
-                            <f:selectItem itemLabel="#{cc.attrs.defaultItemLabel}" itemValue="#{cc.attrs.defaultItemValue}" />
-                            <f:selectItems value="#{cc.attrs.options}" var="#{cc.attrs.item}" itemValue="#{cc.attrs.itemValue}" itemLabel="#{cc.attrs.itemLabel}" />
+                            <f:selectItem
+                                itemLabel="#{cc.attrs.defaultItemLabel}"
+                                itemValue="#{cc.attrs.defaultItemValue}" />
+                            <f:selectItems
+                                value="#{cc.attrs.options}"
+                                var="#{cc.attrs.item}"
+                                itemValue="#{cc.attrs.itemValue}"
+                                itemLabel="#{cc.attrs.itemLabel}" />
                             <f:ajax render="#{cc.attrs.render}" />
                         </h:selectOneMenu>
                     </ui:fragment>
@@ -67,7 +109,11 @@
             </div>
             <div class="cms-module__option-help">
                 <ui:fragment rendered="#{cc.attrs.help != ''}">
-                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                    <button
+                        type="button"
+                        class="btn btn--clean"
+                        data-toggle="helptext"
+                        aria-label="#{msg.aria_label__help}">
                         <util:icon icon="help" />
                     </button>
                 </ui:fragment>

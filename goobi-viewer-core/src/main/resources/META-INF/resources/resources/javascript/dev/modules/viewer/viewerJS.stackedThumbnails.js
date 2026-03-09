@@ -24,47 +24,47 @@
  * @requires jQuery
  */
 var viewerJS = (function (viewer) {
-  "use strict";
+    'use strict';
 
-  var _debug = false;
-  var _imgWidth = null;
-  var _imgHeight = null;
-  var _defaults = {
-    thumbs: ".stacked-thumbnail",
-    thumbsBefore: ".stacked-thumbnail-before",
-    thumbsAfter: ".stacked-thumbnail-after",
-  };
+    var _debug = false;
+    var _imgWidth = null;
+    var _imgHeight = null;
+    var _defaults = {
+        thumbs: '.stacked-thumbnail',
+        thumbsBefore: '.stacked-thumbnail-before',
+        thumbsAfter: '.stacked-thumbnail-after',
+    };
 
-  viewer.stackedThumbnails = {
-    /**
-     * Method to initialize the timematrix slider and the events which builds the
-     * matrix and popovers.
-     *
-     * @method init
-     * @param {Object} config An config object which overwrites the defaults.
-     * @param {Object} config.thumbs All jQuery objects of the stacked thumbnails.
-     * @param {String} config.thumbsBefore The classname of the stacked thumbnail
-     * before element.
-     * @param {String} config.thumbsAfter The classname of the stacked thumbnail after
-     * element.
-     */
-    init: function (config) {
-      if (_debug) {
-        console.log("##############################");
-        console.log("viewer.stackedThumbnails.init");
-        console.log("##############################");
-        console.log("viewer.stackedThumbnails.init: config - ");
-        console.log(config);
-      }
+    viewer.stackedThumbnails = {
+        /**
+         * Method to initialize the timematrix slider and the events which builds the
+         * matrix and popovers.
+         *
+         * @method init
+         * @param {Object} config An config object which overwrites the defaults.
+         * @param {Object} config.thumbs All jQuery objects of the stacked thumbnails.
+         * @param {String} config.thumbsBefore The classname of the stacked thumbnail
+         * before element.
+         * @param {String} config.thumbsAfter The classname of the stacked thumbnail after
+         * element.
+         */
+        init: function (config) {
+            if (_debug) {
+                console.log('##############################');
+                console.log('viewer.stackedThumbnails.init');
+                console.log('##############################');
+                console.log('viewer.stackedThumbnails.init: config - ');
+                console.log(config);
+            }
 
-      $.extend(true, _defaults, config);
+            $.extend(true, _defaults, config);
 
-      // hide stacked thumbs
-      //    $( _defaults.thumbs ).hide();
-      //    $( _defaults.thumbs ).siblings().hide();
+            // hide stacked thumbs
+            //    $( _defaults.thumbs ).hide();
+            //    $( _defaults.thumbs ).siblings().hide();
 
-      // iterate through thumbnails and set width and height for image stack
-      /*   $( _defaults.thumbs ).each( function() {
+            // iterate through thumbnails and set width and height for image stack
+            /*   $( _defaults.thumbs ).each( function() {
                 _imgWidth = $( this ).outerWidth();
                 _imgHeight = $( this ).outerHeight();
                 
@@ -85,60 +85,58 @@ var viewerJS = (function (viewer) {
                 } );
             } );*/
 
-      // fade in thumb paper stack effect on scroll
-      $.fn.isInViewport = function () {
-        let elementTop = $(this).offset().top;
-        let elementBottom = elementTop + $(this).outerHeight();
+            // fade in thumb paper stack effect on scroll
+            $.fn.isInViewport = function () {
+                let elementTop = $(this).offset().top;
+                let elementBottom = elementTop + $(this).outerHeight();
 
-        let viewportTop = $(window).scrollTop();
-        let viewportBottom = viewportTop + $(window).height();
+                let viewportTop = $(window).scrollTop();
+                let viewportBottom = viewportTop + $(window).height();
 
-        return elementBottom > viewportTop && elementTop < viewportBottom;
-      };
+                return elementBottom > viewportTop && elementTop < viewportBottom;
+            };
 
-      var debounce_timer;
+            var debounce_timer;
 
-      $(window).scroll(function () {
-        if (debounce_timer) {
-          window.clearTimeout(debounce_timer);
-        }
-        debounce_timer = window.setTimeout(function () {
-          $(".stacked-thumbnail-after, .stacked-thumbnail-before").each(
-            function (i) {
-              if ($(this).isInViewport()) {
-                $(this).addClass("-shown");
-              }
-            }
-          );
-        }, 100);
-      });
-
-      // triggers thumb paper stack effect on initial render or if the page has no scroll
-      $(".stacked-thumbnail").each(function () {
-        // If the image is already loaded
-        if (this.complete) {
-          $(this)
-            .siblings(".stacked-thumbnail-before, .stacked-thumbnail-after")
-            .each(function () {
-              if ($(this).isInViewport()) {
-                $(this).addClass("-shown");
-              }
-            });
-        } else {
-          // If the image is still loading
-          $(this).on("load", function () {
-            $(this)
-              .siblings(".stacked-thumbnail-before, .stacked-thumbnail-after")
-              .each(function () {
-                if ($(this).isInViewport()) {
-                  $(this).addClass("-shown");
+            $(window).scroll(function () {
+                if (debounce_timer) {
+                    window.clearTimeout(debounce_timer);
                 }
-              });
-          });
-        }
-      });
-    },
-  };
+                debounce_timer = window.setTimeout(function () {
+                    $('.stacked-thumbnail-after, .stacked-thumbnail-before').each(function (i) {
+                        if ($(this).isInViewport()) {
+                            $(this).addClass('-shown');
+                        }
+                    });
+                }, 100);
+            });
 
-  return viewer;
+            // triggers thumb paper stack effect on initial render or if the page has no scroll
+            $('.stacked-thumbnail').each(function () {
+                // If the image is already loaded
+                if (this.complete) {
+                    $(this)
+                        .siblings('.stacked-thumbnail-before, .stacked-thumbnail-after')
+                        .each(function () {
+                            if ($(this).isInViewport()) {
+                                $(this).addClass('-shown');
+                            }
+                        });
+                } else {
+                    // If the image is still loading
+                    $(this).on('load', function () {
+                        $(this)
+                            .siblings('.stacked-thumbnail-before, .stacked-thumbnail-after')
+                            .each(function () {
+                                if ($(this).isInViewport()) {
+                                    $(this).addClass('-shown');
+                                }
+                            });
+                    });
+                }
+            });
+        },
+    };
+
+    return viewer;
 })(viewerJS || {}, jQuery);
