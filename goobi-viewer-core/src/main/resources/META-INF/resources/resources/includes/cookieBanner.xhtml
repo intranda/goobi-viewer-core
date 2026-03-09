@@ -46,11 +46,9 @@
             </div>
 
             <!-- OVERLAY -->
-            <div class="cookie-banner__overlay"></div>
+            <div class="cookie-banner__overlay" />
         </div>
     </ui:fragment>
 
-    <script>
-        $(document).ready(() => viewerJS.cookieBanner.init(#{cookieBannerBean.cookieBannerConfig}));
-    </script>
+    <script>$(document).ready(() => viewerJS.cookieBanner.init(#{cookieBannerBean.cookieBannerConfig}));</script>
 </ui:composition>

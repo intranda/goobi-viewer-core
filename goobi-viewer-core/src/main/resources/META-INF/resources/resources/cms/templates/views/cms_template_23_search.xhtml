@@ -25,7 +25,7 @@
                     <div class="tpl-search__text">
                         <h:outputText
                             escape="false"
-                            value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
+                            value="#{cc.attrs.component.getContentData('text')}" />
                     </div>
                 </ui:fragment>
             </h:panelGroup>
@@ -37,14 +37,14 @@
                     value="#{sessionBean.get('cmsSearch')}" />
                 <ui:param
                     name="searchType"
-                    value="0"></ui:param>
+                    value="0" />
 
                 <ui:param
                     name="renderOnSearchTypeChange"
-                    value="#{cmsTextContent}"></ui:param>
+                    value="#{cmsTextContent}" />
                 <ui:param
                     name="title"
-                    value="#{cc.attrs.component.getContentData('text')}"></ui:param>
+                    value="#{cc.attrs.component.getContentData('text')}" />
             </ui:include>
 
             <!-- SEARCH LIST -->

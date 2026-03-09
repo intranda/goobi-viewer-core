@@ -13,7 +13,7 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <ui:param
         name="search"
-        value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
+        value="#{searchParam != null ? searchParam : searchBean}" />
 
     <!-- SEARCH ADVANCED -->
     <div class="search-advanced">
@@ -118,7 +118,7 @@
                 <div
                     class="search-advanced__entry-area -result-group-#{searchBean.advancedSearchFieldTemplate} #{configurationBean.searchResultGroupsEnabled ? '-resultsGroupsActive' : ''}">
                     <!-- AJAX LOADER -->
-                    <div class="search-advanced__loader"></div>
+                    <div class="search-advanced__loader" />
 
                     <!-- SEARCH ADVANCED INPUT GROUP -->
                     <!-- TODO: Loops will need to be replaced with ui:repeat when enabling multiple lines per query item -->
@@ -234,7 +234,7 @@
                                         <h:panelGroup rendered="#{!queryItem.displaySelectItems}">
                                             <label
                                                 class="sr-only"
-                                                for="advsearchValueText_0-#{status.index}-#{lineStatus.index}"></label>
+                                                for="advsearchValueText_0-#{status.index}-#{lineStatus.index}" />
                                             <div class="search-advanced__input-group-field">
                                                 <ui:fragment rendered="#{queryItem.range}">
                                                     <div
@@ -325,7 +325,7 @@
                                                                 value="#{selectable.selected}">
                                                                 <f:ajax
                                                                     event="valueChange"
-                                                                    render="@this"></f:ajax>
+                                                                    render="@this" />
                                                             </h:selectBooleanCheckbox>
                                                             #{selectable.label}
                                                         </label>
@@ -352,7 +352,7 @@
                                                                         value="#{selectable.selected}">
                                                                         <f:ajax
                                                                             event="valueChange"
-                                                                            render="@this"></f:ajax>
+                                                                            render="@this" />
                                                                     </h:selectBooleanCheckbox>
                                                                     #{selectable.label}
                                                                 </label>
@@ -415,7 +415,9 @@
                                     itemValue="#{true}"
                                     itemLabel="#{msg.yes}" />
                             </h:selectOneRadio>
-                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                            <span class="toggle-outside">
+                                <span class="toggle-inside" />
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -500,7 +502,7 @@
 
                         <div
                             class="small-button-loader__icon -top-right"
-                            data-target="buttonLoader"></div>
+                            data-target="buttonLoader" />
                     </div>
 
                     <button
@@ -539,10 +541,10 @@
     </div>
 
     <script type="text/javascript">
-        $(document).ready(function () {
-            var searchAdvancedConfig = {};
+$(document).ready(function () {
+    var searchAdvancedConfig = {};
 
-            viewerJS.searchAdvanced.init(searchAdvancedConfig);
-        });
+    viewerJS.searchAdvanced.init(searchAdvancedConfig);
+});
     </script>
 </ui:composition>

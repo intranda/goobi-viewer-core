@@ -19,11 +19,11 @@
         <composite:attribute
             name="requiredMessage"
             required="false"
-            default="#{msg.info__input_required}"></composite:attribute>
+            default="#{msg.info__input_required}" />
         <composite:attribute
             name="helpText"
             required="false"
-            default=""></composite:attribute>
+            default="" />
     </composite:interface>
 
     <composite:implementation>
@@ -40,17 +40,17 @@
             <div class="col-9 cms-module__option-control admin__form-input">
                 <h:message
                     for="#{cc.attrs.clientId}_input"
-                    errorClass="-validation-message -danger"></h:message>
+                    errorClass="-validation-message -danger" />
                 <div class="-validation-mark">
                     <i
                         class="fa fa-check"
-                        aria-hidden="true"></i>
+                        aria-hidden="true" />
                     <i
                         class="fa fa-exclamation"
-                        aria-hidden="true"></i>
+                        aria-hidden="true" />
                 </div>
 
-                <composite:insertChildren></composite:insertChildren>
+                <composite:insertChildren />
 
                 <ui:fragment rendered="#{not empty cc.attrs.helpText}">
                     <span class="admin__form-help-text">#{cc.attrs.helpText}</span>

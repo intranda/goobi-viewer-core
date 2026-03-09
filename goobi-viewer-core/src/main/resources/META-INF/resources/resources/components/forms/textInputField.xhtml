@@ -13,7 +13,7 @@
             required="true" />
         <composite:attribute
             name="value"
-            required="true"></composite:attribute>
+            required="true" />
         <composite:attribute
             name="required"
             required="false"
@@ -22,23 +22,23 @@
         <composite:attribute
             name="requiredMessage"
             required="false"
-            default="#{msg.info__input_required}"></composite:attribute>
+            default="#{msg.info__input_required}" />
         <composite:attribute
             name="helpText"
             required="false"
-            default=""></composite:attribute>
+            default="" />
         <composite:attribute
             name="validatorId"
             required="false"
-            default="anyStringValidator"></composite:attribute>
+            default="anyStringValidator" />
         <composite:attribute
             name="validatorMessage"
             required="false"
-            default=""></composite:attribute>
+            default="" />
         <composite:attribute
             name="textArea"
             required="false"
-            default="false"></composite:attribute>
+            default="false" />
     </composite:interface>
 
     <composite:implementation>
@@ -65,10 +65,10 @@
                             <div class="cms-module__option-message-mark">
                                 <i
                                     class="fa fa-check"
-                                    aria-hidden="true"></i>
+                                    aria-hidden="true" />
                                 <i
                                     class="fa fa-exclamation"
-                                    aria-hidden="true"></i>
+                                    aria-hidden="true" />
                             </div>
                         </div>
                         <h:inputText

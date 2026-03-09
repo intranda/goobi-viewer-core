@@ -88,14 +88,14 @@
                                                                 class="col-9 cms-module__option-control admin__form-input">
                                                                 <h:message
                                                                     for="displayName"
-                                                                    errorClass="-validation-message -danger"></h:message>
+                                                                    errorClass="-validation-message -danger" />
                                                                 <div class="-validation-mark">
                                                                     <i
                                                                         class="fa fa-check"
-                                                                        aria-hidden="true"></i>
+                                                                        aria-hidden="true" />
                                                                     <i
                                                                         class="fa fa-exclamation"
-                                                                        aria-hidden="true"></i>
+                                                                        aria-hidden="true" />
                                                                 </div>
 
                                                                 <h:inputText
@@ -169,7 +169,7 @@
                                                             layout="block">
                                                             <ui:fragment
                                                                 rendered="#{!crowdsourcingBean.selectedCampaign.isDefaultLocaleSelected()}">
-                                                                <div class="admin__non-clickable-area-overlay"></div>
+                                                                <div class="admin__non-clickable-area-overlay" />
                                                             </ui:fragment>
                                                             <div class="col-2 control-label admin__form-label">
                                                                 <label for="">#{msg.admin__cms_media_file}:</label>
@@ -253,10 +253,10 @@
                                                                         <div class="cms-module__option-message-mark">
                                                                             <i
                                                                                 class="fa fa-check"
-                                                                                aria-hidden="true"></i>
+                                                                                aria-hidden="true" />
                                                                             <i
                                                                                 class="fa fa-exclamation"
-                                                                                aria-hidden="true"></i>
+                                                                                aria-hidden="true" />
                                                                         </div>
                                                                     </div>
                                                                     <h:inputText
@@ -311,7 +311,7 @@
                                                             action="#{crowdsourcingBean.addNewQuestionAction}"
                                                             value="#{msg.add}"
                                                             title="#{msg.add}"
-                                                            alt="#{msg.add}"></h:commandButton>
+                                                            alt="#{msg.add}" />
                                                     </h2>
                                                 </ui:fragment>
                                             </h:panelGroup>
@@ -377,7 +377,7 @@
                                                                                 </button>
                                                                             </div>
 
-                                                                            <div class="col-2"></div>
+                                                                            <div class="col-2" />
                                                                             <span class="col-8 admin__form-help-text">
                                                                                 #{msg.admin__help_crowdsourcing_question_text}
                                                                             </span>
@@ -407,7 +407,7 @@
                                                                                     <f:ajax
                                                                                         event="change"
                                                                                         render="question"
-                                                                                        execute="@this"></f:ajax>
+                                                                                        execute="@this" />
                                                                                 </h:selectOneMenu>
                                                                                 <span class="admin__form-help-text">
                                                                                     #{msg.admin__help_crowdsourcing_question_type}
@@ -470,7 +470,7 @@
                                                                                                                 listener="#{question.serializeMetadataFields}"
                                                                                                                 event="change"
                                                                                                                 render="createCampaignForm:questions:#{status.index}:metadataFields"
-                                                                                                                execute="@this"></f:ajax>
+                                                                                                                execute="@this" />
                                                                                                         </h:selectBooleanCheckbox>
                                                                                                         <label
                                                                                                             title="#{field}">
@@ -529,7 +529,7 @@
                                                                                     <f:ajax
                                                                                         event="change"
                                                                                         render="@none"
-                                                                                        execute="@this"></f:ajax>
+                                                                                        execute="@this" />
                                                                                 </h:selectOneMenu>
                                                                                 <span class="admin__form-help-text">
                                                                                     #{msg.admin__help_crowdsourcing_question_targetSelector}
@@ -578,7 +578,7 @@
                                                                                     <f:ajax
                                                                                         event="change"
                                                                                         render="@none"
-                                                                                        execute="@this"></f:ajax>
+                                                                                        execute="@this" />
                                                                                 </h:selectOneMenu>
                                                                                 <span class="admin__form-help-text">
                                                                                     #{msg.admin__help_crowdsourcing_question_targetFrequency}
@@ -912,7 +912,7 @@
                                                             value="#{crowdsourcingBean.getPossibleReviewModes()}"
                                                             var="mode"
                                                             itemLabel="#{msg[mode.label]}"
-                                                            itemValue="#{mode}"></f:selectItems>
+                                                            itemValue="#{mode}" />
                                                         <f:passThroughAttribute
                                                             name="aria-label"
                                                             value="#{msg.aria_label__campaigns_review}" />
@@ -1014,11 +1014,11 @@
                                                             var="mode"
                                                             value="#{crowdsourcingBean.availableStatisticModes}"
                                                             itemLabel="#{msg[mode.label]}"
-                                                            itemValue="#{mode}"></f:selectItems>
+                                                            itemValue="#{mode}" />
                                                         <f:passThroughAttribute
                                                             name="aria-label"
                                                             value="#{msg.label__crowdsourcing_campaign_statistic_mode}" />
-                                                        <f:ajax render="statisticsArea"></f:ajax>
+                                                        <f:ajax render="statisticsArea" />
                                                     </h:selectOneMenu>
                                                 </div>
                                             </h:panelGroup>
@@ -1036,13 +1036,11 @@
                                                             src="/resources/crowdsourcing/includes/campaignStatistics.xhtml">
                                                             <ui:param
                                                                 name="campaign"
-                                                                value="#{crowdsourcingBean.selectedCampaign}"></ui:param>
+                                                                value="#{crowdsourcingBean.selectedCampaign}" />
                                                         </ui:include>
                                                     </div>
                                                 </ui:fragment>
-                                                <script>
-                                                    riot.mount('progressBar');
-                                                </script>
+                                                <script>riot.mount('progressBar');</script>
                                             </h:panelGroup>
                                         </div>
                                     </div>
@@ -1055,7 +1053,7 @@
                     <h:panelGroup id="mediaSelectPanel">
                         <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
                             <!-- SELECT MEDIA ITEM OVERLAY -->
-                            <div class="admin-cms-media__select-overlay"></div>
+                            <div class="admin-cms-media__select-overlay" />
 
                             <!-- SELECT MEDIA ITEM -->
                             <div class="admin-cms-media__select">

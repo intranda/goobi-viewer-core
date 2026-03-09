@@ -61,7 +61,7 @@
                                         <util:icon
                                             icon="chevron-up"
                                             svgClass="icon icon-xxl" />
-                                        <f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
+                                        <f:ajax render="sidebar_editor_component:selectedWidgetsGroup" />
                                     </button>
 
                                     <button
@@ -74,7 +74,7 @@
                                         <util:icon
                                             icon="chevron-down"
                                             svgClass="icon icon-xxl" />
-                                        <f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
+                                        <f:ajax render="sidebar_editor_component:selectedWidgetsGroup" />
                                     </button>
 
                                     <button
@@ -146,7 +146,7 @@
                                         id="scales#{status.index}"
                                         name="scales#{status.index}"
                                         jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
-                                        <f:ajax event="change"></f:ajax>
+                                        <f:ajax event="change" />
                                     </input>
 
                                     <label
@@ -192,7 +192,9 @@
                 id="checkboxUseDefaultSidebar"
                 value="#{cc.attrs.page.useDefaultSidebar}"
                 onclick="cmsJS.createPage.disablePreview()">
-                <span><h:outputText value="#{msg.cms_pageSidebarUseDefault}" /></span>
+                <span>
+                    <h:outputText value="#{msg.cms_pageSidebarUseDefault}" />
+                </span>
                 <f:ajax
                     event="change"
                     render="sidebarEditorWrapper" />

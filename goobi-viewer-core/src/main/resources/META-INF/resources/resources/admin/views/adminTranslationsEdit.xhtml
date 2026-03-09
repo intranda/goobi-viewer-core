@@ -94,7 +94,7 @@
                                             <ui:fragment
                                                 rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                                 <div class="form-group form-row">
-                                                    <div class="col-3 control-label admin__form-label"></div>
+                                                    <div class="col-3 control-label admin__form-label" />
                                                     <div class="col-9 admin__form-input">
                                                         <strong>
                                                             #{adminBean.currentTranslationGroup.selectedEntry.key}
@@ -147,13 +147,13 @@
                                             <h:commandButton
                                                 styleClass="btn admin__cancel-button"
                                                 value="#{msg.button__abort}"
-                                                action="#{adminBean.cancelSelectedMessageEntryAction}"></h:commandButton>
+                                                action="#{adminBean.cancelSelectedMessageEntryAction}" />
                                             <!-- SAVE BUTTON -->
                                             <h:commandButton
                                                 styleClass="btn btn--default mr-3"
                                                 value="#{msg.button__save}"
                                                 action="#{adminBean.saveSelectedMessageEntryAction}"
-                                                disabled="#{adminBean.currentTranslationGroup.selectedEntry.keySuffixBlank}"></h:commandButton>
+                                                disabled="#{adminBean.currentTranslationGroup.selectedEntry.keySuffixBlank}" />
                                         </ui:fragment>
 
                                         <ui:fragment
@@ -210,10 +210,10 @@
                                             <div class="admin__sidebar-progressbar">
                                                 <div
                                                     class="admin__sidebar-progressbar-complete"
-                                                    style="flex: 0 0 #{adminBean.currentTranslationGroup.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
+                                                    style="flex: 0 0 #{adminBean.currentTranslationGroup.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;" />
                                                 <div
                                                     class="admin__sidebar-progressbar-partially"
-                                                    style="flex: 0 0 #{adminBean.currentTranslationGroup.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
+                                                    style="flex: 0 0 #{adminBean.currentTranslationGroup.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;" />
                                             </div>
                                         </div>
                                         <div class="admin__default-block">
@@ -295,9 +295,7 @@
                     </h:form>
                 </h:panelGroup>
                 <!-- REATTACH HC STICKY AFTER AJAX CALL -->
-                <script>
-                    adminJS.translationsEdit.init();
-                </script>
+                <script>adminJS.translationsEdit.init();</script>
             </div>
         </f:view>
     </ui:define>

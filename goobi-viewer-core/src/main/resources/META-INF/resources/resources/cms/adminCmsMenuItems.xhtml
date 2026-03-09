@@ -250,7 +250,7 @@
                                                                         itemLabel="#{msg.yes}" />
                                                                 </h:selectOneRadio>
                                                                 <span class="toggle-outside">
-                                                                    <span class="toggle-inside"></span>
+                                                                    <span class="toggle-inside" />
                                                                 </span>
                                                             </div>
                                                             <span class="admin__form-help-text">
@@ -454,7 +454,7 @@
                                                                     itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
                                                             <span class="toggle-outside">
-                                                                <span class="toggle-inside"></span>
+                                                                <span class="toggle-inside" />
                                                             </span>
                                                         </div>
                                                         <span class="admin__form-help-text">
@@ -490,17 +490,17 @@
             </div>
 
             <script type="text/javascript">
-                $(document).ready(function () {
-                    var createMenuConfig = {
-                        sortablesConfig: {
-                            componentListInput: document.getElementById('itemOrderInput'),
-                            editButton: $('.widget-edit'),
-                            visibleItemList: '#visibleItemList',
-                        },
-                    };
+$(document).ready(function () {
+    var createMenuConfig = {
+        sortablesConfig: {
+            componentListInput: document.getElementById('itemOrderInput'),
+            editButton: $('.widget-edit'),
+            visibleItemList: '#visibleItemList',
+        },
+    };
 
-                    cmsJS.sortableList.init(20, true, createMenuConfig);
-                });
+    cmsJS.sortableList.init(20, true, createMenuConfig);
+});
             </script>
         </h:panelGroup>
 

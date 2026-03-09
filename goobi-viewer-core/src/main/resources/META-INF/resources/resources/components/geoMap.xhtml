@@ -73,13 +73,13 @@
             </span>
             <div
                 id="featureList_#{cc.attrs.mapId}"
-                class="geomap__featurelist"></div>
+                class="geomap__featurelist" />
         </div>
         <popover
             id="popoverTemplate_#{cc.attrs.mapId}"
             class="#{cc.attrs.popoverClass}">
-            <h3 data-metadata="title"></h3>
-            <span data-metadata="description"></span>
+            <h3 data-metadata="title" />
+            <span data-metadata="description" />
         </popover>
         <div class="geomap__options_wrapper">
             <div
@@ -87,10 +87,9 @@
                 class="geomap__featureset_selector" />
             <div
                 id="featureFilters_#{cc.attrs.mapId}"
-                class="geomap__featureFilters"></div>
+                class="geomap__featureFilters" />
         </div>
         <script>
-
             $(document).ready(() => {
                 let config = {
                 		documentIdToHighlight: "#{cc.attrs.highlightDocumentId}",
@@ -100,8 +99,11 @@
             	            language: "#{navigationHelper.localeString}",
             	            iconPath: "#{request.contextPath}/resources/images/map",
             	            layers: [
-            	            <ui:repeat value="#{cc.attrs.geoMap.featureSets}" var="featureSet" varStatus="status">
-            		            {
+            <ui:repeat
+                value="#{cc.attrs.geoMap.featureSets}"
+                var="featureSet"
+                varStatus="status">
+                {
             		            	features: #{featureSet.useHeatmap ? "[]" : featureSet.featuresAsString},
             		                allowMovingFeatures: false,
             		           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
@@ -110,7 +112,8 @@
             		           		cluster: {
             		           			spiderfyDistanceMultiplier: #{configurationBean.geomapClusterDistanceMultiplier},
             		                    maxClusterRadius: #{configurationBean.geomapClusterRadius},
-            		                    maxClusteringZoom: #{empty configurationBean.getGeomapDisableClusteringAtZoom() ? 'undefined' : configurationBean.getGeomapDisableClusteringAtZoom()}				           		},
+            		                    maxClusteringZoom: #{empty
+                configurationBean.getGeomapDisableClusteringAtZoom() ? 'undefined' : configurationBean.getGeomapDisableClusteringAtZoom()}				           		},
             		           		markerIcon: (icon => icon)(#{featureSet.markerAsJSON}),
 
             		           		label: #{featureSet.name.getAsJson()},
@@ -129,8 +132,8 @@
             			            	linkTarget : "#{cc.attrs.linkTarget}",
             			            	loader: "##{cc.attrs.mapId} .ajax_loader",
             		           		},
-            		           		<ui:fragment rendered="#{featureSet.queryResultSet}">
-            			            heatmap: {
+                <ui:fragment rendered="#{featureSet.queryResultSet}">
+                    heatmap: {
             			            	enabled: #{featureSet.queryResultSet and featureSet.useHeatmap},
             			            	heatmapUrl: "#{geoMapBean.heatmapUrl}",
             			            	featureUrl: "#{geoMapBean.featureUrl}",
@@ -138,8 +141,8 @@
             			        	    labelField: "#{featureSet.markerTitleField}",
             			        	    searchScope: "#{featureSet.searchScope}"
             			        	},
-            			            </ui:fragment>
-            			            style : {
+                </ui:fragment>
+                style : {
             			            	stroke: true,
             			            	color: '#{featureSet.color}',
             			            	opactity: 0.9,
@@ -149,8 +152,8 @@
             			            	radius: 15
             			            }
             		            },
-            	           		</ui:repeat>
-            		        ],
+            </ui:repeat>
+            ],
                         },
                 }
                 // console.log("map layers ", config.map.layers.map(l => l.features));

@@ -91,7 +91,9 @@
                                                         name="data-toggle-target"
                                                         value="#maintenanceModeEditWrapper" />
                                                 </h:selectOneRadio>
-                                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                                <span class="toggle-outside">
+                                                    <span class="toggle-inside" />
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -113,7 +115,7 @@
                                         languageSelector="#{adminBean.maintenanceMode}">
                                         <viewerForms:htmlInputField
                                             label="#{msg.text}"
-                                            value="#{adminBean.maintenanceMode.text}"></viewerForms:htmlInputField>
+                                            value="#{adminBean.maintenanceMode.text}" />
                                     </viewerForms:inputFormBlock>
 
                                     <!-- FINAL ACTIONS CANCEL + SAVE -->

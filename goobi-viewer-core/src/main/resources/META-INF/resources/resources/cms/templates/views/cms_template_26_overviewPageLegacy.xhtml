@@ -66,10 +66,10 @@
                                                     <span class="tpl-overviewpage-legacy__overview-metadata-value">
                                                         <h:outputFormat
                                                             value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                                            escape="false"></h:outputFormat>
+                                                            escape="false" />
                                                     </span>
 
-                                                    <div class="clearfix"></div>
+                                                    <div class="clearfix" />
                                                 </ui:repeat>
                                             </dd>
                                         </ui:fragment>
@@ -81,10 +81,10 @@
                                                     <span class="tpl-overviewpage-legacy__overview-metadata-value">
                                                         <h:outputFormat
                                                             value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                                            escape="false"></h:outputFormat>
+                                                            escape="false" />
                                                     </span>
 
-                                                    <div class="clearfix"></div>
+                                                    <div class="clearfix" />
                                                 </ui:repeat>
                                             </dd>
                                         </ui:fragment>
@@ -129,7 +129,7 @@
                 <div class="tpl-overviewpage-legacy__description-text">
                     <h:outputText
                         escape="false"
-                        value="#{cc.attrs.component.getContentData('description')}"></h:outputText>
+                        value="#{cc.attrs.component.getContentData('description')}" />
                 </div>
             </div>
 
@@ -142,7 +142,7 @@
                 <div class="tpl-overviewpage-legacy__literature-text">
                     <h:outputText
                         escape="false"
-                        value="#{cc.attrs.component.getContentData('literature')}"></h:outputText>
+                        value="#{cc.attrs.component.getContentData('literature')}" />
                 </div>
             </div>
 
@@ -152,23 +152,23 @@
                     <h1>#{msg.viewOverviewHistory_heading}</h1>
                     <h:outputText
                         escape="false"
-                        value="#{cc.attrs.component.getContentData('history')}"></h:outputText>
+                        value="#{cc.attrs.component.getContentData('history')}" />
                 </div>
             </ui:fragment>
         </div>
 
         <script type="text/javascript">
-            var normdataConfig = {
-                path: '#{request.contextPath}',
-                lang: {
-                    popoverTitle: '#{msg.normdataPopoverTitle}',
-                    popoverClose: '#{msg.normdataPopoverClose}',
-                    showNormdata: '#{msg.normdataExpand}',
-                },
-                elemWrapper: $('#metadataElementWrapper'),
-            };
+var normdataConfig = {
+    path: '#{request.contextPath}',
+    lang: {
+        popoverTitle: '#{msg.normdataPopoverTitle}',
+        popoverClose: '#{msg.normdataPopoverClose}',
+        showNormdata: '#{msg.normdataExpand}',
+    },
+    elemWrapper: $('#metadataElementWrapper'),
+};
 
-            viewerJS.normdata.init(normdataConfig);
+viewerJS.normdata.init(normdataConfig);
         </script>
     </composite:implementation>
 </ui:composition>

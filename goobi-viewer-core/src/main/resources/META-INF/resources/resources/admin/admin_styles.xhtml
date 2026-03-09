@@ -54,29 +54,15 @@
                                     svgClass="icon icon-xxxl" />
                             </div>
                             <pre>
-&lt;!-- COMMENT --&gt;
-&lt;ui:fragment rendered="true"&gt;
-    &lt;div class="admin__default-block mb-5 -danger"&gt;
-        &lt;div class="row"&gt;
-            &lt;h2 class="col-12"&gt;#{msg.admin__licenses_not_configured_licenses}&lt;/h2&gt;
-        &lt;/div&gt;
-        &lt;ui:repeat var="accessCondition" value="value"&gt;
-            &lt;h:commandLink 
+                                &lt; !-- COMMENT -- &gt; &lt; ui:fragment rendered="true" &gt; &lt; div
+                                class="admin__default-block mb-5 -danger" &gt; &lt; div class="row" &gt; &lt; h2
+                                class="col-12" &gt; #{msg.admin__licenses_not_configured_licenses} &lt; /h2 &gt; &lt; /div &gt; &lt; ui:repeat
+                                var="accessCondition" value="value" &gt; &lt; h:commandLink 
             	action="pretty:adminLicenseNew"
                 actionListener="actionListener"
-                styleClass="row admin__license-unconfigured-entry"&gt;
-                &lt;div class="col-10 -textlink"&gt;
-                    accessCondition (#{msg.admin__licenses_record_number}: #{adminLicenseBean.getNumRecordsWithAccessCondition(accessCondition)})
-                &lt;/div&gt;
-                &lt;div class="col-2 d-flex justify-content-end"&gt;
-                    &lt;span&gt;#{msg.admin__licenses_configure_license_now}&lt;/span&gt;
-                &lt;/div&gt;
-            &lt;/h:commandLink&gt;
-        &lt;/ui:repeat&gt;
-    &lt;/div&gt;
-&lt;/ui:fragment&gt;
-</pre
-                            >
+                styleClass="row admin__license-unconfigured-entry" &gt; &lt; div class="col-10 -textlink" &gt; accessCondition (#{msg.admin__licenses_record_number}: #{adminLicenseBean.getNumRecordsWithAccessCondition(accessCondition)}) &lt; /div &gt; &lt; div
+                                class="col-2 d-flex justify-content-end" &gt; &lt; span &gt; #{msg.admin__licenses_configure_license_now} &lt; /span &gt; &lt; /div &gt; &lt; /h:commandLink &gt; &lt; /ui:repeat &gt; &lt; /div &gt; &lt; /ui:fragment &gt;
+                            </pre>
                         </div>
                     </div>
                     <!-- END OF ONE ROW -->
@@ -202,52 +188,24 @@
                             </div>
 
                             <pre>
-&lt;div class=&quot;admin__entry-list&quot;&gt;
-    &lt;!-- INDIVIDUAL GROUPS --&gt;
-    &lt;ui:repeat var=&quot;userGroup&quot; value=&quot;\#{adminBean.allUserGroups}&quot;&gt;
-        &lt;div class=&quot;admin__boxed-entry -w33&quot;&gt;
-            &lt;!-- NAME --&gt;
-            &lt;div class=&quot;row&quot;&gt;
-                &lt;h2 class=&quot;col-12&quot;&gt;\#{userGroup.name}&lt;/h2&gt;
-            &lt;/div&gt;
-            &lt;!-- DESCRIPTION --&gt;
-            &lt;div class=&quot;row&quot;&gt;
-                &lt;ui:fragment rendered=&quot;\#{userGroup.description ne ''}&quot;&gt;
-                    &lt;p class=&quot;col-12 admin__boxed-entry-description&quot;&gt;\#{userGroup.description}&lt;/p&gt;
-                &lt;/ui:fragment&gt;
-                &lt;ui:fragment rendered=&quot;\#{userGroup.description eq ''}&quot;&gt;
-                    &lt;p class=&quot;col-12 admin__boxed-entry-description-empty&quot; aria-disabled=&quot;true&quot;&gt;(\#{msg.admin__label__no_description_available})&lt;/p&gt;
-                &lt;/ui:fragment&gt;
-            &lt;/div&gt;
-            &lt;!-- DATA --&gt;
-            &lt;dl class=&quot;row&quot;&gt;
-                &lt;dt class=&quot;col-sm-4&quot;&gt;\#{msg.userGroup_members}:&lt;/dt&gt;
-                &lt;dd class=&quot;col-sm-8&quot;&gt;\#{userGroup.memberCount}&lt;/dd&gt;
-                &lt;dt class=&quot;col-sm-4&quot;&gt;\#{msg.owner}:&lt;/dt&gt;
-                &lt;dd class=&quot;col-sm-8&quot;&gt;\#{userGroup.owner.displayName}&lt;/dd&gt;
-            &lt;/dl&gt;
-            &lt;!-- ACTIONS --&gt;
-            &lt;div class=&quot;row admin__boxed-entry-actions&quot;&gt;
-                &lt;div class=&quot;col-3 d-flex&quot;&gt;
-                    &lt;!-- EDIT--&gt;
-                    &lt;a href=&quot;\#{navigationHelper.applicationUrl}admin/groups/edit/\#{userGroup.id}/&quot; class=&quot;admin__boxed-entry-actions-edit&quot; aria-label=&quot;\#{msg.edit}: \#{userGroup.name}&quot;&gt;\#{msg.edit}&lt;/a&gt;
+                                &lt; div class= &quot; admin__entry-list &quot; &gt; &lt; !-- INDIVIDUAL GROUPS -- &gt; &lt; ui:repeat
+                                var= &quot; userGroup &quot; value= &quot; \#{adminBean.allUserGroups} &quot; &gt; &lt; div
+                                class= &quot; admin__boxed-entry -w33 &quot; &gt; &lt; !-- NAME -- &gt; &lt; div class= &quot; row &quot; &gt; &lt; h2
+                                class= &quot; col-12 &quot; &gt; \#{userGroup.name} &lt; /h2 &gt; &lt; /div &gt; &lt; !-- DESCRIPTION -- &gt; &lt; div
+                                class= &quot; row &quot; &gt; &lt; ui:fragment rendered= &quot; \#{userGroup.description
+                                ne ''} &quot; &gt; &lt; p class= &quot; col-12 admin__boxed-entry-description &quot; &gt; \#{userGroup.description} &lt; /p &gt; &lt; /ui:fragment &gt; &lt; ui:fragment
+                                rendered= &quot; \#{userGroup.description eq ''} &quot; &gt; &lt; p class= &quot; col-12
+                                admin__boxed-entry-description-empty &quot; aria-disabled= &quot; true &quot; &gt; (\#{msg.admin__label__no_description_available}) &lt; /p &gt; &lt; /ui:fragment &gt; &lt; /div &gt; &lt; !-- DATA -- &gt; &lt; dl
+                                class= &quot; row &quot; &gt; &lt; dt class= &quot; col-sm-4 &quot; &gt; \#{msg.userGroup_members}: &lt; /dt &gt; &lt; dd
+                                class= &quot; col-sm-8 &quot; &gt; \#{userGroup.memberCount} &lt; /dd &gt; &lt; dt
+                                class= &quot; col-sm-4 &quot; &gt; \#{msg.owner}: &lt; /dt &gt; &lt; dd class= &quot; col-sm-8 &quot; &gt; \#{userGroup.owner.displayName} &lt; /dd &gt; &lt; /dl &gt; &lt; !-- ACTIONS -- &gt; &lt; div
+                                class= &quot; row admin__boxed-entry-actions &quot; &gt; &lt; div class= &quot; col-3
+                                d-flex &quot; &gt; &lt; !-- EDIT-- &gt; &lt; a href= &quot; \#{navigationHelper.applicationUrl}admin/groups/edit/\#{userGroup.id}/ &quot; class= &quot; admin__boxed-entry-actions-edit &quot; aria-label= &quot; \#{msg.edit}: \#{userGroup.name} &quot; &gt; \#{msg.edit} &lt; /a &gt;
 
-                    &lt;!-- DELETE --&gt;
-                    &lt;h:commandLink rendered=&quot;\#{!userGroup.hasMembers}&quot;
-                        onclick=&quot;if ( !confirm( &amp;quot;\#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&amp;quot; ) ) { return false };&quot;
-                        action=&quot;adminAllUserGroups&quot;
-                        actionListener=&quot;\#{adminBean.deleteUserGroupAction(userGroup)}&quot;
-                        styleClass=&quot;admin__boxed-entry-actions-delete -redlink&quot;&gt;
-                        &lt;f:passThroughAttribute name=&quot;aria-label&quot; value=&quot;\#{msg.delete}: \#{userGroup.name}&quot; /&gt;
-                        \#{msg.delete}
-                    &lt;/h:commandLink&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/ui:repeat&gt;
-&lt;/div&gt;
-</pre
-                            >
+                                &lt; !-- DELETE -- &gt; &lt; h:commandLink rendered= &quot; \#{!userGroup.hasMembers} &quot; onclick= &quot; if ( !confirm( &amp; quot;\#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)} &amp; quot; ) ) { return
+                                false }; &quot; action= &quot; adminAllUserGroups &quot; actionListener= &quot; \#{adminBean.deleteUserGroupAction(userGroup)} &quot; styleClass= &quot; admin__boxed-entry-actions-delete -redlink &quot; &gt; &lt; f:passThroughAttribute
+                                name= &quot; aria-label &quot; value= &quot; \#{msg.delete}: \#{userGroup.name} &quot; / &gt; \#{msg.delete} &lt; /h:commandLink &gt; &lt; /div &gt; &lt; /div &gt; &lt; /div &gt; &lt; /ui:repeat &gt; &lt; /div &gt;
+                            </pre>
                         </div>
                     </div>
                     <!-- END OF ONE ROW -->
@@ -293,8 +251,8 @@
                                             id="ipRangeDescription"
                                             name="ipRangeDescription"
                                             class="form-control">
-Everybodys very own personal reading room</textarea
-                                        >
+                                            Everybodys very own personal reading room
+                                        </textarea>
                                         <span class="admin__form-help-text">
                                             The description text is optional and can be used to further describe the IP
                                             range.
@@ -329,39 +287,22 @@ Everybodys very own personal reading room</textarea
                             </div>
                             <!-- ESCAPED XHTML CODE -->
                             <pre>
-&lt;div class=&quot;admin__default-block&quot;&gt;
-	&lt;div class=&quot;form-group form-row&quot;&gt;
-		&lt;div class=&quot;col-2 control-label admin__form-label&quot;&gt;
-			&lt;label for=&quot;ipRangeName&quot;&gt;\#{msg.name}:&lt;/label&gt;
-			&lt;span class=&quot;admin__label-required-field&quot;&gt;(\#{msg.form__required_field})&lt;/span&gt;
-		&lt;/div&gt;
-		&lt;div class=&quot;col-9 admin__form-input&quot;&gt;
-			&lt;h:inputText value=&quot;\#{adminBean.currentIpRange.name}&quot; id=&quot;ipRangeName&quot; required=&quot;true&quot; styleClass=&quot;form-control&quot; /&gt;
-			&lt;span class=&quot;admin__form-help-text&quot;&gt;\#{msg.admin__ip_range_name__help}&lt;/span&gt;
-		&lt;/div&gt;
-		&lt;div class=&quot;col-1 admin__form-help-icon&quot;&gt;
-			&lt;button type=&quot;button&quot; class=&quot;btn btn--clean&quot; data-toggle=&quot;helptext&quot; aria-label=&quot;inline help icon&quot;&gt;
-				&lt;util:icon icon=&quot;help&quot; /&gt;
-			&lt;/button&gt;
-		&lt;/div&gt;
-	&lt;/div&gt;
-	&lt;div class=&quot;form-group form-row&quot;&gt;
-		&lt;div class=&quot;col-2 control-label&quot;&gt;
-			&lt;label for=&quot;ipRangeDescription&quot;&gt;\#{msg.description}:&lt;/label&gt;
-		&lt;/div&gt;
-		&lt;div class=&quot;col-9 admin__form-input&quot;&gt;
-			&lt;h:inputTextarea value=&quot;\#{adminBean.currentIpRange.description}&quot; id=&quot;ipRangeDescription&quot; styleClass=&quot;form-control&quot; /&gt;
-			&lt;span class=&quot;admin__form-help-text&quot;&gt;\#{msg.admin__ip_range_description__help}&lt;/span&gt;
-		&lt;/div&gt;
-		&lt;div class=&quot;col-1 admin__form-help-icon&quot;&gt;
-			&lt;button type=&quot;button&quot; class=&quot;btn btn--clean&quot; data-toggle=&quot;helptext&quot; aria-label=&quot;inline help icon&quot;&gt;
-				&lt;util:icon icon=&quot;help&quot; /&gt;
-			&lt;/button&gt;
-		&lt;/div&gt;
-	&lt;/div&gt;
-&lt;/div&gt;
-</pre
-                            >
+                                &lt; div class= &quot; admin__default-block &quot; &gt; &lt; div class= &quot; form-group
+                                form-row &quot; &gt; &lt; div class= &quot; col-2 control-label admin__form-label &quot; &gt; &lt; label
+                                for= &quot; ipRangeName &quot; &gt; \#{msg.name}: &lt; /label &gt; &lt; span class= &quot; admin__label-required-field &quot; &gt; (\#{msg.form__required_field}) &lt; /span &gt; &lt; /div &gt; &lt; div
+                                class= &quot; col-9 admin__form-input &quot; &gt; &lt; h:inputText value= &quot; \#{adminBean.currentIpRange.name} &quot; id= &quot; ipRangeName &quot; required= &quot; true &quot; styleClass= &quot; form-control &quot; / &gt; &lt; span
+                                class= &quot; admin__form-help-text &quot; &gt; \#{msg.admin__ip_range_name__help} &lt; /span &gt; &lt; /div &gt; &lt; div
+                                class= &quot; col-1 admin__form-help-icon &quot; &gt; &lt; button type= &quot; button &quot; class= &quot; btn
+                                btn--clean &quot; data-toggle= &quot; helptext &quot; aria-label= &quot; inline help
+                                icon &quot; &gt; &lt; util:icon icon= &quot; help &quot; / &gt; &lt; /button &gt; &lt; /div &gt; &lt; /div &gt; &lt; div
+                                class= &quot; form-group form-row &quot; &gt; &lt; div class= &quot; col-2 control-label &quot; &gt; &lt; label
+                                for= &quot; ipRangeDescription &quot; &gt; \#{msg.description}: &lt; /label &gt; &lt; /div &gt; &lt; div
+                                class= &quot; col-9 admin__form-input &quot; &gt; &lt; h:inputTextarea value= &quot; \#{adminBean.currentIpRange.description} &quot; id= &quot; ipRangeDescription &quot; styleClass= &quot; form-control &quot; / &gt; &lt; span
+                                class= &quot; admin__form-help-text &quot; &gt; \#{msg.admin__ip_range_description__help} &lt; /span &gt; &lt; /div &gt; &lt; div
+                                class= &quot; col-1 admin__form-help-icon &quot; &gt; &lt; button type= &quot; button &quot; class= &quot; btn
+                                btn--clean &quot; data-toggle= &quot; helptext &quot; aria-label= &quot; inline help
+                                icon &quot; &gt; &lt; util:icon icon= &quot; help &quot; / &gt; &lt; /button &gt; &lt; /div &gt; &lt; /div &gt; &lt; /div &gt;
+                            </pre>
                         </div>
                     </div>
                     <!-- END OF ONE ROW -->

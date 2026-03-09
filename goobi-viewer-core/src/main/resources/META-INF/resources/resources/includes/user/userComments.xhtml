@@ -83,7 +83,7 @@
                         <!-- COMMENT CONTENT -->
                         <div class="user-comments__comment-content">
                             <!-- CONTENT LOADER -->
-                            <div class="user-comments__comment-content-loader"></div>
+                            <div class="user-comments__comment-content-loader" />
 
                             <!-- COMMENT OPTIONS -->
                             <ui:fragment rendered="#{userBean.loggedIn or comment.dateModified != null}">
@@ -193,7 +193,9 @@
                 <!-- ADD COMMENT -->
                 <ui:fragment rendered="#{userBean.loggedIn}">
                     <div class="user-comments__add-comment">
-                        <label for="userCommentAdd"><span>#{msg.userCommentAdd}</span></label>
+                        <label for="userCommentAdd">
+                            <span>#{msg.userCommentAdd}</span>
+                        </label>
                         <div class="user-comments__add-comment-add">
                             <h:inputTextarea
                                 id="userCommentAdd"
@@ -219,10 +221,10 @@
         </div>
 
         <script type="text/javascript">
-            $(document).ready(function () {
-                viewerJS.userComments.init();
-                viewerJS.jsfAjax.success.subscribe((data) => viewerJS.userComments.init());
-            });
+$(document).ready(function () {
+    viewerJS.userComments.init();
+    viewerJS.jsfAjax.success.subscribe((data) => viewerJS.userComments.init());
+});
         </script>
     </ui:fragment>
 </ui:composition>

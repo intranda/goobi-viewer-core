@@ -181,11 +181,15 @@
                                     <h2>#{msg.information}</h2>
 
                                     <div>
-                                        <span><b>#{msg.admin__comment_group_input_title}:</b></span>
+                                        <span>
+                                            <b>#{msg.admin__comment_group_input_title}:</b>
+                                        </span>
                                     </div>
                                     <div class="mb-2">#{msg[adminCommentBean.currentCommentGroup.title]}</div>
                                     <div>
-                                        <span><b>#{msg.admin__comment_group_description}:</b></span>
+                                        <span>
+                                            <b>#{msg.admin__comment_group_description}:</b>
+                                        </span>
                                     </div>
                                     <div>#{msg[adminCommentBean.currentCommentGroup.description]}</div>
                                 </div>
@@ -216,7 +220,10 @@
 
             // Create no entries found message
             if ($('.admin__table-entry').length == 0) {
-                $('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+                $('.admin__table-content').append('
+            <br />
+            <p>#{msg.hitsZero}</p>
+            ');
             }
         </script>
     </ui:define>

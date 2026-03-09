@@ -54,7 +54,9 @@
 
                                     value = $url + cardNo;
 
-                                    var $temp = $('<textarea />');
+                                    var $temp = $('
+                                <textarea />
+                                ');
                                     $('body').append($temp);
                                     $temp.val(value).select();
                                     document.execCommand('copy');
@@ -96,7 +98,7 @@
                                     <h:panelGroup rendered="#{cc.attrs.component.hasContent('text')}">
                                         <h:outputText
                                             escape="false"
-                                            value="#{cc.attrs.component.getContent('text').text}"></h:outputText>
+                                            value="#{cc.attrs.component.getContent('text').text}" />
                                     </h:panelGroup>
                                 </div>
                             </div>

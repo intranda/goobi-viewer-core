@@ -195,7 +195,7 @@
                                                     validator="#{cmsCollectionsBean.validatePI}"
                                                     value="#{cmsCollectionsBean.currentCollection.representativeWorkPI}">
                                                     <!--                                 validator="piInSolrValidator" -->
-                                                    <f:ajax render="@all"></f:ajax>
+                                                    <f:ajax render="@all" />
                                                 </h:inputText>
                                             </div>
                                         </h:panelGroup>
@@ -224,7 +224,7 @@
                                 <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
                                     <div class="admin-cms-media-select-overlay">
                                         <!-- SELECT MEDIA ITEM OVERLAY -->
-                                        <div class="admin-cms-media__select-overlay"></div>
+                                        <div class="admin-cms-media__select-overlay" />
 
                                         <!-- SELECT MEDIA ITEM -->
                                         <div class="admin-cms-media__select">
@@ -358,13 +358,14 @@
                             <h:commandScript
                                 id="dirtyEvaluator"
                                 name="checkDirtyStatus"
-                                render="@form"></h:commandScript>
+                                render="@form" />
                             <h:inputHidden
                                 id="dirtyMessage"
-                                value="#{cmsCollectionsBean.dirty}"></h:inputHidden>
+                                value="#{cmsCollectionsBean.dirty}" />
                         </h:form>
                         <script>
-                            //Click on link to translations checks dirty status of current collection and ask for confirmation
+                            //Click on link to translations checks dirty status of current collection and ask for
+                            confirmation
                             //before following link if status is dirty
                             $("[data-trigger='displayTranslations']").on('click', (e) => {
                                 let target = e.target.href;

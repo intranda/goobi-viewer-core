@@ -34,7 +34,7 @@
                 <div class="tpl-single-collection__description">
                     <h:outputText
                         escape="false"
-                        value="#{cc.attrs.component.getContentData('A2')}"></h:outputText>
+                        value="#{cc.attrs.component.getContentData('A2')}" />
                 </div>
             </h:panelGroup>
 
@@ -47,16 +47,16 @@
                     <ui:include src="/resources/includes/search/searchHitList.xhtml">
                         <ui:param
                             name="listStyle"
-                            value="#{cc.attrs.component.getContent('recordlist').view.cssClass}"></ui:param>
+                            value="#{cc.attrs.component.getContent('recordlist').view.cssClass}" />
                         <ui:param
                             name="searchParam"
-                            value="#{sessionBean.get('cmsSearch')}"></ui:param>
+                            value="#{sessionBean.get('cmsSearch')}" />
                         <ui:param
                             name="showOptions"
-                            value="#{cc.attrs.component.getContent('recordlist').showOptions}"></ui:param>
+                            value="#{cc.attrs.component.getContent('recordlist').showOptions}" />
                         <ui:param
                             name="showSorting"
-                            value="#{empty cc.attrs.component.getContent('recordlist').sortField}"></ui:param>
+                            value="#{empty cc.attrs.component.getContent('recordlist').sortField}" />
                         <ui:param
                             name="groupPreviewMode"
                             value="#{false}" />

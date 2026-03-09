@@ -58,7 +58,7 @@
                                                 value="#{adminBean.currentUserGroup.name}"
                                                 id="userGroupNameGeneral"
                                                 styleClass="form-control"
-                                                required="true"></h:inputText>
+                                                required="true" />
                                             <span class="admin__form-help-text">
                                                 #{msg.admin__user_group_name__help}
                                             </span>
@@ -159,7 +159,7 @@
                                                 value="add-member-to-group" />
                                             <f:selectItem
                                                 noSelectionOption="true"
-                                                itemLabel="#{msg.select}"></f:selectItem>
+                                                itemLabel="#{msg.select}" />
                                             <f:selectItems
                                                 value="#{adminBean.getAllUsersExcept(adminBean.currentUserGroup.membersAndOwner)}"
                                                 var="user"

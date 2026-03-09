@@ -17,11 +17,11 @@
         <composite:attribute
             name="render"
             required="false"
-            default="@form"></composite:attribute>
+            default="@form" />
         <composite:attribute
             name="execute"
             required="false"
-            default="@form"></composite:attribute>
+            default="@form" />
     </composite:interface>
 
     <composite:implementation>
@@ -42,7 +42,7 @@
                         immediate="false">
                         <f:ajax
                             render="#{cc.attrs.render}"
-                            execute="#{cc.attrs.execute}"></f:ajax>
+                            execute="#{cc.attrs.execute}" />
                     </h:commandLink>
                 </li>
             </ui:repeat>

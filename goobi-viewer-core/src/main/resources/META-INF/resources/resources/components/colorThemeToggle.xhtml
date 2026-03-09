@@ -7,7 +7,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:jsf="http://xmlns.jcp.org/jsf">
-    <composite:interface></composite:interface>
+    <composite:interface />
 
     <composite:implementation>
         <!-- COLOR SWITCHER FUNCTION -->
@@ -18,7 +18,7 @@
                 class="btn btn--clean color-theme-switch color-theme-switch-dark #{(sessionBean.get('colorTheme') eq 'color-theme-light') ? 'active' : ''} #{(sessionBean.get('colorTheme') eq 'color-theme-dark') ? 'hide' : ''}"
                 jsf:action="#{sessionBean.put('colorTheme', 'color-theme-dark')}">
                 <util:icon icon="moon" />
-                <f:ajax render="@none"></f:ajax>
+                <f:ajax render="@none" />
             </button>
             <button
                 aria-label="#{msg.button__theme_color_switch_light}"
@@ -26,7 +26,7 @@
                 class="btn btn--clean color-theme-switch color-theme-switch-light #{((sessionBean.get('colorTheme') eq 'color-theme-dark')) ? 'active' : ''} #{(sessionBean.get('colorTheme') eq 'color-theme-light') ? 'hide' : ''}"
                 jsf:action="#{sessionBean.put('colorTheme', 'color-theme-light')}">
                 <util:icon icon="sun" />
-                <f:ajax render="@none"></f:ajax>
+                <f:ajax render="@none" />
             </button>
         </h:form>
         <script>

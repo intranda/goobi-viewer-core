@@ -23,7 +23,6 @@
     <!-- CONTENT -->
     <ui:define name="content">
         <script>
-
             var mapEditor = new cmsJS.GeoMapEditor({
             	mapId: "geomap",
                 displayLanguage : "#{navigationHelper.localeString}",
@@ -58,7 +57,7 @@
                     <div class="admin__info-text">
                         <h:outputText
                             escape="false"
-                            value="#{msg.cms__geomap_edit__description}"></h:outputText>
+                            value="#{msg.cms__geomap_edit__description}" />
                     </div>
 
                     <h:form
@@ -77,7 +76,7 @@
                             <div class="admin__default-block">
                                 <ui:param
                                     name="language"
-                                    value="de"></ui:param>
+                                    value="de" />
                                 <!--                         	<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status"> -->
                                 <div id="nameLanguage-#{geoMapBean.selectedLanguage}">
                                     <!-- TITLE -->
@@ -163,7 +162,7 @@
                                     <div class="admin__language-tabs">
                                         <viewerComponent:localeSelector
                                             object="#{featureSet.name}"
-                                            render="featureSetsPanel"></viewerComponent:localeSelector>
+                                            render="featureSetsPanel" />
                                     </div>
                                     <div
                                         id="panelFeatureSet_#{status.index}"
@@ -179,7 +178,7 @@
                                                 <o:skipValidators />
                                                 <f:ajax
                                                     execute="featureSetsPanel"
-                                                    render="mapPanel featureSetsPanel"></f:ajax>
+                                                    render="mapPanel featureSetsPanel" />
                                             </button>
                                         </div>
 
@@ -291,7 +290,7 @@
                                                         value="#{featureSet.useHeatmap}"
                                                         rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
                                                     <span class="toggle-outside">
-                                                        <span class="toggle-inside"></span>
+                                                        <span class="toggle-inside" />
                                                     </span>
                                                 </div>
                                                 <!-- HELP TEXT -->
@@ -398,7 +397,7 @@
                                                             required="false">
                                                             <f:selectItems
                                                                 var="option"
-                                                                value="#{configurationBean.geomapFeatureTitleOptions}"></f:selectItems>
+                                                                value="#{configurationBean.geomapFeatureTitleOptions}" />
                                                             <f:ajax
                                                                 execute="mapPanel"
                                                                 render="mapPanel" />
@@ -427,9 +426,9 @@
                                                         #{msg.cms__geomaps__search_scope__label}:
                                                     </label>
                                                 </div>
-                                                <div class="input_form__option_marker"></div>
+                                                <div class="input_form__option_marker" />
                                                 <div class="col-9 admin__form-input cms-module__option-control">
-                                                    <div class="d-flex admin__geomap-radio-group-wrapper"></div>
+                                                    <div class="d-flex admin__geomap-radio-group-wrapper" />
 
                                                     <!-- NEW STRUCTURES -->
                                                     <div class="radio-button-tree">
@@ -493,7 +492,7 @@
                                                         #{msg.cms__geomaps__item_filter__label}:
                                                     </label>
                                                 </div>
-                                                <div class="input_form__option_marker"></div>
+                                                <div class="input_form__option_marker" />
                                                 <div class="col-9 admin__form-input cms-module__option-control">
                                                     <h:selectOneMenu
                                                         id="itemFilterSelect"
@@ -505,7 +504,7 @@
                                                             itemLabel="" />
                                                         <f:selectItems
                                                             var="option"
-                                                            value="#{configurationBean.geomapFilters}"></f:selectItems>
+                                                            value="#{configurationBean.geomapFilters}" />
                                                     </h:selectOneMenu>
                                                     <div
                                                         id="titleHelp"
@@ -551,7 +550,7 @@
                                     <div class="admin__content-component-add-area-label">
                                         #{msg.cms__geomap__add_featureset}:
                                     </div>
-                                    <div class="input_form__option_marker in"></div>
+                                    <div class="input_form__option_marker in" />
 
                                     <div class="admin__content-component-add-select-wrapper">
                                         <div class="custom-control custom-control--select">
@@ -575,7 +574,7 @@
                                             #{msg.add}
                                             <f:ajax
                                                 execute="featureSetsPanel mapPanel"
-                                                render="mapPanel featureSetsPanel"></f:ajax>
+                                                render="mapPanel featureSetsPanel" />
                                             <o:skipValidators />
                                         </button>
                                     </div>
@@ -596,18 +595,18 @@
                                 <div>#{msg.cms__geomaps__map__help}</div>
                                 <map
                                     class="input_form__geomap"
-                                    id="geomap"></map>
+                                    id="geomap" />
                                 <popover id="geoMapPopoverTemplate">
-                                    <h3 data-metadata="title"></h3>
-                                    <span data-metadata="description"></span>
+                                    <h3 data-metadata="title" />
+                                    <span data-metadata="description" />
                                 </popover>
                                 <div>#{msg.cms__geomaps__map_token__help}</div>
                                 <h:inputHidden
                                     id="featuresInput"
-                                    value="#{geoMapBean.activeFeatureSetAsString}"></h:inputHidden>
+                                    value="#{geoMapBean.activeFeatureSetAsString}" />
                                 <h:inputHidden
                                     id="viewInput"
-                                    value="#{geoMapBean.currentMap.initialView}"></h:inputHidden>
+                                    value="#{geoMapBean.currentMap.initialView}" />
 
                                 <metadataEditor class="admin__geopmap-edit-metadata-editor-wrapper" />
                             </div>
@@ -631,50 +630,55 @@
                                             	    if($("#geomap").length > 0) {
                                              	    mapEditor.init(window.storedView);
                                              	    mapEditor.setAllowEditFeatures(true);
-
-                                             	    <ui:repeat var="featureSet" value="#{geoMapBean.currentMap.featureSets}" varStatus="status">
-                                             	    {
+                                    <ui:repeat
+                                        var="featureSet"
+                                        value="#{geoMapBean.currentMap.featureSets}"
+                                        varStatus="status">
+                                        {
                                              	    	let config = {
                                              	    			clusterMarkers : #{featureSet.queryResultSet},
                                              	    			popoverOnHover : #{featureSet.queryResultSet},
                                              	    			popover: "#geoMapPopoverTemplate",
                                              	    			markerIcon : #{featureSet.markerAsJSON},
                                              	    			allowMovingFeatures: #{geoMapBean.isActiveFeatureSet(featureSet)},
-                                             	    			<ui:fragment rendered="#{featureSet.queryResultSet}">
-                                             	    			heatmap: {
+                                        <ui:fragment rendered="#{featureSet.queryResultSet}">
+                                            heatmap: {
                                              	                	enabled: #{configurationBean.useHeatmapForCMSMaps()},
                                              	                	heatmapUrl:  "#{geoMapBean.heatmapUrl}",
                                         		          	featureUrl:  "#{geoMapBean.featureUrl}",
                                              	    		        filterQuery: "#{featureSet.solrQueryEncoded}",
                                         		      	    labelField:  "#{featureSet.markerTitleField}",
                                              	                },
-                                       		      	    </ui:fragment>
+                                        </ui:fragment>
 
-                                             	    	}
-                                             	    	if(#{featureSet.queryResultSet and configurationBean.useHeatmapForCMSMaps()}) {
+                                        }
+                                             	    	if(#{featureSet.queryResultSet and
+                                        configurationBean.useHeatmapForCMSMaps()}) {
                                              	    		mapEditor.geoMap.addFeatureGroup(config, []);
                                              	    	} else {
-                                             	    		let featureGroup = mapEditor.addFeatureGroup(config, #{featureSet.featuresAsString});
+                                             	    		let
+                                        featureGroup = mapEditor.addFeatureGroup(config, #{featureSet.featuresAsString});
                                              	    		if(#{geoMapBean.isActiveFeatureSet(featureSet)}) {
                                              	    				mapEditor.activeFeatureGroup = featureGroup;
                                              	    		}
                                              	    	}
                                              	    	//change active featureSet
-                                             	    	//trigger on body because the panelFeatureSets can be swapped per ajax on langauge change
+                                             	    	//trigger on body because the panelFeatureSets can be swapped per ajax
+                                        on langauge change
                                              	    	if(!#{featureSet.queryResultSet}) {
                                              	    		$("body").off("click.setactive", "#panelFeatureSet_#{status.index}");
                                              	    		$("body").on("click.setactive", "#panelFeatureSet_#{status.index}", e => {
-                                              	    		let inputElement = $(e.target).closest("button, input, select").length > 0;
+                                              	    		let
+                                        inputElement = $(e.target).closest("button, input, select").length > 0;
                                               	    		if(!inputElement) {
                                               	    			setActiveFeatureSet({index: #{status.index}});
                                               	    		}
                                               	    	});
                                              	    	}
                                              	    }
+                                    </ui:repeat>
 
-                                             	    </ui:repeat>
-
-                                             	    viewerJS.jsfAjax.begin.subscribe((e) => {
+                                    viewerJS.jsfAjax.begin.subscribe((e) => {
                                              	        if(e.source.id === "mapMarker" || e.source.id === "popupContent") {
                                              	            window.storedView = mapEditor.geoMap.getView();
                                              	        } else {

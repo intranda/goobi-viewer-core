@@ -41,12 +41,12 @@
                         <ui:fragment rendered="#{geoMapBean.hasMaps}">
                             <h:outputText
                                 escape="false"
-                                value="#{msg.cms__geomaps__description}"></h:outputText>
+                                value="#{msg.cms__geomaps__description}" />
                         </ui:fragment>
                         <ui:fragment rendered="#{!geoMapBean.hasMaps}">
                             <h:outputText
                                 escape="false"
-                                value="#{msg.cms__geomaps__description__no_content}"></h:outputText>
+                                value="#{msg.cms__geomaps__description__no_content}" />
                         </ui:fragment>
                     </p>
 
@@ -122,33 +122,35 @@
                                     <div class="entity_list__item__area area__right">
                                         <div
                                             id="geomap_#{map.id}"
-                                            class="entity_list__item__map"></div>
+                                            class="entity_list__item__map" />
                                         <script type="text/javascript">
-                                                           $(document).ready( () => {
+                                            $(document).ready( () => {
 
                                                                let geoMap = new viewerJS.GeoMap({
                                                                    mapId: "geomap_#{map.id}",
                                                                    fixed: true,
                                                                    layers: [
-                                               			            <ui:repeat value="#{map.featureSets}" var="featureSet">
-                                               			            {
+                                            <ui:repeat
+                                                value="#{map.featureSets}"
+                                                var="featureSet">
+                                                {
                                                 			            clusterMarkers : #{featureSet.queryResultSet},
                                             	popoverOnHover : #{featureSet.queryResultSet},
                                             	markerIcon : #{featureSet.markerAsJSON},
                                             	allowMovingFeatures: #{geoMapBean.isActiveFeatureSet(featureSet)},
                                                                         features: #{featureSet.featuresAsString},
-                                            	<ui:fragment rendered="#{featureSet.queryResultSet}">
-                                            		heatmap: {
+                                                <ui:fragment rendered="#{featureSet.queryResultSet}">
+                                                    heatmap: {
                                                        	enabled: #{configurationBean.useHeatmapForCMSMaps()},
                                                        	heatmapUrl:  "#{geoMapBean.heatmapUrl}",
                                              	featureUrl:  "#{geoMapBean.featureUrl}",
                                             	        filterQuery: "#{featureSet.solrQueryEncoded}",
                                               labelField:  "#{featureSet.markerTitleField}",
                                                        },
-                                            </ui:fragment>
-                                               			            },
-                                               			            </ui:repeat>
-                                                                    ],
+                                                </ui:fragment>
+                                                },
+                                            </ui:repeat>
+                                            ],
                                                                });
                                                                geoMap.init(#{map.initialView});
                                                            })
@@ -172,8 +174,6 @@
             </div>
         </ui:fragment>
 
-        <script>
-            viewerJS.clipboard.init();
-        </script>
+        <script>viewerJS.clipboard.init();</script>
     </ui:define>
 </ui:composition>

@@ -17,11 +17,11 @@
         <composite:attribute
             name="render"
             required="false"
-            default="@form"></composite:attribute>
+            default="@form" />
         <composite:attribute
             name="execute"
             required="false"
-            default="@form"></composite:attribute>
+            default="@form" />
     </composite:interface>
 
     <composite:implementation>
@@ -36,7 +36,7 @@
                     role="tab"
                     class="admin__translation-indicator #{cc.attrs.object.isSelected(locale) ? 'active':''} #{cc.attrs.object.isEmpty(locale) ? '' : (cc.attrs.object.isComplete(locale) ? '-already-translated' : '-partly-translated')} #{cc.attrs.object.isDefaultLocaleSelected() ? '-default-language':''}"
                     title="#{locale.getDisplayLanguage(navigationHelper.locale)}"
-                    data-toggle="tooltip"></li>
+                    data-toggle="tooltip" />
             </ui:repeat>
         </ul>
     </composite:implementation>

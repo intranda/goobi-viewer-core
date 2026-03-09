@@ -11,7 +11,7 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <ui:param
         name="browseElement"
-        value="#{browseElement != null ? browseElement : null}"></ui:param>
+        value="#{browseElement != null ? browseElement : null}" />
     <ui:fragment rendered="#{browseElement.showThumbnail}">
         <!-- THUMBNAIL -->
         <figure class="search-list__hit-thumbnail">
@@ -45,8 +45,8 @@
                 styleClass="stackedThumbEffect">
                 <div class="stackedThumbEffect-inner">
                     <h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
-                        <div class="stacked-thumbnail-before"></div>
-                        <div class="stacked-thumbnail-after"></div>
+                        <div class="stacked-thumbnail-before" />
+                        <div class="stacked-thumbnail-after" />
                     </h:panelGroup>
                     <img
                         src="#{browseElement.thumbnailUrl}"

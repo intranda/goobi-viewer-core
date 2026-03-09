@@ -10,13 +10,13 @@
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
     <ui:param
         name="hideOwned"
-        value="#{hideOwned != null ? hideOwned : false}"></ui:param>
+        value="#{hideOwned != null ? hideOwned : false}" />
     <ui:param
         name="userList"
-        value="#{userList != null ? userList : false}"></ui:param>
+        value="#{userList != null ? userList : false}" />
     <ui:param
         name="bookmarkLists"
-        value="#{userList ? bookmarkBean.getBookmarkListsForUser(userBean.user) : source }"></ui:param>
+        value="#{userList ? bookmarkBean.getBookmarkListsForUser(userBean.user) : source }" />
 
     <ui:fragment rendered="#{bookmarkLists != null}">
         <ui:repeat
@@ -25,7 +25,7 @@
             varStatus="status">
             <ui:param
                 name="owned"
-                value="#{bookmarkList.isOwnedBy(userBean.user)}"></ui:param>
+                value="#{bookmarkList.isOwnedBy(userBean.user)}" />
 
             <ui:fragment rendered="#{!(hideOwned and owned)}">
                 <div class="col-12 user-bookmark__panel">
@@ -106,7 +106,7 @@
                                                 title="#{item.name}"
                                                 data-toggle="tooltip"
                                                 data-placement="bottom"
-                                                aria-label="#{item.name}"></a>
+                                                aria-label="#{item.name}" />
                                         </div>
                                     </div>
                                 </ui:fragment>
@@ -197,7 +197,7 @@
                                                     text="#{msg.option__share_bookmarklist}" />
                                                 <f:ajax
                                                     execute="@this"
-                                                    render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
+                                                    render="editBookmarkListPublicWrapper isPublicMarker" />
                                             </h:commandLink>
                                         </ui:fragment>
                                         <ui:fragment rendered="#{bookmarkList.isPublic}">
@@ -207,7 +207,7 @@
                                                     text="#{msg.option__share_bookmarklist}" />
                                                 <f:ajax
                                                     execute="@this"
-                                                    render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
+                                                    render="editBookmarkListPublicWrapper isPublicMarker" />
                                             </h:commandLink>
                                         </ui:fragment>
 
@@ -218,7 +218,7 @@
                                                     text="#{msg.action__create_bookmarklist_sharelink}" />
                                                 <f:ajax
                                                     execute="@this"
-                                                    render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
+                                                    render="editBookmarkListPublicWrapper isPublicMarker" />
                                             </h:commandLink>
                                         </ui:fragment>
 
@@ -249,7 +249,7 @@
                                                     text="#{msg.action__delete_bookmarklist_sharelink}" />
                                                 <f:ajax
                                                     execute="@this"
-                                                    render="editBookmarkListPublicWrapper isPublicMarker"></f:ajax>
+                                                    render="editBookmarkListPublicWrapper isPublicMarker" />
                                             </h:commandLink>
                                         </ui:fragment>
                                     </h:panelGroup>
@@ -317,8 +317,6 @@
             </ui:fragment>
         </ui:repeat>
 
-        <script>
-            viewerJS.clipboard.init();
-        </script>
+        <script>viewerJS.clipboard.init();</script>
     </ui:fragment>
 </ui:composition>

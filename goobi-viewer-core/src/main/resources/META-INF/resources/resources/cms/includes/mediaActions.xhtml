@@ -54,7 +54,7 @@
                     action="#{cmsMediaBean.deleteSelectedItems}">
                     <f:ajax
                         render="adminCmsMediaFilesForm :messages"
-                        onevent="reload"></f:ajax>
+                        onevent="reload" />
                 </h:commandLink>
             </div>
         </ui:fragment>
@@ -98,7 +98,7 @@
                 value="#{cmsMediaBean.filter}">
                 <f:passThroughAttribute
                     name="placeholder"
-                    value="#{msg.admin__media_filter}"></f:passThroughAttribute>
+                    value="#{msg.admin__media_filter}" />
             </h:inputText>
             <h:commandButton
                 id="reloadButton#{index}"
@@ -108,7 +108,7 @@
                 <f:ajax
                     execute="adminCmsMediaFilter"
                     render="@form"
-                    onevent="reload"></f:ajax>
+                    onevent="reload" />
             </h:commandButton>
         </div>
 

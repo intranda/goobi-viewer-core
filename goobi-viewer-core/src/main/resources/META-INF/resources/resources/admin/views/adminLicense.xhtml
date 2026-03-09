@@ -88,7 +88,7 @@
                                 <div class="admin__default-block">
                                     <ui:param
                                         name="language"
-                                        value="de"></ui:param>
+                                        value="de" />
                                     <div id="nameLanguage-#{adminLicenseBean.currentLicenseType.selectedLocale}">
                                         <!--                                 <div class="form-group form-row"> -->
                                         <!--                                     #{msg.admin__license_placeholder_image_desc} -->
@@ -270,7 +270,9 @@
                                                         itemValue="#{true}"
                                                         itemLabel="#{msg.yes}" />
                                                 </h:selectOneRadio>
-                                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                                <span class="toggle-outside">
+                                                    <span class="toggle-inside" />
+                                                </span>
                                             </div>
                                             <span class="admin__form-help-text in">
                                                 #{msg.admin__license_functions_moving_wall_desc}
@@ -309,7 +311,9 @@
                                                         itemLabel="#{msg.yes}" />
                                                     <f:ajax render="functionsGroup" />
                                                 </h:selectOneRadio>
-                                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                                <span class="toggle-outside">
+                                                    <span class="toggle-inside" />
+                                                </span>
                                             </div>
                                             <span class="admin__form-help-text in">
                                                 #{msg.admin__license_ticket_required_desc}
@@ -352,7 +356,7 @@
                                                         <f:ajax render="redirectUrl" />
                                                     </h:selectOneRadio>
                                                     <span class="toggle-outside">
-                                                        <span class="toggle-inside"></span>
+                                                        <span class="toggle-inside" />
                                                     </span>
                                                 </div>
                                                 <span class="admin__form-help-text in">
@@ -376,14 +380,14 @@
 
                                                 <h:message
                                                     for="redirectUrl"
-                                                    errorClass="-validation-message -danger"></h:message>
+                                                    errorClass="-validation-message -danger" />
                                                 <div class="-validation-mark">
                                                     <i
                                                         class="fa fa-check"
-                                                        aria-hidden="true"></i>
+                                                        aria-hidden="true" />
                                                     <i
                                                         class="fa fa-exclamation"
-                                                        aria-hidden="true"></i>
+                                                        aria-hidden="true" />
                                                 </div>
                                                 <h:inputText
                                                     value="#{adminLicenseBean.currentLicenseType.redirectUrl}"
@@ -410,8 +414,8 @@
                                         <div class="form-group form-row pb-3">
                                             <div class="col-2">#{msg.admin__license_functions}:</div>
                                             <div class="col-9 pb-1">#{msg.admin__license_functions_added}</div>
-                                            <div class="col-1"></div>
-                                            <div class="col-2"></div>
+                                            <div class="col-1" />
+                                            <div class="col-2" />
                                             <div class="col-9 badge-hover pb-3">
                                                 <c:forEach
                                                     var="priv"
@@ -454,9 +458,9 @@
                                                 </button>
                                             </div>
 
-                                            <div class="col-2"></div>
+                                            <div class="col-2" />
                                             <div class="col-10 pb-1">#{msg.admin__license_functions_available}</div>
-                                            <div class="col-2"></div>
+                                            <div class="col-2" />
                                             <div class="col-9 badge-hover">
                                                 <c:forEach
                                                     var="priv"
@@ -471,7 +475,7 @@
                                                     </button>
                                                 </c:forEach>
                                             </div>
-                                            <div class="col-2"></div>
+                                            <div class="col-2" />
                                             <div class="col-9 admin__license-functions-help">
                                                 <h:outputText
                                                     value="#{msg.admin__license_functions__help}"
@@ -484,7 +488,7 @@
                                         <ui:fragment
                                             rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
                                             <div class="form-group form-row mb-3">
-                                                <div class="col-2"></div>
+                                                <div class="col-2" />
                                                 <h:panelGroup
                                                     id="pdf_concurrent_views_limit_info_box"
                                                     layout="block"
@@ -535,7 +539,7 @@
                                                                                 itemLabel="#{msg.yes}" />
                                                                         </h:selectOneRadio>
                                                                         <span class="toggle-outside">
-                                                                            <span class="toggle-inside"></span>
+                                                                            <span class="toggle-inside" />
                                                                         </span>
                                                                     </div>
                                                                 </div>
@@ -550,7 +554,7 @@
                                         <ui:fragment
                                             rendered="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
                                             <div class="form-group form-row mb-3">
-                                                <div class="col-2"></div>
+                                                <div class="col-2" />
                                                 <h:panelGroup
                                                     id="pdf_download_quota_info_box"
                                                     layout="block"
@@ -608,7 +612,7 @@
                                                                                 render="pdf_download_quota_info_box" />
                                                                         </h:selectOneRadio>
                                                                         <span class="toggle-outside">
-                                                                            <span class="toggle-inside"></span>
+                                                                            <span class="toggle-inside" />
                                                                         </span>
                                                                     </div>
                                                                 </div>
@@ -664,15 +668,13 @@
                             </div>
                         </div>
 
-                        <script>
-                            adminJS.licenceToggle.init();
-                        </script>
+                        <script>adminJS.licenceToggle.init();</script>
 
                         <h:panelGroup id="mediaSelectPanel">
                             <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
                                 <div class="admin-cms-media-select-overlay">
                                     <!-- SELECT MEDIA ITEM OVERLAY -->
-                                    <div class="admin-cms-media__select-overlay"></div>
+                                    <div class="admin-cms-media__select-overlay" />
 
                                     <!-- SELECT MEDIA ITEM -->
                                     <div class="admin-cms-media__select">

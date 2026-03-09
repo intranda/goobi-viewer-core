@@ -61,12 +61,12 @@
                             styleClass="btn admin__cancel-button"
                             value="#{msg.cancel}"
                             action="#{adminBean.resetUserAction(userBean.user, '')}"
-                            immediate="true"></h:commandLink>
+                            immediate="true" />
                         <h:commandButton
                             id="saveNewUserCreationButton"
                             styleClass="btn btn--success"
                             value="#{msg.save}"
-                            action="#{adminBean.saveUserAction(userBean.user.copy, true, '')}"></h:commandButton>
+                            action="#{adminBean.saveUserAction(userBean.user.copy, true, '')}" />
                     </div>
                 </h:form>
                 <h:form

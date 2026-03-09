@@ -8,7 +8,7 @@
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
-    <composite:interface></composite:interface>
+    <composite:interface />
 
     <composite:implementation>
         <!-- CITATION RECOMMENDATION -->
@@ -37,7 +37,7 @@
                     <div class="widget-citation__citerecommendation-text-wrapper">
                         <i
                             class="fa fa-quote-right"
-                            aria-hidden="true"></i>
+                            aria-hidden="true" />
                         <button
                             type="button"
                             id="citeCopyText"
@@ -58,9 +58,7 @@
                         #{msg.citeRecommendation__text_info}
                     </div>
                     <!-- REENABLE COPY TO CLIPBOARD AFTER AJAX CALL -->
-                    <script>
-                        viewerJS.clipboard.init('[data-copy-cite]', 'data-copy-cite');
-                    </script>
+                    <script>viewerJS.clipboard.init('[data-copy-cite]', 'data-copy-cite');</script>
                 </h:form>
             </div>
         </ui:fragment>

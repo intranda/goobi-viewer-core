@@ -85,11 +85,11 @@
                                         styleClass="admin__fancy-checkbox">
                                         <f:passThroughAttribute
                                             name="data-group-select"
-                                            value="select-all"></f:passThroughAttribute>
+                                            value="select-all" />
                                         <f:passThroughAttribute
                                             name="data-group"
-                                            value="exportSelection"></f:passThroughAttribute>
-                                        <f:ajax event="change"></f:ajax>
+                                            value="exportSelection" />
+                                        <f:ajax event="change" />
                                     </h:selectBooleanCheckbox>
                                     <label for="selectAllCheckbox">
                                         <span class="sr-only">#{msg.aria_label__select_all}</span>
@@ -145,11 +145,11 @@
                                             styleClass="admin__fancy-checkbox">
                                             <f:passThroughAttribute
                                                 name="data-group-select"
-                                                value="select-one"></f:passThroughAttribute>
+                                                value="select-one" />
                                             <f:passThroughAttribute
                                                 name="data-group"
-                                                value="exportSelection"></f:passThroughAttribute>
-                                            <f:ajax event="change"></f:ajax>
+                                                value="exportSelection" />
+                                            <f:ajax event="change" />
                                         </h:selectBooleanCheckbox>
                                         <h:outputLabel
                                             value=""
@@ -218,7 +218,7 @@
                                             role="gridcell">
                                             <i
                                                 class="fa fa-check"
-                                                aria-hidden="true"></i>
+                                                aria-hidden="true" />
                                         </ui:fragment>
                                     </div>
                                 </div>
@@ -236,7 +236,7 @@
                             action="#{annotationBean.downloadSelectedAnnotations()}" />
                     </div>
                     <script type="text/javascript">
-                                  $( document ).ready( function() {
+                        $( document ).ready( function() {
 
                                    initTable();
                                       mountRiotTags();
@@ -282,7 +282,10 @@
 
                                   // Create no entries found message
                         	if($('.admin__table-entry').length == 0) {
-                        		$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+                        		$('.admin__table-content').append('
+                        <br />
+                        <p>#{msg.hitsZero}</p>
+                        ');
                         	}
                     </script>
                 </h:form>

@@ -10,7 +10,7 @@
     <composite:implementation>
         <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.nerAvailable}">
             <div id="widgetNerFacetting">
-                <a name="widgetNerFacettingTop"></a>
+                <a name="widgetNerFacettingTop" />
                 <h2>#{msg.widgetNerFacetting}</h2>
 
                 <!-- TABS -->
@@ -45,7 +45,7 @@
                     <!-- TAB PANES -->
                     <div class="tab-content">
                         <!-- AJAX LOADER -->
-                        <div id="nerFacettingLoader"></div>
+                        <div id="nerFacettingLoader" />
 
                         <!-- OVERVIEW -->
                         <div
@@ -53,7 +53,7 @@
                             class="tab-pane active"
                             id="overview">
                             <!-- CURRENT TAGS -->
-                            <div class="current-tags"></div>
+                            <div class="current-tags" />
 
                             <!-- DESCRIPTION -->
                             <div class="tag-filter-description">
@@ -61,7 +61,7 @@
                                 <span class="pull-right">#{msg.widgetNerFacetting_filterTags}:</span>
                             </div>
 
-                            <div class="clearfix"></div>
+                            <div class="clearfix" />
 
                             <!-- SET RANGE -->
                             <select class="set-tag-range-widget overview pull-left">
@@ -133,9 +133,9 @@
                                 </li>
                             </ul>
 
-                            <div class="clearfix"></div>
+                            <div class="clearfix" />
 
-                            <div class="overview-content"></div>
+                            <div class="overview-content" />
                         </div>
 
                         <!-- SECTION -->
@@ -149,7 +149,7 @@
                                 <span class="pull-right">#{msg.widgetNerFacetting_filterTags}:</span>
                             </div>
 
-                            <div class="clearfix"></div>
+                            <div class="clearfix" />
 
                             <!-- SET RANGE -->
                             <select class="set-tag-range-widget section pull-left">
@@ -215,70 +215,70 @@
                                 </li>
                             </ul>
 
-                            <div class="clearfix"></div>
+                            <div class="clearfix" />
 
                             <!-- SCALE -->
                             <div id="sliderScale">
                                 <span class="scale-page start">1</span>
                                 <span class="slider-description">#{msg.widgetNerFacetting_pages}</span>
                                 <ul class="scale-stripes">
-                                    <li></li>
-                                    <li></li>
-                                    <li></li>
-                                    <li></li>
-                                    <li class="middle"></li>
-                                    <li></li>
-                                    <li></li>
-                                    <li></li>
-                                    <li></li>
-                                    <li></li>
+                                    <li />
+                                    <li />
+                                    <li />
+                                    <li />
+                                    <li class="middle" />
+                                    <li />
+                                    <li />
+                                    <li />
+                                    <li />
+                                    <li />
                                 </ul>
-                                <span class="scale-page end"></span>
-                                <div class="scale-section-stripe"></div>
+                                <span class="scale-page end" />
+                                <div class="scale-section-stripe" />
 
                                 <!-- SLIDER -->
-                                <div id="sliderVertical"></div>
+                                <div id="sliderVertical" />
                             </div>
 
                             <!-- TAGS -->
-                            <div id="sectionTags"></div>
+                            <div id="sectionTags" />
 
-                            <div class="clearfix"></div>
+                            <div class="clearfix" />
                         </div>
                     </div>
                 </div>
 
                 <script type="text/javascript">
-                    var nerFacettingConfig = {
-                        currentPage: '#{navigationHelper.currentPage}',
-                        baseUrl: '#{request.contextPath}',
-                        workId: '#{activeDocumentBean.viewManager.pi}',
-                        overviewTrigger: '#overviewTrigger',
-                        overviewContent: '.overview-content',
-                        sectionTrigger: '#sectionTrigger',
-                        sectionContent: '.section-content',
-                        facettingTrigger: '.facetting-trigger',
-                        setTagRange: '.set-tag-range-widget',
-                        setTagRangeOverview: '.set-tag-range-widget.overview',
-                        setTagRangeSection: '.set-tag-range-widget.section',
-                        slider: '#sliderVertical',
-                        sliderScale: '#sliderScale',
-                        sectionTags: '#sectionTags',
-                        currentTags: '.current-tags',
-                        sliderHandle: '#sliderVertical .ui-slider-handle',
-                        sliderSectionStripe: '#sliderScale .scale-section-stripe',
-                        recurrenceNumber: 10,
-                        recurrenceSectionNumber: 100,
-                        loader: '#nerFacettingLoader',
-                        msg: {
-                            noJSON: '#{msg.widgetNerFacetting_noJSON}',
-                            emptyTag: '#{msg.widgetNerFacetting_emptyTag}',
-                            page: '#{msg.widgetNerFacetting_page}',
-                            tags: '#{msg.widgetNerFacetting_tags}',
-                        },
-                    };
+var nerFacettingConfig = {
+    currentPage: '#{navigationHelper.currentPage}',
+    baseUrl: '#{request.contextPath}',
+    workId: '#{activeDocumentBean.viewManager.pi}',
+    overviewTrigger: '#overviewTrigger',
+    overviewContent: '.overview-content',
+    sectionTrigger: '#sectionTrigger',
+    sectionContent: '.section-content',
+    facettingTrigger: '.facetting-trigger',
+    setTagRange: '.set-tag-range-widget',
+    setTagRangeOverview: '.set-tag-range-widget.overview',
+    setTagRangeSection: '.set-tag-range-widget.section',
+    slider: '#sliderVertical',
+    sliderScale: '#sliderScale',
+    sectionTags: '#sectionTags',
+    currentTags: '.current-tags',
+    sliderHandle: '#sliderVertical .ui-slider-handle',
+    sliderSectionStripe: '#sliderScale .scale-section-stripe',
+    recurrenceNumber: 10,
+    recurrenceSectionNumber: 100,
+    loader: '#nerFacettingLoader',
+    msg: {
+        noJSON: '#{msg.widgetNerFacetting_noJSON}',
+        emptyTag: '#{msg.widgetNerFacetting_emptyTag}',
+        page: '#{msg.widgetNerFacetting_page}',
+        tags: '#{msg.widgetNerFacetting_tags}',
+    },
+};
 
-                    viewerJS.nerFacetting.init(nerFacettingConfig);
+viewerJS.nerFacetting.init(nerFacettingConfig);
                 </script>
             </div>
         </h:panelGroup>

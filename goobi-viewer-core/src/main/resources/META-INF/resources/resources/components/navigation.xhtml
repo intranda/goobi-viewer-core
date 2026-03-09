@@ -43,7 +43,7 @@
                                             class="btn btn--clean"
                                             data-toggle="submenu">
                                             #{msg[navItem.itemLabel]}
-                                            <span class="caret"></span>
+                                            <span class="caret" />
                                         </button>
                                     </h:panelGroup>
                                     <h:panelGroup rendered="#{!navItem.activeChildItems.isEmpty()}">
@@ -74,7 +74,7 @@
                                                                     class="btn btn--clean"
                                                                     data-toggle="submenu">
                                                                     #{msg[child.itemLabel]}
-                                                                    <span class="caret"></span>
+                                                                    <span class="caret" />
                                                                 </button>
                                                             </h:panelGroup>
                                                             <h:panelGroup
@@ -104,7 +104,7 @@
                                                                                             class="btn btn--clean"
                                                                                             data-toggle="submenu">
                                                                                             #{msg[child1.itemLabel]}
-                                                                                            <span class="caret"></span>
+                                                                                            <span class="caret" />
                                                                                         </button>
                                                                                     </h:panelGroup>
                                                                                     <h:panelGroup
@@ -137,7 +137,7 @@
                                                                                                                     data-toggle="submenu">
                                                                                                                     #{msg[child2.itemLabel]}
                                                                                                                     <span
-                                                                                                                        class="caret"></span>
+                                                                                                                        class="caret" />
                                                                                                                 </button>
                                                                                                             </h:panelGroup>
                                                                                                             <h:panelGroup
@@ -170,7 +170,7 @@
                                                                                                                                             data-toggle="submenu">
                                                                                                                                             #{msg[child3.itemLabel]}
                                                                                                                                             <span
-                                                                                                                                                class="caret"></span>
+                                                                                                                                                class="caret" />
                                                                                                                                         </button>
                                                                                                                                     </h:panelGroup>
                                                                                                                                     <h:panelGroup
@@ -244,7 +244,7 @@
                                             class="btn btn--clean"
                                             data-toggle="megamenu">
                                             #{msg[navItem.itemLabel]}
-                                            <span class="caret"></span>
+                                            <span class="caret" />
                                         </button>
                                         <h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
                                             <ui:param
@@ -311,13 +311,13 @@
         </nav>
 
         <script type="text/javascript">
-            var navigationConfig = {
-                navigationSelector: '.navigation',
-                subMenuSelector: '#' + CSS.escape('#{cc.clientId}') + " [data-toggle='submenu']",
-                megaMenuSelector: '#' + CSS.escape('#{cc.clientId}') + " [data-toggle='megamenu']",
-                closeMegaMenuSelector: '#' + CSS.escape('#{cc.clientId}') + " [data-toggle='close']",
-            };
-            viewerJS.navigation.init(navigationConfig);
+var navigationConfig = {
+    navigationSelector: '.navigation',
+    subMenuSelector: '#' + CSS.escape('#{cc.clientId}') + " [data-toggle='submenu']",
+    megaMenuSelector: '#' + CSS.escape('#{cc.clientId}') + " [data-toggle='megamenu']",
+    closeMegaMenuSelector: '#' + CSS.escape('#{cc.clientId}') + " [data-toggle='close']",
+};
+viewerJS.navigation.init(navigationConfig);
         </script>
     </composite:implementation>
 </ui:composition>

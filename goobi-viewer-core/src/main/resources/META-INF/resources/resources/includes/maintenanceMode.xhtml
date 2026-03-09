@@ -30,7 +30,7 @@
                             layout="block">
                             <h:outputText
                                 escape="false"
-                                value="#{adminBean.maintenanceMode.getTextOrDefault(navigationHelper.localeString)}"></h:outputText>
+                                value="#{adminBean.maintenanceMode.getTextOrDefault(navigationHelper.localeString)}" />
                         </h:panelGroup>
 
                         <button
@@ -38,13 +38,11 @@
                             class="fancy-close maintenance-banner__close-button"
                             data-dismiss="modal"
                             aria-label="#{msg.maintenance_mode__close_banner}"
-                            data-trigger="closeMaintenanceInfo"></button>
+                            data-trigger="closeMaintenanceInfo" />
                     </div>
                 </div>
             </div>
         </div>
-        <script>
-            viewerJS.maintenanceMode.init();
-        </script>
+        <script>viewerJS.maintenanceMode.init();</script>
     </ui:fragment>
 </ui:composition>

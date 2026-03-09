@@ -30,7 +30,7 @@
             <div class="tpl-stacked-collection__text">
                 <h:outputText
                     escape="false"
-                    value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
+                    value="#{cc.attrs.component.getContentData('text')}" />
             </div>
 
             <div class="tpl-stacked-collection__collections">
@@ -43,11 +43,11 @@
                     defaultlanguage="#{navigationHelper.defaultLocale.language}"
                     blacklist="#{cc.attrs.collectionItem.content.ignoreCollections}"
                     sorting="#{cc.attrs.collectionItem.content.sorting}"
-                    depth="2"></collectionView>
+                    depth="2" />
             </div>
 
             <script type="text/javascript">
-                riot.mount('collectionView');
+riot.mount('collectionView');
             </script>
         </div>
     </composite:implementation>

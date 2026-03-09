@@ -10,7 +10,7 @@
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-    <composite:interface></composite:interface>
+    <composite:interface />
 
     <composite:implementation>
         <ui:repeat
@@ -149,8 +149,6 @@
         <widgetComponent:widget_userInteractions />
 
         <!-- INIT COPY TO CLIPBOARD FUNCTION -->
-        <script>
-            viewerJS.clipboard.init();
-        </script>
+        <script>viewerJS.clipboard.init();</script>
     </composite:implementation>
 </ui:composition>

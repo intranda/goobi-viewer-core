@@ -31,7 +31,7 @@
             <c:set
                 scope="view"
                 value="#{adminClientsBean.selectedClient}"
-                var="client"></c:set>
+                var="client" />
 
             <!-- NOT CONFIGURED CLIENT -->
             <ui:fragment rendered="#{client.registrationPendingOrDenied}">
@@ -66,11 +66,11 @@
                         <h:commandButton
                             class="btn btn--success"
                             value="#{msg.action__accept}"
-                            action="#{adminClientsBean.accept(client)}"></h:commandButton>
+                            action="#{adminClientsBean.accept(client)}" />
                         <h:commandButton
                             class="btn btn--danger"
                             value="#{msg.action__reject}"
-                            action="#{adminClientsBean.reject(client)}"></h:commandButton>
+                            action="#{adminClientsBean.reject(client)}" />
                     </div>
                 </h:form>
             </ui:fragment>
@@ -105,11 +105,11 @@
                                     styleClass="btn admin__cancel-button"
                                     value="#{msg.cancel}"
                                     immediate="true"
-                                    action="pretty:adminClients"></h:commandButton>
+                                    action="pretty:adminClients" />
                                 <h:commandButton
                                     styleClass="btn btn--success"
                                     value="#{msg.button__save}"
-                                    action="#{adminClientsBean.save(client)}"></h:commandButton>
+                                    action="#{adminClientsBean.save(client)}" />
                             </div>
                         </h:form>
                     </div>

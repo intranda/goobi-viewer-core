@@ -23,13 +23,13 @@
                 <div class="tpl-geomap__text">
                     <h:outputText
                         escape="false"
-                        value="#{cc.attrs.component.getContentData('text01')}"></h:outputText>
+                        value="#{cc.attrs.component.getContentData('text01')}" />
                 </div>
             </ui:fragment>
             <ui:fragment rendered="#{cc.attrs.component.hasContent('geomap')}">
                 <viewerComponent:geoMap
                     popoverOnHover="false"
-                    geoMap="#{cc.attrs.component.getContentItem('geomap').content.map}"></viewerComponent:geoMap>
+                    geoMap="#{cc.attrs.component.getContentItem('geomap').content.map}" />
             </ui:fragment>
         </div>
     </composite:implementation>

@@ -8,7 +8,7 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     template="/resources/themes/#{navigationHelper.theme}/template.html">
-    <composite:interface></composite:interface>
+    <composite:interface />
 
     <ui:define name="metadata">
         <f:metadata>
@@ -169,13 +169,13 @@
                                                 <span class="sr-only">#{msg.yes}</span>
                                                 <i
                                                     class="fa fa-check"
-                                                    aria-hidden="true"></i>
+                                                    aria-hidden="true" />
                                             </ui:fragment>
                                             <ui:fragment rendered="#{annotation.publicationStatus != 'PUBLISHED'}">
                                                 <span class="sr-only">#{msg.no}</span>
                                                 <i
                                                     class="fa fa-check"
-                                                    aria-hidden="true"></i>
+                                                    aria-hidden="true" />
                                             </ui:fragment>
                                         </div>
                                     </div>

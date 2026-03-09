@@ -31,7 +31,7 @@
             <div class="tpl-masonry__text">
                 <h:outputText
                     escape="false"
-                    value="#{cc.attrs.text.content.text.textOrDefault}"></h:outputText>
+                    value="#{cc.attrs.text.content.text.textOrDefault}" />
             </div>
 
             <!-- LOADER -->
@@ -46,27 +46,27 @@
 
             <!-- MASONRY -->
             <div class="grid">
-                <div class="grid-sizer"></div>
-                <div class="gutter-sizer"></div>
+                <div class="grid-sizer" />
+                <div class="gutter-sizer" />
             </div>
 
             <script
                 type="text/javascript"
-                src="#{request.contextPath}/resources/javascript/libs/masonry/masonry.min.js"></script>
+                src="#{request.contextPath}/resources/javascript/libs/masonry/masonry.min.js" />
             <script type="text/javascript">
-                $.ajax({
-                    url: '#{cc.attrs.grid.content.tileGridUrl}',
-                    type: 'GET',
-                    datatype: 'JSON',
-                }).then(function (data) {
-                    const masonryConfig = {
-                        $grid: $('.grid'),
-                        language: currentLang,
-                    };
-                    $(document).ready(() => {
-                        cmsJS.masonry.init(masonryConfig, data);
-                    });
-                });
+$.ajax({
+    url: '#{cc.attrs.grid.content.tileGridUrl}',
+    type: 'GET',
+    datatype: 'JSON',
+}).then(function (data) {
+    const masonryConfig = {
+        $grid: $('.grid'),
+        language: currentLang,
+    };
+    $(document).ready(() => {
+        cmsJS.masonry.init(masonryConfig, data);
+    });
+});
             </script>
         </div>
     </composite:implementation>

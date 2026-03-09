@@ -62,7 +62,7 @@
                                             validator="#{bookmarkBean.validateName}">
                                             <f:passThroughAttribute
                                                 name="placeholder"
-                                                value="#{msg.bookmarkList_addNewBookmarkList}"></f:passThroughAttribute>
+                                                value="#{msg.bookmarkList_addNewBookmarkList}" />
                                         </h:inputText>
                                     </div>
                                     <div class="col-1 no-padding">
@@ -73,7 +73,7 @@
                                             <ui:include src="/resources/icons/outline/plus.svg" />
                                             <f:passThroughAttribute
                                                 name="aria-label"
-                                                value="#{msg.bookmarkList_addNewBookmarkList}"></f:passThroughAttribute>
+                                                value="#{msg.bookmarkList_addNewBookmarkList}" />
                                         </h:commandLink>
                                     </div>
                                 </div>
@@ -152,7 +152,7 @@
         </div>
 
         <script type="text/javascript">
-            viewerJS.clipboard.init();
+viewerJS.clipboard.init();
         </script>
     </ui:define>
 

@@ -154,7 +154,7 @@
                                                     <!-- DESCRIPTION -->
                                                     <h:panelGroup
                                                         rendered="#{browseDcElement.hasCMSDescription() and browseDcElement.showDescription}">
-                                                        <div class="col-1"></div>
+                                                        <div class="col-1" />
                                                         <div class="col-8 pb-3">
                                                             <div class="collection__description">
                                                                 <h:outputText
@@ -193,7 +193,7 @@
                                                 <h:commandButton
                                                     styleClass="btn btn--full"
                                                     value="#{msg.admin__cms_collections_import_start}"
-                                                    action="#{cmsCollectionsBean.importDescriptionsAction(cmsCollectionsBean.solrField)}"></h:commandButton>
+                                                    action="#{cmsCollectionsBean.importDescriptionsAction(cmsCollectionsBean.solrField)}" />
                                             </div>
                                         </div>
                                     </ui:fragment>
@@ -231,10 +231,10 @@
                                                             <div class="admin__cms-collections-progress-bar">
                                                                 <div
                                                                     class="admin__dashboard-translations-progress-complete"
-                                                                    style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;"></div>
+                                                                    style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;" />
                                                                 <div
                                                                     class="admin__dashboard-translations-progress-partially"
-                                                                    style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;"></div>
+                                                                    style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;" />
                                                             </div>
                                                         </div>
 
@@ -281,7 +281,7 @@
                                                     </h2>
                                                     <h:outputText
                                                         escape="false"
-                                                        value="#{msg.admin__translations__missing_write_permissions__description}"></h:outputText>
+                                                        value="#{msg.admin__translations__missing_write_permissions__description}" />
                                                 </div>
                                             </c:otherwise>
                                         </c:choose>
@@ -301,8 +301,8 @@
                                                     value="#{cmsCollectionsBean.solrField}"
                                                     styleClass="form-control">
                                                     <f:selectItems value="#{cmsCollectionsBean.allCollectionFields}" />
-                                                    <f:ajax render="collectionTreeGroup"></f:ajax>
-                                                    <f:ajax render="collectionsTranslationProgress"></f:ajax>
+                                                    <f:ajax render="collectionTreeGroup" />
+                                                    <f:ajax render="collectionsTranslationProgress" />
                                                 </h:selectOneMenu>
                                             </div>
                                         </div>

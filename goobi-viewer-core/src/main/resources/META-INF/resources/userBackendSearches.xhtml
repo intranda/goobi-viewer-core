@@ -133,7 +133,7 @@
                                         </div>
                                         <div
                                             class="alt-backdrop"
-                                            data-dismiss="modal"></div>
+                                            data-dismiss="modal" />
                                     </div>
                                 </div>
                                 <!-- end my-searches__table__actions -->
@@ -156,22 +156,22 @@
             </c:choose>
         </div>
         <script type="text/javascript">
-            $(document).ready(function () {
-                var btnCount = 0;
-                $.each($('.my-searches__delete-button'), function () {
-                    $(this).attr('data-target', '#deleteSearchModal-' + btnCount);
-                    btnCount++;
-                });
+$(document).ready(function () {
+    var btnCount = 0;
+    $.each($('.my-searches__delete-button'), function () {
+        $(this).attr('data-target', '#deleteSearchModal-' + btnCount);
+        btnCount++;
+    });
 
-                var modalCount = 0;
-                $.each($('.my-searches__delete-modal'), function () {
-                    $(this).attr('id', 'deleteSearchModal-' + modalCount);
-                    $(this)
-                        .find('.modal-title')
-                        .attr('id', 'deleteSearchModalLabel-' + modalCount);
-                    modalCount++;
-                });
-            });
+    var modalCount = 0;
+    $.each($('.my-searches__delete-modal'), function () {
+        $(this).attr('id', 'deleteSearchModal-' + modalCount);
+        $(this)
+            .find('.modal-title')
+            .attr('id', 'deleteSearchModalLabel-' + modalCount);
+        modalCount++;
+    });
+});
         </script>
     </ui:define>
 

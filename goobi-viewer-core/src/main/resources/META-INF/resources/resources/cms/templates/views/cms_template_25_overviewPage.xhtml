@@ -74,10 +74,10 @@
                                                     <span class="tpl-overviewpage__overview-metadata-value">
                                                         <h:outputFormat
                                                             value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                                            escape="false"></h:outputFormat>
+                                                            escape="false" />
                                                     </span>
 
-                                                    <div class="clearfix"></div>
+                                                    <div class="clearfix" />
                                                 </ui:repeat>
                                             </dd>
                                         </ui:fragment>
@@ -89,10 +89,10 @@
                                                     <span class="tpl-overviewpage__overview-metadata-value">
                                                         <h:outputFormat
                                                             value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                                            escape="false"></h:outputFormat>
+                                                            escape="false" />
                                                     </span>
 
-                                                    <div class="clearfix"></div>
+                                                    <div class="clearfix" />
                                                 </ui:repeat>
                                             </dd>
                                         </ui:fragment>
@@ -118,7 +118,9 @@
                                     <c:set
                                         var="purl"
                                         value="#{cmsBean.getUrl(cmsPage)}" />
-                                    <a href="#{purl}"><h:outputText value="#{purl}" /></a>
+                                    <a href="#{purl}">
+                                        <h:outputText value="#{purl}" />
+                                    </a>
                                 </span>
                             </dd>
                         </dl>

@@ -151,7 +151,7 @@
                                         value="#{msg.delete}"
                                         rendered="#{user.hasLocalAvatarImage()}"
                                         action="#{user.deleteAvatarFile}">
-                                        <f:ajax render="@form"></f:ajax>
+                                        <f:ajax render="@form" />
                                     </h:commandLink>
                                 </div>
                             </h:form>
@@ -167,7 +167,7 @@
                             pt:data-dismiss="modal">
                             <f:ajax
                                 execute="changeAvatarForm mediaForm @form"
-                                render="changeAvatarForm mediaForm userAvatarPreview"></f:ajax>
+                                render="changeAvatarForm mediaForm userAvatarPreview" />
                         </h:commandButton>
                     </h:form>
                 </div>
@@ -175,6 +175,6 @@
         </div>
         <div
             class="alt-backdrop"
-            data-dismiss="modal"></div>
+            data-dismiss="modal" />
     </div>
 </ui:composition>

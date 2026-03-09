@@ -11,7 +11,7 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
-    <composite:interface></composite:interface>
+    <composite:interface />
 
     <composite:implementation>
         <c:if test="#{userBean.admin}">
@@ -26,13 +26,13 @@
                     <h:commandScript
                         render="@none"
                         name="hideStatistics"
-                        action="#{viewBean.put('showRecordStatistics', 'false')}"></h:commandScript>
+                        action="#{viewBean.put('showRecordStatistics', 'false')}" />
                     <h:commandScript
                         render="usageStatisticsDisplay"
                         name="showStatistics"
                         action="#{viewBean.put('showRecordStatistics', 'true')}"
                         onbegin="document.querySelector('.usage-statistics-loader')?.classList.remove('d-none')"
-                        oncomplete="document.querySelector('.usage-statistics-loader')?.classList.add('d-none')"></h:commandScript>
+                        oncomplete="document.querySelector('.usage-statistics-loader')?.classList.add('d-none')" />
 
                     <div
                         tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'statistics-usage') ? '0' : ''}"

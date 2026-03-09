@@ -52,8 +52,12 @@
                                 var="slider"
                                 value="#{cmsSliderBean.sliders}">
                                 <div class="admin__boxed-entry -w33">
-                                    <div class="row"><h2 class="col-12">#{slider.name}</h2></div>
-                                    <div class="row"><p class="col-12">#{slider.description}</p></div>
+                                    <div class="row">
+                                        <h2 class="col-12">#{slider.name}</h2>
+                                    </div>
+                                    <div class="row">
+                                        <p class="col-12">#{slider.description}</p>
+                                    </div>
                                     <dl class="row">
                                         <dt class="col-sm-4">#{msg.label__type}:</dt>
                                         <dd class="col-sm-8">#{msg[slider.sourceType.label]}</dd>

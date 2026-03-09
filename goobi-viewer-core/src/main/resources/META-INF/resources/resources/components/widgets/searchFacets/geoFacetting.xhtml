@@ -12,7 +12,7 @@
     <composite:implementation>
         <ui:param
             name="search"
-            value="#{cc.attrs.search != null ? cc.attrs.search : searchBean}"></ui:param>
+            value="#{cc.attrs.search != null ? cc.attrs.search : searchBean}" />
         <!--  WIDGET Geo facetting -->
         <ui:fragment rendered="#{searchBean.showGeoFacetMap}">
             <h:form>
@@ -95,7 +95,7 @@
                                 src="#{request.contextPath}/resources/images/infinity_loader.svg"
                                 class="img-responsive widget-geofacetting__loader-animated-image"
                                 alt="Waiting..." />
-                            <div class="modal-backdrop show"></div>
+                            <div class="modal-backdrop show" />
                         </div>
                         <div class="widget-geofacetting__overlay-buttons-wrapper">
                             <button
@@ -121,7 +121,7 @@
                         </div>
                         <div
                             id="geoFacettingOverlayMap"
-                            class="overlay__geomap"></div>
+                            class="overlay__geomap" />
                     </div>
                 </div>
                 <script type="text/javascript">
@@ -135,7 +135,11 @@
                          			hitsLayer: {
                          				allowMovingFeatures: false,
                          				popoverOnHover: true,
-                         				popover: $( '<div><p data-metadata="title"></p></div>' ),
+                         				popover: $( '
+                    <div>
+                        <p data-metadata="title" />
+                    </div>
+                    ' ),
                          				clusterMarkers: true,
                          				style: {
                          					fillOpacity: 0.02,

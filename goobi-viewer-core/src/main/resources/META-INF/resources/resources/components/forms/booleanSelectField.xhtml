@@ -14,11 +14,11 @@
             required="true" />
         <composite:attribute
             name="value"
-            required="true"></composite:attribute>
+            required="true" />
         <composite:attribute
             name="helpText"
             required="false"
-            default=""></composite:attribute>
+            default="" />
         <composite:attribute
             name="leftValue"
             default="#{false}" />
@@ -59,14 +59,14 @@
             <div class="col-9 cms-module__option-control admin__form-input">
                 <h:message
                     for="#{cc.attrs.clientId}_input"
-                    errorClass="-validation-message -danger"></h:message>
+                    errorClass="-validation-message -danger" />
                 <div class="-validation-mark">
                     <i
                         class="fa fa-check"
-                        aria-hidden="true"></i>
+                        aria-hidden="true" />
                     <i
                         class="fa fa-exclamation"
-                        aria-hidden="true"></i>
+                        aria-hidden="true" />
                 </div>
 
                 <viewerComponent:toggleSwitch

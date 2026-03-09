@@ -64,7 +64,7 @@
                             value-input="#{cc.clientId}:chronologySliderForm_#{status.count}:chronologySliderInput"
                             update-facet="#{cc.clientId}:chronologySliderForm_#{status.count}:chronologySliderSet"
                             loader="chronologyLoader-#{status.count}"
-                            show-tooltip="true"></div>
+                            show-tooltip="true" />
 
                         <!-- HIDDEN FORM TO UPDATE SEARCHHITS -->
                         <h:form
@@ -79,8 +79,7 @@
                         </h:form>
                     </div>
                     <script>
-
-                                 // chronologySlider.tag and chronologyGraph.tag for widget chronology
+                        // chronologySlider.tag and chronologyGraph.tag for widget chronology
 
                                  (() => {
                         let values = #{searchBean.facets.getValueRangeAsJsonMap(field)};

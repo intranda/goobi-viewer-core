@@ -16,7 +16,7 @@
         <c:if test="#{cmsBean.currentPage.published or userBean.hasAdminBackendAccess}">
             <!-- CUSTOM SIDEBAR -->
             <c:if test="#{!cmsBean.currentPage.useDefaultSidebar}">
-                <h:panelGroup binding="#{cmsSidebarWidgetsBean.sidebarGroup}"></h:panelGroup>
+                <h:panelGroup binding="#{cmsSidebarWidgetsBean.sidebarGroup}" />
             </c:if>
 
             <!-- DEFAULT SIDEBAR -->

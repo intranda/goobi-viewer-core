@@ -21,7 +21,7 @@
     </ui:define>
 
     <ui:define name="heroSlider">
-        <h:panelGroup binding="#{cmsDynamicContentBean.topBarContent}"></h:panelGroup>
+        <h:panelGroup binding="#{cmsDynamicContentBean.topBarContent}" />
     </ui:define>
 
     <!-- CONTENT -->
@@ -75,7 +75,7 @@
                                                 <c:forEach
                                                     var="cmsComponent"
                                                     items="#{cmsComponentGroup.components}">
-                                                    <h:panelGroup binding="#{cmsComponent.uiComponent}"></h:panelGroup>
+                                                    <h:panelGroup binding="#{cmsComponent.uiComponent}" />
                                                 </c:forEach>
                                             </div>
                                         </c:when>
@@ -83,7 +83,7 @@
                                             <c:forEach
                                                 var="cmsComponent"
                                                 items="#{cmsComponentGroup.components}">
-                                                <h:panelGroup binding="#{cmsComponent.uiComponent}"></h:panelGroup>
+                                                <h:panelGroup binding="#{cmsComponent.uiComponent}" />
                                             </c:forEach>
                                         </c:otherwise>
                                     </c:choose>

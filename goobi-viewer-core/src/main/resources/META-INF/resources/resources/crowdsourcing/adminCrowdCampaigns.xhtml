@@ -147,7 +147,7 @@
                                             value="#{msg['admin__crowdsourcing_campaign_visibility_' += campaign.visibility]} " />
                                         <h:outputText
                                             rendered="#{campaign.userGroup != null}"
-                                            value="${msg.userGroup}: ${campaign.userGroup.name}"></h:outputText>
+                                            value="${msg.userGroup}: ${campaign.userGroup.name}" />
                                     </div>
                                     <div
                                         class="col-2 d-flex"
@@ -205,7 +205,10 @@
 
                 // Create no entries found message
                 if ($('.admin__table-entry').length == 0) {
-                    $('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+                    $('.admin__table-content').append('
+                <br />
+                <p>#{msg.hitsZero}</p>
+                ');
                 }
             </script>
         </h:panelGroup>

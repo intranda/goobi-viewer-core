@@ -7,24 +7,20 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:o="http://omnifaces.org/ui"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
->
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
         <composite:attribute
             name="pageNummbers"
             required="false"
-            default="true"
-        />
+            default="true" />
         <composite:attribute
             name="pdfIcon"
             required="false"
-            default="true"
-        />
+            default="true" />
         <composite:attribute
             name="visible"
             required="false"
-            default="true"
-        />
+            default="true" />
     </composite:interface>
 
     <composite:implementation>
@@ -43,17 +39,14 @@
             </script>
             <o:socket
                 channel="tocUpdateChannel"
-                onmessage="updateToc"
-            />
+                onmessage="updateToc" />
 
             <div
                 id="widgetToc"
-                class="widget widget-toc"
-            >
+                class="widget widget-toc">
                 <h:form
                     id="widgetTocForm"
-                    prependId="false"
-                >
+                    prependId="false">
                     <!-- TITLE -->
                     <div class="widget__topbar widget-toc__topbar">
                         <div class="widget-toc__title">
@@ -61,8 +54,7 @@
 
                             <!-- EXPAND ALL -->
                             <ui:fragment
-                                rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}"
-                            >
+                                rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}">
                                 <div class="widget-toc__title-expand">
                                     <!-- CLOSE -->
                                     <button
@@ -72,12 +64,10 @@
                                         title="#{msg.allClose}"
                                         data-toggle="tooltip"
                                         data-placement="top"
-                                        aria-label="#{msg.allClose}"
-                                    >
+                                        aria-label="#{msg.allClose}">
                                         <util:icon
                                             icon="square-rounded-minus"
-                                            svgClass="icon icon-lg"
-                                        />
+                                            svgClass="icon icon-lg" />
                                     </button>
                                     <!-- OPEN -->
                                     <button
@@ -87,12 +77,10 @@
                                         title="#{msg.allOpen}"
                                         data-toggle="tooltip"
                                         data-placement="top"
-                                        aria-label="#{msg.allOpen}"
-                                    >
+                                        aria-label="#{msg.allOpen}">
                                         <util:icon
                                             icon="square-rounded-plus"
-                                            svgClass="icon icon-lg"
-                                        />
+                                            svgClass="icon icon-lg" />
                                     </button>
                                 </div>
                             </ui:fragment>
@@ -101,25 +89,21 @@
                     <!-- ELEMENTS -->
                     <div
                         jsf:id="sidebarTocTree"
-                        class="widget__body widget-toc__body widget-toc__elements"
-                    >
+                        class="widget__body widget-toc__body widget-toc__elements">
                         <!-- TREE VIEW -->
                         <ui:fragment rendered="#{configurationBean.sidebarTocTreeView}">
                             <ul>
                                 <ui:repeat
                                     var="group"
-                                    value="#{activeDocumentBean.toc.groupNames}"
-                                >
+                                    value="#{activeDocumentBean.toc.groupNames}">
                                     <ui:repeat
                                         var="tocElement"
-                                        value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}"
-                                    >
+                                        value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}">
                                         <li
                                             class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' } #{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''} #{!tocElement.visible ? 'widget-toc__element--hidden' : ''} #{tocElement.expanded ? 'widget-toc__element--expanded' : ''}"
                                             data-iddoc="iddoc_#{tocElement.iddoc}"
                                             data-level="#{tocElement.level}"
-                                            style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'margin-right:' : 'margin-left:'} #{tocElement.level * 15}px"
-                                        >
+                                            style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'margin-right:' : 'margin-left:'} #{tocElement.level * 15}px">
                                             <!-- EXPAND -->
                                             <ui:fragment rendered="#{tocElement.hasChild == true}">
                                                 <div class="widget-toc__element-expand">
@@ -127,16 +111,13 @@
                                                         type="button"
                                                         class="btn btn--clean widget-toc__toggle"
                                                         aria-expanded="#{tocElement.expanded}"
-                                                        aria-label="#{tocElement.expanded ? msg.allClose : msg.allOpen}"
-                                                    >
+                                                        aria-label="#{tocElement.expanded ? msg.allClose : msg.allOpen}">
                                                         <util:icon
                                                             icon="square-rounded-plus"
-                                                            svgClass="icon icon-lg widget-toc__icon-expand"
-                                                        />
+                                                            svgClass="icon icon-lg widget-toc__icon-expand" />
                                                         <util:icon
                                                             icon="square-rounded-minus"
-                                                            svgClass="icon icon-lg widget-toc__icon-collapse"
-                                                        />
+                                                            svgClass="icon icon-lg widget-toc__icon-collapse" />
                                                     </button>
                                                 </div>
                                             </ui:fragment>
@@ -144,18 +125,15 @@
                                             <!-- FULLSCREEN LINK -->
                                             <ui:fragment rendered="#{navigationHelper.currentView == 'fullscreen'}">
                                                 <div
-                                                    class="widget-toc__element-link #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''} #{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}"
-                                                >
+                                                    class="widget-toc__element-link #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''} #{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}">
                                                     <h:outputLink
                                                         rendered="#{tocElement.label != null}"
                                                         title="#{tocElement.label}"
                                                         value="#{tocElement.getUrl('fullscreen')}"
-                                                        styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}"
-                                                    >
+                                                        styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}">
                                                         <f:passThroughAttribute
                                                             name="aria-label"
-                                                            value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}"
-                                                        />
+                                                            value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}" />
                                                         #{tocElement.label}
                                                     </h:outputLink>
                                                 </div>
@@ -164,17 +142,14 @@
                                             <!-- LINK -->
                                             <ui:fragment rendered="#{navigationHelper.currentView != 'fullscreen'}">
                                                 <div
-                                                    class="widget-toc__element-link #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''} #{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}"
-                                                >
+                                                    class="widget-toc__element-link #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''} #{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}">
                                                     <h:outputLink
                                                         rendered="#{tocElement.label != null}"
                                                         title="#{tocElement.label}"
-                                                        value="#{tocElement.url}"
-                                                    >
+                                                        value="#{tocElement.url}">
                                                         <f:passThroughAttribute
                                                             name="aria-label"
-                                                            value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}"
-                                                        />
+                                                            value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}" />
                                                         #{tocElement.label}
                                                     </h:outputLink>
                                                 </div>
@@ -197,32 +172,26 @@
                             <ul>
                                 <ui:repeat
                                     var="group"
-                                    value="#{activeDocumentBean.toc.groupNames}"
-                                >
+                                    value="#{activeDocumentBean.toc.groupNames}">
                                     <ui:repeat
                                         var="tocElement"
-                                        value="#{activeDocumentBean.toc.getViewForGroup(group)}"
-                                    >
+                                        value="#{activeDocumentBean.toc.getViewForGroup(group)}">
                                         <li
                                             class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' }"
                                             data-logid="#{tocElement.logId}"
-                                            style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'margin-right:' : 'margin-left:'} #{tocElement.level * 15}px"
-                                        >
+                                            style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'margin-right:' : 'margin-left:'} #{tocElement.level * 15}px">
                                             <!-- LINK -->
                                             <div
-                                                class="widget-toc__element-link #{!configurationBean.sidebarTocTreeView ? 'non-tree-view' : ''} #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''}"
-                                            >
+                                                class="widget-toc__element-link #{!configurationBean.sidebarTocTreeView ? 'non-tree-view' : ''} #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''}">
                                                 <h:outputLink
                                                     rendered="#{tocElement.label != null}"
                                                     title="#{tocElement.label}"
                                                     value="#{tocElement.url}"
-                                                    styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}"
-                                                >
+                                                    styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}">
                                                     <h:outputText value="#{tocElement.label}" />
                                                     <f:passThroughAttribute
                                                         name="aria-label"
-                                                        value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}"
-                                                    />
+                                                        value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}" />
                                                 </h:outputLink>
                                             </div>
                                             <!-- PAGE NUMBER -->

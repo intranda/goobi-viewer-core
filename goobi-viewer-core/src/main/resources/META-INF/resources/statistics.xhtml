@@ -33,64 +33,64 @@
 
         <script
             type="text/javascript"
-            src="#{request.contextPath}/resources/javascript/libs/jqplot/jquery.jqplot.min.js"></script>
+            src="#{request.contextPath}/resources/javascript/libs/jqplot/jquery.jqplot.min.js" />
         <script
             type="text/javascript"
-            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.pieRenderer.min.js"></script>
+            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.pieRenderer.min.js" />
         <script
             type="text/javascript"
-            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.barRenderer.min.js"></script>
+            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.barRenderer.min.js" />
         <script
             type="text/javascript"
-            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"></script>
+            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.categoryAxisRenderer.min.js" />
         <script
             type="text/javascript"
-            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.pointLabels.min.js"></script>
+            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.pointLabels.min.js" />
         <script
             type="text/javascript"
-            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js" />
         <script
             type="text/javascript"
-            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.canvasTextRenderer.min.js" />
         <script
             type="text/javascript"
-            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.dateAxisRenderer.min.js" />
         <script
             type="text/javascript"
-            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.BezierCurveRenderer.min.js"></script>
+            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.BezierCurveRenderer.min.js" />
         <!--         <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.cursor.min.js"></script> -->
         <script
             type="text/javascript"
-            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.highlighter.min.js"></script>
+            src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.highlighter.min.js" />
         <script
             type="text/javascript"
-            src="#{request.contextPath}/resources/javascript/dist/statistics.min.js"></script>
+            src="#{request.contextPath}/resources/javascript/dist/statistics.min.js" />
 
         <script type="text/javascript">
-            $(document).ready(function () {
-                var publicationTypes = new Statistics.PublicationTypes({
-                    labelList: '#{statisticsBean.topStructTypesByNumber}',
-                    labelDesc: '#{msg.statistics_publicationTypes_dataLabel}',
-                });
-                publicationTypes.plot('chart-publication');
-                publicationTypes.initSearchQuery('chart-publication', 'searchInput', 'searchBtn');
+$(document).ready(function () {
+    var publicationTypes = new Statistics.PublicationTypes({
+        labelList: '#{statisticsBean.topStructTypesByNumber}',
+        labelDesc: '#{msg.statistics_publicationTypes_dataLabel}',
+    });
+    publicationTypes.plot('chart-publication');
+    publicationTypes.initSearchQuery('chart-publication', 'searchInput', 'searchBtn');
 
-                var importedWorks = new Statistics.MostImportedWorksTrend({
-                    labelList: '#{statisticsBean.getImportedRecordsTrend(6*30, 12)}',
-                    labelDesc: '#{msg.statistics_importedWorksTrend_dataLabel}',
-                });
-                importedWorks.plot('chart-import-over-time');
+    var importedWorks = new Statistics.MostImportedWorksTrend({
+        labelList: '#{statisticsBean.getImportedRecordsTrend(6*30, 12)}',
+        labelDesc: '#{msg.statistics_importedWorksTrend_dataLabel}',
+    });
+    importedWorks.plot('chart-import-over-time');
 
-                var numPages = new Statistics.NumberOfPages({
-                    titlePages: '#{msg.statistics_importedPages}',
-                    numPages: '#{statisticsBean.importedPages}',
-                    titleFullTexts: '#{msg.statistics_importedFullTexts}',
-                    numFullTexts: '#{statisticsBean.importedFullTexts}',
-                });
-                numPages.plot('chart-import-pages-fulltext');
+    var numPages = new Statistics.NumberOfPages({
+        titlePages: '#{msg.statistics_importedPages}',
+        numPages: '#{statisticsBean.importedPages}',
+        titleFullTexts: '#{msg.statistics_importedFullTexts}',
+        numFullTexts: '#{statisticsBean.importedFullTexts}',
+    });
+    numPages.plot('chart-import-pages-fulltext');
 
-                Statistics.initMouseover(document, window);
-            });
+    Statistics.initMouseover(document, window);
+});
         </script>
 
         <f:view
@@ -111,10 +111,10 @@
                             <h2>#{msg.statistics_publicationTypes}</h2>
                             <div
                                 id="chartpseudotooltip"
-                                class="jqplot-highlighter-tooltip"></div>
+                                class="jqplot-highlighter-tooltip" />
                             <div
                                 id="chart-publication"
-                                class="statistic-chart"></div>
+                                class="statistic-chart" />
                         </div>
                         <!-- Publication type : end -->
                     </div>
@@ -127,7 +127,7 @@
                             <h2>#{msg.statistics_importedWorksTrend}</h2>
                             <div
                                 id="chart-import-over-time"
-                                class="statistic-chart"></div>
+                                class="statistic-chart" />
                         </div>
                         <!-- Imported Works Trend : end -->
                     </div>
@@ -140,7 +140,7 @@
                             <h2>#{msg.statistics_importedPagesTitle}</h2>
                             <div
                                 id="chart-import-pages-fulltext"
-                                class="statistic-chart"></div>
+                                class="statistic-chart" />
                         </div>
                         <!-- Imported pages : end -->
                     </div>
@@ -157,7 +157,7 @@
                     </c:forEach>
                 </h:panelGroup>
 
-                <div class="clearfix"></div>
+                <div class="clearfix" />
             </div>
 
             <h:form
@@ -170,7 +170,7 @@
                 <h:commandButton
                     id="searchBtn"
                     styleClass="btn btn--full"
-                    action="#{searchBean.searchDirect}"></h:commandButton>
+                    action="#{searchBean.searchDirect}" />
             </h:form>
         </f:view>
     </ui:define>

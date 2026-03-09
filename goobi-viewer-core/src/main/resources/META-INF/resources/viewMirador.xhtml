@@ -42,7 +42,7 @@
                 <!-- MIRADOR CONTAINER -->
                 <div
                     id="miradorViewer"
-                    class="view-mirador__viewer"></div>
+                    class="view-mirador__viewer" />
             </div>
         </ui:fragment>
 
@@ -68,20 +68,20 @@
         <!-- TODO: REST-Aufrufe entwickeln, die die notwendigen Parameter an Mirador übergeben. -->
 
         <script type="text/javascript">
-            function getPageFromQueryParameter() {
-                let query = window.location.search;
-                let params = new URLSearchParams(query);
-                let page = params.get('page');
-                return page;
-            }
+function getPageFromQueryParameter() {
+    let query = window.location.search;
+    let params = new URLSearchParams(query);
+    let page = params.get('page');
+    return page;
+}
 
-            var miradorConfig = {
-                root: '#{request.contextPath}',
-                restEndpoint: '#{configurationBean.restApiUrl}',
-                manifestEndpoint: '#{configurationBean.restApiUrlForIIIFPresention}/',
-                startPage: getPageFromQueryParameter(),
-            };
-            viewerJS.mirador.init(miradorConfig);
+var miradorConfig = {
+    root: '#{request.contextPath}',
+    restEndpoint: '#{configurationBean.restApiUrl}',
+    manifestEndpoint: '#{configurationBean.restApiUrlForIIIFPresention}/',
+    startPage: getPageFromQueryParameter(),
+};
+viewerJS.mirador.init(miradorConfig);
         </script>
     </ui:define>
 </ui:composition>

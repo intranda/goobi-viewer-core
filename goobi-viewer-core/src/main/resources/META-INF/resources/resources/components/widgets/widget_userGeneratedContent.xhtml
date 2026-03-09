@@ -5,7 +5,7 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-    <composite:interface></composite:interface>
+    <composite:interface />
 
     <composite:implementation>
         <script type="text/javascript">
@@ -74,28 +74,24 @@
                                 </h:panelGroup>
                             </h:panelGroup>
                             <script type="text/javascript">
-                                userGeneratedContentJSArray.push([
-                                    '#{content.id}',
-                                    '#{content.displayCoordinates}',
-                                    '#{content.title}',
-                                ]);
-                                $('#words-#{content.id}').on('click', function (e) {
-                                    e.preventDefault();
-                                    highlightContentBox('${content.id}');
-                                    highlightCurrentSelection($(this));
-                                });
+userGeneratedContentJSArray.push(['#{content.id}', '#{content.displayCoordinates}', '#{content.title}']);
+$('#words-#{content.id}').on('click', function (e) {
+    e.preventDefault();
+    highlightContentBox('${content.id}');
+    highlightCurrentSelection($(this));
+});
                             </script>
                         </ui:repeat>
                         <script type="text/javascript">
-                            drawContentBoxes(true);
+drawContentBoxes(true);
 
-                            var highlightCurrentSelection = function ($Obj) {
-                                // reset styles for all li elements
-                                $('#user_generated_content_nav li').removeClass('ugc-highlight');
+var highlightCurrentSelection = function ($Obj) {
+    // reset styles for all li elements
+    $('#user_generated_content_nav li').removeClass('ugc-highlight');
 
-                                // highlight clicked li element
-                                $Obj.addClass('ugc-highlight');
-                            };
+    // highlight clicked li element
+    $Obj.addClass('ugc-highlight');
+};
                         </script>
                     </ul>
                 </div>

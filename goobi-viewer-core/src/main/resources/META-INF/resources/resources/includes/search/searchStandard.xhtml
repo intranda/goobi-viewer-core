@@ -12,13 +12,13 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <ui:param
         name="search"
-        value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
+        value="#{searchParam != null ? searchParam : searchBean}" />
     <ui:param
         name="title"
-        value="#{title != null ? title : ''}"></ui:param>
+        value="#{title != null ? title : ''}" />
     <ui:param
         name="renderOnSearchTypeChange"
-        value="#{renderOnSearchTypeChange != null ? renderOnSearchTypeChange : ''}"></ui:param>
+        value="#{renderOnSearchTypeChange != null ? renderOnSearchTypeChange : ''}" />
 
     <!-- SEARCH STANDARD -->
     <div class="search-standard">
@@ -70,7 +70,7 @@
                     <viewerComponent:autocomplete
                         value="#{search.searchString}"
                         items="#{search.autocomplete}"
-                        placeholder="#{msg.search}"></viewerComponent:autocomplete>
+                        placeholder="#{msg.search}" />
                 </div>
                 <h:commandButton
                     id="submitSearch"
@@ -130,6 +130,6 @@
         </div>
         <div
             class="alt-backdrop"
-            data-dismiss="modal"></div>
+            data-dismiss="modal" />
     </div>
 </ui:composition>

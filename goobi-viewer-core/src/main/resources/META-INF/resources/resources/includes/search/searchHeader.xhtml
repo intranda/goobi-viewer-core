@@ -11,16 +11,16 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <ui:param
         name="search"
-        value="#{search != null ? search : searchBean}"></ui:param>
+        value="#{search != null ? search : searchBean}" />
     <ui:param
         name="searchType"
-        value="#{searchType != null ? searchType : search.activeSearchType}"></ui:param>
+        value="#{searchType != null ? searchType : search.activeSearchType}" />
     <ui:param
         name="renderOnSearchTypeChange"
-        value="#{renderOnSearchTypeChange != null ? renderOnSearchTypeChange : ''}"></ui:param>
+        value="#{renderOnSearchTypeChange != null ? renderOnSearchTypeChange : ''}" />
     <ui:param
         name="title"
-        value="#{title != null ? title : ''}"></ui:param>
+        value="#{title != null ? title : ''}" />
 
     <!-- SEARCH LIST OPTIONS -->
     <ui:fragment rendered="#{search.searchPerformed}">
@@ -76,7 +76,6 @@
                         value="#{navigationHelper.datePattern}" />
                 </h:outputText>
                 )
-
                 <!-- CALENDAR SEARCH -->
                 <div class="search-list__adv-search-info-back text-right">
                     <ui:fragment rendered="#{calendarBean.selectYear != null}">

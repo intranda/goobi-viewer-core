@@ -221,26 +221,26 @@
             </nav>
 
             <script type="text/javascript">
-                // RUN FUNCTION ONLY ONCE
-                if (typeof doClick === 'function') {
-                    // console.log('already defined - do nothing');
-                } else {
-                    // console.log('not already defined');
-                    var paginatorConfig = {
-                        previous: () => doClick('[data-target="paginatorPrevPage"]'),
-                        next: () => doClick('[data-target="paginatorNextPage"]'),
-                        first: () => doClick('[data-target="paginatorFirstPage"]'),
-                        last: () => doClick('[data-target="paginatorLastPage"]'),
-                        rightToLeft: '#{activeDocumentBean.viewManager.topStructElement.rtl}',
-                    };
-                    function doClick(selector) {
-                        let query = $(selector);
-                        if (query.length) {
-                            query.get(0).click();
-                        }
-                    }
-                    viewerJS.paginator.init(paginatorConfig);
-                }
+// RUN FUNCTION ONLY ONCE
+if (typeof doClick === 'function') {
+    // console.log('already defined - do nothing');
+} else {
+    // console.log('not already defined');
+    var paginatorConfig = {
+        previous: () => doClick('[data-target="paginatorPrevPage"]'),
+        next: () => doClick('[data-target="paginatorNextPage"]'),
+        first: () => doClick('[data-target="paginatorFirstPage"]'),
+        last: () => doClick('[data-target="paginatorLastPage"]'),
+        rightToLeft: '#{activeDocumentBean.viewManager.topStructElement.rtl}',
+    };
+    function doClick(selector) {
+        let query = $(selector);
+        if (query.length) {
+            query.get(0).click();
+        }
+    }
+    viewerJS.paginator.init(paginatorConfig);
+}
             </script>
         </h:panelGroup>
     </composite:implementation>

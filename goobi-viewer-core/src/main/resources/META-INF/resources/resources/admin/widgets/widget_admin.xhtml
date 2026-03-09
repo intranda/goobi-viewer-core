@@ -51,7 +51,7 @@
                             <c:set
                                 scope="view"
                                 value="#{adminClientsBean.notConfiguredClients}"
-                                var="notConfiguredClients"></c:set>
+                                var="notConfiguredClients" />
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminClients')}/">
                                 <util:icon-text
                                     icon="device-desktop"
@@ -84,7 +84,7 @@
                                     </span>
                                 </ui:fragment>
                             </h:outputLink>
-                            <div></div>
+                            <div />
                         </li>
                         <li
                             class="#{navigationHelper.currentPage == 'adminRights' ? 'active' : '' or navigationHelper.currentPage == 'adminRight' ? 'active' : ''}">

@@ -67,13 +67,12 @@
                                         value="0" />
                                     <f:passThroughAttribute
                                         name="disabled"
-                                        value="disabled"></f:passThroughAttribute>
+                                        value="disabled" />
                                 </h:commandButton>
                             </div>
-                            <div id="geoMapSearch"></div>
+                            <div id="geoMapSearch" />
                         </div>
                         <script type="text/javascript">
-
                             viewerJS.initialized.subscribe(() => {
 
                                 config = {
@@ -128,7 +127,7 @@
             <div class="widget__body">
                 <h:outputText
                     escape="false"
-                    value="#{msg.help__geomap_search__text}"></h:outputText>
+                    value="#{msg.help__geomap_search__text}" />
             </div>
         </div>
     </ui:define>

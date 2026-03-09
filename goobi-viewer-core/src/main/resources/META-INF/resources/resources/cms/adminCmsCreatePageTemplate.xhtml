@@ -53,7 +53,7 @@
                             data-toggle="tooltip"
                             data-placement="bottom"
                             title="#{msg.admin__cms_back_to_page}"
-                            aria-label="#{msg.admin__cms_back_to_page}"></a>
+                            aria-label="#{msg.admin__cms_back_to_page}" />
                     </div>
 
                     <viewerComponent:adminBreadcrumbs />
@@ -82,7 +82,7 @@
                                                                 action="#{cmsPageTemplateEditBean.setPageEditState('CONTENT')}">
                                                                 <f:ajax
                                                                     render="createPageTemplateContentArea"
-                                                                    execute="@form"></f:ajax>
+                                                                    execute="@form" />
                                                             </h:commandLink>
                                                         </li>
 
@@ -94,7 +94,7 @@
                                                                 action="#{cmsPageTemplateEditBean.setPageEditState('SIDEBAR')}">
                                                                 <f:ajax
                                                                     render="createPageTemplateContentArea"
-                                                                    execute="@form"></f:ajax>
+                                                                    execute="@form" />
                                                             </h:commandLink>
                                                         </li>
                                                     </ul>
@@ -154,7 +154,7 @@
                                                                     <h:commandScript
                                                                         name="refreshComponents"
                                                                         execute="pageComponents"
-                                                                        render="pageComponents"></h:commandScript>
+                                                                        render="pageComponents" />
 
                                                                     <h:panelGroup
                                                                         layout="block"
@@ -243,7 +243,7 @@
                                                                                         #{msg.delete}
                                                                                         <f:ajax
                                                                                             render="componentSelectionWrapper"
-                                                                                            onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+                                                                                            onevent="e => {if(e.status == 'success')refreshComponents()}" />
                                                                                     </button>
                                                                                 </div>
                                                                             </div>
@@ -279,7 +279,7 @@
                                                                                     <f:ajax
                                                                                         event="valueChange"
                                                                                         execute="@this"
-                                                                                        render="componentSelectionWrapper"></f:ajax>
+                                                                                        render="componentSelectionWrapper" />
                                                                                 </h:selectOneMenu>
                                                                             </h:panelGroup>
 
@@ -289,7 +289,7 @@
                                                                                 #{msg.cms__page_add_component}
                                                                                 <f:ajax
                                                                                     execute="@form"
-                                                                                    render="createPageTemplateContentArea :messages"></f:ajax>
+                                                                                    render="createPageTemplateContentArea :messages" />
                                                                             </button>
                                                                         </div>
                                                                     </div>
@@ -348,7 +348,7 @@
                                                         value="#{page.published}"
                                                         rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
                                                     <span class="toggle-outside">
-                                                        <span class="toggle-inside"></span>
+                                                        <span class="toggle-inside" />
                                                     </span>
                                                 </div>
 
@@ -422,7 +422,7 @@
                                                                 id="save-button"
                                                                 styleClass="btn btn--success"
                                                                 value="#{msg.cms_pageMetadata_save}"
-                                                                onclick="$('#AJAXLoader').show()"></h:commandButton>
+                                                                onclick="$('#AJAXLoader').show()" />
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -523,10 +523,10 @@
                                                         <div class="cms-module__option-message-mark">
                                                             <i
                                                                 class="fa fa-check"
-                                                                aria-hidden="true"></i>
+                                                                aria-hidden="true" />
                                                             <i
                                                                 class="fa fa-exclamation"
-                                                                aria-hidden="true"></i>
+                                                                aria-hidden="true" />
                                                         </div>
                                                     </div>
 
@@ -578,10 +578,10 @@
                                                         <div class="cms-module__option-message-mark">
                                                             <i
                                                                 class="fa fa-check"
-                                                                aria-hidden="true"></i>
+                                                                aria-hidden="true" />
                                                             <i
                                                                 class="fa fa-exclamation"
-                                                                aria-hidden="true"></i>
+                                                                aria-hidden="true" />
                                                         </div>
                                                     </div>
 
@@ -628,21 +628,21 @@
                 </script>
 
                 <script type="text/javascript">
-                    var createPageConfig = {
-                        selectedPageID: '#{cmsPageTemplateEditBean.selectedTemplate.id}',
-                        inputFields: $('.content-input'),
-                        prevBtn: $('#preview-button'),
-                        prevDescription: $('#previewDescription'),
-                        saveBtn: $('a[id*="save-button"]'),
-                        sortablesConfig: {
-                            componentListInput: document.getElementById('sidebar_editor_component:itemOrderInput'),
-                            editButton: $('.widget-edit'),
-                            availableItemList: '#availableItemList',
-                            visibleItemList: '#visibleItemList',
-                        },
-                    };
+var createPageConfig = {
+    selectedPageID: '#{cmsPageTemplateEditBean.selectedTemplate.id}',
+    inputFields: $('.content-input'),
+    prevBtn: $('#preview-button'),
+    prevDescription: $('#previewDescription'),
+    saveBtn: $('a[id*="save-button"]'),
+    sortablesConfig: {
+        componentListInput: document.getElementById('sidebar_editor_component:itemOrderInput'),
+        editButton: $('.widget-edit'),
+        availableItemList: '#availableItemList',
+        visibleItemList: '#visibleItemList',
+    },
+};
 
-                    cmsJS.createPage.init(createPageConfig);
+cmsJS.createPage.init(createPageConfig);
                 </script>
             </div>
         </h:panelGroup>

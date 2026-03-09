@@ -44,7 +44,7 @@
                 <script
                     src="https://www.google.com/recaptcha/api.js"
                     async="async"
-                    defer="defer"></script>
+                    defer="defer" />
             </h:panelGroup>
 
             <!-- No access ticket required or already unlocked -->
@@ -95,17 +95,17 @@
         </f:view>
 
         <script type="text/javascript">
-            var normdataConfig = {
-                path: '#{request.contextPath}',
-                lang: {
-                    popoverTitle: '#{msg.normdataPopoverTitle}',
-                    popoverClose: '#{msg.normdataPopoverClose}',
-                    showNormdata: '#{msg.normdataExpand}',
-                },
-                elemWrapper: $('#metadataElementWrapper'),
-            };
+var normdataConfig = {
+    path: '#{request.contextPath}',
+    lang: {
+        popoverTitle: '#{msg.normdataPopoverTitle}',
+        popoverClose: '#{msg.normdataPopoverClose}',
+        showNormdata: '#{msg.normdataExpand}',
+    },
+    elemWrapper: $('#metadataElementWrapper'),
+};
 
-            viewerJS.normdata.init(normdataConfig);
+viewerJS.normdata.init(normdataConfig);
         </script>
     </ui:define>
 

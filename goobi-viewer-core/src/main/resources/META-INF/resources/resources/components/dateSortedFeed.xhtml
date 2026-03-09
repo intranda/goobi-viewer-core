@@ -29,15 +29,15 @@
         </div>
 
         <script type="text/javascript">
-            var dateSortedFeedConfig = {
-                path: '#{request.contextPath}',
-                feedBox: $('#dateSortedFeed'),
-            };
+var dateSortedFeedConfig = {
+    path: '#{request.contextPath}',
+    feedBox: $('#dateSortedFeed'),
+};
 
-            viewerJS.dateSortedFeed.setDataSortOrder('#{cc.attrs.sorting}');
-            viewerJS.dateSortedFeed.setDataCount('#{cc.attrs.count}');
-            viewerJS.dateSortedFeed.setDataEncoding('#{cc.attrs.encoding}');
-            viewerJS.dateSortedFeed.init(dateSortedFeedConfig);
+viewerJS.dateSortedFeed.setDataSortOrder('#{cc.attrs.sorting}');
+viewerJS.dateSortedFeed.setDataCount('#{cc.attrs.count}');
+viewerJS.dateSortedFeed.setDataEncoding('#{cc.attrs.encoding}');
+viewerJS.dateSortedFeed.init(dateSortedFeedConfig);
         </script>
     </composite:implementation>
 </ui:composition>

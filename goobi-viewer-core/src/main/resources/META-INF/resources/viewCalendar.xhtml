@@ -142,7 +142,7 @@
                                                                     </div>
                                                                 </h:panelGroup>
                                                                 <h:panelGroup rendered="#{day.name == ''}">
-                                                                    <div class="search-calendar__month-day-empty"></div>
+                                                                    <div class="search-calendar__month-day-empty" />
                                                                 </h:panelGroup>
                                                             </ui:repeat>
                                                         </div>
@@ -157,13 +157,13 @@
                     </div>
 
                     <script type="text/javascript">
-                        var calendarPopoverConfig = {
-                            appUrl: '#{navigationHelper.applicationUrl}',
-                            indexResourceUrl: '#{navigationHelper.applicationUrl}api/v1/index/query/',
-                            popoverTitle: '#{activeDocumentBean.titleBarLabel}',
-                        };
+var calendarPopoverConfig = {
+    appUrl: '#{navigationHelper.applicationUrl}',
+    indexResourceUrl: '#{navigationHelper.applicationUrl}api/v1/index/query/',
+    popoverTitle: '#{activeDocumentBean.titleBarLabel}',
+};
 
-                        viewerJS.calendarPopover.init(calendarPopoverConfig);
+viewerJS.calendarPopover.init(calendarPopoverConfig);
                     </script>
                 </div>
             </ui:fragment>

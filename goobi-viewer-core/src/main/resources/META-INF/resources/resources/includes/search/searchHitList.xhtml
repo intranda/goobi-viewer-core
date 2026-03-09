@@ -14,22 +14,22 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <ui:param
         name="search"
-        value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
+        value="#{searchParam != null ? searchParam : searchBean}" />
     <ui:param
         name="showOptions"
-        value="#{showOptions != null ? showOptions : true}"></ui:param>
+        value="#{showOptions != null ? showOptions : true}" />
     <ui:param
         name="showSorting"
-        value="#{showSorting != null ? showSorting : true}"></ui:param>
+        value="#{showSorting != null ? showSorting : true}" />
     <ui:param
         name="displayHitsPerPage"
-        value="#{displayHitsPerPage != null ? displayHitsPerPage : true}"></ui:param>
+        value="#{displayHitsPerPage != null ? displayHitsPerPage : true}" />
     <ui:param
         name="listStyle"
-        value="#{listStyle != null ? listStyle : ''}"></ui:param>
+        value="#{listStyle != null ? listStyle : ''}" />
     <ui:param
         name="groupPreviewMode"
-        value="#{groupPreviewMode != null ? groupPreviewMode : searchBean.currentSearch.groupPreviewMode}"></ui:param>
+        value="#{groupPreviewMode != null ? groupPreviewMode : searchBean.currentSearch.groupPreviewMode}" />
 
     <!-- THIS INCLUDE MUST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
 
@@ -117,7 +117,7 @@
                                 <h:commandButton
                                     styleClass="d-none"
                                     pt:data-execute="search"
-                                    action="#{search.changeSorting()}"></h:commandButton>
+                                    action="#{search.changeSorting()}" />
                             </h:form>
                         </div>
                     </div>
@@ -154,17 +154,17 @@
                             <!-- COinS IMPLEMENTATION -->
                             <span
                                 class="Z3988"
-                                title="#{hit.browseElement.contextObject}"></span>
+                                title="#{hit.browseElement.contextObject}" />
 
                             <!-- HEADER -->
                             <div class="search-list__hit-header">
                                 <ui:include src="/resources/includes/search/browseElement.xhtml">
                                     <ui:param
                                         name="browseElement"
-                                        value="#{hit.browseElement}"></ui:param>
+                                        value="#{hit.browseElement}" />
                                     <ui:param
                                         name="showBookmarkIcon"
-                                        value="#{configurationBean.bookmarksEnabled}"></ui:param>
+                                        value="#{configurationBean.bookmarksEnabled}" />
                                 </ui:include>
 
                                 <!-- Related archive entry -->
@@ -252,7 +252,7 @@
                                         name="loadChildHits_#{status.index}"
                                         action="#{hit.loadChildHits(configurationBean.searchChildHitsToLoadOnExpand)}"
                                         render="childHitGroup"
-                                        oncomplete="viewerJS.searchList.initChildHitThumbs('childHits_#{status.index}');"></h:commandScript>
+                                        oncomplete="viewerJS.searchList.initChildHitThumbs('childHits_#{status.index}');" />
                                     <!-- END OF EXPAND BUTTON AREA -->
                                 </div>
 
@@ -283,7 +283,7 @@
                                                                     src="/resources/includes/search/browseElementMetadata.xhtml">
                                                                     <ui:param
                                                                         name="browseElement"
-                                                                        value="#{childHit.browseElement}"></ui:param>
+                                                                        value="#{childHit.browseElement}" />
                                                                 </ui:include>
                                                             </div>
                                                         </ui:fragment>
@@ -326,7 +326,7 @@
                                                                                 src="/resources/includes/search/browseElementMetadata.xhtml">
                                                                                 <ui:param
                                                                                     name="browseElement"
-                                                                                    value="#{grandChildHit.browseElement}"></ui:param>
+                                                                                    value="#{grandChildHit.browseElement}" />
                                                                             </ui:include>
                                                                         </div>
                                                                     </ui:fragment>
@@ -340,7 +340,7 @@
                                                         src="/resources/includes/search/browseElementThumbnail.xhtml">
                                                         <ui:param
                                                             name="browseElement"
-                                                            value="#{childHit.browseElement}"></ui:param>
+                                                            value="#{childHit.browseElement}" />
                                                     </ui:include>
                                                 </div>
                                             </div>
@@ -392,7 +392,7 @@
                 itemActive="#{search.currentPage}"
                 urlPrefix="#{search.currentSearchUrlRoot}/#{searchBean.activeContext}/#{search.exactSearchString}/"
                 urlSuffix="#{search.sortString}/#{search.facets.activeFacetString}/" />
-            <div class="clearfix"></div>
+            <div class="clearfix" />
         </ui:fragment>
     </div>
 
@@ -440,12 +440,11 @@
         </div>
         <div
             class="alt-backdrop"
-            data-dismiss="modal"></div>
+            data-dismiss="modal" />
     </div>
 
     <script type="text/javascript">
-
-          	var cmsPageId = '#{cmsPage.id}';
+        var cmsPageId = '#{cmsPage.id}';
 
         if (cmsPageId != '') {
            	var cmsSearchCustomView = true;

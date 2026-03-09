@@ -41,7 +41,7 @@
                                 prependId="false">
                                 <div
                                     id="terms"
-                                    class="terms-modal"></div>
+                                    class="terms-modal" />
 
                                 <!-- ACTION -->
                                 <div class="form-group form-row modal__user-terms-actions">
@@ -49,7 +49,7 @@
                                         <h:commandButton
                                             class="btn btn--danger mr-3 modal__user-terms-decline"
                                             value="#{msg.action__reject}"
-                                            action="#{userBean.logoutWithMessage('logoutSuccessful')}"></h:commandButton>
+                                            action="#{userBean.logoutWithMessage('logoutSuccessful')}" />
                                         <h:commandButton
                                             styleClass="btn btn--success accept"
                                             value="#{msg.action__agree}"
@@ -57,7 +57,7 @@
                                             <f:ajax execute="@this" />
                                             <f:passThroughAttribute
                                                 name="data-dismiss"
-                                                value="modal"></f:passThroughAttribute>
+                                                value="modal" />
                                         </h:commandButton>
                                     </div>
                                 </div>

@@ -40,7 +40,7 @@
                         <h:form>
                             <h:commandScript
                                 name="reloadTree"
-                                render="#{cc.clientId}:treeform1"></h:commandScript>
+                                render="#{cc.clientId}:treeform1" />
                         </h:form>
 
                         <h:panelGroup
@@ -150,7 +150,7 @@
                                     <h:form>
                                         <h:commandScript
                                             name="reloadTree"
-                                            render="#{cc.clientId}:treeform2"></h:commandScript>
+                                            render="#{cc.clientId}:treeform2" />
                                     </h:form>
 
                                     <h:panelGroup
@@ -218,22 +218,22 @@
 
             <!-- SCRIPTS FOR ARCHIVE (COMPONENT) -->
             <script type="text/javascript">
-                //initialize search
-                viewerJS.archives.init({
-                    initHcSticky: false,
-                    initSearch: true,
-                    initTextTree: false,
-                });
+//initialize search
+viewerJS.archives.init({
+    initHcSticky: false,
+    initSearch: true,
+    initTextTree: false,
+});
 
-                //normal ajax refresh doesn't work (maybe because of the cms-component-structure)
-                //so refresh the tree after the actual request with a commandScript
-                viewerJS.jsfAjax.success.subscribe((data) => {
-                    console.log('success', data.source);
-                    let shouldRefresh = data.source.dataset.render == 'archiveTree';
-                    if (shouldRefresh) {
-                        reloadTree();
-                    }
-                });
+//normal ajax refresh doesn't work (maybe because of the cms-component-structure)
+//so refresh the tree after the actual request with a commandScript
+viewerJS.jsfAjax.success.subscribe((data) => {
+    console.log('success', data.source);
+    let shouldRefresh = data.source.dataset.render == 'archiveTree';
+    if (shouldRefresh) {
+        reloadTree();
+    }
+});
             </script>
         </ui:fragment>
     </composite:implementation>

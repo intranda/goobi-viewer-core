@@ -13,7 +13,7 @@
             required="true" />
         <composite:attribute
             name="value"
-            required="true"></composite:attribute>
+            required="true" />
         <composite:attribute
             name="required"
             required="false"
@@ -22,11 +22,11 @@
         <composite:attribute
             name="requiredMessage"
             required="false"
-            default="#{msg.info__input_required}"></composite:attribute>
+            default="#{msg.info__input_required}" />
         <composite:attribute
             name="helpText"
             required="false"
-            default=""></composite:attribute>
+            default="" />
     </composite:interface>
 
     <composite:implementation>
@@ -44,14 +44,14 @@
                 <h:panelGroup id="inputGroup">
                     <h:message
                         for="#{cc.attrs.clientId}_input"
-                        errorClass="-validation-message -danger"></h:message>
+                        errorClass="-validation-message -danger" />
                     <div class="-validation-mark">
                         <i
                             class="fa fa-check"
-                            aria-hidden="true"></i>
+                            aria-hidden="true" />
                         <i
                             class="fa fa-exclamation"
-                            aria-hidden="true"></i>
+                            aria-hidden="true" />
                     </div>
                     <h:inputTextarea
                         value="#{cc.attrs.value}"

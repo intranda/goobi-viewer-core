@@ -84,7 +84,7 @@
             rendered="#{activeDocumentBean.viewManager.hasDownloadResources or activeDocumentBean.viewManager.hasExternalResources}">
             <viewerComponent:bornDigital />
             <viewerComponent:modalDownloadTicket />
-            <div class="clearfix"></div>
+            <div class="clearfix" />
         </h:panelGroup>
 
         <c:forEach
@@ -140,7 +140,7 @@
                                                     </ui:fragment>
                                                     <h:outputFormat
                                                         value="#{val.getDisplayValue(navigationHelper.locale, true)}"
-                                                        escape="false"></h:outputFormat>
+                                                        escape="false" />
                                                 </dd>
                                             </c:forEach>
                                         </ui:fragment>
@@ -154,7 +154,7 @@
                                                     <span class="metadata__element-value">
                                                         <h:outputFormat
                                                             value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                                            escape="false"></h:outputFormat>
+                                                            escape="false" />
                                                     </span>
                                                 </dd>
                                             </c:forEach>
@@ -207,5 +207,5 @@
         </c:forEach>
     </div>
 
-    <div class="clearfix"></div>
+    <div class="clearfix" />
 </ui:composition>

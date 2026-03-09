@@ -36,7 +36,7 @@
                         value="#{sessionBean.get('cmsSearch')}" />
                     <ui:param
                         name="searchType"
-                        value="0"></ui:param>
+                        value="0" />
                 </ui:include>
 
                 <!-- SEARCH LIST -->
@@ -47,7 +47,7 @@
                             value="#{sessionBean.get('cmsSearch')}" />
                         <ui:param
                             name="listStyle"
-                            value="#{cc.attrs.component.getContent('search').view.cssClass}"></ui:param>
+                            value="#{cc.attrs.component.getContent('search').view.cssClass}" />
                     </ui:include>
                 </div>
             </div>

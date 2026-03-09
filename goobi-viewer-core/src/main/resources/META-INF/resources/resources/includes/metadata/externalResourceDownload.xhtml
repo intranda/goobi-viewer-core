@@ -1,5 +1,4 @@
 <!-- Deprecated -->
-
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -11,7 +10,7 @@
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-    <div id="externalResourceDownload"></div>
+    <div id="externalResourceDownload" />
     <script>
         riot.mount("#externalResourceDownload", "external-resource-download", {
         	urls : #{activeDocumentBean.viewManager.externalResourceUrlsAsJson},

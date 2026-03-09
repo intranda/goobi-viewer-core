@@ -28,7 +28,9 @@
                 prependId="false">
                 <!-- DRILL DOWN -->
                 <div class="field-facets__collection">
-                    <h3><span>#{msg[cc.attrs.field.concat('_DD')]}</span></h3>
+                    <h3>
+                        <span>#{msg[cc.attrs.field.concat('_DD')]}</span>
+                    </h3>
 
                     <!-- FILTER FACETS -->
                     <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(cc.attrs.field)}">

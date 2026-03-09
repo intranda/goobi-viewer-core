@@ -41,12 +41,12 @@
                 placeholder="#{cc.attrs.placeholder}"
                 aria-label="#{cc.attrs.arialabel}" />
             <script>
-
                 function initAutocomplete() {
 
                 	//Observable for ajax responses of automcompleteRequest commandScript
                 	const autocompleteResponseListener_#{cc.attrs.id} = new rxjs.Subject();
-                	const socket = new viewerJS.WebSocket(window.location.host, "#{request.contextPath}", viewerJS.WebSocket.PATH_SEARCH_AUTOCOMPLETE);
+                	const socket = new
+                viewerJS.WebSocket(window.location.host, "#{request.contextPath}", viewerJS.WebSocket.PATH_SEARCH_AUTOCOMPLETE);
                 	const input = document.getElementById("#{cc.attrs.id}");
 
                 	socket.onMessage.subscribe( (event) => {
@@ -72,7 +72,8 @@
                         //appendTo: $("##{cc.attrs.id}").parent(),
                         change: function(event, ui) {
                             //console.log("change ", event, ui);
-                            //refocus input field after other javascript has finished because jquery will defocus the element first
+                            //refocus input field after other javascript has finished because jquery will defocus the
+                element first
                             setTimeout( () => $("##{cc.attrs.id}").focus(), 0);
                         },
                 	});

@@ -286,13 +286,13 @@
                             <h:panelGroup
                                 id="uploadForm"
                                 styleClass="admin__content-inner-content__upload_form">
-                                <adminMediaUpload></adminMediaUpload>
+                                <adminMediaUpload />
                             </h:panelGroup>
 
                             <div class="admin__final-actions">
                                 <h:link
                                     styleClass="btn admin__cancel-button"
-                                    value="#{msg.cancel}"></h:link>
+                                    value="#{msg.cancel}" />
                                 <h:commandButton
                                     styleClass="btn btn--success"
                                     value="#{msg.save}"
@@ -301,29 +301,28 @@
                         </h:form>
 
                         <script type="text/javascript">
-                            var fileUploadConfig = {
-                                postUrl:
-                                    '#{navigationHelper.applicationUrl}api/v1/temp/files/#{createRecordBean.uuid}_tif/',
-                                msg: {
-                                    buttonUpload: '#{msg.button__upload}',
-                                    uploadText: '#{msg.admin__media_upload_text}',
-                                    allowedFileTypes: '#{msg.admin__media_upload_filetypes}',
-                                    mediaUploading: '#{msg.admin__media_upload_uploading}',
-                                    mediaFinished: '#{msg.admin__media_upload_finished}',
-                                    mediaError: '#{msg.admin__media_upload_error}',
-                                    bulkDeleteConfirm: '#{msg.admin__media_bulk_delete_confirm}',
-                                    overwriteFileConfirm: '#{msg.admin__media_overwrite_file_confirm}',
-                                    overwriteFileRefused: '#{msg.admin__media_overwrite_file_refused}',
-                                    button__overwrite: '#{msg.button__overwrite}',
-                                },
-                                fileTypes: 'TIFF, JPEG, JP2, PNG',
-                                showFiles: true,
-                                onUploadComplete: function () {
-                                    console.log('file upload complete');
-                                },
-                            };
+var fileUploadConfig = {
+    postUrl: '#{navigationHelper.applicationUrl}api/v1/temp/files/#{createRecordBean.uuid}_tif/',
+    msg: {
+        buttonUpload: '#{msg.button__upload}',
+        uploadText: '#{msg.admin__media_upload_text}',
+        allowedFileTypes: '#{msg.admin__media_upload_filetypes}',
+        mediaUploading: '#{msg.admin__media_upload_uploading}',
+        mediaFinished: '#{msg.admin__media_upload_finished}',
+        mediaError: '#{msg.admin__media_upload_error}',
+        bulkDeleteConfirm: '#{msg.admin__media_bulk_delete_confirm}',
+        overwriteFileConfirm: '#{msg.admin__media_overwrite_file_confirm}',
+        overwriteFileRefused: '#{msg.admin__media_overwrite_file_refused}',
+        button__overwrite: '#{msg.button__overwrite}',
+    },
+    fileTypes: 'TIFF, JPEG, JP2, PNG',
+    showFiles: true,
+    onUploadComplete: function () {
+        console.log('file upload complete');
+    },
+};
 
-                            riot.mount('adminMediaUpload', fileUploadConfig);
+riot.mount('adminMediaUpload', fileUploadConfig);
                         </script>
                     </div>
                 </div>

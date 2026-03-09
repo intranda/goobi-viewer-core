@@ -21,7 +21,7 @@
 
     <ui:param
         name="highlight"
-        value="#{highlightsBean.selectedObject}"></ui:param>
+        value="#{highlightsBean.selectedObject}" />
 
     <ui:define name="content">
         <div
@@ -77,14 +77,14 @@
                                                         <div class="admin__form-input cms-module__option-control">
                                                             <h:message
                                                                 for="select_inputRecordIdentifier"
-                                                                errorClass="-validation-message -danger"></h:message>
+                                                                errorClass="-validation-message -danger" />
                                                             <div class="-validation-mark">
                                                                 <i
                                                                     class="fa fa-check"
-                                                                    aria-hidden="true"></i>
+                                                                    aria-hidden="true" />
                                                                 <i
                                                                     class="fa fa-exclamation"
-                                                                    aria-hidden="true"></i>
+                                                                    aria-hidden="true" />
                                                             </div>
                                                             <h:inputText
                                                                 id="select_inputRecordIdentifier"
@@ -123,14 +123,14 @@
                                                         <div class="admin__form-input cms-module__option-control">
                                                             <h:message
                                                                 for="select_inputTargetUrl"
-                                                                errorClass="-validation-message -danger"></h:message>
+                                                                errorClass="-validation-message -danger" />
                                                             <div class="-validation-mark">
                                                                 <i
                                                                     class="fa fa-check"
-                                                                    aria-hidden="true"></i>
+                                                                    aria-hidden="true" />
                                                                 <i
                                                                     class="fa fa-exclamation"
-                                                                    aria-hidden="true"></i>
+                                                                    aria-hidden="true" />
                                                             </div>
                                                             <h:inputText
                                                                 id="select_inputTargetUrl"
@@ -139,7 +139,7 @@
                                                                 styleClass="form-control -validation-input"
                                                                 requiredMessage="#{msg.info__input_required}"
                                                                 required="#{highlight.data.targetType eq 'URL'}"
-                                                                value="#{highlight.data.targetUrl}"></h:inputText>
+                                                                value="#{highlight.data.targetUrl}" />
                                                             <span class="admin__form-help-text">
                                                                 #{msg.admin__highlights__target_type_url__help}
                                                             </span>
@@ -164,7 +164,7 @@
                                                 <f:ajax
                                                     render="@form"
                                                     execute="@form"
-                                                    onevent="viewerJS.initTinyMCE"></f:ajax>
+                                                    onevent="viewerJS.initTinyMCE" />
                                             </h:commandButton>
                                         </div>
                                     </ui:fragment>
@@ -202,7 +202,7 @@
                                                             tabindex="1"
                                                             styleClass="form-control -validation-input"
                                                             requiredMessage="#{msg.info__input_required}"
-                                                            value="#{highlight.data.name.text}"></h:inputText>
+                                                            value="#{highlight.data.name.text}" />
                                                         <span class="admin__form-help-text">
                                                             #{msg.cms__record_notes_select_record__help}
                                                         </span>
@@ -223,14 +223,14 @@
                                                             class="col-11 col-lg-9 admin__form-input">
                                                             <h:message
                                                                 for="inputTargetUrl"
-                                                                errorClass="-validation-message -danger"></h:message>
+                                                                errorClass="-validation-message -danger" />
                                                             <div class="-validation-mark">
                                                                 <i
                                                                     class="fa fa-check"
-                                                                    aria-hidden="true"></i>
+                                                                    aria-hidden="true" />
                                                                 <i
                                                                     class="fa fa-exclamation"
-                                                                    aria-hidden="true"></i>
+                                                                    aria-hidden="true" />
                                                             </div>
                                                             <h:inputText
                                                                 id="inputTargetUrl"
@@ -243,7 +243,7 @@
                                                                 <f:ajax
                                                                     event="valueChange"
                                                                     execute="@this"
-                                                                    render="@form"></f:ajax>
+                                                                    render="@form" />
                                                             </h:inputText>
                                                             <span class="admin__form-help-text">
                                                                 #{msg.cms__highlight_target_url__help}
@@ -266,14 +266,14 @@
                                                             class="col-11 col-lg-9 admin__form-input">
                                                             <h:message
                                                                 for="inputRecordIdentifier"
-                                                                errorClass="-validation-message -danger"></h:message>
+                                                                errorClass="-validation-message -danger" />
                                                             <div class="-validation-mark">
                                                                 <i
                                                                     class="fa fa-check"
-                                                                    aria-hidden="true"></i>
+                                                                    aria-hidden="true" />
                                                                 <i
                                                                     class="fa fa-exclamation"
-                                                                    aria-hidden="true"></i>
+                                                                    aria-hidden="true" />
                                                             </div>
                                                             <h:inputText
                                                                 id="inputRecordIdentifier"
@@ -290,7 +290,7 @@
                                                                 <f:ajax
                                                                     event="valueChange"
                                                                     execute="@this"
-                                                                    render="@form"></f:ajax>
+                                                                    render="@form" />
                                                             </h:inputText>
                                                             <span class="admin__form-help-text">
                                                                 #{msg.cms__highligh_record_identifier__help}
@@ -424,7 +424,7 @@
                                                 #{msg.button__save}
                                                 <f:ajax
                                                     render="@form :messages :noteInfoGroup"
-                                                    execute="@form"></f:ajax>
+                                                    execute="@form" />
                                             </button>
                                         </div>
                                     </ui:fragment>
@@ -434,7 +434,7 @@
                                     <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
                                         <div class="admin-cms-media-select-overlay">
                                             <!-- SELECT MEDIA ITEM OVERLAY -->
-                                            <div class="admin-cms-media__select-overlay"></div>
+                                            <div class="admin-cms-media__select-overlay" />
 
                                             <!-- SELECT MEDIA ITEM -->
                                             <div class="admin-cms-media__select">
@@ -545,7 +545,6 @@
                                                     </div>
 
                                                     <script type="text/javascript">
-
                                                         $(document).ready(function(){
                                                             $("[data-target='datePickerStart']").datepicker({
                                                                 onSelect: function(selected) {

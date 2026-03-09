@@ -27,7 +27,9 @@
                     <ul class="breadcrumbs__list">
                         <!-- SHOW PREPENDED TEXT "YOU ARE HERE:" -->
                         <ui:fragment rendered="#{cc.attrs.showStartText == true}">
-                            <li class="breadcrumbs__starttext"><span>#{msg.breadcrumbStartText}:</span></li>
+                            <li class="breadcrumbs__starttext">
+                                <span>#{msg.breadcrumbStartText}:</span>
+                            </li>
                         </ui:fragment>
 
                         <ui:repeat

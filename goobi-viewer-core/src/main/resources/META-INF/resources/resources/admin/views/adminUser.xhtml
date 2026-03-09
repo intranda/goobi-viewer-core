@@ -66,7 +66,7 @@
                                             value="#{msg.cancel}"
                                             action="#{adminBean.resetUserAction(adminBean.currentUser, 'pretty:adminUsers')}"
                                             immediate="true">
-                                            <f:ajax render="@all"></f:ajax>
+                                            <f:ajax render="@all" />
                                         </h:commandLink>
                                         <h:commandButton
                                             id="saveNewUserCreationButton"
@@ -75,7 +75,7 @@
                                             action="#{adminBean.saveUserAction(adminBean.currentUser.copy, false, 'pretty:adminUsers')}">
                                             <f:ajax
                                                 execute="@all"
-                                                render="@all"></f:ajax>
+                                                render="@all" />
                                         </h:commandButton>
                                     </div>
                                 </h:form>
@@ -117,7 +117,7 @@
                                                                 itemLabel="#{msg.no}" />
                                                             <f:ajax
                                                                 execute="@this"
-                                                                render="@none"></f:ajax>
+                                                                render="@none" />
                                                         </h:selectOneRadio>
                                                         <h:selectOneRadio
                                                             group="activateUserToggle"
@@ -129,10 +129,10 @@
                                                                 itemLabel="#{msg.yes}" />
                                                             <f:ajax
                                                                 execute="@this"
-                                                                render="@none"></f:ajax>
+                                                                render="@none" />
                                                         </h:selectOneRadio>
                                                         <span class="toggle-outside">
-                                                            <span class="toggle-inside"></span>
+                                                            <span class="toggle-inside" />
                                                         </span>
                                                     </div>
                                                 </h:form>
@@ -169,7 +169,7 @@
                                                             itemLabel="#{msg.no}" />
                                                         <f:ajax
                                                             execute="@this"
-                                                            render="@none"></f:ajax>
+                                                            render="@none" />
                                                     </h:selectOneRadio>
                                                     <h:selectOneRadio
                                                         group="superUserToggle"
@@ -181,10 +181,10 @@
                                                             itemLabel="#{msg.yes}" />
                                                         <f:ajax
                                                             execute="@this"
-                                                            render="@none"></f:ajax>
+                                                            render="@none" />
                                                     </h:selectOneRadio>
                                                     <span class="toggle-outside">
-                                                        <span class="toggle-inside"></span>
+                                                        <span class="toggle-inside" />
                                                     </span>
                                                 </div>
                                             </h:form>

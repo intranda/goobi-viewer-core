@@ -133,7 +133,7 @@
                                     <h:outputText
                                         converter="localDateConverter"
                                         data-format="#{navigationHelper.datePattern}"
-                                        value="#{object.data.dateStart}"></h:outputText>
+                                        value="#{object.data.dateStart}" />
                                 </ui:fragment>
                                 <ui:fragment rendered="#{empty object.data.dateStart}">-</ui:fragment>
                             </span>
@@ -148,7 +148,7 @@
                                     <h:outputText
                                         converter="localDateConverter"
                                         data-format="#{navigationHelper.datePattern}"
-                                        value="#{object.data.dateEnd}"></h:outputText>
+                                        value="#{object.data.dateEnd}" />
                                 </ui:fragment>
                                 <ui:fragment rendered="#{empty object.data.dateEnd}">-</ui:fragment>
                             </span>
@@ -182,7 +182,10 @@
 
             // Create no entries found message
             if ($('#tableWrapper_#{cc.clientId} .admin__table-entry').length == 0) {
-                $('#tableWrapper_#{cc.clientId}.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+                $('#tableWrapper_#{cc.clientId}.admin__table-content').append('
+            <br />
+            <p>#{msg.hitsZero}</p>
+            ');
             }
         </script>
     </composite:implementation>

@@ -12,7 +12,7 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <ui:param
         name="renderTitle"
-        value="#{renderTitle == null ? true : renderTitle}"></ui:param>
+        value="#{renderTitle == null ? true : renderTitle}" />
 
     <ui:fragment rendered="#{!metadataElement.skip}">
         <div class="metadata__element-wrapper">
@@ -77,7 +77,7 @@
                                             <span class="metadata__element-value">
                                                 <h:outputFormat
                                                     value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                                    escape="false"></h:outputFormat>
+                                                    escape="false" />
                                             </span>
                                         </dd>
                                     </ui:repeat>

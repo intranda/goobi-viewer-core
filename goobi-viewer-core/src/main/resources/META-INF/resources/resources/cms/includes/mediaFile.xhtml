@@ -17,11 +17,13 @@
         class="admin-cms-media__file"
         tabindex="-1">
         <!-- CLOSE -->
-        <div class="admin-cms-media__file-close"><ui:include src="/resources/images/icons/icon_fs-close.svg" /></div>
+        <div class="admin-cms-media__file-close">
+            <ui:include src="/resources/images/icons/icon_fs-close.svg" />
+        </div>
 
         <!-- NAVIGATE -->
-        <div class="admin-cms-media__file-prev"></div>
-        <div class="admin-cms-media__file-next"></div>
+        <div class="admin-cms-media__file-prev" />
+        <div class="admin-cms-media__file-next" />
 
         <!-- TOP -->
         <div class="admin-cms-media__file-top">
@@ -56,7 +58,7 @@
             <ui:fragment rendered="#{cmsMediaBean.isImage(media)}">
                 <div
                     class="admin-cms-media__file-image"
-                    style="background-image: url('#{cmsMediaBean.getMediaUrl(media, 300, 300)}')"></div>
+                    style="background-image: url('#{cmsMediaBean.getMediaUrl(media, 300, 300)}')" />
             </ui:fragment>
             <ui:fragment rendered="#{cmsMediaBean.isVideo(media)}">
                 <div
@@ -225,10 +227,10 @@
                                     styleClass="form-control">
                                     <f:passThroughAttribute
                                         name="type"
-                                        value="number"></f:passThroughAttribute>
+                                        value="number" />
                                     <f:passThroughAttribute
                                         name="min"
-                                        value="0"></f:passThroughAttribute>
+                                        value="0" />
                                     <f:passThroughAttribute
                                         name="aria-label"
                                         value="#{msg.admin__media_display_order}" />
@@ -384,7 +386,7 @@
                         #{msg.delete}
                         <f:ajax
                             render="adminCmsMediaFilesForm :messages"
-                            onevent="reload"></f:ajax>
+                            onevent="reload" />
                     </button>
                     <button
                         type="button"

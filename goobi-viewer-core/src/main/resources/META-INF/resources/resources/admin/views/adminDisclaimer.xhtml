@@ -77,7 +77,7 @@
                                     <viewerForms:htmlInputField
                                         label="#{msg.text}"
                                         value="#{disclaimer.text.text}"
-                                        required="#{disclaimer.text.isDefaultLocaleSelected()}"></viewerForms:htmlInputField>
+                                        required="#{disclaimer.text.isDefaultLocaleSelected()}" />
                                 </viewerForms:inputFormBlock>
 
                                 <viewerForms:inputFormBlock
@@ -114,7 +114,7 @@
                                                         rendered="#{disclaimer.displayScope.pageScope == 'RECORD'}">
                                                         <div class="cms-module__option-control admin__form-input">
                                                             <!-- EMPTY ELEMENT AS JS TARGET FOR COLORING THE INPUT BOX ON SUCCESS/WARNING/ERROR -->
-                                                            <div class="cms-module__option-message"></div>
+                                                            <div class="cms-module__option-message" />
 
                                                             <h:inputText
                                                                 id="solrQueryInput"
@@ -187,7 +187,7 @@
                                                                 id="scopeDurationInput"
                                                                 styleClass="form-control"
                                                                 value="#{disclaimer.acceptanceScope.daysToLive}"
-                                                                pt:data-input="number"></h:inputText>
+                                                                pt:data-input="number" />
                                                         </div>
                                                     </h:panelGroup>
                                                 </div>
@@ -201,7 +201,7 @@
                                     <h:commandButton
                                         class="btn btn--success"
                                         value="#{msg.save}"
-                                        action="#{disclaimerEditBean.save()}"></h:commandButton>
+                                        action="#{disclaimerEditBean.save()}" />
                                 </div>
                             </h:form>
                             <h:form>

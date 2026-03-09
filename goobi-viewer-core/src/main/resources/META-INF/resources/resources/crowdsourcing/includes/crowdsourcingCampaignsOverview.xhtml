@@ -61,8 +61,7 @@
                         <div class="crowdsourcing-campaigns-overview__campaign__statistics">
                             <ui:fragment
                                 rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount > 0}">
-                                <ui:include
-                                    src="/resources/crowdsourcing/includes/campaignStatistics.xhtml"></ui:include>
+                                <ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml" />
                             </ui:fragment>
                             <!-- Future campaign: days left counter -->
                             <span class="crowdsourcing-campaigns-overview__campaign__statistics__message">
@@ -82,8 +81,6 @@
                 </ui:fragment>
             </ui:repeat>
         </h:form>
-        <script>
-            riot.mount('progressBar');
-        </script>
+        <script>riot.mount('progressBar');</script>
     </div>
 </ui:composition>

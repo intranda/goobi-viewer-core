@@ -68,7 +68,7 @@
                                         data-toggle="tooltip"
                                         data-placement="top"
                                         data-trigger="hover">
-                                        <div class="admin__tasks-icon-loader"></div>
+                                        <div class="admin__tasks-icon-loader" />
                                         <div class="admin__tasks-icon">
                                             <div
                                                 data-target="playPauseMsgQueueToggle"
@@ -97,7 +97,7 @@
                                         data-require-confirmation="true"
                                         data-confirmation-text="#{msg.admin__tasks__clear_all_button_confirmation}"
                                         aria-label="#{msg.admin__tasks__clear_all_button_confirmation}">
-                                        <div class="admin__tasks-clear-all"></div>
+                                        <div class="admin__tasks-clear-all" />
                                         <div class="admin__tasks-icon">
                                             <div
                                                 class="admin__tasks-button-trash #{messageQueueBean.paused ? '-hidden' : '-active'}">
@@ -118,7 +118,7 @@
                                     data-trigger="hover"
                                     class="ml-auto admin__tasks-icon-wrapper"
                                     title="#{msg.action__restart_all_task_listeners}">
-                                    <span class="admin__tasks-button-restart-queue"></span>
+                                    <span class="admin__tasks-button-restart-queue" />
                                     <span class="admin__tasks-icon">
                                         <span class="admin__tasks-button-restart">
                                             <util:icon icon="refresh" />
@@ -147,7 +147,7 @@
                                     render="@form runningTasksNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
                             </h:commandButton>
 
-                            <div class="admin__tasks-empty-queue-spacer"></div>
+                            <div class="admin__tasks-empty-queue-spacer" />
                             <ui:fragment rendered="#{messageQueueBean.queueContent.size() > 0}">
                                 <!-- INDIVIDUAL ROWS -->
                                 <ui:repeat
@@ -296,7 +296,7 @@
                                         data-toggle="tooltip"
                                         data-placement="top"
                                         data-trigger="hover">
-                                        <div class="admin__tasks-quartz-icon-holder"></div>
+                                        <div class="admin__tasks-quartz-icon-holder" />
                                         <div class="admin__tasks-icon">
                                             <div
                                                 data-target="playPauseQuartzToggle"
@@ -586,15 +586,15 @@
         </div>
 
         <script type="text/javascript">
-            var dataTableConfig = {
-                dataTablePaginator: '#dataTablePaginator',
-                txtField1: '#txtMoveTo1',
-                txtField2: '#txtMoveTo2',
-                totalCount: '#totalCount',
-                reloadBtn: 'input[id*="cmdMoveTo"]',
-            };
+var dataTableConfig = {
+    dataTablePaginator: '#dataTablePaginator',
+    txtField1: '#txtMoveTo1',
+    txtField2: '#txtMoveTo2',
+    totalCount: '#totalCount',
+    reloadBtn: 'input[id*="cmdMoveTo"]',
+};
 
-            viewerJS.dataTable.init(dataTableConfig);
+viewerJS.dataTable.init(dataTableConfig);
         </script>
     </ui:define>
 </ui:composition>

@@ -11,10 +11,10 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <ui:param
         name="browseElement"
-        value="#{browseElement != null ? browseElement : null}"></ui:param>
+        value="#{browseElement != null ? browseElement : null}" />
     <ui:param
         name="showBookmarkIcon"
-        value="#{showBookmarkIcon != null ? showBookmarkIcon : false}"></ui:param>
+        value="#{showBookmarkIcon != null ? showBookmarkIcon : false}" />
 
     <div class="search-list__hit-inner-structure">
         <!-- ALL CONTENT/VALUES WRAPPER -->
@@ -81,7 +81,7 @@
             <ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
                 <ui:param
                     name="browseElement"
-                    value="#{browseElement}"></ui:param>
+                    value="#{browseElement}" />
             </ui:include>
         </div>
         <div class="search-list__thumb-wrapper">
@@ -90,7 +90,7 @@
                 <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
                     <ui:param
                         name="browseElement"
-                        value="#{browseElement}"></ui:param>
+                        value="#{browseElement}" />
                 </ui:include>
             </ui:fragment>
             <!-- ADD TO BOOKMARKS BUTTON (ICON) -->

@@ -76,7 +76,7 @@
                         </ui:fragment>
 
                         <script>
-                              							// Check if download ticket request messsage is very long and offer unfold button
+                            // Check if download ticket request messsage is very long and offer unfold button
 
                             // Debounce
                             function debounce(func, time){
@@ -101,7 +101,7 @@
                               							function checkTextLength() {
                               								$('.admin__tickets-pending-ticket-value-message-wrapper').each(function() {
 
-                                    						if ( $(this).find('.admin__tickets-pending-ticket-value-invis-message').height() > 85 &amp;&amp; !$(this).find('.admin__tickets-pending-ticket-value-message').hasClass("-unfolded") )  {
+                                    						if ( $(this).find('.admin__tickets-pending-ticket-value-invis-message').height() > 85 &amp; &amp; !$(this).find('.admin__tickets-pending-ticket-value-message').hasClass("-unfolded") )  {
                                     							 // console.log('Height: ' + $(this).find('.admin__tickets-pending-ticket-value-invis-message').height());
 
                                     							$(this).find('.admin__tickets-pending-ticket-unfold-button').fadeIn('fast');
@@ -339,7 +339,17 @@
                         // Create no entries found message
                         if ($('.admin__grid-table-data-row').length == 0) {
                             $('.admin__grid-table-data-row-area').append(
-                                '<div class="admin__grid-table-data-row" role="row"><div class="admin__grid-table-data" role="gridcell">#{msg.hitsZero}</div></div>'
+                                '
+                        <div
+                            class="admin__grid-table-data-row"
+                            role="row">
+                            <div
+                                class="admin__grid-table-data"
+                                role="gridcell">
+                                #{msg.hitsZero}
+                            </div>
+                        </div>
+                        '
                             );
                         }
                     </script>

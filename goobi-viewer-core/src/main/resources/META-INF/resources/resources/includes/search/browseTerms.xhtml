@@ -10,10 +10,10 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <ui:param
         name="termList"
-        value="#{termList != null ? termList : browseBean.browseTermListEscaped}"></ui:param>
+        value="#{termList != null ? termList : browseBean.browseTermListEscaped}" />
     <ui:param
         name="baseUrl"
-        value="#{baseUrl != null ? baseUrl : navigationHelper.termUrl.concat('/').concat(browseBean.browsingMenuField).concat('/').concat(browseBean.filterQuery).concat('/')}"></ui:param>
+        value="#{baseUrl != null ? baseUrl : navigationHelper.termUrl.concat('/').concat(browseBean.browsingMenuField).concat('/').concat(browseBean.filterQuery).concat('/')}" />
 
     <ui:fragment rendered="#{!browseBean.browsingMenuFieldTranslated}">
         <viewerComponent:alphabeticPaginator baseUrl="#{baseUrl}" />
@@ -43,7 +43,7 @@
         </ul>
     </nav>
 
-    <div class="clearfix"></div>
+    <div class="clearfix" />
 
     <viewerComponent:simplePaginator
         itemCount="#{browseBean.lastPage}"

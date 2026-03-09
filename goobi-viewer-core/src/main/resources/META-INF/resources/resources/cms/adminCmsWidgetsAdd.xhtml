@@ -13,7 +13,7 @@
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <f:event
         listener="cmswidgetEditBean.startConversation()"
-        type="preRenderView"></f:event>
+        type="preRenderView" />
 
     <ui:define name="metadata">
         <f:metadata>
@@ -157,7 +157,7 @@
                                                                     </h:selectBooleanCheckbox>
                                                                     <h:outputFormat
                                                                         value="#{var.title}"
-                                                                        escape="false"></h:outputFormat>
+                                                                        escape="false" />
                                                                 </label>
                                                             </li>
                                                         </ui:repeat>
@@ -294,7 +294,7 @@
                                             #{msg.button__save}
                                             <f:ajax
                                                 execute="@form"
-                                                render="@form :messages"></f:ajax>
+                                                render="@form :messages" />
                                         </button>
                                     </div>
                                 </ui:fragment>
@@ -313,7 +313,7 @@
                                                     svgClass="icon icon-xl" />
                                                 <f:ajax
                                                     execute="@form"
-                                                    render="previewGroup"></f:ajax>
+                                                    render="previewGroup" />
                                             </button>
                                             <h2>#{msg.title__preview}</h2>
                                             <h:panelGroup

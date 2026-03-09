@@ -12,7 +12,9 @@
         <div
             id="bornDigital"
             class="born-digital">
-            <h2><h:outputText value="#{msg.bornDigital_fileList}" /></h2>
+            <h2>
+                <h:outputText value="#{msg.bornDigital_fileList}" />
+            </h2>
 
             <!-- ACCESS DENIED -->
             <ui:fragment
@@ -44,7 +46,7 @@
                             <div class="born-digital__head">
                                 <span>#{msg.label__born_digital__fileformat}</span>
                             </div>
-                            <div class="born-digital__head"></div>
+                            <div class="born-digital__head" />
                         </div>
                         <div class="born-digital__internal-resources-wrapper">
                             <ui:repeat
@@ -101,7 +103,7 @@
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.hasExternalResources}">
                         <div class="download-external-resource__wrapper">
                             <div class="download-external-resource__heading">#{msg.bornDigital_external_resources}</div>
-                            <ui:include src="/resources/includes/metadata/externalResourceDownload.xhtml"></ui:include>
+                            <ui:include src="/resources/includes/metadata/externalResourceDownload.xhtml" />
                         </div>
                     </ui:fragment>
                 </div>

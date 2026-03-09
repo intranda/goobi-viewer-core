@@ -13,19 +13,19 @@
         <composite:attribute
             name="render"
             required="false"
-            default=""></composite:attribute>
+            default="" />
         <composite:attribute
             name="execute"
             required="false"
-            default=""></composite:attribute>
+            default="" />
         <composite:attribute
             name="required"
             required="false"
             default="false"
-            type="java.lang.Boolean"></composite:attribute>
+            type="java.lang.Boolean" />
         <composite:attribute
             name="ariaLabel"
-            required="false"></composite:attribute>
+            required="false" />
     </composite:interface>
 
     <composite:implementation>
@@ -34,14 +34,14 @@
             class="col-9">
             <h:message
                 for="input"
-                errorClass="-validation-message -danger"></h:message>
+                errorClass="-validation-message -danger" />
             <div class="-validation-mark">
                 <i
                     class="fa fa-check"
-                    aria-hidden="true"></i>
+                    aria-hidden="true" />
                 <i
                     class="fa fa-exclamation"
-                    aria-hidden="true"></i>
+                    aria-hidden="true" />
             </div>
 
             <div class="admin__form-input d-flex">
@@ -63,7 +63,7 @@
                                 immediate="false">
                                 <f:ajax
                                     render="#{cc.clientId}"
-                                    execute="#{cc.clientId}"></f:ajax>
+                                    execute="#{cc.clientId}" />
                             </h:commandLink>
                         </li>
                     </ui:repeat>
@@ -81,7 +81,7 @@
                     <f:ajax
                         event="change"
                         render="@none"
-                        execute="@this"></f:ajax>
+                        execute="@this" />
                 </h:inputTextarea>
             </div>
         </div>

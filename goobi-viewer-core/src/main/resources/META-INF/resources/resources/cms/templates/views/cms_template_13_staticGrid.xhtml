@@ -22,25 +22,25 @@
             <div class="tpl-static-grid__text">
                 <h:outputText
                     escape="false"
-                    value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
+                    value="#{cc.attrs.component.getContentData('text')}" />
             </div>
 
             <!-- STATIC GRID -->
-            <div class="tpl-static-grid__grid"></div>
+            <div class="tpl-static-grid__grid" />
 
             <script type="text/javascript">
-                $.ajax({
-                    url: "#{cc.attrs.component.getContent('grid').tileGridUrl}",
-                    type: 'GET',
-                    datatype: 'JSON',
-                }).then(function (data) {
-                    var staticGridConfig = {
-                        gridSelector: '.tpl-static-grid__grid',
-                        language: currentLang,
-                    };
+$.ajax({
+    url: "#{cc.attrs.component.getContent('grid').tileGridUrl}",
+    type: 'GET',
+    datatype: 'JSON',
+}).then(function (data) {
+    var staticGridConfig = {
+        gridSelector: '.tpl-static-grid__grid',
+        language: currentLang,
+    };
 
-                    cmsJS.staticGrid.init(staticGridConfig, data);
-                });
+    cmsJS.staticGrid.init(staticGridConfig, data);
+});
             </script>
         </div>
     </composite:implementation>

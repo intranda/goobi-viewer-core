@@ -47,13 +47,13 @@
                 <script
                     src="https://www.google.com/recaptcha/api.js"
                     async="async"
-                    defer="defer"></script>
+                    defer="defer" />
             </h:panelGroup>
 
             <!-- TODO: use appropriate class and maybe styling -->
             <div
                 id="AJAXLoader"
-                class="archives-tree__loader"></div>
+                class="archives-tree__loader" />
 
             <!-- No access ticket required or already unlocked -->
             <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
@@ -101,12 +101,12 @@
                                 <div class="toc__multi-volume">
                                     <!-- TILE VIEW -->
                                     <ui:fragment rendered="#{configurationBean.tocAnchorLayout == 'grid'}">
-                                        <ui:include src="/resources/includes/toc/tileView.xhtml"></ui:include>
+                                        <ui:include src="/resources/includes/toc/tileView.xhtml" />
                                     </ui:fragment>
 
                                     <!-- GROUPS: DEFAULT AND != DEFAULT -->
                                     <ui:fragment rendered="#{configurationBean.tocAnchorLayout == 'list'}">
-                                        <ui:include src="/resources/includes/toc/listView.xhtml"></ui:include>
+                                        <ui:include src="/resources/includes/toc/listView.xhtml" />
                                     </ui:fragment>
                                 </div>
                             </h:panelGroup>
@@ -119,10 +119,10 @@
                                     scope="request" />
 
                                 <!-- EXPANDABLE TREEVIEW -->
-                                <ui:include src="/resources/includes/toc/expandableTreeView.xhtml"></ui:include>
+                                <ui:include src="/resources/includes/toc/expandableTreeView.xhtml" />
 
                                 <!-- FULL TREEVIEW -->
-                                <ui:include src="/resources/includes/toc/fullTreeView.xhtml"></ui:include>
+                                <ui:include src="/resources/includes/toc/fullTreeView.xhtml" />
                             </h:panelGroup>
                         </h:form>
                     </div>
@@ -163,42 +163,42 @@
             </h:panelGroup>
 
             <script type="text/javascript">
-                $('[data-toggle="mv-element"]').on('click', function () {
-                    var currBtn = $(this);
+$('[data-toggle="mv-element"]').on('click', function () {
+    var currBtn = $(this);
 
-                    currBtn.toggleClass('active');
-                    currBtn
-                        .parents()
-                        .next('.toc__mv-element')
-                        .slideToggle({
-                            duration: 0,
-                            start: function () {
-                                currBtn.prev().toggleClass('inactive');
-                            },
-                        });
-                });
+    currBtn.toggleClass('active');
+    currBtn
+        .parents()
+        .next('.toc__mv-element')
+        .slideToggle({
+            duration: 0,
+            start: function () {
+                currBtn.prev().toggleClass('inactive');
+            },
+        });
+});
 
-                $('[data-iddoc*="iddoc"] a').on('click', function (event) {
-                    event.preventDefault();
+$('[data-iddoc*="iddoc"] a').on('click', function (event) {
+    event.preventDefault();
 
-                    var currIdDoc = $(this).parents('li').attr('data-iddoc');
-                    var currUrl = $(this).attr('href');
+    var currIdDoc = $(this).parents('li').attr('data-iddoc');
+    var currUrl = $(this).attr('href');
 
-                    sessionStorage.setItem('currIdDoc', currIdDoc);
-                    location.href = currUrl;
-                });
+    sessionStorage.setItem('currIdDoc', currIdDoc);
+    location.href = currUrl;
+});
 
-                var normdataConfig = {
-                    path: '#{request.contextPath}',
-                    lang: {
-                        popoverTitle: '#{msg.normdataPopoverTitle}',
-                        popoverClose: '#{msg.normdataPopoverClose}',
-                        showNormdata: '#{msg.normdataExpand}',
-                    },
-                    elemWrapper: $('#metadataElementWrapper'),
-                };
+var normdataConfig = {
+    path: '#{request.contextPath}',
+    lang: {
+        popoverTitle: '#{msg.normdataPopoverTitle}',
+        popoverClose: '#{msg.normdataPopoverClose}',
+        showNormdata: '#{msg.normdataExpand}',
+    },
+    elemWrapper: $('#metadataElementWrapper'),
+};
 
-                viewerJS.normdata.init(normdataConfig);
+viewerJS.normdata.init(normdataConfig);
             </script>
         </f:view>
     </ui:define>

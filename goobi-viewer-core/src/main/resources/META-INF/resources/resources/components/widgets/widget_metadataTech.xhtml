@@ -64,7 +64,7 @@
                                                 </ui:fragment>
                                                 <h:outputFormat
                                                     value="#{val.getDisplayValue(navigationHelper.locale, true)}"
-                                                    escape="false"></h:outputFormat>
+                                                    escape="false" />
                                             </h:panelGroup>
 
                                             <!-- Nested child metadata -->
@@ -128,7 +128,7 @@
                                         var="val">
                                         <h:outputFormat
                                             value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                            escape="false"></h:outputFormat>
+                                            escape="false" />
                                         <br />
                                     </ui:repeat>
                                 </dd>
@@ -140,17 +140,17 @@
         </ui:fragment>
 
         <script type="text/javascript">
-            var normdataWidgetConfig = {
-                path: '#{request.contextPath}',
-                lang: {
-                    popoverTitle: '#{msg.normdataPopoverTitle}',
-                    popoverClose: '#{msg.normdataPopoverClose}',
-                    showNormdata: '#{msg.normdataExpand}',
-                },
-                elemWrapper: $('#widgetMetadata'),
-            };
+var normdataWidgetConfig = {
+    path: '#{request.contextPath}',
+    lang: {
+        popoverTitle: '#{msg.normdataPopoverTitle}',
+        popoverClose: '#{msg.normdataPopoverClose}',
+        showNormdata: '#{msg.normdataExpand}',
+    },
+    elemWrapper: $('#widgetMetadata'),
+};
 
-            viewerJS.normdata.init(normdataWidgetConfig);
+viewerJS.normdata.init(normdataWidgetConfig);
         </script>
     </composite:implementation>
 </ui:composition>

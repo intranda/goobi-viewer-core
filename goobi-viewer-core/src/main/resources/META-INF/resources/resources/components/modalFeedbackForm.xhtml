@@ -66,7 +66,7 @@
                                                     <f:selectItem
                                                         itemLabel="#{recipient.label}"
                                                         itemValue="#{recipient.emailAddress}"
-                                                        pt:data-recipient-id="#{recipient.id}"></f:selectItem>
+                                                        pt:data-recipient-id="#{recipient.id}" />
                                                 </c:forEach>
                                             </h:selectOneMenu>
                                         </div>
@@ -142,10 +142,10 @@
                                             <div class="cms-module__option-message-mark">
                                                 <i
                                                     class="fa fa-check"
-                                                    aria-hidden="true"></i>
+                                                    aria-hidden="true" />
                                                 <i
                                                     class="fa fa-exclamation"
-                                                    aria-hidden="true"></i>
+                                                    aria-hidden="true" />
                                             </div>
                                         </div>
                                         <h:inputText
@@ -189,10 +189,10 @@
                                             <div class="cms-module__option-message-mark">
                                                 <i
                                                     class="fa fa-check"
-                                                    aria-hidden="true"></i>
+                                                    aria-hidden="true" />
                                                 <i
                                                     class="fa fa-exclamation"
-                                                    aria-hidden="true"></i>
+                                                    aria-hidden="true" />
                                             </div>
                                         </div>
                                         <h:inputText
@@ -271,7 +271,7 @@
                                                 pt:autocomplete="new-password"
                                                 value="#{feedbackBean.captchaBean.securityAnswer}"
                                                 required="true"
-                                                requiredMessage="#{msg.user__security_question_required_msg}"></h:inputText>
+                                                requiredMessage="#{msg.user__security_question_required_msg}" />
                                         </div>
                                     </div>
                                 </ui:fragment>
@@ -316,7 +316,9 @@
                                                 itemValue="#{feedbackModalAcceptedTerms}"
                                                 itemLabel="#{msg.yes}" />
                                         </h:selectOneRadio>
-                                        <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                        <span class="toggle-outside">
+                                            <span class="toggle-inside" />
+                                        </span>
                                     </div>
                                 </div>
                             </div>

@@ -67,23 +67,23 @@
                 </div>
 
                 <h:form styleClass="d-none">
-                    <viewerComponent:autocomplete></viewerComponent:autocomplete>
+                    <viewerComponent:autocomplete />
                 </h:form>
 
                 <div class="tpl-search-list-custom content-component__legacy-full-width search-list__hits">
                     <ui:include src="/resources/includes/search/searchHitList.xhtml">
                         <ui:param
                             name="listStyle"
-                            value="#{cc.attrs.component.getContent('recordlist').view.cssClass}"></ui:param>
+                            value="#{cc.attrs.component.getContent('recordlist').view.cssClass}" />
                         <ui:param
                             name="searchParam"
-                            value="#{sessionBean.get('cmsSearch')}"></ui:param>
+                            value="#{sessionBean.get('cmsSearch')}" />
                         <ui:param
                             name="showSortingOptions"
-                            value="#{true}"></ui:param>
+                            value="#{true}" />
                         <ui:param
                             name="displayHitsPerPage"
-                            value="{false}"></ui:param>
+                            value="{false}" />
                     </ui:include>
                 </div>
             </div>
