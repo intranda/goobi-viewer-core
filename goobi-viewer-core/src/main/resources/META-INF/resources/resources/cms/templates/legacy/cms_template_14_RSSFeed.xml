@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<cms_page_template id="templateRSSFeed" version="2017-10-04">
+<cms_page_template
+    id="templateRSSFeed"
+    version="2017-10-04">
     <name>cms__template_14__title</name>
     <description>cms__template_14__description</description>
     <icon>cms_template_14_RSSFeed.png</icon>
-    <html>cms_template_14_RSSFeed.xhtml</html>
+    <html>
+cms_template_14_RSSFeed.xhtml
+    </html>
     <content>
- 	    <item id="text" label="cms__template_14__text__label" type="HTML" order="1"/>
- 	    <item id="rss" label="cms_itemRssCount" type="RSS" order="2"/>
+        <item
+            id="text"
+            label="cms__template_14__text__label"
+            type="HTML"
+            order="1" />
+        <item
+            id="rss"
+            label="cms_itemRssCount"
+            type="RSS"
+            order="2" />
     </content>
 </cms_page_template>

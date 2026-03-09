@@ -1,5 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<web-fragment id="WebFragment_ID" version="4.0"
+<?xml version="1.0" encoding="UTF-8" ?>
+<web-fragment
+    id="WebFragment_ID"
+    version="4.0"
     xmlns="http://xmlns.jcp.org/xml/ns/javaee"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-fragment_4_0.xsd">
@@ -38,14 +40,15 @@
     <!-- Programmatic setting of the com.ocpsoft.pretty.CONFIG_FILES value no longer seems to work with current Rewrite versions -->
     <context-param>
         <param-name>com.ocpsoft.pretty.CONFIG_FILES</param-name>
-        <param-value>resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml</param-value>
+        <param-value>
+            resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml
+        </param-value>
     </context-param>
     <!-- OmniFaces Websocket -->
     <context-param>
         <param-name>org.omnifaces.SOCKET_ENDPOINT_ENABLED</param-name>
         <param-value>true</param-value>
     </context-param>
-
 
     <filter>
         <filter-name>HttpResponseFilter</filter-name>
@@ -79,7 +82,7 @@
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
-    
+
     <filter>
         <filter-name>SessionCounterFilter</filter-name>
         <filter-class>io.goobi.viewer.filters.SessionCounterFilter</filter-class>
@@ -120,7 +123,7 @@
         <url-pattern>/resolver</url-pattern>
     </servlet-mapping>
     <servlet>
-        <description></description>
+        <description />
         <display-name>MetsResolver</display-name>
         <servlet-name>MetsResolver</servlet-name>
         <servlet-class>io.goobi.viewer.servlets.MetsResolver</servlet-class>
@@ -146,7 +149,7 @@
     <servlet>
         <display-name>DFGViewerImage</display-name>
         <servlet-name>DFGViewerImage</servlet-name>
-        <servlet-class> io.goobi.viewer.servlets.DFGViewerImage</servlet-class>
+        <servlet-class>io.goobi.viewer.servlets.DFGViewerImage</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DFGViewerImage</servlet-name>
@@ -195,7 +198,7 @@
         <url-pattern>/harvest</url-pattern>
     </servlet-mapping>
     <servlet>
-        <description></description>
+        <description />
         <display-name>OEmbedServlet</display-name>
         <servlet-name>OEmbedServlet</servlet-name>
         <servlet-class>io.goobi.viewer.servlets.OEmbedServlet</servlet-class>
@@ -213,10 +216,9 @@
         <mime-type>text/plain</mime-type>
     </mime-mapping>
 
-
     <session-config>
         <tracking-mode>COOKIE</tracking-mode>
-<!--        <session-timeout>120</session-timeout> -->
+        <!--        <session-timeout>120</session-timeout> -->
     </session-config>
 
     <welcome-file-list>
@@ -244,5 +246,4 @@
         <exception-type>java.lang.Throwable</exception-type>
         <location>/errorHttp500.xhtml</location>
     </error-page>
-
 </web-fragment>

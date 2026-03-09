@@ -53,7 +53,7 @@
                 <script
                     src="https://www.google.com/recaptcha/api.js"
                     async="async"
-                    defer="defer"></script>
+                    defer="defer" />
             </h:panelGroup>
             <!-- HIDDEN DFG VIEWER LINK -->
             <h:outputText
@@ -63,7 +63,7 @@
                 style="display: none" />
 
             <!-- TOP DOC ANCHOR -->
-            <a name="topDocAnchor"></a>
+            <a name="topDocAnchor" />
 
             <!-- No access ticket required or already unlocked -->
             <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
@@ -102,7 +102,7 @@
                             action="#{activeDocumentBean.setCurrentImageOrderPerScript}"
                             onevent="onPageUpdateEvent"
                             onerror="onPageUpdateEvent"
-                            render="imageControls:fullscreenLink :viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitation:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetMetadataTech:technicalMetadataList"></h:commandScript>
+                            render="imageControls:fullscreenLink :viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitation:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetMetadataTech:technicalMetadataList" />
 
                         <script>
                             function onPageUpdateEvent(data) {
@@ -128,7 +128,7 @@
                     <!-- VIEW IMAGE -->
                     <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
                         <ui:insert name="viewImage">
-                            <ui:include src="/resources/includes/object/image.xhtml"></ui:include>
+                            <ui:include src="/resources/includes/object/image.xhtml" />
                         </ui:insert>
                     </h:panelGroup>
 
@@ -174,7 +174,7 @@
                     <h:panelGroup id="paginatorGroup">
                         <div id="simplePaginator" />
                         <script>
-                                           	$(document).ready(() => {
+                            $(document).ready(() => {
                                            		riot.mount("#simplePaginator", "simplepaginator", {
                                            			navigationMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase() == 'sequence' ? 'buttons' : 'links'}",
                                            			mimeTypes: #{activeDocumentBean.viewManager.mimeTypesForLoadedPagesAsJson},
@@ -186,8 +186,10 @@
                                    	                rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
                                    	                classSuffix: "",
                                    	                positionBottom: false,
-                                   	                update: typeof imageOrderChanged !== 'undefined' ? imageOrderChanged : undefined,
-                            			onUpdate: typeof imageOrderChanged !== 'undefined' ? (pageNumber) => changeImageOrder.next(pageNumber) : undefined,
+                                   	                update: typeof
+                            imageOrderChanged !== 'undefined' ? imageOrderChanged : undefined,
+                            			onUpdate: typeof
+                            imageOrderChanged !== 'undefined' ? (pageNumber) => changeImageOrder.next(pageNumber) : undefined,
                                    	             	msg: {
                                    	             		aria_label__pagination_bottom: "#{msg.aria_label__pagination_bottom}",
                                    	             		aria_label__pagination_pages: "#{msg.aria_label__pagination_pages}",

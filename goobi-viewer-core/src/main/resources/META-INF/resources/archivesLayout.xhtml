@@ -141,7 +141,7 @@
                                                         value="#{archiveBean.filteredDatabases}"
                                                         var="database"
                                                         itemValue="#{database.resourceId}"
-                                                        itemLabel="#{database.resourceName}"></f:selectItems>
+                                                        itemLabel="#{database.resourceName}" />
                                                 </h:selectOneMenu>
                                             </div>
 
@@ -160,7 +160,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="alt-backdrop"></div>
+                        <div class="alt-backdrop" />
                     </div>
 
                     <script>
@@ -189,11 +189,11 @@
 
         <!-- HC STICKY INIT FOR ARCHIVES -->
         <script type="text/javascript">
-            viewerJS.archives.init({
-                initHcSticky: true,
-                initSearch: true,
-                initTextTree: true,
-            });
+viewerJS.archives.init({
+    initHcSticky: true,
+    initSearch: true,
+    initTextTree: true,
+});
         </script>
     </div>
 </ui:composition>

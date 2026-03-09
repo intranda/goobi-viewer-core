@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<cms_page_template id="template_overview" version="2015-02-03">
+<cms_page_template
+    id="template_overview"
+    version="2015-02-03">
     <name>cms__template_02__title</name>
     <description>cms__template_02__description</description>
     <icon>cms_template_02_overview.png</icon>
-    <html>cms_template_02_overview.xhtml</html>
+    <html>
+cms_template_02_overview.xhtml
+    </html>
     <content>
-        <item id="A1" label="cms__template_02__descriptive_text__label" type="HTML"/>
-        <item id="image01" label="cms__template_02__descriptive_text_image__label" type="MEDIA" />
+        <item
+            id="A1"
+            label="cms__template_02__descriptive_text__label"
+            type="HTML" />
+        <item
+            id="image01"
+            label="cms__template_02__descriptive_text_image__label"
+            type="MEDIA" />
         <!-- Should not be both random and paginated since randomization does not work with pagination -->
-        <item id="list01" label="cms__template_02__current_elements__label" type="PAGELIST" mode="paginated" mandatory="true" random="false" />
+        <item
+            id="list01"
+            label="cms__template_02__current_elements__label"
+            type="PAGELIST"
+            mode="paginated"
+            mandatory="true"
+            random="false" />
     </content>
 </cms_page_template>

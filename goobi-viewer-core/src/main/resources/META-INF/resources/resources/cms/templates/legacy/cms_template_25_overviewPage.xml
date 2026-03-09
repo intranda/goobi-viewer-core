@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<cms_page_template id="templateOverviewPage" version="2018-11-28">
-	<name>cms__template_25__title</name>
-	<description>cms__template_25__description</description>
-	<icon>cms_template_25_overviewPage.png</icon>
-	<html>cms_template_25_overviewPage.xhtml</html>
+<cms_page_template
+    id="templateOverviewPage"
+    version="2018-11-28">
+    <name>cms__template_25__title</name>
+    <description>cms__template_25__description</description>
+    <icon>cms_template_25_overviewPage.png</icon>
+    <html>
+cms_template_25_overviewPage.xhtml
+    </html>
 
-	<content>
-		<item id="subtitle" order="1" label="cms__template_15__subtitle__label" type="TEXT" />
-		<item id="metadata" order="2" label="cms__template_25__metadata__label" type="METADATA" />
-		<item id="literature" order="3" label="cms__template_25__document__label" type="MEDIA" filter=".*(.docx|.rtf|.htm|.html|.xhtml|.pdf)" />
-	</content>
+    <content>
+        <item
+            id="subtitle"
+            order="1"
+            label="cms__template_15__subtitle__label"
+            type="TEXT" />
+        <item
+            id="metadata"
+            order="2"
+            label="cms__template_25__metadata__label"
+            type="METADATA" />
+        <item
+            id="literature"
+            order="3"
+            label="cms__template_25__document__label"
+            type="MEDIA"
+            filter=".*(.docx|.rtf|.htm|.html|.xhtml|.pdf)" />
+    </content>
 </cms_page_template>

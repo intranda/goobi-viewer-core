@@ -11,7 +11,7 @@
     <c:set
         var="archiveEntry"
         value="archiveEntry != null ? archiveEntry : 'archiveBean.displayEntry'}"
-        scope="request"></c:set>
+        scope="request" />
 
     <div class="archives__object-info-heading">#{msg.archives__archive_area_unit}</div>
     <div class="archives__object-info">
@@ -73,7 +73,7 @@
                                         <span class="metadata__element-value">
                                             <h:outputFormat
                                                 value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                                escape="false"></h:outputFormat>
+                                                escape="false" />
                                         </span>
                                     </dd>
                                 </ui:repeat>
@@ -132,7 +132,7 @@
                                     <span class="metadata__element-value">
                                         <h:outputFormat
                                             value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                            escape="false"></h:outputFormat>
+                                            escape="false" />
                                     </span>
                                 </dd>
                             </ui:repeat>
@@ -158,7 +158,7 @@
                 rendered="#{archiveEntry != null and archiveEntry.associatedRecordPi != ''}"
                 value="#{navigationHelper.objectUrl}/#{archiveEntry.associatedRecordPi}/1/">
                 <!-- TODO less trivial image display -->
-                <div class="archives__object-image-overlay"></div>
+                <div class="archives__object-image-overlay" />
                 <img />
                 <!-- set src from javascript -->
                 <div class="archives__object-image-hover-text">#{msg.archives__showRecord}</div>
@@ -178,21 +178,21 @@
             </div>
             <div
                 class="archives__object-thumbnails"
-                source="#{request.contextPath}/api/v2/records/#{archiveEntry.associatedRecordPi}/manifest"></div>
+                source="#{request.contextPath}/api/v2/records/#{archiveEntry.associatedRecordPi}/manifest" />
         </div>
     </div>
 
     <script type="text/javascript">
-        var normdataConfig = {
-            path: '#{request.contextPath}',
-            lang: {
-                popoverTitle: '#{msg.normdataPopoverTitle}',
-                popoverClose: '#{msg.normdataPopoverClose}',
-                showNormdata: '#{msg.normdataExpand}',
-            },
-            elemWrapper: $('#metadataElementWrapper'),
-        };
+var normdataConfig = {
+    path: '#{request.contextPath}',
+    lang: {
+        popoverTitle: '#{msg.normdataPopoverTitle}',
+        popoverClose: '#{msg.normdataPopoverClose}',
+        showNormdata: '#{msg.normdataExpand}',
+    },
+    elemWrapper: $('#metadataElementWrapper'),
+};
 
-        viewerJS.normdata.init(normdataConfig);
+viewerJS.normdata.init(normdataConfig);
     </script>
 </ui:composition>
