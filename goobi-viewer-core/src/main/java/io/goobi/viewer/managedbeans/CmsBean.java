@@ -1843,7 +1843,7 @@ public class CmsBean implements Serializable {
 
     public boolean isUserHasAccess(CMSPage page) {
         if (page != null) {
-            logger.trace("isUserHasAccess: {}", page.getId());
+            // logger.trace("isUserHasAccess: {}", page.getId()); //NOSONAR Debug
             try {
                 return AccessConditionUtils.checkAccessPermissionForCmsPage(BeanUtils.getRequest(), page).isGranted();
             } catch (IndexUnreachableException | DAOException | PresentationException e) {
