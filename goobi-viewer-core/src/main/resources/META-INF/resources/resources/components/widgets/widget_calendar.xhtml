@@ -1,0 +1,156 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <composite:interface />
+
+    <composite:implementation>
+        <!-- TODO #27682 @Andrey: Rendered-Condition anpassen.
+             Aktuell: nur fuer Anchor-Werke. Soll fuer JEDE PI funktionieren.
+             Bedingungen damit das Widget gerendert wird:
+             1. Kalender-Widget ist in config_viewer.xml fuer diese View aktiviert
+             2. Das Werk (egal ob Anchor oder Einzelwerk) hat mindestens 2 Eintraege mit YEARMONTHDAY in Solr
+             Wenn beides zutrifft: Widget rendern, JS ruft REST-Endpoint auf.
+             Wenn nicht: Widget nicht rendern, kein REST-Call, kein leeres Ergebnis. -->
+        <h:panelGroup
+            rendered="#{activeDocumentBean.viewManager.anchorPi != null and activeDocumentBean.viewManager.calendarView.display}">
+            <div
+                id="widgetCalendar"
+                class="widget widget-calendar">
+                <div class="widget__body widget-calendar__body">
+                    <!-- TODO #27682 @Andrey: data-pi statt data-anchor-pi verwenden sobald Endpoint steht.
+                         Fuer Anchor: anchorPi, fuer Einzelwerke: topStructElement PI. -->
+                    <div
+                        id="calendarWidgetContainer"
+                        data-anchor-pi="#{activeDocumentBean.viewManager.anchorPi}"
+                        data-current-year="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('YEAR')}"
+                        data-locale="#{navigationHelper.localeString}"
+                        data-app-url="#{navigationHelper.applicationUrl}" />
+                </div>
+            </div>
+
+            <script type="text/javascript">
+//<![CDATA[
+(function() {
+    var container = document.getElementById('calendarWidgetContainer');
+    if (!container) return;
+
+    var anchorPi = container.dataset.anchorPi;
+    var currentYear = container.dataset.currentYear;
+    var locale = container.dataset.locale;
+    var appUrl = container.dataset.appUrl;
+
+    var pathParts = window.location.pathname.replace(/\/+$/, '').split('/');
+    var currentLogId = pathParts.length >= 2 ? pathParts[pathParts.length - 1] : null;
+    if (currentLogId === '-' || currentLogId === '') currentLogId = null;
+
+    if (!anchorPi || !currentYear) return;
+
+    var dateUrlMap = {};
+    var calendarInstance = null;
+    var currentIssueDate = null;
+
+    // TODO #27682 @Andrey: REST-Endpoint fuer das Kalender-Widget.
+    //
+    //   GET /api/v1/records/{pi}/calendar/{year}
+    //
+    //   Der Endpoint akzeptiert JEDE PI (nicht nur Anchor).
+    //   Er soll alle Dokumente mit YEARMONTHDAY fuer das gegebene Jahr zurueckgeben.
+    //   Gilt fuer Zeitungen, Zeitschriften, Periodika, Mehrbandwerke etc.
+    //
+    //   Query-Logik (serverseitig):
+    //   - Wenn PI ein Anchor ist: +PI_ANCHOR:"{pi}" +YEAR:"{year}" +YEARMONTHDAY:*
+    //   - Wenn PI kein Anchor ist: +PI_TOPSTRUCT:"{pi}" +YEAR:"{year}" +YEARMONTHDAY:*
+    //   - Felder: PI_TOPSTRUCT, YEARMONTHDAY, THUMBPAGENO, LOGID, LABEL
+    //
+    //   Erwartete Response (JSON-Array):
+    //   [
+    //     { "date": "1893-03-01", "label": "Malchower Tageblatt - Nr. 51", "url": "/image/PPN767137728/1/LOG_0002/" },
+    //     { "date": "1893-03-01", "label": "Malchower Tageblatt - Nr. 52", "url": "/image/PPN767137728/1/LOG_0003/" },
+    //     { "date": "1893-03-04", "label": "Malchower Tageblatt - Nr. 53", "url": "/image/PPN767137728/1/LOG_0004/" }
+    //   ]
+    //
+    //   - "date": ISO-Datum (YYYY-MM-DD), abgeleitet aus YEARMONTHDAY (18930301 -> 1893-03-01)
+    //   - "label": Titel der Ausgabe (LABEL aus Solr)
+    //   - "url": Relative URL zur Ausgabe, zusammengebaut aus /image/{PI_TOPSTRUCT}/{THUMBPAGENO}/{LOGID}/
+    //
+    //   Wichtig:
+    //   - Mehrere Ausgaben pro Tag moeglich (Morgen-/Abendausgabe) -> flache Liste, NICHT nach Datum gruppieren
+    //   - Kein kuenstliches Limit: Tageszeitung = 365+ Ausgaben/Jahr. Alles zurueckgeben.
+    //   - URL-Zusammensetzung serverseitig (nicht im JS), damit Pfad-Logik zentral bleibt.
+    //
+    //   Rendered-Condition (siehe XHTML-Kommentar oben):
+    //   Das Widget wird NUR gerendert wenn Config aktiviert UND mindestens 2 YEARMONTHDAY-Eintraege
+    //   fuer diese PI existieren. Dadurch kommt es nie zu einem REST-Call mit leerem Ergebnis.
+    //
+    //   TODO #27682 @Basti Sobald der Endpoint steht, wird hier fetchYearData() darauf umgestellt.
+    function fetchYearData(year) {
+        return fetch(appUrl + 'api/v1/index/query/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                query: '+PI_ANCHOR:"' + anchorPi + '" +YEAR:"' + year + '" +YEARMONTHDAY:*',
+                resultFields: ['PI_TOPSTRUCT', 'YEARMONTHDAY', 'THUMBPAGENO', 'LOGID'],
+                count: 400
+            })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            dateUrlMap = {};
+            var dates = [];
+            (data.docs || []).forEach(function(doc) {
+                var raw = String(doc.YEARMONTHDAY);
+                var iso = raw.substring(0, 4) + '-' + raw.substring(4, 6) + '-' + raw.substring(6, 8);
+                dates.push(iso);
+                // TODO #27682 @Basti: Mehrere Ausgaben pro Tag (z.B. Morgen-/Abendausgabe).
+                // Aktuell wird nur die letzte Ausgabe pro Datum gespeichert.
+                // Wenn mehrere Ausgaben am selben Tag existieren, muss eine Auswahl ermoeglicht werden
+                // (z.B. Popover mit Liste, aehnlich searchCalendar data-popover-trigger).
+                dateUrlMap[iso] = appUrl + 'image/' + doc.PI_TOPSTRUCT + '/' + (doc.THUMBPAGENO || 1) + '/' + (doc.LOGID || '-') + '/';
+                if (doc.LOGID === currentLogId) {
+                    currentIssueDate = iso;
+                }
+            });
+            return dates;
+        });
+    }
+
+    function createCalendar(dates, targetDate) {
+        if (calendarInstance) {
+            calendarInstance.destroy();
+            container.innerHTML = '';
+        }
+        var defDate = targetDate
+            || (currentIssueDate ? new Date(parseInt(currentIssueDate.substring(0, 4)), parseInt(currentIssueDate.substring(5, 7)) - 1, parseInt(currentIssueDate.substring(8, 10))) : null)
+            || new Date(parseInt(currentYear), 0, 1);
+
+        calendarInstance = viewerJS.datePicker.createInlineCalendar(container, {
+            hasDataDates: dates,
+            currentIssueDate: currentIssueDate,
+            locale: locale,
+            defaultDate: defDate,
+            onDayClick: function(dateStr) {
+                if (dateUrlMap[dateStr]) {
+                    window.location.href = dateUrlMap[dateStr];
+                }
+            },
+            onYearChange: function(selectedDates, dateStr, instance) {
+                var newYear = instance.currentYear;
+                var month = instance.currentMonth;
+                fetchYearData(String(newYear)).then(function(newDates) {
+                    createCalendar(newDates, new Date(newYear, month, 1));
+                });
+            }
+        });
+    }
+
+    fetchYearData(currentYear).then(function(dates) {
+        createCalendar(dates);
+    });
+})();
+//]]>
+            </script>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>

@@ -98,17 +98,27 @@
                                     </ui:include>
                                 </div>
 
-                                <div class="toc__multi-volume">
-                                    <!-- TILE VIEW -->
-                                    <ui:fragment rendered="#{configurationBean.tocAnchorLayout == 'grid'}">
-                                        <ui:include src="/resources/includes/toc/tileView.xhtml" />
-                                    </ui:fragment>
+                                <!-- CALENDAR TOC (newspapers/periodicals with calendar data) -->
+                                <ui:fragment rendered="#{activeDocumentBean.viewManager.calendarView.display}">
+                                    <div class="search-calendar">
+                                        <ui:include src="/resources/includes/toc/calendarTocView.xhtml" />
+                                    </div>
+                                </ui:fragment>
 
-                                    <!-- GROUPS: DEFAULT AND != DEFAULT -->
-                                    <ui:fragment rendered="#{configurationBean.tocAnchorLayout == 'list'}">
-                                        <ui:include src="/resources/includes/toc/listView.xhtml" />
-                                    </ui:fragment>
-                                </div>
+                                <!-- STANDARD MULTI-VOLUME TOC (no calendar data) -->
+                                <ui:fragment rendered="#{!activeDocumentBean.viewManager.calendarView.display}">
+                                    <div class="toc__multi-volume">
+                                        <!-- TILE VIEW -->
+                                        <ui:fragment rendered="#{configurationBean.tocAnchorLayout == 'grid'}">
+                                            <ui:include src="/resources/includes/toc/tileView.xhtml" />
+                                        </ui:fragment>
+
+                                        <!-- GROUPS: DEFAULT AND != DEFAULT -->
+                                        <ui:fragment rendered="#{configurationBean.tocAnchorLayout == 'list'}">
+                                            <ui:include src="/resources/includes/toc/listView.xhtml" />
+                                        </ui:fragment>
+                                    </div>
+                                </ui:fragment>
                             </h:panelGroup>
 
                             <!-- TOC TREEVIEW -->
@@ -163,6 +173,7 @@
             </h:panelGroup>
 
             <script type="text/javascript">
+//<![CDATA[
 $('[data-toggle="mv-element"]').on('click', function () {
     var currBtn = $(this);
 
@@ -199,6 +210,15 @@ var normdataConfig = {
 };
 
 viewerJS.normdata.init(normdataConfig);
+
+viewerJS.tocNewspaper.init({
+    contextPath: '#{request.contextPath}',
+    popoverTitle: '#{activeDocumentBean.titleBarLabel}',
+    locale: '#{navigationHelper.localeString}',
+    dateFromSelector: "[data-target='tocNewspaperDateFrom']",
+    dateToSelector: "[data-target='tocNewspaperDateTo']",
+});
+//]]>
             </script>
         </f:view>
     </ui:define>

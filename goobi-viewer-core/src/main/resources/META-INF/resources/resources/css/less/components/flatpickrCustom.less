@@ -1,0 +1,229 @@
+/* Flatpickr — Goobi Viewer Theme */
+
+/* Calendar container */
+.flatpickr-calendar {
+    background: @datepicker-bg;
+    border: none;
+    border-radius: 6px;
+    color: @datepicker-day-fg;
+    font-family: inherit;
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.1),
+        0 1px 3px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+/* Header */
+.flatpickr-months {
+    background-color: @datepicker-header-bg;
+    padding: 4px 0;
+    position: relative;
+}
+
+.flatpickr-current-month,
+.flatpickr-current-month .cur-month,
+.flatpickr-current-month input.cur-year {
+    color: @datepicker-header-fg;
+    fill: @datepicker-header-fg;
+    font-weight: 600;
+}
+
+.flatpickr-current-month input.cur-year,
+.flatpickr-current-month select.flatpickr-monthDropdown-months {
+    font-weight: 600;
+    font-size: inherit;
+    padding: 2px 0.5ch;
+    text-align: center;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.12);
+    }
+}
+
+/* Hide month dropdown arrow + year spinner arrows */
+.flatpickr-current-month select.flatpickr-monthDropdown-months {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
+}
+
+.numInputWrapper span.arrowUp,
+.numInputWrapper span.arrowDown {
+    display: none;
+}
+
+/* Navigation arrows — CSS chevrons (nested for specificity) */
+.flatpickr-months {
+    .flatpickr-prev-month,
+    .flatpickr-next-month {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        top: 50%;
+        transform: translateY(calc(-50% + 3px));
+        border-radius: 4px;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.15);
+
+            svg {
+                fill: @datepicker-header-fg;
+            }
+        }
+
+        svg {
+            display: none;
+        }
+
+        &::after {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 10px;
+            border-right: 2.5px solid @datepicker-header-fg;
+            border-bottom: 2.5px solid @datepicker-header-fg;
+        }
+    }
+
+    .flatpickr-prev-month {
+        margin-left: 2px;
+
+        &::after {
+            transform: rotate(135deg);
+            margin-left: 3px;
+        }
+    }
+
+    .flatpickr-next-month {
+        margin-right: 2px;
+
+        &::after {
+            transform: rotate(-45deg);
+            margin-right: 3px;
+        }
+    }
+}
+
+/* Weekday names */
+.flatpickr-weekdays {
+    background-color: @datepicker-header-bg;
+    padding-bottom: 4px;
+}
+
+span.flatpickr-weekday {
+    color: @datepicker-weekday-fg;
+    background: transparent;
+    font-weight: 600;
+    font-size: 0.85em;
+}
+
+/* Day cells — uniform spacing via margin + calc */
+.flatpickr-day {
+    color: @datepicker-day-fg;
+    border-radius: 2px;
+    margin: 1px;
+    max-width: calc(~'100% / 7 - 2px');
+    height: 38px;
+    line-height: 38px;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+
+    &:hover {
+        background: @datepicker-day-hover-bg;
+        border-color: @datepicker-day-hover-bg;
+    }
+
+    &.today {
+        border-color: @datepicker-day-today-border-color;
+        font-weight: 600;
+
+        &:hover {
+            background: @datepicker-day-hover-bg;
+            border-color: @datepicker-day-hover-bg;
+            color: @datepicker-day-fg;
+        }
+    }
+
+    &.selected,
+    &.startRange,
+    &.endRange {
+        background: @datepicker-day-selected-bg;
+        border-color: @datepicker-day-selected-bg;
+        color: @datepicker-day-selected-fg;
+        font-weight: 600;
+
+        &:hover {
+            background: @datepicker-day-selected-bg;
+            border-color: @datepicker-day-selected-bg;
+        }
+    }
+
+    &.inRange {
+        background: @datepicker-day-range-bg;
+        border-color: @datepicker-day-range-bg;
+        box-shadow:
+            -5px 0 0 @datepicker-day-range-bg,
+            5px 0 0 @datepicker-day-range-bg;
+    }
+
+    &.flatpickr-disabled,
+    &.flatpickr-disabled:hover,
+    &.prevMonthDay,
+    &.nextMonthDay {
+        color: @datepicker-day-disabled-fg;
+    }
+
+    /* Custom: newspaper day has data */
+    &.-has-data- {
+        background-color: @datepicker-day-hasdata-bg;
+        border-color: @datepicker-day-hasdata-bg;
+        color: @datepicker-day-hasdata-fg;
+        font-weight: 700;
+
+        &:hover {
+            background-color: @datepicker-day-selected-bg;
+            border-color: @datepicker-day-selected-bg;
+            color: @datepicker-day-selected-fg;
+        }
+    }
+
+    /* Custom: currently viewed issue */
+    &.-current-issue- {
+        background-color: @datepicker-day-selected-bg;
+        border-color: @datepicker-day-selected-bg;
+        color: @datepicker-day-selected-fg;
+        font-weight: 700;
+    }
+}
+
+/* Datepicker input wrapper — shared component */
+.datepicker-input {
+    position: relative;
+    flex: 1;
+    .form-control {
+        padding-right: 35px;
+    }
+}
+.datepicker-input__icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    color: @gray;
+    .icon {
+        width: 16px;
+        height: 16px;
+    }
+}

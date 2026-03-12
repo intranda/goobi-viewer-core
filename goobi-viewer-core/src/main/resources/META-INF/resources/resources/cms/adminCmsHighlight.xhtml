@@ -545,23 +545,17 @@
                                                     </div>
 
                                                     <script type="text/javascript">
-                                                        $(document).ready(function(){
-                                                            $("[data-target='datePickerStart']").datepicker({
-                                                                onSelect: function(selected) {
-                                                                  $("[data-target='datePickerEnd']").datepicker("option","minDate", selected)
-                                                                },
-                                                           		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
-                                                           		isRTL: #{navigationHelper.rtl},
-                                                            });
-
-                                                            $("[data-target='datePickerEnd']").datepicker({
-                                                                onSelect: function(selected) {
-                                                                   $("[data-target='datePickerStart']").datepicker("option","maxDate", selected)
-                                                                },
-                                                        		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
-                                                        		isRTL: #{navigationHelper.rtl},
-                                                            });
-                                                        });
+                                                    //<![CDATA[
+                                                        if (typeof viewerJS !== 'undefined' && viewerJS.datePicker) {
+                                                            var startEl = document.querySelector("[data-target='datePickerStart']");
+                                                            var endEl = document.querySelector("[data-target='datePickerEnd']");
+                                                            if (startEl && endEl) {
+                                                                viewerJS.datePicker.createRange(startEl, endEl, {
+                                                                    locale: '#{navigationHelper.localeString}',
+                                                                });
+                                                            }
+                                                        }
+                                                    //]]>
                                                     </script>
                                                 </div>
                                             </div>

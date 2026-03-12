@@ -1967,6 +1967,7 @@ public class Configuration extends AbstractConfiguration {
             String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, field);
             boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
             boolean range = subElement.getBoolean("[@range]", false);
+            boolean datepicker = subElement.getBoolean("[@datepicker]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
             boolean visible = subElement.getBoolean("[@visible]", false);
             boolean allowMultipleItems = subElement.getBoolean("[@allowMultipleItems]", false);
@@ -1980,6 +1981,7 @@ public class Configuration extends AbstractConfiguration {
                     .setLabel(label)
                     .setHierarchical(hierarchical)
                     .setRange(range)
+                    .setDatepicker(datepicker)
                     .setUntokenizeForPhraseSearch(untokenizeForPhraseSearch)
                     .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
                     .setVisible(visible)
@@ -2127,6 +2129,16 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isAdvancedSearchFieldRange(String field, String template, boolean fallbackToDefaultTemplate) {
         return isAdvancedSearchFieldHasAttribute(field, "range", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * @param field a {@link java.lang.String} object.
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return a boolean.
+     */
+    public boolean isAdvancedSearchFieldDatepicker(String field, String template, boolean fallbackToDefaultTemplate) {
+        return isAdvancedSearchFieldHasAttribute(field, "datepicker", template, fallbackToDefaultTemplate);
     }
 
     /**

@@ -311,6 +311,13 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * @return true if datepicker should be used for this field's range inputs
+     */
+    public boolean isDatepicker() {
+        return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldDatepicker(field, template, true);
+    }
+
+    /**
      * <p>
      * isUntokenizeForPhraseSearch.
      * </p>
@@ -823,6 +830,11 @@ public class SearchQueryItem implements Serializable {
                                     // Range search
                                     String val1 = ClientUtils.escapeQueryChars(useValue).replace("\\-", "-");
                                     String val2 = ClientUtils.escapeQueryChars(line.getValues().get(1).trim()).replace("\\-", "-");
+                                    // TODO #27681 @Andrey: Wenn isDatepicker()==true, val1/val2 nach YYYYMMDD konvertieren.
+                                    // Flatpickr sendet locale-abhaengig: DE="d.m.Y" (z.B. "15.3.2024"), EN="m/d/Y" (z.B. "3/15/2024").
+                                    // Solr YEARMONTHDAY erwartet "YYYYMMDD" (z.B. "20240315").
+                                    // Konvertierung VOR escapeQueryChars, da Punkte/Slashes sonst escaped werden.
+                                    // Siehe viewerJS.datePicker.js Zeile 29+54 fuer die Flatpickr-Formate.
                                     if (SolrConstants.YEAR.equals(field) || field.startsWith(SolrConstants.PREFIX_MDNUM)) {
                                         // Prevent exception if not a number
                                         if (StringTools.parseInt(val1).isEmpty()) {

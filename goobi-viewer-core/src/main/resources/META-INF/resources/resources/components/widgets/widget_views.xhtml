@@ -92,10 +92,10 @@
                             </li>
                         </h:panelGroup>
 
-                        <!-- Calendar -->
+                        <!-- Calendar (hidden when integrated into TOC for anchors) -->
                         <h:panelGroup
                             visibility-class="widget-element"
-                            rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display}">
+                            rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display and !activeDocumentBean.anchor}">
                             <li class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
                                 <h:outputLink
                                     value="#{navigationHelper.calendarActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">

@@ -8,6 +8,7 @@
     template="/resources/themes/#{navigationHelper.theme}/template.html"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:util="http://goobi.io/util"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <ui:define name="metadata">
         <f:metadata>
@@ -51,11 +52,137 @@
                                 <span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
                             </h1>
                         </div>
-                        <!-- YEAR SELECTION -->
+                        <!-- NEWSPAPER SEARCH + YEAR SELECTION (TABBED) -->
                         <h:form
                             id="searchCalendarForm"
                             prependId="false">
-                            <h:panelGroup rendered="#{activeDocumentBean.anchor or activeDocumentBean.group}">
+                            <h:panelGroup rendered="#{activeDocumentBean.anchor}">
+                                <h2 class="search-calendar__newspaper-search-title">#{msg.newspaper__search_title}</h2>
+
+                                <div class="search-calendar__newspaper-search">
+                                    <!-- TAB NAVIGATION -->
+                                    <ul
+                                        class="nav nav-tabs search-calendar__nav-tabs"
+                                        role="tablist">
+                                        <li class="nav-item">
+                                            <a
+                                                class="nav-link active"
+                                                data-toggle="tab"
+                                                href="#newspaperTabDateRange"
+                                                role="tab">
+                                                #{msg.newspaper__date_range}
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a
+                                                class="nav-link"
+                                                data-toggle="tab"
+                                                href="#newspaperTabYear"
+                                                role="tab">
+                                                #{msg.newspaper__tab_year}
+                                            </a>
+                                        </li>
+                                    </ul>
+
+                                    <!-- TAB CONTENT -->
+                                    <div class="tab-content search-calendar__tab-content">
+                                        <!-- TAB 1: DATE RANGE -->
+                                        <div
+                                            id="newspaperTabDateRange"
+                                            class="tab-pane fade show active"
+                                            role="tabpanel">
+                                            <!-- TEXT SEARCH -->
+                                            <div class="search-calendar__newspaper-search-text">
+                                                <h:inputText
+                                                    id="newspaperSearchInput"
+                                                    styleClass="form-control">
+                                                    <f:passThroughAttribute
+                                                        name="placeholder"
+                                                        value="#{activeDocumentBean.titleBarLabel}" />
+                                                </h:inputText>
+                                            </div>
+
+                                            <!-- DATE RANGE -->
+                                            <div class="search-calendar__newspaper-search-date">
+                                                <span class="search-calendar__newspaper-search-date-label">
+                                                    #{msg.newspaper__date_from}
+                                                </span>
+                                                <div class="search-calendar__newspaper-search-date-fields">
+                                                    <div class="datepicker-input">
+                                                        <h:inputText
+                                                            id="newspaperDateFrom"
+                                                            styleClass="form-control">
+                                                            <f:passThroughAttribute
+                                                                name="data-target"
+                                                                value="newspaperDateFrom" />
+                                                            <f:passThroughAttribute
+                                                                name="placeholder"
+                                                                value="#{msg.newspaper__date_placeholder}" />
+                                                        </h:inputText>
+                                                        <span class="datepicker-input__icon">
+                                                            <util:icon
+                                                                icon="calendar"
+                                                                svgClass="icon" />
+                                                        </span>
+                                                    </div>
+                                                    <span class="search-calendar__newspaper-search-date-sep">
+                                                        #{msg.newspaper__date_to}
+                                                    </span>
+                                                    <div class="datepicker-input">
+                                                        <h:inputText
+                                                            id="newspaperDateTo"
+                                                            styleClass="form-control">
+                                                            <f:passThroughAttribute
+                                                                name="data-target"
+                                                                value="newspaperDateTo" />
+                                                            <f:passThroughAttribute
+                                                                name="placeholder"
+                                                                value="#{msg.newspaper__date_placeholder}" />
+                                                        </h:inputText>
+                                                        <span class="datepicker-input__icon">
+                                                            <util:icon
+                                                                icon="calendar"
+                                                                svgClass="icon" />
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <h:commandButton
+                                                    styleClass="btn btn--full search-calendar__newspaper-search-btn"
+                                                    value="#{msg.search}" />
+                                            </div>
+                                        </div>
+
+                                        <!-- TAB 2: YEAR SELECTION -->
+                                        <div
+                                            id="newspaperTabYear"
+                                            class="tab-pane fade"
+                                            role="tabpanel">
+                                            <div class="search-calendar__year-grid">
+                                                <ui:repeat
+                                                    var="year"
+                                                    value="#{activeDocumentBean.viewManager.calendarView.volumeYears}">
+                                                    <button
+                                                        type="submit"
+                                                        name="selectyear"
+                                                        value="#{year}"
+                                                        class="search-calendar__year-chip #{year == activeDocumentBean.viewManager.calendarView.year ? '-active' : ''}"
+                                                        data-year="#{year}"
+                                                        onclick="document.getElementById('selectedYearInput').value='#{year}'; this.form.action=this.form.action.split('#')[0]+'#tab=newspaperTabYear'; this.form.submit();">
+                                                        #{year}
+                                                    </button>
+                                                </ui:repeat>
+                                            </div>
+                                            <h:inputHidden
+                                                id="selectedYearInput"
+                                                value="#{activeDocumentBean.viewManager.calendarView.year}" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+
+                            <!-- YEAR SELECTION (non-newspaper anchors/groups) -->
+                            <h:panelGroup
+                                rendered="#{!activeDocumentBean.anchor and (activeDocumentBean.anchor or activeDocumentBean.group)}">
                                 <div class="search-calendar__input">
                                     <div class="form-horizontal">
                                         <div class="form-group form-row align-items-center">
@@ -87,6 +214,11 @@
                                         </div>
                                     </div>
                                 </div>
+                            </h:panelGroup>
+
+                            <!-- ISSUES HEADING -->
+                            <h:panelGroup rendered="#{activeDocumentBean.anchor}">
+                                <h2 class="search-calendar__issues-title">#{msg.newspaper__issues}</h2>
                             </h:panelGroup>
 
                             <!-- SEARCH CALENDAR MONTHS -->
@@ -157,13 +289,15 @@
                     </div>
 
                     <script type="text/javascript">
-var calendarPopoverConfig = {
-    appUrl: '#{navigationHelper.applicationUrl}',
-    indexResourceUrl: '#{navigationHelper.applicationUrl}api/v1/index/query/',
+                    //<![CDATA[
+viewerJS.tocNewspaper.init({
+    contextPath: '#{request.contextPath}',
     popoverTitle: '#{activeDocumentBean.titleBarLabel}',
-};
-
-viewerJS.calendarPopover.init(calendarPopoverConfig);
+    locale: '#{navigationHelper.localeString}',
+    dateFromSelector: "[data-target='newspaperDateFrom']",
+    dateToSelector: "[data-target='newspaperDateTo']",
+});
+                    //]]>
                     </script>
                 </div>
             </ui:fragment>

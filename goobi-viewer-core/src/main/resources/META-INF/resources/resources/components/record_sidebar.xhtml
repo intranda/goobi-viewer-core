@@ -127,6 +127,11 @@
                     <widgetComponent:widget_statistics_usage />
                 </ui:fragment>
 
+                <!-- WIDGET CALENDAR -->
+                <ui:fragment rendered="#{widgetName == 'calendar'}">
+                    <widgetComponent:widget_calendar id="widgetCalendar" />
+                </ui:fragment>
+
                 <!-- WIDGET TOC -->
                 <ui:fragment rendered="#{widgetName == 'toc'}">
                     <widgetComponent:widget_toc id="widgetToc" />

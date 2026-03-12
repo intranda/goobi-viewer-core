@@ -1,0 +1,173 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    <!-- NEWSPAPER SEARCH (redirects to /search/ via searchInRecord) -->
+    <h2 class="search-calendar__newspaper-search-title">#{msg.newspaper__search_title}</h2>
+
+    <div class="search-calendar__newspaper-search">
+        <div class="search-calendar__newspaper-search-body">
+            <!-- SEARCH TERM — bindet an queryItems[1] wie widget_searchInCurrentItem.xhtml -->
+            <div class="search-calendar__search-field">
+                <h:inputText
+                    id="newspaperSearchTerm"
+                    value="#{searchBean.advancedSearchQueryGroup.queryItems[1].value}"
+                    styleClass="form-control">
+                    <f:passThroughAttribute
+                        name="placeholder"
+                        value="#{activeDocumentBean.titleBarLabel}" />
+                </h:inputText>
+            </div>
+            <!-- DATE RANGE -->
+            <div class="search-calendar__newspaper-search-date">
+                <span class="search-calendar__newspaper-search-date-label">#{msg.newspaper__date_from}</span>
+                <div class="search-calendar__newspaper-search-date-fields">
+                    <div class="datepicker-input">
+                        <!-- TODO #27683 @Andrey: value an ein Bean-Property binden fuer YEARMONTHDAY-Range (Von).
+                             Beim Submit muss dd.MM.yyyy in YYYYMMDD konvertiert werden
+                             und als YEARMONTHDAY:[von TO bis] Query-Item gesetzt werden.
+                             Siehe searchInRecord() in SearchBean als Referenz-Pattern. -->
+                        <h:inputText
+                            id="tocNewspaperDateFrom"
+                            styleClass="form-control">
+                            <f:passThroughAttribute
+                                name="data-target"
+                                value="tocNewspaperDateFrom" />
+                            <f:passThroughAttribute
+                                name="placeholder"
+                                value="#{msg.newspaper__date_placeholder}" />
+                        </h:inputText>
+                        <span class="datepicker-input__icon">
+                            <util:icon
+                                icon="calendar"
+                                svgClass="icon" />
+                        </span>
+                    </div>
+                    <span class="search-calendar__newspaper-search-date-sep">#{msg.newspaper__date_to}</span>
+                    <div class="datepicker-input">
+                        <h:inputText
+                            id="tocNewspaperDateTo"
+                            styleClass="form-control">
+                            <f:passThroughAttribute
+                                name="data-target"
+                                value="tocNewspaperDateTo" />
+                            <f:passThroughAttribute
+                                name="placeholder"
+                                value="#{msg.newspaper__date_placeholder}" />
+                        </h:inputText>
+                        <span class="datepicker-input__icon">
+                            <util:icon
+                                icon="calendar"
+                                svgClass="icon" />
+                        </span>
+                    </div>
+                </div>
+                <!-- Suche innerhalb des Anchor-Werks — gleiches Pattern wie widget_searchInCurrentItem.xhtml -->
+                <!-- TODO #27683 @Andrey: searchInRecord() um optionalen YEARMONTHDAY-Range erweitern.
+                     Die Datums-Inputs (tocNewspaperDateFrom/tocNewspaperDateTo) muessen
+                     als zusaetzliches QueryItem (YEARMONTHDAY range) in die Suche einfliessen.
+                     Ohne Datum: nur Suchbegriff im Anchor. Ohne Suchbegriff: nur Zeitraum. -->
+                <button
+                    class="btn btn--full search-calendar__newspaper-search-btn"
+                    jsf:action="#{searchBean.searchInRecord('PI_ANCHOR', activeDocumentBean.persistentIdentifier)}">
+                    #{msg.search}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- YEAR SELECTION + ISSUES HEADING (inline) -->
+    <div class="search-calendar__issues-header">
+        <h2 class="search-calendar__issues-title">
+            <label for="tocSelectYear">#{msg.newspaper__issues_from_year}</label>
+        </h2>
+        <div class="search-calendar__year-select">
+            <div class="custom-control custom-control--select">
+                <h:selectOneMenu
+                    id="tocSelectYear"
+                    styleClass="form-control"
+                    value="#{activeDocumentBean.viewManager.calendarView.year}"
+                    immediate="true"
+                    onchange="submit()">
+                    <f:selectItem
+                        itemDisabled="false"
+                        itemLabel="#{msg.newspaper__select_year}"
+                        noSelectionOption="true" />
+                    <f:selectItems
+                        var="year"
+                        itemLabel="#{year}"
+                        itemValue="#{year}"
+                        value="#{activeDocumentBean.viewManager.calendarView.volumeYears}" />
+                </h:selectOneMenu>
+            </div>
+        </div>
+    </div>
+
+    <!-- CALENDAR MONTHS -->
+    <h:panelGroup rendered="#{fn:length(activeDocumentBean.viewManager.calendarView.calendarItems) gt 0}">
+        <div class="search-calendar__months">
+            <div class="row">
+                <ui:repeat
+                    var="month"
+                    value="#{activeDocumentBean.viewManager.calendarView.calendarItems}">
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <div class="search-calendar__month">
+                            <!-- MONTH TITLE -->
+                            <div class="search-calendar__month-title">
+                                <h:outputText value="#{msg[month.name]}" />
+                            </div>
+
+                            <!-- MONTH DAYS -->
+                            <div class="search-calendar__month-days clearfix">
+                                <span>#{msg.Monday}</span>
+                                <span>#{msg.Tuesday}</span>
+                                <span>#{msg.Wednsday}</span>
+                                <span>#{msg.Thursday}</span>
+                                <span>#{msg.Friday}</span>
+                                <span>#{msg.Saturday}</span>
+                                <span>#{msg.Sunday}</span>
+                            </div>
+
+                            <!-- MONTH WEEKS -->
+                            <ui:repeat
+                                var="week"
+                                value="#{month.weeksOfMonth}">
+                                <div class="search-calendar__month-week clearfix">
+                                    <ui:repeat
+                                        var="day"
+                                        value="#{week.daysOfWeek}">
+                                        <h:panelGroup rendered="#{day.name != ''}">
+                                            <div class="search-calendar__month-day">
+                                                <h:panelGroup rendered="#{day.hits == 0}">
+                                                    <span>#{day.name}</span>
+                                                </h:panelGroup>
+                                                <h:panelGroup rendered="#{day.hits != 0}">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn--clean"
+                                                        data-popover-trigger="calendar-po-trigger"
+                                                        data-query="#{day.query}"
+                                                        data-fields="PI_TOPSTRUCT,LABEL,THUMBPAGENO,LOGID">
+                                                        #{day.name}
+                                                    </button>
+                                                </h:panelGroup>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{day.name == ''}">
+                                            <div class="search-calendar__month-day-empty" />
+                                        </h:panelGroup>
+                                    </ui:repeat>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </ui:repeat>
+            </div>
+        </div>
+    </h:panelGroup>
+</ui:composition>

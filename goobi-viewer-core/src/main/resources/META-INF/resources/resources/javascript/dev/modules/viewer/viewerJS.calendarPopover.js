@@ -50,7 +50,7 @@ var viewerJS = (function (viewer) {
 
             $.extend(true, _defaults, config);
 
-            // TODO: Fehlermeldung in der Konsole beseitigen, wenn man auf den Tag ein
+            // TODO #27682 Basti: Fehlermeldung in der Konsole beseitigen, wenn man auf den Tag ein
             // zweites Mal klickt.
 
             // show popover for current day
@@ -89,7 +89,7 @@ var viewerJS = (function (viewer) {
                         _this.popover('show');
                     })
                     .catch((error) => {
-                        console.log('Error calling ' + _defaults.indexResourceUrl + ' :' + error);
+                        console.error('Error calling ' + _defaults.indexResourceUrl + ' :' + error);
                     });
             });
 
