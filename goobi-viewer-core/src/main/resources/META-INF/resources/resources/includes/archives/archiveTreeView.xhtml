@@ -296,11 +296,6 @@
 
             <script>
                 <!--  JUMP TO LAST SAVED FOCUS ELEMENT -->
-                // 			var archiveBeanDataBaseState = '#{archiveBean.databaseState}';
-                // 			if ((sessionStorage.getItem("focusElement") != null)
-                &amp;
-                &amp;
-                (archiveBeanDataBaseState != 'ARCHIVES_LOADED')) {
                 if (sessionStorage.getItem('focusElement') != null) {
                     var lastFocusElement = sessionStorage.getItem('focusElement');
                     var lastFocusElementEscaped = lastFocusElement.replace(/:/g, '\\:');
@@ -315,8 +310,7 @@
                 sessionStorage.setItem('focusElement', this.id);
             });
 
-            // REMOVE TOOLTIPS AFTER AJAX ONCE SO IT IS NOT STUCK ON SCREEN BECAUSE COLLAPSE ALL BUTTON IDENTITY IS
-            DESTROYED DUE TO THE CALL
+            // REMOVE TOOLTIPS AFTER AJAX ONCE SO IT IS NOT STUCK ON SCREEN BECAUSE COLLAPSE ALL BUTTON IDENTITY IS DESTROYED DUE TO THE CALL
             function fadeOutAllTooltips() {
                 $('.bs-tooltip-top').remove();
             }
