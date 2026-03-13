@@ -116,8 +116,7 @@ var viewerJS = (function (viewer) {
                   background: '#1b2330',
                   showConfirmButton: false,
                   animation: true,
-                  timer: 5000,
-                  // backdrop: `rgba(0,0,0,0.5)`,
+                  timer: 4000,
                   timerProgressBar: true,
                   didOpen: (toast) => {
                       toast.addEventListener('mouseenter', Swal.stopTimer);
@@ -126,6 +125,25 @@ var viewerJS = (function (viewer) {
               })
             : {};
 
+    // Toast queue for sequential display
+    var toastQueue = [];
+    var isShowingToast = false;
+
+    function processToastQueue() {
+        if (isShowingToast || toastQueue.length === 0) return;
+        isShowingToast = true;
+        var next = toastQueue.shift();
+        swalToast.fire({
+            scrollbarPadding: false,
+            icon: next.type,
+            title: next.titleAlert,
+            didClose: function () {
+                isShowingToast = false;
+                processToastQueue();
+            },
+        });
+    }
+
     viewer.swaltoasts = {
         success: (titleAlert, message) => viewer.swaltoasts.toast(titleAlert, message, 'success'),
         error: (titleAlert, message) => viewer.swaltoasts.toast(titleAlert, message, 'error'),
@@ -133,11 +151,8 @@ var viewerJS = (function (viewer) {
 
         toast: (titleAlert, message, type) => {
             if (typeof Swal !== 'undefined') {
-                swalToast.fire({
-                    scrollbarPadding: false,
-                    icon: type,
-                    title: titleAlert,
-                });
+                toastQueue.push({ titleAlert: titleAlert, type: type });
+                processToastQueue();
             } else if (typeof sweetAlert !== 'undefined') {
                 swal(message, '', type);
             } else if (jQuery().overhang) {
