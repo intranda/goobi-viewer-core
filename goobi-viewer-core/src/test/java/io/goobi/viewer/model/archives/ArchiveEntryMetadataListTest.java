@@ -29,7 +29,7 @@ import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -38,7 +38,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.solr.SolrConstants;
 
-class ArchiveEntryMetadataListTest extends AbstractSolrEnabledTest {
+class ArchiveEntryMetadataListTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @throws IndexUnreachableException
