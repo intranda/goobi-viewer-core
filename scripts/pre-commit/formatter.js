@@ -62,11 +62,20 @@ function filterPrettierFiles(files, pattern = SUPPORTED_EXTENSIONS) {
  * @param {string} prettierBin - Path to Prettier binary
  * @param {Function} execFn - Function to execute shell commands
  */
-function runPrettier(files, prettierBin, execFn = execSync) {
+function runPrettier(
+  files,
+  prettierBin,
+  execFn = execSync,
+  baseDir = __dirname,
+) {
   if (files.length === 0) return;
 
+  const ignorePath = path.join(
+    baseDir,
+    "../../goobi-viewer-core/.prettierignore",
+  );
   const fileArgs = files.map((f) => `"${f}"`).join(" ");
-  execFn(`"${prettierBin}" --write ${fileArgs}`, {
+  execFn(`"${prettierBin}" --write --ignore-path "${ignorePath}" ${fileArgs}`, {
     stdio: "inherit",
   });
 }
@@ -124,7 +133,7 @@ function runPreCommit(options = {}) {
     log("Running Prettier on staged files:");
     prettierFiles.forEach((f) => log("  ", f));
 
-    runPrettier(prettierFiles, prettierBin, execFn);
+    runPrettier(prettierFiles, prettierBin, execFn, baseDir);
     stageFiles(prettierFiles, execFn);
   }
 
