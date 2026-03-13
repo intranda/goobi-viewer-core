@@ -227,8 +227,8 @@ function createFooter(viewer) {
 }
 
 function initControls(zoom, rotation) {
-    if(document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
-        zoom.setSlider(_config.elementSelectors.controls.zoomSlider);
+    if (document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
+        zoom.setSlider(_config.elementSelectors.controls.zoomSlider, 3);
     }
     document.querySelectorAll(_config.elementSelectors.controls.rotateLeft).forEach(button => button.addEventListener("click", e => rotation.rotateLeft()));
     document.querySelectorAll(_config.elementSelectors.controls.rotateRight).forEach(button => button.addEventListener("click", e => rotation.rotateRight()))

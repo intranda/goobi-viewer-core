@@ -1038,7 +1038,11 @@ riot.tag2(
 );
 riot.tag2(
     'chronologyslider',
+<<<<<<< HEAD
     '<p class="widget__description-text widget-chronology-slider__description-text" ref="descriptionText"></p><div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYearStart}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYearStart}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYearEnd}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYearEnd}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>',
+=======
+    '<p class="widget__description-text widget-chronology-slider__description-text" ref="descriptionText" hidden></p><div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYearStart}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYearStart}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYearEnd}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYearEnd}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>',
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
     '',
     '',
     function (opts) {
@@ -1057,6 +1061,10 @@ riot.tag2(
 
             if (this.msg.description && this.refs.descriptionText) {
                 this.refs.descriptionText.innerHTML = this.msg.description;
+<<<<<<< HEAD
+=======
+                this.refs.descriptionText.removeAttribute('hidden');
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
             }
             this.update();
         });

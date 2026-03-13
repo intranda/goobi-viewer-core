@@ -25,6 +25,20 @@
     --search-toolbar-icon-color: #212529;
     --search-toolbar-icon-color-active: #fff;
     --search-toolbar-icon-color-hover: #212529;
+<<<<<<< HEAD
+=======
+    --widget-toc-hover-bg: #eee;
+    --widget-toc-toggle-icon-color: currentColor;
+    --widget-toc-toggle-icon-color-hover: currentColor;
+    --widget-toc-link-color-hover: inherit;
+    --widget-toc-active-color: currentColor;
+    --toc-page-hover-bg: #eee;
+    --toc-page-toggle-icon-color: currentColor;
+    --toc-page-toggle-icon-color-hover: currentColor;
+    --toc-page-link-color: currentColor;
+    --toc-page-link-color-hover: inherit;
+    --toc-page-border-color: #ccc;
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
     --image-controls-background: transparent;
     --image-controls-border-color: #6f6f6f;
     --image-controls-container-border-color: #ccc;
@@ -7887,10 +7901,19 @@ html[dir='rtl'] .widget-search-result-navigation__back-to-collection a::before {
     align-items: center;
     margin-left: auto;
 }
+<<<<<<< HEAD
 .widget-toc__title-expand a {
     margin-left: 10px;
 }
 .widget-toc__title-expand a:first-child {
+=======
+.widget-toc__title-expand a,
+.widget-toc__title-expand button {
+    margin-left: 10px;
+}
+.widget-toc__title-expand a:first-child,
+.widget-toc__title-expand button:first-child {
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
     margin: 0;
 }
 .widget-toc__elements {
@@ -7905,7 +7928,11 @@ html[dir='rtl'] .widget-search-result-navigation__back-to-collection a::before {
     padding-left: 3px;
 }
 .widget-toc__element:hover {
+<<<<<<< HEAD
     background-color: #eee;
+=======
+    background-color: var(--widget-toc-hover-bg);
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
 }
 .widget-toc__element a {
     display: flex;
@@ -7915,6 +7942,20 @@ html[dir='rtl'] .widget-search-result-navigation__back-to-collection a::before {
 .widget-toc__element-expand {
     max-width: 20px;
 }
+<<<<<<< HEAD
+=======
+.widget-toc__toggle {
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+.widget-toc__toggle .icon-wrapper svg {
+    color: var(--widget-toc-toggle-icon-color);
+}
+.widget-toc__toggle:hover .icon-wrapper svg {
+    color: var(--widget-toc-toggle-icon-color-hover);
+}
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
 .widget-toc__element-link {
     width: calc(100% - 20px);
     padding-left: 5px;
@@ -7936,8 +7977,28 @@ html[dir='rtl'] .widget-search-result-navigation__back-to-collection a::before {
 .widget-toc__element-link a {
     padding: 2px 0;
 }
+<<<<<<< HEAD
 .widget-toc__element-link.active a {
     font-weight: 700;
+=======
+.widget-toc__element-link a:hover,
+.widget-toc__element-link a:focus,
+.widget-toc__element-link a:active {
+    color: var(--widget-toc-link-color-hover);
+}
+.widget-toc__element-link.active a {
+    font-weight: 700;
+    color: var(--widget-toc-active-color);
+}
+.widget-toc__element--hidden {
+    display: none;
+}
+.widget-toc__element--expanded .icon-wrapper:has(.widget-toc__icon-expand) {
+    display: none;
+}
+.widget-toc__element:not(.widget-toc__element--expanded) .icon-wrapper:has(.widget-toc__icon-collapse) {
+    display: none;
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
 }
 .widget-toc__element-pagenumber {
     width: 45px;
@@ -14830,7 +14891,31 @@ html[dir='rtl'] .timematrix__loader {
 }
 .toc__list-expandable li:hover,
 .toc__list-full li:hover {
+<<<<<<< HEAD
     background-color: #eee;
+=======
+    background-color: var(--toc-page-hover-bg);
+}
+.toc__list-expandable-title a,
+.toc__list-full-title a,
+.toc__list-expandable-title button,
+.toc__list-full-title button {
+    color: var(--toc-page-link-color);
+}
+.toc__list-expandable-title a:hover,
+.toc__list-full-title a:hover,
+.toc__list-expandable-title button:hover,
+.toc__list-full-title button:hover,
+.toc__list-expandable-title a:focus,
+.toc__list-full-title a:focus,
+.toc__list-expandable-title button:focus,
+.toc__list-full-title button:focus,
+.toc__list-expandable-title a:active,
+.toc__list-full-title a:active,
+.toc__list-expandable-title button:active,
+.toc__list-full-title button:active {
+    color: var(--toc-page-link-color-hover);
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
 }
 .toc__list-expandable-number,
 .toc__list-full-number {
@@ -14857,28 +14942,97 @@ html[dir='rtl'] .timematrix__loader {
 .toc__list-full-number a:active {
     text-decoration: none;
 }
+<<<<<<< HEAD
+=======
+.toc__list-expandable-number .icon-wrapper svg,
+.toc__list-full-number .icon-wrapper svg {
+    color: var(--toc-page-toggle-icon-color);
+}
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
 .toc__list-expandable-download-button,
 .toc__list-full-download-button {
     display: flex;
 }
+<<<<<<< HEAD
+=======
+.toc__list-expandable-download-button .icon-wrapper svg,
+.toc__list-full-download-button .icon-wrapper svg {
+    color: var(--toc-page-toggle-icon-color);
+}
+.toc__list-expandable-download-button:hover .icon-wrapper svg,
+.toc__list-full-download-button:hover .icon-wrapper svg {
+    color: var(--toc-page-toggle-icon-color-hover);
+}
+.toc__list-expandable-download-button:focus .icon-wrapper svg,
+.toc__list-full-download-button:focus .icon-wrapper svg,
+.toc__list-expandable-download-button:active .icon-wrapper svg,
+.toc__list-full-download-button:active .icon-wrapper svg {
+    color: var(--toc-page-toggle-icon-color);
+}
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
 .toc__list-expandable-all {
     margin: 15px 0;
     display: flex;
     justify-content: flex-end;
     gap: 10px;
 }
+<<<<<<< HEAD
+=======
+.toc__list-expandable-all .btn .icon-wrapper svg {
+    color: var(--toc-page-toggle-icon-color);
+}
+.toc__list-expandable-all .btn:hover .icon-wrapper svg {
+    color: var(--toc-page-toggle-icon-color-hover);
+}
+.toc__list-expandable-all .btn:focus .icon-wrapper svg,
+.toc__list-expandable-all .btn:active .icon-wrapper svg {
+    color: var(--toc-page-toggle-icon-color);
+}
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
 .toc__list-expandable-elem,
 .toc__list-full-item {
     padding: 4px 0px;
 }
+<<<<<<< HEAD
+=======
+.toc__list-expandable-elem + .toc__list-expandable-elem:not(.toc__list-expandable-elem--hidden),
+.toc__list-full-item + .toc__list-full-item {
+    border-top: 1px solid var(--toc-page-border-color);
+}
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
 .toc__list-expandable-title-wrapper,
 .toc__list-full-title-wrapper {
     display: flex;
     align-items: center;
 }
+<<<<<<< HEAD
 .toc__list-expandable-expand-button {
     display: flex;
 }
+=======
+.toc__list-expandable-toggle {
+    display: flex;
+}
+.toc__list-expandable-toggle .icon-wrapper svg {
+    color: var(--toc-page-toggle-icon-color);
+}
+.toc__list-expandable-toggle:hover .icon-wrapper svg {
+    color: var(--toc-page-toggle-icon-color-hover);
+}
+.toc__list-expandable-toggle:focus .icon-wrapper svg,
+.toc__list-expandable-toggle:active .icon-wrapper svg {
+    color: var(--toc-page-toggle-icon-color);
+}
+.toc__list-expandable-elem--hidden {
+    display: none;
+}
+.toc__list-expandable-elem--expanded .icon-wrapper:has(.toc__icon-expand) {
+    display: none;
+}
+.toc__list-expandable-elem:not(.toc__list-expandable-elem--expanded) .icon-wrapper:has(.toc__icon-collapse) {
+    display: none;
+}
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
 .toc__list-full {
     margin-top: 15px;
 }
@@ -15334,12 +15488,25 @@ html[dir='rtl'] .timematrix__loader {
     display: block;
     background: transparent;
 }
+<<<<<<< HEAD
 .fullscreen .widget-toc__title-expand a {
     color: #1a1a1a;
 }
 .fullscreen .widget-toc__title-expand a:hover,
 .fullscreen .widget-toc__title-expand a:active,
 .fullscreen .widget-toc__title-expand a:focus {
+=======
+.fullscreen .widget-toc__title-expand a,
+.fullscreen .widget-toc__title-expand button {
+    color: #1a1a1a;
+}
+.fullscreen .widget-toc__title-expand a:hover,
+.fullscreen .widget-toc__title-expand button:hover,
+.fullscreen .widget-toc__title-expand a:active,
+.fullscreen .widget-toc__title-expand button:active,
+.fullscreen .widget-toc__title-expand a:focus,
+.fullscreen .widget-toc__title-expand button:focus {
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
     color: #1a1a1a;
     text-decoration: none;
 }
@@ -19723,7 +19890,11 @@ html[dir='rtl'] .admin__topbar-frontend-dropdown li {
     border-bottom: none;
     padding: 2rem 1.5rem 0.5rem 1.5rem;
     font-weight: 400;
+<<<<<<< HEAD
     letter-spacing: 0;
+=======
+    letter-spacing: 0rem;
+>>>>>>> 36fb40eb01 (fix zoom slider for images)
     text-transform: uppercase;
     margin-bottom: 0;
     font-size: 1.4rem;
