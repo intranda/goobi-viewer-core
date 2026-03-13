@@ -230,7 +230,7 @@ function createFooter(viewer) {
 
 function initControls(zoom, rotation) {
     if (document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
-        zoom.setSlider(_config.elementSelectors.controls.zoomSlider);
+        zoom.setSlider(_config.elementSelectors.controls.zoomSlider, 3);
     }
     document
         .querySelectorAll(_config.elementSelectors.controls.rotateLeft)
