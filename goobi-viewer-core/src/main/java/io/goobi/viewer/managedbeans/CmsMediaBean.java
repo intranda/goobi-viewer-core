@@ -243,9 +243,16 @@ public class CmsMediaBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteMedia(CMSMediaItem item) throws DAOException {
+        if (deleteSingleMedia(item)) {
+            Messages.info(null, "admin__media_delete_success", item.getFileName());
+        }
+        reloadMediaList(false);
+    }
+
+    private boolean deleteSingleMedia(CMSMediaItem item) throws DAOException {
         IDAO dao = DataManager.getInstance().getDao();
         if (dao == null) {
-            return;
+            return false;
         }
 
         try {
@@ -266,10 +273,10 @@ public class CmsMediaBean implements Serializable {
             }
             if (!deleted) {
                 Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
-            } else {
-                CMSMediaResource.removeFromImageCache(item, ContentServerCacheManager.getInstance());
+                return false;
             }
-            reloadMediaList(false);
+            CMSMediaResource.removeFromImageCache(item, ContentServerCacheManager.getInstance());
+            return true;
         } catch (RollbackException e) {
             if (e.getMessage() != null && e.getMessage().toLowerCase().contains("cannot delete or update a parent row")) {
                 Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
@@ -277,6 +284,7 @@ public class CmsMediaBean implements Serializable {
                 logger.error("Error deleting category ", e);
                 Messages.error(null, "admin__media_delete_error", item.getFileName(), e.getMessage());
             }
+            return false;
         }
     }
 
@@ -366,9 +374,16 @@ public class CmsMediaBean implements Serializable {
             stream = stream.filter(Selectable::isSelected);
         }
         List<CMSMediaItem> itemsToDelete = stream.map(Selectable::getValue).collect(Collectors.toList());
+        int successCount = 0;
         for (CMSMediaItem item : itemsToDelete) {
-            deleteMedia(item);
+            if (deleteSingleMedia(item)) {
+                successCount++;
+            }
         }
+        if (successCount > 0) {
+            Messages.info(null, "admin__media_delete_success_count", String.valueOf(successCount));
+        }
+        reloadMediaList(false);
         //reset selected status after gobal action
         setAllSelected(false);
     }
