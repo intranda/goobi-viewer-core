@@ -119,6 +119,8 @@ public class ArchiveEntryMetadataList {
             if (metadataList != null && !metadataList.isEmpty()) {
                 StructElement se = new StructElement(doc);
                 for (Metadata md : metadataList) {
+                    logger.trace("Populating archive metadata field: {}", md.getLabel());
+                    se.getMetadataFields().put(md.getLabel(), new ArrayList<>()); // Field must exist on StructElement to be populated
                     if (md.populate(se, SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), null, null)) {
                         addMetadataField(md);
                     }
