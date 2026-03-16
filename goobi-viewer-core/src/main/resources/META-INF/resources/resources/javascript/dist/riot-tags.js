@@ -2227,11 +2227,11 @@ riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{
         }.bind(this)
 
         this.getPageUrl = function(pageNo) {
-        	if(this.isDoublePageMode()) {
-        		return this.opts.pageUrlTemplate(pageNo + "-" + (pageNo+1));
-        	} else {
+         	if(this.isDoublePageMode()) {
+         		return this.opts.pageUrlTemplate(pageNo + "-" + (pageNo+1));
+         	} else {
             	return this.opts.pageUrlTemplate(pageNo);
-        	}
+         	}
         }.bind(this)
 
         this.gotoFirstPage = function() {
@@ -2276,7 +2276,9 @@ riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{
             if(this.isSequenceMode()) {
                 this.gotoPage(pageNo);
             } else {
-                window.location.assign(this.getPageUrl(pageNo));
+            	const pageUrl = this.opts.pageUrlTemplate(pageNo);
+
+                window.location.assign(pageUrl);
             }
         }.bind(this)
 
