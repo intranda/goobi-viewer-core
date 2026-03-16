@@ -87,6 +87,8 @@ import io.goobi.viewer.model.maps.GeoMapMarker.MarkerType;
 import io.goobi.viewer.model.maps.GeomapItemFilter;
 import io.goobi.viewer.model.maps.View;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.metadata.MetadataListElement;
+import io.goobi.viewer.model.metadata.MetadataListSeparator;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
@@ -675,6 +677,31 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Reads metadata configuration for the given template name if it's contained in the given template list. Includes non-metadata elements in the
+     * list
+     *
+     * @param template Requested template name
+     * @param templateList List of templates in which to look
+     * @param fallbackToDefaultTemplate If true, the _DEFAULT template will be loaded if the given template is not found
+     * @param topstructValueFallbackDefaultValue If true, the default value for the parameter attribute "topstructValueFallback" will be the value
+     *            passed here
+     * @return Configured values
+     */
+    private static List<MetadataListElement> getMetadataListItemsForTemplate(String template,
+            List<HierarchicalConfiguration<ImmutableNode>> templateList,
+            boolean fallbackToDefaultTemplate, boolean topstructValueFallbackDefaultValue) {
+        if (templateList == null) {
+            return new ArrayList<>();
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
+        if (usingTemplate == null) {
+            return new ArrayList<>();
+        }
+
+        return getMetadataListItemsForTemplate(usingTemplate, topstructValueFallbackDefaultValue);
+    }
+
+    /**
      * Reads metadata configuration for the given template name if it's contained in the given template list.
      *
      * @param template Requested template name
@@ -686,15 +713,10 @@ public class Configuration extends AbstractConfiguration {
      */
     private static List<Metadata> getMetadataForTemplate(String template, List<HierarchicalConfiguration<ImmutableNode>> templateList,
             boolean fallbackToDefaultTemplate, boolean topstructValueFallbackDefaultValue) {
-        if (templateList == null) {
-            return new ArrayList<>();
-        }
-        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
-        if (usingTemplate == null) {
-            return new ArrayList<>();
-        }
-
-        return getMetadataForTemplate(usingTemplate, topstructValueFallbackDefaultValue);
+        return getMetadataListItemsForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue).stream()
+                .filter(item -> item instanceof Metadata)
+                .map(item -> (Metadata) item)
+                .toList();
     }
 
     /**
@@ -704,7 +726,7 @@ public class Configuration extends AbstractConfiguration {
      * @param topstructValueFallbackDefaultValue Default value for topstructValueFallback, if not explicitly configured
      * @return Configured values
      */
-    private static List<Metadata> getMetadataForTemplate(HierarchicalConfiguration<ImmutableNode> usingTemplate,
+    private static List<MetadataListElement> getMetadataListItemsForTemplate(HierarchicalConfiguration<ImmutableNode> usingTemplate,
             boolean topstructValueFallbackDefaultValue) {
         if (usingTemplate == null) {
             return new ArrayList<>();
@@ -715,11 +737,15 @@ public class Configuration extends AbstractConfiguration {
             return new ArrayList<>();
         }
 
-        List<Metadata> ret = new ArrayList<>(elements.size());
+        List<MetadataListElement> ret = new ArrayList<>(elements.size());
         for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
-            Metadata md = getMetadataFromSubnodeConfig(sub, topstructValueFallbackDefaultValue, 0);
-            if (md != null) {
-                ret.add(md);
+            if ("fold".equals(sub.getRootElementName())) {
+                ret.add(new MetadataListSeparator());
+            } else {
+                Metadata md = getMetadataFromSubnodeConfig(sub, topstructValueFallbackDefaultValue, 0);
+                if (md != null) {
+                    ret.add(md);
+                }
             }
         }
 
@@ -892,7 +918,7 @@ public class Configuration extends AbstractConfiguration {
         }
     }
 
-    public Metadata getGeoMapFeatureConfiguration(String option, String template) {
+    public MetadataListElement getGeoMapFeatureConfiguration(String option, String template) {
         return getGeomapFeatureConfigurations(option).getOrDefault(template, new Metadata());
     }
 
@@ -1035,14 +1061,14 @@ public class Configuration extends AbstractConfiguration {
         return List.of(config);
     }
 
-    private static Map<String, Metadata> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
+    private static Map<String, MetadataListElement> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
         if (templateList == null) {
             return Collections.emptyMap();
         }
-        Map<String, Metadata> map = new HashMap<>();
+        Map<String, MetadataListElement> map = new HashMap<>();
         for (HierarchicalConfiguration<ImmutableNode> template : templateList) {
             String name = template.getString("[@name]", "_DEFAULT");
-            Metadata md = getMetadataForTemplate(name, templateList, true, false).stream().findAny().orElse(null);
+            MetadataListElement md = getMetadataForTemplate(name, templateList, true, false).stream().findAny().orElse(null);
             if (md != null) {
                 map.put(name, md);
             }

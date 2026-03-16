@@ -216,21 +216,24 @@ public class MetadataElement implements Serializable {
         PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false);
         url = se.getUrl(pageType);
 
-        for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(metadataViewIndex, se.getDocStructType())) {
-            try {
-                if (!metadata.populate(se, String.valueOf(se.getLuceneId()), metadata.getSortFields(), sessionLocale)) {
-                    continue;
-                }
-                if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
-                    if (se.isWork() || se.isAnchor()) {
+        for (MetadataListElement metadataEle : DataManager.getInstance()
+                .getConfiguration()
+                .getMainMetadataForTemplate(metadataViewIndex, se.getDocStructType())) {
+            if (metadataEle instanceof Metadata metadata)
+                try {
+                    if (!metadata.populate(se, String.valueOf(se.getLuceneId()), metadata.getSortFields(), sessionLocale)) {
+                        continue;
+                    }
+                    if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
+                        if (se.isWork() || se.isAnchor()) {
+                            metadataList.add(metadata);
+                        }
+                    } else {
                         metadataList.add(metadata);
                     }
-                } else {
-                    metadataList.add(metadata);
+                } catch (IndexUnreachableException | PresentationException e) {
+                    logger.error("Error populating {}", metadata.getLabel(), e);
                 }
-            } catch (IndexUnreachableException | PresentationException e) {
-                logger.error("Error populating {}", metadata.getLabel(), e);
-            }
         }
 
         // Populate sidebar metadata
@@ -239,7 +242,7 @@ public class MetadataElement implements Serializable {
             docStructType = "_GROUPS";
             groupType = se.getMetadataValue(SolrConstants.GROUPTYPE);
         }
-        List<Metadata> sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(docStructType);
+        List<MetadataListElement> sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(docStructType);
         if (sidebarMetadataTempList.isEmpty()) {
             // Use default if no elements are defined for the current docstruct
             sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(StringConstants.DEFAULT_NAME);
@@ -249,25 +252,26 @@ public class MetadataElement implements Serializable {
         }
         // The component is only rendered if sidebarMetadataList != null
         sidebarMetadataList = new ArrayList<>(sidebarMetadataTempList.size());
-        for (Metadata metadata : sidebarMetadataTempList) {
-            if (!metadata.populate(se, String.valueOf(se.getLuceneId()), metadata.getSortFields(), sessionLocale)) {
-                continue;
-            }
-            if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
-                // TODO remove bean retrieval
-                ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-                if (adb != null && adb.getViewManager() != null && adb.getViewManager().getCurrentPage() != null
-                        && adb.getViewManager().getCurrentPage().getUrn() != null && !adb.getViewManager().getCurrentPage().getUrn().equals("")) {
-                    Metadata newMetadata =
-                            new Metadata(String.valueOf(se.getLuceneId()), metadata.getLabel(), metadata.getMasterValue(),
-                                    adb.getViewManager().getCurrentPage().getUrn());
-                    sidebarMetadataList.add(newMetadata);
+        for (MetadataListElement metadataEle : sidebarMetadataTempList) {
+            if (metadataEle instanceof Metadata metadata) {
+                if (!metadata.populate(se, String.valueOf(se.getLuceneId()), metadata.getSortFields(), sessionLocale)) {
+                    continue;
                 }
-            } else {
-                sidebarMetadataList.add(metadata);
+                if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
+                    // TODO remove bean retrieval
+                    ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+                    if (adb != null && adb.getViewManager() != null && adb.getViewManager().getCurrentPage() != null
+                            && adb.getViewManager().getCurrentPage().getUrn() != null && !adb.getViewManager().getCurrentPage().getUrn().equals("")) {
+                        Metadata newMetadata =
+                                new Metadata(String.valueOf(se.getLuceneId()), metadata.getLabel(), metadata.getMasterValue(),
+                                        adb.getViewManager().getCurrentPage().getUrn());
+                        sidebarMetadataList.add(newMetadata);
+                    }
+                } else {
+                    sidebarMetadataList.add(metadata);
+                }
             }
         }
-
         return this;
     }
 

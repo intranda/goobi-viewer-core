@@ -76,7 +76,7 @@ import io.goobi.viewer.solr.SolrTools;
 /**
  * Metadata field configuration.
  */
-public class Metadata implements Serializable {
+public class Metadata implements MetadataListElement, Serializable {
 
     private static final long serialVersionUID = 5671775647919258310L;
 
