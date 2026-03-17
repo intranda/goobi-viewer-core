@@ -442,6 +442,26 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
+        return getMetadataListItemsForTemplate(type, template, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue).stream()
+                .filter(item -> item instanceof Metadata)
+                .map(item -> (Metadata) item)
+                .toList();
+    }
+
+    /**
+     * 
+     * @param type
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @param topstructValueFallbackDefaultValue
+     * @return List of metadata configurations
+     * @should throw IllegalArgumentException if type null
+     * @should return empty list if no metadata lists configured
+     * @should return empty list if metadataList contains no templates
+     * @should return empty list if list type not found
+     */
+    public List<MetadataListElement> getMetadataListItemsForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
+            boolean topstructValueFallbackDefaultValue) {
         // logger.trace("getMetadataConfigurationForTemplate: {}/{}", type, template); //NOSONAR Debug
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");
@@ -473,7 +493,7 @@ public class Configuration extends AbstractConfiguration {
                     return new ArrayList<>(); // must be a mutable list!
                 }
 
-                return getMetadataForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue);
+                return getMetadataListItemsForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue);
             }
         }
 
@@ -629,6 +649,22 @@ public class Configuration extends AbstractConfiguration {
      * @should return default template if template is null
      */
     public List<Metadata> getMainMetadataForTemplate(int index, String template) {
+        return getMainMetadataListItemsForTemplate(index, template).stream()
+                .filter(item -> item instanceof Metadata)
+                .map(item -> (Metadata) item)
+                .toList();
+    }
+
+    /**
+     *
+     * @param index
+     * @param template
+     * @return List of configured <code>Metadata</code> fields for the given template
+     * @should return correct template configuration
+     * @should return default template configuration if template not found
+     * @should return default template if template is null
+     */
+    public List<MetadataListElement> getMainMetadataListItemsForTemplate(int index, String template) {
         logger.trace("getMainMetadataForTemplate: {}", template);
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.metadataView(" + index + ").template");
         if (templateList == null) {
@@ -644,7 +680,7 @@ public class Configuration extends AbstractConfiguration {
             }
         }
 
-        return getMetadataForTemplate(template, templateList, true, false);
+        return getMetadataListItemsForTemplate(template, templateList, true, false);
     }
 
     /**

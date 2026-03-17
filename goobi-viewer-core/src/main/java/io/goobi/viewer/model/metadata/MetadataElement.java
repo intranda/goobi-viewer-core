@@ -183,6 +183,12 @@ public class MetadataElement implements Serializable {
     private boolean filesOnly;
     /** Selected language version of the current record. This can be different from the current viewer locale. */
     private String selectedRecordLanguage;
+    /**
+     * The index of the element in the {@link #metadataList} before which the "fold" element occurs in the configuration. If no such element exists,
+     * the index is {@link Integer#MAX_VALUE}. Otherwise, only metadata before the index should be displayed initially, and metadata starting with
+     * this index should be shown only when the user expands the list
+     */
+    private int metadataFoldIndex = Integer.MAX_VALUE;
 
     /**
      *
@@ -216,10 +222,10 @@ public class MetadataElement implements Serializable {
         PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false);
         url = se.getUrl(pageType);
 
-        for (MetadataListElement metadataEle : DataManager.getInstance()
+        for (MetadataListElement item : DataManager.getInstance()
                 .getConfiguration()
-                .getMainMetadataForTemplate(metadataViewIndex, se.getDocStructType())) {
-            if (metadataEle instanceof Metadata metadata)
+                .getMainMetadataListItemsForTemplate(metadataViewIndex, se.getDocStructType())) {
+            if (item instanceof Metadata metadata) {
                 try {
                     if (!metadata.populate(se, String.valueOf(se.getLuceneId()), metadata.getSortFields(), sessionLocale)) {
                         continue;
@@ -234,6 +240,9 @@ public class MetadataElement implements Serializable {
                 } catch (IndexUnreachableException | PresentationException e) {
                     logger.error("Error populating {}", metadata.getLabel(), e);
                 }
+            } else if (this.metadataFoldIndex == Integer.MAX_VALUE) { //only allow setting metadata fold index if it isn't already set
+                this.metadataFoldIndex = metadataList.size();
+            }
         }
 
         // Populate sidebar metadata
@@ -242,7 +251,7 @@ public class MetadataElement implements Serializable {
             docStructType = "_GROUPS";
             groupType = se.getMetadataValue(SolrConstants.GROUPTYPE);
         }
-        List<MetadataListElement> sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(docStructType);
+        List<Metadata> sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(docStructType);
         if (sidebarMetadataTempList.isEmpty()) {
             // Use default if no elements are defined for the current docstruct
             sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(StringConstants.DEFAULT_NAME);
@@ -252,24 +261,22 @@ public class MetadataElement implements Serializable {
         }
         // The component is only rendered if sidebarMetadataList != null
         sidebarMetadataList = new ArrayList<>(sidebarMetadataTempList.size());
-        for (MetadataListElement metadataEle : sidebarMetadataTempList) {
-            if (metadataEle instanceof Metadata metadata) {
-                if (!metadata.populate(se, String.valueOf(se.getLuceneId()), metadata.getSortFields(), sessionLocale)) {
-                    continue;
+        for (Metadata metadata : sidebarMetadataTempList) {
+            if (!metadata.populate(se, String.valueOf(se.getLuceneId()), metadata.getSortFields(), sessionLocale)) {
+                continue;
+            }
+            if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
+                // TODO remove bean retrieval
+                ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+                if (adb != null && adb.getViewManager() != null && adb.getViewManager().getCurrentPage() != null
+                        && adb.getViewManager().getCurrentPage().getUrn() != null && !adb.getViewManager().getCurrentPage().getUrn().equals("")) {
+                    Metadata newMetadata =
+                            new Metadata(String.valueOf(se.getLuceneId()), metadata.getLabel(), metadata.getMasterValue(),
+                                    adb.getViewManager().getCurrentPage().getUrn());
+                    sidebarMetadataList.add(newMetadata);
                 }
-                if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
-                    // TODO remove bean retrieval
-                    ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-                    if (adb != null && adb.getViewManager() != null && adb.getViewManager().getCurrentPage() != null
-                            && adb.getViewManager().getCurrentPage().getUrn() != null && !adb.getViewManager().getCurrentPage().getUrn().equals("")) {
-                        Metadata newMetadata =
-                                new Metadata(String.valueOf(se.getLuceneId()), metadata.getLabel(), metadata.getMasterValue(),
-                                        adb.getViewManager().getCurrentPage().getUrn());
-                        sidebarMetadataList.add(newMetadata);
-                    }
-                } else {
-                    sidebarMetadataList.add(metadata);
-                }
+            } else {
+                sidebarMetadataList.add(metadata);
             }
         }
         return this;
@@ -293,6 +300,14 @@ public class MetadataElement implements Serializable {
         }
 
         return mimeType;
+    }
+
+    public boolean isHasMetadataListFold() {
+        return Integer.MAX_VALUE != this.metadataFoldIndex;
+    }
+
+    public int getMetadataFoldIndex() {
+        return metadataFoldIndex;
     }
 
     /**
@@ -436,7 +451,34 @@ public class MetadataElement implements Serializable {
      * @return the oneMetadataList
      */
     public List<Metadata> getMetadataList() {
-        return Metadata.filterMetadata(metadataList, selectedRecordLanguage, null);
+        return getMetadataList(false);
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>metadataList</code>.
+     * </p>
+     *
+     * @param beforeFold if true, only list metadata before index #{@link #metadataFoldIndex}
+     * @return the MetadataList
+     */
+    public List<Metadata> getMetadataList(boolean beforeFold) {
+        List<Metadata> mdList = beforeFold ? metadataList.subList(0, this.metadataFoldIndex) : metadataList;
+        return Metadata.filterMetadata(mdList, selectedRecordLanguage, null);
+    }
+
+    /**
+     * Alias for {@link #getMetadataList(boolean) getMetadataList(true)}
+     * 
+     * @return the MetadataList
+     */
+    public List<Metadata> getMetadataListBeforeFold() {
+        return getMetadataList(true);
+    }
+
+    public List<Metadata> getMetadataListAftereFold() {
+        List<Metadata> mdList = metadataList.subList(this.metadataFoldIndex, this.metadataList.size());
+        return Metadata.filterMetadata(mdList, selectedRecordLanguage, null);
     }
 
     /**
