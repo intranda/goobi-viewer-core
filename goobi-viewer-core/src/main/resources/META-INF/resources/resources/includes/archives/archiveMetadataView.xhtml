@@ -19,8 +19,7 @@
             <!-- METADATA -->
             <div class="archives__object-title">#{archiveEntry.label}</div>
 
-            <!-- Replacing these with c:forEach will result in get*List() being called for each iteration -->
-            <ui:repeat
+            <c:forEach
                 begin="0"
                 end="6"
                 var="index">
@@ -81,7 +80,7 @@
                         </h:panelGroup>
                     </c:forEach>
                 </ui:fragment>
-            </ui:repeat>
+            </c:forEach>
 
             <!-- Description control metadata -->
             <ui:fragment
