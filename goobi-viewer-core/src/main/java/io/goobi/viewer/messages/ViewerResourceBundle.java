@@ -88,6 +88,8 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     private static final String BUNDLE_NAME = "messages";
 
+    private static Thread fileWatcherThread;
+
     private static Map<Locale, ResourceBundle> defaultBundles = new ConcurrentHashMap<>();
     /** Constant <code>localBundles</code> */
     protected static Map<Locale, ResourceBundle> localBundles = new ConcurrentHashMap<>();
@@ -117,15 +119,21 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @throws IOException
      * @throws InterruptedException
      */
+    public static void shutdown() {
+        if (fileWatcherThread != null) {
+            fileWatcherThread.interrupt();
+        }
+    }
+
     private static void registerFileChangedService(Path path) {
         logger.trace("registerFileChangedService: {}", path);
-        Thread fileChangedObserver = new Thread(new Runnable() {
+        fileWatcherThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
                 try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
                     path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
-                    while (true) {
+                    while (!Thread.currentThread().isInterrupted()) {
                         final WatchKey wk = watchService.take();
                         for (WatchEvent<?> event : wk.pollEvents()) {
                             final Path changed = (Path) event.context();
@@ -145,14 +153,13 @@ public class ViewerResourceBundle extends ResourceBundle {
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 } catch (InterruptedException e) {
-                    logger.error(e.getMessage(), e);
                     Thread.currentThread().interrupt();
                 }
             }
         });
 
-        fileChangedObserver.setDaemon(true);
-        fileChangedObserver.start();
+        fileWatcherThread.setDaemon(true);
+        fileWatcherThread.start();
     }
 
     /**

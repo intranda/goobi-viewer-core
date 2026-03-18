@@ -131,6 +131,7 @@ public class ContextListener implements ServletContextListener {
             logger.error("Error closing Solr client", e);
         }
         DataManager.getInstance().getLanguageHelper().shutdown();
+        ViewerResourceBundle.shutdown();
         Enumeration<Driver> drivers = DriverManager.getDrivers();
         while (drivers.hasMoreElements()) {
             try {

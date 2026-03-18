@@ -76,7 +76,7 @@ public class LanguageHelper {
 
     public void shutdown() {
         if (trigger != null) {
-            trigger.shutdown();
+            trigger.shutdown(true);
         }
     }
 
