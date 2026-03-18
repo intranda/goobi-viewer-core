@@ -233,6 +233,9 @@ public class DefaultQueueListener {
                 log.warn("Error closing connection for queue listener {}: {}", queueType, e.toString());
             }
         }
+        if (this.thread != null) {
+            this.thread.interrupt();
+        }
         try {
             if (this.thread != null) {
                 this.thread.join(5000);

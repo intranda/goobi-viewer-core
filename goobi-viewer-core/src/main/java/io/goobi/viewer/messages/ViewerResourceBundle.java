@@ -132,6 +132,9 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     private static void registerFileChangedService(Path path) {
         logger.trace("registerFileChangedService: {}", path);
+        if (fileWatcherThread != null && fileWatcherThread.isAlive()) {
+            return;
+        }
         fileWatcherThread = new Thread(new Runnable() {
 
             @Override
