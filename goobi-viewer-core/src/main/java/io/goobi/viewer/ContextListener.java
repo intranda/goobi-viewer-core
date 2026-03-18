@@ -117,6 +117,10 @@ public class ContextListener implements ServletContextListener {
     /** {@inheritDoc} */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        // Shut down the task thread pool first so no running task can re-open resources
+        // that are about to be closed (e.g. the Solr client).
+        DataManager.getInstance().getRestApiJobManager().shutdown();
+
         try {
             DataManager.getInstance().getDao().shutdown();
             ContentServerCacheManager.getInstance().close();
@@ -125,7 +129,7 @@ public class ContextListener implements ServletContextListener {
             logger.error("Error stopping DAO", e);
         }
         try {
-            DataManager.getInstance().getSearchIndex().close();
+            DataManager.getInstance().closeSearchIndex();
             logger.info("Successfully closed Solr client");
         } catch (IOException e) {
             logger.error("Error closing Solr client", e);
