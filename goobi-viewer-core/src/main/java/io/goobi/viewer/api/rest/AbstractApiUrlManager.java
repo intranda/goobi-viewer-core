@@ -39,7 +39,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientProperties;
 
-import io.goobi.viewer.controller.StringTools;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.core.MediaType;
@@ -184,7 +183,7 @@ public abstract class AbstractApiUrlManager {
                 if (i.hasNext()) {
                     Object o = i.next();
                     if (o != null) {
-                        String replacement = StringTools.encodeUrl(o.toString());
+                        String replacement = o.toString();
                         // Escape URLs and colons
                         urlString = urlString.replace(group, replacement);
                     }

@@ -194,7 +194,7 @@ public class ImageHandler {
             apiUri = fileUri;
         } else {
             //create internal imageInformation uri
-            apiUri = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), page.getFilepath()).buildURI();
+            apiUri = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), fileUri).buildURI();
         }
 
         ViewAttributes viewAttributes = new ViewAttributes(page, pageType);

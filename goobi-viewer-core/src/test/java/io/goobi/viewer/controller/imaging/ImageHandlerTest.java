@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller.imaging;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -196,7 +197,8 @@ class ImageHandlerTest extends AbstractTest {
 
     @Test
     void testGetImageInformationFromPage_filenameWithSpaces()
-            throws URISyntaxException, ContentLibException, IndexUnreachableException, ViewerConfigurationException, DAOException {
+            throws URISyntaxException, ContentLibException, IndexUnreachableException, ViewerConfigurationException, DAOException,
+            UnsupportedEncodingException {
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
         Mockito.when(page.getFilepath()).thenReturn("image with spaces.tif");
         Mockito.when(page.getImageWidth()).thenReturn(800);
@@ -205,8 +207,9 @@ class ImageHandlerTest extends AbstractTest {
         Mockito.when(page.getPi()).thenReturn("PPN1234");
 
         ImageInformation info = handler.getImageInformation(page, PageType.viewObject);
+        String filenameEncoded = PathConverter.toURI("image with spaces.tif").toString();
         Assertions.assertEquals(
-                TestUtils.APPLICATION_ROOT_URL + "api/v1/records/PPN1234/files/images/image+with+spaces.tif",
+                TestUtils.APPLICATION_ROOT_URL + "api/v1/records/PPN1234/files/images/" + filenameEncoded,
                 info.getId().toString());
         Assertions.assertEquals(page.getImageWidth(), info.getWidth());
         Assertions.assertEquals(page.getImageHeight(), info.getHeight());
