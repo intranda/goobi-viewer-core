@@ -37,6 +37,7 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -191,6 +192,59 @@ class ImageHandlerTest extends AbstractTest {
         Path pathRelative = PathConverter.getPath(uriRelative);
         Assertions.assertEquals("a/b/c d [1]-falls.jpg", pathRelative.toString());
 
+    }
+
+    @Test
+    void testGetImageInformationFromPage_filenameWithSpaces()
+            throws URISyntaxException, ContentLibException, IndexUnreachableException, ViewerConfigurationException, DAOException {
+        PhysicalElement page = Mockito.mock(PhysicalElement.class);
+        Mockito.when(page.getFilepath()).thenReturn("image with spaces.tif");
+        Mockito.when(page.getImageWidth()).thenReturn(800);
+        Mockito.when(page.getImageHeight()).thenReturn(1200);
+        Mockito.when(page.getMimeType()).thenReturn("image/tiff");
+        Mockito.when(page.getPi()).thenReturn("PPN1234");
+
+        ImageInformation info = handler.getImageInformation(page, PageType.viewObject);
+        Assertions.assertEquals(
+                TestUtils.APPLICATION_ROOT_URL + "api/v1/records/PPN1234/files/images/image+with+spaces.tif",
+                info.getId().toString());
+        Assertions.assertEquals(page.getImageWidth(), info.getWidth());
+        Assertions.assertEquals(page.getImageHeight(), info.getHeight());
+    }
+
+    @Test
+    void testGetImageInformationFromPage_filenameWithUmlauts()
+            throws URISyntaxException, ContentLibException, IndexUnreachableException, ViewerConfigurationException, DAOException {
+        PhysicalElement page = Mockito.mock(PhysicalElement.class);
+        Mockito.when(page.getFilepath()).thenReturn("unrühmliches-Bild.tif");
+        Mockito.when(page.getImageWidth()).thenReturn(800);
+        Mockito.when(page.getImageHeight()).thenReturn(1200);
+        Mockito.when(page.getMimeType()).thenReturn("image/tiff");
+        Mockito.when(page.getPi()).thenReturn("PPN1234");
+
+        ImageInformation info = handler.getImageInformation(page, PageType.viewObject);
+        Assertions.assertEquals(
+                TestUtils.APPLICATION_ROOT_URL + "api/v1/records/PPN1234/files/images/unrühmliches-Bild.tif",
+                StringTools.decodeUrl(info.getId().toString()));
+        Assertions.assertEquals(page.getImageWidth(), info.getWidth());
+        Assertions.assertEquals(page.getImageHeight(), info.getHeight());
+    }
+
+    @Test
+    void testGetImageInformationFromPage_externalImage()
+            throws URISyntaxException, ContentLibException, IndexUnreachableException, ViewerConfigurationException, DAOException {
+        PhysicalElement page = Mockito.mock(PhysicalElement.class);
+        Mockito.when(page.getFilepath()).thenReturn("https://other-site/iiif/unrühmliches-Bild.tif");
+        Mockito.when(page.getImageWidth()).thenReturn(800);
+        Mockito.when(page.getImageHeight()).thenReturn(1200);
+        Mockito.when(page.getMimeType()).thenReturn("image/tiff");
+        Mockito.when(page.getPi()).thenReturn("PPN1234");
+
+        ImageInformation info = handler.getImageInformation(page, PageType.viewObject);
+        Assertions.assertEquals("https://other-site/iiif/unrühmliches-Bild.tif",
+                StringTools.decodeUrl(info.getId().toString()));
+        Assertions.assertEquals(page.getImageWidth(), info.getWidth());
+        Assertions.assertEquals(page.getImageHeight(), info.getHeight());
     }
 
 }
