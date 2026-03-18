@@ -29,6 +29,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.ProviderNotFoundException;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -119,6 +123,21 @@ public class ContextListener implements ServletContextListener {
             logger.info("Successfully stopped DAO");
         } catch (DAOException e) {
             logger.error("Error stopping DAO", e);
+        }
+        try {
+            DataManager.getInstance().getSearchIndex().close();
+            logger.info("Successfully closed Solr client");
+        } catch (IOException e) {
+            logger.error("Error closing Solr client", e);
+        }
+        DataManager.getInstance().getLanguageHelper().shutdown();
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            try {
+                DriverManager.deregisterDriver(drivers.nextElement());
+            } catch (SQLException e) {
+                logger.error("Error deregistering JDBC driver", e);
+            }
         }
     }
 }

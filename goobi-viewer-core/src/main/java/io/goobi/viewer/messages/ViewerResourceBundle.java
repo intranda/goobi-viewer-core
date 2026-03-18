@@ -151,6 +151,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
         });
 
+        fileChangedObserver.setDaemon(true);
         fileChangedObserver.start();
     }
 

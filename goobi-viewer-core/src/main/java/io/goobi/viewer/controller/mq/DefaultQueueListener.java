@@ -121,7 +121,10 @@ public class DefaultQueueListener {
      */
     void waitForMessage(Session sess, MessageConsumer consumer) {
         try {
-            Message message = consumer.receive();
+            Message message = consumer.receive(1000);
+            if (message == null) {
+                return;
+            }
             ViewerMessage ticket = null;
             if (message instanceof TextMessage tm) {
                 ticket = ViewerMessage.parseJSON(tm.getText());
