@@ -115,6 +115,11 @@ public class ViewerResourceBundle extends ResourceBundle {
     public static void shutdown() {
         if (fileWatcherThread != null) {
             fileWatcherThread.interrupt();
+            try {
+                fileWatcherThread.join(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
