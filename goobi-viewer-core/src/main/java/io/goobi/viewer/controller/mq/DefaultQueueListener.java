@@ -102,7 +102,7 @@ public class DefaultQueueListener {
     void startListener(String queueType, ActiveMQConnection conn) throws JMSException {
         try (Session sess = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
                 MessageConsumer consumer = sess.createConsumer(sess.createQueue(queueType));) {
-            while (!shouldStop && !conn.isClosed()) {
+            while (!shouldStop && !conn.isTransportFailed()) {
                 lastLoopCircle = LocalDateTime.now();
                 waitForMessage(sess, consumer);
                 if (Thread.interrupted()) {
@@ -139,7 +139,7 @@ public class DefaultQueueListener {
                 handleTicket(sess, message, ticket);
             }
         } catch (JMSException | JsonProcessingException e) {
-            if (!shouldStop && (conn == null || !conn.isClosed())) {
+            if (!shouldStop && (conn == null || !conn.isTransportFailed())) {
                 // back off a little bit, maybe we have a problem with the connection or we are shutting down
                 try {
                     Thread.sleep(3000);
@@ -147,7 +147,7 @@ public class DefaultQueueListener {
                     Thread.currentThread().interrupt();
                     return;
                 }
-                if (!shouldStop && (conn == null || !conn.isClosed())) {
+                if (!shouldStop && (conn == null || !conn.isTransportFailed())) {
                     log.error("Message listener {} has encountered an error. Attempting to resume listener", this, e);
                 }
             }
