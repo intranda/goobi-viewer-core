@@ -103,6 +103,11 @@ public class SocketBean {
     @PreDestroy
     public void close() {
         service.shutdownNow();
+        try {
+            service.awaitTermination(2, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
 }

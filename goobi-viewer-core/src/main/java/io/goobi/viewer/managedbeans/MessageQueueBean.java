@@ -157,16 +157,24 @@ public class MessageQueueBean implements Serializable {
      * @throws jakarta.jms.JMSException if any.
      */
     @PreDestroy
-    public void close() throws JMSException {
+    public void close() {
         log.debug("MessageQueueBean.close()");
         for (DefaultQueueListener listener : getListeners()) {
             listener.close();
         }
-        if (this.queueSession != null) {
-            this.queueSession.close();
+        try {
+            if (this.queueSession != null) {
+                this.queueSession.close();
+            }
+        } catch (JMSException e) {
+            log.warn("Error closing queue session: {}", e.toString());
         }
-        if (this.connection != null) {
-            this.connection.close();
+        try {
+            if (this.connection != null) {
+                this.connection.close();
+            }
+        } catch (JMSException e) {
+            log.warn("Error closing connection: {}", e.toString());
         }
     }
 
