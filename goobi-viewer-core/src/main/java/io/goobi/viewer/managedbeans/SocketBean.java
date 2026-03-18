@@ -102,7 +102,7 @@ public class SocketBean {
 
     @PreDestroy
     public void close() {
-        service.close();
+        service.shutdownNow();
     }
 
 }

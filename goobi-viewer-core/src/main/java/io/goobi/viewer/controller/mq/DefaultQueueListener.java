@@ -89,7 +89,9 @@ public class DefaultQueueListener {
             startListener(queueType, conn);
             log.info("Exiting listener thread for message queue {}: ", queueType);
         } catch (JMSException e) {
-            log.error("Error starting listener for queue {}. Aborting listerner startup", e.toString(), e);
+            if (!shouldStop && !conn.isTransportFailed()) {
+                log.error("Error starting listener for queue {}. Aborting listerner startup", e.toString(), e);
+            }
         }
     }
 
