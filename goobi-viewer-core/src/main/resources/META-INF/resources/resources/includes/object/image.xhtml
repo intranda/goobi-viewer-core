@@ -224,7 +224,6 @@
                     .subscribe((tileSource) => {
                         const imageId = viewerJS.iiif.getId(tileSource);
                         const pageOrder = image.getTileSourceOrderFromId(imageId);
-                    	console.log("scrolled to ", tileSource, imageId, pageOrder);
                         if (pageOrder != undefined) {
                             setCurrentImageOrder({ order: pageOrder });
                         }
@@ -308,7 +307,6 @@
             }
         }
         zoomableImageLoaded.subscribe((image) => {
-        	console.log("loaded zoomable image  2", image);
             initializeSequence(image);
 
             $('.openseadragon-canvas').get(0).focus = () => {
