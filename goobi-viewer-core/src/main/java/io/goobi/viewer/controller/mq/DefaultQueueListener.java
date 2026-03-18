@@ -51,6 +51,7 @@ public class DefaultQueueListener {
     private volatile boolean shouldStop = false;
     private volatile LocalDateTime lastLoopCircle = LocalDateTime.now();
     private final String queueType;
+    private ActiveMQConnection conn = null;
 
     /**
      * 
@@ -66,13 +67,13 @@ public class DefaultQueueListener {
         if (this.thread != null) {
             throw new IllegalStateException("Listener is already registered");
         }
-        ActiveMQConnection conn = this.messageBroker.getConnection();
+        this.conn = this.messageBroker.getConnection();
         ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
         prefetchPolicy.setAll(0);
-        conn.setPrefetchPolicy(prefetchPolicy);
-        RedeliveryPolicy policy = conn.getRedeliveryPolicy();
+        this.conn.setPrefetchPolicy(prefetchPolicy);
+        RedeliveryPolicy policy = this.conn.getRedeliveryPolicy();
         policy.setMaximumRedeliveries(0);
-        thread = new Thread(() -> startMessageLoop(queueType, conn));
+        thread = new Thread(() -> startMessageLoop(queueType, this.conn));
         thread.setDaemon(true);
         thread.start();
     }
@@ -164,6 +165,7 @@ public class DefaultQueueListener {
     public void restartLoop() throws JMSException {
         close();
         this.thread = null;
+        this.conn = null;
         this.shouldStop = false;
         this.register();
     }
@@ -222,9 +224,16 @@ public class DefaultQueueListener {
     public void close() {
         this.shouldStop = true;
         log.info("Stopping MessageQueue listener {}...", this);
+        if (this.conn != null) {
+            try {
+                this.conn.close();
+            } catch (JMSException e) {
+                log.warn("Error closing connection for queue listener {}: {}", queueType, e.toString());
+            }
+        }
         try {
             if (this.thread != null) {
-                this.thread.join(1000);
+                this.thread.join(5000);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
