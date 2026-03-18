@@ -112,6 +112,12 @@ public class ViewerResourceBundle extends ResourceBundle {
         registerFileChangedService(localConfigPath);
     }
 
+    public static void shutdown() {
+        if (fileWatcherThread != null) {
+            fileWatcherThread.interrupt();
+        }
+    }
+
     /**
      * Registers a WatchService that checks for modified messages.properties files and tags them for reloading.
      *
@@ -119,12 +125,6 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static void shutdown() {
-        if (fileWatcherThread != null) {
-            fileWatcherThread.interrupt();
-        }
-    }
-
     private static void registerFileChangedService(Path path) {
         logger.trace("registerFileChangedService: {}", path);
         fileWatcherThread = new Thread(new Runnable() {
