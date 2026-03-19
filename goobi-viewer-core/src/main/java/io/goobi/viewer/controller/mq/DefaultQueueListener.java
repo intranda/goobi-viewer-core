@@ -90,7 +90,7 @@ public class DefaultQueueListener {
             log.info("Exiting listener thread for message queue {}: ", queueType);
         } catch (JMSException e) {
             if (!shouldStop && !conn.isTransportFailed()) {
-                log.error("Error starting listener for queue {}. Aborting listerner startup", e.toString(), e);
+                log.error("Error starting listener for queue {}. Aborting listener startup", queueType, e);
             }
         }
     }
@@ -230,7 +230,7 @@ public class DefaultQueueListener {
             try {
                 this.conn.close();
             } catch (JMSException e) {
-                log.warn("Error closing connection for queue listener {}: {}", queueType, e.toString());
+                log.warn("Error closing connection for queue listener {}", queueType, e);
             }
         }
         if (this.thread != null) {

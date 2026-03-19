@@ -167,14 +167,14 @@ public class MessageQueueBean implements Serializable {
                 this.queueSession.close();
             }
         } catch (JMSException e) {
-            log.warn("Error closing queue session: {}", e.toString());
+            log.warn("Error closing queue session", e);
         }
         try {
             if (this.connection != null) {
                 this.connection.close();
             }
         } catch (JMSException e) {
-            log.warn("Error closing connection: {}", e.toString());
+            log.warn("Error closing connection", e);
         }
     }
 
@@ -455,7 +455,7 @@ public class MessageQueueBean implements Serializable {
             try {
                 l.restartLoop();
             } catch (JMSException e) {
-                log.error("Error restarting message listener for queue {}: {}", l.getQueueType(), e.toString());
+                log.error("Error restarting message listener for queue {}", l.getQueueType(), e);
             }
         });
         updateMessageQueueState();
