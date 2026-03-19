@@ -37,6 +37,7 @@ import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.search.SearchHelper;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -46,7 +47,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "cms_content_advanced_search")
 @DiscriminatorValue("advancedsearch")
-public class CMSAdvancedSearchContent extends CMSContent {
+public class CMSAdvancedSearchContent extends CMSContent implements PagedCMSContent {
 
     private static final Logger logger = LogManager.getLogger(CMSAdvancedSearchContent.class);
 
@@ -55,6 +56,9 @@ public class CMSAdvancedSearchContent extends CMSContent {
     @Column(name = "template_name")
     private String templateName;
 
+    @Column(name = "result_group_name")
+    private String resultGroupName;
+
     public CMSAdvancedSearchContent() {
         super();
     }
@@ -62,25 +66,29 @@ public class CMSAdvancedSearchContent extends CMSContent {
     public CMSAdvancedSearchContent(CMSAdvancedSearchContent orig) {
         super(orig);
         this.templateName = orig.templateName;
+        this.resultGroupName = orig.resultGroupName;
     }
 
     @Override
     public String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException {
         logger.trace("handlePageLoad");
-        if (StringUtils.isBlank(templateName)) {
+        if (StringUtils.isBlank(templateName) && StringUtils.isBlank(resultGroupName)) {
             return "";
         }
         if (!isTemplateValid()) {
-            logger.warn("Advanced search template '{}' not found in configuration", templateName);
+            logger.warn("Advanced search template '{}' or result group '{}' not found in configuration", templateName, resultGroupName);
             return "";
         }
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
             if (searchBean != null) {
                 searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_ADVANCED);
-                searchBean.setAdvancedSearchFieldTemplate(templateName);
-                if (DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()) {
-                    searchBean.setActiveResultGroupName(templateName);
+                if (StringUtils.isNotBlank(templateName)) {
+                    searchBean.setAdvancedSearchFieldTemplate(templateName);
+                }
+                if (StringUtils.isNotBlank(resultGroupName)
+                        && DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()) {
+                    searchBean.setActiveResultGroupName(resultGroupName);
                 }
             }
         } catch (Exception e) {
@@ -111,19 +119,23 @@ public class CMSAdvancedSearchContent extends CMSContent {
 
     @Override
     public boolean isEmpty() {
-        return StringUtils.isBlank(templateName);
+        return StringUtils.isBlank(templateName) && StringUtils.isBlank(resultGroupName);
     }
 
     public boolean isTemplateValid() {
-        if (StringUtils.isBlank(templateName)) {
+        if (StringUtils.isNotBlank(templateName)
+                && !DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames().contains(templateName)) {
             return false;
         }
-        if (DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames().contains(templateName)) {
-            return true;
+        if (StringUtils.isNotBlank(resultGroupName)
+                && DataManager.getInstance()
+                        .getConfiguration()
+                        .getSearchResultGroups()
+                        .stream()
+                        .noneMatch(g -> g.getName().equals(resultGroupName))) {
+            return false;
         }
-        return DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
-                && DataManager.getInstance().getConfiguration().getSearchResultGroups().stream()
-                        .anyMatch(g -> g.getName().equals(templateName));
+        return true;
     }
 
     public String getTemplateName() {
@@ -132,5 +144,13 @@ public class CMSAdvancedSearchContent extends CMSContent {
 
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
+    }
+
+    public String getResultGroupName() {
+        return resultGroupName;
+    }
+
+    public void setResultGroupName(String resultGroupName) {
+        this.resultGroupName = resultGroupName;
     }
 }

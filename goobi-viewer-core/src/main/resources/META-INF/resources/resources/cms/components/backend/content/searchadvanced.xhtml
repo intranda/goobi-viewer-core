@@ -21,23 +21,11 @@
                         id="advancedSearchTemplate"
                         styleClass="form-control"
                         value="#{cc.attrs.contentItem.content.templateName}">
-                        <f:selectItem
-                            itemLabel="#{msg.select}"
-                            itemValue=""
-                            noSelectionOption="true" />
                         <f:selectItems
                             value="#{configurationBean.advancedSearchTemplateNames}"
                             var="template"
                             itemValue="#{template}"
                             itemLabel="#{msg[template]}" />
-                        <c:forEach
-                            var="groupName"
-                            items="#{configurationBean.searchResultGroupNames}">
-                            <f:selectItem
-                                itemValue="#{groupName}"
-                                itemLabel="#{msg[groupName]}"
-                                itemDisabled="#{configurationBean.advancedSearchTemplateNames.contains(groupName)}" />
-                        </c:forEach>
                         <f:passThroughAttribute
                             name="aria-label"
                             value="#{msg.cms_component__search_advanced__template_select}" />
@@ -45,5 +33,35 @@
                 </div>
             </div>
         </div>
+        <ui:fragment rendered="#{configurationBean.searchResultGroupsEnabled}">
+            <div class="admin__content-component-input-group">
+                <div class="admin__content-component-input-label">
+                    <label for="advancedSearchResultGroup">
+                        #{msg.cms_component__search_advanced__result_group_select}:
+                    </label>
+                </div>
+                <div class="admin__content-component-input-field">
+                    <div class="custom-control custom-control--select">
+                        <h:selectOneMenu
+                            id="advancedSearchResultGroup"
+                            styleClass="form-control"
+                            value="#{cc.attrs.contentItem.content.resultGroupName}">
+                            <f:selectItem
+                                itemLabel="#{msg.cms_component__search_advanced__result_group_all}"
+                                itemValue=""
+                                noSelectionOption="true" />
+                            <f:selectItems
+                                value="#{configurationBean.searchResultGroupNames}"
+                                var="groupName"
+                                itemValue="#{groupName}"
+                                itemLabel="#{msg[groupName]}" />
+                            <f:passThroughAttribute
+                                name="aria-label"
+                                value="#{msg.cms_component__search_advanced__result_group_select}" />
+                        </h:selectOneMenu>
+                    </div>
+                </div>
+            </div>
+        </ui:fragment>
     </composite:implementation>
 </ui:composition>
