@@ -277,6 +277,15 @@ class StringToolsTest {
     }
 
     /**
+     * @see StringTools#isStringUrlEncoded(String,String)
+     * @verifies return false if string contains literal percent sign
+     */
+    @Test
+    void isStringUrlEncoded_shouldReturnFalseIfStringContainsLiteralPercentSign() throws Exception {
+        assertFalse(StringTools.isStringUrlEncoded("%", StringTools.DEFAULT_ENCODING));
+    }
+
+    /**
      * @see StringTools#escapeCriticalUrlChracters(String,boolean)
      * @verifies replace characters correctly
      */

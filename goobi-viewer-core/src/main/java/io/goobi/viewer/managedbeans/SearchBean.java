@@ -1290,7 +1290,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 searchStringInternal = URLDecoder.decode(searchStringInternal, URL_ENCODING);
             }
         } catch (UnsupportedEncodingException | IllegalArgumentException e) {
-            logger.error(e.getMessage());
+            logger.warn(e.getMessage());
         }
         // Then unescape custom sequences
         searchStringInternal = StringTools.unescapeCriticalUrlChracters(searchStringInternal);
