@@ -1212,8 +1212,6 @@ public class AdminBean implements Serializable {
         synchronized (TRANSLATION_LOCK) {
             List<TranslationGroup> ret = DataManager.getInstance().getConfiguration().getTranslationGroups();
             logger.trace("groups: {}", ret.size());
-            setTranslationGroupsEditorSession(BeanUtils.getSession().getId());
-            logger.trace("Locked translation for: {}", translationGroupsEditorSession);
             return ret;
         }
     }

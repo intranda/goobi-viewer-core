@@ -22,21 +22,39 @@
 package io.goobi.viewer.websockets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
+import io.goobi.viewer.model.administration.configeditor.FileLocks;
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.Session;
 
 class UserEndpointTest extends AbstractTest {
+
+    private static final String SESSION_ID = "test-session-lock-release";
+    private static final Path CONFIG_FILE = Paths.get("/tmp/viewer-test-config.xml");
+
+    @AfterEach
+    void cleanupFileLocks() throws Exception {
+        FileLocks fileLocks = getFileLocks();
+        fileLocks.unlockFile(CONFIG_FILE, SESSION_ID);
+    }
 
     /**
      * @verifies close socket when no authenticated user is in the HTTP session
@@ -55,5 +73,35 @@ class UserEndpointTest extends AbstractTest {
         ArgumentCaptor<CloseReason> reason = ArgumentCaptor.forClass(CloseReason.class);
         Mockito.verify(ws).close(reason.capture());
         assertEquals(CloseReason.CloseCodes.VIOLATED_POLICY, reason.getValue().getCloseCode());
+    }
+
+    /**
+     * @see UserEndpoint#delayedRemoveLocksForSessionId(String, long)
+     * @verifies release config file editor locks after grace period
+     */
+    @Test
+    void delayedRemoveLocksForSessionId_shouldReleaseConfigFileEditorLocks() throws Exception {
+        FileLocks fileLocks = getFileLocks();
+        fileLocks.lockFile(CONFIG_FILE, SESSION_ID);
+        assertTrue(fileLocks.isFileLockedByOthers(CONFIG_FILE, "other-session"),
+                "File should be locked before cleanup");
+
+        invokeDelayedRemoveLocksForSessionId(SESSION_ID, 1L);
+        Thread.sleep(100);
+
+        assertFalse(fileLocks.isFileLockedByOthers(CONFIG_FILE, "other-session"),
+                "Config file lock should be released after grace period");
+    }
+
+    private static FileLocks getFileLocks() throws Exception {
+        Field field = AdminConfigEditorBean.class.getDeclaredField("fileLocks");
+        field.setAccessible(true);
+        return (FileLocks) field.get(null);
+    }
+
+    private static void invokeDelayedRemoveLocksForSessionId(String sessionId, long delayMs) throws Exception {
+        Method method = UserEndpoint.class.getDeclaredMethod("delayedRemoveLocksForSessionId", String.class, long.class);
+        method.setAccessible(true);
+        method.invoke(null, sessionId, delayMs);
     }
 }

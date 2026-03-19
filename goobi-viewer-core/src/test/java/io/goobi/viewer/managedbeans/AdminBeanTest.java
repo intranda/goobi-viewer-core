@@ -22,11 +22,13 @@
 package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +42,37 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 
 class AdminBeanTest extends AbstractDatabaseEnabledTest {
+
+    @AfterEach
+    void resetTranslationLock() {
+        AdminBean.setTranslationGroupsEditorSession(null);
+    }
+
+    /**
+     * @see AdminBean#getConfiguredTranslationGroups()
+     * @verifies not overwrite existing translation lock
+     */
+    @Test
+    void getConfiguredTranslationGroups_shouldNotOverwriteExistingTranslationLock() {
+        AdminBean.setTranslationGroupsEditorSession("session-A");
+
+        new AdminBean().getConfiguredTranslationGroups();
+
+        assertEquals("session-A", AdminBean.getTranslationGroupsEditorSession());
+    }
+
+    /**
+     * @see AdminBean#getConfiguredTranslationGroups()
+     * @verifies not set translation lock when none exists
+     */
+    @Test
+    void getConfiguredTranslationGroups_shouldNotSetTranslationLockWhenNoneExists() {
+        AdminBean.setTranslationGroupsEditorSession(null);
+
+        new AdminBean().getConfiguredTranslationGroups();
+
+        assertNull(AdminBean.getTranslationGroupsEditorSession());
+    }
 
     /**
      * @verifies return all users except given
