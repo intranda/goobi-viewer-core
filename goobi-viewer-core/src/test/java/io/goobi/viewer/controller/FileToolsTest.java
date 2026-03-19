@@ -205,6 +205,7 @@ class FileToolsTest extends AbstractTest {
         Assertions.assertEquals("foo.bar", FileTools.sanitizeFileName("../../foo.bar"));
         Assertions.assertEquals("foo.bar", FileTools.sanitizeFileName("/foo.bar"));
         Assertions.assertEquals("f o-o_.bar", FileTools.sanitizeFileName("/f o-o_.bar"));
+        Assertions.assertEquals("XIX-1083.4-14,1919_0001.xml", FileTools.sanitizeFileName("XIX-1083.4-14,1919_0001.xml"));
     }
 
     /**

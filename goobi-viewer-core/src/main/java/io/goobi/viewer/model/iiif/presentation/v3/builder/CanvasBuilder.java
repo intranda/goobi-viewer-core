@@ -291,8 +291,7 @@ public class CanvasBuilder extends AbstractBuilder {
             String filename = page.getFileName();
             URI mediaId = imageUrlManager.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_MEDIA).params(page.getPi(), page.getOrder()).buildURI();
             if (ImageHandler.isExternalUrl(filename)) {
-                // Hotfix for URIs that contain spaces in the image file name
-                String imageId = ImageHandler.getIIIFBaseUrl(filename.replace(" ", "+"));
+                String imageId = ImageHandler.getIIIFBaseUrl(filename);
                 ImageResource imageResource = new ImageResource(imageId, thumbWidth, thumbHeight);
                 canvas.addMedia(mediaId, imageResource);
             } else {

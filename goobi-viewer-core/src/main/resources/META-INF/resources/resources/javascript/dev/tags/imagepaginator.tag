@@ -288,11 +288,11 @@
         }
 
         isFirstPage() {
-            return this.currentPageNumber == this.opts.firstPageNumber;
+            return this.currentPageNumbers[0] == this.opts.firstPageNumber;
         }
 
         isLastPage() {
-            return this.currentPageNumber == this.opts.lastPageNumber;
+            return this.currentPageNumbers[0] == this.opts.lastPageNumber;
         }
 
     </script>

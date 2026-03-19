@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -179,12 +180,12 @@ public class ImageHandler {
      */
     public ImageInformation getImageInformation(PhysicalElement page, PageType pageType)
             throws ContentLibException, ViewerConfigurationException, URISyntaxException, IndexUnreachableException, DAOException {
-        URI fileUri = new URI(getIIIFBaseUrl(page.getFilepath()));
+        URI fileUri = PathConverter.toURI(getIIIFBaseUrl(page.getFilepath()));
         int width = page.getImageWidth(); //0 if width is not known
         int height = page.getImageHeight(); //0 if height is not known
 
         URI apiUri;
-        if (fileUri.getScheme() != null && fileUri.getScheme().matches("^http.*")) {
+        if (StringUtils.isNotBlank(fileUri.getScheme()) && !"file".equals(fileUri.getScheme())) {
             if (width * height == 0) {
                 //no internal size information. return external url
                 return new ImageInformation(fileUri);
@@ -193,7 +194,7 @@ public class ImageHandler {
             apiUri = fileUri;
         } else {
             //create internal imageInformation uri
-            apiUri = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), PathConverter.getPath(fileUri).getFileName().toString()).buildURI();
+            apiUri = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), fileUri).buildURI();
         }
 
         ViewAttributes viewAttributes = new ViewAttributes(page, pageType);

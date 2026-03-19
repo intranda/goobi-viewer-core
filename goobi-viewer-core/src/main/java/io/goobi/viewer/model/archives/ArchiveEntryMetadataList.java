@@ -133,7 +133,7 @@ public class ArchiveEntryMetadataList {
         try {
             StructElement se = new StructElement(doc);
             for (Metadata md : metadataList) {
-                logger.error("Populating archive metadata field: {}", md.getLabel());
+                logger.trace("Populating archive metadata field: {}", md.getLabel()); //NOSONAR Debug
                 if (!se.isHasMetadata(md.getLabel())) {
                     // Field must exist on StructElement to be populated
                     se.getMetadataFields().put(md.getLabel(), new ArrayList<>());

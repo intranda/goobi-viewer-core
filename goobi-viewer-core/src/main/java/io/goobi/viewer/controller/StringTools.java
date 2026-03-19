@@ -461,7 +461,13 @@ public final class StringTools {
             return false;
         }
 
-        String decoded = URLDecoder.decode(s, charset);
+        String decoded;
+        try {
+            decoded = URLDecoder.decode(s, charset);
+        } catch (IllegalArgumentException e) {
+            // String contains a literal '%' not followed by valid hex digits -> not URL-encoded
+            return false;
+        }
         return !s.equals(decoded);
     }
 
