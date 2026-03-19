@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.search;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.util.ClientUtils;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -681,8 +681,19 @@ public class SearchQueryItem implements Serializable {
             }
             sbItem.append('(');
 
+            // Datepicker range: convert locale-dependent dates to yyyyMMdd and query YEARMONTHDAY
+            if (isDatepicker() && line.getValues().size() > 1 && StringUtils.isNotBlank(line.getValues().get(1))) {
+                String val1 = convertDatepickerValueToSolrDate(line.getValues().get(0).trim());
+                String val2 = convertDatepickerValueToSolrDate(line.getValues().get(1).trim());
+                sbItem.append(SolrConstants.CALENDAR_DAY)
+                        .append(":[")
+                        .append(val1)
+                        .append(" TO ")
+                        .append(val2)
+                        .append(']');
+            }
             // Phrase search operator: just the whole value in quotation marks
-            if (phrase || isDisplaySelectItems()) {
+            else if (phrase || isDisplaySelectItems()) {
                 boolean additionalField = false;
                 for (final String f : fields) {
                     if (additionalField) {
@@ -830,11 +841,6 @@ public class SearchQueryItem implements Serializable {
                                     // Range search
                                     String val1 = ClientUtils.escapeQueryChars(useValue).replace("\\-", "-");
                                     String val2 = ClientUtils.escapeQueryChars(line.getValues().get(1).trim()).replace("\\-", "-");
-                                    // TODO #27681 @Andrey: Wenn isDatepicker()==true, val1/val2 nach YYYYMMDD konvertieren.
-                                    // Flatpickr sendet locale-abhaengig: DE="d.m.Y" (z.B. "15.3.2024"), EN="m/d/Y" (z.B. "3/15/2024").
-                                    // Solr YEARMONTHDAY erwartet "YYYYMMDD" (z.B. "20240315").
-                                    // Konvertierung VOR escapeQueryChars, da Punkte/Slashes sonst escaped werden.
-                                    // Siehe viewerJS.datePicker.js Zeile 29+54 fuer die Flatpickr-Formate.
                                     if (SolrConstants.YEAR.equals(field) || field.startsWith(SolrConstants.PREFIX_MDNUM)) {
                                         // Prevent exception if not a number
                                         if (StringTools.parseInt(val1).isEmpty()) {
@@ -908,5 +914,51 @@ public class SearchQueryItem implements Serializable {
      */
     public void setPreselectValue(String preselectValue) {
         this.preselectValue = preselectValue;
+    }
+
+    /**
+     * Converts a locale-dependent datepicker value (DE: "dd.MM.yyyy", EN: "MM/dd/yyyy") to Solr's yyyyMMdd format.
+     *
+     * @param value Date string from Flatpickr
+     * @return Date formatted as yyyyMMdd, or the original value if parsing fails
+     * @should convert german dates correctly
+     * @should convert english dates correctly
+     * @should return value if it could not be parsed
+     */
+    static String convertDatepickerValueToSolrDate(String value) {
+        if (StringUtils.isBlank(value)) {
+            return value;
+        }
+        // Flatpickr sends locale-dependent formats without zero-padding:
+        // DE: "d.m.Y" (e.g. "15.3.2024"), EN: "m/d/Y" (e.g. "3/15/2024")
+        if (value.contains(".")) {
+            // German format: d.m.yyyy
+            String[] parts = value.split("\\.");
+            if (parts.length == 3) {
+                try {
+                    int day = Integer.parseInt(parts[0].trim());
+                    int month = Integer.parseInt(parts[1].trim());
+                    int year = Integer.parseInt(parts[2].trim());
+                    return LocalDate.of(year, month, day).format(DateTools.FORMATTERISO8601BASICDATE);
+                } catch (NumberFormatException | java.time.DateTimeException e) {
+                    logger.warn("Unable to parse DE datepicker value: {}", value);
+                }
+            }
+        } else if (value.contains("/")) {
+            // English format: m/d/yyyy
+            String[] parts = value.split("/");
+            if (parts.length == 3) {
+                try {
+                    int month = Integer.parseInt(parts[0].trim());
+                    int day = Integer.parseInt(parts[1].trim());
+                    int year = Integer.parseInt(parts[2].trim());
+                    return LocalDate.of(year, month, day).format(DateTools.FORMATTERISO8601BASICDATE);
+                } catch (NumberFormatException | java.time.DateTimeException e) {
+                    logger.warn("Unable to parse EN datepicker value: {}", value);
+                }
+            }
+        }
+        logger.warn("Unable to parse datepicker value: {}", value);
+        return value;
     }
 }
