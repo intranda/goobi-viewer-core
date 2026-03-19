@@ -1007,7 +1007,7 @@ const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags
 
 exports.build = buildAll;
 exports.dev = gulp.series(fullSync, watchMode);
-exports['copy-deps'] = gulp.series(buildIcons, copyDependencies);
+exports['copy-deps'] = copyDependencies;
 exports['sync-all'] = fullSync;
 exports.target = printTargets;
 exports.java = java;
