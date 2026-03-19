@@ -6,15 +6,8 @@
     <composite:interface />
 
     <composite:implementation>
-        <!-- TODO #27682 @Andrey: Rendered-Condition anpassen.
-             Aktuell: nur fuer Anchor-Werke. Soll fuer JEDE PI funktionieren.
-             Bedingungen damit das Widget gerendert wird:
-             1. Kalender-Widget ist in config_viewer.xml fuer diese View aktiviert
-             2. Das Werk (egal ob Anchor oder Einzelwerk) hat mindestens 2 Eintraege mit YEARMONTHDAY in Solr
-             Wenn beides zutrifft: Widget rendern, JS ruft REST-Endpoint auf.
-             Wenn nicht: Widget nicht rendern, kein REST-Call, kein leeres Ergebnis. -->
         <h:panelGroup
-            rendered="#{activeDocumentBean.viewManager.anchorPi != null and activeDocumentBean.viewManager.calendarView.display}">
+            rendered="#{activeDocumentBean.viewManager.calendarView.display}">
             <div
                 id="widgetCalendar"
                 class="widget widget-calendar">
