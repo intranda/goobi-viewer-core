@@ -91,7 +91,7 @@ public class CMSAdvancedSearchContent extends CMSContent implements PagedCMSCont
                     searchBean.setActiveResultGroupName(resultGroupName);
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new PresentationException("Error initializing advanced search on CMS page", e);
         }
         return "";
