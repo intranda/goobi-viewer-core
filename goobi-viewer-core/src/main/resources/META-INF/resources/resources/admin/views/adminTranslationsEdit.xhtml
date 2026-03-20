@@ -270,6 +270,18 @@
                 </h:panelGroup>
                 <!-- REATTACH HC STICKY AFTER AJAX CALL -->
                 <script>adminJS.translationsEdit.init();</script>
+                <!-- Keep translation lock alive; releases lock on navigation -->
+                <h:outputScript>
+                    (function() {
+                        if (typeof viewerJS !== 'undefined' &amp; &amp; viewerJS.WebSocket) {
+                            var socket = new viewerJS.WebSocket(
+                                window.location.host,
+                                window.currentPath,
+                                viewerJS.WebSocket.PATH_TRANSLATION_EDITOR_SOCKET
+                            );
+                        }
+                    })();
+                </h:outputScript>
             </div>
         </f:view>
     </ui:define>
