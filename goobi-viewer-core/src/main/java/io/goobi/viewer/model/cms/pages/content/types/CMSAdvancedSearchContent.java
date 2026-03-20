@@ -39,6 +39,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.search.SearchHelper;
+import jakarta.enterprise.context.ContextNotActiveException;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -91,7 +92,7 @@ public class CMSAdvancedSearchContent extends CMSContent implements PagedCMSCont
                     searchBean.setActiveResultGroupName(resultGroupName);
                 }
             }
-        } catch (RuntimeException e) {
+        } catch (ContextNotActiveException e) {
             throw new PresentationException("Error initializing advanced search on CMS page", e);
         }
         return "";
