@@ -143,7 +143,7 @@ public class CMSComponentAttribute implements Serializable {
      */
     private static Option createOption(Element element) {
         String label = element.getAttributeValue("label");
-        String value = element.getText();
+        String value = element.getText().trim();
         if (StringUtils.isBlank(label)) {
             label = value;
         }
