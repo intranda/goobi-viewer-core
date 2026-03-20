@@ -1011,6 +1011,10 @@
         <pattern value="/admin/developer/" />
         <view-id value="/resources/admin/views/adminDeveloper.xhtml" />
     </url-mapping>
+     <url-mapping id="adminLogViewer">
+        <pattern value="/admin/logviewer/" />
+        <view-id value="/resources/admin/views/adminLogViewer.xhtml" />
+    </url-mapping>
     
 
 	<!-- THEME CONFIGS -->

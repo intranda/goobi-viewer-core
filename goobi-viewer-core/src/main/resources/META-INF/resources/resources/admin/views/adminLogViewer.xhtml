@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:util="http://goobi.io/util"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminLogViewer')}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <!-- Access guard: superusers only. userBean.admin maps to UserBean.isAdmin() → user.isSuperuser() -->
+        <h:panelGroup rendered="#{!userBean.admin}">
+            <h:outputText value="#{msg.errAccessDenied}" />
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{userBean.admin}">
+            <div class="admin__title-bar">
+                <h1 class="admin__title">Log Viewer</h1>
+            </div>
+
+            <div
+                class="admin__boxed-entry -w100"
+                style="padding:0; overflow:hidden">
+                <!-- Tab Bar -->
+                <div style="display:flex; border-bottom:1px solid #ccc; background:#f7f7f7">
+                    <ui:repeat
+                        value="#{logViewerBean.availableLogFiles}"
+                        var="lf">
+                        <button
+                            class="logviewer-tab"
+                            data-logfile="#{lf.name}"
+                            style="padding:1.2rem 2rem; background:none; border:none;
+                                   border-bottom:3px solid transparent; cursor:pointer;
+                                   font-size:1.4rem; color:#6f6f6f; font-family:inherit">
+                            <span
+                                class="tab-dot"
+                                id="dot-#{lf.name}"
+                                style="display:inline-block; width:7px; height:7px;
+                                     border-radius:50%; background:#ccc; margin-right:0.5rem" />
+                            #{lf.name}.log
+                        </button>
+                    </ui:repeat>
+                </div>
+
+                <!-- Toolbar -->
+                <div
+                    style="display:flex; align-items:center; gap:1rem; padding:1.2rem 2rem;
+                        border-bottom:1px solid #eee; background:#fafafa; flex-wrap:wrap">
+                    <label
+                        for="levelFilter"
+                        style="font-weight:600; font-size:1.3rem">
+                        Level
+                    </label>
+                    <select
+                        id="levelFilter"
+                        onchange="LogViewer.applyFilters()"
+                        style="font-size:1.3rem; padding:0.5rem 0.8rem; border:1px solid #ccc; border-radius:5px">
+                        <option value="ALL">ALL</option>
+                        <option
+                            value="ERROR"
+                            selected="selected">
+                            ERROR
+                        </option>
+                        <option value="WARN">WARN</option>
+                        <option value="INFO">INFO</option>
+                        <option value="DEBUG">DEBUG</option>
+                        <option value="TRACE">TRACE</option>
+                    </select>
+
+                    <label
+                        for="textFilter"
+                        style="font-weight:600; font-size:1.3rem">
+                        Suche
+                    </label>
+                    <input
+                        id="textFilter"
+                        type="text"
+                        placeholder="Filter …"
+                        oninput="LogViewer.applyFilters()"
+                        style="font-size:1.3rem; padding:0.5rem 1rem; border:1px solid #ccc;
+                              border-radius:5px; width:24rem" />
+
+                    <div style="flex:1" />
+
+                    <button
+                        id="btnAutoScroll"
+                        onclick="LogViewer.toggleAutoScroll()"
+                        style="font-size:1.3rem; padding:0.5rem 1rem; border:1px solid #3365a9;
+                               border-radius:5px; background:#e8effa; color:#3365a9; cursor:pointer">
+                        ↓ Auto-Scroll
+                    </button>
+                    <button
+                        onclick="LogViewer.clearBuffer()"
+                        style="font-size:1.3rem; padding:0.5rem 1rem; border:1px solid #ccc;
+                               border-radius:5px; background:#fff; cursor:pointer">
+                        Leeren
+                    </button>
+
+                    <span
+                        id="statusBadge"
+                        style="font-size:1.3rem; padding:0.4rem 1rem; border-radius:20px;
+                             background:#eaf7ea; color:#2e7d32; border:1px solid #a5d6a7; font-weight:600">
+                        ● Live
+                    </span>
+                </div>
+
+                <!-- Log output -->
+                <div
+                    id="logOutput"
+                    style="background:#1e2430; min-height:52rem; max-height:62rem; overflow-y:auto;
+                        font-family:monospace; font-size:1.25rem; line-height:1.7; padding:1.5rem" />
+
+                <!-- Footer -->
+                <div
+                    style="display:flex; align-items:center; justify-content:space-between;
+                        padding:0.8rem 1.5rem; background:#1b2330; border-top:1px solid #2d3748">
+                    <div
+                        style="color:rgba(255,255,255,0.45); font-size:1.2rem; font-family:monospace; display:flex; gap:2rem">
+                        <span id="bufferInfo">0 Zeilen im Buffer</span>
+                        <span
+                            id="droppedInfo"
+                            style="display:none; color:#ff9800; font-weight:600">
+                            ⚠
+                            <span id="droppedCount">0</span>
+                            Zeilen übersprungen
+                        </span>
+                    </div>
+                    <button
+                        id="btnScrollBottom"
+                        onclick="LogViewer.scrollToBottom()"
+                        style="display:none;
+                        font-size:1.2rem; padding:0.4rem 1.2rem; border:1px solid rgba(255,255,255,0.2);
+                        border-radius:20px; background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.65);
+                        cursor:pointer">
+                        ↓↓ Zum Ende scrollen
+                    </button>
+                </div>
+            </div>
+            <!-- /.admin__boxed-entry -->
+        </h:panelGroup>
+
+        <script type="text/javascript">
+        //<![CDATA[
+        var LogViewer = (function() {
+            var BUFFER_MAX = 2000;
+            var THROTTLE_PER_SEC = 50;
+            var WS_TIMEOUT_MS = 5000;
+            var POLL_INTERVAL_MS = 3000;
+            var WS_RECONNECT_MS = 30000;
+            var levelOrder = { ERROR: 1, WARN: 2, INFO: 3, DEBUG: 4, TRACE: 5 };
+
+            var buffer = [], droppedCount = 0, autoScroll = true;
+            var currentLogFile = null, ws = null;
+            var pollTimer = null, reconnectTimer = null, throttleTimer = null;
+            var pollOffset = 0, isPolling = false, throttleQueue = [];
+
+            function init(logFile) {
+                currentLogFile = logFile;
+                buffer = []; droppedCount = 0; pollOffset = 0;
+                document.getElementById('logOutput').innerHTML = '';
+                updateDroppedInfo(); updateBufferInfo();
+                loadInitial();
+                connect();
+            }
+
+            function loadInitial() {
+                fetch(getApiBase() + '?t=' + Date.now())
+                    .then(function(r) { return r.json(); })
+                    .then(function(d) {
+                        pollOffset = d.nextOffset || 0;
+                        (d.lines || []).forEach(addLine);
+                        renderBuffer();
+                        if (autoScroll) scrollToBottom();
+                    }).catch(function() {});
+            }
+
+            function getApiBase() {
+                return '#{request.contextPath}/api/v1/logs/' + currentLogFile;
+            }
+
+            function getWsUrl() {
+                var p = location.protocol === 'https:' ? 'wss:' : 'ws:';
+                return p + '//' + location.host + '#{request.contextPath}/websocket/logviewer/' + currentLogFile;
+            }
+
+            function connect() {
+                var timeout = setTimeout(fallbackToPolling, WS_TIMEOUT_MS);
+                try {
+                    ws = new WebSocket(getWsUrl());
+                    ws.onopen = function() {
+                        clearTimeout(timeout);
+                        setStatus('live');
+                        stopPolling();
+                    };
+                    ws.onmessage = function(e) {
+                        try { throttleAdd(JSON.parse(e.data)); } catch(x) {}
+                    };
+                    ws.onclose = function() {
+                        clearTimeout(timeout);
+                        if (!isPolling) fallbackToPolling();
+                    };
+                    ws.onerror = function() { clearTimeout(timeout); };
+                } catch(e) { clearTimeout(timeout); fallbackToPolling(); }
+            }
+
+            function fallbackToPolling() {
+                isPolling = true;
+                setStatus('polling');
+                if (!pollTimer) pollTimer = setInterval(poll, POLL_INTERVAL_MS);
+                if (!reconnectTimer) {
+                    reconnectTimer = setTimeout(function() {
+                        reconnectTimer = null;
+                        isPolling = false;
+                        if (ws) { ws.close(); ws = null; }
+                        connect();
+                    }, WS_RECONNECT_MS);
+                }
+            }
+
+            function stopPolling() {
+                if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+                if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+                isPolling = false;
+            }
+
+            function poll() {
+                fetch(getApiBase() + '?sinceOffset=' + pollOffset + '&t=' + Date.now())
+                    .then(function(r) { return r.json(); })
+                    .then(function(d) {
+                        pollOffset = d.nextOffset || pollOffset;
+                        (d.lines || []).forEach(throttleAdd);
+                    }).catch(function() {});
+            }
+
+            function throttleAdd(line) {
+                throttleQueue.push(line);
+                if (!throttleTimer) {
+                    throttleTimer = setInterval(function() {
+                        var batch = throttleQueue.splice(0, THROTTLE_PER_SEC);
+                        if (throttleQueue.length > 0) {
+                            droppedCount += throttleQueue.length;
+                            throttleQueue = [];
+                            updateDroppedInfo();
+                        }
+                        batch.forEach(addLine);
+                        renderBuffer();
+                        if (autoScroll) scrollToBottom();
+                    }, 1000);
+                }
+            }
+
+            function addLine(line) {
+                buffer.push(line);
+                if (buffer.length > BUFFER_MAX) buffer.shift();
+                updateBufferInfo();
+            }
+
+            function renderBuffer() {
+                var levelSel = document.getElementById('levelFilter').value;
+                var textSel = (document.getElementById('textFilter').value || '').toLowerCase();
+                var maxLevel = levelOrder[levelSel] || 99;
+                var lvlClass = { ERROR:'color:#f44336', WARN:'color:#ff9800',
+                    INFO:'color:#5cb85c', DEBUG:'color:#64b5f6', TRACE:'color:#9e9e9e' };
+                var html = '';
+                buffer.forEach(function(l) {
+                    if ((levelOrder[l.level] || 99) > maxLevel) return;
+                    var full = ((l.timestamp||'') + ' ' + (l.level||'') + ' ' + (l.location||'') + ' ' + (l.message||'')).toLowerCase();
+                    if (textSel && full.indexOf(textSel) === -1) return;
+                    var msg = (l.message || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                        .replace(/\n/g,'<br><span style="color:#8b949e;padding-left:1rem">');
+                    if ((l.message||'').indexOf('\n') > -1) msg += '</span>';
+                    html += '<div style="display:flex;gap:1rem;padding:0.15rem 0">'
+                        + '<span style="color:#5f7089;white-space:nowrap">' + esc(l.timestamp) + '</span>'
+                        + '<span style="font-weight:700;width:5rem;text-align:right;' + (lvlClass[l.level]||'color:#ccc') + '">' + esc(l.level) + '</span>'
+                        + '<span style="color:#6e9bcf;white-space:nowrap;max-width:36rem;overflow:hidden;text-overflow:ellipsis">' + esc(l.location) + '</span>'
+                        + '<span style="color:#c9d1d9;word-break:break-word">' + msg + '</span>'
+                        + '</div>';
+                });
+                document.getElementById('logOutput').innerHTML = html;
+            }
+
+            function esc(s) {
+                return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            }
+
+            function setStatus(mode) {
+                var badge = document.getElementById('statusBadge');
+                if (mode === 'live') {
+                    badge.style.background = '#eaf7ea'; badge.style.color = '#2e7d32';
+                    badge.style.borderColor = '#a5d6a7'; badge.textContent = '● Live';
+                    document.querySelectorAll('.tab-dot').forEach(function(d) { d.style.background = '#5cb85c'; });
+                } else {
+                    badge.style.background = '#fff8e1'; badge.style.color = '#e65100';
+                    badge.style.borderColor = '#ffcc80'; badge.textContent = '● Polling';
+                    document.querySelectorAll('.tab-dot').forEach(function(d) { d.style.background = '#ff9800'; });
+                }
+            }
+
+            function scrollToBottom() {
+                var out = document.getElementById('logOutput');
+                out.scrollTop = out.scrollHeight;
+            }
+
+            function toggleAutoScroll() {
+                autoScroll = !autoScroll;
+                var btn = document.getElementById('btnAutoScroll');
+                btn.style.background = autoScroll ? '#e8effa' : '#fff';
+                btn.style.borderColor = autoScroll ? '#3365a9' : '#ccc';
+                btn.style.color = autoScroll ? '#3365a9' : '#4b4b4b';
+                document.getElementById('btnScrollBottom').style.display = autoScroll ? 'none' : 'block';
+                if (autoScroll) scrollToBottom();
+            }
+
+            function clearBuffer() {
+                buffer = []; droppedCount = 0;
+                updateDroppedInfo(); updateBufferInfo(); renderBuffer();
+            }
+
+            function applyFilters() { renderBuffer(); }
+
+            function updateDroppedInfo() {
+                var el = document.getElementById('droppedInfo');
+                document.getElementById('droppedCount').textContent = droppedCount;
+                el.style.display = droppedCount > 0 ? 'inline' : 'none';
+            }
+
+            function updateBufferInfo() {
+                document.getElementById('bufferInfo').textContent = buffer.length + ' Zeilen im Buffer';
+            }
+
+            function switchTab(logFile) {
+                if (ws) { ws.close(); ws = null; }
+                stopPolling();
+                if (throttleTimer) { clearInterval(throttleTimer); throttleTimer = null; }
+                throttleQueue = [];
+                document.querySelectorAll('.logviewer-tab').forEach(function(t) {
+                    var active = t.dataset.logfile === logFile;
+                    t.style.borderBottom = active ? '3px solid #3365a9' : '3px solid transparent';
+                    t.style.color = active ? '#3365a9' : '#6f6f6f';
+                    t.style.fontWeight = active ? '600' : 'normal';
+                });
+                init(logFile);
+            }
+
+            document.getElementById('logOutput').addEventListener('scroll', function() {
+                var out = this;
+                if (out.scrollTop + out.clientHeight < out.scrollHeight - 10 && autoScroll) {
+                    autoScroll = false;
+                    var btn = document.getElementById('btnAutoScroll');
+                    btn.style.background = '#fff'; btn.style.borderColor = '#ccc'; btn.style.color = '#4b4b4b';
+                    document.getElementById('btnScrollBottom').style.display = 'block';
+                }
+            });
+
+            return { init: init, switchTab: switchTab, applyFilters: applyFilters,
+                     clearBuffer: clearBuffer, toggleAutoScroll: toggleAutoScroll, scrollToBottom: scrollToBottom };
+        })();
+
+        window.addEventListener('load', function() {
+            var tabs = document.querySelectorAll('.logviewer-tab');
+            if (tabs.length > 0) {
+                tabs[0].click();
+            }
+        });
+
+        document.querySelectorAll('.logviewer-tab').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                LogViewer.switchTab(this.dataset.logfile);
+            });
+        });
+        //]]>
+        </script>
+    </ui:define>
+</ui:composition>

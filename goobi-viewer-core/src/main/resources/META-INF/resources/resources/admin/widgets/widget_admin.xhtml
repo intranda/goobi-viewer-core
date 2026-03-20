@@ -200,6 +200,14 @@
                                     styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>
+                        <li class="#{navigationHelper.currentPage == 'adminLogViewer' ? 'active' : ''}">
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminLogViewer')}/">
+                                <util:icon-text
+                                    icon="file-lines"
+                                    text="Log Viewer"
+                                    styleClass="icon-text--nav" />
+                            </h:outputLink>
+                        </li>
                     </ui:fragment>
                 </ul>
             </h:form>
