@@ -34,85 +34,89 @@
                 <h2 class="search-advanced__entry-area-title">#{msg.search__search_query}</h2>
 
                 <!-- ENTITY SELECTION -->
-                <ui:fragment rendered="#{configurationBean.advancedSearchTemplatesEnabled}">
-                    <div
-                        class="search-advanced__entity-tabs -result-group-#{searchBean.advancedSearchFieldTemplate == '-' ? 'standard' : searchBean.advancedSearchFieldTemplate}">
-                        <div class="search-advanced__entity-tabs-dropdown-button-wrapper">
-                            <ui:fragment rendered="#{searchBean.advancedSearchFieldTemplate == '-'}">
-                                <button
-                                    data-trigger="entityDropdown"
-                                    type="button"
-                                    class="search-advanced__entity-tabs-dropdown-toggle-button -result-group-#{searchBean.advancedSearchFieldTemplate == '-' ? 'standard' : searchBean.advancedSearchFieldTemplate}">
-                                    #{msg.search__search_default_all_group}
-                                    <util:icon
-                                        icon="caret-down"
-                                        styleClass="icon-rot-on-open"
-                                        svgClass="icon" />
-                                </button>
-                            </ui:fragment>
-                            <ui:fragment rendered="#{searchBean.advancedSearchFieldTemplate != '-'}">
-                                <button
-                                    data-trigger="entityDropdown"
-                                    type="button"
-                                    class="search-advanced__entity-tabs-dropdown-toggle-button -result-group-#{searchBean.advancedSearchFieldTemplate == '-' ? 'standard' : searchBean.advancedSearchFieldTemplate}">
-                                    #{msg[searchBean.advancedSearchFieldTemplate]}
-                                    <util:icon
-                                        icon="caret-down"
-                                        styleClass="icon-rot-on-open"
-                                        svgClass="icon" />
-                                </button>
-                            </ui:fragment>
-                        </div>
+                <ui:fragment rendered="#{!hideEntityTabs}">
+                    <ui:fragment rendered="#{configurationBean.advancedSearchTemplatesEnabled}">
+                        <div
+                            class="search-advanced__entity-tabs -result-group-#{searchBean.advancedSearchFieldTemplate == '-' ? 'standard' : searchBean.advancedSearchFieldTemplate}">
+                            <div class="search-advanced__entity-tabs-dropdown-button-wrapper">
+                                <ui:fragment rendered="#{searchBean.advancedSearchFieldTemplate == '-'}">
+                                    <button
+                                        data-trigger="entityDropdown"
+                                        type="button"
+                                        class="search-advanced__entity-tabs-dropdown-toggle-button -result-group-#{searchBean.advancedSearchFieldTemplate == '-' ? 'standard' : searchBean.advancedSearchFieldTemplate}">
+                                        #{msg.search__search_default_all_group}
+                                        <util:icon
+                                            icon="caret-down"
+                                            styleClass="icon-rot-on-open"
+                                            svgClass="icon" />
+                                    </button>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{searchBean.advancedSearchFieldTemplate != '-'}">
+                                    <button
+                                        data-trigger="entityDropdown"
+                                        type="button"
+                                        class="search-advanced__entity-tabs-dropdown-toggle-button -result-group-#{searchBean.advancedSearchFieldTemplate == '-' ? 'standard' : searchBean.advancedSearchFieldTemplate}">
+                                        #{msg[searchBean.advancedSearchFieldTemplate]}
+                                        <util:icon
+                                            icon="caret-down"
+                                            styleClass="icon-rot-on-open"
+                                            svgClass="icon" />
+                                    </button>
+                                </ui:fragment>
+                            </div>
 
-                        <ul
-                            data-target="entityDropdown"
-                            class="search-advanced__entity-tabs-dropdown">
-                            <li class="search-advanced__entity-tabs-dropdown-list-entry">
-                                <h:outputLink
-                                    styleClass="search-advanced__entity-tabs-dropdown-link -result-group-standard #{searchBean.advancedSearchFieldTemplate == '-' ? '-active' : ''}"
-                                    value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/">
-                                    #{msg.search__search_default_all_group}
-                                </h:outputLink>
-                            </li>
-                            <ui:repeat
-                                value="#{configurationBean.searchResultGroupNames}"
-                                var="groupName"
-                                varStatus="status">
+                            <ul
+                                data-target="entityDropdown"
+                                class="search-advanced__entity-tabs-dropdown">
                                 <li class="search-advanced__entity-tabs-dropdown-list-entry">
                                     <h:outputLink
-                                        styleClass="search-advanced__entity-tabs-dropdown-link -result-group-#{groupName} #{groupName == searchBean.advancedSearchFieldTemplate ? '-active' : ''}"
-                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{groupName}/-/">
-                                        #{msg[groupName]}
+                                        styleClass="search-advanced__entity-tabs-dropdown-link -result-group-standard #{searchBean.advancedSearchFieldTemplate == '-' ? '-active' : ''}"
+                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/">
+                                        #{msg.search__search_default_all_group}
                                     </h:outputLink>
                                 </li>
-                            </ui:repeat>
-                        </ul>
+                                <ui:repeat
+                                    value="#{configurationBean.searchResultGroupNames}"
+                                    var="groupName"
+                                    varStatus="status">
+                                    <li class="search-advanced__entity-tabs-dropdown-list-entry">
+                                        <h:outputLink
+                                            styleClass="search-advanced__entity-tabs-dropdown-link -result-group-#{groupName} #{groupName == searchBean.advancedSearchFieldTemplate ? '-active' : ''}"
+                                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{groupName}/-/">
+                                            #{msg[groupName]}
+                                        </h:outputLink>
+                                    </li>
+                                </ui:repeat>
+                            </ul>
 
-                        <div class="search-advanced__entity-tabs-links-wrapper">
-                            <!-- LINK TO CONFIGURED TEMPLATE NAMES -->
-                            <ui:repeat
-                                value="#{configurationBean.advancedSearchTemplateNames}"
-                                var="template"
-                                varStatus="status">
-                                <div
-                                    class="search-advanced__entity-tab-link-wrapper #{template == searchBean.advancedSearchFieldTemplate ? '-active' : ''} -result-group-#{template}">
-                                    <h:outputLink
-                                        styleClass="search-advanced__entity-tab-link -result-group-#{template} #{template == searchBean.advancedSearchFieldTemplate ? '-active' : ''}"
-                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{template}/-/">
-                                        <ui:fragment rendered="#{template == searchBean.advancedSearchFieldTemplate}">
-                                            #{msg[template]}
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{template != searchBean.advancedSearchFieldTemplate}">
-                                            #{msg[template]}
-                                        </ui:fragment>
-                                        <f:passThroughAttribute
-                                            name="aria-label"
-                                            value="#{msg[template]}" />
-                                    </h:outputLink>
-                                </div>
-                            </ui:repeat>
+                            <div class="search-advanced__entity-tabs-links-wrapper">
+                                <!-- LINK TO CONFIGURED TEMPLATE NAMES -->
+                                <ui:repeat
+                                    value="#{configurationBean.advancedSearchTemplateNames}"
+                                    var="template"
+                                    varStatus="status">
+                                    <div
+                                        class="search-advanced__entity-tab-link-wrapper #{template == searchBean.advancedSearchFieldTemplate ? '-active' : ''} -result-group-#{template}">
+                                        <h:outputLink
+                                            styleClass="search-advanced__entity-tab-link -result-group-#{template} #{template == searchBean.advancedSearchFieldTemplate ? '-active' : ''}"
+                                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{template}/-/">
+                                            <ui:fragment
+                                                rendered="#{template == searchBean.advancedSearchFieldTemplate}">
+                                                #{msg[template]}
+                                            </ui:fragment>
+                                            <ui:fragment
+                                                rendered="#{template != searchBean.advancedSearchFieldTemplate}">
+                                                #{msg[template]}
+                                            </ui:fragment>
+                                            <f:passThroughAttribute
+                                                name="aria-label"
+                                                value="#{msg[template]}" />
+                                        </h:outputLink>
+                                    </div>
+                                </ui:repeat>
+                            </div>
                         </div>
-                    </div>
+                    </ui:fragment>
                 </ui:fragment>
 
                 <div
