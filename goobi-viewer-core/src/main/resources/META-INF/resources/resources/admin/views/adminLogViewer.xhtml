@@ -63,12 +63,12 @@
                         id="levelFilter"
                         onchange="LogViewer.applyFilters()"
                         style="font-size:1.3rem; padding:0.5rem 0.8rem; border:1px solid #ccc; border-radius:5px">
-                        <option value="ALL">ALL</option>
                         <option
-                            value="ERROR"
+                            value="ALL"
                             selected="selected">
-                            ERROR
+                            ALL
                         </option>
+                        <option value="ERROR">ERROR</option>
                         <option value="WARN">WARN</option>
                         <option value="INFO">INFO</option>
                         <option value="DEBUG">DEBUG</option>
@@ -188,7 +188,7 @@
 
             function getWsUrl() {
                 var p = location.protocol === 'https:' ? 'wss:' : 'ws:';
-                return p + '//' + location.host + '#{request.contextPath}/websocket/logviewer/' + currentLogFile;
+                return p + '//' + location.host + '#{request.contextPath}/admin/logviewer/' + currentLogFile + '.socket';
             }
 
             function connect() {

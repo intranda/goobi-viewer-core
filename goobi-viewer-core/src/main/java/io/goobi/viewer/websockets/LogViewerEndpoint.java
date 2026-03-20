@@ -25,7 +25,7 @@ import jakarta.websocket.server.ServerEndpoint;
  * URL: /websocket/logviewer/{logfile}
  * Access: superusers only (checked in onOpen).
  */
-@ServerEndpoint(value = "/websocket/logviewer/{logfile}", configurator = GetHttpSessionConfigurator.class)
+@ServerEndpoint(value = "/admin/logviewer/{logfile}.socket", configurator = GetHttpSessionConfigurator.class)
 public class LogViewerEndpoint {
 
     private static final Logger logger = LogManager.getLogger(LogViewerEndpoint.class);
