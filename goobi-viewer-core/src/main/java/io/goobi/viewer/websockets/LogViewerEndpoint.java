@@ -17,15 +17,14 @@ import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
-import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 
 /**
  * WebSocket endpoint for live log file streaming.
- * URL: /websocket/logviewer/{logfile}
+ * URL: /admin/logviewer.socket?logfile={name}
  * Access: superusers only (checked in onOpen).
  */
-@ServerEndpoint(value = "/admin/logviewer/{logfile}.socket", configurator = GetHttpSessionConfigurator.class)
+@ServerEndpoint(value = "/admin/logviewer.socket", configurator = GetHttpSessionConfigurator.class)
 public class LogViewerEndpoint {
 
     private static final Logger logger = LogManager.getLogger(LogViewerEndpoint.class);
@@ -36,7 +35,7 @@ public class LogViewerEndpoint {
     private LogFile logFile;
 
     @OnOpen
-    public void onOpen(Session session, EndpointConfig config, @PathParam("logfile") String logfileName) {
+    public void onOpen(Session session, EndpointConfig config) {
         // Auth: superusers only
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         User user = BeanUtils.getUserFromSession(httpSession);
@@ -45,6 +44,9 @@ public class LogViewerEndpoint {
             return;
         }
 
+        // Logfile name passed as query parameter: ?logfile=viewer
+        var params = session.getRequestParameterMap().get("logfile");
+        String logfileName = (params != null && !params.isEmpty()) ? params.get(0) : null;
         var optLogFile = LogFile.fromName(logfileName);
         if (optLogFile.isEmpty()) {
             closeSession(session, CloseReason.CloseCodes.CANNOT_ACCEPT, "Unknown log file: " + logfileName);
