@@ -134,10 +134,7 @@ public class UserEndpoint {
                     sessionClearTimers.remove(sessionId);
 
                     // Remove translation editing lock
-                    if (sessionId.equals(AdminBean.getTranslationGroupsEditorSession())) {
-                        AdminBean.setTranslationGroupsEditorSession(null);
-                        logger.trace("Removed translation editing lock for session '{}'.", sessionId);
-                    }
+                    AdminBean.unlockTranslation(sessionId);
                     // Remove config file editor locks
                     AdminConfigEditorBean.clearLocksForSessionId(sessionId);
                 }

@@ -63,9 +63,7 @@ public class SessionListener implements HttpSessionListener {
             String sessionId = event.getSession().getId();
             // logger.trace("Session destroyed: {}", sessionId); //NOSONAR Debug
             DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(sessionId, null);
-            if (sessionId.equals(AdminBean.getTranslationGroupsEditorSession())) {
-                AdminBean.setTranslationGroupsEditorSession(null);
-            }
+            AdminBean.unlockTranslation(sessionId);
             // Release file edit locks
             AdminConfigEditorBean.clearLocksForSessionId(sessionId);
             // Remove the per-session PRIV_* access-permission cache so its entries (up to

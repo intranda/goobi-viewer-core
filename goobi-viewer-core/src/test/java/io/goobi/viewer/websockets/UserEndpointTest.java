@@ -23,6 +23,7 @@ package io.goobi.viewer.websockets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
 import io.goobi.viewer.model.administration.configeditor.FileLocks;
 import jakarta.servlet.http.HttpSession;
@@ -54,6 +56,7 @@ class UserEndpointTest extends AbstractTest {
     void cleanupFileLocks() throws Exception {
         FileLocks fileLocks = getFileLocks();
         fileLocks.unlockFile(CONFIG_FILE, SESSION_ID);
+        AdminBean.setTranslationGroupsEditorSession(null);
     }
 
     /**
@@ -103,5 +106,18 @@ class UserEndpointTest extends AbstractTest {
         Method method = UserEndpoint.class.getDeclaredMethod("delayedRemoveLocksForSessionId", String.class, long.class);
         method.setAccessible(true);
         method.invoke(null, sessionId, delayMs);
+    }
+
+    /**
+     * @see AdminBean#unlockTranslation(String)
+     * @verifies release translation lock for matching session
+     */
+    @Test
+    void gracePeriodTimer_shouldCallUnlockTranslationNotSetTranslationSession() {
+        AdminBean.setTranslationGroupsEditorSession("session-to-expire");
+
+        // Verify that calling unlockTranslation (as the timer would) releases the lock
+        AdminBean.unlockTranslation("session-to-expire");
+        assertNull(AdminBean.getTranslationGroupsEditorSession());
     }
 }
