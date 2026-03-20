@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
@@ -71,6 +72,7 @@ import io.goobi.viewer.model.administration.configeditor.BackupRecord;
 import io.goobi.viewer.model.administration.configeditor.FileLocks;
 import io.goobi.viewer.model.administration.configeditor.FileRecord;
 import io.goobi.viewer.model.administration.configeditor.FilesListing;
+import io.goobi.viewer.model.administration.configeditor.VimSwapFile;
 import io.goobi.viewer.model.files.upload.FileUploader;
 import io.goobi.viewer.model.xml.XMLError;
 
@@ -381,6 +383,15 @@ public class AdminConfigEditorBean implements Serializable {
             // get an exclusive lock if the file is editable, otherwise a shared lock
             if (editable) {
                 String sessionId = BeanUtils.getSession().getId();
+                // vim-Lock-Check
+                VimSwapFile.Status vimStatus = VimSwapFile.check(filePath);
+                if (vimStatus == VimSwapFile.Status.LOCKED_BY_VIM) {
+                    Messages.error("admin__config_editor__file_locked_by_vim");
+                    return;
+                }
+                if (vimStatus == VimSwapFile.Status.STALE_VIM) {
+                    logger.warn("Stale vim swap file found for {}, ignoring", filePath);
+                }
                 // File already locked by someone else
                 if (fileLocks.isFileLockedByOthers(filePath, sessionId)) {
                     Messages.error("admin__config_editor__file_locked_msg");
@@ -388,6 +399,11 @@ public class AdminConfigEditorBean implements Serializable {
                 }
                 fileLocks.lockFile(filePath, sessionId);
                 logger.trace("{} locked for session ID {}", filePath.toAbsolutePath(), sessionId);
+                try {
+                    VimSwapFile.create(filePath, null);
+                } catch (Exception e) {
+                    logger.warn("Could not create swap file for {}: {}", filePath, e.getMessage(), e);
+                }
                 // outputLock also locks reading this file in Windows, so read it prior to creating the lock
                 fileContent = Files.readString(filePath);
             } else { // READ_ONLY
@@ -436,8 +452,8 @@ public class AdminConfigEditorBean implements Serializable {
      */
     public static void unlockFile(Path file, String sessionId) {
         logger.trace("Unlocking file {} for session {}", file, sessionId);
-        if (file != null) {
-            fileLocks.unlockFile(file, sessionId);
+        if (file != null && fileLocks.unlockFile(file, sessionId)) {
+            VimSwapFile.delete(file);
         }
     }
 
@@ -633,7 +649,7 @@ public class AdminConfigEditorBean implements Serializable {
                         Files.delete(backupFiles[--length].toPath());
                         logger.trace("Rotated away backup: {}", backupFiles[length].toPath().getFileName());
                     } catch (IOException e) {
-                        logger.error(e.getMessage());
+                        logger.error(e.getMessage(), e);
                     }
                 }
                 backupFiles = backupFolder.listFiles();
@@ -669,7 +685,7 @@ public class AdminConfigEditorBean implements Serializable {
             try {
                 return Files.getLastModifiedTime(b.toPath()).compareTo(Files.getLastModifiedTime(a.toPath()));
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
                 return 0;
             }
         }); // last modified comes on top
@@ -747,7 +763,7 @@ public class AdminConfigEditorBean implements Serializable {
             }
         } catch (IOException e) {
             if (GetAction.isClientAbort(e)) {
-                logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage());
+                logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage()); // Stack trace intentionally omitted - client abort
                 return "";
             }
             throw e;
@@ -762,7 +778,10 @@ public class AdminConfigEditorBean implements Serializable {
      * @param sessionId HTTP session ID whose locks are to be released
      */
     public static void clearLocksForSessionId(String sessionId) {
-        fileLocks.clearLocksForSessionId(sessionId);
+        Set<Path> pathsToUnlock = fileLocks.getAndClearLocksForSessionId(sessionId);
+        for (Path p : pathsToUnlock) {
+            VimSwapFile.delete(p);
+        }
     }
 
     /**
