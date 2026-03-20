@@ -52,6 +52,7 @@
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSAdvancedSearchContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
@@ -195,6 +196,7 @@
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSAdvancedSearchContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>

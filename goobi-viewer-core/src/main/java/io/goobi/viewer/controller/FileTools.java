@@ -792,7 +792,7 @@ public final class FileTools {
         }
 
         final String sanitizedFileName = Paths.get(fileName).getFileName().toString();
-        if (sanitizedFileName == null || !sanitizedFileName.matches("[\\w.\\- ]+")) {
+        if (sanitizedFileName == null || !sanitizedFileName.matches("[\\w.,\\- ]+")) {
             throw new IllegalArgumentException("Illegal fileName: " + fileName);
         }
 

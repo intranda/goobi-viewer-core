@@ -438,16 +438,18 @@ public class Search implements Serializable {
         }
 
         List<String> allFacetFields = SearchHelper.facetifyList(this.facetFields);
-        if (locale != null) {
-            Set<String> toRemove = new HashSet<>();
-            for (String field : allFacetFields) {
-                if (SolrTools.isHasWrongLanguageCode(field, locale.getLanguage())) {
-                    toRemove.add(field);
-                    logger.trace("Ignore configured facet field {} due to language mismatch.", field);
-                }
-            }
-            allFacetFields.removeAll(toRemove);
-        }
+        
+        // Do not filter by language here so that the calculated facets are available when switching languages (no new search executed)
+        //        if (locale != null) {
+        //            Set<String> toRemove = new HashSet<>();
+        //            for (String field : allFacetFields) {
+        //                if (SolrTools.isHasWrongLanguageCode(field, locale.getLanguage())) {
+        //                    toRemove.add(field);
+        //                    logger.trace("Ignore configured facet field {} due to language mismatch.", field);
+        //                }
+        //            }
+        //            allFacetFields.removeAll(toRemove);
+        //        }
 
         //Include this to see if any results have geo-coords and thus the geomap-faceting widget should be displayed
         if (facets.getGeoFacetting().isActive()) {

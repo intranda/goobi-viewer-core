@@ -210,11 +210,11 @@
         }
         
         getPageUrl(pageNo) {
-        	if(this.isDoublePageMode()) {
-        		return this.opts.pageUrlTemplate(pageNo + "-" + (pageNo+1));
-        	} else {        		
+         	if(this.isDoublePageMode()) {
+         		return this.opts.pageUrlTemplate(pageNo + "-" + (pageNo+1));
+         	} else {        		
             	return this.opts.pageUrlTemplate(pageNo);
-        	}
+         	}
         }
 
         gotoFirstPage() {
@@ -259,7 +259,9 @@
             if(this.isSequenceMode()) {
                 this.gotoPage(pageNo);
             } else {
-                window.location.assign(this.getPageUrl(pageNo));
+            	const pageUrl = this.opts.pageUrlTemplate(pageNo); //do not use getPageUrl(pageNo) since that requires a single number value
+            	//console.log("nagivate to", pageUrl, pageNo);
+                window.location.assign(pageUrl);
             }
         }
 
@@ -286,11 +288,11 @@
         }
 
         isFirstPage() {
-            return this.currentPageNumber == this.opts.firstPageNumber;
+            return this.currentPageNumbers[0] == this.opts.firstPageNumber;
         }
 
         isLastPage() {
-            return this.currentPageNumber == this.opts.lastPageNumber;
+            return this.currentPageNumbers[0] == this.opts.lastPageNumber;
         }
 
     </script>

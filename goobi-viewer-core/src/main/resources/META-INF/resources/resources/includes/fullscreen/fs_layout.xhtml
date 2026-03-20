@@ -587,6 +587,7 @@ $(function () {
 
 //init imageFilters
 zoomableImageLoaded.subscribe((image) => {
+    console.log('loaded zoomable image ', image);
     image.updateMargins();
     let originClean = image.viewer.isOriginClean();
     if (originClean) {

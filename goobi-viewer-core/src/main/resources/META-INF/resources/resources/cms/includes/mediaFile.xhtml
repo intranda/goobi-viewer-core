@@ -413,6 +413,9 @@
                         jsf:action="#{cmsMediaBean.deleteMedia(media)}"
                         aria-label="#{msg.delete}">
                         #{msg.delete}
+                        <f:ajax
+                            render="adminCmsMediaFilesForm :messages"
+                            onevent="reload" />
                     </button>
 
                     <h:commandLink

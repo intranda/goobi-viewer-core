@@ -21,14 +21,19 @@
  */
 package io.goobi.viewer.controller;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.apache.solr.common.SolrDocument;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 import io.goobi.viewer.exceptions.IndexAugmenterException;
 import io.goobi.viewer.model.job.ITaskType;
@@ -37,6 +42,12 @@ import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
 
 class DataManagerTest {
+
+    @AfterEach
+    void cleanupInjectedSearchIndex() {
+        // injectSearchIndex() rejects null, so restore with a fresh neutral mock
+        DataManager.getInstance().injectSearchIndex(Mockito.mock(SolrSearchIndex.class));
+    }
 
     /**
      * @see DataManager#registerModule(IModule)
@@ -193,5 +204,20 @@ class DataManagerTest {
         }
         Assertions.assertTrue(DataManager.getInstance().registerModule(new TestModule()));
         Assertions.assertFalse(DataManager.getInstance().registerModule(new TestModule()));
+    }
+
+    /**
+     * @see DataManager#closeSearchIndex()
+     * @verifies close searchIndex without calling checkReloadNeeded
+     */
+    @Test
+    void closeSearchIndex_shouldCloseClientWithoutCheckReloadNeeded() throws Exception {
+        SolrSearchIndex mockIndex = Mockito.mock(SolrSearchIndex.class);
+        DataManager.getInstance().injectSearchIndex(mockIndex);
+
+        DataManager.getInstance().closeSearchIndex();
+
+        Mockito.verify(mockIndex, Mockito.times(1)).close();
+        Mockito.verify(mockIndex, Mockito.never()).checkReloadNeeded();
     }
 }

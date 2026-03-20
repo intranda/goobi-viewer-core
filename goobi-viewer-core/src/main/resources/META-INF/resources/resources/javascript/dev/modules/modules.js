@@ -368,6 +368,13 @@
         }
 
         getTileSourceOrderFromId(id) {
+            if (this.sequence) {
+                id =
+                    this.sequence.urlMap
+                        .entries()
+                        .find((e) => e[1] == id)
+                        ?.at(0) ?? id;
+            }
             return this.tileSourceIdToOrder[id];
         }
     }
@@ -401,8 +408,6 @@
                     let value = tileSources[key];
                     if (typeof value == 'string' && (value.startsWith('{') || value.startsWith('['))) {
                         tileSources[key] = JSON.parse(value);
-                    } else if (value.endsWith('/info.json')) {
-                        tileSources[key] = value.replace('/info.json', '');
                     }
                 });
                 return tileSources;
@@ -424,7 +429,7 @@
 
     function initControls(zoom, rotation) {
         if (document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
-            zoom.setSlider(_config.elementSelectors.controls.zoomSlider);
+            zoom.setSlider(_config.elementSelectors.controls.zoomSlider, 3);
         }
         document
             .querySelectorAll(_config.elementSelectors.controls.rotateLeft)

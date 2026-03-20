@@ -509,10 +509,10 @@
             $(document).ready(function () {
                 document.querySelectorAll('[data-codemirror]').forEach((element) => {
                     let mode = element.dataset['codemirror'];
-                    console.log('Found code mirror text ', element, mode);
+                    //  console.log('Found code mirror text ', element, mode);
                     // INIT EDITOR MAIN
                     let cmInstance = adminJS.codemirror(element, mode);
-                    console.log('initialized code mirror ', cmInstance);
+                    // console.log('initialized code mirror ', cmInstance);
                 });
             });
         </script>

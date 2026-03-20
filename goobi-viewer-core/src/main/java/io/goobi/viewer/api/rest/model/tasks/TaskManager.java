@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -140,6 +141,28 @@ public class TaskManager {
 
     public List<Task> getTasks() {
         return this.tasks.values().stream().collect(Collectors.toList());
+    }
+
+    /**
+     * Shuts down the internal thread pool. Attempts to stop running tasks; waits up to 5 seconds
+     * for threads to terminate. Should be called from the servlet context listener on undeploy.
+     */
+    public void shutdown() {
+        executorService.shutdownNow();
+        try {
+            if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                logger.warn("TaskManager executor did not terminate within 5 seconds");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * @return true if the internal executor service has been shut down
+     */
+    public boolean isShutdown() {
+        return executorService.isShutdown();
     }
 
     /**

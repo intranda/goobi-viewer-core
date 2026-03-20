@@ -77,6 +77,7 @@ export default class ZoomableImage {
                 Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
             );
 
+
             if (this.viewMode == 'sequence') {
                 if (_debug) console.log('initialize sequence mode');
                 this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
@@ -128,6 +129,7 @@ export default class ZoomableImage {
 
     load() {
         if (this.viewer) {
+			if(_debug)console.log("load image from", this.tileSources);
             return this.viewer.load(Object.values(this.tileSources), this.getCurrentTileSourceIndex()).then((image) => {
                 this.sequence?.initialize(this.getCurrentTileSourceId());
                 this.overlayGroups.forEach((group) => group.show());
@@ -174,6 +176,9 @@ export default class ZoomableImage {
     }
 
     getTileSourceOrderFromId(id) {
+		if(this.sequence) {
+			id = this.sequence.urlMap.entries().find(e => e[1] == id)?.at(0) ?? id;
+		}
         return this.tileSourceIdToOrder[id];
     }
 }
@@ -207,8 +212,6 @@ function createTileSource() {
                 let value = tileSources[key];
                 if (typeof value == 'string' && (value.startsWith('{') || value.startsWith('['))) {
                     tileSources[key] = JSON.parse(value);
-                } else if (value.endsWith('/info.json')) {
-                    tileSources[key] = value.replace('/info.json', '');
                 }
             });
             return tileSources;
@@ -230,7 +233,7 @@ function createFooter(viewer) {
 
 function initControls(zoom, rotation) {
     if (document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
-        zoom.setSlider(_config.elementSelectors.controls.zoomSlider);
+        zoom.setSlider(_config.elementSelectors.controls.zoomSlider, 3);
     }
     document
         .querySelectorAll(_config.elementSelectors.controls.rotateLeft)

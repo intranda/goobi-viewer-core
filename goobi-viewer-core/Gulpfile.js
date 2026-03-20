@@ -892,6 +892,10 @@ async function java() {
  */
 function watchMode() {
     requireDeploymentDir();
+    logBlock('watch', [
+        `deploy: ${colors.blue(prettyPath(DEPLOYMENT_DIR))}`,
+        colors.gray('watching for changes — run "npm run sync" for a full initial sync'),
+    ]);
     // JS bundles
     gulp.watch([
         joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'),
@@ -1006,8 +1010,8 @@ const buildJS = gulp.series(bundleModules, bundleViewerJS, bundleStatisticsJS, b
 const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags));
 
 exports.build = buildAll;
-exports.dev = gulp.series(fullSync, watchMode);
-exports['copy-deps'] = gulp.series(buildIcons, copyDependencies);
+exports.dev = watchMode;
+exports['copy-deps'] = copyDependencies;
 exports['sync-all'] = fullSync;
 exports.target = printTargets;
 exports.java = java;
@@ -1015,7 +1019,7 @@ exports.icons = buildIcons;
 
 /* ── Task exports ────────────────────────────────────────────────────────────────────────────
    - npm run build      → builds styles, JS bundles, riot tags, icons
-   - npm run dev        → builds icons, full project → deploy mirror once, then starts watchers
+   - npm run dev        → starts watchers (no initial full sync; run npm run sync separately if needed)
    - npm run copyDeps   → copies declared 3rd-party assets
    - npm run icons      → rebuilds Tabler SVG sprite assets
    - npm run sync       → one-shot full project → deploy mirror

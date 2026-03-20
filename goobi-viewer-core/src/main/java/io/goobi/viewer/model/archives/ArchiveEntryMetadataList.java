@@ -105,6 +105,7 @@ public class ArchiveEntryMetadataList {
      * @param id
      * @param doc Archive node Solr doc
      * @param metadataList Metadata configuration list
+     * @should populate metadata correctly
      */
     public ArchiveEntryMetadataList(String id, SolrDocument doc, List<Metadata> metadataList) {
         if (StringUtils.isBlank(id)) {
@@ -113,15 +114,32 @@ public class ArchiveEntryMetadataList {
             throw new IllegalArgumentException("Cannot create an archvie entry metadata list from solr document 'null'");
         }
         this.id = id;
-        logger.trace("loadMetadata ({})", doc);
+
+        populateMetadata(doc, metadataList);
+    }
+
+    /**
+     * 
+     * @param doc
+     * @param metadataList
+     * @should populate metadata correctly
+     */
+    void populateMetadata(SolrDocument doc, List<Metadata> metadataList) {
+        logger.trace("populateMetadata ({})", doc);
+        if (metadataList == null || metadataList.isEmpty()) {
+            logger.trace("No metadata");
+            return;
+        }
         try {
-            // Collect metadata
-            if (metadataList != null && !metadataList.isEmpty()) {
-                StructElement se = new StructElement(doc);
-                for (Metadata md : metadataList) {
-                    if (md.populate(se, SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), null, null)) {
-                        addMetadataField(md);
-                    }
+            StructElement se = new StructElement(doc);
+            for (Metadata md : metadataList) {
+                logger.trace("Populating archive metadata field: {}", md.getLabel()); //NOSONAR Debug
+                if (!se.isHasMetadata(md.getLabel())) {
+                    // Field must exist on StructElement to be populated
+                    se.getMetadataFields().put(md.getLabel(), new ArrayList<>());
+                }
+                if (md.populate(se, SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), null, null)) {
+                    addMetadataField(md);
                 }
             }
         } catch (IndexUnreachableException | PresentationException e) {

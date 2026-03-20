@@ -304,6 +304,7 @@ public class MessageQueueManager {
             }
             if (broker != null) {
                 broker.stop();
+                broker.waitUntilStopped();
             }
             if (rmiServer != null) {
                 rmiServer.stop();

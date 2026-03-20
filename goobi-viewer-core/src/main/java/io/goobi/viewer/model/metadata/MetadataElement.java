@@ -174,13 +174,15 @@ public class MetadataElement implements Serializable {
     private String groupType = null;
     private String mimeType = null;
     private String url = null;
+    private String pi = null;
     private List<Metadata> metadataList = new ArrayList<>();
     private List<Metadata> sidebarMetadataList = null;
     private List<MetadataType> metadataTypes;
     /** True if this ISWORK=true or ISANCHOR=true. */
     private boolean topElement;
     private boolean anchor;
-    private boolean filesOnly;
+    private boolean filesOnly = false;
+    private boolean hasImages = true;
     /** Selected language version of the current record. This can be different from the current viewer locale. */
     private String selectedRecordLanguage;
 
@@ -209,11 +211,12 @@ public class MetadataElement implements Serializable {
         docType = ViewerResourceBundle.getTranslation(se.getDocStructType(), null);
         docStructType = se.getDocStructType();
         topElement = se.isAnchor() || se.isWork();
-        se.getPi(); // TODO why?
+        pi = se.getPi();
         anchor = se.isAnchor();
         filesOnly = "application".equalsIgnoreCase(getMimeType(se));
+        hasImages = se.isHasImages();
 
-        PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false);
+        PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), hasImages, false);
         url = se.getUrl(pageType);
 
         for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(metadataViewIndex, se.getDocStructType())) {
@@ -643,6 +646,13 @@ public class MetadataElement implements Serializable {
     }
 
     /**
+     * @return the pi
+     */
+    public String getPi() {
+        return pi;
+    }
+
+    /**
      * <p>
      * isAnchor.
      * </p>
@@ -662,6 +672,13 @@ public class MetadataElement implements Serializable {
      */
     public boolean isFilesOnly() {
         return filesOnly;
+    }
+
+    /**
+     * @return the hasImages
+     */
+    public boolean isHasImages() {
+        return hasImages;
     }
 
     /**
