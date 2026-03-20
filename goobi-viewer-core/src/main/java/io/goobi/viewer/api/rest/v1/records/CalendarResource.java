@@ -26,6 +26,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CALENDAR_YEAR;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -146,7 +147,7 @@ public class CalendarResource {
         try {
             LocalDate date = LocalDate.parse(yearMonthDay, DateTools.FORMATTERISO8601BASICDATE);
             return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
-        } catch (Exception e) {
+        } catch (DateTimeParseException e) {
             logger.warn("Unable to parse YEARMONTHDAY value: {}", yearMonthDay);
             return yearMonthDay;
         }
