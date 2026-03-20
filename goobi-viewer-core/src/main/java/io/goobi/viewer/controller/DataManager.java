@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -315,6 +316,19 @@ public final class DataManager {
         searchIndex.checkReloadNeeded();
 
         return searchIndex;
+    }
+
+    /**
+     * Closes the Solr search index client directly, without triggering {@link SolrSearchIndex#checkReloadNeeded()}.
+     * Use this during application shutdown instead of {@code getSearchIndex().close()} to prevent
+     * a closed client from being silently replaced by a new one.
+     *
+     * @throws IOException if closing the client fails
+     */
+    public void closeSearchIndex() throws IOException {
+        if (searchIndex != null) {
+            searchIndex.close();
+        }
     }
 
     /**

@@ -29,6 +29,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.ProviderNotFoundException;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -113,12 +117,32 @@ public class ContextListener implements ServletContextListener {
     /** {@inheritDoc} */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        // Shut down the task thread pool first so no running task can re-open resources
+        // that are about to be closed (e.g. the Solr client).
+        DataManager.getInstance().getRestApiJobManager().shutdown();
+
         try {
             DataManager.getInstance().getDao().shutdown();
             ContentServerCacheManager.getInstance().close();
             logger.info("Successfully stopped DAO");
         } catch (DAOException e) {
             logger.error("Error stopping DAO", e);
+        }
+        try {
+            DataManager.getInstance().closeSearchIndex();
+            logger.info("Successfully closed Solr client");
+        } catch (IOException e) {
+            logger.error("Error closing Solr client", e);
+        }
+        DataManager.getInstance().getLanguageHelper().shutdown();
+        ViewerResourceBundle.shutdown();
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            try {
+                DriverManager.deregisterDriver(drivers.nextElement());
+            } catch (SQLException e) {
+                logger.error("Error deregistering JDBC driver", e);
+            }
         }
     }
 }

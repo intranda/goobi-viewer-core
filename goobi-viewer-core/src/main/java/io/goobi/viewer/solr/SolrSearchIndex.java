@@ -86,7 +86,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  * SolrSearchIndex class.
  * </p>
  */
-public class SolrSearchIndex {
+public class SolrSearchIndex implements java.io.Closeable {
 
     private static final METHOD DEFAULT_QUERY_METHOD = METHOD.POST;
 
@@ -167,8 +167,13 @@ public class SolrSearchIndex {
         }
     }
 
+    @Override
+    public void close() throws IOException {
+        client.close();
+    }
+
     /**
-     * 
+     *
      * @return New {@link SolrClient}
      */
     public static SolrClient getNewSolrClient() {
