@@ -199,11 +199,15 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         Map<String, Object> requestMap = fc.getExternalContext().getRequestMap();
 
         Flash flash = fc.getExternalContext().getFlash();
-        flash.setKeepMessages(true);
-
-        putNavigationState(requestMap, flash);
         PhaseId phase = fc.getCurrentPhaseId();
-        if (PhaseId.RENDER_RESPONSE == phase) {
+        boolean renderPhase = PhaseId.RENDER_RESPONSE == phase;
+
+        if (!fc.getExternalContext().isResponseCommitted()) {
+            flash.setKeepMessages(true);
+        }
+
+        putNavigationState(requestMap, flash, renderPhase);
+        if (renderPhase) {
             flash.putNow("ErrorPhase", phase.toString());
             flash.putNow("errorDetails", errorDetails);
             flash.putNow("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
@@ -259,12 +263,17 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     /**
      * @param requestMap
      * @param flash
+     * @param renderPhase
      */
-    public void putNavigationState(Map<String, Object> requestMap, Flash flash) {
+    public void putNavigationState(Map<String, Object> requestMap, Flash flash, boolean renderPhase) {
         NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
         if (navigationHelper != null) {
             requestMap.put("sourceUrl", navigationHelper.getCurrentUrl());
-            flash.put("sourceUrl", navigationHelper.getCurrentUrl());
+            if (renderPhase) {
+                flash.putNow("sourceUrl", navigationHelper.getCurrentUrl());
+            } else {
+                flash.put("sourceUrl", navigationHelper.getCurrentUrl());
+            }
         }
     }
 
