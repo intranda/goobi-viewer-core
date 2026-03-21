@@ -40,4 +40,17 @@ class LanguageHelperTest extends AbstractTest {
         Assertions.assertNotNull(helper.getLanguage("fr"));
     }
 
+    @Test
+    void testShutdownStopsReloadingThread() throws InterruptedException {
+        LanguageHelper helper = new LanguageHelper("src/test/resources/languages.xml");
+        helper.shutdown();
+
+        Thread.sleep(500);
+
+        boolean threadStillAlive = Thread.getAllStackTraces().keySet().stream()
+                .anyMatch(t -> t.getName().startsWith("ReloadingTrigger") && t.isAlive());
+
+        Assertions.assertFalse(threadStillAlive, "ReloadingTrigger thread should be stopped after shutdown");
+    }
+
 }
