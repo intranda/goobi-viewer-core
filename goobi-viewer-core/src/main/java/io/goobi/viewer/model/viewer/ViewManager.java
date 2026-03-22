@@ -759,6 +759,9 @@ public class ViewManager implements Serializable {
      */
     public String getPageDownloadUrl(final DownloadOption option, PhysicalElement page)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException {
+        if (page == null) {
+            return "";
+        }
         logger.trace("getPageDownloadUrl: {}", option);
         DownloadOption useOption = option;
         if (useOption == null || !useOption.isValid()) {
