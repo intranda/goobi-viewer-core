@@ -198,36 +198,33 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         FacesContext fc = FacesContext.getCurrentInstance();
         Map<String, Object> requestMap = fc.getExternalContext().getRequestMap();
 
-        Flash flash = fc.getExternalContext().getFlash();
         PhaseId phase = fc.getCurrentPhaseId();
         boolean renderPhase = PhaseId.RENDER_RESPONSE == phase;
-
-        if (!fc.getExternalContext().isResponseCommitted()) {
-            flash.setKeepMessages(true);
-        }
-
-        putNavigationState(requestMap, flash, renderPhase);
-        if (renderPhase) {
-            flash.putNow("ErrorPhase", phase.toString());
-            flash.putNow("errorDetails", errorDetails);
-            flash.putNow("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
-            flash.putNow("errorType", errorType);
-        } else {
-            flash.put("ErrorPhase", phase.toString());
-            flash.put("errorDetails", errorDetails);
-            flash.put("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
-            flash.put("errorType", errorType);
-        }
+        boolean responseCommitted = fc.getExternalContext().isResponseCommitted();
 
         requestMap.put("errMsg", errorDetails);
         requestMap.put("errorType", errorType);
 
-        if (fc.getExternalContext().isResponseCommitted()) {
-            // Cannot redirect when response is already committed - attempting a redirect
-            // would cause Mojarra's ELFlash to try to set a Set-Cookie header on the
-            // committed response, triggering JSF1095 warnings.
+        if (responseCommitted) {
+            // Cannot use flash or redirect when response is already committed - any
+            // flash.put() call would cause Mojarra's ELFlash to try to set a Set-Cookie
+            // header on the committed response, triggering JSF1095 warnings.
             fc.responseComplete();
         } else {
+            Flash flash = fc.getExternalContext().getFlash();
+            flash.setKeepMessages(true);
+            putNavigationState(requestMap, flash, renderPhase);
+            if (renderPhase) {
+                flash.putNow("ErrorPhase", phase.toString());
+                flash.putNow("errorDetails", errorDetails);
+                flash.putNow("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
+                flash.putNow("errorType", errorType);
+            } else {
+                flash.put("ErrorPhase", phase.toString());
+                flash.put("errorDetails", errorDetails);
+                flash.put("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
+                flash.put("errorType", errorType);
+            }
             redirect("pretty:error");
         }
     }
