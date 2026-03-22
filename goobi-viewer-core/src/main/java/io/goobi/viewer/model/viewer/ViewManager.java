@@ -685,6 +685,9 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getThumbnailUrlForDownload(Scale scale, PhysicalElement page) throws IndexUnreachableException, DAOException {
+        if (page == null) {
+            return "";
+        }
 
         PageType pageType = Optional.ofNullable(BeanUtils.getNavigationHelper()).map(NavigationHelper::getCurrentPageType).orElse(null);
         if (pageType == null) {
