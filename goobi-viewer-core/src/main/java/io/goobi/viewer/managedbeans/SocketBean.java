@@ -50,7 +50,11 @@ public class SocketBean {
     @Push
     private PushContext backgroundTasksState;
 
-    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "socket-bean-scheduler");
+        t.setDaemon(true);
+        return t;
+    });
 
     /**
      * Default constructor. Instantiates a fixed schedule thread

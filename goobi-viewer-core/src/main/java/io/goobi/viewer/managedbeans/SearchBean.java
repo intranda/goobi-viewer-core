@@ -130,7 +130,18 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private static final long serialVersionUID = 6962223613432267768L;
 
-    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(r -> {
+        Thread t = new Thread(r);
+        t.setDaemon(true);
+        return t;
+    });
+
+    /**
+     * Shuts down the static executor. Should be called from the servlet context listener on undeploy.
+     */
+    public static void shutdown() {
+        EXECUTOR.shutdownNow();
+    }
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SearchBean.class);
