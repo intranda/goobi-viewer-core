@@ -1634,14 +1634,15 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public TOC getToc() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        if (viewManager == null) {
+        ViewManager vm = viewManager;
+        if (vm == null) {
             return null;
         }
-        synchronized (viewManager) {
-            if (viewManager.getToc() == null) {
-                viewManager.setToc(createTOC());
+        synchronized (vm) {
+            if (vm.getToc() == null) {
+                vm.setToc(createTOC());
             }
-            return viewManager.getToc();
+            return vm.getToc();
         }
     }
 
