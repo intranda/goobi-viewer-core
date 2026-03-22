@@ -36,7 +36,6 @@ import jakarta.faces.context.ExceptionHandler;
 import jakarta.faces.context.ExceptionHandlerWrapper;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-import jakarta.faces.context.Flash;
 import jakarta.faces.event.ExceptionQueuedEvent;
 import jakarta.faces.event.ExceptionQueuedEventContext;
 import jakarta.faces.event.PhaseId;
@@ -198,33 +197,21 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         FacesContext fc = FacesContext.getCurrentInstance();
         Map<String, Object> requestMap = fc.getExternalContext().getRequestMap();
 
-        PhaseId phase = fc.getCurrentPhaseId();
-        boolean renderPhase = PhaseId.RENDER_RESPONSE == phase;
         boolean responseCommitted = fc.getExternalContext().isResponseCommitted();
 
         requestMap.put("errMsg", errorDetails);
         requestMap.put("errorType", errorType);
 
         if (responseCommitted) {
-            // Cannot use flash or redirect when response is already committed - any
-            // flash.put() call would cause Mojarra's ELFlash to try to set a Set-Cookie
-            // header on the committed response, triggering JSF1095 warnings.
+            // Cannot redirect when response is already committed.
             fc.responseComplete();
         } else {
-            Flash flash = fc.getExternalContext().getFlash();
-            flash.setKeepMessages(true);
-            putNavigationState(requestMap, flash, renderPhase);
-            if (renderPhase) {
-                flash.putNow("ErrorPhase", phase.toString());
-                flash.putNow("errorDetails", errorDetails);
-                flash.putNow("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
-                flash.putNow("errorType", errorType);
-            } else {
-                flash.put("ErrorPhase", phase.toString());
-                flash.put("errorDetails", errorDetails);
-                flash.put("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
-                flash.put("errorType", errorType);
-            }
+            HttpSession session = (HttpSession) fc.getExternalContext().getSession(true);
+            session.setAttribute("ErrorPhase", fc.getCurrentPhaseId().toString());
+            session.setAttribute("errorDetails", errorDetails);
+            session.setAttribute("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
+            session.setAttribute("errorType", errorType);
+            putNavigationState(requestMap, session);
             redirect("pretty:error");
         }
     }
@@ -266,18 +253,13 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
     /**
      * @param requestMap
-     * @param flash
-     * @param renderPhase
+     * @param session
      */
-    public void putNavigationState(Map<String, Object> requestMap, Flash flash, boolean renderPhase) {
+    public void putNavigationState(Map<String, Object> requestMap, HttpSession session) {
         NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
         if (navigationHelper != null) {
             requestMap.put("sourceUrl", navigationHelper.getCurrentUrl());
-            if (renderPhase) {
-                flash.putNow("sourceUrl", navigationHelper.getCurrentUrl());
-            } else {
-                flash.put("sourceUrl", navigationHelper.getCurrentUrl());
-            }
+            session.setAttribute("sourceUrl", navigationHelper.getCurrentUrl());
         }
     }
 

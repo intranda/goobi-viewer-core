@@ -181,8 +181,6 @@ public final class ViewHistory {
      * @throws java.io.IOException if any.
      */
     public static synchronized void redirectToUrl(String url) throws IOException {
-
-        FacesContext.getCurrentInstance().getExternalContext().getFlash().setRedirect(true);
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
 
