@@ -37,10 +37,10 @@ import jakarta.faces.application.NavigationHandler;
 import jakarta.faces.context.ExceptionHandler;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-import jakarta.faces.context.Flash;
 import jakarta.faces.event.ExceptionQueuedEvent;
 import jakarta.faces.event.ExceptionQueuedEventContext;
 import jakarta.faces.event.PhaseId;
+import jakarta.servlet.http.HttpSession;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -79,29 +79,29 @@ class MyExceptionHandlerTest {
     }
 
     /**
-     * When the response is not yet committed, Flash must be used and a redirect must be triggered.
+     * When the response is not yet committed, session attributes must be set and a redirect must be triggered.
      */
     @Test
-    void handle_responseNotCommitted_usesFlash() throws Exception {
+    void handle_responseNotCommitted_usesSession() throws Exception {
         FacesContext mockFc = ContextMocker.mockFacesContext();
         ExternalContext mockEc = mockFc.getExternalContext();
-        Flash mockFlash = mock(Flash.class);
+        HttpSession mockSession = mock(HttpSession.class);
         Application mockApp = mock(Application.class);
         NavigationHandler mockNav = mock(NavigationHandler.class);
 
         when(mockFc.getCurrentPhaseId()).thenReturn(PhaseId.INVOKE_APPLICATION);
         when(mockEc.isResponseCommitted()).thenReturn(false);
         when(mockEc.getRequestMap()).thenReturn(new HashMap<>());
-        when(mockEc.getFlash()).thenReturn(mockFlash);
+        when(mockEc.getSession(true)).thenReturn(mockSession);
         when(mockFc.getApplication()).thenReturn(mockApp);
         when(mockApp.getNavigationHandler()).thenReturn(mockNav);
 
         MyExceptionHandler handler = new MyExceptionHandler(buildWrappedHandlerWith(mockFc, new RuntimeException("test error")));
         handler.handle();
 
-        verify(mockEc).getFlash();
-        verify(mockFlash).setKeepMessages(true);
-        verify(mockFlash).put(eq("errorType"), any());
+        verify(mockEc, never()).getFlash();
+        verify(mockSession).setAttribute(eq("errorType"), any());
+        verify(mockSession).setAttribute(eq("errorDetails"), any());
     }
 
     private static ExceptionHandler buildWrappedHandlerWith(FacesContext facesContext, Throwable throwable) {
