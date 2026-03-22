@@ -81,6 +81,8 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 import io.goobi.viewer.model.viewer.CollectionLabeledLink;
 import io.goobi.viewer.model.viewer.LabeledLink;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -1060,10 +1062,14 @@ public class NavigationHelper implements Serializable {
         String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
         if (StringUtils.isNotBlank(discriminatorField)) {
             ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
-            if (activeDocumentBean != null && activeDocumentBean.getViewManager() != null && getCurrentPageType().isDocumentPage()) {
+            ViewManager viewManager = activeDocumentBean != null ? activeDocumentBean.getViewManager() : null;
+            if (viewManager != null && getCurrentPageType().isDocumentPage()) {
                 // If a record is loaded, get the value from the record's value
                 // in discriminatorField
-                subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopStructElement().getMetadataValue(discriminatorField);
+                StructElement topStructElement = viewManager.getTopStructElement();
+                if (topStructElement != null) {
+                    subThemeDiscriminatorValue = topStructElement.getMetadataValue(discriminatorField);
+                }
             } else if (isCmsPage()) {
                 if (cmsBean != null && cmsBean.getCurrentPage() != null) {
                     subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
