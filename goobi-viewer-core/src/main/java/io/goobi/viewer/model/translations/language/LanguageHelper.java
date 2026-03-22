@@ -23,6 +23,8 @@ package io.goobi.viewer.model.translations.language;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
@@ -49,6 +51,7 @@ public class LanguageHelper {
 
     private ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
     private PeriodicReloadingTrigger trigger;
+    private ScheduledExecutorService executorService;
 
     /**
      * <p>
@@ -66,8 +69,9 @@ public class LanguageHelper {
                                     .setListDelimiterHandler(new DefaultListDelimiterHandler('&')) // TODO Why '&'?
                                     .setThrowExceptionOnMissing(false));
             builder.getConfiguration().setExpressionEngine(new XPathExpressionEngine());
+            executorService = Executors.newSingleThreadScheduledExecutor();
             trigger = new PeriodicReloadingTrigger(builder.getReloadingController(),
-                    null, 10, TimeUnit.SECONDS);
+                    null, 10, TimeUnit.SECONDS, executorService);
             trigger.start();
         } catch (ConfigurationException e) {
             logger.error(e.getMessage());
@@ -77,6 +81,7 @@ public class LanguageHelper {
     public void shutdown() {
         if (trigger != null) {
             trigger.shutdown(true);
+            executorService.shutdownNow();
         }
     }
 
