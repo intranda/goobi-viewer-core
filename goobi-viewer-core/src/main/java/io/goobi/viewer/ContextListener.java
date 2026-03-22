@@ -43,6 +43,7 @@ import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.SocketBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -121,6 +122,7 @@ public class ContextListener implements ServletContextListener {
         // Shut down the task thread pool first so no running task can re-open resources
         // that are about to be closed (e.g. the Solr client).
         DataManager.getInstance().getRestApiJobManager().shutdown();
+        SocketBean.shutdownExecutor();
         SearchBean.shutdown();
 
         try {

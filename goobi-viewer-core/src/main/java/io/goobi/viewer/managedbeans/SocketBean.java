@@ -50,7 +50,7 @@ public class SocketBean {
     @Push
     private PushContext backgroundTasksState;
 
-    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor(r -> {
+    private static final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread t = new Thread(r, "socket-bean-scheduler");
         t.setDaemon(true);
         return t;
@@ -104,14 +104,22 @@ public class SocketBean {
 
     }
 
-    @PreDestroy
-    public void close() {
+    /**
+     * Shuts down the scheduler. Should be called from the servlet context listener on undeploy
+     * to ensure the thread terminates before Tomcat checks for lingering threads.
+     */
+    public static void shutdownExecutor() {
         service.shutdownNow();
         try {
             service.awaitTermination(2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    @PreDestroy
+    public void close() {
+        shutdownExecutor();
     }
 
 }
