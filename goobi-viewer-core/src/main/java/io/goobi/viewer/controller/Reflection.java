@@ -39,7 +39,7 @@ public final class Reflection {
         try {
             return Optional.ofNullable(object.getClass().getMethod(method).invoke(object));
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-            logger.error("Error calling method {} ob object {}", method, object);
+            logger.warn("Error calling method {} ob object {}", method, object);
             return Optional.empty();
         }
     }

@@ -381,6 +381,24 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     }
 
+    /**
+     * @see ViewManager#getPageDownloadUrl(DownloadOption, PhysicalElement)
+     * @verifies return empty string if page is null
+     */
+    @Test
+    void testGetPageDownloadUrl_shouldReturnEmptyStringIfPageIsNull()
+            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+
+        String pi = "PPN123";
+        String docstructType = "Catalogue";
+        String filename = "00000001.tif";
+
+        ViewManager viewManager = createViewManager(pi, docstructType, filename, "image/tiff");
+
+        DownloadOption maxSizeTiff = new DownloadOption("Master", "master", "max");
+        assertEquals("", viewManager.getPageDownloadUrl(maxSizeTiff, null));
+    }
+
     @Test
     void testGetPageDownloadUrlExternalResource()
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
