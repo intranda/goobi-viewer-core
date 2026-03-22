@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms.pages;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -98,6 +99,39 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
 
         CMSShortTextContent clonedTextContent = (CMSShortTextContent) cloned.getPersistentComponents().get(0).getContentItems().get(0);
         assertEquals("Entered Text", clonedTextContent.getText().getText(Locale.ENGLISH));
+    }
+
+    @Test
+    void isComponentsLoaded_returnsFalseBeforeInitialisation() {
+        CMSPage page = new CMSPage();
+        page.addComponent(contentManager.getComponent("text").orElseThrow());
+        // Copy constructor creates page with persistentComponents but without cmsComponents
+        CMSPage copy = new CMSPage(page);
+        assertFalse(copy.isComponentsLoaded());
+    }
+
+    @Test
+    void isComponentsLoaded_returnsTrueAfterInitialisation() {
+        CMSPage page = new CMSPage();
+        page.addComponent(contentManager.getComponent("text").orElseThrow());
+        CMSPage copy = new CMSPage(page);
+        copy.initialiseCMSComponents(templateManager);
+        assertTrue(copy.isComponentsLoaded());
+    }
+
+    @Test
+    void isComponentsLoaded_returnsTrueEvenWhenTemplateNotFound() {
+        CMSPage page = new CMSPage();
+        // Add a component with an unknown template filename
+        PersistentCMSComponent unknown = new PersistentCMSComponent();
+        unknown.setTemplateFilename("nonexistent_template");
+        unknown.setOwningPage(page);
+        page.getPersistentComponents().add(unknown);
+        // initialiseCMSComponents cannot find the template — but flag must still be set
+        page.initialiseCMSComponents(templateManager);
+        assertTrue(page.isComponentsLoaded());
+        // The missing component is simply skipped
+        assertEquals(0, page.getComponents().size());
     }
 
     /**

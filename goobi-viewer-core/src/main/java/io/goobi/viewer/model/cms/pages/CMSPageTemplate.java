@@ -165,6 +165,9 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     @Transient
     private List<CMSComponent> cmsComponents = new ArrayList<>();
 
+    @Transient
+    private boolean cmsComponentsInitialized = false;
+
     /**
      * <p>
      * Constructor for CMSPage.
@@ -243,8 +246,11 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
                     .orElse(null);
             if (comp != null) {
                 this.cmsComponents.add(comp);
+            } else {
+                logger.warn("No component template found for '{}' on CMS template {}", persistentComponent.getTemplateFilename(), this.id);
             }
         }
+        this.cmsComponentsInitialized = true;
         sortComponents();
     }
 
@@ -772,7 +778,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     public List<CMSComponent> getComponents() {
-        if (this.cmsComponents.size() != this.persistentComponents.size()) {
+        if (!this.cmsComponentsInitialized) {
             logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
         }
         return this.cmsComponents;
