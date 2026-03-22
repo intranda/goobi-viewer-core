@@ -587,12 +587,17 @@ public final class BeanUtils {
      */
     public static UserBean getUserBeanFromSession(HttpSession session) {
         if (session != null) {
-            Object bean = session.getAttribute("userBean");
-            if (bean != null) {
-                return (UserBean) bean;
+            try {
+                Object bean = session.getAttribute("userBean");
+                if (bean != null) {
+                    return (UserBean) bean;
+                }
+                return findInstanceInSessionAttributes(session, UserBean.class)
+                        .orElse(null);
+            } catch (IllegalStateException e) {
+                // Session was invalidated before the request finished
+                logger.warn("Session already invalidated when retrieving userBean: {}", e.getMessage());
             }
-            return findInstanceInSessionAttributes(session, UserBean.class)
-                    .orElse(null);
         }
 
         return null;

@@ -87,10 +87,13 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             Throwable t = context.getException();
             Throwable cause = getCause(t);
             // Handle ViewExpiredExceptions here ... or even others :)
-            if (!t.getClass().equals(ViewExpiredException.class) && !t.getClass().equals(PrettyException.class)) {
-                logger.error("CLASS: {}", t.getClass().getName());
-            } else {
+            if (t.getClass().equals(ViewExpiredException.class) || t.getClass().equals(PrettyException.class)) {
                 logger.trace(t.getClass().getSimpleName());
+            } else if (cause instanceof IllegalStateException && cause.getMessage() != null
+                    && cause.getMessage().contains("Session already invalidated")) {
+                logger.warn("CLASS: {} (session invalidated)", t.getClass().getName());
+            } else {
+                logger.error("CLASS: {}", t.getClass().getName());
             }
             FacesContext fc = FacesContext.getCurrentInstance();
             if (fc == null) {
@@ -169,6 +172,10 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     String msg = getRootCause(t).getMessage();
                     logger.warn(msg);
                     handleError("Illegal URL parameter.", "general_no_url");
+                } else if (cause instanceof IllegalStateException && cause.getMessage() != null
+                        && cause.getMessage().contains("Session already invalidated")) {
+                    // Session was invalidated (e.g. timeout) while the request was still rendering — expected, not an error
+                    logger.warn("Session invalidated during request rendering: {}", cause.getMessage());
                 } else {
                     // All other exceptions
                     logger.error(t.getMessage(), t);
