@@ -2527,7 +2527,11 @@ public class ActiveDocumentBean implements Serializable {
     public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
         RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
         if (map == null) {
-            map = new RecordGeoMap(getTopDocument());
+            StructElement topDocument = getTopDocument();
+            if (topDocument == null) {
+                return new RecordGeoMap();
+            }
+            map = new RecordGeoMap(topDocument);
             this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), map);
         }
         return map;
