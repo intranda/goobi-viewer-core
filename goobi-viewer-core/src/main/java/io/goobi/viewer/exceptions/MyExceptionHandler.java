@@ -222,7 +222,14 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         requestMap.put("errMsg", errorDetails);
         requestMap.put("errorType", errorType);
 
-        redirect("pretty:error");
+        if (fc.getExternalContext().isResponseCommitted()) {
+            // Cannot redirect when response is already committed - attempting a redirect
+            // would cause Mojarra's ELFlash to try to set a Set-Cookie header on the
+            // committed response, triggering JSF1095 warnings.
+            fc.responseComplete();
+        } else {
+            redirect("pretty:error");
+        }
     }
 
     /**
