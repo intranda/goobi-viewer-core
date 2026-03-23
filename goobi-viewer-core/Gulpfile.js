@@ -932,7 +932,10 @@ function watchMode() {
         '!' + joinPosix(paths.staticRoot, 'resources', 'css', 'dist', '**', '*.css'),
     ];
 
-    const staticWatcher = gulp.watch(staticGlobs, { ignoreInitial: true });
+    const staticWatcher = gulp.watch(staticGlobs, {
+        ignoreInitial: true,
+        awaitWriteFinish: { stabilityThreshold: 200, pollInterval: 100 },
+    });
 
     function mirrorStatic(filePath) {
         const started = process.hrtime.bigint();
