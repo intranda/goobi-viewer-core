@@ -778,7 +778,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     public List<CMSComponent> getComponents() {
-        if (!this.cmsComponentsInitialized) {
+        if (!this.cmsComponentsInitialized && !this.persistentComponents.isEmpty()) {
             logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
         }
         return this.cmsComponents;

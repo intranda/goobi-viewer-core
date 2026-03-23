@@ -1339,7 +1339,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public List<CMSComponent> getComponents() {
-        if (!this.cmsComponentsInitialized) {
+        if (!this.cmsComponentsInitialized && !this.persistentComponents.isEmpty()) {
             logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
         }
         return this.cmsComponents;
