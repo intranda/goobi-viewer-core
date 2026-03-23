@@ -34,6 +34,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -237,7 +238,11 @@ public class TempMediaFileResource {
     }
 
     public static String message(String string) {
-        return "{message: \"" + string + "\"}";
+        try {
+            return new ObjectMapper().writeValueAsString(Map.of("message", string));
+        } catch (JsonProcessingException e) {
+            return "{\"message\":\"internal error\"}";
+        }
     }
 
     /**
