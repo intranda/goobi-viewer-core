@@ -445,7 +445,7 @@ public class Configuration extends AbstractConfiguration {
         return getMetadataListItemsForTemplate(type, template, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue).stream()
                 .filter(item -> item instanceof Metadata)
                 .map(item -> (Metadata) item)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**
@@ -767,7 +767,7 @@ public class Configuration extends AbstractConfiguration {
         if (usingTemplate == null) {
             return new ArrayList<>();
         }
-        List<HierarchicalConfiguration<ImmutableNode>> elements = usingTemplate.configurationsAt("metadata");
+        List<HierarchicalConfiguration<ImmutableNode>> elements = usingTemplate.childConfigurationsAt(".");
         if (elements == null) {
             logger.warn("Template '{}' contains no metadata elements.", usingTemplate.getRootElementName());
             return new ArrayList<>();
@@ -777,7 +777,7 @@ public class Configuration extends AbstractConfiguration {
         for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
             if ("fold".equals(sub.getRootElementName())) {
                 ret.add(new MetadataListSeparator());
-            } else {
+            } else if ("metadata".equals(sub.getRootElementName())) {
                 Metadata md = getMetadataFromSubnodeConfig(sub, topstructValueFallbackDefaultValue, 0);
                 if (md != null) {
                     ret.add(md);

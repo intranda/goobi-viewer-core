@@ -224,10 +224,10 @@ public class MetadataElement implements Serializable {
 
         PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), hasImages, false);
         url = se.getUrl(pageType);
-
-        for (MetadataListElement item : DataManager.getInstance()
+        List<MetadataListElement> metadataItems = DataManager.getInstance()
                 .getConfiguration()
-                .getMainMetadataListItemsForTemplate(metadataViewIndex, se.getDocStructType())) {
+                .getMainMetadataListItemsForTemplate(metadataViewIndex, se.getDocStructType());
+        for (MetadataListElement item : metadataItems) {
             if (item instanceof Metadata metadata) {
                 try {
                     if (!metadata.populate(se, String.valueOf(se.getLuceneId()), metadata.getSortFields(), sessionLocale)) {
@@ -466,7 +466,7 @@ public class MetadataElement implements Serializable {
      * @return the MetadataList
      */
     public List<Metadata> getMetadataList(boolean beforeFold) {
-        List<Metadata> mdList = beforeFold ? metadataList.subList(0, this.metadataFoldIndex) : metadataList;
+        List<Metadata> mdList = (beforeFold && isHasMetadataListFold()) ? metadataList.subList(0, this.metadataFoldIndex) : metadataList;
         return Metadata.filterMetadata(mdList, selectedRecordLanguage, null);
     }
 
@@ -479,8 +479,8 @@ public class MetadataElement implements Serializable {
         return getMetadataList(true);
     }
 
-    public List<Metadata> getMetadataListAftereFold() {
-        List<Metadata> mdList = metadataList.subList(this.metadataFoldIndex, this.metadataList.size());
+    public List<Metadata> getMetadataListAfterFold() {
+        List<Metadata> mdList = isHasMetadataListFold() ? metadataList.subList(this.metadataFoldIndex, this.metadataList.size()) : metadataList;
         return Metadata.filterMetadata(mdList, selectedRecordLanguage, null);
     }
 
