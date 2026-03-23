@@ -54,9 +54,7 @@
 
                                     value = $url + cardNo;
 
-                                    var $temp = $('
-                                <textarea />
-                                ');
+                                    var $temp = $('<textarea />');
                                     $('body').append($temp);
                                     $temp.val(value).select();
                                     document.execCommand('copy');

@@ -13,9 +13,12 @@ module.exports = {
     bracketSpacing: true,
     arrowParens: 'always',
     endOfLine: 'lf',
+    embeddedLanguageFormatting: 'off',
 
     // Plugins
-    plugins: [require.resolve('@prettier/plugin-xml')],
+    // Wrapper around @prettier/plugin-xml that prevents embedded JS formatter
+    // from reformatting HTML strings inside <script> tags in XHTML files.
+    plugins: [require.resolve('./prettier-plugin-xhtml-script-fix.mjs')],
 
     // === File-specific overrides ===
     overrides: [
