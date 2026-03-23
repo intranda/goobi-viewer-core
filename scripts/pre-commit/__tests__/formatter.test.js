@@ -121,12 +121,22 @@ describe("Pre-Commit Formatter", () => {
   // ============================================================
 
   describe("Command Building", () => {
-    test("Prettier command includes --write and all files", () => {
+    test("Prettier command includes --write, --ignore-path and all files", () => {
       const mockExec = jest.fn();
-      runPrettier(["a.js", "b.css"], "/bin/prettier", mockExec);
+      const path = require("path");
+      runPrettier(
+        ["a.js", "b.css"],
+        "/bin/prettier",
+        mockExec,
+        "/base/scripts/pre-commit",
+      );
 
+      const expectedIgnorePath = path.join(
+        "/base/scripts/pre-commit",
+        "../../goobi-viewer-core/.prettierignore",
+      );
       expect(mockExec).toHaveBeenCalledWith(
-        '"/bin/prettier" --write "a.js" "b.css"',
+        `"/bin/prettier" --write --ignore-path "${expectedIgnorePath}" "a.js" "b.css"`,
         { stdio: "inherit" },
       );
     });

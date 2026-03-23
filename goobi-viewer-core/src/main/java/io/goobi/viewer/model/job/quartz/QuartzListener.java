@@ -106,7 +106,7 @@ public class QuartzListener implements ServletContextListener {
      */
     private static void stopTimedJobs() throws SchedulerException {
         SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
-        schedFact.getScheduler().shutdown(false);
+        schedFact.getScheduler().shutdown(true);
     }
 
     /**

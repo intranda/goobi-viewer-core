@@ -21,11 +21,16 @@
  */
 package io.goobi.viewer.api.rest.model.tasks;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TaskManagerTest extends AbstractDatabaseEnabledTest {
 
@@ -38,5 +43,16 @@ class TaskManagerTest extends AbstractDatabaseEnabledTest {
         Assertions.assertNotNull(DataManager.getInstance().getDao().getTicket(1L));
         Assertions.assertEquals(1, TaskManager.deleteExpiredDownloadTickets());
         Assertions.assertNull(DataManager.getInstance().getDao().getTicket(1L));
+    }
+
+    /**
+     * @see TaskManager#shutdown()
+     * @verifies stop the executor service
+     */
+    @Test
+    void shutdown_shouldStopExecutorService() throws InterruptedException {
+        TaskManager manager = new TaskManager(Duration.of(1, ChronoUnit.DAYS));
+        manager.shutdown();
+        assertTrue(manager.isShutdown(), "ExecutorService should be shut down after shutdown()");
     }
 }

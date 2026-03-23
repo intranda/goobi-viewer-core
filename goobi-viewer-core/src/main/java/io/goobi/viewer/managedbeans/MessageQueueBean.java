@@ -157,16 +157,24 @@ public class MessageQueueBean implements Serializable {
      * @throws jakarta.jms.JMSException if any.
      */
     @PreDestroy
-    public void close() throws JMSException {
+    public void close() {
         log.debug("MessageQueueBean.close()");
         for (DefaultQueueListener listener : getListeners()) {
             listener.close();
         }
-        if (this.queueSession != null) {
-            this.queueSession.close();
+        try {
+            if (this.queueSession != null) {
+                this.queueSession.close();
+            }
+        } catch (JMSException e) {
+            log.warn("Error closing queue session", e);
         }
-        if (this.connection != null) {
-            this.connection.close();
+        try {
+            if (this.connection != null) {
+                this.connection.close();
+            }
+        } catch (JMSException e) {
+            log.warn("Error closing connection", e);
         }
     }
 
@@ -447,7 +455,7 @@ public class MessageQueueBean implements Serializable {
             try {
                 l.restartLoop();
             } catch (JMSException e) {
-                log.error("Error restarting message listener for queue {}: {}", l.getQueueType(), e.toString());
+                log.error("Error restarting message listener for queue {}", l.getQueueType(), e);
             }
         });
         updateMessageQueueState();

@@ -912,6 +912,7 @@ public class Metadata implements MetadataListElement, Serializable {
         // Grouped metadata
         if (group) {
             if (se.getMetadataFields().get(key) == null && parentMetadata == null) {
+                logger.trace("Skip grouped metadata: {} (key: {})", getLabel(), key);
                 // If there is no plain value in the docstruct/event doc or this is a child
                 // metadata, then there shouldn't be a metadata Solr doc.
                 // In this case save time by skipping this field.

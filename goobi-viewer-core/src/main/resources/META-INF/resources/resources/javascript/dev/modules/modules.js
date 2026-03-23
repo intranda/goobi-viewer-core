@@ -368,6 +368,13 @@
         }
 
         getTileSourceOrderFromId(id) {
+            if (this.sequence) {
+                id =
+                    this.sequence.urlMap
+                        .entries()
+                        .find((e) => e[1] == id)
+                        ?.at(0) ?? id;
+            }
             return this.tileSourceIdToOrder[id];
         }
     }
@@ -401,8 +408,6 @@
                     let value = tileSources[key];
                     if (typeof value == 'string' && (value.startsWith('{') || value.startsWith('['))) {
                         tileSources[key] = JSON.parse(value);
-                    } else if (value.endsWith('/info.json')) {
-                        tileSources[key] = value.replace('/info.json', '');
                     }
                 });
                 return tileSources;

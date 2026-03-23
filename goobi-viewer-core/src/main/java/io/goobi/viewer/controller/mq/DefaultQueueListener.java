@@ -51,6 +51,7 @@ public class DefaultQueueListener {
     private volatile boolean shouldStop = false;
     private volatile LocalDateTime lastLoopCircle = LocalDateTime.now();
     private final String queueType;
+    private ActiveMQConnection conn = null;
 
     /**
      * 
@@ -66,13 +67,13 @@ public class DefaultQueueListener {
         if (this.thread != null) {
             throw new IllegalStateException("Listener is already registered");
         }
-        ActiveMQConnection conn = this.messageBroker.getConnection();
+        this.conn = this.messageBroker.getConnection();
         ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
         prefetchPolicy.setAll(0);
-        conn.setPrefetchPolicy(prefetchPolicy);
-        RedeliveryPolicy policy = conn.getRedeliveryPolicy();
+        this.conn.setPrefetchPolicy(prefetchPolicy);
+        RedeliveryPolicy policy = this.conn.getRedeliveryPolicy();
         policy.setMaximumRedeliveries(0);
-        thread = new Thread(() -> startMessageLoop(queueType, conn));
+        thread = new Thread(() -> startMessageLoop(queueType, this.conn));
         thread.setDaemon(true);
         thread.start();
     }
@@ -88,7 +89,9 @@ public class DefaultQueueListener {
             startListener(queueType, conn);
             log.info("Exiting listener thread for message queue {}: ", queueType);
         } catch (JMSException e) {
-            log.error("Error starting listener for queue {}. Aborting listerner startup", e.toString(), e);
+            if (!shouldStop && !conn.isTransportFailed()) {
+                log.error("Error starting listener for queue {}. Aborting listener startup", queueType, e);
+            }
         }
     }
 
@@ -101,7 +104,7 @@ public class DefaultQueueListener {
     void startListener(String queueType, ActiveMQConnection conn) throws JMSException {
         try (Session sess = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
                 MessageConsumer consumer = sess.createConsumer(sess.createQueue(queueType));) {
-            while (!shouldStop) {
+            while (!shouldStop && !conn.isTransportFailed()) {
                 lastLoopCircle = LocalDateTime.now();
                 waitForMessage(sess, consumer);
                 if (Thread.interrupted()) {
@@ -121,7 +124,10 @@ public class DefaultQueueListener {
      */
     void waitForMessage(Session sess, MessageConsumer consumer) {
         try {
-            Message message = consumer.receive();
+            Message message = consumer.receive(1000);
+            if (message == null) {
+                return;
+            }
             ViewerMessage ticket = null;
             if (message instanceof TextMessage tm) {
                 ticket = ViewerMessage.parseJSON(tm.getText());
@@ -135,7 +141,7 @@ public class DefaultQueueListener {
                 handleTicket(sess, message, ticket);
             }
         } catch (JMSException | JsonProcessingException e) {
-            if (!shouldStop) {
+            if (!shouldStop && (conn == null || !conn.isTransportFailed())) {
                 // back off a little bit, maybe we have a problem with the connection or we are shutting down
                 try {
                     Thread.sleep(3000);
@@ -143,7 +149,7 @@ public class DefaultQueueListener {
                     Thread.currentThread().interrupt();
                     return;
                 }
-                if (!shouldStop) {
+                if (!shouldStop && (conn == null || !conn.isTransportFailed())) {
                     log.error("Message listener {} has encountered an error. Attempting to resume listener", this, e);
                 }
             }
@@ -161,6 +167,7 @@ public class DefaultQueueListener {
     public void restartLoop() throws JMSException {
         close();
         this.thread = null;
+        this.conn = null;
         this.shouldStop = false;
         this.register();
     }
@@ -219,9 +226,19 @@ public class DefaultQueueListener {
     public void close() {
         this.shouldStop = true;
         log.info("Stopping MessageQueue listener {}...", this);
+        if (this.conn != null) {
+            try {
+                this.conn.close();
+            } catch (JMSException e) {
+                log.warn("Error closing connection for queue listener {}", queueType, e);
+            }
+        }
+        if (this.thread != null) {
+            this.thread.interrupt();
+        }
         try {
             if (this.thread != null) {
-                this.thread.join(1000);
+                this.thread.join(5000);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

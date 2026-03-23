@@ -86,6 +86,8 @@ var cmsJS = (function (cms) {
             if (data && data.status == 'begin') {
                 cms.media.removeEventListeners();
             } else if (!data || data.status == 'success') {
+                $('.admin-cms-media__overlay').hide();
+                $('.admin-cms-media__file.fixed').removeClass('fixed');
                 cms.media.initEventListeners();
             }
         },

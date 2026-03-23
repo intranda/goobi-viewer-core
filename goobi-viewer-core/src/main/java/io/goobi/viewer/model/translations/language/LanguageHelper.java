@@ -48,6 +48,7 @@ public class LanguageHelper {
     private static final Logger logger = LogManager.getLogger(LanguageHelper.class);
 
     private ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
+    private PeriodicReloadingTrigger trigger;
 
     /**
      * <p>
@@ -65,11 +66,17 @@ public class LanguageHelper {
                                     .setListDelimiterHandler(new DefaultListDelimiterHandler('&')) // TODO Why '&'?
                                     .setThrowExceptionOnMissing(false));
             builder.getConfiguration().setExpressionEngine(new XPathExpressionEngine());
-            PeriodicReloadingTrigger trigger = new PeriodicReloadingTrigger(builder.getReloadingController(),
+            trigger = new PeriodicReloadingTrigger(builder.getReloadingController(),
                     null, 10, TimeUnit.SECONDS);
             trigger.start();
         } catch (ConfigurationException e) {
             logger.error(e.getMessage());
+        }
+    }
+
+    public void shutdown() {
+        if (trigger != null) {
+            trigger.shutdown(true);
         }
     }
 
