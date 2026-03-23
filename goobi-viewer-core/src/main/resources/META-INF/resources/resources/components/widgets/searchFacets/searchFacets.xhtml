@@ -38,7 +38,8 @@
                             rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getActiveFacetsForField(field.key)) > 0)}">
                             <div
                                 class="widget widget-search-facets__collection"
-                                data-facet="searchFacetFilter">
+                                data-facet="searchFacetFilter"
+                                data-facetfield="#{field.key}">
                                 <div class="widget__topbar widget-search-facets__topbar">
                                     <h2
                                         class="widget__title widget-search-facets__title"
