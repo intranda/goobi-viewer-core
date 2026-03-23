@@ -145,7 +145,8 @@ public class TempMediaFileResource {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage(message)).build();
             }
         } catch (IOException e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
+            logger.error("Error uploading file to folder {}", foldername, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error")).build();
         }
     }
 
@@ -173,8 +174,9 @@ public class TempMediaFileResource {
                     uploadedFiles =
                             stream.map(this::getIiifUri).sorted((i1, i2) -> i1.toString().compareTo(i2.toString())).collect(Collectors.toList());
                 } catch (IOException e) {
+                    logger.error("Error reading upload directory {}", targetDir, e);
                     return Response.status(Status.INTERNAL_SERVER_ERROR)
-                            .entity(errorMessage("Error reading upload directory: " + e.toString()))
+                            .entity(errorMessage("Error reading upload directory"))
                             .build();
                 }
             }
@@ -182,12 +184,13 @@ public class TempMediaFileResource {
                 String json = getAsJson(uploadedFiles);
                 return Response.status(Status.OK).entity(json).build();
             } catch (JsonProcessingException e) {
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Error creating json object: " + e.toString())).build();
+                logger.error("Error serializing uploaded files list", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Error creating json object")).build();
             }
 
         } catch (IOException e) {
-            logger.error("Error retgrieving uploaded files: {}", e.getMessage(), e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
+            logger.error("Error retrieving uploaded files: {}", e.getMessage(), e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error")).build();
         }
     }
 
@@ -216,14 +219,16 @@ public class TempMediaFileResource {
                         Files.delete(file);
                     }
                 } catch (IOException e) {
+                    logger.error("Error deleting files in upload directory {}", targetDir, e);
                     return Response.status(Status.INTERNAL_SERVER_ERROR)
-                            .entity(errorMessage("Error reading upload directory: " + e.toString()))
+                            .entity(errorMessage("Error deleting upload directory contents"))
                             .build();
                 }
             }
             return Response.status(Status.OK).build();
         } catch (IOException e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
+            logger.error("Error deleting uploaded files for folder {}", folder, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error")).build();
         }
     }
 

@@ -195,8 +195,8 @@ public class ObjectResource {
             }
 
         } catch (PresentationException | IndexUnreachableException e) {
-            logger.error("Error reading media directory for {} ", pi, e);
-            return Response.serverError().entity("Error reading media directory: " + e.toString()).build();
+            logger.error("Error reading media directory for {}", pi, e);
+            return Response.serverError().entity("Error reading media directory").build();
         }
         return Response.ok().build();
     }
@@ -222,7 +222,7 @@ public class ObjectResource {
 
         } catch (IOException | PresentationException | IndexUnreachableException e) {
             logger.error("Error writing voyager scene file {}", svxFilename, e);
-            return Response.serverError().entity("Error writing voyager scene file: " + e.toString()).build();
+            return Response.serverError().entity("Error writing voyager scene file").build();
         }
         return Response.ok().build();
     }
