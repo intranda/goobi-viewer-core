@@ -12,32 +12,31 @@
 
     <div class="search-calendar__newspaper-search">
         <div class="search-calendar__newspaper-search-body">
-            <!-- SEARCH TERM — bindet an queryItems[1] wie widget_searchInCurrentItem.xhtml -->
-            <div class="search-calendar__search-field">
-                <h:inputText
-                    id="newspaperSearchTerm"
-                    value="#{searchBean.advancedSearchQueryGroup.queryItems[1].value}"
-                    styleClass="form-control">
-                    <f:passThroughAttribute
-                        name="placeholder"
-                        value="#{activeDocumentBean.titleBarLabel}" />
-                </h:inputText>
+            <!-- SEARCH TERM — queryItems[1] (free text search) -->
+            <div class="form-group">
+                <div class="input-group">
+                    <h:inputText
+                        id="newspaperSearchTerm"
+                        value="#{searchBean.advancedSearchQueryGroup.queryItems[1].value}"
+                        styleClass="form-control">
+                        <f:passThroughAttribute
+                            name="placeholder"
+                            value="#{activeDocumentBean.titleBarLabel}" />
+                    </h:inputText>
+                </div>
             </div>
-            <!-- DATE RANGE -->
+            <!-- DATE RANGE — queryItems[0]=PI filter, queryItems[1]=free text, queryItems[2]=YEARMONTHDAY range -->
             <div class="search-calendar__newspaper-search-date">
                 <span class="search-calendar__newspaper-search-date-label">#{msg.newspaper__date_from}</span>
                 <div class="search-calendar__newspaper-search-date-fields">
                     <div class="datepicker-input">
-                        <!-- TODO #27683 @Andrey: value an ein Bean-Property binden fuer YEARMONTHDAY-Range (Von).
-                             Beim Submit muss dd.MM.yyyy in YYYYMMDD konvertiert werden
-                             und als YEARMONTHDAY:[von TO bis] Query-Item gesetzt werden.
-                             Siehe searchInRecord() in SearchBean als Referenz-Pattern. -->
                         <h:inputText
                             id="tocNewspaperDateFrom"
+                            value="#{searchBean.advancedSearchQueryGroup.queryItems[2].value}"
                             styleClass="form-control">
                             <f:passThroughAttribute
-                                name="data-target"
-                                value="tocNewspaperDateFrom" />
+                                name="data-datepicker-range-group"
+                                value="tocNewspaperDateRange" />
                             <f:passThroughAttribute
                                 name="placeholder"
                                 value="#{msg.newspaper__date_placeholder}" />
@@ -52,10 +51,11 @@
                     <div class="datepicker-input">
                         <h:inputText
                             id="tocNewspaperDateTo"
+                            value="#{searchBean.advancedSearchQueryGroup.queryItems[2].value2}"
                             styleClass="form-control">
                             <f:passThroughAttribute
-                                name="data-target"
-                                value="tocNewspaperDateTo" />
+                                name="data-datepicker-range-end"
+                                value="tocNewspaperDateRange" />
                             <f:passThroughAttribute
                                 name="placeholder"
                                 value="#{msg.newspaper__date_placeholder}" />
@@ -68,13 +68,9 @@
                     </div>
                 </div>
                 <!-- Suche innerhalb des Anchor-Werks — gleiches Pattern wie widget_searchInCurrentItem.xhtml -->
-                <!-- TODO #27683 @Andrey: searchInRecord() um optionalen YEARMONTHDAY-Range erweitern.
-                     Die Datums-Inputs (tocNewspaperDateFrom/tocNewspaperDateTo) muessen
-                     als zusaetzliches QueryItem (YEARMONTHDAY range) in die Suche einfliessen.
-                     Ohne Datum: nur Suchbegriff im Anchor. Ohne Suchbegriff: nur Zeitraum. -->
                 <button
                     class="btn btn--full search-calendar__newspaper-search-btn"
-                    jsf:action="#{searchBean.searchInRecord('PI_ANCHOR', activeDocumentBean.persistentIdentifier)}">
+                    jsf:action="#{searchBean.searchInRecord('PI_ANCHOR', activeDocumentBean.persistentIdentifier, searchBean.advancedSearchQueryGroup.queryItems[2].value, searchBean.advancedSearchQueryGroup.queryItems[2].value2)}">
                     #{msg.search}
                 </button>
             </div>
