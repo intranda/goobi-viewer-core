@@ -5,9 +5,7 @@
     <name>cms__template_06__title</name>
     <description>cms__template_06__description</description>
     <icon>cms_template_06_solrquery.png</icon>
-    <html>
-cms_template_06_solrquery.xhtml
-    </html>
+    <html>cms_template_06_solrquery.xhtml</html>
     <content>
         <item
             id="preview01"

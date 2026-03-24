@@ -5,9 +5,7 @@
     <name>cms__template_27__title</name>
     <description>cms__template_27__description</description>
     <icon>cms_template_27_crowdsourcingCampaignsOverview.png</icon>
-    <html>
-cms_template_27_crowdsourcingCampaignsOverview.xhtml
-    </html>
+    <html>cms_template_27_crowdsourcingCampaignsOverview.xhtml</html>
 
     <content>
         <item

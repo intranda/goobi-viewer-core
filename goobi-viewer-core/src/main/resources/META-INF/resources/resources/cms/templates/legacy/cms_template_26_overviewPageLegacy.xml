@@ -5,9 +5,7 @@
     <name>cms__template_26__title</name>
     <description>cms__template_26__description</description>
     <icon>cms_template_26_overviewPageLegacy.png</icon>
-    <html>
-cms_template_26_overviewPageLegacy.xhtml
-    </html>
+    <html>cms_template_26_overviewPageLegacy.xhtml</html>
 
     <content>
         <item

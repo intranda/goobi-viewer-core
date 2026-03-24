@@ -74,7 +74,7 @@
                                 </h:panelGroup>
                             </h:panelGroup>
                             <script type="text/javascript">
-userGeneratedContentJSArray.push(['#{content.id}', '#{content.displayCoordinates}', '#{content.title}']);
+                                userGeneratedContentJSArray.push(['#{content.id}', '#{content.displayCoordinates}', '#{content.title}']);
 $('#words-#{content.id}').on('click', function (e) {
     e.preventDefault();
     highlightContentBox('${content.id}');
@@ -83,7 +83,7 @@ $('#words-#{content.id}').on('click', function (e) {
                             </script>
                         </ui:repeat>
                         <script type="text/javascript">
-drawContentBoxes(true);
+                            drawContentBoxes(true);
 
 var highlightCurrentSelection = function ($Obj) {
     // reset styles for all li elements

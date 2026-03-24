@@ -5,9 +5,7 @@
     <name>cms__template_21__title</name>
     <description>cms__template_21__description</description>
     <icon>cms_template_21_faq.png</icon>
-    <html>
-cms_template_21_faq.xhtml
-    </html>
+    <html>cms_template_21_faq.xhtml</html>
     <content>
         <item
             id="faqList"

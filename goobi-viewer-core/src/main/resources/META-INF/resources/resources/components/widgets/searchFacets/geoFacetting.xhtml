@@ -135,7 +135,11 @@
                          			hitsLayer: {
                          				allowMovingFeatures: false,
                          				popoverOnHover: true,
-                         				popover: $( '<div><p data-metadata="title"></p></div>' ),
+                         				popover: $( '
+                    <div>
+                        <p data-metadata="title" />
+                    </div>
+                    ' ),
                          				clusterMarkers: true,
                          				style: {
                          					fillOpacity: 0.02,

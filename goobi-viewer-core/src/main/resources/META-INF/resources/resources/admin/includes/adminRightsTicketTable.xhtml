@@ -338,7 +338,17 @@
                     <script type="text/javascript">
                         // Create no entries found message
                         if ($('.admin__grid-table-data-row').length == 0) {
-                            $('.admin__grid-table-data-row-area').append('<div class="admin__grid-table-data-row" role="row"><div class="admin__grid-table-data" role="gridcell">#{msg.hitsZero}</div></div>');
+                            $('.admin__grid-table-data-row-area').append('
+                        <div
+                            class="admin__grid-table-data-row"
+                            role="row">
+                            <div
+                                class="admin__grid-table-data"
+                                role="gridcell">
+                                #{msg.hitsZero}
+                            </div>
+                        </div>
+                        ');
                         }
                     </script>
                 </div>

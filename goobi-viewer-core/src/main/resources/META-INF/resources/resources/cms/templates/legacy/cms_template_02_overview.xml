@@ -5,9 +5,7 @@
     <name>cms__template_02__title</name>
     <description>cms__template_02__description</description>
     <icon>cms_template_02_overview.png</icon>
-    <html>
-cms_template_02_overview.xhtml
-    </html>
+    <html>cms_template_02_overview.xhtml</html>
     <content>
         <item
             id="A1"

@@ -182,7 +182,10 @@
 
             // Create no entries found message
             if ($('#tableWrapper_#{cc.clientId} .admin__table-entry').length == 0) {
-                $('#tableWrapper_#{cc.clientId}.admin__table-content').append('<br /><p>#{msg.hitsZero}</p>');
+                $('#tableWrapper_#{cc.clientId}.admin__table-content').append('
+            <br />
+            <p>#{msg.hitsZero}</p>
+            ');
             }
         </script>
     </composite:implementation>

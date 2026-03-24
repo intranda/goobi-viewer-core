@@ -5,9 +5,7 @@
     <name>cms__template_05__title</name>
     <description>cms__template_05__description</description>
     <icon>cms_template_05_simple.png</icon>
-    <html>
-cms_template_05_simple.xhtml
-    </html>
+    <html>cms_template_05_simple.xhtml</html>
     <options>
         <topBarSlider>true</topBarSlider>
     </options>
