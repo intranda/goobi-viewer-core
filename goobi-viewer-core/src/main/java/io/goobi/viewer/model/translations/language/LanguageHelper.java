@@ -81,7 +81,18 @@ public class LanguageHelper {
     public void shutdown() {
         if (trigger != null) {
             trigger.shutdown(true);
+        }
+        if (executorService != null) {
+            // Interrupt the scheduled thread immediately and wait for it to actually stop,
+            // so Tomcat does not report a false memory-leak warning on shutdown.
             executorService.shutdownNow();
+            try {
+                if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                    logger.warn("LanguageHelper executor did not terminate within 5 seconds");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 

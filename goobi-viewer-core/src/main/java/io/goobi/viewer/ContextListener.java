@@ -128,6 +128,18 @@ public class ContextListener implements ServletContextListener {
         try {
             DataManager.getInstance().getDao().shutdown();
             ContentServerCacheManager.getInstance().close();
+            // EhCache's disk-store scheduler (MappedByteBufferSource Async Flush Thread) may
+            // not terminate synchronously on close(). Wait briefly so Tomcat does not report it
+            // as a memory leak.
+            Thread.getAllStackTraces().keySet().stream()
+                    .filter(t -> t.getName().contains("MappedByteBufferSource") || t.getName().contains("Async Flush"))
+                    .forEach(t -> {
+                        try {
+                            t.join(5000);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    });
             logger.info("Successfully stopped DAO");
         } catch (DAOException e) {
             logger.error("Error stopping DAO", e);
