@@ -6,7 +6,7 @@ module.exports = {
     // === Global defaults ===
     useTabs: false,
     tabWidth: 4,
-    printWidth: 120,
+    printWidth: 150,
     singleQuote: true,
     semi: true,
     trailingComma: 'es5',
@@ -44,7 +44,7 @@ module.exports = {
                 htmlWhitespaceSensitivity: 'ignore',
                 useTabs: false,
                 tabWidth: 4,
-                printWidth: 120,
+                printWidth: 160,
             },
         },
 
@@ -59,7 +59,7 @@ module.exports = {
                 xmlWhitespaceSensitivity: 'ignore',
                 useTabs: false,
                 tabWidth: 4,
-                printWidth: 120,
+                printWidth: 160,
                 semi: true,
                 singleQuote: true,
             },
