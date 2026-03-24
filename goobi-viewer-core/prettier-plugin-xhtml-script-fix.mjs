@@ -20,7 +20,7 @@ function patchedEmbed(path, opts) {
     }
     return async function (textToDoc, print, ...rest) {
         const patchedTextToDoc = (text, innerOpts) =>
-            textToDoc(text, { embeddedLanguageFormatting: 'off', ...innerOpts });
+            textToDoc(text, { ...innerOpts, embeddedLanguageFormatting: 'off' });
         return result(patchedTextToDoc, print, ...rest);
     };
 }
