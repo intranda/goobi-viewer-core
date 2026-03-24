@@ -215,8 +215,8 @@ viewerJS.tocNewspaper.init({
     contextPath: '#{request.contextPath}',
     popoverTitle: '#{activeDocumentBean.titleBarLabel}',
     locale: '#{navigationHelper.localeString}',
-    dateFromSelector: "[data-target='tocNewspaperDateFrom']",
-    dateToSelector: "[data-target='tocNewspaperDateTo']",
+    dateFromSelector: "[data-datepicker-range-group='tocNewspaperDateRange']",
+    dateToSelector: "[data-datepicker-range-end='tocNewspaperDateRange']",
 });
 //]]>
             </script>
