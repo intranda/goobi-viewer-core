@@ -333,7 +333,10 @@ public final class BeanUtils {
                 CreationalContext ctx = bm.createCreationalContext(bean);
                 return bm.getReference(bean, clazz, ctx);
             }
-        } catch (IllegalArgumentException | IllegalStateException | NullPointerException e) {
+        } catch (IllegalStateException e) {
+            // Expected during CDI container shutdown (e.g. in-flight requests after Weld has stopped)
+            logger.warn("CDI container not available when looking up bean '{}': {}", name, e.getMessage());
+        } catch (IllegalArgumentException | NullPointerException e) {
             logger.error("Error when getting bean by name '{}'", name, e);
         }
 

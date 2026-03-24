@@ -66,6 +66,7 @@ import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -125,7 +126,14 @@ public class TempMediaFileResource {
             if (!Files.isDirectory(targetDir)) {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("No target directory for upload available")).build();
             }
-            Path targetFile = targetDir.resolve(filename);
+            // Sanitize filename to prevent path traversal attacks (e.g. "../../etc/passwd")
+            final String sanitizedFilename;
+            try {
+                sanitizedFilename = FileTools.sanitizeFileName(filename);
+            } catch (IllegalArgumentException e) {
+                return Response.status(Status.BAD_REQUEST).entity(errorMessage("Invalid filename")).build();
+            }
+            Path targetFile = targetDir.resolve(sanitizedFilename);
 
             try {
                 Files.copy(uploadedInputStream, targetFile, StandardCopyOption.REPLACE_EXISTING);

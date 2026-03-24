@@ -31,6 +31,15 @@ class ReflectionTest {
         Assertions.assertEquals("graograman", Reflection.getMethodReturnValue(new Foo(), "bar").orElse(null));
     }
 
+    /**
+     * @see Reflection#getMethodReturnValue(Object, String)
+     * @verifies return empty optional if method not found
+     */
+    @Test
+    void getMethodReturnValue_shouldReturnEmptyOptionalIfMethodNotFound() {
+        Assertions.assertFalse(Reflection.getMethodReturnValue(new Foo(), "nonExistentMethod").isPresent());
+    }
+
     private class Foo {
         @SuppressWarnings("unused")
         public String bar() {
