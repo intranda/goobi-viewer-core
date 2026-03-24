@@ -27,10 +27,13 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.rmi.server.RMIServerSocketFactory;
+import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -124,6 +127,7 @@ public class MessageQueueManager {
     private boolean queueRunning = false;
     private ActiveMQConfig config = null;
     private RMIConnectorServer rmiServer = null;
+    private Registry rmiRegistry = null;
     private BrokerService broker = null;
     private List<DefaultQueueListener> listeners = new ArrayList<>();
     @Inject
@@ -291,7 +295,7 @@ public class MessageQueueManager {
 
     public void createRegistry(int namingPort, RMIServerSocketFactory serverFactory) throws RemoteException {
         try {
-            LocateRegistry.createRegistry(namingPort, null, serverFactory);
+            rmiRegistry = LocateRegistry.createRegistry(namingPort, null, serverFactory);
         } catch (ExportException e) {
             logger.trace("Cannot create registry, already in use");
         }
@@ -308,6 +312,14 @@ public class MessageQueueManager {
             }
             if (rmiServer != null) {
                 rmiServer.stop();
+            }
+            if (rmiRegistry != null) {
+                try {
+                    UnicastRemoteObject.unexportObject(rmiRegistry, true);
+                } catch (NoSuchObjectException e) {
+                    logger.trace("RMI registry already unexported");
+                }
+                rmiRegistry = null;
             }
         } catch (Exception e) {
             logger.error(e);
