@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
@@ -68,6 +69,13 @@ class ContentBeanTest extends AbstractDatabaseEnabledTest {
         ContentBean bean = new ContentBean();
         List<DisplayUserGeneratedContent> ugcList = bean.getUserGeneratedContentsForDisplay(PI);
         assertEquals(2, ugcList.size());
+    }
+
+    @Test
+    void getUserGeneratedContentsForDisplay_returnsUnmodifiableList() throws PresentationException, IndexUnreachableException, DAOException {
+        ContentBean bean = new ContentBean();
+        List<DisplayUserGeneratedContent> ugcList = bean.getUserGeneratedContentsForDisplay(PI);
+        assertThrows(UnsupportedOperationException.class, () -> ugcList.add(null));
     }
 
 }

@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.faces.context.ExternalContext;
@@ -410,5 +411,15 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         String result = adb.getRelativeUrlTags();
         assertTrue(StringUtils.isNotBlank(result));
+    }
+
+    /**
+     * @see ActiveDocumentBean#getToc()
+     * @verifies return null when viewManager is null
+     */
+    @Test
+    void getToc_shouldReturnNullWhenViewManagerIsNull() throws Exception {
+        // Fresh bean has viewManager == null
+        assertNull(adb.getToc());
     }
 }
