@@ -50,7 +50,7 @@ public class SocketBean {
     @Push
     private PushContext backgroundTasksState;
 
-    private static final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor(r -> {
+    private static final ScheduledExecutorService SERVICE = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread t = new Thread(r, "socket-bean-scheduler");
         t.setDaemon(true);
         return t;
@@ -65,9 +65,9 @@ public class SocketBean {
 
     public SocketBean(long minIdleSeconds) {
         if (minIdleSeconds < 1) {
-            service.scheduleAtFixedRate(createRunnable(), 0, 1, TimeUnit.MILLISECONDS);
+            SERVICE.scheduleAtFixedRate(createRunnable(), 0, 1, TimeUnit.MILLISECONDS);
         } else {
-            service.scheduleAtFixedRate(createRunnable(), 0, minIdleSeconds, TimeUnit.SECONDS);
+            SERVICE.scheduleAtFixedRate(createRunnable(), 0, minIdleSeconds, TimeUnit.SECONDS);
         }
     }
 
@@ -109,9 +109,9 @@ public class SocketBean {
      * to ensure the thread terminates before Tomcat checks for lingering threads.
      */
     public static void shutdownExecutor() {
-        service.shutdownNow();
+        SERVICE.shutdownNow();
         try {
-            service.awaitTermination(2, TimeUnit.SECONDS);
+            SERVICE.awaitTermination(2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
