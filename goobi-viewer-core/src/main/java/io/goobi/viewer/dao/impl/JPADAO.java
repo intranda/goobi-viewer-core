@@ -153,6 +153,8 @@ public class JPADAO implements IDAO {
     private final EntityManagerFactory factory;
     private Object cmsRequestLock = new Object();
     private Object crowdsourcingRequestLock = new Object();
+    // Dedicated lock for ViewerMessage operations to prevent concurrent write deadlocks on mq_message_properties
+    private Object viewerMessageLock = new Object();
 
     /**
      * <p>
@@ -3802,7 +3804,8 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public boolean updateCampaign(Campaign campaign) throws DAOException {
-        synchronized (cmsRequestLock) {
+        // Use crowdsourcingRequestLock consistent with addCampaign/getCampaign methods
+        synchronized (crowdsourcingRequestLock) {
             preQuery();
             EntityManager em = getEntityManager();
             try {
@@ -3827,7 +3830,8 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public boolean deleteCampaign(Campaign campaign) throws DAOException {
-        synchronized (cmsRequestLock) {
+        // Use crowdsourcingRequestLock consistent with addCampaign/getCampaign methods
+        synchronized (crowdsourcingRequestLock) {
 
             preQuery();
             EntityManager em = getEntityManager();
@@ -6882,8 +6886,8 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public boolean addViewerMessage(ViewerMessage message) throws DAOException {
-        synchronized (cmsRequestLock) {
-
+        // Synchronized to prevent concurrent INSERT deadlocks on mq_message_properties (MariaDB error 1213)
+        synchronized (viewerMessageLock) {
             preQuery();
             EntityManager em = getEntityManager();
             try {
@@ -6904,7 +6908,8 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public boolean deleteViewerMessage(ViewerMessage message) throws DAOException {
-        synchronized (cmsRequestLock) {
+        // Synchronized together with add/updateViewerMessage to prevent concurrent write conflicts on mq_message_properties
+        synchronized (viewerMessageLock) {
             preQuery();
             EntityManager em = getEntityManager();
             try {
@@ -6940,18 +6945,21 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public boolean updateViewerMessage(ViewerMessage message) throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            startTransaction(em);
-            em.merge(message);
-            commitTransaction(em);
-            return true;
-        } catch (PersistenceException e) {
-            handleException(em);
-            return false;
-        } finally {
-            close(em);
+        // Synchronized together with addViewerMessage to prevent concurrent DELETE+INSERT deadlocks on mq_message_properties
+        synchronized (viewerMessageLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.merge(message);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
         }
     }
 
