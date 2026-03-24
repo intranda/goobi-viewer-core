@@ -73,6 +73,11 @@ class UserToolsTest extends AbstractDatabaseEnabledTest {
 
         UserTools.deleteUserGroupOwnedByUser(user);
         Assertions.assertNull(DataManager.getInstance().getDao().getUserGroup(2));
+        // TODO: This test only verifies that group 2 was deleted. User 1 owns additional groups
+        // (e.g. "user group 1 name") whose deletion fails silently (ERROR log visible during test run).
+        // Root cause: deleteUserGroup() returns false, likely due to an unresolved foreign key
+        // dependency in the test data. The test should assert that ALL groups owned by the user
+        // are deleted, and the method must properly clean up all dependencies beforehand.
     }
 
     /**
