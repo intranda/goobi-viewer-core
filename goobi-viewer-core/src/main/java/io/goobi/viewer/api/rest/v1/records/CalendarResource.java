@@ -125,7 +125,7 @@ public class CalendarResource {
             JSONObject entry = new JSONObject();
             entry.put("date", convertYearMonthDayToIsoDate(yearMonthDay));
             entry.put("label", label != null ? label : "");
-            entry.put("url", "/image/" + piTopstruct + "/" + (thumbPageNo != null ? thumbPageNo : 1) + "/" + logId + "/");
+            entry.put("url", "/image/" + piTopstruct + "/" + (thumbPageNo != null ? thumbPageNo : 1) + "/" + (logId != null ? logId : "-") + "/");
             jsonArray.put(entry);
         }
 

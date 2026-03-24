@@ -6,14 +6,11 @@
     <composite:interface />
 
     <composite:implementation>
-        <h:panelGroup
-            rendered="#{activeDocumentBean.viewManager.calendarView.display}">
+        <h:panelGroup rendered="#{activeDocumentBean.viewManager.calendarView.display}">
             <div
                 id="widgetCalendar"
                 class="widget widget-calendar">
                 <div class="widget__body widget-calendar__body">
-                    <!-- TODO #27682 @Andrey: data-pi statt data-anchor-pi verwenden sobald Endpoint steht.
-                         Fuer Anchor: anchorPi, fuer Einzelwerke: topStructElement PI. -->
                     <div
                         id="calendarWidgetContainer"
                         data-anchor-pi="#{activeDocumentBean.viewManager.anchorPi}"
@@ -44,65 +41,18 @@
     var calendarInstance = null;
     var currentIssueDate = null;
 
-    // TODO #27682 @Andrey: REST-Endpoint fuer das Kalender-Widget.
-    //
-    //   GET /api/v1/records/{pi}/calendar/{year}
-    //
-    //   Der Endpoint akzeptiert JEDE PI (nicht nur Anchor).
-    //   Er soll alle Dokumente mit YEARMONTHDAY fuer das gegebene Jahr zurueckgeben.
-    //   Gilt fuer Zeitungen, Zeitschriften, Periodika, Mehrbandwerke etc.
-    //
-    //   Query-Logik (serverseitig):
-    //   - Wenn PI ein Anchor ist: +PI_ANCHOR:"{pi}" +YEAR:"{year}" +YEARMONTHDAY:*
-    //   - Wenn PI kein Anchor ist: +PI_TOPSTRUCT:"{pi}" +YEAR:"{year}" +YEARMONTHDAY:*
-    //   - Felder: PI_TOPSTRUCT, YEARMONTHDAY, THUMBPAGENO, LOGID, LABEL
-    //
-    //   Erwartete Response (JSON-Array):
-    //   [
-    //     { "date": "1893-03-01", "label": "Malchower Tageblatt - Nr. 51", "url": "/image/PPN767137728/1/LOG_0002/" },
-    //     { "date": "1893-03-01", "label": "Malchower Tageblatt - Nr. 52", "url": "/image/PPN767137728/1/LOG_0003/" },
-    //     { "date": "1893-03-04", "label": "Malchower Tageblatt - Nr. 53", "url": "/image/PPN767137728/1/LOG_0004/" }
-    //   ]
-    //
-    //   - "date": ISO-Datum (YYYY-MM-DD), abgeleitet aus YEARMONTHDAY (18930301 -> 1893-03-01)
-    //   - "label": Titel der Ausgabe (LABEL aus Solr)
-    //   - "url": Relative URL zur Ausgabe, zusammengebaut aus /image/{PI_TOPSTRUCT}/{THUMBPAGENO}/{LOGID}/
-    //
-    //   Wichtig:
-    //   - Mehrere Ausgaben pro Tag moeglich (Morgen-/Abendausgabe) -> flache Liste, NICHT nach Datum gruppieren
-    //   - Kein kuenstliches Limit: Tageszeitung = 365+ Ausgaben/Jahr. Alles zurueckgeben.
-    //   - URL-Zusammensetzung serverseitig (nicht im JS), damit Pfad-Logik zentral bleibt.
-    //
-    //   Rendered-Condition (siehe XHTML-Kommentar oben):
-    //   Das Widget wird NUR gerendert wenn Config aktiviert UND mindestens 2 YEARMONTHDAY-Eintraege
-    //   fuer diese PI existieren. Dadurch kommt es nie zu einem REST-Call mit leerem Ergebnis.
-    //
-    //   TODO #27682 @Basti Sobald der Endpoint steht, wird hier fetchYearData() darauf umgestellt.
     function fetchYearData(year) {
-        return fetch(appUrl + 'api/v1/index/query/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                query: '+PI_ANCHOR:"' + anchorPi + '" +YEAR:"' + year + '" +YEARMONTHDAY:*',
-                resultFields: ['PI_TOPSTRUCT', 'YEARMONTHDAY', 'THUMBPAGENO', 'LOGID'],
-                count: 400
-            })
-        })
+        return fetch(appUrl + 'api/v1/records/' + anchorPi + '/calendar/' + year)
         .then(function(r) { return r.json(); })
-        .then(function(data) {
+        .then(function(entries) {
             dateUrlMap = {};
             var dates = [];
-            (data.docs || []).forEach(function(doc) {
-                var raw = String(doc.YEARMONTHDAY);
-                var iso = raw.substring(0, 4) + '-' + raw.substring(4, 6) + '-' + raw.substring(6, 8);
-                dates.push(iso);
-                // TODO #27682 @Basti: Mehrere Ausgaben pro Tag (z.B. Morgen-/Abendausgabe).
-                // Aktuell wird nur die letzte Ausgabe pro Datum gespeichert.
-                // Wenn mehrere Ausgaben am selben Tag existieren, muss eine Auswahl ermoeglicht werden
-                // (z.B. Popover mit Liste, aehnlich searchCalendar data-popover-trigger).
-                dateUrlMap[iso] = appUrl + 'image/' + doc.PI_TOPSTRUCT + '/' + (doc.THUMBPAGENO || 1) + '/' + (doc.LOGID || '-') + '/';
-                if (doc.LOGID === currentLogId) {
-                    currentIssueDate = iso;
+            entries.forEach(function(entry) {
+                dates.push(entry.date);
+                dateUrlMap[entry.date] = appUrl + entry.url.replace(/^\//, '');
+                var logId = entry.url.split('/').filter(Boolean).pop();
+                if (logId === currentLogId) {
+                    currentIssueDate = entry.date;
                 }
             });
             return dates;
