@@ -26,9 +26,7 @@
                     <div class="admin__boxed-entry -warning admin__tickets-pending-ticket-single">
                         <!-- PENDING TICKET REQUESTED BY EMAIL SENDER -->
                         <div class="admin__tickets-pending-ticket-title-wrapper">
-                            <h2 class="admin__tickets-pending-ticket-title">
-                                #{msg.admin__dashboard_access_ticket_request_by} #{ticket.email}
-                            </h2>
+                            <h2 class="admin__tickets-pending-ticket-title">#{msg.admin__dashboard_access_ticket_request_by} #{ticket.email}</h2>
                         </div>
 
                         <!-- PENDING TICKET RECORD TITLE -->
@@ -46,8 +44,7 @@
                         </div>
 
                         <!-- PENDING TICKET EMAIL -->
-                        <div
-                            class="admin__tickets-pending-ticket-key-value-wrapper #{ticket.requestMessage == null ? 'mb-4' : ''}">
+                        <div class="admin__tickets-pending-ticket-key-value-wrapper #{ticket.requestMessage == null ? 'mb-4' : ''}">
                             <div class="admin__tickets-pending-ticket-key">#{msg.email}:</div>
                             <div class="admin__tickets-pending-ticket-value">
                                 <a href="mailto:#{ticket.email}">#{ticket.email}</a>
@@ -58,11 +55,8 @@
                         <ui:fragment rendered="#{ticket.requestMessage != null}">
                             <div class="admin__tickets-pending-ticket-key-value-wrapper mb-4">
                                 <div class="admin__tickets-pending-ticket-key">#{msg.message}:</div>
-                                <div
-                                    class="admin__tickets-pending-ticket-value admin__tickets-pending-ticket-value-message-wrapper">
-                                    <div class="admin__tickets-pending-ticket-value-message">
-                                        #{ticket.requestMessage}
-                                    </div>
+                                <div class="admin__tickets-pending-ticket-value admin__tickets-pending-ticket-value-message-wrapper">
+                                    <div class="admin__tickets-pending-ticket-value-message">#{ticket.requestMessage}</div>
                                     <div
                                         class="admin__tickets-pending-ticket-value-invis-message"
                                         aria-hidden="true">
@@ -296,9 +290,7 @@
                                     class="admin__grid-table-data"
                                     role="gridcell">
                                     <div class="admin__tickets-pending-ticket-value-message-wrapper">
-                                        <div class="admin__tickets-pending-ticket-value-message">
-                                            #{ticket.requestMessage}
-                                        </div>
+                                        <div class="admin__tickets-pending-ticket-value-message">#{ticket.requestMessage}</div>
                                         <div
                                             class="admin__tickets-pending-ticket-value-invis-message"
                                             aria-hidden="true">

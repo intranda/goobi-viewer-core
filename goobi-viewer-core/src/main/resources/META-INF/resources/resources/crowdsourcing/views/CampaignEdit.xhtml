@@ -26,8 +26,7 @@
         <f:view
             contentType="text/html"
             encoding="utf-8">
-            <ui:fragment
-                rendered="#{crowdsourcingBean.targetCampaign.isUserAllowedAction(userBean.user, crowdsourcingBean.targetRecordStatus)}">
+            <ui:fragment rendered="#{crowdsourcingBean.targetCampaign.isUserAllowedAction(userBean.user, crowdsourcingBean.targetRecordStatus)}">
                 <campaignItem />
             </ui:fragment>
         </f:view>

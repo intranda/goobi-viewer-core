@@ -216,8 +216,7 @@
                     </ui:fragment>
 
                     <!-- TOC -->
-                    <ui:fragment
-                        rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen and (activeDocumentBean.toc.hasChildren)}">
+                    <ui:fragment rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen and (activeDocumentBean.toc.hasChildren)}">
                         <div
                             id="panel-2"
                             class="fullscreen__view-sidebar-accordeon-panel fs-toc">
@@ -310,8 +309,7 @@
                         </div>
                     </ui:fragment>
 
-                    <c:if
-                        test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.archiveEntryIdentifier != null}">
+                    <c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.archiveEntryIdentifier != null}">
                         <!-- ARCHIVE -->
                         <div
                             id="panel-10"
@@ -402,9 +400,7 @@
                                         value="#{note.noteText.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}" />
                                     <ui:fragment rendered="#{userBean.admin}">
                                         <div class="widget-record-notes__action-link">
-                                            <a href="#{request.contextPath}/admin/cms/recordnotes/edit/#{note.id}">
-                                                #{msg.edit}
-                                            </a>
+                                            <a href="#{request.contextPath}/admin/cms/recordnotes/edit/#{note.id}">#{msg.edit}</a>
                                         </div>
                                     </ui:fragment>
                                 </div>
@@ -518,9 +514,7 @@
                             </h3>
 
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                                <span class="fullscreen__view-sidebar-accordeon-panel-error">
-                                    #{msg.label__image_filter_toolkit__error}
-                                </span>
+                                <span class="fullscreen__view-sidebar-accordeon-panel-error">#{msg.label__image_filter_toolkit__error}</span>
                                 <imageFilters />
                             </div>
                         </div>

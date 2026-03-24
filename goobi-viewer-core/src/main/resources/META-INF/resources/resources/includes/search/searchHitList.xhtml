@@ -34,8 +34,7 @@
     <!-- THIS INCLUDE MUST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
 
     <!-- SEARCH LIST HITS -->
-    <div
-        class="search-list__hits #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : 'noClass'}">
+    <div class="search-list__hits #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : 'noClass'}">
         <!-- SEARCH LIST SORTING -->
         <h:panelGroup rendered="#{!groupPreviewMode and showOptions and search.hitsCount > 1}">
             <h2 class="-sr-only">#{msg.searchHitNavigation}:</h2>
@@ -142,9 +141,7 @@
                 var="resultGroup">
                 <ui:fragment rendered="#{not empty resultGroup.hits}">
                     <ui:fragment rendered="#{searchBean.displayResultGroupNames}">
-                        <h2 class="search-list__hit-result-group-heading">
-                            #{msg[resultGroup.name]} (#{resultGroup.hitsCount})
-                        </h2>
+                        <h2 class="search-list__hit-result-group-heading">#{msg[resultGroup.name]} (#{resultGroup.hitsCount})</h2>
                     </ui:fragment>
                     <ui:repeat
                         value="#{resultGroup.hits}"
@@ -279,8 +276,7 @@
                                                         </h4>
                                                         <ui:fragment rendered="#{childHit.includeMetadata()}">
                                                             <div class="search-list__struct-title__metadata">
-                                                                <ui:include
-                                                                    src="/resources/includes/search/browseElementMetadata.xhtml">
+                                                                <ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
                                                                     <ui:param
                                                                         name="browseElement"
                                                                         value="#{childHit.browseElement}" />
@@ -312,18 +308,14 @@
                                                                         ariaLabel="#{grandChildHit.translatedType}" />
                                                                 </dt>
                                                                 <dd>
-                                                                    <a
-                                                                        href="#{request.contextPath}/#{grandChildHit.url}">
+                                                                    <a href="#{request.contextPath}/#{grandChildHit.url}">
                                                                         <h:outputFormat
                                                                             escape="false"
                                                                             value="#{grandChildHit.displayText}" />
                                                                     </a>
-                                                                    <ui:fragment
-                                                                        rendered="#{grandChildHit.includeMetadata()}">
-                                                                        <div
-                                                                            class="search-list__struct-child-hits__metadata">
-                                                                            <ui:include
-                                                                                src="/resources/includes/search/browseElementMetadata.xhtml">
+                                                                    <ui:fragment rendered="#{grandChildHit.includeMetadata()}">
+                                                                        <div class="search-list__struct-child-hits__metadata">
+                                                                            <ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
                                                                                 <ui:param
                                                                                     name="browseElement"
                                                                                     value="#{grandChildHit.browseElement}" />
@@ -336,8 +328,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="search-list__subhit-thumbnail">
-                                                    <ui:include
-                                                        src="/resources/includes/search/browseElementThumbnail.xhtml">
+                                                    <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
                                                         <ui:param
                                                             name="browseElement"
                                                             value="#{childHit.browseElement}" />
@@ -355,8 +346,7 @@
                                                 alt="Search List Loader" />
                                         </span>
                                         <div class="search-list__hit-content-more">
-                                            <ui:fragment
-                                                rendered="#{hit.hitsPopulated > 0 and (hit.hitsPopulated+hit.hitsPreloaded) lt hit.hitCount}">
+                                            <ui:fragment rendered="#{hit.hitsPopulated > 0 and (hit.hitsPopulated+hit.hitsPreloaded) lt hit.hitCount}">
                                                 <button
                                                     type="button"
                                                     class="btn btn--clean"
@@ -371,8 +361,7 @@
                         </div>
                     </ui:repeat>
                     <!-- EXPAND LINK -->
-                    <ui:fragment
-                        rendered="#{groupPreviewMode and searchBean.activeContext eq '-' and resultGroup.displayExpandUrl}">
+                    <ui:fragment rendered="#{groupPreviewMode and searchBean.activeContext eq '-' and resultGroup.displayExpandUrl}">
                         <a
                             class="search-list__expand-group-link"
                             href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{resultGroup.name}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetString}/">

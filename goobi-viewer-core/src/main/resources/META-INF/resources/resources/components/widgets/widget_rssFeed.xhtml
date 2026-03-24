@@ -33,8 +33,7 @@
 
     <!-- USED IN FRONTEND -->
     <composite:implementation>
-        <h:panelGroup
-            rendered="#{(configurationBean.displaySidebarRssFeed and cc.attrs.widget == null) or cc.attrs.widget.type == 'WIDGET_RSSFEED'}">
+        <h:panelGroup rendered="#{(configurationBean.displaySidebarRssFeed and cc.attrs.widget == null) or cc.attrs.widget.type == 'WIDGET_RSSFEED'}">
             <div class="widget widget-rss">
                 <div class="widget__topbar widget-rss__topbar">
                     <h2 class="widget__title widget-rss__title">#{cc.attrs.title}</h2>

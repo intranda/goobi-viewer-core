@@ -44,8 +44,7 @@
                         <span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
 
                         <!-- ADD TO BOOKMARK -->
-                        <ui:fragment
-                            rendered="#{configurationBean.bookmarksEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
+                        <ui:fragment rendered="#{configurationBean.bookmarksEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
                             <button
                                 type="button"
                                 class="btn btn--icon metadata__bookmark-button bookmark-toggle__button"
@@ -80,8 +79,7 @@
         </div>
 
         <!-- BORN DIGITAL MATERIALS -->
-        <h:panelGroup
-            rendered="#{activeDocumentBean.viewManager.hasDownloadResources or activeDocumentBean.viewManager.hasExternalResources}">
+        <h:panelGroup rendered="#{activeDocumentBean.viewManager.hasDownloadResources or activeDocumentBean.viewManager.hasExternalResources}">
             <viewerComponent:bornDigital />
             <viewerComponent:modalDownloadTicket />
             <div class="clearfix" />

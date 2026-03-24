@@ -44,8 +44,7 @@
                                                                 <component:navigationLink
                                                                     linkClass="#{navigationHelper.currentPage == child2.itemLabel?'mainnav-active':''}"
                                                                     navItem="#{child2}" />
-                                                                <h:panelGroup
-                                                                    rendered="#{!child2.childItems.isEmpty()}">
+                                                                <h:panelGroup rendered="#{!child2.childItems.isEmpty()}">
                                                                     <ul class="mainsubnav">
                                                                         <ui:repeat
                                                                             varStatus="count"
@@ -56,37 +55,32 @@
                                                                                     <component:navigationLink
                                                                                         linkClass="#{navigationHelper.currentPage == child3.itemLabel?'mainnav-active':''}"
                                                                                         navItem="#{child3}" />
-                                                                                    <h:panelGroup
-                                                                                        rendered="#{!child3.childItems.isEmpty()}">
+                                                                                    <h:panelGroup rendered="#{!child3.childItems.isEmpty()}">
                                                                                         <ul class="mainsubnav">
                                                                                             <ui:repeat
                                                                                                 varStatus="count"
                                                                                                 var="child4"
                                                                                                 value="#{child3.childItems}">
-                                                                                                <h:panelGroup
-                                                                                                    rendered="#{child4.valid}">
+                                                                                                <h:panelGroup rendered="#{child4.valid}">
                                                                                                     <li>
                                                                                                         <component:navigationLink
                                                                                                             linkClass="#{navigationHelper.currentPage == child4.itemLabel?'mainnav-active':''}"
                                                                                                             navItem="#{child4}" />
                                                                                                         <h:panelGroup
                                                                                                             rendered="#{!child4.childItems.isEmpty()}">
-                                                                                                            <ul
-                                                                                                                class="mainsubnav">
+                                                                                                            <ul class="mainsubnav">
                                                                                                                 <ui:repeat
                                                                                                                     varStatus="count"
                                                                                                                     var="child5"
                                                                                                                     value="#{child4.childItems}">
-                                                                                                                    <h:panelGroup
-                                                                                                                        rendered="#{child5.valid}">
+                                                                                                                    <h:panelGroup rendered="#{child5.valid}">
                                                                                                                         <li>
                                                                                                                             <component:navigationLink
                                                                                                                                 linkClass="#{navigationHelper.currentPage == child5.itemLabel?'mainnav-active':''}"
                                                                                                                                 navItem="#{child5}" />
                                                                                                                             <h:panelGroup
                                                                                                                                 rendered="#{!child5.childItems.isEmpty()}">
-                                                                                                                                <ul
-                                                                                                                                    class="mainsubnav">
+                                                                                                                                <ul class="mainsubnav">
                                                                                                                                     <ui:repeat
                                                                                                                                         varStatus="count"
                                                                                                                                         var="child6"

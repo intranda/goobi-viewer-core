@@ -16,8 +16,7 @@
 
     <!-- SEARCH LIST OPTIONS -->
     <div class="search-list__options-container">
-        <ui:fragment
-            rendered="#{navigationHelper.currentPage == 'search' || navigationHelper.currentPage == 'searchlist'}">
+        <ui:fragment rendered="#{navigationHelper.currentPage == 'search' || navigationHelper.currentPage == 'searchlist'}">
             <h1 class="search-list__options-container-heading">#{msg.search}</h1>
         </ui:fragment>
 
@@ -51,8 +50,7 @@
             </ui:fragment>
 
             <!-- SAVE SEARCH -->
-            <ui:fragment
-                rendered="#{userBean.loggedIn and searchBean.searchSavingEnabled and !searchBean.currentSearch.saved}">
+            <ui:fragment rendered="#{userBean.loggedIn and searchBean.searchSavingEnabled and !searchBean.currentSearch.saved}">
                 <viewerComponent:searchSaveDialog prependId="false" />
             </ui:fragment>
 

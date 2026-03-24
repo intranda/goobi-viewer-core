@@ -30,8 +30,7 @@
                                 <div class="row">
                                     <div class="col-2 col-sm-1 collection__structure-col">
                                         <!-- STRUCTURE -->
-                                        <h:panelGroup
-                                            rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
+                                        <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
                                             <div class="collection__structure text-center">
                                                 <button
                                                     class="btn btn-link"
@@ -39,12 +38,10 @@
                                                     <f:passThroughAttribute
                                                         name="aria-label"
                                                         value="#{msg.aria_label__show_details}" />
-                                                    <h:panelGroup
-                                                        rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
+                                                    <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
                                                         <util:icon icon="square-rounded-plus" />
                                                     </h:panelGroup>
-                                                    <h:panelGroup
-                                                        rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
+                                                    <h:panelGroup rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
                                                         <util:icon icon="square-rounded-minus" />
                                                     </h:panelGroup>
                                                     <f:ajax render="@form" />
@@ -57,8 +54,7 @@
                                             <div class="row">
                                                 <div class="col-12">
                                                     <!-- TITLE -->
-                                                    <h:outputLink
-                                                        value="#{cc.attrs.collection.getCollectionUrl(browseDcElement)}">
+                                                    <h:outputLink value="#{cc.attrs.collection.getCollectionUrl(browseDcElement)}">
                                                         <h:outputText
                                                             rendered="#{browseDcElement.displayNumberOfVolumes}"
                                                             value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})" />

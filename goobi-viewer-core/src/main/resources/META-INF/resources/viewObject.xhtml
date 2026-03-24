@@ -148,14 +148,12 @@
 
                     <!-- VIEW 3D OBJECT -->
                     <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.is3DModel()}">
-                        <ui:fragment
-                            rendered="#{activeDocumentBean.viewManager.currentPage.mimeType.matches('.*\\/gl(tf|b)(\\+json)?')}">
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType.matches('.*\\/gl(tf|b)(\\+json)?')}">
                             <ui:insert name="viewObject3d">
                                 <ui:include src="/resources/includes/object/voyager3d.xhtml" />
                             </ui:insert>
                         </ui:fragment>
-                        <ui:fragment
-                            rendered="#{!activeDocumentBean.viewManager.currentPage.mimeType.matches('.*\\/gl(tf|b)(\\+json)?')}">
+                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.mimeType.matches('.*\\/gl(tf|b)(\\+json)?')}">
                             <ui:insert name="viewObject3d">
                                 <ui:include src="/resources/includes/object/object3d.xhtml" />
                             </ui:insert>
@@ -268,8 +266,7 @@
                                 class="view-object__user_generated_content">
                                 <h2>
                                     <span>#{msg.admin__crowdsourcing_annotations}</span>
-                                    <div
-                                        class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+                                    <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
                                         <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
                                     </div>
                                 </h2>

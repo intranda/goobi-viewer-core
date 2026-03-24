@@ -57,9 +57,7 @@
 
                                             <div class="admin__cms-archive-edit__field-block">
                                                 <div class="admin__cms-archive-edit__field-row form-group">
-                                                    <div class="admin__cms-archive-edit__field-label">
-                                                        #{msg.title}:
-                                                    </div>
+                                                    <div class="admin__cms-archive-edit__field-label">#{msg.title}:</div>
                                                     <div class="admin__cms-archive-edit__field-input admin__form-input">
                                                         <div
                                                             class="#{status.index == 0 ? 'active' : ''}"
@@ -72,9 +70,7 @@
                                                                     value="#{msg.aria_label__collections_title}" />
                                                             </h:inputText>
                                                         </div>
-                                                        <span class="admin__form-help-text">
-                                                            #{msg.admin__cms_archives_title_help}
-                                                        </span>
+                                                        <span class="admin__form-help-text">#{msg.admin__cms_archives_title_help}</span>
                                                     </div>
                                                     <div class="admin__form-help-icon">
                                                         <button
@@ -104,9 +100,7 @@
 
                                             <div class="admin__cms-archive-edit__field-block">
                                                 <div class="admin__cms-archive-edit__field-row form-group">
-                                                    <div class="admin__cms-archive-edit__field-label">
-                                                        #{msg.description}:
-                                                    </div>
+                                                    <div class="admin__cms-archive-edit__field-label">#{msg.description}:</div>
                                                     <div class="admin__cms-archive-edit__field-input admin__form-input">
                                                         <div
                                                             class="#{status.index == 0 ? 'active' : ''}"
@@ -119,9 +113,7 @@
                                                                     value="#{msg.aria_label__collections_description}" />
                                                             </h:inputTextarea>
                                                         </div>
-                                                        <span class="admin__form-help-text">
-                                                            #{msg.admin__cms_archives_description_help}
-                                                        </span>
+                                                        <span class="admin__form-help-text">#{msg.admin__cms_archives_description_help}</span>
                                                     </div>
                                                     <div class="admin__form-help-icon">
                                                         <button
@@ -138,13 +130,9 @@
                                     </div>
 
                                     <!-- IMAGE: TILE -->
-                                    <h2 class="admin__cms-archive-edit__section-title">
-                                        #{msg.admin__cms_archives_image_tile}
-                                    </h2>
+                                    <h2 class="admin__cms-archive-edit__section-title">#{msg.admin__cms_archives_image_tile}</h2>
                                     <div class="admin__cms-archive-edit__image-block">
-                                        <p class="admin__cms-archive-edit__image-description">
-                                            #{msg.admin__cms_archives_image_tile_desc}
-                                        </p>
+                                        <p class="admin__cms-archive-edit__image-description">#{msg.admin__cms_archives_image_tile_desc}</p>
 
                                         <h:panelGroup
                                             layout="block"
@@ -182,15 +170,13 @@
                                                 rendered="#{cmsArchivesBean.imageModeTile == 'IMAGE'}">
                                                 <!-- THUMBNAIL -->
                                                 <div class="admin__cms-archive-edit__image-thumbnail">
-                                                    <ui:fragment
-                                                        rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(0)}">
+                                                    <ui:fragment rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(0)}">
                                                         <img
                                                             src="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem(0).iconURI}"
                                                             class="img-fluid"
                                                             alt="" />
                                                     </ui:fragment>
-                                                    <ui:fragment
-                                                        rendered="#{!cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(0)}">
+                                                    <ui:fragment rendered="#{!cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(0)}">
                                                         <img
                                                             src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
                                                             data-viewer-thumbnail="thumbnail"
@@ -224,13 +210,9 @@
                                     </div>
 
                                     <!-- IMAGE: HEADER -->
-                                    <h2 class="admin__cms-archive-edit__section-title">
-                                        #{msg.admin__cms_archives_image_header}
-                                    </h2>
+                                    <h2 class="admin__cms-archive-edit__section-title">#{msg.admin__cms_archives_image_header}</h2>
                                     <div class="admin__cms-archive-edit__image-block">
-                                        <p class="admin__cms-archive-edit__image-description">
-                                            #{msg.admin__cms_archives_image_header_desc}
-                                        </p>
+                                        <p class="admin__cms-archive-edit__image-description">#{msg.admin__cms_archives_image_header_desc}</p>
 
                                         <h:panelGroup
                                             layout="block"
@@ -268,15 +250,13 @@
                                                 rendered="#{cmsArchivesBean.imageModeHeader == 'IMAGE'}">
                                                 <!-- THUMBNAIL -->
                                                 <div class="admin__cms-archive-edit__image-thumbnail">
-                                                    <ui:fragment
-                                                        rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(1)}">
+                                                    <ui:fragment rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(1)}">
                                                         <img
                                                             src="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem(1).iconURI}"
                                                             class="img-fluid"
                                                             alt="" />
                                                     </ui:fragment>
-                                                    <ui:fragment
-                                                        rendered="#{!cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(1)}">
+                                                    <ui:fragment rendered="#{!cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(1)}">
                                                         <img
                                                             src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
                                                             data-viewer-thumbnail="thumbnail"
@@ -392,19 +372,14 @@
                                     <h2>#{msg.admin__cms_archives_hint_tile_title}</h2>
 
                                     <!-- SCHEMATIC PREVIEW -->
-                                    <div
-                                        class="admin__cms-archive-edit__hint-schema admin__cms-archive-edit__hint-schema--tile">
+                                    <div class="admin__cms-archive-edit__hint-schema admin__cms-archive-edit__hint-schema--tile">
                                         <div class="admin__cms-archive-edit__hint-schema-image">
                                             <util:icon icon="photo" />
                                         </div>
-                                        <div class="admin__cms-archive-edit__hint-schema-label">
-                                            #{msg.admin__cms_archives_hint_tile_label}
-                                        </div>
+                                        <div class="admin__cms-archive-edit__hint-schema-label">#{msg.admin__cms_archives_hint_tile_label}</div>
                                     </div>
 
-                                    <div class="admin__form-help-text in mt-3">
-                                        #{msg.admin__cms_archives_hint_tile_text}
-                                    </div>
+                                    <div class="admin__form-help-text in mt-3">#{msg.admin__cms_archives_hint_tile_text}</div>
                                     <div class="admin__cms-archive-edit__hint-meta">
                                         #{msg.admin__cms_archives_hint_tile_dimensions}
                                         <br />
@@ -417,19 +392,14 @@
                                     <h2>#{msg.admin__cms_archives_hint_header_title}</h2>
 
                                     <!-- SCHEMATIC PREVIEW -->
-                                    <div
-                                        class="admin__cms-archive-edit__hint-schema admin__cms-archive-edit__hint-schema--header">
+                                    <div class="admin__cms-archive-edit__hint-schema admin__cms-archive-edit__hint-schema--header">
                                         <div class="admin__cms-archive-edit__hint-schema-image">
                                             <util:icon icon="photo" />
                                         </div>
-                                        <div class="admin__cms-archive-edit__hint-schema-label">
-                                            #{msg.admin__cms_archives_hint_header_label}
-                                        </div>
+                                        <div class="admin__cms-archive-edit__hint-schema-label">#{msg.admin__cms_archives_hint_header_label}</div>
                                     </div>
 
-                                    <div class="admin__form-help-text in mt-3">
-                                        #{msg.admin__cms_archives_hint_header_text}
-                                    </div>
+                                    <div class="admin__form-help-text in mt-3">#{msg.admin__cms_archives_hint_header_text}</div>
                                     <div class="admin__cms-archive-edit__hint-meta">
                                         #{msg.admin__cms_archives_hint_header_dimensions}
                                         <br />

@@ -53,8 +53,7 @@
                             <h2 class="widget__title">#{msg.sidebarTocAnchor}</h2>
 
                             <!-- EXPAND ALL -->
-                            <ui:fragment
-                                rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}">
+                            <ui:fragment rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}">
                                 <div class="widget-toc__title-expand">
                                     <!-- CLOSE -->
                                     <button
@@ -157,9 +156,7 @@
 
                                             <!-- PAGE NUMBER -->
                                             <ui:fragment rendered="#{configurationBean.sidebarTocPageNumbersVisible}">
-                                                <div class="widget-toc__element-pagenumber">
-                                                    #{tocElement.pageNoLabel}
-                                                </div>
+                                                <div class="widget-toc__element-pagenumber">#{tocElement.pageNoLabel}</div>
                                             </ui:fragment>
                                         </li>
                                     </ui:repeat>

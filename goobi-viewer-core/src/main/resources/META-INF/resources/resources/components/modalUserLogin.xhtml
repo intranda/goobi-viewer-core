@@ -38,9 +38,7 @@
                     <div class="user-login-modal__left">
                         <div class="modal-header">
                             <h1 class="modal-title user-login-modal__header-title">#{msg.login__header_title}</h1>
-                            <h1 class="modal-title user-login-modal__header-title-create-account">
-                                #{msg.login__create_new_account}
-                            </h1>
+                            <h1 class="modal-title user-login-modal__header-title-create-account">#{msg.login__create_new_account}</h1>
                         </div>
 
                         <div class="modal-body">
@@ -58,8 +56,7 @@
                                             id="userLoginSelectLoginWrapper"
                                             class="user-login-modal__body-login-select">
                                             <div class="user-login-modal__form-row">
-                                                <div
-                                                    class="custom-control custom-control--select user-login-modal__form-control">
+                                                <div class="custom-control custom-control--select user-login-modal__form-control">
                                                     <h:selectOneMenu
                                                         id="userLoginSelectLogin"
                                                         styleClass="user-login-modal__form-control -valueEntered"
@@ -103,8 +100,7 @@
                                                     id="loginType"
                                                     class="user-login-modal__body-login-type">
                                                     <!-- LOGIN TYPE LOCAL -->
-                                                    <ui:fragment
-                                                        rendered="#{userBean.authenticationProvider.type == 'local'}">
+                                                    <ui:fragment rendered="#{userBean.authenticationProvider.type == 'local'}">
                                                         <div class="user-login-modal__form-row">
                                                             <h:inputText
                                                                 id="userEMail"
@@ -130,8 +126,7 @@
                                                     </ui:fragment>
 
                                                     <!-- LOGIN TYPE EMAIL -->
-                                                    <ui:fragment
-                                                        rendered="#{userBean.authenticationProvider.type == 'userPassword'}">
+                                                    <ui:fragment rendered="#{userBean.authenticationProvider.type == 'userPassword'}">
                                                         <div class="user-login-modal__form-row">
                                                             <h:inputText
                                                                 id="externalUserName"
@@ -154,8 +149,7 @@
                                                     </ui:fragment>
 
                                                     <!-- ENTER PASSWORD -->
-                                                    <div
-                                                        class="user-login-modal__form-row user-login-modal__password mb-0">
+                                                    <div class="user-login-modal__form-row user-login-modal__password mb-0">
                                                         <h:inputSecret
                                                             id="userPassword"
                                                             styleClass="form-control user-login-modal__form-control"
@@ -179,11 +173,9 @@
                                                     </div>
 
                                                     <!-- RETRIEVE LOST PASSWORD -->
-                                                    <div
-                                                        class="form-row form-group no-gutters user-login-modal__lost-password">
+                                                    <div class="form-row form-group no-gutters user-login-modal__lost-password">
                                                         <div class="col-12 col-lg-9">
-                                                            <ui:fragment
-                                                                rendered="#{userBean.authenticationProvider.allowsPasswordChange()}">
+                                                            <ui:fragment rendered="#{userBean.authenticationProvider.allowsPasswordChange()}">
                                                                 <button
                                                                     type="button"
                                                                     class="btn btn--link"
@@ -208,8 +200,7 @@
                                                                     value="#{msg.login}" />
                                                             </h:commandButton>
 
-                                                            <h:panelGroup
-                                                                rendered="#{userBean.userRegistrationEnabled}">
+                                                            <h:panelGroup rendered="#{userBean.userRegistrationEnabled}">
                                                                 <div
                                                                     id="userLoginCreateAccount"
                                                                     class="user-login-modal__new-account">
@@ -303,14 +294,11 @@
                                         </div>
 
                                         <!-- USER LOGIN TYPE CREATE ACCOUNT -->
-                                        <ui:fragment
-                                            rendered="#{userBean.userRegistrationEnabled and captchaBean.resetSecurityQuestion()}">
+                                        <ui:fragment rendered="#{userBean.userRegistrationEnabled and captchaBean.resetSecurityQuestion()}">
                                             <div
                                                 id="loginTypeCreateAccount"
                                                 class="user-login-modal__body-login-type create">
-                                                <p class="user-login-modal__create-account-info">
-                                                    #{msg.login__create_new_account__info}:
-                                                </p>
+                                                <p class="user-login-modal__create-account-info">#{msg.login__create_new_account__info}:</p>
                                                 <h:form id="loginTypeCreateAccountForm">
                                                     <div class="form-group form-row no-gutters lastname">
                                                         <label
@@ -409,8 +397,7 @@
                                                     </ui:fragment>
 
                                                     <ui:fragment rendered="#{termsOfUseBean.isTermsOfUseActive()}">
-                                                        <div
-                                                            class="form-group form-row no-gutters user-login-modal__terms">
+                                                        <div class="form-group form-row no-gutters user-login-modal__terms">
                                                             <div class="col-12 mb-2 user-login-modal__terms-title">
                                                                 <b>#{termsOfUseBean.getTitle()}</b>
                                                             </div>
@@ -430,9 +417,7 @@
                                                             <div
                                                                 id="createAccountAcceptTerms"
                                                                 class="col-12 d-flex align-items-center admin__form-input user-login-modal__terms-accept">
-                                                                <label class="mr-3 mb-0">
-                                                                    #{msg.admin__terms_of_use__accept}:
-                                                                </label>
+                                                                <label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
                                                                 <div>
                                                                     <viewerComponent:toggleSwitch
                                                                         name="activateUserTerms"
@@ -487,8 +472,7 @@
                         </ui:fragment>
 
                         <!-- USER LOGIN BODY EXTERNAL PROVIDERS-->
-                        <ui:fragment
-                            rendered="#{userBean.hasProvidersOfType('openId') or userBean.hasProvidersOfType('httpHeader')}">
+                        <ui:fragment rendered="#{userBean.hasProvidersOfType('openId') or userBean.hasProvidersOfType('httpHeader')}">
                             <div
                                 id="userLoginOpenId"
                                 class="user-login-modal__body-login-open-id">
@@ -525,38 +509,22 @@
 
                         <div class="user-login-modal__keyboard">
                             <div class="user-login-modal__keyboard-space-button" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-1" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-2" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-3 -keyPressAnimation -delay1" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-4" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-5" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-6 -keyPressAnimation -delay4" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-7" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-8" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-9 keyPressAnimation -delay2" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-10" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-11" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-12 -keyPressAnimation -delay3" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-13" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-14 -keyPressAnimation -delay6" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-15" />
-                            <div
-                                class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-16" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-1" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-2" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-3 -keyPressAnimation -delay1" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-4" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-5" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-6 -keyPressAnimation -delay4" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-7" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-8" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-9 keyPressAnimation -delay2" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-10" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-11" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-12 -keyPressAnimation -delay3" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-13" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-14 -keyPressAnimation -delay6" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-15" />
+                            <div class="user-login-modal__keyboard-single-key user-login-modal__keyboard-single-key-16" />
                         </div>
                         <script>
                             // JUST VISUAL EFFECT - NO FUNCTION

@@ -54,11 +54,8 @@
                                 prependId="false">
                                 <div class="form-horizontal form-group">
                                     <div class="d-flex mb-3 align-items-center">
-                                        <div class="control-label mr-3 admin__form-label">
-                                            #{msg.admin__comment_groups_functionality_active}:
-                                        </div>
-                                        <div
-                                            class="admin__form-input admin__comment-groups-toggle #{!userBean.admin ? '-isDisabled' : ''}">
+                                        <div class="control-label mr-3 admin__form-label">#{msg.admin__comment_groups_functionality_active}:</div>
+                                        <div class="admin__form-input admin__comment-groups-toggle #{!userBean.admin ? '-isDisabled' : ''}">
                                             <viewerComponent:toggleSwitch
                                                 name="activateUserComments"
                                                 toggleTarget=".-toggle-comments-functions"
@@ -88,9 +85,7 @@
 
                                                 <!-- DESCRIPTION -->
                                                 <ui:fragment rendered="#{commentGroup.description ne ''}">
-                                                    <p class="admin__boxed-entry-description">
-                                                        #{msg[commentGroup.description]}
-                                                    </p>
+                                                    <p class="admin__boxed-entry-description">#{msg[commentGroup.description]}</p>
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{commentGroup.description eq ''}">
                                                     <p
@@ -103,20 +98,12 @@
                                                 <!-- SOLR QUERY -->
                                                 <dl class="row">
                                                     <ui:fragment rendered="#{commentGroup.userGroup != null}">
-                                                        <dt class="col-xl-6 col-lg-12 mb-2">
-                                                            #{msg.admin__comment_group_enabled_for_user_group}:
-                                                        </dt>
-                                                        <dd class="col-xl-6 col-lg-12 text-break mb-2">
-                                                            #{commentGroup.userGroup}
-                                                        </dd>
+                                                        <dt class="col-xl-6 col-lg-12 mb-2">#{msg.admin__comment_group_enabled_for_user_group}:</dt>
+                                                        <dd class="col-xl-6 col-lg-12 text-break mb-2">#{commentGroup.userGroup}</dd>
                                                     </ui:fragment>
                                                     <ui:fragment rendered="#{commentGroup.solrQuery != null}">
-                                                        <dt class="col-xl-6 col-lg-12">
-                                                            #{msg.admin__comment_group_solr_query}:
-                                                        </dt>
-                                                        <dd class="col-xl-6 col-lg-12 text-break mb-0">
-                                                            #{commentGroup.solrQuery}
-                                                        </dd>
+                                                        <dt class="col-xl-6 col-lg-12">#{msg.admin__comment_group_solr_query}:</dt>
+                                                        <dd class="col-xl-6 col-lg-12 text-break mb-0">#{commentGroup.solrQuery}</dd>
                                                     </ui:fragment>
                                                 </dl>
                                             </div>

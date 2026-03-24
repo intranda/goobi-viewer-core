@@ -24,8 +24,7 @@
     </composite:interface>
 
     <composite:implementation>
-        <h:panelGroup
-            rendered="#{cc.attrs.sidebarElement == null or cc.attrs.sidebarElement.contentType.isAllowedForPage(cmsPage)}">
+        <h:panelGroup rendered="#{cc.attrs.sidebarElement == null or cc.attrs.sidebarElement.contentType.isAllowedForPage(cmsPage)}">
             <searchFacetsComponent:chronologyFacet cmsPage="#{cc.attrs.cmsPage}" />
             <searchFacetsComponent:geoFacetting cmsPage="#{cc.attrs.cmsPage}" />
             <searchFacetsComponent:searchFacets cmsPage="#{cc.attrs.cmsPage}" />

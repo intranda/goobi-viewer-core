@@ -20,8 +20,7 @@
             <div
                 class="content-component content-component__htmltext -width-#{cc.attrs.width} #{cc.attrs.hideOnScreenSizes} #{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} #{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''} #{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
                 <!-- INFO: CONTENT ITEM IS NOT PUBLISHED YET -->
-                <ui:fragment
-                    rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
+                <ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
                     <div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
                 </ui:fragment>
 

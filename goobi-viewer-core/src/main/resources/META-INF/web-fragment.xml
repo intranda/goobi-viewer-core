@@ -40,9 +40,7 @@
     <!-- Programmatic setting of the com.ocpsoft.pretty.CONFIG_FILES value no longer seems to work with current Rewrite versions -->
     <context-param>
         <param-name>com.ocpsoft.pretty.CONFIG_FILES</param-name>
-        <param-value>
-            resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml
-        </param-value>
+        <param-value>resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml</param-value>
     </context-param>
     <!-- OmniFaces Websocket -->
     <context-param>

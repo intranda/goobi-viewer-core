@@ -20,15 +20,13 @@
             <div
                 class="content-component content-component__slider -width-100 #{cc.attrs.hideOnScreenSizes} #{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} #{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''} #{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
                 <!-- INFO: CONTENT ITEM IS NOT PUBLISHED YET -->
-                <ui:fragment
-                    rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
+                <ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
                     <div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
                 </ui:fragment>
 
                 <ui:fragment rendered="#{cc.attrs.component.hasContent('slider')}">
                     <div class="tpl-slider__slider">
-                        <viewerComponent:cmsSlider
-                            slider="#{cc.attrs.component.getContentItem('slider').content.slider}" />
+                        <viewerComponent:cmsSlider slider="#{cc.attrs.component.getContentItem('slider').content.slider}" />
                     </div>
                 </ui:fragment>
             </div>

@@ -62,9 +62,7 @@
 
                                             <!-- ADDITION TO TITLE -->
                                             <ui:fragment rendered="#{widget.generationType != 'DEFAULT'}">
-                                                <span class="cms-widgets-overview__single-widget-title-type">
-                                                    (#{msg[widget.generationType.label]})
-                                                </span>
+                                                <span class="cms-widgets-overview__single-widget-title-type">(#{msg[widget.generationType.label]})</span>
                                             </ui:fragment>
                                         </h2>
 
@@ -76,8 +74,7 @@
                                     </div>
 
                                     <!-- DESCRIPTION -->
-                                    <p
-                                        class="admin__boxed-entry-description cms-widgets-overview__single-widget-description">
+                                    <p class="admin__boxed-entry-description cms-widgets-overview__single-widget-description">
                                         <h:outputText
                                             escape="true"
                                             value="#{widget.descriptionOrTypeDescription.getValue(navigationHelper.locale)}" />
@@ -88,21 +85,15 @@
                                         <!-- TYPE OF WIDGET -->
                                         <ui:fragment rendered="#{widget.generationType != 'DEFAULT'}">
                                             <div class="cms-widgets-overview__single-widget-info-type">
-                                                <div class="cms-widgets-overview__single-widget-info-label">
-                                                    #{msg.type}:
-                                                </div>
-                                                <div class="cms-widgets-overview__single-widget-info-data">
-                                                    #{msg[widget.contentType.label]}
-                                                </div>
+                                                <div class="cms-widgets-overview__single-widget-info-label">#{msg.type}:</div>
+                                                <div class="cms-widgets-overview__single-widget-info-data">#{msg[widget.contentType.label]}</div>
                                             </div>
                                         </ui:fragment>
 
                                         <!-- WHERE IS THIS WIDGET DISPLAYED -->
                                         <ui:fragment rendered="#{not empty widget.embeddingPages}">
                                             <div class="cms-widgets-overview__single-widget-info-used">
-                                                <div class="cms-widgets-overview__single-widget-info-label">
-                                                    #{msg.cms_widgets__usage}:
-                                                </div>
+                                                <div class="cms-widgets-overview__single-widget-info-label">#{msg.cms_widgets__usage}:</div>
 
                                                 <!-- LIST ALL PAGES ON WHICH THIS WIDGET IS ACTIVE -->
 

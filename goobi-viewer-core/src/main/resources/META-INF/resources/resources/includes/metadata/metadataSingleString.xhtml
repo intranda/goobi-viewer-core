@@ -80,9 +80,7 @@
                                         <h:outputFormat
                                             value="#{val.getDisplayValue(navigationHelper.locale, true)}"
                                             escape="false" />
-                                        <span class="metadata__element-wrapper-single-custom-separator">
-                                            #{metadata.separator}
-                                        </span>
+                                        <span class="metadata__element-wrapper-single-custom-separator">#{metadata.separator}</span>
                                     </h:panelGroup>
 
                                     <!-- Nested child metadata -->
@@ -91,16 +89,14 @@
                                         items="#{val.childMetadata}">
                                         <ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
                                             <ui:fragment rendered="#{child.singleString}">
-                                                <ui:include
-                                                    src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                                <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
                                                     <ui:param
                                                         name="metadata"
                                                         value="#{child}" />
                                                 </ui:include>
                                             </ui:fragment>
                                             <ui:fragment rendered="#{!child.singleString}">
-                                                <ui:include
-                                                    src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                                <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
                                                     <ui:param
                                                         name="metadata"
                                                         value="#{child}" />

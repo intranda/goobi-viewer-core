@@ -164,8 +164,7 @@
                                                         data-select-entry="#{entry.id}">
                                                         <span>#{entry.label}</span>
 
-                                                        <ui:fragment
-                                                            rendered="#{entry.containsImage and entry.imageAccessAllowed}">
+                                                        <ui:fragment rendered="#{entry.containsImage and entry.imageAccessAllowed}">
                                                             <span class="archives-tree__record-link-icon-wrapper-outer">
                                                                 <span class="archives-tree__record-link-icon-wrapper">
                                                                     <util:icon icon="photo" />
@@ -173,8 +172,7 @@
                                                             </span>
                                                         </ui:fragment>
 
-                                                        <ui:fragment
-                                                            rendered="#{entry.containsImage and !entry.imageAccessAllowed}">
+                                                        <ui:fragment rendered="#{entry.containsImage and !entry.imageAccessAllowed}">
                                                             <span
                                                                 class="archives-tree__record-link-icon-wrapper-outer"
                                                                 data-toggle="tooltip"
@@ -200,8 +198,7 @@
                                                         pt:data-render="archiveTree">
                                                         <span>#{entry.label}</span>
 
-                                                        <ui:fragment
-                                                            rendered="#{entry.containsImage and entry.imageAccessAllowed}">
+                                                        <ui:fragment rendered="#{entry.containsImage and entry.imageAccessAllowed}">
                                                             <span class="archives-tree__record-link-icon-wrapper-outer">
                                                                 <span class="archives-tree__record-link-icon-wrapper">
                                                                     <util:icon icon="photo" />
@@ -209,8 +206,7 @@
                                                             </span>
                                                         </ui:fragment>
 
-                                                        <ui:fragment
-                                                            rendered="#{entry.containsImage and !entry.imageAccessAllowed}">
+                                                        <ui:fragment rendered="#{entry.containsImage and !entry.imageAccessAllowed}">
                                                             <span
                                                                 class="archives-tree__record-link-icon-wrapper-outer"
                                                                 data-toggle="tooltip"
@@ -310,8 +306,7 @@
                 sessionStorage.setItem('focusElement', this.id);
             });
 
-            // REMOVE TOOLTIPS AFTER AJAX ONCE SO IT IS NOT STUCK ON SCREEN BECAUSE COLLAPSE ALL BUTTON IDENTITY IS
-            DESTROYED DUE TO THE CALL
+            // REMOVE TOOLTIPS AFTER AJAX ONCE SO IT IS NOT STUCK ON SCREEN BECAUSE COLLAPSE ALL BUTTON IDENTITY IS DESTROYED DUE TO THE CALL
             function fadeOutAllTooltips() {
                 $('.bs-tooltip-top').remove();
             }

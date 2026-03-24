@@ -47,8 +47,7 @@
         </ui:fragment>
 
         <!-- SHOW IF THIS SORTING OPTION IS SELECTED AND ASCENDING -->
-        <ui:fragment
-            rendered="#{cc.attrs.list.sortOrder == 'ASCENDING' and cc.attrs.list.sortField == cc.attrs.filterType}">
+        <ui:fragment rendered="#{cc.attrs.list.sortOrder == 'ASCENDING' and cc.attrs.list.sortField == cc.attrs.filterType}">
             <div
                 role="columnheader"
                 aria-sort="descending">
@@ -67,8 +66,7 @@
         </ui:fragment>
 
         <!-- SHOW IF THIS SORTING OPTION IS SELECTED AND DESCENDING -->
-        <ui:fragment
-            rendered="#{cc.attrs.list.sortOrder == 'DESCENDING' and cc.attrs.list.sortField == cc.attrs.filterType}">
+        <ui:fragment rendered="#{cc.attrs.list.sortOrder == 'DESCENDING' and cc.attrs.list.sortField == cc.attrs.filterType}">
             <div
                 role="columnheader"
                 aria-sort="descending">

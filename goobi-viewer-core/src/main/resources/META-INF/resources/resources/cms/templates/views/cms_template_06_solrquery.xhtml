@@ -28,8 +28,7 @@
             <!-- SOLR QUERY COLLECTION -->
             <h:panelGroup rendered="#{cmsBean.hasSearchResults()}">
                 <div class="solr-query-collection">
-                    <ui:fragment
-                        rendered="#{empty cc.attrs.component.getContentItem('queryList01').content.groupingField}">
+                    <ui:fragment rendered="#{empty cc.attrs.component.getContentItem('queryList01').content.groupingField}">
                         <div class="solr-query-collection__thumbs">
                             <div class="row">
                                 <ui:repeat
@@ -39,8 +38,7 @@
                                         <div class="solr-query-collection__thumb">
                                             <!-- IMAGE -->
                                             <div class="solr-query-collection__image">
-                                                <h:outputLink
-                                                    value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}">
+                                                <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}">
                                                     <img
                                                         src="#{hit.browseElement.getThumbnailUrl(360, 300)}"
                                                         class="img-fluid"
@@ -65,8 +63,7 @@
                         </div>
                     </ui:fragment>
 
-                    <ui:fragment
-                        rendered="#{not empty cc.attrs.component.getContentItem('queryList01').content.groupingField}">
+                    <ui:fragment rendered="#{not empty cc.attrs.component.getContentItem('queryList01').content.groupingField}">
                         <ui:repeat
                             var="hitSet"
                             value="#{cmsBean.getGroupedQueryResults(cmsBean.queryResults, cc.attrs.component.getContentItem('queryList01').content.groupingField)}">
@@ -80,8 +77,7 @@
                                             <div class="solr-query-collection__thumb">
                                                 <!-- IMAGE -->
                                                 <div class="solr-query-collection__image">
-                                                    <h:outputLink
-                                                        value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}">
+                                                    <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}">
                                                         <img
                                                             src="#{hit.browseElement.getThumbnailUrl(360, 300)}"
                                                             class="img-fluid"

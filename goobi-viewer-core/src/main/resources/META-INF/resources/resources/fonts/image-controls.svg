@@ -8,36 +8,12 @@
 <missing-glyph horiz-adv-x="1024" />
 <glyph unicode="&#x20;" horiz-adv-x="512" d="" />
 <glyph unicode="&#xe900;" glyph-name="back" d="M358.4 496l121.6 144h-96l-160-192 157.6-200h98.4l-123.2 152h451.2v96z" />
-<glyph
-                unicode="&#xe901;"
-                glyph-name="forward"
-                d="M673.6 497.6l-121.6 144h96l160-192-157.6-200h-98.4l123.2 152h-451.2v96z"
-            />
-<glyph
-                unicode="&#xe902;"
-                glyph-name="start"
-                d="M412 496l121.6 144h-96l-160-192 158.4-200h97.6l-123.2 152h452v96zM165.6 248h96v392h-96z"
-            />
-<glyph
-                unicode="&#xe903;"
-                glyph-name="end"
-                d="M608 496l-121.6 144h96l160-192-158.4-200h-97.6l123.2 152h-452v96zM854.4 248h-96v392h96z"
-            />
-<glyph
-                unicode="&#xe904;"
-                glyph-name="rotate_left"
-                d="M442.4 738.4h-96v-452l-152 123.2v-97.6l200-158.4 192 160v96l-144-121.6v354.4h391.2v96z"
-            />
-<glyph
-                unicode="&#xe905;"
-                glyph-name="rotate_right"
-                d="M577.6 738.4h96v-452l152 123.2v-97.6l-200-158.4-192 160v96l144-121.6v354.4h-391.2v96z"
-            />
-<glyph
-                unicode="&#xe906;"
-                glyph-name="reset"
-                d="M223.2 736v-96h488.8v-392h-392.8v200h68.8l-115.2 116h-0.8l-115.2-116h66.4v-296h584.8v584z"
-            />
+<glyph unicode="&#xe901;" glyph-name="forward" d="M673.6 497.6l-121.6 144h96l160-192-157.6-200h-98.4l123.2 152h-451.2v96z" />
+<glyph unicode="&#xe902;" glyph-name="start" d="M412 496l121.6 144h-96l-160-192 158.4-200h97.6l-123.2 152h452v96zM165.6 248h96v392h-96z" />
+<glyph unicode="&#xe903;" glyph-name="end" d="M608 496l-121.6 144h96l160-192-158.4-200h-97.6l123.2 152h-452v96zM854.4 248h-96v392h96z" />
+<glyph unicode="&#xe904;" glyph-name="rotate_left" d="M442.4 738.4h-96v-452l-152 123.2v-97.6l200-158.4 192 160v96l-144-121.6v354.4h391.2v96z" />
+<glyph unicode="&#xe905;" glyph-name="rotate_right" d="M577.6 738.4h96v-452l152 123.2v-97.6l-200-158.4-192 160v96l144-121.6v354.4h-391.2v96z" />
+<glyph unicode="&#xe906;" glyph-name="reset" d="M223.2 736v-96h488.8v-392h-392.8v200h68.8l-115.2 116h-0.8l-115.2-116h66.4v-296h584.8v584z" />
 <glyph
                 unicode="&#xe907;"
                 glyph-name="fullscreen"
@@ -68,11 +44,7 @@
 <glyph unicode="&#xe90c;" horiz-adv-x="1022" d="M0 960v-1024h511.077v1024zM491.6-11.673h-430.584v920.522h430.584z" />
 <glyph unicode="&#xe90d;" horiz-adv-x="1022" d="M103.247 720.448h342.995v-46.962h-342.995v46.962z" />
 <glyph unicode="&#xe90e;" horiz-adv-x="1022" d="M103.247 216.744h342.995v-46.962h-342.995v46.962z" />
-<glyph
-                unicode="&#xe90f;"
-                horiz-adv-x="1022"
-                d="M511.077 960v-1024h511.077v1024zM530.554 908.85h430.584v-920.522h-430.584z"
-            />
+<glyph unicode="&#xe90f;" horiz-adv-x="1022" d="M511.077 960v-1024h511.077v1024zM530.554 908.85h430.584v-920.522h-430.584z" />
 <glyph unicode="&#xe910;" horiz-adv-x="1022" d="M918.907 673.486h-342.995v46.962h342.995v-46.962z" />
 <glyph unicode="&#xe911;" horiz-adv-x="1022" d="M918.907 169.783h-342.995v46.962h342.995v-46.962z" />
 <glyph

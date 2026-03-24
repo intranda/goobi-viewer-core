@@ -40,11 +40,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
   All the links just link to oai_dc versions of records.
 
 -->
-<xsl:stylesheet
-    version="1.0"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:oai="http://www.openarchives.org/OAI/2.0/"
->
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:oai="http://www.openarchives.org/OAI/2.0/">
 
 <xsl:output method="html" />
 
@@ -156,10 +152,7 @@ p.intro {
 <xsl:call-template name='xmlstyle' />
 </xsl:template>
 
-<xsl:variable
-        name='identifier'
-        select="substring-before(concat(substring-after(/oai:OAI-PMH/oai:request,'identifier='),'&amp;'),'&amp;')"
-    />
+<xsl:variable name='identifier' select="substring-before(concat(substring-after(/oai:OAI-PMH/oai:request,'identifier='),'&amp;'),'&amp;')" />
 <xsl:variable
         name="available_formats"
         select="document(concat(/oai:OAI-PMH/oai:request, '/?verb=ListMetadataFormats'))/oai:OAI-PMH/oai:ListMetadataFormats[1]/oai:metadataFormat/oai:metadataPrefix"
@@ -189,9 +182,7 @@ p.intro {
                         href="http://www.ecs.soton.ac.uk/people/cjg"
                     >Christopher Gutteridge</a> at the University of Southampton as part of the <a
                         href="http://software.eprints.org"
-                    >GNU EPrints system</a>, and is freely redistributable under the <a
-                        href="http://www.gnu.org"
-                    >GPL</a>.</p><p
+                    >GNU EPrints system</a>, and is freely redistributable under the <a href="http://www.gnu.org">GPL</a>.</p><p
                 >If you want to use the XSL file on your own OAI interface you may but due to the way XSLT works you must install the XSL file on the same server as the OAI script, you can't just link to this copy.</p><p
                 >For more information or to download the XSL file please see the <a
                         href="http://software.eprints.org/xslt.php"
@@ -337,10 +328,7 @@ p.intro {
   <xsl:apply-templates select="ep:comment" />
 </xsl:template>
 
-<xsl:template
-        match="ep:content|ep:dataPolicy|ep:metadataPolicy|ep:submissionPolicy"
-        xmlns:ep="http://www.openarchives.org/OAI/1.1/eprints"
-    >
+<xsl:template match="ep:content|ep:dataPolicy|ep:metadataPolicy|ep:submissionPolicy" xmlns:ep="http://www.openarchives.org/OAI/1.1/eprints">
   <xsl:if test="ep:text">
     <p><xsl:value-of select="ep:text" /></p>
   </xsl:if>
@@ -481,9 +469,7 @@ p.intro {
     <xsl:when test="$identifier">
       <p>This is a list of metadata formats available for the record "<xsl:value-of
                         select='$identifier'
-                    />". Use these links to view the metadata: <xsl:apply-templates
-                        select="oai:metadataFormat/oai:metadataPrefix"
-                    /></p>
+                    />". Use these links to view the metadata: <xsl:apply-templates select="oai:metadataFormat/oai:metadataPrefix" /></p>
     </xsl:when>
     <xsl:otherwise>
       <p>This is a list of metadata formats available from this archive.</p>
@@ -505,10 +491,7 @@ p.intro {
 </xsl:template>
 
 <xsl:template match="oai:metadataPrefix">
-      <xsl:text> </xsl:text><a
-            class="link"
-            href="?verb=GetRecord&amp;metadataPrefix={.}&amp;identifier={$identifier}"
-        ><xsl:value-of select='.' /></a>
+      <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix={.}&amp;identifier={$identifier}"><xsl:value-of select='.' /></a>
 </xsl:template>
 
 <!-- record object -->
@@ -530,17 +513,11 @@ p.intro {
     <td class="value">
       <xsl:value-of select="$oai_identifier" />
       <xsl:for-each select="$available_formats">
-        <xsl:text> </xsl:text><a
-                            class="link"
-                            href="?verb=GetRecord&amp;metadataPrefix={.}&amp;identifier={$oai_identifier}"
-                        >
+        <xsl:text> </xsl:text><a class="link" href="?verb=GetRecord&amp;metadataPrefix={.}&amp;identifier={$oai_identifier}">
           <xsl:value-of select="." />
         </a>
       </xsl:for-each>
-      <xsl:text> </xsl:text><a
-                        class="link"
-                        href="?verb=ListMetadataFormats&amp;identifier={$oai_identifier}"
-                    >formats</a>
+      <xsl:text> </xsl:text><a class="link" href="?verb=ListMetadataFormats&amp;identifier={$oai_identifier}">formats</a>
     </td></tr>
     <tr><td class="key">Datestamp</td>
     <td class="value"><xsl:value-of select="oai:datestamp" /></td></tr>
@@ -571,10 +548,7 @@ p.intro {
 <xsl:template match="oai:setSpec">
   <tr><td class="key">setSpec</td>
   <td class="value"><xsl:value-of select="." />
-    <xsl:text> </xsl:text><a
-                    class="link"
-                    href="?verb=ListIdentifiers&amp;metadataPrefix=oai_dc&amp;set={.}"
-                >Identifiers</a>
+    <xsl:text> </xsl:text><a class="link" href="?verb=ListIdentifiers&amp;metadataPrefix=oai_dc&amp;set={.}">Identifiers</a>
     <xsl:text> </xsl:text><a class="link" href="?verb=ListRecords&amp;metadataPrefix=oai_dc&amp;set={.}">Records</a>
   </td></tr>
 </xsl:template>
@@ -587,9 +561,9 @@ p.intro {
    <p>There are more results.</p>
    <table class="values">
      <tr><td class="key">resumptionToken:</td>
-     <td class="value"><xsl:value-of select="." /> (List size: <xsl:value-of
-                        select="@completeListSize"
-                    /> / Cursor:  <xsl:value-of select="@cursor" />)
+     <td class="value"><xsl:value-of select="." /> (List size: <xsl:value-of select="@completeListSize" /> / Cursor:  <xsl:value-of
+                        select="@cursor"
+                    />)
 <xsl:text> </xsl:text>
 <a class="link" href="?verb={/oai:OAI-PMH/oai:request/@verb}&amp;resumptionToken={.}">Resume</a></td></tr>
    </table>
@@ -680,21 +654,19 @@ p.intro {
 
 <xsl:template match="node()" mode='xmlMarkup'>
   <div class="xmlBlock">
-    &lt;<span class="xmlTagName"><xsl:value-of select='name(.)' /></span><xsl:apply-templates
-                select="@*"
+    &lt;<span class="xmlTagName"><xsl:value-of select='name(.)' /></span><xsl:apply-templates select="@*" mode='xmlMarkup' />&gt;<xsl:apply-templates
+                select="node()"
                 mode='xmlMarkup'
-            />&gt;<xsl:apply-templates select="node()" mode='xmlMarkup' />&lt;/<span class="xmlTagName"><xsl:value-of
-                    select='name(.)'
-                /></span>&gt;
+            />&lt;/<span class="xmlTagName"><xsl:value-of select='name(.)' /></span>&gt;
   </div>
 </xsl:template>
 
 <xsl:template match="text()" mode='xmlMarkup'><span class="xmlText"><xsl:value-of select='.' /></span></xsl:template>
 
 <xsl:template match="@*" mode='xmlMarkup'>
-  <xsl:text> </xsl:text><span class="xmlAttrName"><xsl:value-of select='name()' /></span>="<span
-            class="xmlAttrValue"
-        ><xsl:value-of select='.' /></span>"
+  <xsl:text> </xsl:text><span class="xmlAttrName"><xsl:value-of select='name()' /></span>="<span class="xmlAttrValue"><xsl:value-of
+                select='.'
+            /></span>"
 </xsl:template>
 
 <xsl:template name="xmlstyle">

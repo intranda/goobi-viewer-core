@@ -46,8 +46,7 @@
                                     styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>
-                        <li
-                            class="admin-widget__clients-link #{navigationHelper.currentPage == 'adminClients' ? 'active' : ''}">
+                        <li class="admin-widget__clients-link #{navigationHelper.currentPage == 'adminClients' ? 'active' : ''}">
                             <c:set
                                 scope="view"
                                 value="#{adminClientsBean.notConfiguredClients}"
@@ -74,8 +73,7 @@
                                     icon="key"
                                     text="#{msg.admin__licenses}"
                                     styleClass="icon-text--nav" />
-                                <ui:fragment
-                                    rendered="#{fn:length(adminLicenseBean.notConfiguredAccessConditions) gt 0}">
+                                <ui:fragment rendered="#{fn:length(adminLicenseBean.notConfiguredAccessConditions) gt 0}">
                                     <span
                                         data-toggle="tooltip"
                                         title="#{msg.admin__licenses__tooltip_not_configured}"
@@ -93,8 +91,7 @@
                                     icon="lock"
                                     text="#{msg.admin__rights}"
                                     styleClass="icon-text--nav" />
-                                <ui:fragment
-                                    rendered="#{adminLicenseBean.ticketRequests.size() gt 0 and adminLicenseBean.ticketRequests.size() le 99}">
+                                <ui:fragment rendered="#{adminLicenseBean.ticketRequests.size() gt 0 and adminLicenseBean.ticketRequests.size() le 99}">
                                     <span
                                         data-toggle="tooltip"
                                         title="#{msg.admin__rights__download_tickets_tooltip}"
@@ -132,8 +129,7 @@
                             </h:outputLink>
                         </li>
                         <ui:fragment rendered="#{adminBean.hasAccessPermissingForTranslationFiles}">
-                            <li
-                                class="admin-widget__translations-link #{navigationHelper.currentPage == 'adminTranslations' ? 'active' : ''}">
+                            <li class="admin-widget__translations-link #{navigationHelper.currentPage == 'adminTranslations' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminTranslations')}/">
                                     <util:icon-text
                                         icon="arrows-exchange"

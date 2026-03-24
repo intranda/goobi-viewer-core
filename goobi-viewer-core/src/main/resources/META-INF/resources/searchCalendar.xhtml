@@ -48,8 +48,7 @@
                         <!-- SEARCH CALENDAR TITLE -->
                         <div class="search-calendar__title">
                             <h1>
-                                <h:outputText
-                                    value="#{msg.searchCalendar} #{calendarBean.currentYear != null ? calendarBean.currentYear.name : ''}" />
+                                <h:outputText value="#{msg.searchCalendar} #{calendarBean.currentYear != null ? calendarBean.currentYear.name : ''}" />
                             </h1>
                         </div>
 
@@ -74,8 +73,7 @@
                                     <h:outputFormat
                                         value="#{msg.label__calendar__century}"
                                         escape="false">
-                                        <f:param
-                                            value="#{calendarBean.getCenturyLabel(century.value, navigationHelper.locale)}" />
+                                        <f:param value="#{calendarBean.getCenturyLabel(century.value, navigationHelper.locale)}" />
                                     </h:outputFormat>
                                 </h2>
 
@@ -91,9 +89,7 @@
                                                 jsf:rendered="#{!year.isEmpty()}"
                                                 data-toggle="tooltip"
                                                 title="#{year.hits} #{msg.currentwitsForYear}">
-                                                <a href="#{request.contextPath}/searchcalendar/#{year.name}/">
-                                                    #{year.name}
-                                                </a>
+                                                <a href="#{request.contextPath}/searchcalendar/#{year.name}/">#{year.name}</a>
                                             </span>
                                             <!-- YEAR HAS 0 ENTRIES SO NO LINK RENDERED -->
                                             <span
@@ -111,8 +107,7 @@
 
                         <h:panelGroup rendered="#{configurationBean.calendarSearchEnabled}">
                             <!-- SEARCH CALENDAR MONTHS -->
-                            <h:panelGroup
-                                rendered="#{configurationBean.calendarSearchEnabled and calendarBean.currentYear.hits ge 1}">
+                            <h:panelGroup rendered="#{configurationBean.calendarSearchEnabled and calendarBean.currentYear.hits ge 1}">
                                 <div class="search-calendar__months">
                                     <div class="row">
                                         <ui:repeat

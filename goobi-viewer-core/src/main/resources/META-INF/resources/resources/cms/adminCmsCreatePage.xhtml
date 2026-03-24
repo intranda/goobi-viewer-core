@@ -44,9 +44,7 @@
                             <ui:fragment rendered="#{!cmsPageEditBean.editMode and page.template != null}">
                                 #{msg.cms_createPage}: #{msg[cmsPageEditBean.selectedPage.template.title]}
                             </ui:fragment>
-                            <ui:fragment rendered="#{!cmsPageEditBean.editMode and page.template == null}">
-                                #{msg.cms_createPage}
-                            </ui:fragment>
+                            <ui:fragment rendered="#{!cmsPageEditBean.editMode and page.template == null}">#{msg.cms_createPage}</ui:fragment>
                         </h1>
                         <!-- EXIT -->
                         <a
@@ -105,11 +103,9 @@
                                                         </li>
                                                     </ul>
 
-                                                    <div
-                                                        class="tab-content language-tab #{page.isDefaultLocaleSelected() ? '-default-lang' : ''}">
+                                                    <div class="tab-content language-tab #{page.isDefaultLocaleSelected() ? '-default-lang' : ''}">
                                                         <!-- LOCALIZE TABS -->
-                                                        <h:panelGroup
-                                                            rendered="#{cmsPageEditBean.pageEditState == 'CONTENT'}">
+                                                        <h:panelGroup rendered="#{cmsPageEditBean.pageEditState == 'CONTENT'}">
                                                             <ui:param
                                                                 name="locale"
                                                                 value="#{page.selectedLocale}" />
@@ -117,14 +113,11 @@
                                                                 class="tab-pane admin__cms-create-page-inner -noTopRightRoundedBorder #{page.selectedLocale == locale ? 'active':''}"
                                                                 id="#{locale.language}">
                                                                 <!-- PAGE CONTENT -->
-                                                                <div
-                                                                    class="edit-content-page edit-content-page-content">
+                                                                <div class="edit-content-page edit-content-page-content">
                                                                     <!-- TITLE -->
                                                                     <div class="cms-module__option-group">
                                                                         <div class="cms-module__option-label">
-                                                                            <label for="cmsCreatePageTitle">
-                                                                                #{msg.label__cms_page_title}*:
-                                                                            </label>
+                                                                            <label for="cmsCreatePageTitle">#{msg.label__cms_page_title}*:</label>
                                                                         </div>
                                                                         <div class="cms-module__option-control">
                                                                             <h:inputText
@@ -134,40 +127,31 @@
                                                                                 pt:data-target="watchedInput"
                                                                                 required="#{page.isDefaultLocaleSelected()}"
                                                                                 requiredMessage="#{msg.error__title_required}" />
-                                                                            <span
-                                                                                class="cms-module__option-control-helptext">
-                                                                                #{msg.help__cms_page_title}
-                                                                            </span>
+                                                                            <span class="cms-module__option-control-helptext">#{msg.help__cms_page_title}</span>
                                                                         </div>
                                                                     </div>
 
                                                                     <!-- MENUTITLE -->
                                                                     <div class="cms-module__option-group">
                                                                         <div class="cms-module__option-label">
-                                                                            <label for="cmsCreatePageMenutitle">
-                                                                                #{msg.label__cms_page_menutitle}:
-                                                                            </label>
+                                                                            <label for="cmsCreatePageMenutitle">#{msg.label__cms_page_menutitle}:</label>
                                                                         </div>
                                                                         <div class="cms-module__option-control">
                                                                             <h:inputText
                                                                                 id="cmsCreatePageMenutitle"
                                                                                 styleClass="form-control"
                                                                                 value="#{cmsPageEditBean.selectedPage.menuTitleTranslations.text}" />
-                                                                            <span
-                                                                                class="cms-module__option-control-helptext">
+                                                                            <span class="cms-module__option-control-helptext">
                                                                                 #{msg.help__cms_page_menutitle}
                                                                             </span>
                                                                         </div>
                                                                     </div>
 
-                                                                    <ui:fragment
-                                                                        rendered="#{page.isDefaultLocaleSelected()}">
+                                                                    <ui:fragment rendered="#{page.isDefaultLocaleSelected()}">
                                                                         <!-- PAGE SORTING -->
                                                                         <div class="cms-module__option-group">
                                                                             <div class="cms-module__option-label">
-                                                                                <label for="cmsCreatePageSortingField">
-                                                                                    #{msg.label__cms_page_sortfield}:
-                                                                                </label>
+                                                                                <label for="cmsCreatePageSortingField">#{msg.label__cms_page_sortfield}:</label>
                                                                             </div>
                                                                             <div class="cms-module__option-control">
                                                                                 <h:inputText
@@ -178,8 +162,7 @@
                                                                                         name="type"
                                                                                         value="number" />
                                                                                 </h:inputText>
-                                                                                <span
-                                                                                    class="cms-module__option-control-helptext">
+                                                                                <span class="cms-module__option-control-helptext">
                                                                                     #{msg.help__cms_page_sortfield}
                                                                                 </span>
                                                                             </div>
@@ -211,13 +194,10 @@
                                                                             items="#{page.components}">
                                                                             <div class="admin__content-component">
                                                                                 <!-- CONTENT COMPONENT INNER -->
-                                                                                <div
-                                                                                    class="admin__content-component-inner">
+                                                                                <div class="admin__content-component-inner">
                                                                                     <!-- CONTENT HEADER + TOOLBAR -->
-                                                                                    <div
-                                                                                        class="admin__content-component-header">
-                                                                                        <h2
-                                                                                            class="admin__content-component-heading">
+                                                                                    <div class="admin__content-component-header">
+                                                                                        <h2 class="admin__content-component-heading">
                                                                                             #{msg[cmsComponent.label]}
                                                                                         </h2>
 
@@ -254,8 +234,7 @@
                                                                                                             jsf:action="#{cmsComponent.setAttribute(attribute.name, option.value)}"
                                                                                                             class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">
                                                                                                             #{msg[option.label]}
-                                                                                                            <f:ajax
-                                                                                                                render="attributes-block-#{loop.index}" />
+                                                                                                            <f:ajax render="attributes-block-#{loop.index}" />
                                                                                                         </button>
                                                                                                     </ui:repeat>
                                                                                                 </ui:fragment>
@@ -266,38 +245,30 @@
                                                                                                 jsf:action="#{cmsComponent.togglePrivate()}"
                                                                                                 class="admin__content-component-option #{cmsComponent.isPrivate() ? '-active' : ''}">
                                                                                                 Private
-                                                                                                <f:ajax
-                                                                                                    render="attributes-block-#{loop.index}" />
+                                                                                                <f:ajax render="attributes-block-#{loop.index}" />
                                                                                             </button>
                                                                                         </h:panelGroup>
 
                                                                                         <!-- CONTENT COMPONENT ORDER FUNCTIONS -->
                                                                                         <ui:fragment
                                                                                             rendered="#{!page.lockComponents and page.isDefaultLocaleSelected()}">
-                                                                                            <ui:include
-                                                                                                src="/resources/cms/includes/orderContentItems.xhtml" />
+                                                                                            <ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
                                                                                         </ui:fragment>
                                                                                     </div>
 
-                                                                                    <div
-                                                                                        class="admin__content-component-description">
+                                                                                    <div class="admin__content-component-description">
                                                                                         #{msg[cmsComponent.description]}
                                                                                     </div>
                                                                                 </div>
 
-                                                                                <div
-                                                                                    class="admin__content-component-content-items-wrapper">
-                                                                                    <h:panelGroup
-                                                                                        binding="#{cmsComponent.backendUiComponent}" />
+                                                                                <div class="admin__content-component-content-items-wrapper">
+                                                                                    <h:panelGroup binding="#{cmsComponent.backendUiComponent}" />
                                                                                 </div>
 
-                                                                                <ui:fragment
-                                                                                    rendered="#{page.isDefaultLocaleSelected()}">
-                                                                                    <div
-                                                                                        class="admin__content-component-delete-wrapper">
+                                                                                <ui:fragment rendered="#{page.isDefaultLocaleSelected()}">
+                                                                                    <div class="admin__content-component-delete-wrapper">
                                                                                         <!-- DELETE THIS CONTENT ITEM -->
-                                                                                        <ui:fragment
-                                                                                            rendered="#{!page.lockComponents}">
+                                                                                        <ui:fragment rendered="#{!page.lockComponents}">
                                                                                             <button
                                                                                                 class="admin__content-component-delete"
                                                                                                 data-require-confirmation="true"
@@ -318,13 +289,11 @@
                                                                     <!-- AVAILABLE CONTENT COMPONENTS -->
                                                                     <ui:fragment rendered="#{!page.lockComponents}">
                                                                         <div class="admin__content-component-add-area">
-                                                                            <div
-                                                                                class="admin__content-component-add-area-label">
+                                                                            <div class="admin__content-component-add-area-label">
                                                                                 #{msg.cms__page_new_component}
                                                                             </div>
 
-                                                                            <div
-                                                                                class="admin__content-component-add-select-wrapper">
+                                                                            <div class="admin__content-component-add-select-wrapper">
                                                                                 <h:panelGroup
                                                                                     id="componentSelectionWrapper"
                                                                                     layout="block"
