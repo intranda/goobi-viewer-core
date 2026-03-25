@@ -151,7 +151,8 @@ public class CampaignItemResource {
     @Operation(tags = { "crowdsourcing" }, summary = "Get the campaign item for a given campaign and record")
     @ApiResponse(responseCode = "200", description = "Campaign item containing questions and status information")
     @ApiResponse(responseCode = "404", description = "Campaign or record not found for the given identifiers")
-    public CampaignItem getItemForManifest(@Parameter(description = "Record persistent identifier") @PathParam("pi") final String persistentIdentifier,
+    public CampaignItem getItemForManifest(
+            @Parameter(description = "Record persistent identifier") @PathParam("pi") final String persistentIdentifier,
             @Context HttpServletRequest servletRequest)
             throws URISyntaxException, DAOException, ContentNotFoundException {
         if (persistentIdentifier == null) {

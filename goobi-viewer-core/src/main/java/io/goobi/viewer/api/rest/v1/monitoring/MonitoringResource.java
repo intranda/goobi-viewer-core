@@ -73,7 +73,8 @@ public class MonitoringResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Checks and reports the availability of relevant data providing services", tags = { "monitoring" })
-    @ApiResponse(responseCode = "200", description = "Status report for all monitored services (Solr, database, message queue). Individual service errors are reported within the response body, not as HTTP error codes")
+    @ApiResponse(responseCode = "200",
+            description = "Status report for all monitored services (Solr, database, message queue). Service errors appear in the response body")
     public MonitoringStatus checkServices() {
         logger.trace("checkServices");
         MonitoringStatus ret = new MonitoringStatus();
