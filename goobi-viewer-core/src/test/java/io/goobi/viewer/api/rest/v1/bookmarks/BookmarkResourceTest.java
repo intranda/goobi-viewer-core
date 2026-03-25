@@ -21,37 +21,28 @@
  */
 package io.goobi.viewer.api.rest.v1.bookmarks;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.model.bookmark.Bookmark;
+import io.goobi.viewer.model.bookmark.BookmarkList;
 
 /**
  * @author florian
  *
  */
-class BookmarkResourceTest {
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @BeforeEach
-    public void setUp() throws Exception {
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @AfterEach
-    public void tearDown() throws Exception {
-    }
+class BookmarkResourceTest extends AbstractRestApiTest {
 
     @Test
     void testDeserializeBookmark() throws JsonMappingException, JsonProcessingException {
@@ -60,6 +51,24 @@ class BookmarkResourceTest {
         Bookmark bookmark = mapper.readValue(jsonString, Bookmark.class);
         assertNotNull(bookmark);
         assertEquals("Test Bookmark", bookmark.getName());
+    }
+
+    /**
+     * Verify that POST /bookmarks returns 400 when called without a logged-in user.
+     * Session-based bookmark lists do not support adding additional lists.
+     * The success path (201 Created) requires authentication and is verified at the source level
+     * in BookmarkResource.addBookmarkList() which wraps the result in Response.status(CREATED).
+     */
+    @Test
+    void testAddBookmarkList_returns400WhenNotLoggedIn() {
+        BookmarkList list = new BookmarkList();
+        list.setName("Test List");
+        try (Response response = target(USERS_BOOKMARKS)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .post(Entity.entity(list, MediaType.APPLICATION_JSON))) {
+            assertEquals(400, response.getStatus(), "POST /bookmarks without login should return 400 Bad Request");
+        }
     }
 
 }

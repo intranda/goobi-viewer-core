@@ -36,6 +36,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -89,15 +90,17 @@ public class ClientApplicationsResource {
     @POST
     @jakarta.ws.rs.Path(CLIENTS_REGISTER)
     @Produces({ MediaType.APPLICATION_JSON })
-    //    @Operation(summary = "Request registration as a trusted client application", tags = { "clients" })
-    public String register() throws ContentLibException, DAOException {
+    @Operation(summary = "Request registration as a trusted client application", tags = { "clients" })
+    @ApiResponse(responseCode = "201", description = "Client registered successfully; registration is pending approval")
+    @ApiResponse(responseCode = "400", description = "A client with this machine identifier is already registered")
+    public Response register() throws ContentLibException, DAOException {
         String clientIdentifier = ClientApplicationManager.getClientIdentifier(servletRequest);
         Optional<ClientApplication> existingClient = DataManager.getInstance().getClientManager().getClientByClientIdentifier(clientIdentifier);
         if (existingClient.isPresent()) {
             throw new IllegalRequestException("Client with this machine identifier is already registered");
         }
         ClientApplication client = DataManager.getInstance().getClientManager().persistNewClient(clientIdentifier, servletRequest);
-        return createRegistrationResponse(client);
+        return Response.status(Response.Status.CREATED).entity(createRegistrationResponse(client)).build();
     }
 
     @GET

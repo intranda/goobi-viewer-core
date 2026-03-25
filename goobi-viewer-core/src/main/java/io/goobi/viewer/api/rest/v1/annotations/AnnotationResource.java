@@ -42,6 +42,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -182,16 +183,16 @@ public class AnnotationResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Create a new annotation")
-    @ApiResponse(responseCode = "200", description = "The created annotation")
+    @ApiResponse(responseCode = "201", description = "The created annotation")
     @ApiResponse(responseCode = "501",
             description = "Persisting this kind of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest,"
                     + " canvas or part of a canvas may be persisted")
-    public IAnnotation addAnnotation(IncomingAnnotation anno) throws DAOException, NotImplementedException {
+    public Response addAnnotation(IncomingAnnotation anno) throws DAOException, NotImplementedException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = createPersistentAnnotation(anno);
         if (pAnno != null) {
             DataManager.getInstance().getDao().addAnnotation(pAnno);
-            return converter.getAsWebAnnotation(pAnno);
+            return Response.status(Response.Status.CREATED).entity(converter.getAsWebAnnotation(pAnno)).build();
         }
         throw new NotImplementedException();
     }

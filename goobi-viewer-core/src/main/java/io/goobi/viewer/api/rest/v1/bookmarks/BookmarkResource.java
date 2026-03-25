@@ -54,6 +54,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -131,14 +132,17 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Add a new bookmark list for the current user.")
-    @ApiResponse(responseCode = "200", description = "Bookmark list created successfully")
+    @ApiResponse(responseCode = "201", description = "Bookmark list created successfully")
     @ApiResponse(responseCode = "400", description = "Not logged in, so no bookmark lists may be added")
     @ApiResponse(responseCode = "500", description = "Error querying database")
-    public SuccessMessage addBookmarkList(BookmarkList list) throws DAOException, IOException, RestApiException, IllegalRequestException {
+    public Response addBookmarkList(BookmarkList list) throws DAOException, IOException, RestApiException, IllegalRequestException {
+        SuccessMessage result;
         if (StringUtils.isNotBlank(list.getName())) {
-            return builder.addBookmarkList(list.getName());
+            result = builder.addBookmarkList(list.getName());
+        } else {
+            result = builder.addBookmarkList();
         }
-        return builder.addBookmarkList();
+        return Response.status(Response.Status.CREATED).entity(result).build();
     }
 
     @GET
@@ -203,15 +207,16 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Add bookmark to list. Only pi, LogId and order are used")
-    @ApiResponse(responseCode = "200", description = "The updated bookmark list including the newly added item")
+    @ApiResponse(responseCode = "201", description = "Bookmark added; returns the updated bookmark list")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
-    public BookmarkList addItemToBookmarkList(
+    public Response addItemToBookmarkList(
             @Parameter(description = "The id of the bookmark list.") @PathParam("listId") Long id,
             Bookmark item) throws DAOException, IOException, RestApiException {
         builder.addBookmarkToBookmarkList(id, item.getPi(), item.getLogId(),
                 Optional.ofNullable(item.getOrder()).map(Object::toString).orElse(null));
-        return builder.getBookmarkListById(id);
+        BookmarkList updatedList = builder.getBookmarkListById(id);
+        return Response.status(Response.Status.CREATED).entity(updatedList).build();
     }
 
     @GET
