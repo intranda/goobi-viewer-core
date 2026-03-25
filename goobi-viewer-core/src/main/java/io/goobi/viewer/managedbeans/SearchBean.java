@@ -85,6 +85,7 @@ import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.search.AdvancedSearchOrigin;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
 import io.goobi.viewer.model.search.FilterQueryParser;
@@ -185,8 +186,8 @@ public class SearchBean implements SearchInterface, Serializable {
     private SearchSortingOption searchSortingOption;
     /** Keep lists of select values, once generated, for performance reasons. */
     private final Map<String, List<StringPair>> advancedSearchSelectItems = new HashMap<>();
-    /** PI of the record from which the search was triggered (for back-link to TOC view). Null if not searching within a record. */
-    private String searchInRecordPi;
+    /** Origin record from which the search was triggered (for back-link to TOC view). Null if not searching within a record. */
+    private AdvancedSearchOrigin advancedSearchOrigin;
     /** Group of query item clusters for the advanced search. */
     private SearchQueryGroup advancedSearchQueryGroup =
             new SearchQueryGroup(
@@ -540,7 +541,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void resetSearchParameters(boolean resetAllSearchTypes, boolean resetCurrentPage) {
         logger.trace("resetSearchParameters; resetAllSearchTypes: {}", resetAllSearchTypes);
-        this.searchInRecordPi = null;
+        this.advancedSearchOrigin = null;
         CalendarBean calendarBean = BeanUtils.getCalendarBean();
         if (resetAllSearchTypes) {
             resetSimpleSearchParameters();
@@ -1071,11 +1072,10 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * @return the PI of the record from which the search was triggered, or null
+     * @return the origin record from which the search was triggered, or null
      */
-    public String getSearchInRecordPi() {
-        logger.trace("getSearchInRecordPi: {}", searchInRecordPi);
-        return searchInRecordPi;
+    public AdvancedSearchOrigin getAdvancedSearchOrigin() {
+        return advancedSearchOrigin;
     }
 
     /** {@inheritDoc} */
@@ -3053,7 +3053,6 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String searchInRecord(String piField, String piValue, String date1, String date2) {
         logger.trace("searchInRecord: {}:{}", piField, piValue);
-        this.searchInRecordPi = piValue;
         // reset all items except those containing values from the search input fields
         int index = 0;
         for (SearchQueryItem item : this.advancedSearchQueryGroup.getQueryItems()) {
@@ -3080,7 +3079,16 @@ public class SearchBean implements SearchInterface, Serializable {
         this.setActiveSearchType(1);
         logger.trace("Searching for: {}", this.advancedSearchQueryGroup.getQueryItems().get(1).getValue());
 
-        return this.searchAdvanced();
+        String outcome = this.searchAdvanced();
+        // Set advancedSearchOrigin AFTER searchAdvanced() because it calls resetSearchParameters() which would null it
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        if (adb != null && adb.getViewManager() != null) {
+            this.advancedSearchOrigin = new AdvancedSearchOrigin(
+                    piValue,
+                    adb.getViewManager().getTopStructElement().getLabel(),
+                    adb.getViewManager().getTopStructElement().getDocStructType());
+        }
+        return outcome;
     }
 
     /**
