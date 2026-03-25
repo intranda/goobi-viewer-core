@@ -23,73 +23,20 @@
             <script type="text/javascript">
 //<![CDATA[
 (function() {
-    var container = document.getElementById('calendarWidgetContainer');
-    if (!container) return;
-
-    var anchorPi = container.dataset.anchorPi;
-    var currentYear = container.dataset.currentYear;
-    var locale = container.dataset.locale;
-    var appUrl = container.dataset.appUrl;
+    var el = document.getElementById('calendarWidgetContainer');
+    if (!el) return;
 
     var pathParts = window.location.pathname.replace(/\/+$/, '').split('/');
-    var currentLogId = pathParts.length >= 2 ? pathParts[pathParts.length - 1] : null;
-    if (currentLogId === '-' || currentLogId === '') currentLogId = null;
+    var logId = pathParts.length >= 2 ? pathParts[pathParts.length - 1] : null;
+    if (logId === '-' || logId === '') logId = null;
 
-    if (!anchorPi || !currentYear) return;
-
-    var dateUrlMap = {};
-    var calendarInstance = null;
-    var currentIssueDate = null;
-
-    function fetchYearData(year) {
-        return fetch(appUrl + 'api/v1/records/' + anchorPi + '/calendar/' + year)
-        .then(function(r) { return r.json(); })
-        .then(function(entries) {
-            dateUrlMap = {};
-            var dates = [];
-            entries.forEach(function(entry) {
-                dates.push(entry.date);
-                dateUrlMap[entry.date] = appUrl + entry.url.replace(/^\//, '');
-                var logId = entry.url.split('/').filter(Boolean).pop();
-                if (logId === currentLogId) {
-                    currentIssueDate = entry.date;
-                }
-            });
-            return dates;
-        });
-    }
-
-    function createCalendar(dates, targetDate) {
-        if (calendarInstance) {
-            calendarInstance.destroy();
-            container.innerHTML = '';
-        }
-        var defDate = targetDate
-            || (currentIssueDate ? new Date(parseInt(currentIssueDate.substring(0, 4)), parseInt(currentIssueDate.substring(5, 7)) - 1, parseInt(currentIssueDate.substring(8, 10))) : null)
-            || new Date(parseInt(currentYear), 0, 1);
-
-        calendarInstance = viewerJS.datePicker.createInlineCalendar(container, {
-            hasDataDates: dates,
-            currentIssueDate: currentIssueDate,
-            locale: locale,
-            defaultDate: defDate,
-            onDayClick: function(dateStr) {
-                if (dateUrlMap[dateStr]) {
-                    window.location.href = dateUrlMap[dateStr];
-                }
-            },
-            onYearChange: function(selectedDates, dateStr, instance) {
-                var newYear = instance.currentYear;
-                var month = instance.currentMonth;
-                fetchYearData(String(newYear)).then(function(newDates) {
-                    createCalendar(newDates, new Date(newYear, month, 1));
-                });
-            }
-        });
-    }
-
-    fetchYearData(currentYear).then(function(dates) {
-        createCalendar(dates);
+    viewerJS.calendarWidget.init({
+        container: el,
+        anchorPi: el.dataset.anchorPi,
+        currentYear: el.dataset.currentYear,
+        locale: el.dataset.locale,
+        appUrl: el.dataset.appUrl,
+        currentLogId: logId
     });
 })();
 //]]>

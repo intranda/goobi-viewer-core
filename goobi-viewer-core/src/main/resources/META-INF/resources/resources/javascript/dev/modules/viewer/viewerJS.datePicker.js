@@ -1,8 +1,103 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @module viewerJS.datePicker
+ * @description Flatpickr wrapper for the Goobi viewer. Provides date pickers,
+ * date range pickers, and inline calendars with locale support,
+ * format conversion, and auto-initialization from data-attributes.
+ */
 var viewerJS = (function (viewer) {
     'use strict';
 
+    // -- Private helpers ------------------------------------------------------
+
+    function _toISODate(d) {
+        return (
+            d.getFullYear() +
+            '-' +
+            String(d.getMonth() + 1).padStart(2, '0') +
+            '-' +
+            String(d.getDate()).padStart(2, '0')
+        );
+    }
+
+    function _parseISODate(isoStr) {
+        var parts = isoStr.split('-');
+        return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    }
+
+    var _javaToFp = { yyyy: 'Y', MMMM: 'F', MM: 'm', dd: 'd', HH: 'H', hh: 'h', mm: 'i', aa: 'K' };
+    var _fpToLuxon = { Y: 'yyyy', F: 'MMMM', m: 'MM', d: 'dd', H: 'HH', h: 'hh', i: 'mm', K: 'aa' };
+
+    function _escapeRegex(s) {
+        return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function _convertByMap(format, map) {
+        if (!format) return format;
+        var tokens = Object.keys(map).sort(function (a, b) {
+            return b.length - a.length;
+        });
+        var regex = new RegExp(tokens.map(_escapeRegex).join('|'), 'g');
+        return format.replace(regex, function (match) {
+            return map[match];
+        });
+    }
+
+    function _hideExtraWeekRow(fp) {
+        var dc = fp.days;
+        if (!dc) return;
+        var cells = dc.querySelectorAll('.flatpickr-day');
+        if (cells.length < 42) return;
+        var allNextMonth = true;
+        for (var i = 35; i < 42; i++) {
+            if (!cells[i].classList.contains('nextMonthDay')) {
+                allNextMonth = false;
+                break;
+            }
+        }
+        dc.classList.toggle('--hide-last-row', allNextMonth);
+    }
+
+    function _wrapCallback(existing, extra) {
+        if (!existing) return extra;
+        if (Array.isArray(existing)) return existing.concat(extra);
+        return function () {
+            existing.apply(this, arguments);
+            extra.apply(this, arguments);
+        };
+    }
+
+    // -- Public API -----------------------------------------------------------
+
     viewer.datePicker = {
+        // Test-accessible helpers
+        _toISODate: _toISODate,
+        _parseISODate: _parseISODate,
+        _escapeRegex: _escapeRegex,
+        _convertByMap: _convertByMap,
+        _wrapCallback: _wrapCallback,
+        _javaToFp: _javaToFp,
+        _fpToLuxon: _fpToLuxon,
+
         instances: [],
+
+        // -- Locales ----------------------------------------------------------
 
         locales: {
             de: {
@@ -57,6 +152,8 @@ var viewerJS = (function (viewer) {
             },
         },
 
+        // -- Defaults ---------------------------------------------------------
+
         defaults: {
             closeOnSelect: true,
             clickOpens: true,
@@ -73,31 +170,7 @@ var viewerJS = (function (viewer) {
                 '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>',
         },
 
-        _convertFormat: function (airFormat) {
-            if (!airFormat) return airFormat;
-            return airFormat
-                .replace(/yyyy/g, 'Y')
-                .replace(/MMMM/g, 'F')
-                .replace(/MM/g, 'm')
-                .replace(/dd/g, 'd')
-                .replace(/HH/g, 'H')
-                .replace(/hh/g, 'h')
-                .replace(/mm/g, 'i')
-                .replace(/aa/g, 'K');
-        },
-
-        _convertFormatToLuxon: function (fpFormat) {
-            if (!fpFormat) return fpFormat;
-            return fpFormat
-                .replace(/Y/g, 'yyyy')
-                .replace(/F/g, 'MMMM')
-                .replace(/m/g, 'MM')
-                .replace(/d/g, 'dd')
-                .replace(/H/g, 'HH')
-                .replace(/h/g, 'hh')
-                .replace(/i/g, 'mm')
-                .replace(/K/g, 'aa');
-        },
+        // -- Locale resolution ------------------------------------------------
 
         _toFlatpickrLocale: function (localeObj) {
             if (!localeObj) return {};
@@ -120,12 +193,24 @@ var viewerJS = (function (viewer) {
             return this.locales[key] || this.locales['en'];
         },
 
+        _resolveLocaleFromConfig: function (el, config) {
+            var key = (el.dataset && el.dataset.datepickerLocale) || null;
+            if (key) return this._resolveLocale(key);
+            if (typeof config.locale === 'string') return this._resolveLocale(config.locale);
+            if (config.locale && typeof config.locale === 'object') return config.locale;
+            return this._resolveLocale('de');
+        },
+
+        // -- Date parsing -----------------------------------------------------
+
         _parseExistingDate: function (value, formatObj) {
             if (!value || !formatObj || !formatObj.dateFormat) return null;
             if (typeof luxon === 'undefined') return null;
             var dt = luxon.DateTime.fromFormat(value.trim(), formatObj.dateFormat);
             return dt.isValid ? dt.toJSDate() : null;
         },
+
+        // -- Factory methods --------------------------------------------------
 
         create: function (el, opts) {
             if (!el || typeof flatpickr === 'undefined') {
@@ -135,19 +220,7 @@ var viewerJS = (function (viewer) {
 
             var config = Object.assign({}, this.defaults, opts);
 
-            var resolvedLocale;
-            if (el.dataset && el.dataset.datepickerLocale) {
-                resolvedLocale = this._resolveLocale(el.dataset.datepickerLocale);
-            } else if (typeof config.locale === 'string') {
-                resolvedLocale = this._resolveLocale(config.locale);
-            } else if (config.locale && typeof config.locale === 'object' && config.locale.dateFormat) {
-                resolvedLocale = config.locale;
-            } else if (!config.locale) {
-                resolvedLocale = this._resolveLocale('de');
-            } else {
-                resolvedLocale = config.locale;
-            }
-
+            var resolvedLocale = this._resolveLocaleFromConfig(el, config);
             config.locale = resolvedLocale;
 
             var javaFormat = null;
@@ -159,7 +232,7 @@ var viewerJS = (function (viewer) {
             }
 
             if (javaFormat) {
-                config.dateFormat = this._convertFormat(javaFormat);
+                config.dateFormat = _convertByMap(javaFormat, _javaToFp);
             }
             if (el.dataset && el.dataset.datepickerMin) {
                 config.minDate = el.dataset.datepickerMin;
@@ -178,7 +251,7 @@ var viewerJS = (function (viewer) {
                 var parseFmt =
                     javaFormat ||
                     (resolvedLocale && resolvedLocale.dateFormat
-                        ? this._convertFormatToLuxon(resolvedLocale.dateFormat)
+                        ? _convertByMap(resolvedLocale.dateFormat, _fpToLuxon)
                         : null);
                 if (parseFmt) {
                     var existingDate = this._parseExistingDate(el.value, { dateFormat: parseFmt });
@@ -208,18 +281,35 @@ var viewerJS = (function (viewer) {
             };
 
             fpConfig.dateFormat = config.dateFormat || (resolvedLocale && resolvedLocale.dateFormat) || 'Y-m-d';
-            if (config.prevArrow) fpConfig.prevArrow = config.prevArrow;
-            if (config.nextArrow) fpConfig.nextArrow = config.nextArrow;
-            if (config.defaultDate) fpConfig.defaultDate = config.defaultDate;
-            if (config.minDate) fpConfig.minDate = config.minDate;
-            if (config.maxDate) fpConfig.maxDate = config.maxDate;
-            if (config.inline) fpConfig.inline = config.inline;
-            if (config.mode) fpConfig.mode = config.mode;
-            if (config.onChange) fpConfig.onChange = config.onChange;
-            if (config.onDayCreate) fpConfig.onDayCreate = config.onDayCreate;
-            if (config.onYearChange) fpConfig.onYearChange = config.onYearChange;
-            if (config.onMonthChange) fpConfig.onMonthChange = config.onMonthChange;
-            if (config.navTitles) fpConfig.navTitles = config.navTitles;
+
+            var _fpPassthrough = [
+                'minDate',
+                'maxDate',
+                'mode',
+                'inline',
+                'defaultDate',
+                'onChange',
+                'onDayCreate',
+                'onReady',
+                'onYearChange',
+                'onMonthChange',
+                'prevArrow',
+                'nextArrow',
+                'navTitles',
+            ];
+
+            _fpPassthrough.forEach(function (key) {
+                if (config[key] !== undefined) fpConfig[key] = config[key];
+            });
+
+            // Hide empty 6th week row on all calendars
+            var hideRow = function (selectedDates, dateStr, fp) {
+                _hideExtraWeekRow(fp);
+            };
+            fpConfig.onReady = _wrapCallback(fpConfig.onReady, hideRow);
+            fpConfig.onOpen = _wrapCallback(fpConfig.onOpen, hideRow);
+            fpConfig.onMonthChange = _wrapCallback(fpConfig.onMonthChange, hideRow);
+            fpConfig.onYearChange = _wrapCallback(fpConfig.onYearChange, hideRow);
 
             var instance = flatpickr(el, fpConfig);
 
@@ -277,49 +367,46 @@ var viewerJS = (function (viewer) {
 
         createInlineCalendar: function (containerEl, opts) {
             var hasDataDates = opts.hasDataDates || [];
+            var hasMultipleMap = opts.hasMultipleMap || {};
             var currentIssueDateStr = opts.currentIssueDate || null;
             var onDayClickCb = opts.onDayClick || null;
 
-            var config = Object.assign({}, this.defaults, opts, {
+            var fpOpts = {
+                locale: opts.locale,
+                defaultDate: opts.defaultDate,
                 inline: true,
                 onDayCreate: function (dObj, dStr, fp, dayElem) {
-                    var d = dayElem.dateObj;
-                    var dateStr =
-                        d.getFullYear() +
-                        '-' +
-                        String(d.getMonth() + 1).padStart(2, '0') +
-                        '-' +
-                        String(d.getDate()).padStart(2, '0');
+                    var dateStr = _toISODate(dayElem.dateObj);
 
                     if (hasDataDates.indexOf(dateStr) !== -1) {
                         dayElem.classList.add('-has-data-');
+                    }
+                    if (hasMultipleMap[dateStr] && hasMultipleMap[dateStr].length > 1) {
+                        dayElem.classList.add('-has-multiple-');
                     }
                     if (dateStr === currentIssueDateStr) {
                         dayElem.classList.add('-current-issue-');
                     }
                 },
-                onChange: function (selectedDates) {
+                onChange: function (selectedDates, dStr, fp) {
                     if (!selectedDates || !selectedDates.length) return;
-                    var d = selectedDates[0];
-                    var dateStr =
-                        d.getFullYear() +
-                        '-' +
-                        String(d.getMonth() + 1).padStart(2, '0') +
-                        '-' +
-                        String(d.getDate()).padStart(2, '0');
+                    var dateStr = _toISODate(selectedDates[0]);
 
                     if (hasDataDates.indexOf(dateStr) !== -1 && onDayClickCb) {
-                        onDayClickCb(dateStr, d);
+                        var dayElem = fp.days.querySelector(
+                            '.flatpickr-day.selected:not(.prevMonthDay):not(.nextMonthDay)'
+                        );
+                        onDayClickCb(dateStr, selectedDates[0], dayElem);
                     }
                 },
-            });
+            };
 
-            delete config.hasDataDates;
-            delete config.currentIssueDate;
-            delete config.onDayClick;
+            if (opts.onYearChange) fpOpts.onYearChange = opts.onYearChange;
 
-            return this.create(containerEl, config);
+            return this.create(containerEl, fpOpts);
         },
+
+        // -- Auto-initialization ----------------------------------------------
 
         init: function () {
             var self = this;
@@ -357,6 +444,8 @@ var viewerJS = (function (viewer) {
                 });
         },
 
+        // -- Lifecycle --------------------------------------------------------
+
         destroy: function (instance) {
             if (instance && instance.destroy) {
                 instance.destroy();
@@ -379,3 +468,7 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {});
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

@@ -1,12 +1,13 @@
 /* ==============================================================
    Widget Calendar
-   style declarations for widget_calendar.xhtml
+   Inline calendar for newspaper/periodical sidebar.
+   Custom properties (--wc-*) defined in core-defaults.less,
+   overridable via theme mixins (.mx-theme-light / .mx-theme-dark).
    ==============================================================*/
 .widget-calendar {
-    overflow: hidden;
-
     &__body {
         padding: 0;
+        position: relative;
 
         .flatpickr-calendar {
             width: 100%;
@@ -17,14 +18,8 @@
             top: 0;
         }
 
-        .flatpickr-innerContainer {
-            width: 100%;
-        }
-
-        .flatpickr-rContainer {
-            width: 100%;
-        }
-
+        .flatpickr-innerContainer,
+        .flatpickr-rContainer,
         .flatpickr-days {
             width: 100%;
         }
@@ -33,6 +28,47 @@
             width: 100%;
             max-width: 100%;
             min-width: 100%;
+        }
+
+        .flatpickr-day.-has-multiple-::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: var(--wc-dot-size);
+            height: var(--wc-dot-size);
+            border-radius: 50%;
+            background-color: var(--wc-dot-color);
+        }
+    }
+
+    &__popover {
+        position: fixed;
+        z-index: 1050;
+        min-width: var(--wc-popover-min-width);
+        max-width: calc(100vw - 8px);
+        padding: 4px 0;
+        background: var(--wc-popover-bg);
+        border: 1px solid var(--wc-popover-border);
+        border-radius: var(--wc-popover-radius);
+        box-shadow: var(--wc-popover-shadow);
+    }
+
+    &__popover-item {
+        display: block;
+        padding: var(--wc-popover-item-padding);
+        font-size: var(--wc-popover-font-size);
+        color: var(--wc-popover-item-color);
+        text-decoration: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover {
+            background-color: var(--wc-popover-item-hover-bg);
+            color: var(--wc-popover-item-hover-color);
+            text-decoration: none;
         }
     }
 }

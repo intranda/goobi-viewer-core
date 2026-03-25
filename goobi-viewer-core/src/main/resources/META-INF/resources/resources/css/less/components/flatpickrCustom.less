@@ -10,7 +10,6 @@
     box-shadow:
         0 4px 16px rgba(0, 0, 0, 0.1),
         0 1px 3px rgba(0, 0, 0, 0.06);
-    overflow: hidden;
 }
 
 /* Header */
@@ -18,6 +17,13 @@
     background-color: @datepicker-header-bg;
     padding: 4px 0;
     position: relative;
+
+    .flatpickr-month {
+    }
+}
+
+.flatpickr-current-month {
+    line-height: 1.3;
 }
 
 .flatpickr-current-month,
@@ -203,6 +209,11 @@ span.flatpickr-weekday {
         color: @datepicker-day-selected-fg;
         font-weight: 700;
     }
+}
+
+/* Hide 6th week row when all days belong to next month */
+.dayContainer.--hide-last-row .flatpickr-day:nth-child(n + 36) {
+    display: none;
 }
 
 /* Datepicker input wrapper — shared component */
