@@ -22,6 +22,7 @@
 package io.goobi.viewer.api.rest.v1.records;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CALENDAR;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CALENDAR_MONTHS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CALENDAR_YEAR;
 
 import java.time.LocalDate;
@@ -31,6 +32,8 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONArray;
@@ -143,6 +146,62 @@ public class CalendarResource {
         }
 
         return Response.ok(jsonArray.toString(), MediaType.APPLICATION_JSON).build();
+    }
+
+    /**
+     * Returns all year-month combinations that have calendar entries for this record as a sorted JSON array
+     * of "YYYY-MM" strings. Uses Solr facet query on the YEARMONTH field — no documents loaded, just facet counts.
+     *
+     * @return JSON array of "YYYY-MM" strings
+     * @throws PresentationException if any.
+     * @throws IndexUnreachableException if any.
+     * @should return sorted year-month list
+     * @should return 404 if pi not found
+     */
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_CALENDAR_MONTHS)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records" }, summary = "Get all year-month combinations that have calendar entries")
+    public Response getAvailableMonths() throws PresentationException, IndexUnreachableException {
+        logger.trace("getAvailableMonths: {}", pi);
+
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc("+" + SolrConstants.PI + ":\"" + pi + "\"",
+                        List.of(SolrConstants.ISANCHOR, SolrConstants.DOCTYPE, SolrConstants.GROUPTYPE));
+        if (doc == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Record not found: " + pi).build();
+        }
+
+        String piField;
+        if (SolrTools.isAnchor(doc)) {
+            piField = SolrConstants.PI_ANCHOR;
+        } else if (SolrTools.isGroup(doc)) {
+            piField = SolrTools.getSingleFieldStringValue(doc, SolrConstants.GROUPTYPE);
+        } else {
+            piField = SolrConstants.PI_TOPSTRUCT;
+        }
+        String query = "+" + piField + ":\"" + pi + "\" +" + SolrConstants.CALENDAR_DAY + ":*";
+
+        QueryResponse qr = DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(query, null, List.of(SolrConstants.CALENDAR_MONTH), 1, false);
+
+        JSONArray months = new JSONArray();
+        FacetField facetField = qr.getFacetField(SolrConstants.CALENDAR_MONTH);
+        if (facetField != null) {
+            List<String> sorted = facetField.getValues().stream()
+                    .map(FacetField.Count::getName)
+                    .sorted()
+                    .toList();
+            for (String ym : sorted) {
+                if (ym.length() == 6) {
+                    months.put(ym.substring(0, 4) + "-" + ym.substring(4));
+                }
+            }
+        }
+
+        return Response.ok(months.toString(), MediaType.APPLICATION_JSON).build();
     }
 
     /**

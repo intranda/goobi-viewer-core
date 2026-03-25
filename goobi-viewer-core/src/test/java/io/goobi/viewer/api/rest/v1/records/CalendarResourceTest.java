@@ -22,6 +22,7 @@
 package io.goobi.viewer.api.rest.v1.records;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CALENDAR;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CALENDAR_MONTHS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CALENDAR_YEAR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -98,6 +99,60 @@ class CalendarResourceTest extends AbstractRestApiTest {
     @Test
     void getCalendarEntries_shouldReturn404IfPiNotFound() {
         String url = urls.path(RECORDS_CALENDAR, RECORDS_CALENDAR_YEAR).params("NONEXISTENT_PI", YEAR).build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(404, response.getStatus(), "Should return status 404 for unknown PI");
+        }
+    }
+
+    /**
+     * @see CalendarResource#getAvailableMonths()
+     * @verifies return sorted year-month list
+     */
+    @Test
+    void getAvailableMonths_shouldReturnSortedYearMonthList() {
+        String url = urls.path(RECORDS_CALENDAR, RECORDS_CALENDAR_MONTHS).params(PI).build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            String entity = response.readEntity(String.class);
+            assertNotNull(entity);
+
+            JSONArray months = new JSONArray(entity);
+            assertTrue(months.length() > 0, "Should return at least one month");
+
+            // Verify format and sorting
+            String prev = "";
+            for (int i = 0; i < months.length(); i++) {
+                String ym = months.getString(i);
+                assertTrue(ym.matches("\\d{4}-\\d{2}"), "Should be YYYY-MM format: " + ym);
+                assertTrue(ym.compareTo(prev) > 0, "Should be sorted: " + prev + " < " + ym);
+                prev = ym;
+            }
+
+            // Verify known months exist (1823 data)
+            boolean hasJan1823 = false;
+            for (int i = 0; i < months.length(); i++) {
+                if ("1823-01".equals(months.getString(i))) {
+                    hasJan1823 = true;
+                    break;
+                }
+            }
+            assertTrue(hasJan1823, "Should contain 1823-01");
+        }
+    }
+
+    /**
+     * @see CalendarResource#getAvailableMonths()
+     * @verifies return 404 if pi not found
+     */
+    @Test
+    void getAvailableMonths_shouldReturn404IfPiNotFound() {
+        String url = urls.path(RECORDS_CALENDAR, RECORDS_CALENDAR_MONTHS).params("NONEXISTENT_PI").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
