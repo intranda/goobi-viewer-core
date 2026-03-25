@@ -111,6 +111,8 @@ public class SolrSearchIndex implements java.io.Closeable {
      * Usually boolean fields should not be part of the solr field list. In case one needs them, they are listed here
      */
     private List<String> booleanSolrFields = null;
+    /** Cached list of sort field names (SORT_* / SORTNUM_*) loaded via Luke request */
+    private List<String> sortFieldNames = null;
 
     /**
      * <p>
@@ -140,7 +142,10 @@ public class SolrSearchIndex implements java.io.Closeable {
             // Re-init Solr client if the configured Solr URL has been changed
             logger.info("Solr URL has changed, re-initializing Solr client...");
             synchronized (this) {
-                solrFields = null; // Reset available Solr field name list
+                // Reset all cached Solr field lists so they are reloaded from the new client
+                solrFields = null;
+                booleanSolrFields = null;
+                sortFieldNames = null;
                 try {
                     client.close();
                 } catch (IOException e) {
@@ -155,6 +160,10 @@ public class SolrSearchIndex implements java.io.Closeable {
             } catch (IOException | SolrServerException e) {
                 logger.warn("HTTP client was closed, re-initializing Solr client...");
                 synchronized (this) {
+                    // Reset all cached Solr field lists so they are reloaded from the new client
+                    solrFields = null;
+                    booleanSolrFields = null;
+                    sortFieldNames = null;
                     try {
                         client.close();
                     } catch (IOException e1) {
@@ -688,6 +697,8 @@ public class SolrSearchIndex implements java.io.Closeable {
         logger.trace("getIdentifierFromIddoc: {}", iddoc);
         SolrQuery solrQuery = new SolrQuery(new StringBuilder(SolrConstants.IDDOC).append(":").append(iddoc).toString());
         solrQuery.setRows(1);
+        // Only request the PI field to avoid fetching all document fields unnecessarily
+        solrQuery.setFields(SolrConstants.PI);
         try {
             QueryResponse resp = client.query(solrQuery);
             if (resp.getResults().getNumFound() > 0) {
@@ -1066,6 +1077,11 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @throws java.io.IOException if any.
      */
     public List<String> getAllSortFieldNames() throws SolrServerException, IOException {
+        // Return cached list to avoid repeated Luke requests on every call
+        if (this.sortFieldNames != null) {
+            return this.sortFieldNames;
+        }
+
         LukeRequest lukeRequest = new LukeRequest();
         lukeRequest.setNumTerms(0);
         LukeResponse lukeResponse = lukeRequest.process(client);
@@ -1087,7 +1103,8 @@ public class SolrSearchIndex implements java.io.Closeable {
             }
         }
 
-        return list;
+        this.sortFieldNames = list;
+        return this.sortFieldNames;
     }
 
     /**

@@ -296,6 +296,30 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals("Gottlob Heinrich", result.get("MD_AUTHOR:Heinse, Gottlob Heinrich"));
     }
 
+    /**
+     * @see SolrSearchIndex#getAllSortFieldNames()
+     * @verifies return non-empty list
+     */
+    @Test
+    void getAllSortFieldNames_shouldReturnNonEmptyList() throws Exception {
+        List<String> fields = DataManager.getInstance().getSearchIndex().getAllSortFieldNames();
+        Assertions.assertNotNull(fields);
+        Assertions.assertFalse(fields.isEmpty());
+    }
+
+    /**
+     * @see SolrSearchIndex#getAllSortFieldNames()
+     * @verifies return cached list on second call
+     */
+    @Test
+    void getAllSortFieldNames_shouldReturnCachedListOnSecondCall() throws Exception {
+        SolrSearchIndex searchIndex = DataManager.getInstance().getSearchIndex();
+        List<String> first = searchIndex.getAllSortFieldNames();
+        List<String> second = searchIndex.getAllSortFieldNames();
+        // Must be the exact same object to confirm caching (no new Luke request)
+        Assertions.assertSame(first, second);
+    }
+
     @Test
     void test_getHeatMap() throws IndexUnreachableException {
 
