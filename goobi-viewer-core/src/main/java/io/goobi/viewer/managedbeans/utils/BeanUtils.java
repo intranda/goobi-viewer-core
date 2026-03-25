@@ -291,8 +291,8 @@ public final class BeanUtils {
             if (ret != null) {
                 return ret;
             }
-        } catch (IllegalStateException e) {
-            //
+        } catch (IllegalStateException | IndexOutOfBoundsException e) {
+            // CDI container not available or already shut down (Weld may throw IndexOutOfBoundsException during shutdown)
         }
         // Via FacesContext
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext().getContext() != null) {
