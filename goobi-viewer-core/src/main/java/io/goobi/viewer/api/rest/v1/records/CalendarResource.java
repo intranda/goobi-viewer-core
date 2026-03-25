@@ -23,7 +23,7 @@ package io.goobi.viewer.api.rest.v1.records;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CALENDAR;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CALENDAR_MONTHS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CALENDAR_YEAR;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CALENDAR_YEAR_REGEX;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -88,7 +88,7 @@ public class CalendarResource {
      * @should return 404 if pi not found
      */
     @GET
-    @jakarta.ws.rs.Path(RECORDS_CALENDAR_YEAR)
+    @jakarta.ws.rs.Path(RECORDS_CALENDAR_YEAR_REGEX)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get calendar entries for a record and year")
     public Response getCalendarEntries(
