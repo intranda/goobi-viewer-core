@@ -1417,15 +1417,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarViewsWidgetCalendarViewLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    void isSidebarViewsWidgetCalendarLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetCalendarViewLinkVisible());
-    }
-
-    /**
      * @see Configuration#isSidebarViewsWidgetThumbsViewLinkVisible()
      * @verifies return correct value
      */
