@@ -131,6 +131,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Add a new bookmark list for the current user.")
+    @ApiResponse(responseCode = "200", description = "Bookmark list created successfully")
     @ApiResponse(responseCode = "400", description = "Not logged in, so no bookmark lists may be added")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public SuccessMessage addBookmarkList(BookmarkList list) throws DAOException, IOException, RestApiException, IllegalRequestException {
@@ -202,6 +203,8 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Add bookmark to list. Only pi, LogId and order are used")
+    @ApiResponse(responseCode = "200", description = "The updated bookmark list including the newly added item")
+    @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList addItemToBookmarkList(
             @Parameter(description = "The id of the bookmark list.") @PathParam("listId") Long id,

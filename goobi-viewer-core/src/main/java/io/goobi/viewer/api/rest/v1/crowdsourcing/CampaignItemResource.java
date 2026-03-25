@@ -67,6 +67,9 @@ import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -145,7 +148,11 @@ public class CampaignItemResource {
     @Path("/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public CampaignItem getItemForManifest(@PathParam("pi") final String persistentIdentifier, @Context HttpServletRequest servletRequest)
+    @Operation(tags = { "crowdsourcing" }, summary = "Get the campaign item for a given campaign and record")
+    @ApiResponse(responseCode = "200", description = "Campaign item containing questions and status information")
+    @ApiResponse(responseCode = "404", description = "Campaign or record not found for the given identifiers")
+    public CampaignItem getItemForManifest(@Parameter(description = "Record persistent identifier") @PathParam("pi") final String persistentIdentifier,
+            @Context HttpServletRequest servletRequest)
             throws URISyntaxException, DAOException, ContentNotFoundException {
         if (persistentIdentifier == null) {
             return null;
@@ -215,7 +222,12 @@ public class CampaignItemResource {
     @Path("/{pi}/{page}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void setItemForManifest(CampaignItem item, @PathParam("pi") final String persistentIdentifier, @PathParam("page") int page)
+    @Operation(tags = { "crowdsourcing" }, summary = "Set the crowdsourcing status for a given campaign, record and page")
+    @ApiResponse(responseCode = "204", description = "Status updated successfully")
+    @ApiResponse(responseCode = "400", description = "Item or status is missing from the request body")
+    public void setItemForManifest(CampaignItem item,
+            @Parameter(description = "Record persistent identifier") @PathParam("pi") final String persistentIdentifier,
+            @Parameter(description = "Page order number") @PathParam("page") int page)
             throws DAOException {
         if (item == null) {
             throw new IllegalArgumentException("item may not be null");
@@ -343,7 +355,10 @@ public class CampaignItemResource {
     @Path("/{pi}/annotations")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public List<WebAnnotation> getAnnotationsForManifest(@PathParam("pi") final String pi, @Context HttpServletRequest request)
+    @Operation(tags = { "crowdsourcing", "annotations" }, summary = "Get all annotations for a given campaign and record")
+    @ApiResponse(responseCode = "200", description = "List of W3C Web Annotations for the given campaign and record")
+    public List<WebAnnotation> getAnnotationsForManifest(
+            @Parameter(description = "Record persistent identifier") @PathParam("pi") final String pi, @Context HttpServletRequest request)
             throws URISyntaxException, DAOException {
         // logger.debug("getAnnotationsForManifest: {}", pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
@@ -374,7 +389,11 @@ public class CampaignItemResource {
     @Path("/{pi}/annotations")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void setAnnotationsForManifest(List<AnnotationPage> pages, @PathParam("pi") final String pi)
+    @Operation(tags = { "crowdsourcing", "annotations" },
+            summary = "Replace all annotations for a given campaign and record with the ones provided in the request body")
+    @ApiResponse(responseCode = "204", description = "Annotations updated successfully")
+    public void setAnnotationsForManifest(List<AnnotationPage> pages,
+            @Parameter(description = "Record persistent identifier") @PathParam("pi") final String pi)
             throws URISyntaxException, DAOException {
         // logger.debug("setAnnotationsForManifest: {}", pi);
         IDAO dao = DataManager.getInstance().getDao();

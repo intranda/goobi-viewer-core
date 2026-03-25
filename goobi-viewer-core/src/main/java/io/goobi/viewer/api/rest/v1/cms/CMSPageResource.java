@@ -34,6 +34,9 @@ import io.goobi.viewer.api.rest.model.ViewerPage;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Return basic information about cms pages. Used for sliders
@@ -50,12 +53,15 @@ public class CMSPageResource {
 
     private final CMSPage page;
 
-    public CMSPageResource(@PathParam("pageId") Long pageId) throws DAOException {
+    public CMSPageResource(@Parameter(description = "CMS page id") @PathParam("pageId") Long pageId) throws DAOException {
         this.page = DataManager.getInstance().getDao().getCMSPage(pageId);
     }
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "cms" }, summary = "Get basic information about a CMS page by its id")
+    @ApiResponse(responseCode = "200", description = "Basic information about the CMS page")
+    @ApiResponse(responseCode = "404", description = "No CMS page found for the given id")
     public ViewerPage getPage() {
         return new ViewerPage(page);
     }

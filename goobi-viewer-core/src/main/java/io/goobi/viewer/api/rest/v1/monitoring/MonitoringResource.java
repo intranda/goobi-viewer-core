@@ -43,6 +43,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -72,6 +73,7 @@ public class MonitoringResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Checks and reports the availability of relevant data providing services", tags = { "monitoring" })
+    @ApiResponse(responseCode = "200", description = "Status report for all monitored services (Solr, database, message queue). Individual service errors are reported within the response body, not as HTTP error codes")
     public MonitoringStatus checkServices() {
         logger.trace("checkServices");
         MonitoringStatus ret = new MonitoringStatus();

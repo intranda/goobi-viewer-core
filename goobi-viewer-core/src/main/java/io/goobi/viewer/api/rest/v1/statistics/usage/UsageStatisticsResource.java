@@ -57,6 +57,7 @@ import io.goobi.viewer.model.statistics.usage.StatisticsSummaryBuilder;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummaryFilter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Class for retrieving usage statistics for a day or a range of days.
@@ -84,6 +85,8 @@ public class UsageStatisticsResource {
     @jakarta.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, StringConstants.MIMETYPE_TEXT_CSV })
     @Operation(summary = "Get usage statistics for a single day", tags = { "statistics" })
+    @ApiResponse(responseCode = "200", description = "Usage statistics for the given day")
+    @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     public Response getStatisticsForDay(
             @Parameter(description = "date to observe, in format yyyy-mm-dd") @PathParam("date") String date,
             @Parameter(description = "additional Solr query to filter records which should be counted."
@@ -118,6 +121,9 @@ public class UsageStatisticsResource {
     @jakarta.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE_RANGE)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, StringConstants.MIMETYPE_TEXT_CSV })
     @Operation(summary = "Get a list of usage statistics for a time frame", tags = { "statistics" })
+    @ApiResponse(responseCode = "200", description = "Usage statistics for the given time frame")
+    @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
+    @ApiResponse(responseCode = "416", description = "The requested date range is invalid (end date before start date)")
     public Response getStatisticsListForDates(
             @Parameter(description = "first date to observer, in format yyyy-mm-dd") @PathParam("startDate") String start,
             @Parameter(description = "last date to observer, in format yyyy-mm-dd") @PathParam("endDate") String end,

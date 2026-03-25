@@ -34,6 +34,8 @@ import jakarta.ws.rs.core.MediaType;
 import de.intranda.monitoring.timer.TimingStatistics;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
 import io.goobi.viewer.controller.DataManager;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -48,6 +50,8 @@ public class ApplicationResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get basic information about this REST API", tags = { "application" })
+    @ApiResponse(responseCode = "200", description = "API name, version and link to OpenAPI specification")
     public ApiInfo getApiInfo() {
         return new ApiInfo("Goobi viewer REST API", "v1", urls.getApiUrl() + "/openapi.json");
     }
