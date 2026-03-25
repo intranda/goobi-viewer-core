@@ -81,6 +81,7 @@ public class CalendarResource {
      * @throws PresentationException if any.
      * @throws IndexUnreachableException if any.
      * @should return all issues for given pi and year
+     * @should return all issues for given group pi and year
      * @should return 404 if pi not found
      */
     @GET
@@ -92,17 +93,29 @@ public class CalendarResource {
             throws PresentationException, IndexUnreachableException {
         logger.trace("getCalendarEntries: {}/{}", pi, year);
 
-        // Look up the PI document to determine whether it is an anchor
+        // Look up the PI document to determine whether it is an anchor or group
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
-                .getFirstDoc("+" + SolrConstants.PI + ":\"" + pi + "\"", List.of(SolrConstants.ISANCHOR));
+                .getFirstDoc("+" + SolrConstants.PI + ":\"" + pi + "\"",
+                        List.of(SolrConstants.ISANCHOR, SolrConstants.DOCTYPE, SolrConstants.GROUPTYPE));
         if (doc == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Record not found: " + pi).build();
         }
 
-        // Build query depending on anchor status
-        String piField = SolrTools.isAnchor(doc) ? SolrConstants.PI_ANCHOR : SolrConstants.PI_TOPSTRUCT;
+        // Build query depending on record type (anchor, group, or regular)
+        logger.debug("Record lookup for PI {}: isAnchor={}, DOCTYPE={}, GROUPTYPE={}",
+                pi, doc.getFieldValue(SolrConstants.ISANCHOR), doc.getFieldValue(SolrConstants.DOCTYPE),
+                doc.getFieldValue(SolrConstants.GROUPTYPE));
+        String piField;
+        if (SolrTools.isAnchor(doc)) {
+            piField = SolrConstants.PI_ANCHOR;
+        } else if (SolrTools.isGroup(doc)) {
+            piField = SolrTools.getSingleFieldStringValue(doc, SolrConstants.GROUPTYPE);
+        } else {
+            piField = SolrConstants.PI_TOPSTRUCT;
+        }
         String query = "+" + piField + ":\"" + pi + "\" +" + SolrConstants.YEAR + ":\"" + year + "\" +" + SolrConstants.CALENDAR_DAY + ":*";
+        logger.debug("Calendar query: {}", query);
 
         List<String> fieldList = List.of(
                 SolrConstants.PI_TOPSTRUCT,
