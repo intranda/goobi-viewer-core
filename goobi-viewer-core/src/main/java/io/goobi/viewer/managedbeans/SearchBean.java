@@ -185,6 +185,8 @@ public class SearchBean implements SearchInterface, Serializable {
     private SearchSortingOption searchSortingOption;
     /** Keep lists of select values, once generated, for performance reasons. */
     private final Map<String, List<StringPair>> advancedSearchSelectItems = new HashMap<>();
+    /** PI of the record from which the search was triggered (for back-link to TOC view). Null if not searching within a record. */
+    private String searchInRecordPi;
     /** Group of query item clusters for the advanced search. */
     private SearchQueryGroup advancedSearchQueryGroup =
             new SearchQueryGroup(
@@ -538,6 +540,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void resetSearchParameters(boolean resetAllSearchTypes, boolean resetCurrentPage) {
         logger.trace("resetSearchParameters; resetAllSearchTypes: {}", resetAllSearchTypes);
+        this.searchInRecordPi = null;
         CalendarBean calendarBean = BeanUtils.getCalendarBean();
         if (resetAllSearchTypes) {
             resetSimpleSearchParameters();
@@ -1065,6 +1068,14 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public int getActiveSearchType() {
         return activeSearchType;
+    }
+
+    /**
+     * @return the PI of the record from which the search was triggered, or null
+     */
+    public String getSearchInRecordPi() {
+        logger.trace("getSearchInRecordPi: {}", searchInRecordPi);
+        return searchInRecordPi;
     }
 
     /** {@inheritDoc} */
@@ -3042,6 +3053,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String searchInRecord(String piField, String piValue, String date1, String date2) {
         logger.trace("searchInRecord: {}:{}", piField, piValue);
+        this.searchInRecordPi = piValue;
         // reset all items except those containing values from the search input fields
         int index = 0;
         for (SearchQueryItem item : this.advancedSearchQueryGroup.getQueryItems()) {

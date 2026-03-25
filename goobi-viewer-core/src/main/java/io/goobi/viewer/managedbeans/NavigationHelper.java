@@ -1175,9 +1175,11 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Calendar view has been retired; use <code>getTocUrl()</code>
      */
+    @Deprecated(since = "26.03")
     public String getCalendarUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewCalendar.getName();
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewToc.getName();
     }
 
     /**
@@ -1186,9 +1188,11 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Calendar view has been retired; use <code>getTocActiveUrl()</code>
      */
+    @Deprecated(since = "26.03")
     public String getCalendarActiveUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewCalendar.getName();
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewToc.getName();
     }
 
     /**

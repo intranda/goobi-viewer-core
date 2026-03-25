@@ -52,7 +52,6 @@ public enum PageType {
     viewFulltext("fulltext"),
     viewFullscreen("fullscreen"),
     viewObject("object"),
-    viewCalendar("calendar"),
     viewMei("mei"),
     searchlist("searchlist", "search"),
     searchCalendar("searchcalendar", "searchCalendar"),
@@ -250,7 +249,6 @@ public enum PageType {
                 case editContent:
                 case editHistory:
                 case editOcr:
-                case viewCalendar:
                 case viewFullscreen:
                 case viewFulltext:
                 case viewImage:
@@ -281,7 +279,6 @@ public enum PageType {
                 case editContent:
                 case editHistory:
                 case editOcr:
-                case viewCalendar:
                 case viewFullscreen:
                 case viewFulltext:
                 case viewImage:

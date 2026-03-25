@@ -455,7 +455,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     public String getUrl(final PageType pageType) {
         PageType usePageType = pageType;
         // Only viewToc, viewMetadata and viewCalendar are allowed for anchors
-        if (anchor && usePageType != PageType.viewMetadata && usePageType != PageType.viewCalendar) {
+        if (anchor && usePageType != PageType.viewMetadata) {
             usePageType = PageType.viewToc;
         }
 

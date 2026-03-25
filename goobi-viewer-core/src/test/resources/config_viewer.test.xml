@@ -1044,7 +1044,6 @@
         
             <widget name="views">
                 <fulltext enabled="false" />
-                <calendar enabled="falsE" />
                 <metadata enabled="false" />
                 <object enabled="false" />
                 <opac enabled="true" />
