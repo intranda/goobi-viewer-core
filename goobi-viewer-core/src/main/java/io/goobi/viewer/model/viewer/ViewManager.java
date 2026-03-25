@@ -336,17 +336,21 @@ public class ViewManager implements Serializable {
     public CalendarView createCalendarView() throws IndexUnreachableException, PresentationException {
         // Init calendar view
         String anchorPi = null;
+        String anchorField = topStructElement.isVolume() ? SolrConstants.PI_ANCHOR : topStructElement.getGroupIdField();
         if (anchorStructElement != null) {
             anchorPi = anchorStructElement.getPi();
         } else if (topStructElement.isAnchor() || topStructElement.isGroup()) {
             anchorPi = pi;
         } else if (topStructElement.isGroupMember()) {
-            anchorPi = topStructElement.getGroupMemberships().get(topStructElement.getGroupIdField());
+            // For group members, GROUPTYPE is only on the GROUP doc, not on issues.
+            // Use the groupMemberships map key as the field name and its value as the anchor PI.
+            Map.Entry<String, String> groupEntry = topStructElement.getGroupMemberships().entrySet().iterator().next();
+            anchorField = groupEntry.getKey();
+            anchorPi = groupEntry.getValue();
         }
-        String anchorField = topStructElement.isVolume() ? SolrConstants.PI_ANCHOR : topStructElement.getGroupIdField();
+        
         return new CalendarView(pi, anchorPi, anchorField,
                 topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
-
     }
 
     /**

@@ -92,6 +92,7 @@ public class CalendarView implements Serializable {
             }
         }
 
+        logger.trace("hits: " + hits + ", volumeyears: " + getVolumeYears().size());
         return hits > 1 || getVolumeYears().size() > 1;
     }
 
@@ -102,7 +103,7 @@ public class CalendarView implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void populateCalendar() throws PresentationException, IndexUnreachableException {
-        if (anchorPi != null && anchorPi.equals(pi)) {
+        if (anchorPi != null && anchorField != null) {
             calendarItems = CalendarBean.populateMonthsWithDays(year, null, " +" + anchorField + ":\"" + anchorPi + "\"");
         } else {
             calendarItems = CalendarBean.populateMonthsWithDays(year, null, " +" + SolrConstants.PI_TOPSTRUCT + ":\"" + pi + "\"");
