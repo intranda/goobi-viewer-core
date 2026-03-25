@@ -163,6 +163,17 @@ public class CalendarView implements Serializable {
     }
 
     /**
+     * Returns the parent identifier used for calendar queries.
+     * For anchor volumes this is the anchor PI, for group members it is the group identifier value
+     * (i.e. the PI of the GROUP document).
+     *
+     * @return the anchorPi
+     */
+    public String getAnchorPi() {
+        return anchorPi;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>calendarItems</code>.
      * </p>
