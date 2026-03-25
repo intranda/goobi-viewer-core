@@ -123,7 +123,7 @@ public class RecordsListResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_LIST_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and filed mapping are configured statically.")
+    @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
     public Response getRecordMetadataAsJson(@PathParam("template") String template) throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}", template);
         if (template == null) {

@@ -145,7 +145,7 @@ public class ClientApplicationsResource {
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given clientIdentifier was found in database")
-    @ApiResponse(responseCode = "500", description = "In interal error occured")
+    @ApiResponse(responseCode = "500", description = "An internal error occurred")
     public ClientApplication setClient(
             @PathParam("id") @Parameter(description = "client identifier") String clientIdentifier,
             ClientApplication update) throws DAOException, ContentNotFoundException {
@@ -181,7 +181,7 @@ public class ClientApplicationsResource {
             description = "Clients are returned as json objects. Requires an access token in the query paramter or header field 'token'.")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
-    @ApiResponse(responseCode = "500", description = "In interal error occured")
+    @ApiResponse(responseCode = "500", description = "An internal error occurred")
     public List<ClientApplication> getAllClients() throws DAOException {
         return dao.getAllClientApplications().stream().filter(clientManager::isNotAllClients).collect(Collectors.toList());
     }
@@ -203,7 +203,7 @@ public class ClientApplicationsResource {
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given 'id' was found in database")
-    @ApiResponse(responseCode = "500", description = "In interal error occured")
+    @ApiResponse(responseCode = "500", description = "An internal error occurred")
     public ClientApplication getClient(@PathParam("id") @Parameter(description = "client identifier") String clientIdentifier)
             throws DAOException, ContentNotFoundException {
         ClientApplication client = dao.getClientApplicationByClientId(clientIdentifier);

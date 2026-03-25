@@ -86,7 +86,7 @@ public class UsageStatisticsResource {
     @Operation(summary = "Get usage statistics for a single day", tags = { "statistics" })
     public Response getStatisticsForDay(
             @Parameter(description = "date to observe, in format yyyy-mm-dd") @PathParam("date") String date,
-            @Parameter(description = "additional SOLR query to filter records which should be counted. "
+            @Parameter(description = "additional Solr query to filter records which should be counted."
                     + "Only requests to records matching the query will be counted") @QueryParam("recordFilterQuery") String recordFilterQuery,
             @Parameter(description = "the format in which to return the data. May be json, text or csv."
                     + " Default is json") @QueryParam("format") final String inFormat)
@@ -121,7 +121,7 @@ public class UsageStatisticsResource {
     public Response getStatisticsListForDates(
             @Parameter(description = "first date to observer, in format yyyy-mm-dd") @PathParam("startDate") String start,
             @Parameter(description = "last date to observer, in format yyyy-mm-dd") @PathParam("endDate") String end,
-            @Parameter(description = "additional SOLR query to filter records which should be counted. "
+            @Parameter(description = "additional Solr query to filter records which should be counted."
                     + "Only requests to records matching the query will be counted") @QueryParam("recordFilterQuery") String recordFilterQuery,
             @Parameter(description = "the format in which to return the data. May be json, text or csv."
                     + " Default is json") @QueryParam("format") final String inFormat,

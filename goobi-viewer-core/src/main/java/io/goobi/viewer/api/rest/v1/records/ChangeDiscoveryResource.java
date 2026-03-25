@@ -88,10 +88,10 @@ public class ChangeDiscoveryResource {
             tags = { "records", "iiif" },
             summary = "Get a IIIF change discovery activity stream of all record changes")
     @ApiResponse(responseCode = "200", description = "Return activity stream according to IIIF change discovery specification")
-    @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")
+    @ApiResponse(responseCode = "500", description = "An internal error occurred, possibly due to an unreachable Solr index")
     public OrderedCollection<Activity> getAllChanges(
             @Parameter(description = "Optional date in the form 'yyyy-MM-dd' of the oldest changes to return") @QueryParam("start") String startDate,
-            @Parameter(description = "Optional SOLR query to filter results") @QueryParam("filter") String filterQuery)
+            @Parameter(description = "Optional Solr query to filter results") @QueryParam("filter") String filterQuery)
             throws PresentationException, IndexUnreachableException {
         ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager, DataManager.getInstance().getSearchIndex(),
                 DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage());
@@ -125,7 +125,7 @@ public class ChangeDiscoveryResource {
     public OrderedCollectionPage<Activity> getPage(
             @Parameter(description = "page order within the collection of activities") @PathParam("pageNo") int pageNo,
             @Parameter(description = "Optional date in the form 'yyyy-MM-dd' of the oldest changes to return") @QueryParam("start") String startDate,
-            @Parameter(description = "Optional SOLR query to filter results") @QueryParam("filter") String filterQuery)
+            @Parameter(description = "Optional Solr query to filter results") @QueryParam("filter") String filterQuery)
             throws PresentationException, IndexUnreachableException {
         ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager, DataManager.getInstance().getSearchIndex(),
                 DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage());

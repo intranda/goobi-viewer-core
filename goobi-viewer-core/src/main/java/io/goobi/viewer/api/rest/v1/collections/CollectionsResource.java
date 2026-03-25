@@ -72,7 +72,7 @@ public class CollectionsResource {
     private ApiUrls urls;
 
     public CollectionsResource(
-            @Parameter(description = "Name of the SOLR field the collection is based on. Typically 'DC'") @PathParam("field") String solrField,
+            @Parameter(description = "Name of the Solr field the collection is based on. Typically 'DC'") @PathParam("field") String solrField,
             @Context HttpServletRequest request) {
         this.solrField = solrField.toUpperCase();
         this.request = request;
@@ -107,7 +107,7 @@ public class CollectionsResource {
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF Presentation 2.1.1 collection")
     @ApiResponse(responseCode = "400", description = "Invalid collection name or field")
     public Collection2 getCollection(
-            @Parameter(description = "Name of the collection. Must be a value of the SOLR field the collection is based on") 
+            @Parameter(description = "Name of the collection. Must be a value of the Solr field the collection is based on") 
             @PathParam("collection") final String inCollectionName,
             @Parameter(description = "Add values of this field to response to allow grouping of results") 
             @QueryParam("grouping") String grouping,

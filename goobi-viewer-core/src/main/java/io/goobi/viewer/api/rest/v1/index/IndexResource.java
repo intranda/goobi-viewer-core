@@ -141,7 +141,7 @@ public class IndexResource {
             tags = { "index" },
             summary = "Statistics about indexed records")
     public String getStatistics(
-            @Parameter(description = "SOLR Query to filter results (optional)") @QueryParam("query") final String query)
+            @Parameter(description = "Solr query to filter results (optional)") @QueryParam("query") final String query)
             throws IndexUnreachableException, PresentationException {
 
         String useQuery = query;
@@ -175,7 +175,7 @@ public class IndexResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "index" },
-            summary = "Post a query directly the SOLR index")
+            summary = "Post a query directly to the Solr index")
     @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
     public String getRecordsForQuery(RecordsRequestParameters params)
             throws IndexUnreachableException, ViewerConfigurationException, DAOException, IllegalRequestException {
@@ -240,11 +240,11 @@ public class IndexResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "index" },
-            summary = "Post a streaming expression to the SOLR index and forward its response")
+            summary = "Post a streaming expression to the Solr index and forward its response")
     @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
     @ApiResponse(responseCode = "500", description = "Solr not available or unable to respond")
     public StreamingOutput stream(
-            @Schema(description = "Raw SOLR streaming expression",
+            @Schema(description = "Raw Solr streaming expression",
                     example = "search(current,q=\"+ISANCHOR:*\", sort=\"YEAR asc\", fl=\"YEAR,PI,DOCTYPE\""
                             + ", rows=5, qt=\"/select\")") String expression) {
         String solrUrl = DataManager.getInstance().getSearchIndex().getSolrServerUrl();
@@ -290,7 +290,7 @@ public class IndexResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Returns a heatmap of geospatial search results", tags = { "index" })
     public String getHeatmap(
-            @Parameter(description = "SOLR field containing spatial coordinates") @PathParam("solrField") String solrField,
+            @Parameter(description = "Solr field containing spatial coordinates") @PathParam("solrField") String solrField,
             @Parameter(description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain"
                     + " the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
@@ -329,13 +329,13 @@ public class IndexResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Returns results of a geospatial search as GeoJson objects", tags = { "index" })
     public String getGeoJsonResuls(
-            @Parameter(description = "SOLR field containing spatial coordinates") @PathParam("solrField") String solrField,
+            @Parameter(description = "Solr field containing spatial coordinates") @PathParam("solrField") String solrField,
             @Parameter(
                     description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain"
                             + " the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
             @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
-            @Parameter(description = "The SOLR field to be used as label for each feature") @QueryParam("labelField") String labelField,
+            @Parameter(description = "The Solr field to be used as label for each feature") @QueryParam("labelField") String labelField,
             @Parameter(description = "The scope of documents to search in. "
                     + "One of 'RECORDS', 'DOCSTRUCTS' and 'METADATA'") @QueryParam("scope") String searchScope)
             throws IndexUnreachableException, PresentationException {
