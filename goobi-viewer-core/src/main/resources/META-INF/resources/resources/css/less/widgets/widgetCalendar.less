@@ -30,6 +30,48 @@
             min-width: 100%;
         }
 
+        .flatpickr-prev-month.-disabled-,
+        .flatpickr-next-month.-disabled- {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .numInputWrapper span.arrowUp,
+        .numInputWrapper span.arrowDown {
+            display: block;
+            cursor: pointer;
+            padding: 0 3px;
+            opacity: 1;
+            border-color: transparent;
+            background: transparent;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+            &.-disabled- {
+                opacity: 0.3;
+                cursor: default;
+
+                &:hover {
+                    background: transparent;
+                }
+            }
+
+            &::after {
+                border-left: 4px solid transparent;
+                border-right: 4px solid transparent;
+            }
+        }
+
+        .numInputWrapper span.arrowUp::after {
+            border-bottom: 4px solid @datepicker-header-fg;
+        }
+
+        .numInputWrapper span.arrowDown::after {
+            border-top: 4px solid @datepicker-header-fg;
+        }
+
         .flatpickr-day.-has-multiple-::after {
             content: '';
             position: absolute;
@@ -39,6 +81,14 @@
             width: var(--wc-dot-size);
             height: var(--wc-dot-size);
             border-radius: 50%;
+            background-color: var(--wc-dot-color);
+        }
+
+        .flatpickr-day.-has-multiple-.-current-issue-::after {
+            background-color: var(--wc-dot-color-on-selected);
+        }
+
+        .flatpickr-day.-has-multiple-.-current-issue-:hover::after {
             background-color: var(--wc-dot-color);
         }
     }
@@ -69,6 +119,11 @@
             background-color: var(--wc-popover-item-hover-bg);
             color: var(--wc-popover-item-hover-color);
             text-decoration: none;
+        }
+
+        &.-active- {
+            font-weight: 700;
+            color: var(--wc-popover-item-hover-color);
         }
     }
 }

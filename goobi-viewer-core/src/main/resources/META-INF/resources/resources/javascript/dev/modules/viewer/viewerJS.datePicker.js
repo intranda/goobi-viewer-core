@@ -308,10 +308,28 @@ var viewerJS = (function (viewer) {
             };
             fpConfig.onReady = _wrapCallback(fpConfig.onReady, hideRow);
             fpConfig.onOpen = _wrapCallback(fpConfig.onOpen, hideRow);
+            fpConfig.onChange = _wrapCallback(fpConfig.onChange, hideRow);
             fpConfig.onMonthChange = _wrapCallback(fpConfig.onMonthChange, hideRow);
             fpConfig.onYearChange = _wrapCallback(fpConfig.onYearChange, hideRow);
 
             var instance = flatpickr(el, fpConfig);
+
+            // Observe DOM changes to reliably hide the 6th week row
+            if (instance.days && typeof MutationObserver !== 'undefined') {
+                var _updating = false;
+                var observer = new MutationObserver(function () {
+                    if (_updating) return;
+                    _updating = true;
+                    _hideExtraWeekRow(instance);
+                    _updating = false;
+                });
+                observer.observe(instance.days, { childList: true, subtree: true });
+                var origDestroy = instance.destroy;
+                instance.destroy = function () {
+                    observer.disconnect();
+                    origDestroy.call(instance);
+                };
+            }
 
             this.instances.push(instance);
             return instance;
@@ -401,6 +419,7 @@ var viewerJS = (function (viewer) {
                 },
             };
 
+            if (opts.onMonthChange) fpOpts.onMonthChange = opts.onMonthChange;
             if (opts.onYearChange) fpOpts.onYearChange = opts.onYearChange;
 
             return this.create(containerEl, fpOpts);
