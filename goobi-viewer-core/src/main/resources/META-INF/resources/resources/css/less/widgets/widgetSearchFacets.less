@@ -140,13 +140,18 @@
     }
     /* COLLAPSE FACETS */
     &__collapse {
-        display: block;
-        text-align: center;
-        a,
-        button {
-            color: @middlegray;
-        }
+		display: flex;
+		justify-content: center;
     }
+	&__collapse-button {
+		&.-expand,
+		&.-collapse {
+			
+		}
+	}
+	&__collapse-button-icon-svg {
+		color: @widget-icon-color-expand;
+	}
     &__filter {
         display: none;
     }

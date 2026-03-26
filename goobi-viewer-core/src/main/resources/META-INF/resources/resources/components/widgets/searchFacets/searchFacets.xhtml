@@ -63,7 +63,7 @@
                                                 class="btn btn--clean widget-search-facets__filter-button"
                                                 data-toggle="searchFacetFilter"
                                                 aria-label="#{msg.placeholder__filter_search_results}">
-                                                <util:icon icon="search" />
+                                                <util:icon icon="search" svgClass="widget__topbar-icon-svg widget-search-facets__topbar-icon-svg" />
                                             </button>
                                         </div>
                                     </ui:fragment>
@@ -196,7 +196,7 @@
                                                         <div class="widget-search-facets__list-item-link-inner">
                                                             <div class="widget-search-facets__list-item-link-active">#{facet.translatedLabel}</div>
                                                             <div class="widget-search-facets__list-item-link-icon">
-                                                                <util:icon icon="x" />
+                                                                <util:icon icon="x" svgClass="widget__body-icon-svg widget-search-facets__body-icon-svg" />
                                                             </div>
                                                         </div>
                                                         <f:passThroughAttribute
@@ -236,10 +236,10 @@
                                 <ui:fragment rendered="#{searchBean.facets.isDisplayFacetExpandLink(field.key)}">
                                     <div class="widget-search-facets__collapse">
                                         <button
-                                            class="btn btn--clean"
+                                            class="btn btn--clean widget-search-facets__collapse-button -expand"
                                             jsf:action="#{searchBean.facets.expandFacet(field.key)}"
                                             title="#{msg.slideDown}">
-                                            <util:icon icon="chevron-down" />
+                                            <util:icon icon="chevron-down" svgClass="widget-search-facets__collapse-button" />
                                             <f:passThroughAttribute
                                                 name="data-collapse-link"
                                                 value="collapse-link-#{status.index}" />
@@ -250,10 +250,10 @@
                                 <ui:fragment rendered="#{searchBean.facets.isDisplayFacetCollapseLink(field.key)}">
                                     <div class="widget-search-facets__collapse">
                                         <button
-                                            class="btn btn--clean"
+                                            class="btn btn--clean widget-search-facets__collapse-button -collapse"
                                             jsf:action="#{searchBean.facets.collapseFacet(field.key)}"
                                             title="#{msg.slideUp}">
-                                            <util:icon icon="chevron-up" />
+                                            <util:icon icon="chevron-up" svgClass="widget-search-facets__collapse-button"/>
                                             <f:passThroughAttribute
                                                 name="data-collapse-link"
                                                 value="collapse-link-#{status.index}" />
