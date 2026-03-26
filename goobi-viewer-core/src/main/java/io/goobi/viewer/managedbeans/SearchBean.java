@@ -3053,6 +3053,8 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String searchInRecord(String piField, String piValue, String date1, String date2) {
         logger.trace("searchInRecord: {}:{}", piField, piValue);
+        // Clear any active facets from the browsing context so they don't pollute the search
+        this.facets.resetActiveFacets();
         // reset all items except those containing values from the search input fields
         int index = 0;
         for (SearchQueryItem item : this.advancedSearchQueryGroup.getQueryItems()) {
