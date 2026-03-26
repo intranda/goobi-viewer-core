@@ -32,7 +32,7 @@
                 <c:if test="#{type == null}">
                     <c:set
                         var="type"
-                        value="#{flash.keep.errorType}"
+                        value="#{sessionScope.errorType}"
                         scope="request" />
                 </c:if>
                 <c:if test="#{type == null}">
@@ -73,14 +73,14 @@
                             value="URL: #{sourceUrl}" />
                         <h:outputText
                             rendered="#{empty header['referer'] and sourceUrl == null}"
-                            value="URL: #{flash.sourceUrl}" />
+                            value="URL: #{sessionScope.sourceUrl}" />
                         <br />
                         <h:outputText
                             rendered="#{errMsg != null}"
                             value="#{errMsg}" />
                         <h:outputText
                             rendered="#{errMsg == null}"
-                            value="#{flash.keep.errorDetails}" />
+                            value="#{sessionScope.errorDetails}" />
                     </div>
 
                     <p>
@@ -114,7 +114,7 @@
                             value="#{errMsg}" />
                         <h:outputText
                             rendered="#{errMsg == null}"
-                            value="#{flash.keep.errorDetails}" />
+                            value="#{sessionScope.errorDetails}" />
                     </div>
                     <p>
                         <h:outputLink
@@ -139,7 +139,7 @@
                             value="#{errMsg}" />
                         <h:outputText
                             rendered="#{errMsg == null}"
-                            value="#{flash.keep.errorDetails}" />
+                            value="#{sessionScope.errorDetails}" />
                         <h:outputText
                             rendered="#{!empty header['referer']}"
                             value="#{header['referer']}" />
@@ -147,13 +147,9 @@
 
                     <p>
                         #{msg.errRecordNotFoundOptions_part01}
-                        <h:outputLink value="#{navigationHelper.applicationUrl}search/">
-                            #{msg.errRecordNotFoundOptions_part02}
-                        </h:outputLink>
+                        <h:outputLink value="#{navigationHelper.applicationUrl}search/">#{msg.errRecordNotFoundOptions_part02}</h:outputLink>
                         #{msg.errRecordNotFoundOptions_part03}
-                        <h:outputLink value="#{navigationHelper.applicationUrl}">
-                            #{msg.errRecordNotFoundOptions_part04}
-                        </h:outputLink>
+                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.errRecordNotFoundOptions_part04}</h:outputLink>
                         .
                     </p>
                 </h:panelGroup>
@@ -171,7 +167,7 @@
                                 value="#{errMsg}" />
                             <h:outputText
                                 rendered="#{errMsg == null}"
-                                value="#{flash.keep.errorDetails}" />
+                                value="#{sessionScope.errorDetails}" />
                             <h:outputText
                                 rendered="#{!empty header['referer']}"
                                 value="#{header['referer']}" />
@@ -179,13 +175,9 @@
 
                         <p>
                             #{msg.errRecordNotFoundOptions_part01}
-                            <h:outputLink value="#{navigationHelper.applicationUrl}search/">
-                                #{msg.errRecordNotFoundOptions_part02}
-                            </h:outputLink>
+                            <h:outputLink value="#{navigationHelper.applicationUrl}search/">#{msg.errRecordNotFoundOptions_part02}</h:outputLink>
                             #{msg.errRecordNotFoundOptions_part03}
-                            <h:outputLink value="#{navigationHelper.applicationUrl}">
-                                #{msg.errRecordNotFoundOptions_part04}
-                            </h:outputLink>
+                            <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.errRecordNotFoundOptions_part04}</h:outputLink>
                             .
                         </p>
                     </h:form>
@@ -204,7 +196,7 @@
                                 value="#{errMsg}" />
                             <h:outputText
                                 rendered="#{errMsg == null}"
-                                value="#{flash.keep.errorDetails}" />
+                                value="#{sessionScope.errorDetails}" />
                             <h:outputText
                                 rendered="#{!empty header['referer']}"
                                 value="#{header['referer']}" />
@@ -245,7 +237,7 @@
                             value="URL: #{sourceUrl}" />
                         <h:outputText
                             rendered="#{empty header['referer'] and sourceUrl == null}"
-                            value="URL: #{flash.sourceUrl}" />
+                            value="URL: #{sessionScope.sourceUrl}" />
                     </div>
 
                     <p>
@@ -280,7 +272,7 @@
                             value="URL: #{sourceUrl}" />
                         <h:outputText
                             rendered="#{empty header['referer'] and sourceUrl == null}"
-                            value="URL: #{flash.sourceUrl}" />
+                            value="URL: #{sessionScope.sourceUrl}" />
                     </div>
 
                     <p>
@@ -315,7 +307,7 @@
                             value="URL: #{sourceUrl}" />
                         <h:outputText
                             rendered="#{empty header['referer'] and sourceUrl == null}"
-                            value="URL: #{flash.sourceUrl}" />
+                            value="URL: #{sessionScope.sourceUrl}" />
                     </div>
 
                     <p>
@@ -350,7 +342,7 @@
                             value="URL: #{sourceUrl}" />
                         <h:outputText
                             rendered="#{empty header['referer'] and sourceUrl == null}"
-                            value="URL: #{flash.sourceUrl}" />
+                            value="URL: #{sessionScope.sourceUrl}" />
                     </div>
 
                     <p>
@@ -388,7 +380,7 @@
                             value="URL: #{sourceUrl}" />
                         <h:outputText
                             rendered="#{empty header['referer'] and sourceUrl == null}"
-                            value="URL: #{flash.sourceUrl}" />
+                            value="URL: #{sessionScope.sourceUrl}" />
                     </div>
 
                     <p>

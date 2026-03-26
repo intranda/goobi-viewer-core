@@ -45,9 +45,7 @@
                         styleClass="form-horizontal form-group"
                         prependId="false">
                         <div class="d-flex mb-3 align-items-center">
-                            <div class="control-label mr-3 admin__form-label">
-                                #{msg.admin__terms_of_use__is_active}:
-                            </div>
+                            <div class="control-label mr-3 admin__form-label">#{msg.admin__terms_of_use__is_active}:</div>
                             <div class="admin__form-input">
                                 <viewerComponent:toggleSwitch
                                     name="activateUserTerms"
@@ -77,11 +75,8 @@
                                             <div class="col-2 control-label admin__form-label">
                                                 <label for="userTermsTitle">
                                                     #{msg.title}:
-                                                    <ui:fragment
-                                                        rendered="#{termsOfUseEditBean.isDefaultLocaleSelected()}">
-                                                        <span class="admin__label-required-field">
-                                                            (#{msg.form__required_field})
-                                                        </span>
+                                                    <ui:fragment rendered="#{termsOfUseEditBean.isDefaultLocaleSelected()}">
+                                                        <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                     </ui:fragment>
                                                 </label>
                                             </div>
@@ -113,11 +108,8 @@
                                             <div class="col-2 control-label admin__form-label">
                                                 <label for="userTermsText">
                                                     #{msg.text}:
-                                                    <ui:fragment
-                                                        rendered="#{termsOfUseEditBean.isDefaultLocaleSelected()}">
-                                                        <span class="admin__label-required-field">
-                                                            (#{msg.form__required_field})
-                                                        </span>
+                                                    <ui:fragment rendered="#{termsOfUseEditBean.isDefaultLocaleSelected()}">
+                                                        <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                     </ui:fragment>
                                                 </label>
                                             </div>

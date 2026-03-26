@@ -46,6 +46,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -72,6 +74,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 @AdminLoggedInBinding
 public class TempMediaImageResource extends ImageResource {
+
+    private static final Logger logger = LogManager.getLogger(TempMediaImageResource.class);
 
     public TempMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -153,14 +157,16 @@ public class TempMediaImageResource extends ImageResource {
                     Files.delete(file);
                     return Response.status(Status.OK).build();
                 } catch (IOException e) {
+                    logger.error("Error deleting uploaded file {} in folder {}", filename, folder, e);
                     return Response.status(Status.INTERNAL_SERVER_ERROR)
-                            .entity(TempMediaFileResource.errorMessage("Error reading upload directory: " + e.toString()))
+                            .entity(TempMediaFileResource.errorMessage("Error deleting uploaded file"))
                             .build();
                 }
             }
             return Response.status(Status.NOT_ACCEPTABLE).entity(TempMediaFileResource.errorMessage("File doesn't exist")).build();
         } catch (IOException e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(TempMediaFileResource.errorMessage("Unknown error: " + e.toString())).build();
+            logger.error("Error deleting uploaded file {} in folder {}", filename, folder, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(TempMediaFileResource.errorMessage("Unknown error")).build();
         }
     }
 

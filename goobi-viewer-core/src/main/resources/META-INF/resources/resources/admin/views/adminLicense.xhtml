@@ -59,9 +59,7 @@
                                             value="#{adminLicenseBean.currentLicenseType.description}"
                                             id="description"
                                             styleClass="form-control" />
-                                        <span class="admin__form-help-text">
-                                            #{msg.admin__license_description__help}
-                                        </span>
+                                        <span class="admin__form-help-text">#{msg.admin__license_description__help}</span>
                                     </div>
                                     <div class="col-1 admin__form-help-icon">
                                         <button
@@ -100,8 +98,7 @@
                                                 layout="block"
                                                 id="imageModeGroup"
                                                 styleClass="admin__cms-edit-collection-image-actions-wrapper">
-                                                <div
-                                                    class="form-group admin__cms-edit-collection-connected-radio-buttons">
+                                                <div class="form-group admin__cms-edit-collection-connected-radio-buttons">
                                                     <div class="connected-top">
                                                         <h:selectOneRadio
                                                             group="imageModeRadio"
@@ -235,9 +232,7 @@
                                             <viewerComponent:toggleSwitch
                                                 name="openAccessToggle"
                                                 value="#{adminLicenseBean.currentLicenseType.openAccess}" />
-                                            <span class="admin__form-help-text in">
-                                                #{msg.admin__license_functions_open_access_desc}
-                                            </span>
+                                            <span class="admin__form-help-text in">#{msg.admin__license_functions_open_access_desc}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -274,9 +269,7 @@
                                                     <span class="toggle-inside" />
                                                 </span>
                                             </div>
-                                            <span class="admin__form-help-text in">
-                                                #{msg.admin__license_functions_moving_wall_desc}
-                                            </span>
+                                            <span class="admin__form-help-text in">#{msg.admin__license_functions_moving_wall_desc}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -315,9 +308,7 @@
                                                     <span class="toggle-inside" />
                                                 </span>
                                             </div>
-                                            <span class="admin__form-help-text in">
-                                                #{msg.admin__license_ticket_required_desc}
-                                            </span>
+                                            <span class="admin__form-help-text in">#{msg.admin__license_ticket_required_desc}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -359,9 +350,7 @@
                                                         <span class="toggle-inside" />
                                                     </span>
                                                 </div>
-                                                <span class="admin__form-help-text in">
-                                                    #{msg.admin__license_functions_redirect_desc}
-                                                </span>
+                                                <span class="admin__form-help-text in">#{msg.admin__license_functions_redirect_desc}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -371,9 +360,7 @@
                                         data-target-redirect="input">
                                         <div class="form-group form-row admin__license-selectable-block">
                                             <div class="col-2 control-label admin__form-label">
-                                                <label for="placeholderDesc">
-                                                    #{msg.admin__highlights__target_type_url}:
-                                                </label>
+                                                <label for="placeholderDesc">#{msg.admin__highlights__target_type_url}:</label>
                                             </div>
                                             <div class="col-9 admin__form-input cms-module__option-control mt-2 mb-3">
                                                 <!-- VALIDATOR HAS TO BE REWORKED/EXTENDED TO CHECK FOR VALID URL PATTERNS -->
@@ -421,16 +408,13 @@
                                                     var="priv"
                                                     items="#{adminLicenseBean.currentLicenseType.getSortedPrivileges(adminLicenseBean.currentLicenseType.privilegesCopy)}">
                                                     <c:choose>
-                                                        <c:when
-                                                            test="#{adminLicenseBean.currentLicenseType.accessTicketRequired and priv == 'LIST'}">
+                                                        <c:when test="#{adminLicenseBean.currentLicenseType.accessTicketRequired and priv == 'LIST'}">
                                                             <button
                                                                 disabled="true"
                                                                 class="btn btn--link admin__badge admin__badge-secondary admin__license-action"
                                                                 jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}"
                                                                 title="#{msg.remove}">
-                                                                <span>
-                                                                    #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
-                                                                </span>
+                                                                <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
                                                             </button>
                                                         </c:when>
                                                         <c:otherwise>
@@ -438,9 +422,7 @@
                                                                 class="btn btn--link admin__badge admin__badge-active admin__license-action"
                                                                 jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}"
                                                                 title="#{msg.remove}">
-                                                                <span>
-                                                                    #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
-                                                                </span>
+                                                                <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
                                                                 <!-- remove button -->
                                                                 <util:icon icon="trash" />
                                                             </button>
@@ -515,9 +497,7 @@
                                                                 </h:outputFormat>
                                                             </p>
                                                             <div class="row">
-                                                                <div class="col-2">
-                                                                    #{msg.admin__license_concurrent_views_limit_active}:
-                                                                </div>
+                                                                <div class="col-2">#{msg.admin__license_concurrent_views_limit_active}:</div>
                                                                 <div class="col-10">
                                                                     <div class="admin__radio-switch -on-off">
                                                                         <h:selectOneRadio
@@ -584,9 +564,7 @@
                                                                 </h:outputFormat>
                                                             </p>
                                                             <div class="row">
-                                                                <div class="col-2">
-                                                                    #{msg.admin__license_pdf_download_quota_active}:
-                                                                </div>
+                                                                <div class="col-2">#{msg.admin__license_pdf_download_quota_active}:</div>
                                                                 <div class="col-10">
                                                                     <div class="admin__radio-switch -on-off">
                                                                         <h:selectOneRadio
@@ -597,8 +575,7 @@
                                                                             <f:selectItem
                                                                                 itemValue="#{false}"
                                                                                 itemLabel="#{msg.no}" />
-                                                                            <f:ajax
-                                                                                render="pdf_download_quota_info_box" />
+                                                                            <f:ajax render="pdf_download_quota_info_box" />
                                                                         </h:selectOneRadio>
                                                                         <h:selectOneRadio
                                                                             group="pdfDownloadQuotaToggle"
@@ -608,8 +585,7 @@
                                                                             <f:selectItem
                                                                                 itemValue="#{true}"
                                                                                 itemLabel="#{msg.yes}" />
-                                                                            <f:ajax
-                                                                                render="pdf_download_quota_info_box" />
+                                                                            <f:ajax render="pdf_download_quota_info_box" />
                                                                         </h:selectOneRadio>
                                                                         <span class="toggle-outside">
                                                                             <span class="toggle-inside" />

@@ -54,9 +54,7 @@
                                         for="content-upload-modal__uploadJobTitle"
                                         class="col-lg-3 control-label">
                                         <span class="content-upload-modal__label-span">#{msg.title}:</span>
-                                        <span class="content-upload-modal__label-required-field">
-                                            (#{msg.form__required_field})
-                                        </span>
+                                        <span class="content-upload-modal__label-required-field">(#{msg.form__required_field})</span>
                                     </label>
 
                                     <div class="col-12 col-lg-9">
@@ -102,9 +100,7 @@
                                         id="content-upload-modal__labelUploadJobFiles"
                                         for="content-upload-modal__uploadJobFiles"
                                         class="col-lg-3 control-label">
-                                        <span class="content-upload-modal__label-span">
-                                            #{msg.admin__create_record__files__title}:
-                                        </span>
+                                        <span class="content-upload-modal__label-span">#{msg.admin__create_record__files__title}:</span>
                                     </label>
 
                                     <div class="col-12 col-lg-9 content-upload-modal__file-upload-button">
@@ -126,9 +122,7 @@
                                         for="content-upload-modal__contentUploadEmail"
                                         class="col-lg-3 control-label">
                                         <span class="content-upload-modal__label-span">#{msg.email}:</span>
-                                        <span class="content-upload-modal__label-required-field">
-                                            (#{msg.form__required_field})
-                                        </span>
+                                        <span class="content-upload-modal__label-required-field">(#{msg.form__required_field})</span>
                                     </label>
                                     <div class="cms-module__option-control col-12 col-lg-9">
                                         <div class="cms-module__option-message">
@@ -171,9 +165,7 @@
                             <!-- TO DO: CONFIG SWITCH FOR THIS RENDERED CONDITION CHECKBOX, VALUE + ADDITIONAL TEXT WHICH IS SEND BY FORM(?) -->
                             <div class="content-upload-modal__required-checkbox-wrapper">
                                 <div class="form-row">
-                                    <p class="col-12 content-upload-modal__accept-terms-text">
-                                        #{msg.user__upload_content_modal_consent_desc}
-                                    </p>
+                                    <p class="col-12 content-upload-modal__accept-terms-text">#{msg.user__upload_content_modal_consent_desc}</p>
 
                                     <div
                                         id="sendContactFormAcceptTerms"
@@ -181,8 +173,7 @@
                                         <label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
                                     </div>
 
-                                    <div
-                                        class="col-12 col-md-9 mt-3 mt-sm-0 content-upload-modal__accept-terms-radios admin__radio-switch">
+                                    <div class="col-12 col-md-9 mt-3 mt-sm-0 content-upload-modal__accept-terms-radios admin__radio-switch">
                                         <h:selectOneRadio
                                             group="requiredUploadJobTerms"
                                             value="#{uploadBean.currentUploadJob.consent}"

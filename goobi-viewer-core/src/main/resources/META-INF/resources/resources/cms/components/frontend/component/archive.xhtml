@@ -47,8 +47,7 @@
                             layout="block"
                             id="treeGroup1"
                             styleClass="archives__graphic-tree">
-                            <div
-                                class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
+                            <div class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
                                 <h:form
                                     id="searchForm"
                                     prependId="false">
@@ -64,10 +63,7 @@
                                             name="aria-label"
                                             value="#{msg.aria_label__search_form}" />
                                     </h:inputText>
-                                    <div
-                                        class="archives__search-clear #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
-                                        x
-                                    </div>
+                                    <div class="archives__search-clear #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">x</div>
                                     <h:commandButton
                                         styleClass="archives__search-submit-button"
                                         pt:data-render="archiveTree"
@@ -157,8 +153,7 @@
                                         layout="block"
                                         id="treeGroup2"
                                         styleClass="archives__graphic-tree">
-                                        <div
-                                            class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
+                                        <div class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
                                             <h:form
                                                 id="searchForm"
                                                 prependId="false">
@@ -174,10 +169,7 @@
                                                         name="aria-label"
                                                         value="#{msg.aria_label__search_form}" />
                                                 </h:inputText>
-                                                <div
-                                                    class="archives__search-clear #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
-                                                    x
-                                                </div>
+                                                <div class="archives__search-clear #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">x</div>
                                                 <h:commandButton
                                                     styleClass="archives__search-submit-button"
                                                     pt:data-render="archiveTree"
@@ -218,7 +210,7 @@
 
             <!-- SCRIPTS FOR ARCHIVE (COMPONENT) -->
             <script type="text/javascript">
-//initialize search
+                //initialize search
 viewerJS.archives.init({
     initHcSticky: false,
     initSearch: true,

@@ -50,9 +50,7 @@
                         </div>
                         <div class="form-horizontal form-group">
                             <div class="d-flex mb-3 align-items-center">
-                                <div class="control-label mr-3 admin__form-label">
-                                    #{msg.admin__legal__cookie_banner_active}:
-                                </div>
+                                <div class="control-label mr-3 admin__form-label">#{msg.admin__legal__cookie_banner_active}:</div>
                                 <div class="admin__form-input">
                                     <viewerComponent:toggleSwitch
                                         name="activateCookieBanner"
@@ -79,13 +77,11 @@
                                         required="#{banner.text.isDefaultLocaleSelected()}" />
                                 </viewerForms:inputFormBlock>
 
-                                <viewerForms:inputFormBlock
-                                    title="#{msg.admin__legal__ignore_cookie_banner_exceptions}">
+                                <viewerForms:inputFormBlock title="#{msg.admin__legal__ignore_cookie_banner_exceptions}">
                                     <p>#{msg.admin__legal__ignore_cookie_banner_on_pages__label}</p>
 
                                     <viewerForms:inputFormField label="#{msg.pages}">
-                                        <div
-                                            class="cms-widgets-add__pages-selection cms-module__option-control admin__form-input">
+                                        <div class="cms-widgets-add__pages-selection cms-module__option-control admin__form-input">
                                             <ul>
                                                 <ui:repeat
                                                     var="var"
@@ -102,8 +98,7 @@
                                                             <h:outputFormat
                                                                 value="#{var.title}"
                                                                 escape="false" />
-                                                            <ui:fragment
-                                                                rendered="#{not empty var.subThemeDiscriminatorValue}">
+                                                            <ui:fragment rendered="#{not empty var.subThemeDiscriminatorValue}">
                                                                 <small>(#{var.subThemeDiscriminatorValue})</small>
                                                             </ui:fragment>
                                                         </label>

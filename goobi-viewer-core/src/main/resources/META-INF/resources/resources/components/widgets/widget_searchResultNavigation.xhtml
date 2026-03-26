@@ -8,8 +8,7 @@
     <composite:interface />
 
     <composite:implementation>
-        <h:panelGroup
-            rendered="#{configurationBean.displaySearchResultNavigation and searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
+        <h:panelGroup rendered="#{configurationBean.displaySearchResultNavigation and searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
             <div
                 id="widgetSearchResultNavigation"
                 class="widget widget-search-result-navigation">

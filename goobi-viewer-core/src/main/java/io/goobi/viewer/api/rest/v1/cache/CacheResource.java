@@ -114,6 +114,8 @@ public class CacheResource {
     @DELETE
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
+    @ApiResponse(responseCode = "200", description = "Cache cleared successfully")
+    @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" })
     public IResponseMessage clearCache(
             @Parameter(description = "If true, main image content cache will be cleared for all records") @QueryParam("content") boolean content,
@@ -140,6 +142,7 @@ public class CacheResource {
     @Path(ApiUrls.CACHE_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode = "200", description = "Return the number of deleted cache items")
+    @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @AuthorizationBinding
     @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" })
     public IResponseMessage clearCacheForRecord(@Parameter(description = "Record identifier") @PathParam("pi") String pi,

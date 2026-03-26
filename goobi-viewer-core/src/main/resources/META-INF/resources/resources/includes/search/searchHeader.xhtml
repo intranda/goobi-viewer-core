@@ -54,8 +54,7 @@
                 <!-- ADVANCED SEARCH / BACK LINK -->
                 <div class="search-list__adv-search-info-back text-right">
                     <ui:fragment rendered="#{not empty searchBean.advancedSearchOrigin}">
-                        <h:outputLink
-                            value="#{navigationHelper.applicationUrl}toc/#{searchBean.advancedSearchOrigin.pi}/1/">
+                        <h:outputLink value="#{navigationHelper.applicationUrl}toc/#{searchBean.advancedSearchOrigin.pi}/1/">
                             #{msg.searchAdvancedBack}
                         </h:outputLink>
                     </ui:fragment>
@@ -87,9 +86,7 @@
                 <!-- CALENDAR SEARCH -->
                 <div class="search-list__adv-search-info-back text-right">
                     <ui:fragment rendered="#{calendarBean.selectYear != null}">
-                        <a href="#{request.contextPath}/searchcalendar/#{calendarBean.selectYear}/">
-                            #{msg.searchCalendarBack}
-                        </a>
+                        <a href="#{request.contextPath}/searchcalendar/#{calendarBean.selectYear}/">#{msg.searchCalendarBack}</a>
                     </ui:fragment>
                     <ui:fragment rendered="#{calendarBean.selectYear == null}">
                         <a href="#{request.contextPath}/searchcalendar/">#{msg.searchCalendarBack}</a>

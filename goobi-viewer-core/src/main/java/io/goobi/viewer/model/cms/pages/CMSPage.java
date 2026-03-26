@@ -228,8 +228,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     private List<CMSComponent> cmsComponents = new ArrayList<>();
 
     @Transient
+    private boolean cmsComponentsInitialized = false;
+
+    @Transient
     private int listPage = 1;
-    
+
     @Transient
     private final Object cmsComponentsLock = new Object();
 
@@ -340,8 +343,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                         .orElse(null);
                 if (comp != null) {
                     this.cmsComponents.add(comp);
+                } else {
+                    logger.warn("No component template found for '{}' on CMS page {}", component.getTemplateFilename(), this.id);
                 }
             }
+            this.cmsComponentsInitialized = true;
         }
         sortComponents();
     }
@@ -1329,11 +1335,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public boolean isComponentsLoaded() {
-        return this.cmsComponents.size() == this.persistentComponents.size();
+        return this.cmsComponentsInitialized;
     }
 
     public List<CMSComponent> getComponents() {
-        if (!this.isComponentsLoaded()) {
+        if (!this.cmsComponentsInitialized && !this.persistentComponents.isEmpty()) {
             logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
         }
         return this.cmsComponents;

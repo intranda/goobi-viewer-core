@@ -58,9 +58,7 @@
                                                     <h2>#{msg[type.label]}</h2>
                                                 </div>
                                                 <div class="mb-2">
-                                                    <p>
-                                                        #{msg['cms__slider_type_description__'.concat(type.name().toLowerCase())]}
-                                                    </p>
+                                                    <p>#{msg['cms__slider_type_description__'.concat(type.name().toLowerCase())]}</p>
                                                 </div>
                                                 <div class="mt-auto">
                                                     <div class="d-flex">
@@ -97,9 +95,7 @@
                                                 <div class="col-2 control-label admin__form-label">
                                                     <label for="sliderName">
                                                         #{msg.name}:
-                                                        <span class="admin__label-required-field">
-                                                            (#{msg.form__required_field})
-                                                        </span>
+                                                        <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                     </label>
                                                 </div>
 
@@ -121,9 +117,7 @@
                                                         required="true"
                                                         requiredMessage="#{msg.info__input_required}"
                                                         value="#{slider.name}" />
-                                                    <span class="admin__form-help-text">
-                                                        #{msg.cms__edit_slider__name__help}
-                                                    </span>
+                                                    <span class="admin__form-help-text">#{msg.cms__edit_slider__name__help}</span>
                                                 </div>
                                                 <div class="col-1 admin__form-help-icon">
                                                     <button
@@ -147,9 +141,7 @@
                                                         id="sliderDesc"
                                                         styleClass="form-control"
                                                         value="#{slider.description}" />
-                                                    <span class="admin__form-help-text">
-                                                        #{msg.cms__edit_slider__description__help}
-                                                    </span>
+                                                    <span class="admin__form-help-text">#{msg.cms__edit_slider__description__help}</span>
                                                 </div>
                                                 <div class="col-1 admin__form-help-icon">
                                                     <button
@@ -164,13 +156,10 @@
 
                                             <c:choose>
                                                 <c:when test="#{slider.sourceType == 'COLLECTIONS'}">
-                                                    <div
-                                                        class="#{fn:length(cmsSliderEditBean.allCollectionFields) > 1 ? '' : 'd-none'} form-group form-row">
+                                                    <div class="#{fn:length(cmsSliderEditBean.allCollectionFields) > 1 ? '' : 'd-none'} form-group form-row">
                                                         <!-- COLLECTION FIELD -->
                                                         <div class="col-2 control-label admin__form-label xx">
-                                                            <label for="SolrFieldSelect">
-                                                                #{msg.cms_collections_solrField}:
-                                                            </label>
+                                                            <label for="SolrFieldSelect">#{msg.cms_collections_solrField}:</label>
                                                         </div>
 
                                                         <!-- CONTROL -->
@@ -180,13 +169,10 @@
                                                                 name="SolrFieldSelect"
                                                                 value="#{cmsSliderEditBean.collectionField}"
                                                                 styleClass="form-control">
-                                                                <f:selectItems
-                                                                    value="#{cmsSliderEditBean.allCollectionFields}" />
+                                                                <f:selectItems value="#{cmsSliderEditBean.allCollectionFields}" />
                                                                 <f:ajax render="collectionsSelect" />
                                                             </h:selectOneMenu>
-                                                            <span class="admin__form-help-text">
-                                                                #{msg.cms__edit_slider__collections_field__help}
-                                                            </span>
+                                                            <span class="admin__form-help-text">#{msg.cms__edit_slider__collections_field__help}</span>
                                                         </div>
                                                         <div class="col-1 admin__form-help-icon">
                                                             <button
@@ -203,9 +189,7 @@
                                                         <div class="col-2 control-label admin__form-label">
                                                             <label for="collectionsSelect">
                                                                 #{msg.admin__cms_collections}:
-                                                                <span class="admin__label-required-field">
-                                                                    (#{msg.form__required_field})
-                                                                </span>
+                                                                <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                             </label>
                                                         </div>
 
@@ -236,9 +220,7 @@
                                                                     event="change"
                                                                     render="previewSlider" />
                                                             </h:selectManyListbox>
-                                                            <span class="admin__form-help-text">
-                                                                #{msg.cms__edit_slider__collections__help}
-                                                            </span>
+                                                            <span class="admin__form-help-text">#{msg.cms__edit_slider__collections__help}</span>
                                                         </div>
                                                         <div class="col-1 admin__form-help-icon">
                                                             <button
@@ -258,9 +240,7 @@
                                                         <div class="col-2 control-label admin__form-label">
                                                             <label for="recordsQuery">
                                                                 #{msg.cms_itemSolrQuery}:
-                                                                <span class="admin__label-required-field">
-                                                                    (#{msg.form__required_field})
-                                                                </span>
+                                                                <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                             </label>
                                                         </div>
 
@@ -297,9 +277,7 @@
                                                                     event="change"
                                                                     render="previewSlider recordsQueryValidation" />
                                                             </h:inputText>
-                                                            <span class="admin__form-help-text">
-                                                                #{msg.cms__edit_slider__solr_query__help}
-                                                            </span>
+                                                            <span class="admin__form-help-text">#{msg.cms__edit_slider__solr_query__help}</span>
                                                         </h:panelGroup>
                                                         <div class="col-1 admin__form-help-icon">
                                                             <button
@@ -315,9 +293,7 @@
                                                     <!-- SORT FIELD -->
                                                     <div class="form-group form-row">
                                                         <div class="col-2 control-label admin__form-label">
-                                                            <label for="recordsQuery">
-                                                                #{msg.cms_itemSolrSortFields}:
-                                                            </label>
+                                                            <label for="recordsQuery">#{msg.cms_itemSolrSortFields}:</label>
                                                         </div>
 
                                                         <h:panelGroup
@@ -347,9 +323,7 @@
                                                                     name="aria-label"
                                                                     value="#{msg.cms_itemSolrSortFields}" />
                                                             </h:selectOneMenu>
-                                                            <span class="admin__form-help-text">
-                                                                #{msg.cms__edit_slider__solr_sortfield__help}
-                                                            </span>
+                                                            <span class="admin__form-help-text">#{msg.cms__edit_slider__solr_sortfield__help}</span>
                                                         </h:panelGroup>
                                                         <div class="col-1 admin__form-help-icon">
                                                             <button
@@ -367,9 +341,7 @@
                                                         <div class="col-2 control-label admin__form-label">
                                                             <label for="recordsQuery">
                                                                 #{msg.cms_itemCount}:
-                                                                <span class="admin__label-required-field">
-                                                                    (#{msg.form__required_field})
-                                                                </span>
+                                                                <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                             </label>
                                                         </div>
 
@@ -388,9 +360,7 @@
                                                                     name="aria-label"
                                                                     value="#{msg.cms_itemSolrSortFields}" />
                                                             </h:selectOneMenu>
-                                                            <span class="admin__form-help-text">
-                                                                #{msg.cms__edit_slider__max_entries__help}
-                                                            </span>
+                                                            <span class="admin__form-help-text">#{msg.cms__edit_slider__max_entries__help}</span>
                                                         </h:panelGroup>
                                                         <div class="col-1 admin__form-help-icon">
                                                             <button
@@ -404,15 +374,12 @@
                                                     </div>
                                                 </c:when>
 
-                                                <c:when
-                                                    test="#{slider.sourceType == 'PAGES' or slider.sourceType == 'MEDIA'}">
+                                                <c:when test="#{slider.sourceType == 'PAGES' or slider.sourceType == 'MEDIA'}">
                                                     <div class="form-group form-row">
                                                         <div class="col-2 control-label admin__form-label">
                                                             <label for="categoriesSelect">
                                                                 #{msg.categories}:
-                                                                <span class="admin__label-required-field">
-                                                                    (#{msg.form__required_field})
-                                                                </span>
+                                                                <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                             </label>
                                                         </div>
 
@@ -425,9 +392,7 @@
                                                                     <ui:repeat
                                                                         var="category"
                                                                         value="#{cmsSliderEditBean.selectableCategories.stream().filter(sel -> sel.selected).map(sel -> sel.value.name).toList()}">
-                                                                        <div class="admin__badge admin__badge-violet">
-                                                                            #{msg[category]}
-                                                                        </div>
+                                                                        <div class="admin__badge admin__badge-violet">#{msg[category]}</div>
                                                                     </ui:repeat>
                                                                 </h:panelGroup>
                                                             </div>
@@ -468,9 +433,7 @@
                                                                     </ui:repeat>
                                                                 </ul>
                                                             </div>
-                                                            <span class="admin__form-help-text">
-                                                                #{msg.cms__edit_slider__categories__help}
-                                                            </span>
+                                                            <span class="admin__form-help-text">#{msg.cms__edit_slider__categories__help}</span>
                                                         </div>
                                                         <div class="col-1 admin__form-help-icon">
                                                             <button
@@ -488,9 +451,7 @@
                                             <!-- STYLE -->
                                             <div class="form-group form-row">
                                                 <div class="col-2 control-label admin__form-label">
-                                                    <label for="styleSelect">
-                                                        #{msg.cms__edit_slider__style__label}:
-                                                    </label>
+                                                    <label for="styleSelect">#{msg.cms__edit_slider__style__label}:</label>
                                                 </div>
 
                                                 <div class="col-9 admin__form-input cms-module__option-control">
@@ -506,9 +467,7 @@
                                                             #{msg.action__select}
                                                         </option>
                                                     </select>
-                                                    <span class="admin__form-help-text">
-                                                        #{msg.cms__edit_slider__style__help}
-                                                    </span>
+                                                    <span class="admin__form-help-text">#{msg.cms__edit_slider__style__help}</span>
                                                 </div>
                                                 <div class="col-1 admin__form-help-icon">
                                                     <button

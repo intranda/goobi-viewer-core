@@ -27,20 +27,17 @@
     </composite:interface>
 
     <composite:implementation>
-        <ui:fragment
-            rendered="#{cc.attrs.cmsContent != null and cc.attrs.image != null and cc.attrs.component.hasAccess(userBean.user)}">
+        <ui:fragment rendered="#{cc.attrs.cmsContent != null and cc.attrs.image != null and cc.attrs.component.hasAccess(userBean.user)}">
             <!-- CONTENT ITEM IMAGE HALF -->
             <div
                 class="content-component content-component__image -width-#{cc.attrs.width} #{cc.attrs.hideOnScreenSizes} #{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} #{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''} #{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
                 <!-- INFO: CONTENT ITEM IS NOT PUBLISHED YET -->
-                <ui:fragment
-                    rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
+                <ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
                     <div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
                 </ui:fragment>
 
                 <!-- IMAGE WITH LINK -->
-                <ui:fragment
-                    rendered="#{cmsMediaBean.isImage(cc.attrs.image) and cc.attrs.cmsContent.mediaItem.linkURI != null and !cc.attrs.lightbox}">
+                <ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image) and cc.attrs.cmsContent.mediaItem.linkURI != null and !cc.attrs.lightbox}">
                     <div class="content-component__image">
                         <a
                             class="content-component__image-link"
@@ -74,8 +71,7 @@
                 </ui:fragment>
 
                 <!-- SIMPLE IMAGE WITHOUT LINK OR LIGHTBOX -->
-                <ui:fragment
-                    rendered="#{cmsMediaBean.isImage(cc.attrs.image) and !cc.attrs.lightbox and cc.attrs.cmsContent.mediaItem.linkURI == null}">
+                <ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image) and !cc.attrs.lightbox and cc.attrs.cmsContent.mediaItem.linkURI == null}">
                     <div class="content-component__image">
                         <img
                             src="#{cc.attrs.cmsContent.getUrl(1920, null)}"

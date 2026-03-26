@@ -33,7 +33,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
-import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
@@ -266,35 +265,33 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     protected PhysicalElement loadPage(int pageNumber, String fileName) throws PresentationException, IndexUnreachableException {
-        try (Time t = DataManager.getInstance().getTiming().takeTime("loadPage")) {
-            String pi = topElement.getPi();
-            if (pageNumber >= 0) {
-                logger.trace("Loading page {} for '{}'...", pageNumber, pi);
-            }
-            List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
-
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append('+')
-                    .append(SolrConstants.PI_TOPSTRUCT)
-                    .append(':')
-                    .append(pi)
-                    .append(" +")
-                    .append(SolrConstants.DOCTYPE)
-                    .append(':')
-                    .append(DocType.PAGE);
-            if (pageNumber >= 0) {
-                sbQuery.append(" +").append(SolrConstants.ORDER).append(':').append(pageNumber);
-            }
-            if (fileName != null) {
-                sbQuery.append(" +").append(SolrConstants.FILENAME).append(":\"").append(fileName).append("\"");
-            }
-            SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, fields);
-            if (result.isEmpty()) {
-                return null;
-            }
-
-            return loadPageFromDoc(result.get(0), pi, topElement, null);
+        String pi = topElement.getPi();
+        if (pageNumber >= 0) {
+            logger.trace("Loading page {} for '{}'...", pageNumber, pi);
         }
+        List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
+
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append('+')
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append(':')
+                .append(pi)
+                .append(" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.PAGE);
+        if (pageNumber >= 0) {
+            sbQuery.append(" +").append(SolrConstants.ORDER).append(':').append(pageNumber);
+        }
+        if (fileName != null) {
+            sbQuery.append(" +").append(SolrConstants.FILENAME).append(":\"").append(fileName).append("\"");
+        }
+        SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, fields);
+        if (result.isEmpty()) {
+            return null;
+        }
+
+        return loadPageFromDoc(result.get(0), pi, topElement, null);
     }
 
     @Override

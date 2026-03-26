@@ -218,4 +218,17 @@ class FileToolsTest extends AbstractTest {
                 () -> FileTools.sanitizeFileName("/opt/digiverso/foo&.jpg"));
         assertEquals("Illegal fileName: /opt/digiverso/foo&.jpg", e.getMessage());
     }
+
+    /**
+     * @see FileTools#sanitizeFileName(String)
+     * @verifies neutralize path traversal sequences
+     */
+    @Test
+    void sanitizeFileName_shouldNeutralizePathTraversalSequences() {
+        // Directory components must be stripped so that resolving the result
+        // against a base directory cannot escape that directory.
+        Assertions.assertEquals("passwd", FileTools.sanitizeFileName("../../../etc/passwd"));
+        Assertions.assertEquals("shadow", FileTools.sanitizeFileName("../../../../etc/shadow"));
+        Assertions.assertEquals("web.xml", FileTools.sanitizeFileName("../../WEB-INF/web.xml"));
+    }
 }

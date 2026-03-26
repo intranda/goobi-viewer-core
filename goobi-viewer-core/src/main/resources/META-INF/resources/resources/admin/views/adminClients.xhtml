@@ -62,8 +62,7 @@
                     <div class="admin__table-tools">
                         <!-- PAGINATOR -->
                         <div class="admin__table-paginator">
-                            <viewerComponent:dataTablePaginator
-                                tableValues="#{adminClientsBean.configuredClientsModel}" />
+                            <viewerComponent:dataTablePaginator tableValues="#{adminClientsBean.configuredClientsModel}" />
                         </div>
                         <!-- FILTER -->
                         <div class="admin__table-filter">
@@ -121,9 +120,7 @@
                                         class="admin__table-data"
                                         role="gridcell">
                                         <!-- CLIENT NAME -->
-                                        <span class="admin__table-name admin__clients-table-client-name">
-                                            #{client.name}
-                                        </span>
+                                        <span class="admin__table-name admin__clients-table-client-name">#{client.name}</span>
                                         <!-- CLIENT DESCRIPTION -->
                                         <span class="admin__table-additional-info">#{client.description}</span>
                                         <!-- CLIENT ID -->

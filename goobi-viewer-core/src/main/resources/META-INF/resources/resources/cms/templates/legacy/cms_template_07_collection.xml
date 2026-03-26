@@ -5,9 +5,7 @@
     <name>cms__template_07__title</name>
     <description>cms__template_07__description</description>
     <icon>cms_template_07_collection.png</icon>
-    <html>
-cms_template_07_collection.xhtml
-    </html>
+    <html>cms_template_07_collection.xhtml</html>
     <options>
         <appliesToExpandedUrl>true</appliesToExpandedUrl>
     </options>

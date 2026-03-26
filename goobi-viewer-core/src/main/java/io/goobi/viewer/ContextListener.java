@@ -42,6 +42,8 @@ import org.apache.logging.log4j.Logger;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.SocketBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -120,10 +122,24 @@ public class ContextListener implements ServletContextListener {
         // Shut down the task thread pool first so no running task can re-open resources
         // that are about to be closed (e.g. the Solr client).
         DataManager.getInstance().getRestApiJobManager().shutdown();
+        SocketBean.shutdownExecutor();
+        SearchBean.shutdown();
 
         try {
             DataManager.getInstance().getDao().shutdown();
             ContentServerCacheManager.getInstance().close();
+            // EhCache's disk-store scheduler (MappedByteBufferSource Async Flush Thread) may
+            // not terminate synchronously on close(). Wait briefly so Tomcat does not report it
+            // as a memory leak.
+            Thread.getAllStackTraces().keySet().stream()
+                    .filter(t -> t.getName().contains("MappedByteBufferSource") || t.getName().contains("Async Flush"))
+                    .forEach(t -> {
+                        try {
+                            t.join(5000);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    });
             logger.info("Successfully stopped DAO");
         } catch (DAOException e) {
             logger.error("Error stopping DAO", e);

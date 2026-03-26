@@ -30,8 +30,7 @@
                             value="#{cc.attrs.tagMethod}"
                             var="tag">
                             <div class="tagcloudElement tag-cloud__element tag#{tag.css}">
-                                <h:outputLink
-                                    value="#{navigationHelper.searchUrl}/-/#{tag.field}:#{tag.escapedName}/1/-/-/-/">
+                                <h:outputLink value="#{navigationHelper.searchUrl}/-/#{tag.field}:#{tag.escapedName}/1/-/-/-/">
                                     <h:outputText value="#{tag.name}" />
                                     <f:passThroughAttribute
                                         name="aria-label"

@@ -115,8 +115,8 @@ public class RecordPageResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get NER tags for a single page")
     public DocumentReference getNERTags(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
-            @Parameter(description = "Tag type to consider (person, coorporation, event or location)") @QueryParam("type") String type)
+            @Parameter(description = "Page number (1-based)") @PathParam("pageNo") Integer pageNo,
+            @Parameter(description = "Tag type to consider (person, corporation, event or location)") @QueryParam("type") String type)
             throws PresentationException, IndexUnreachableException {
         NERBuilder builder = new NERBuilder();
         return builder.getNERTags(pi, type, pageNo, pageNo, 1, servletRequest);

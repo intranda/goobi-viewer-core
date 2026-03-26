@@ -142,8 +142,7 @@
                         </h:outputLink>
                     </li>
                 </h:panelGroup>
-                <h:panelGroup
-                    rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages}">
+                <h:panelGroup rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages}">
                     <h:panelGroup rendered="#{activeDocumentBean.accessPermissionPdf}">
                         <h:panelGroup rendered="#{!configurationBean.generatePdfInMessageQueue}">
                             <li class="dl-links__pdf">

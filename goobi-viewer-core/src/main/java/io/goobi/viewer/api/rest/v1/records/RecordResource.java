@@ -288,6 +288,7 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest(
@@ -321,7 +322,7 @@ public class RecordResource {
     public IPresentationModelElement getLayer(
             @Parameter(description = "Name of the manifest layer") @PathParam("name") String layerName,
             @Parameter(
-                    description = "Build mode for manifes to select type of resources to include. Default is 'iiif' which returns the full"
+                    description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full"
                             + " IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple'"
                             + " ignores all resources from files") @QueryParam("mode") String mode)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
@@ -338,7 +339,7 @@ public class RecordResource {
             @Parameter(description = "First page to get tags for") @QueryParam("start") Integer start,
             @Parameter(description = "Last page to get tags for") @QueryParam("end") Integer end,
             @Parameter(description = "Number of pages to combine into each group") @QueryParam("step") Integer stepSize,
-            @Parameter(description = "Tag type to consider (person, coorporation, event or location)") @QueryParam("type") String type)
+            @Parameter(description = "Tag type to consider (person, corporation, event or location)") @QueryParam("type") String type)
             throws PresentationException, IndexUnreachableException {
         NERBuilder b = new NERBuilder();
         return b.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize, servletRequest);
@@ -408,7 +409,7 @@ public class RecordResource {
     @Operation(tags = { "records" }, summary = "Get CMDI record file in the requested language.",
             description = "If possible, directly read a CMDI file associated with the record")
     public String getCmdiLanguage(
-            @Parameter(description = "perferred language for the TEI file, in ISO-639 format") @PathParam("lang") final String language)
+            @Parameter(description = "preferred language for the TEI file, in ISO-639 format") @PathParam("lang") final String language)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
@@ -425,7 +426,7 @@ public class RecordResource {
     @Operation(tags = { "records" }, summary = "Get TEI record file in the requested language.",
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     public String getTeiLanguage(
-            @Parameter(description = "perferred language for the TEI file, in ISO-639 format") @PathParam("lang") final String language)
+            @Parameter(description = "preferred language for the TEI file, in ISO-639 format") @PathParam("lang") final String language)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
@@ -456,7 +457,7 @@ public class RecordResource {
     @Operation(tags = { "records" }, summary = "Get text of record in TEI format as a zip file.",
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     public StreamingOutput getTeiAsZip(
-            @Parameter(description = "perferred language for the TEI file, in ISO-639 format") @QueryParam("lang") final String language)
+            @Parameter(description = "preferred language for the TEI file, in ISO-639 format") @QueryParam("lang") final String language)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
@@ -475,7 +476,7 @@ public class RecordResource {
      *
      * @param pi The pi of the manifest to search
      * @param query The search query; a list of space separated terms. The search is for all complete words which match any of the query terms. Terms
-     *            may contain the wildcard charachter '*' to represent an arbitrary number of characters within the word
+     *            may contain the wildcard character '*' to represent an arbitrary number of characters within the word
      * @param motivation a space separated list of motivations of annotations to search for. Search for the following motivations is implemented:
      *            <ul>
      *            <li>painting: fulltext resources</li>
@@ -563,7 +564,10 @@ public class RecordResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
     @AuthorizationBinding
-    @Operation(tags = { "records" }, summary = "Delete the record from the SOLR database",
+    @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
+    @ApiResponse(responseCode = "403", description = "Deletion not allowed because child volumes are still present")
+    @ApiResponse(responseCode = "503", description = "A deletion operation is already in progress")
+    @Operation(tags = { "records" }, summary = "Delete the record from the Solr database",
             description = "Requires an authentication token. This operation may take a while, depending on the indexer queue. If the request"
                     + " aborts before deletion is complete, further deletion requests will be disallowed until the operation completes")
     public String deleteRecord(
@@ -630,7 +634,7 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and filed mapping are configured statically.")
+    @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
     public Response getRecordMetadataAsJson(@PathParam("pi") String pi, @PathParam("template") String template)
             throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}/{}", pi, template);

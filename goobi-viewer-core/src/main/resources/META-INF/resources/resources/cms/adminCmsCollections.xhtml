@@ -72,8 +72,7 @@
                                                     style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
                                                     <div class="col-1 collection__structure-col">
                                                         <!-- STRUCTURE -->
-                                                        <h:panelGroup
-                                                            rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
+                                                        <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
                                                             <div class="collection__structure text-center">
                                                                 <button
                                                                     class="btn btn--link"
@@ -128,15 +127,13 @@
                                                             rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
                                                             <div class="admin__cms-collections-description-toggle">
                                                                 <h:commandLink title="#{msg[browseDcElement.label]}">
-                                                                    <h:panelGroup
-                                                                        rendered="#{not browseDcElement.showDescription}">
+                                                                    <h:panelGroup rendered="#{not browseDcElement.showDescription}">
                                                                         <util:icon
                                                                             icon="chevron-down"
                                                                             aria-hidden="true" />
                                                                     </h:panelGroup>
 
-                                                                    <h:panelGroup
-                                                                        rendered="#{browseDcElement.showDescription}">
+                                                                    <h:panelGroup rendered="#{browseDcElement.showDescription}">
                                                                         <util:icon
                                                                             icon="chevron-up"
                                                                             aria-hidden="true" />
@@ -152,8 +149,7 @@
                                                     </div>
 
                                                     <!-- DESCRIPTION -->
-                                                    <h:panelGroup
-                                                        rendered="#{browseDcElement.hasCMSDescription() and browseDcElement.showDescription}">
+                                                    <h:panelGroup rendered="#{browseDcElement.hasCMSDescription() and browseDcElement.showDescription}">
                                                         <div class="col-1" />
                                                         <div class="col-8 pb-3">
                                                             <div class="collection__description">
@@ -186,9 +182,7 @@
                                     <ui:fragment rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}">
                                         <div class="admin__default-block -danger">
                                             <h2>#{msg.admin__cms_collections_import}</h2>
-                                            <div class="admin__form-help-text in mb-2">
-                                                #{msg.admin__cms_collections_import_desc}
-                                            </div>
+                                            <div class="admin__form-help-text in mb-2">#{msg.admin__cms_collections_import_desc}</div>
                                             <div class="col-12 d-flex justify-content-center">
                                                 <h:commandButton
                                                     styleClass="btn btn--full"
@@ -209,9 +203,7 @@
                                                         <!-- GROUP TITLE -->
                                                         <h2>#{msg.admin__cms_collections_translation}</h2>
 
-                                                        <div class="admin__form-help-text in mb-2">
-                                                            #{msg.admin__cms_collections_translation_desc}
-                                                        </div>
+                                                        <div class="admin__form-help-text in mb-2">#{msg.admin__cms_collections_translation_desc}</div>
 
                                                         <!-- PROGRESS BAR FOR COLLECTION NAMES-->
                                                         <div class="admin__cms-collections-progress-bar-wrapper mb-4">
@@ -219,8 +211,7 @@
                                                                 <span class="admin__cms-collections-progress-heading">
                                                                     #{msg.label__crowdsourcing_campaign_progress}
                                                                 </span>
-                                                                <div
-                                                                    class="admin__cms-collections-progress-bar-numbers">
+                                                                <div class="admin__cms-collections-progress-bar-numbers">
                                                                     <span>
                                                                         (#{group.fullyTranslatedEntryCount} #{msg.of}
                                                                         #{group.entryCount})
@@ -243,8 +234,7 @@
                                                             <div class="col-12 d-flex justify-content-center">
                                                                 <ui:fragment rendered="#{!adminBean.translationLocked}">
                                                                     <!-- TRANSLATIONS INCOMPLETE - SHOW TRANSLATE BUTTON -->
-                                                                    <ui:fragment
-                                                                        rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
+                                                                    <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
                                                                         <a
                                                                             class="btn btn--full"
                                                                             href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
@@ -254,8 +244,7 @@
                                                                     </ui:fragment>
 
                                                                     <!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
-                                                                    <ui:fragment
-                                                                        rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
+                                                                    <ui:fragment rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
                                                                         <a
                                                                             class="btn btn--default"
                                                                             href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
@@ -276,9 +265,7 @@
                                             </c:when>
                                             <c:otherwise>
                                                 <div class="admin__boxed-entry -danger">
-                                                    <h2>
-                                                        #{msg.admin__translations__missing_write_permissions__title}
-                                                    </h2>
+                                                    <h2>#{msg.admin__translations__missing_write_permissions__title}</h2>
                                                     <h:outputText
                                                         escape="false"
                                                         value="#{msg.admin__translations__missing_write_permissions__description}" />
@@ -291,9 +278,7 @@
                                     <ui:fragment rendered="#{cmsCollectionsBean.displaySolrFieldSelectionWidget}">
                                         <div class="admin__default-block">
                                             <h2>#{msg.admin__cms_collections_solr_field}</h2>
-                                            <div class="admin__form-help-text in mb-4">
-                                                #{msg.admin__cms_collections_solr_field_desc}
-                                            </div>
+                                            <div class="admin__form-help-text in mb-4">#{msg.admin__cms_collections_solr_field_desc}</div>
                                             <div class="d-flex">
                                                 <h:selectOneMenu
                                                     id="SolrFieldSelect"
@@ -311,9 +296,7 @@
                                     <!-- PREVIEW -->
                                     <div class="admin__default-block">
                                         <h2>#{msg.admin__cms_collections_preview}</h2>
-                                        <div class="admin__form-help-text in mb-4">
-                                            #{msg.admin__cms_collections_preview_description}
-                                        </div>
+                                        <div class="admin__form-help-text in mb-4">#{msg.admin__cms_collections_preview_description}</div>
                                         <div class="row">
                                             <div class="col-12 d-flex justify-content-center">
                                                 <h:outputLink

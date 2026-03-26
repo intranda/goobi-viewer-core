@@ -5,9 +5,7 @@
     <name>cms__template_29__title</name>
     <description>cms__template_29__description</description>
     <icon>cms_template_29_browse.png</icon>
-    <html>
-cms_template_29_browse.xhtml
-    </html>
+    <html>cms_template_29_browse.xhtml</html>
     <options>
         <appliesToExpandedUrl>true</appliesToExpandedUrl>
     </options>

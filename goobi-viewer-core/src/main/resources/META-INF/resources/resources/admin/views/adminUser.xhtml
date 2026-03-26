@@ -89,8 +89,7 @@
                             </div>
 
                             <div class="admin__content-side -sticky">
-                                <ui:fragment
-                                    rendered="#{!adminBean.currentUser.copy.active and !adminBean.currentUser.copy.anonymous}">
+                                <ui:fragment rendered="#{!adminBean.currentUser.copy.active and !adminBean.currentUser.copy.anonymous}">
                                     <!-- ACCOUNT ACTIVATION -->
                                     <div class="admin__default-block -warning">
                                         <div class="row">
@@ -98,9 +97,7 @@
                                                 <h2>#{msg.admin__user_activation}</h2>
                                             </div>
                                         </div>
-                                        <div class="admin__form-help-text in mb-3">
-                                            #{msg.admin__user_activation_description}
-                                        </div>
+                                        <div class="admin__form-help-text in mb-3">#{msg.admin__user_activation_description}</div>
 
                                         <div class="row">
                                             <div class="col-6">#{msg.admin__user_activation_label}:</div>

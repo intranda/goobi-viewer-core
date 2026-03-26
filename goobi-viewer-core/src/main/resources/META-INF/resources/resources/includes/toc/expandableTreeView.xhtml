@@ -10,8 +10,7 @@
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- EXPANDABLE TREEVIEW -->
-    <h:panelGroup
-        rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
+    <h:panelGroup rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
         <div id="expandableToc">
             <!-- EXPAND ALL -->
             <div class="toc__list-expandable-all">
@@ -131,8 +130,6 @@
             </nav>
         </div>
 
-        <script type="text/javascript">
-viewerJS.expandableToc.init();
-        </script>
+        <script type="text/javascript">viewerJS.expandableToc.init();</script>
     </h:panelGroup>
 </ui:composition>

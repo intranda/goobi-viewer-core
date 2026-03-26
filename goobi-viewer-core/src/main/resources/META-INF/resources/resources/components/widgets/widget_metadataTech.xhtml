@@ -23,9 +23,7 @@
                     class="widget__topbar widget-metadata-tech__topbar #{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'metadata-tech') ? 'collapsible' : ''} #{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'metadata-tech') ? 'in' : ''}"
                     tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'metadata-tech') ? '0' : ''}"
                     role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'metadata-tech') ? 'button' : ''}">
-                    <h2 class="widget__title widget-metadata__title widget-metadata-tech__title">
-                        #{msg.metadataTech}
-                    </h2>
+                    <h2 class="widget__title widget-metadata__title widget-metadata-tech__title">#{msg.metadataTech}</h2>
 
                     <div class="widget__topbar-icons-container">
                         <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
@@ -74,16 +72,14 @@
                                                 varStatus="status">
                                                 <ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
                                                     <ui:fragment rendered="#{child.singleString}">
-                                                        <ui:include
-                                                            src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                                        <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
                                                             <ui:param
                                                                 name="metadata"
                                                                 value="#{metadata.childMetadata[status.index]}" />
                                                         </ui:include>
                                                     </ui:fragment>
                                                     <ui:fragment rendered="#{!child.singleString}">
-                                                        <ui:include
-                                                            src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                                        <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
                                                             <ui:param
                                                                 name="metadata"
                                                                 value="#{metadata.childMetadata[status.index]}" />
@@ -140,7 +136,7 @@
         </ui:fragment>
 
         <script type="text/javascript">
-var normdataWidgetConfig = {
+            var normdataWidgetConfig = {
     path: '#{request.contextPath}',
     lang: {
         popoverTitle: '#{msg.normdataPopoverTitle}',

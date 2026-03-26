@@ -5,9 +5,7 @@
     <name>cms__template_10__title</name>
     <description>cms__template_10__description</description>
     <icon>cms_template_10_searchListCustom.png</icon>
-    <html>
-cms_template_10_searchListCustom.xhtml
-    </html>
+    <html>cms_template_10_searchListCustom.xhtml</html>
     <content>
         <item
             id="queryList01"

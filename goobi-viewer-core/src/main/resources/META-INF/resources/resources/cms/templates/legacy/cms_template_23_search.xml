@@ -5,9 +5,7 @@
     <name>cms__template_23__title</name>
     <description>cms__template_23__description</description>
     <icon>cms_template_23_search.png</icon>
-    <html>
-cms_template_23_search.xhtml
-    </html>
+    <html>cms_template_23_search.xhtml</html>
 
     <content>
         <item

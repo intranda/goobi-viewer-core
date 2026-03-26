@@ -58,9 +58,7 @@
                                     type="button"
                                     class="widget-geofacetting__action-expand"
                                     aria-label="#{msg.widget_geofacetting__area_facetting}">
-                                    <div class="widget-geofacetting__action-expand-hint">
-                                        #{msg.widget_geofacetting__area_facetting}
-                                    </div>
+                                    <div class="widget-geofacetting__action-expand-hint">#{msg.widget_geofacetting__area_facetting}</div>
                                 </button>
                             </div>
                         </div>
@@ -125,6 +123,7 @@
                     </div>
                 </div>
                 <script type="text/javascript">
+                    //<![CDATA[
                     $(document).ready(e => {
                        let config = {
                          		areaString: '#{searchBean.facets.geoFacetFeature}',
@@ -135,11 +134,7 @@
                          			hitsLayer: {
                          				allowMovingFeatures: false,
                          				popoverOnHover: true,
-                         				popover: $( '
-                    <div>
-                        <p data-metadata="title" />
-                    </div>
-                    ' ),
+                         				popover: $( '<div><p data-metadata="title"></p></div>' ),
                          				clusterMarkers: true,
                          				style: {
                          					fillOpacity: 0.02,
@@ -191,6 +186,7 @@
                                             center: [0,0] //long, lat
                                        	})
                     })
+                    //]]>
                 </script>
             </h:form>
         </ui:fragment>

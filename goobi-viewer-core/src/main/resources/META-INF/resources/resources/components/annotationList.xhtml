@@ -29,10 +29,8 @@
                     value="#{cc.attrs.contentList}">
                     <h:panelGroup rendered="#{!content.isEmpty() and content.type != 'GEOLOCATION'}">
                         <li id="words-#{content.id}">
-                            <ui:fragment
-                                rendered="#{!content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
-                                <div
-                                    class="widget-annotations__entry #{content.isOnThisPage(activeDocumentBean.viewManager.currentPage) ? '-onpage' : ''}">
+                            <ui:fragment rendered="#{!content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
+                                <div class="widget-annotations__entry #{content.isOnThisPage(activeDocumentBean.viewManager.currentPage) ? '-onpage' : ''}">
                                     <div class="widget-annotations__type">
                                         <util:icon icon="#{content.iconName}" />
                                     </div>
@@ -80,8 +78,7 @@
                                     </div>
                                 </div>
                             </ui:fragment>
-                            <ui:fragment
-                                rendered="#{content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
+                            <ui:fragment rendered="#{content.isOnOtherPage(activeDocumentBean.viewManager.currentPage)}">
                                 <h:outputLink
                                     pt:class="widget-annotations__entry #{content.isOnThisPage(activeDocumentBean.viewManager.currentPage) ? '-onpage' : ''}"
                                     value="#{content.pageUrl}"

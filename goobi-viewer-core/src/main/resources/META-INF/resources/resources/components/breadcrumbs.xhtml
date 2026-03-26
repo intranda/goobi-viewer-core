@@ -37,8 +37,7 @@
                             var="breadcrumb"
                             varStatus="status">
                             <!-- FIRST BREADCRUMB: ICON WITH LINK - ACTUAL PAGE IS NOT HOMEPAGE -->
-                            <h:panelGroup
-                                rendered="#{(status.first and !status.last and breadcrumb.link) and (cc.attrs.showIcon == true)}">
+                            <h:panelGroup rendered="#{(status.first and !status.last and breadcrumb.link) and (cc.attrs.showIcon == true)}">
                                 <li class="breadcrumbs__crumb">
                                     <a
                                         href="#{breadcrumb.url}"
@@ -78,8 +77,7 @@
                             </h:panelGroup>
 
                             <!-- FIRST BREADCRUMB: TEXT WITH LINK - ACTUAL PAGE IS NOT HOMEPAGE -->
-                            <h:panelGroup
-                                rendered="#{(status.first and !status.last and breadcrumb.link) and (cc.attrs.showIcon == false)}">
+                            <h:panelGroup rendered="#{(status.first and !status.last and breadcrumb.link) and (cc.attrs.showIcon == false)}">
                                 <li class="breadcrumbs__crumb">
                                     <a href="#{breadcrumb.url}">
                                         <h:outputText

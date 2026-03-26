@@ -49,9 +49,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
-            <description>
-                Inline color for the wrapper; forwarded as style=\"color:…\" so currentColor picks it up.
-            </description>
+            <description>Inline color for the wrapper; forwarded as style=\"color:…\" so currentColor picks it up.</description>
             <name>color</name>
             <required>false</required>
             <type>java.lang.String</type>

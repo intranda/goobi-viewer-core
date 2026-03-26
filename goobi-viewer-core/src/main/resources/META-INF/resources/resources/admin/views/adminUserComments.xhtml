@@ -41,8 +41,7 @@
                                 <div class="admin__table-tools">
                                     <!-- PAGINATOR -->
                                     <div class="admin__table-paginator">
-                                        <viewerComponent:dataTablePaginator
-                                            tableValues="#{adminCommentBean.lazyModelComments}" />
+                                        <viewerComponent:dataTablePaginator tableValues="#{adminCommentBean.lazyModelComments}" />
                                     </div>
                                     <!-- FILTER -->
                                     <div class="admin__table-filter">
@@ -165,9 +164,7 @@
                             <div class="admin__content-side -sticky">
                                 <div class="admin__default-block">
                                     <h2>#{msg.admin__overview}</h2>
-                                    <div class="admin__form-help-text in mb-2">
-                                        #{msg.admin__comment_groups_all_comments_back_to_overview_info}
-                                    </div>
+                                    <div class="admin__form-help-text in mb-2">#{msg.admin__comment_groups_all_comments_back_to_overview_info}</div>
                                     <div class="d-flex justify-content-center mt-2">
                                         <a
                                             href="#{request.contextPath}/admin/comments"

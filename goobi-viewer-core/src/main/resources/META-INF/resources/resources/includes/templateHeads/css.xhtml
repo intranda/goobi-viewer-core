@@ -77,9 +77,7 @@
         <c:forEach
             var="path"
             items="#{cssPaths}">
-            <script>
-                console.log('%c#{path[0]}', 'background: #3365a9; color: #fff; padding: 2px 6px; border-radius: 2px;');
-            </script>
+            <script>console.log('%c#{path[0]}', 'background: #3365a9; color: #fff; padding: 2px 6px; border-radius: 2px;');</script>
         </c:forEach>
     </c:if>
 </ui:composition>

@@ -291,8 +291,8 @@ public final class BeanUtils {
             if (ret != null) {
                 return ret;
             }
-        } catch (IllegalStateException e) {
-            //
+        } catch (IllegalStateException | IndexOutOfBoundsException e) {
+            // CDI container not available or already shut down (Weld may throw IndexOutOfBoundsException during shutdown)
         }
         // Via FacesContext
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext().getContext() != null) {
@@ -333,7 +333,10 @@ public final class BeanUtils {
                 CreationalContext ctx = bm.createCreationalContext(bean);
                 return bm.getReference(bean, clazz, ctx);
             }
-        } catch (IllegalArgumentException | IllegalStateException | NullPointerException e) {
+        } catch (IllegalStateException e) {
+            // Expected during CDI container shutdown (e.g. in-flight requests after Weld has stopped)
+            logger.warn("CDI container not available when looking up bean '{}': {}", name, e.getMessage());
+        } catch (IllegalArgumentException | NullPointerException e) {
             logger.error("Error when getting bean by name '{}'", name, e);
         }
 
@@ -584,12 +587,17 @@ public final class BeanUtils {
      */
     public static UserBean getUserBeanFromSession(HttpSession session) {
         if (session != null) {
-            Object bean = session.getAttribute("userBean");
-            if (bean != null) {
-                return (UserBean) bean;
+            try {
+                Object bean = session.getAttribute("userBean");
+                if (bean != null) {
+                    return (UserBean) bean;
+                }
+                return findInstanceInSessionAttributes(session, UserBean.class)
+                        .orElse(null);
+            } catch (IllegalStateException e) {
+                // Session was invalidated before the request finished
+                logger.warn("Session already invalidated when retrieving userBean: {}", e.getMessage());
             }
-            return findInstanceInSessionAttributes(session, UserBean.class)
-                    .orElse(null);
         }
 
         return null;

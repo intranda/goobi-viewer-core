@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import jakarta.annotation.PostConstruct;
@@ -70,9 +71,13 @@ public class ContentBean implements Serializable {
     /**
      * PI for which {@link #userGeneratedContentsForDisplay} is loaded
      */
-    private String pi;
-    /** User generated contents to display on this page. */
-    private List<DisplayUserGeneratedContent> userGeneratedContentsForDisplay;
+    private volatile String pi;
+    /**
+     * User generated contents to display on this page.
+     * Uses AtomicReference for thread-safe access to the list reference,
+     * since volatile alone is insufficient for compound check-then-act operations.
+     */
+    private final AtomicReference<List<DisplayUserGeneratedContent>> userGeneratedContentsForDisplay = new AtomicReference<>();
 
     /**
      * Empty Constructor.
@@ -96,7 +101,7 @@ public class ContentBean implements Serializable {
      */
     public void resetContentList() {
         logger.trace("resetContentList");
-        userGeneratedContentsForDisplay = null;
+        userGeneratedContentsForDisplay.set(null);
     }
 
     /**
@@ -113,11 +118,12 @@ public class ContentBean implements Serializable {
     public List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("getUserGeneratedContentsForDisplay"); //NOSONAR Debug
-        if (pi != null && (userGeneratedContentsForDisplay == null || !pi.equals(this.pi))) {
+        if (pi != null && (userGeneratedContentsForDisplay.get() == null || !pi.equals(this.pi))) {
             loadUserGeneratedContentsForDisplay(pi, BeanUtils.getRequest());
         }
-        if (userGeneratedContentsForDisplay != null && !userGeneratedContentsForDisplay.isEmpty()) {
-            return userGeneratedContentsForDisplay;
+        List<DisplayUserGeneratedContent> snapshot = userGeneratedContentsForDisplay.get();
+        if (snapshot != null && !snapshot.isEmpty()) {
+            return List.copyOf(snapshot);
         }
 
         return Collections.emptyList();
@@ -157,9 +163,6 @@ public class ContentBean implements Serializable {
             logger.debug("pi is null, cannot load");
             return;
         }
-        this.pi = pi;
-        userGeneratedContentsForDisplay = new ArrayList<>();
-
         List<CrowdsourcingAnnotation> allAnnotationsForRecord = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
 
         List<DisplayUserGeneratedContent> allContent = allAnnotationsForRecord.stream()
@@ -175,6 +178,7 @@ public class ContentBean implements Serializable {
                 .filter(ugc -> ugc.isCrowdsourcingModuleContent()).toList();
         allContent.addAll(moduleContent);
 
+        List<DisplayUserGeneratedContent> result = new ArrayList<>();
         for (DisplayUserGeneratedContent ugcContent : allContent) {
             // Do not add empty comments
             if (ugcContent.isEmpty()) {
@@ -182,10 +186,14 @@ public class ContentBean implements Serializable {
             }
             boolean accessible = isAccessible(ugcContent, request);
             if (accessible) {
-                userGeneratedContentsForDisplay.add(ugcContent);
+                result.add(ugcContent);
             }
         }
-        logger.trace("Loaded {} user generated contents for pi {}", userGeneratedContentsForDisplay.size(), this.pi);
+        logger.trace("Loaded {} user generated contents for pi {}", result.size(), pi);
+        // Publish the fully built list and pi; AtomicReference ensures the list
+        // reference is visible to other threads without the pitfalls of volatile on a List.
+        this.pi = pi;
+        this.userGeneratedContentsForDisplay.set(result);
     }
 
     /**

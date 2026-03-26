@@ -51,7 +51,7 @@ public class LanguageHelper {
 
     private ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
     private PeriodicReloadingTrigger trigger;
-    private ScheduledExecutorService triggerExecutor;
+    private ScheduledExecutorService executorService;
 
     /**
      * <p>
@@ -69,9 +69,9 @@ public class LanguageHelper {
                                     .setListDelimiterHandler(new DefaultListDelimiterHandler('&')) // TODO Why '&'?
                                     .setThrowExceptionOnMissing(false));
             builder.getConfiguration().setExpressionEngine(new XPathExpressionEngine());
-            triggerExecutor = Executors.newScheduledThreadPool(1);
+            executorService = Executors.newSingleThreadScheduledExecutor();
             trigger = new PeriodicReloadingTrigger(builder.getReloadingController(),
-                    null, 10, TimeUnit.SECONDS, triggerExecutor);
+                    null, 10, TimeUnit.SECONDS, executorService);
             trigger.start();
         } catch (ConfigurationException e) {
             logger.error(e.getMessage());
@@ -80,12 +80,16 @@ public class LanguageHelper {
 
     public void shutdown() {
         if (trigger != null) {
-            trigger.shutdown(false);
+            trigger.shutdown(true);
         }
-        if (triggerExecutor != null) {
-            triggerExecutor.shutdownNow();
+        if (executorService != null) {
+            // Interrupt the scheduled thread immediately and wait for it to actually stop,
+            // so Tomcat does not report a false memory-leak warning on shutdown.
+            executorService.shutdownNow();
             try {
-                triggerExecutor.awaitTermination(2, TimeUnit.SECONDS);
+                if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                    logger.warn("LanguageHelper executor did not terminate within 5 seconds");
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

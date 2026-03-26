@@ -38,8 +38,7 @@
                         <div class="admin__table-tools">
                             <!-- PAGINATOR -->
                             <div class="admin__table-paginator">
-                                <viewerComponent:dataTablePaginator
-                                    tableValues="#{annotationBean.lazyModelAnnotations}" />
+                                <viewerComponent:dataTablePaginator tableValues="#{annotationBean.lazyModelAnnotations}" />
                             </div>
                             <!-- DOWNLOAD ALL -->
 
@@ -227,9 +226,7 @@
                     </div>
 
                     <div class="admin__overlay-bar">
-                        <div class="admin__overlay-bar-message">
-                            #{msg.admin__crowdsourcing_annotations_export_excel_file}:
-                        </div>
+                        <div class="admin__overlay-bar-message">#{msg.admin__crowdsourcing_annotations_export_excel_file}:</div>
                         <h:commandButton
                             value="#{msg.save}"
                             styleClass="btn btn--success admin__overlay-bar-action"

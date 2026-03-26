@@ -104,9 +104,7 @@
 
                                             <!-- DATE RANGE -->
                                             <div class="search-calendar__newspaper-search-date">
-                                                <span class="search-calendar__newspaper-search-date-label">
-                                                    #{msg.newspaper__date_from}
-                                                </span>
+                                                <span class="search-calendar__newspaper-search-date-label">#{msg.newspaper__date_from}</span>
                                                 <div class="search-calendar__newspaper-search-date-fields">
                                                     <div class="datepicker-input">
                                                         <h:inputText
@@ -125,9 +123,7 @@
                                                                 svgClass="icon" />
                                                         </span>
                                                     </div>
-                                                    <span class="search-calendar__newspaper-search-date-sep">
-                                                        #{msg.newspaper__date_to}
-                                                    </span>
+                                                    <span class="search-calendar__newspaper-search-date-sep">#{msg.newspaper__date_to}</span>
                                                     <div class="datepicker-input">
                                                         <h:inputText
                                                             id="newspaperDateTo"
@@ -181,8 +177,7 @@
                             </h:panelGroup>
 
                             <!-- YEAR SELECTION (non-newspaper anchors/groups) -->
-                            <h:panelGroup
-                                rendered="#{!activeDocumentBean.anchor and (activeDocumentBean.anchor or activeDocumentBean.group)}">
+                            <h:panelGroup rendered="#{!activeDocumentBean.anchor and (activeDocumentBean.anchor or activeDocumentBean.group)}">
                                 <div class="search-calendar__input">
                                     <div class="form-horizontal">
                                         <div class="form-group form-row align-items-center">
@@ -222,8 +217,7 @@
                             </h:panelGroup>
 
                             <!-- SEARCH CALENDAR MONTHS -->
-                            <h:panelGroup
-                                rendered="#{fn:length(activeDocumentBean.viewManager.calendarView.calendarItems) gt 0}">
+                            <h:panelGroup rendered="#{fn:length(activeDocumentBean.viewManager.calendarView.calendarItems) gt 0}">
                                 <div class="search-calendar__months">
                                     <div class="row">
                                         <ui:repeat

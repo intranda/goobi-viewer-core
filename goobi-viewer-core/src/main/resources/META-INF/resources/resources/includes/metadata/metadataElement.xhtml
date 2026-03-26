@@ -16,8 +16,7 @@
 
     <ui:fragment rendered="#{!metadataElement.skip}">
         <div class="metadata__element-wrapper">
-            <ui:fragment
-                rendered="#{renderTitle and !metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}">
+            <ui:fragment rendered="#{renderTitle and !metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}">
                 <h2 class="metadata__elements-h2">
                     <h:outputText value="#{msg[metadataElement.docStructTypeLabel]}" />
                 </h2>

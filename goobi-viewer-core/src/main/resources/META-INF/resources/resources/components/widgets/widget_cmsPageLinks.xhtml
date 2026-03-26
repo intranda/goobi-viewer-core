@@ -25,9 +25,7 @@
                     <h:panelGroup rendered="#{!cc.attrs.widget.collapsed}">
                         <div class="widget__topbar widget-cms-page-links__topbar">
                             <ui:fragment rendered="#{!cc.attrs.widget.title.isEmpty()}">
-                                <h2 class="widget__title widget-cms-page-links__title">
-                                    #{cc.attrs.widget.title.textOrDefault}
-                                </h2>
+                                <h2 class="widget__title widget-cms-page-links__title">#{cc.attrs.widget.title.textOrDefault}</h2>
                             </ui:fragment>
                         </div>
 
@@ -36,8 +34,7 @@
                                 <ui:repeat
                                     value="#{cc.attrs.widget.pageList.pages}"
                                     var="pageId">
-                                    <li
-                                        class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.toString().equals(pageId) ? 'active': ''}">
+                                    <li class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.toString().equals(pageId) ? 'active': ''}">
                                         <a href="#{cmsBean.getPageUrl(pageId)}">#{cmsBean.getPage(pageId).menuTitle}</a>
                                     </li>
                                 </ui:repeat>
@@ -46,9 +43,7 @@
                     </h:panelGroup>
                     <h:panelGroup rendered="#{cc.attrs.widget.collapsed}">
                         <h2>
-                            <ui:fragment rendered="#{!cc.attrs.widget.title.isEmpty()}">
-                                #{cc.attrs.widget.title.textOrDefault}
-                            </ui:fragment>
+                            <ui:fragment rendered="#{!cc.attrs.widget.title.isEmpty()}">#{cc.attrs.widget.title.textOrDefault}</ui:fragment>
                             <a
                                 href="#customCollapse-#{cc.attrs.widget.id}"
                                 data-toggle="collapse"
@@ -66,8 +61,7 @@
                                 <ui:repeat
                                     value="#{cc.attrs.widget.pageList}"
                                     var="pageId">
-                                    <li
-                                        class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.equals(pageId)}">
+                                    <li class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.equals(pageId)}">
                                         <a href="#{cmsBean.getPageUrl(pageId)}">#{cmsBean.getPage(pageId).menuTitle}</a>
                                     </li>
                                 </ui:repeat>

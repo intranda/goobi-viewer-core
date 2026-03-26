@@ -1634,14 +1634,15 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public TOC getToc() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        if (viewManager == null) {
+        ViewManager vm = viewManager;
+        if (vm == null) {
             return null;
         }
-        synchronized (viewManager) {
-            if (viewManager.getToc() == null) {
-                viewManager.setToc(createTOC());
+        synchronized (vm) {
+            if (vm.getToc() == null) {
+                vm.setToc(createTOC());
             }
-            return viewManager.getToc();
+            return vm.getToc();
         }
     }
 
@@ -2526,7 +2527,11 @@ public class ActiveDocumentBean implements Serializable {
     public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
         RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
         if (map == null) {
-            map = new RecordGeoMap(getTopDocument());
+            StructElement topDocument = getTopDocument();
+            if (topDocument == null) {
+                return new RecordGeoMap();
+            }
+            map = new RecordGeoMap(topDocument);
             this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), map);
         }
         return map;

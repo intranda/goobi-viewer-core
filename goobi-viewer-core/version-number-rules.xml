@@ -53,6 +53,12 @@
                 <ignoreVersion type="regex">5.*</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="org.eclipse.persistence" artifactId="org.eclipse.persistence*">
+            <ignoreVersions>
+                <ignoreVersion type="regex">5.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+
 
 
         <!-- Other -->

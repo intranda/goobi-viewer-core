@@ -42,6 +42,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -142,7 +143,8 @@ public class AnnotationResource {
     @jakarta.ws.rs.Path(ANNOTATIONS_ANNOTATION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
-    @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
+    @ApiResponse(responseCode = "200", description = "Return the annotation with the given id")
+    @ApiResponse(responseCode = "404", description = "No annotation found for the given id")
     public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
@@ -161,8 +163,9 @@ public class AnnotationResource {
     @GET
     @jakarta.ws.rs.Path(ANNOTATIONS_COMMENT)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
-    @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
+    @Operation(tags = { "annotations" }, summary = "Get a comment annotation by its identifier")
+    @ApiResponse(responseCode = "200", description = "Return the comment annotation with the given id")
+    @ApiResponse(responseCode = "404", description = "No comment annotation found for the given id")
     public IAnnotation getComment(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
@@ -180,15 +183,16 @@ public class AnnotationResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Create a new annotation")
+    @ApiResponse(responseCode = "201", description = "The created annotation")
     @ApiResponse(responseCode = "501",
-            description = "Persisting this king of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest,"
+            description = "Persisting this kind of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest,"
                     + " canvas or part of a canvas may be persisted")
-    public IAnnotation addAnnotation(IncomingAnnotation anno) throws DAOException, NotImplementedException {
+    public Response addAnnotation(IncomingAnnotation anno) throws DAOException, NotImplementedException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = createPersistentAnnotation(anno);
         if (pAnno != null) {
             DataManager.getInstance().getDao().addAnnotation(pAnno);
-            return converter.getAsWebAnnotation(pAnno);
+            return Response.status(Response.Status.CREATED).entity(converter.getAsWebAnnotation(pAnno)).build();
         }
         throw new NotImplementedException();
     }

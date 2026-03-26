@@ -52,6 +52,7 @@ import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
 /**
  * <p>
@@ -81,8 +82,11 @@ public class SearchResultResource {
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "search" }, summary = "Download current search as RIS export file")
     @AccessConditionBinding
-    public Response getRISAsFile(@PathParam("query") String query, @PathParam("sortString") String sortString,
-            @PathParam("activeFacetString") String activeFacetString, @PathParam("proximitySearchDistance") int proximitySearchDistance)
+    public Response getRISAsFile(
+            @Parameter(description = "Search query string") @PathParam("query") String query,
+            @Parameter(description = "Sort string for the search results") @PathParam("sortString") String sortString,
+            @Parameter(description = "Active facet filter string") @PathParam("activeFacetString") String activeFacetString,
+            @Parameter(description = "Maximum word distance for proximity search") @PathParam("proximitySearchDistance") int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, ViewerConfigurationException {
         String currentQuery = SearchHelper.prepareQuery(query);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);

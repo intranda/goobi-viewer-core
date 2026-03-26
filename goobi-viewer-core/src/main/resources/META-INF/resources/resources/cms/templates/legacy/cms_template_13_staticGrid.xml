@@ -5,9 +5,7 @@
     <name>cms__template_13__title</name>
     <description>cms__template_13__description</description>
     <icon>cms_template_13_staticGrid.png</icon>
-    <html>
-cms_template_13_staticGrid.xhtml
-    </html>
+    <html>cms_template_13_staticGrid.xhtml</html>
     <content>
         <item
             id="text"

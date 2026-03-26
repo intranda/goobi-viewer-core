@@ -6,16 +6,19 @@ module.exports = {
     // === Global defaults ===
     useTabs: false,
     tabWidth: 4,
-    printWidth: 120,
+    printWidth: 150,
     singleQuote: true,
     semi: true,
     trailingComma: 'es5',
     bracketSpacing: true,
     arrowParens: 'always',
     endOfLine: 'lf',
+    embeddedLanguageFormatting: 'off',
 
     // Plugins
-    plugins: [require.resolve('@prettier/plugin-xml')],
+    // Wrapper around @prettier/plugin-xml that prevents embedded JS formatter
+    // from reformatting HTML strings inside <script> tags in XHTML files.
+    plugins: [require.resolve('./prettier-plugin-xhtml-script-fix.mjs')],
 
     // === File-specific overrides ===
     overrides: [
@@ -41,7 +44,7 @@ module.exports = {
                 htmlWhitespaceSensitivity: 'ignore',
                 useTabs: false,
                 tabWidth: 4,
-                printWidth: 120,
+                printWidth: 160,
             },
         },
 
@@ -56,7 +59,7 @@ module.exports = {
                 xmlWhitespaceSensitivity: 'ignore',
                 useTabs: false,
                 tabWidth: 4,
-                printWidth: 120,
+                printWidth: 160,
                 semi: true,
                 singleQuote: true,
             },

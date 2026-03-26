@@ -80,9 +80,7 @@
                                         for="feedbackModal__feedbackName"
                                         class="col-lg-3 control-label">
                                         <span class="feedback-modal__label-span">#{msg.name}:</span>
-                                        <span class="feedback-modal__label-required-field">
-                                            (#{msg.form__required_field})
-                                        </span>
+                                        <span class="feedback-modal__label-required-field">(#{msg.form__required_field})</span>
                                     </label>
 
                                     <div class="col-12 col-lg-9">
@@ -127,9 +125,7 @@
                                         for="feedback-modal__feedbackEmail"
                                         class="col-lg-3 control-label">
                                         <span class="feedback-modal__label-span">#{msg.email}:</span>
-                                        <span class="feedback-modal__label-required-field">
-                                            (#{msg.form__required_field})
-                                        </span>
+                                        <span class="feedback-modal__label-required-field">(#{msg.form__required_field})</span>
                                     </label>
                                     <div class="cms-module__option-control col-12 col-lg-9">
                                         <div class="cms-module__option-message">
@@ -222,9 +218,7 @@
                                         for="feedback-modal__feedbackMessage"
                                         class="col-lg-3 control-label">
                                         <span class="feedback-modal__label-span">#{msg.message}:</span>
-                                        <span class="feedback-modal__label-required-field">
-                                            (#{msg.form__required_field})
-                                        </span>
+                                        <span class="feedback-modal__label-required-field">(#{msg.form__required_field})</span>
                                     </label>
 
                                     <div class="col-12 col-lg-9">
@@ -253,9 +247,7 @@
                                             #{msg.user__security_question}:
                                         </label>
                                         <div class="col-12 col-12 col-lg-9 composite-control pt-0">
-                                            <span class="control-label d-block pb-1">
-                                                #{msg[feedbackBean.captchaBean.securityQuestion.questionKey]}:
-                                            </span>
+                                            <span class="control-label d-block pb-1">#{msg[feedbackBean.captchaBean.securityQuestion.questionKey]}:</span>
                                             <h:messages
                                                 for="feedbackSecurityQuestion"
                                                 styleClass="m-0 p-0 pb-1 list-unstyled"
@@ -293,8 +285,7 @@
                                         <label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
                                     </div>
 
-                                    <div
-                                        class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch">
+                                    <div class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch">
                                         <h:selectOneRadio
                                             group="requiredFeedbackTerms"
                                             value="false"

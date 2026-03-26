@@ -222,8 +222,7 @@
                 </div>
 
                 <!-- SECURITY QUESTION -->
-                <ui:fragment
-                    rendered="#{cc.attrs.bean.captchaBean.resetSecurityQuestion() and cc.attrs.bean.captchaBean.securityQuestion != null}">
+                <ui:fragment rendered="#{cc.attrs.bean.captchaBean.resetSecurityQuestion() and cc.attrs.bean.captchaBean.securityQuestion != null}">
                     <div class="form-group form-row mb-0">
                         <label
                             id="feedbackSecurityQuestion"
@@ -231,9 +230,7 @@
                             #{msg.user__security_question}:
                         </label>
                         <div class="col-12 col-12 col-lg-9 composite-control pt-0">
-                            <span class="control-label d-block pb-1">
-                                #{msg[cc.attrs.bean.captchaBean.securityQuestion.questionKey]}:
-                            </span>
+                            <span class="control-label d-block pb-1">#{msg[cc.attrs.bean.captchaBean.securityQuestion.questionKey]}:</span>
                             <h:messages
                                 for="feedbackSecurityQuestion"
                                 styleClass="m-0 p-0 pb-1 list-unstyled"

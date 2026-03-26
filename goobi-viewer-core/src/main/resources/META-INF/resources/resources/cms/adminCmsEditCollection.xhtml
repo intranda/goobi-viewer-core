@@ -77,9 +77,7 @@
                                 <!-- LINK -->
                                 <h2>#{msg.cms_collections_link}</h2>
                                 <div class="admin__default-block">
-                                    <p class="admin__boxed-entry-description">
-                                        #{msg.admin__cms_collections_link_desc}
-                                    </p>
+                                    <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_link_desc}</p>
                                     <h:inputText
                                         id="textControlUrl"
                                         styleClass="form-control"
@@ -93,9 +91,7 @@
                                 <!-- IMAGE -->
                                 <h2>#{msg.cms_collections_image}</h2>
                                 <div class="admin__default-block">
-                                    <p class="admin__boxed-entry-description">
-                                        #{msg.admin__cms_collections_image_desc}
-                                    </p>
+                                    <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_image_desc}</p>
 
                                     <h:panelGroup
                                         layout="block"
@@ -144,15 +140,13 @@
                                             rendered="#{cmsCollectionsBean.imageMode == 'IMAGE'}">
                                             <!-- THUMBNAIL -->
                                             <div class="admin__cms-edit-collection-image-thumbnail">
-                                                <ui:fragment
-                                                    rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
+                                                <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
                                                     <img
                                                         src="#{cmsCollectionsBean.currentCollection.iconURI}"
                                                         class="img-fluid"
                                                         alt="" />
                                                 </ui:fragment>
-                                                <ui:fragment
-                                                    rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
+                                                <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
                                                     <img
                                                         src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
                                                         data-viewer-thumbnail="thumbnail"
@@ -252,9 +246,7 @@
                                     <h2>#{msg.admin__cms_collections_translation}</h2>
 
                                     <!-- DESCRIPTION AVAILABLE -->
-                                    <div class="admin__form-help-text in mb-3">
-                                        #{msg.admin__cms_collections_translation_desc}
-                                    </div>
+                                    <div class="admin__form-help-text in mb-3">#{msg.admin__cms_collections_translation_desc}</div>
 
                                     <!-- NO DESCRIPTION AVAILABLE -->
                                     <ui:fragment rendered="#{group.description eq ''}">
@@ -271,8 +263,7 @@
                                             <ui:fragment rendered="#{!adminBean.translationLocked}">
                                                 ´
                                                 <!-- TRANSLATIONS INCOMPLETE - SHOW TRANSLATE BUTTON -->
-                                                <ui:fragment
-                                                    rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
+                                                <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
                                                     <a
                                                         class="btn btn--full"
                                                         data-trigger="displayTranslations"
@@ -283,8 +274,7 @@
                                                 </ui:fragment>
 
                                                 <!-- TRANSLATIONS COMPLETE - SHOW GO TO TRANSLATIONS BUTTON -->
-                                                <ui:fragment
-                                                    rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
+                                                <ui:fragment rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
                                                     <a
                                                         class="btn btn--full"
                                                         data-trigger="displayTranslations"
@@ -308,23 +298,15 @@
                                 <h2>#{msg.admin__cms_collections_information}</h2>
                                 <div class="admin__cms-edit-collection-info-box">
                                     <div class="admin__cms-edit-collection-data-wrapper">
-                                        <div class="admin__cms-edit-collection-data-type mb-4">
-                                            #{msg.admin__cms_collections_info_internal_name}
-                                        </div>
-                                        <div class="admin__cms-edit-collection-data-value mb-4">
-                                            #{cmsCollectionsBean.currentCollection.name}
-                                        </div>
+                                        <div class="admin__cms-edit-collection-data-type mb-4">#{msg.admin__cms_collections_info_internal_name}</div>
+                                        <div class="admin__cms-edit-collection-data-value mb-4">#{cmsCollectionsBean.currentCollection.name}</div>
                                     </div>
                                     <ui:repeat
                                         var="value"
                                         value="#{cmsCollectionsBean.messageEntryForFieldValue.values}">
                                         <div class="admin__cms-edit-collection-data-wrapper">
-                                            <div class="admin__cms-edit-collection-data-type">
-                                                #{msg[value.language]}
-                                            </div>
-                                            <div class="admin__cms-edit-collection-data-value">
-                                                #{value.value != null ? value.value : '-/-'}
-                                            </div>
+                                            <div class="admin__cms-edit-collection-data-type">#{msg[value.language]}</div>
+                                            <div class="admin__cms-edit-collection-data-value">#{value.value != null ? value.value : '-/-'}</div>
                                         </div>
                                     </ui:repeat>
 
@@ -335,9 +317,7 @@
                                     <!-- 					</div> -->
 
                                     <!-- SHOW ALL RECORDS OF COLLECTION IN SEARCH HIT LIST -->
-                                    <div class="admin__form-help-text in mb-3 mt-4">
-                                        #{msg.admin__cms_collections__link_search_results}
-                                    </div>
+                                    <div class="admin__form-help-text in mb-3 mt-4">#{msg.admin__cms_collections__link_search_results}</div>
                                     <div class="row">
                                         <div class="col-12 d-flex justify-content-center">
                                             <h:outputLink

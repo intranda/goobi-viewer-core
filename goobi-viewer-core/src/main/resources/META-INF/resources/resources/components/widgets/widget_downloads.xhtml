@@ -507,9 +507,7 @@
                                 value="#{activeDocumentBean.viewManager.getPageDownloadUrl(option, activeDocumentBean.viewManager.currentPage)}"
                                 pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}.#{option.getExtension(activeDocumentBean.viewManager.currentPage.fileName)}">
                                 <span class="widget-downloads__download-image-size-radio-label">#{msg.image}</span>
-                                <span class="widget-downloads__download-image-size-radio-label">
-                                    #{msg[option.label]}
-                                </span>
+                                <span class="widget-downloads__download-image-size-radio-label">#{msg[option.label]}</span>
                             </h:outputLink>
                         </ui:repeat>
                     </ui:fragment>
@@ -705,8 +703,7 @@
                                                     value="#{activeDocumentBean.viewManager.firstPdfPage}"
                                                     pt:data-toggle="tooltip"
                                                     pt:title="#{msg.widget__downloads__page_range_tooltip_first_page}">
-                                                    <f:selectItems
-                                                        value="#{activeDocumentBean.viewManager.dropdownPages}" />
+                                                    <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
                                                 </h:selectOneMenu>
                                             </div>
                                         </div>
@@ -717,8 +714,7 @@
                                                     value="#{activeDocumentBean.viewManager.lastPdfPage}"
                                                     pt:data-toggle="tooltip"
                                                     pt:title="#{msg.widget__downloads__page_range_tooltip_last_page}">
-                                                    <f:selectItems
-                                                        value="#{activeDocumentBean.viewManager.dropdownPages}" />
+                                                    <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
                                                 </h:selectOneMenu>
                                             </div>
                                         </div>

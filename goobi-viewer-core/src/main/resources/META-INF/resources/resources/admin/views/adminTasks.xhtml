@@ -99,8 +99,7 @@
                                         aria-label="#{msg.admin__tasks__clear_all_button_confirmation}">
                                         <div class="admin__tasks-clear-all" />
                                         <div class="admin__tasks-icon">
-                                            <div
-                                                class="admin__tasks-button-trash #{messageQueueBean.paused ? '-hidden' : '-active'}">
+                                            <div class="admin__tasks-button-trash #{messageQueueBean.paused ? '-hidden' : '-active'}">
                                                 <util:icon icon="x" />
                                             </div>
                                         </div>
@@ -186,8 +185,7 @@
                                                         <ui:repeat
                                                             var="prop"
                                                             value="#{msgqueueticket.properties.keySet()}">
-                                                            <h:outputText
-                                                                value="#{prop}: #{msgqueueticket.properties[prop]} " />
+                                                            <h:outputText value="#{prop}: #{msgqueueticket.properties[prop]} " />
                                                             <br />
                                                         </ui:repeat>
                                                     </div>
@@ -383,8 +381,7 @@
                                             <div
                                                 class="admin__tasks-quartz-table-entry-name-wrapper"
                                                 role="gridcell">
-                                                <div
-                                                    class="admin__tasks-quartz-table-entry-buttons-wrapper #{entry.paused == true ? '-paused' : ''}">
+                                                <div class="admin__tasks-quartz-table-entry-buttons-wrapper #{entry.paused == true ? '-paused' : ''}">
                                                     <button
                                                         jsf:action="#{quartzBean.pauseJob}"
                                                         class="btn btn--clean admin__tasks-quartz-table-pause-button">
@@ -473,8 +470,7 @@
                             <div class="admin__table-tools flex-wrap">
                                 <!-- PAGINATOR -->
                                 <div class="admin__table-paginator">
-                                    <viewerComponent:dataTablePaginator
-                                        tableValues="#{messageQueueBean.lazyModelViewerHistory}" />
+                                    <viewerComponent:dataTablePaginator tableValues="#{messageQueueBean.lazyModelViewerHistory}" />
                                 </div>
                                 <!-- FILTER -->
                                 <div class="admin__table-filter b-3 mb-sm-0">
@@ -586,7 +582,7 @@
         </div>
 
         <script type="text/javascript">
-var dataTableConfig = {
+            var dataTableConfig = {
     dataTablePaginator: '#dataTablePaginator',
     txtField1: '#txtMoveTo1',
     txtField2: '#txtMoveTo2',

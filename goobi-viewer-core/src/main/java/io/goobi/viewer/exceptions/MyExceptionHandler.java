@@ -36,7 +36,6 @@ import jakarta.faces.context.ExceptionHandler;
 import jakarta.faces.context.ExceptionHandlerWrapper;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-import jakarta.faces.context.Flash;
 import jakarta.faces.event.ExceptionQueuedEvent;
 import jakarta.faces.event.ExceptionQueuedEventContext;
 import jakarta.faces.event.PhaseId;
@@ -88,10 +87,13 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             Throwable t = context.getException();
             Throwable cause = getCause(t);
             // Handle ViewExpiredExceptions here ... or even others :)
-            if (!t.getClass().equals(ViewExpiredException.class) && !t.getClass().equals(PrettyException.class)) {
-                logger.error("CLASS: {}", t.getClass().getName());
-            } else {
+            if (t.getClass().equals(ViewExpiredException.class) || t.getClass().equals(PrettyException.class)) {
                 logger.trace(t.getClass().getSimpleName());
+            } else if (cause instanceof IllegalStateException && cause.getMessage() != null
+                    && cause.getMessage().contains("Session already invalidated")) {
+                logger.warn("CLASS: {} (session invalidated)", t.getClass().getName());
+            } else {
+                logger.error("CLASS: {}", t.getClass().getName());
             }
             FacesContext fc = FacesContext.getCurrentInstance();
             if (fc == null) {
@@ -170,6 +172,10 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     String msg = getRootCause(t).getMessage();
                     logger.warn(msg);
                     handleError("Illegal URL parameter.", "general_no_url");
+                } else if (cause instanceof IllegalStateException && cause.getMessage() != null
+                        && cause.getMessage().contains("Session already invalidated")) {
+                    // Session was invalidated (e.g. timeout) while the request was still rendering — expected, not an error
+                    logger.warn("Session invalidated during request rendering: {}", cause.getMessage());
                 } else {
                     // All other exceptions
                     logger.error(t.getMessage(), t);
@@ -198,27 +204,23 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
         FacesContext fc = FacesContext.getCurrentInstance();
         Map<String, Object> requestMap = fc.getExternalContext().getRequestMap();
 
-        Flash flash = fc.getExternalContext().getFlash();
-        flash.setKeepMessages(true);
-
-        putNavigationState(requestMap, flash);
-        PhaseId phase = fc.getCurrentPhaseId();
-        if (PhaseId.RENDER_RESPONSE == phase) {
-            flash.putNow("ErrorPhase", phase.toString());
-            flash.putNow("errorDetails", errorDetails);
-            flash.putNow("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
-            flash.putNow("errorType", errorType);
-        } else {
-            flash.put("ErrorPhase", phase.toString());
-            flash.put("errorDetails", errorDetails);
-            flash.put("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
-            flash.put("errorType", errorType);
-        }
+        boolean responseCommitted = fc.getExternalContext().isResponseCommitted();
 
         requestMap.put("errMsg", errorDetails);
         requestMap.put("errorType", errorType);
 
-        redirect("pretty:error");
+        if (responseCommitted) {
+            // Cannot redirect when response is already committed.
+            fc.responseComplete();
+        } else {
+            HttpSession session = (HttpSession) fc.getExternalContext().getSession(true);
+            session.setAttribute("ErrorPhase", fc.getCurrentPhaseId().toString());
+            session.setAttribute("errorDetails", errorDetails);
+            session.setAttribute("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
+            session.setAttribute("errorType", errorType);
+            putNavigationState(requestMap, session);
+            redirect("pretty:error");
+        }
     }
 
     /**
@@ -262,13 +264,13 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
     /**
      * @param requestMap
-     * @param flash
+     * @param session
      */
-    public void putNavigationState(Map<String, Object> requestMap, Flash flash) {
+    public void putNavigationState(Map<String, Object> requestMap, HttpSession session) {
         NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
         if (navigationHelper != null) {
             requestMap.put("sourceUrl", navigationHelper.getCurrentUrl());
-            flash.put("sourceUrl", navigationHelper.getCurrentUrl());
+            session.setAttribute("sourceUrl", navigationHelper.getCurrentUrl());
         }
     }
 

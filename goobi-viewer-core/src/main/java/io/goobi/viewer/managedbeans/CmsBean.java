@@ -651,9 +651,10 @@ public class CmsBean implements Serializable {
      */
     public void setCurrentPage(CMSPage currentPage) {
         if (currentPage != null) {
-            this.currentPage = new CMSPage(currentPage);
-            this.currentPage.initialiseCMSComponents(templateManager);
-            this.currentPage.setListPage(1);
+            CMSPage page = new CMSPage(currentPage);
+            page.initialiseCMSComponents(templateManager);
+            page.setListPage(1);
+            this.currentPage = page;
             navigationHelper.setCmsPage(true);
             logger.trace("Set current cms page to {}", this.currentPage.getTitle());
         } else {

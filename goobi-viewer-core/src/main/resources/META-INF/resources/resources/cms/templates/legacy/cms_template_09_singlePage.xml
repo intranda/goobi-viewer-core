@@ -5,9 +5,7 @@
     <name>cms__template_09__title</name>
     <description>cms__template_09__description</description>
     <icon>cms_template_09_singlePage.png</icon>
-    <html>
-cms_template_09_singlePage.xhtml
-    </html>
+    <html>cms_template_09_singlePage.xhtml</html>
     <content>
         <item
             id="text01"
