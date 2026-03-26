@@ -328,7 +328,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         if (StringUtils.isEmpty(filename)) {
             filename = structElement.getFirstPageFieldValue(SolrConstants.FILENAME_HTML_SANDBOXED);
         }
-        if (anchor) {
+        if (anchor || DocType.GROUP.equals(docType)) {
             mimeType = structElement.getFirstVolumeFieldValue(SolrConstants.MIMETYPE);
         } else {
             mimeType = structElement.getMetadataValue(SolrConstants.MIMETYPE);
