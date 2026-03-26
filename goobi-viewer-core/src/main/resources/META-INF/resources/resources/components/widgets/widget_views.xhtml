@@ -79,7 +79,7 @@
                         <!-- Object -->
                         <h:panelGroup
                             visibility-class="widget-element"
-                            rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, contentType:[IMAGE, AUDIO, VIDEO, MODEL, PDF]}')}">
+                            rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, contentType:[MEDIA]}')}">
                             <li class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
                                 <h:outputLink
                                     value="#{navigationHelper.imageActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
@@ -146,7 +146,7 @@
                         <!-- Thumbnails -->
                         <h:panelGroup
                             visibility-class="widget-element"
-                            rendered="#{configurationBean.sidebarThumbsLinkVisible and displayConditions.matchRecord('{numPages:2, contentType:[IMAGE, AUDIO, VIDEO, MODEL, PDF]}')}">
+                            rendered="#{configurationBean.sidebarThumbsLinkVisible and displayConditions.matchRecord('{numPages:2, contentType:[MEDIA]}')}">
                             <li class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.thumbsActiveUrl}/#{activeDocumentBean.persistentIdentifier}/1/">
                                     <h:outputText value="#{msg.thumbGal}" />
