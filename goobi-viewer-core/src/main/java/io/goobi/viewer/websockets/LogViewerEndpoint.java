@@ -68,7 +68,7 @@ public class LogViewerEndpoint {
     @OnError
     public void onError(Session session, Throwable t) {
         if (!(t instanceof EOFException)) {
-            logger.warn("LogViewerEndpoint error: {}", t.getMessage());
+            logger.warn("LogViewerEndpoint error", t);
         }
         if (logFile != null) {
             MANAGER.unregisterSession(logFile, session);

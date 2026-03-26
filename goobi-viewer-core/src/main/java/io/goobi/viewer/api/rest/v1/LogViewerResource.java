@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,6 +57,7 @@ import jakarta.ws.rs.core.Response;
 public class LogViewerResource {
 
     private static final Logger logger = LogManager.getLogger(LogViewerResource.class);
+    private static final int MAX_READ_BYTES = 1_048_576;
 
     @GET
     @jakarta.ws.rs.Path("/{logfile}")
@@ -67,7 +69,8 @@ public class LogViewerResource {
         var optLogFile = LogFile.fromName(logfileName);
         if (optLogFile.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
-                .entity("{\"error\":\"Unknown log file: " + logfileName.replace("\"", "\\\"") + "\"}")
+                .type(MediaType.APPLICATION_JSON)
+                .entity("{\"error\":\"Unknown log file\"}")
                 .build();
         }
 
@@ -97,8 +100,11 @@ public class LogViewerResource {
             return Response.ok(json.toString()).build();
 
         } catch (IOException e) {
-            logger.error("Error reading log file {}: {}", logPath, e.getMessage(), e);
-            return Response.serverError().entity("{\"error\":\"Could not read log file\"}").build();
+            logger.error("Error reading log file {}", logPath, e);
+            return Response.serverError()
+                .type(MediaType.APPLICATION_JSON)
+                .entity("{\"error\":\"Could not read log file\"}")
+                .build();
         }
     }
 
@@ -111,14 +117,13 @@ public class LogViewerResource {
                 .setPath(logPath)
                 .setCharset(StandardCharsets.UTF_8)
                 .get()) {
-            StringBuilder raw = new StringBuilder();
+            List<String> rawLines = new ArrayList<>();
             String line;
-            int rawCount = 0;
-            while ((line = reader.readLine()) != null && rawCount < n * 4) {
-                raw.insert(0, line + "\n");
-                rawCount++;
+            while ((line = reader.readLine()) != null && rawLines.size() < n * 4) {
+                rawLines.add(line);
             }
-            List<LogLine> parsed = LogLineParser.parse(raw.toString());
+            Collections.reverse(rawLines);
+            List<LogLine> parsed = LogLineParser.parse(String.join("\n", rawLines));
             if (parsed.size() > n) {
                 parsed = parsed.subList(parsed.size() - n, parsed.size());
             }
@@ -136,7 +141,7 @@ public class LogViewerResource {
         try (FileInputStream fis = new FileInputStream(logPath.toFile())) {
             long skipped = fis.skip(offset);
             if (skipped < offset) return Collections.emptyList();
-            byte[] bytes = fis.readAllBytes();
+            byte[] bytes = fis.readNBytes(MAX_READ_BYTES);
             return LogLineParser.parse(new String(bytes, StandardCharsets.UTF_8));
         }
     }

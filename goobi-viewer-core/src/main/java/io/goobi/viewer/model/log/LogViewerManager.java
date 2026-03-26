@@ -1,11 +1,15 @@
 package io.goobi.viewer.model.log;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
@@ -17,31 +21,38 @@ import jakarta.websocket.Session;
 /**
  * Application-scoped singleton that manages log file tailers and WebSocket sessions.
  * One Tailer thread per active LogFile, shared across all sessions watching that file.
+ * Lines are buffered until the next log entry header arrives, so multi-line entries
+ * (stacktraces) are sent as a single complete message.
  */
 public class LogViewerManager {
 
     private static final Logger logger = LogManager.getLogger(LogViewerManager.class);
     private static final long TAILER_DELAY_MS = 500;
+    private static final long FLUSH_TIMEOUT_MS = 500;
 
     private final ConcurrentHashMap<LogFile, Set<Session>> activeSessions = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<LogFile, Tailer> activeTailers = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "logviewer-flush");
+        t.setDaemon(true);
+        return t;
+    });
 
     public void registerSession(LogFile logFile, Session session) {
         activeSessions.computeIfAbsent(logFile, k -> ConcurrentHashMap.newKeySet()).add(session);
-        // computeIfAbsent does not store null — if startTailer returns null (unconfigured path),
-        // no entry is created and the next registerSession call will attempt again (harmless).
         activeTailers.computeIfAbsent(logFile, k -> startTailer(logFile));
     }
 
     public void unregisterSession(LogFile logFile, Session session) {
-        Set<Session> sessions = activeSessions.get(logFile);
-        if (sessions == null) return;
-        sessions.remove(session);
-        if (sessions.isEmpty()) {
-            activeSessions.remove(logFile);
-            Tailer tailer = activeTailers.remove(logFile);
-            if (tailer != null) tailer.stop();
-        }
+        activeSessions.computeIfPresent(logFile, (k, sessions) -> {
+            sessions.remove(session);
+            if (sessions.isEmpty()) {
+                Tailer tailer = activeTailers.remove(logFile);
+                if (tailer != null) tailer.stop();
+                return null;
+            }
+            return sessions;
+        });
     }
 
     public boolean hasActiveSessions(LogFile logFile) {
@@ -49,54 +60,91 @@ public class LogViewerManager {
         return sessions != null && !sessions.isEmpty();
     }
 
+    public void shutdown() {
+        activeTailers.values().forEach(Tailer::stop);
+        activeTailers.clear();
+        activeSessions.clear();
+        scheduler.shutdownNow();
+    }
+
     /**
-     * Broadcasts a raw log line to all active WebSocket sessions for the given log file.
-     * Each session is wrapped in its own try/catch — a failing session does not block others.
-     * Dead sessions are removed from the registry.
+     * Broadcasts parsed log entries to all active WebSocket sessions for the given log file.
      */
-    public void broadcast(LogFile logFile, String rawLine) {
+    void broadcastParsed(LogFile logFile, String rawBlock) {
         Set<Session> sessions = activeSessions.get(logFile);
         if (sessions == null || sessions.isEmpty()) return;
 
-        String json = LogLineParser.parse(rawLine).stream()
-            .findFirst()
-            .map(LogLine::toJson)
-            .orElseGet(() -> new LogLine("", "", "", rawLine).toJson());
+        List<LogLine> entries = LogLineParser.parse(rawBlock);
+        if (entries.isEmpty()) return;
 
-        Set<Session> dead = ConcurrentHashMap.newKeySet();
-        for (Session session : sessions) {
-            try {
-                session.getBasicRemote().sendText(json);
-            } catch (IOException e) {
-                // Stack trace intentionally omitted - dead session, expected on disconnect
-                logger.debug("Removing dead WebSocket session for log file: {}", logFile.getName());
-                dead.add(session);
+        sessions.removeIf(session -> !session.isOpen());
+        for (LogLine entry : entries) {
+            String json = entry.toJson();
+            for (Session session : sessions) {
+                if (session.isOpen()) {
+                    session.getAsyncRemote().sendText(json);
+                }
             }
         }
-        sessions.removeAll(dead);
     }
 
     private Tailer startTailer(LogFile logFile) {
         Optional<Path> path = logFile.getPath();
         if (path.isEmpty()) {
             logger.warn("No path configured for log file: {}", logFile.getName());
-            return null; // ConcurrentHashMap.computeIfAbsent ignores null — next call retries
+            return null;
         }
 
-        // Anonymous listener captures logFile in its closure — avoids needing a Tailer→LogFile map.
         TailerListener listener = new TailerListener() {
+            private final StringBuilder pending = new StringBuilder();
+            private ScheduledFuture<?> flushTask;
+
             @Override public void init(Tailer tailer) {}
             @Override public void fileNotFound() {
                 logger.debug("Log file not found: {}", logFile.getName());
             }
             @Override public void fileRotated() {
                 logger.debug("Log file rotated, continuing: {}", logFile.getName());
+                flush();
             }
-            @Override public void handle(String line) {
-                broadcast(logFile, line);
+
+            @Override
+            public synchronized void handle(String line) {
+                if (LogLineParser.isHeaderLine(line)) {
+                    flush();
+                    pending.append(line);
+                } else {
+                    if (pending.length() > 0) {
+                        pending.append("\n");
+                    }
+                    pending.append(line);
+                }
+                resetFlushTimer();
             }
-            @Override public void handle(Exception ex) {
-                logger.error("Tailer error for {}: {}", logFile.getName(), ex.getMessage(), ex);
+
+            @Override
+            public void handle(Exception ex) {
+                logger.error("Tailer error for {}", logFile.getName(), ex);
+            }
+
+            private synchronized void flush() {
+                if (pending.length() == 0) return;
+                String raw = pending.toString();
+                pending.setLength(0);
+                cancelFlushTimer();
+                broadcastParsed(logFile, raw);
+            }
+
+            private void resetFlushTimer() {
+                cancelFlushTimer();
+                flushTask = scheduler.schedule(this::flush, FLUSH_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            }
+
+            private void cancelFlushTimer() {
+                if (flushTask != null) {
+                    flushTask.cancel(false);
+                    flushTask = null;
+                }
             }
         };
 

@@ -27,19 +27,35 @@ class LogViewerManagerTest {
     }
 
     @Test
-    void broadcastSkipsFailedSessions() throws Exception {
-        Session good = Mockito.mock(Session.class);
-        Session bad = Mockito.mock(Session.class);
-        RemoteEndpoint.Basic goodRemote = Mockito.mock(RemoteEndpoint.Basic.class);
-        RemoteEndpoint.Basic badRemote = Mockito.mock(RemoteEndpoint.Basic.class);
-        Mockito.when(good.getBasicRemote()).thenReturn(goodRemote);
-        Mockito.when(bad.getBasicRemote()).thenReturn(badRemote);
-        Mockito.doThrow(new java.io.IOException("dead")).when(badRemote).sendText(Mockito.anyString());
+    void broadcastSkipsClosedSessions() throws Exception {
+        Session open = Mockito.mock(Session.class);
+        Session closed = Mockito.mock(Session.class);
+        RemoteEndpoint.Async openRemote = Mockito.mock(RemoteEndpoint.Async.class);
+        Mockito.when(open.isOpen()).thenReturn(true);
+        Mockito.when(open.getAsyncRemote()).thenReturn(openRemote);
+        Mockito.when(closed.isOpen()).thenReturn(false);
 
-        manager.registerSession(LogFile.VIEWER, good);
-        manager.registerSession(LogFile.VIEWER, bad);
+        manager.registerSession(LogFile.VIEWER, open);
+        manager.registerSession(LogFile.VIEWER, closed);
 
-        assertDoesNotThrow(() -> manager.broadcast(LogFile.VIEWER, "test line"));
-        Mockito.verify(goodRemote).sendText(Mockito.anyString());
+        manager.broadcastParsed(LogFile.VIEWER,
+            "ERROR 2026-03-26 11:05:08.562 [main] io.goobi.viewer.Foo.bar(Foo.java:10) - test line");
+        Mockito.verify(openRemote, Mockito.atLeastOnce()).sendText(Mockito.anyString());
+    }
+
+    @Test
+    void unregisterLastSession_removesFromActiveSessions() {
+        Session s1 = Mockito.mock(Session.class);
+        Session s2 = Mockito.mock(Session.class);
+
+        manager.registerSession(LogFile.VIEWER, s1);
+        manager.registerSession(LogFile.VIEWER, s2);
+        assertTrue(manager.hasActiveSessions(LogFile.VIEWER));
+
+        manager.unregisterSession(LogFile.VIEWER, s1);
+        assertTrue(manager.hasActiveSessions(LogFile.VIEWER));
+
+        manager.unregisterSession(LogFile.VIEWER, s2);
+        assertFalse(manager.hasActiveSessions(LogFile.VIEWER));
     }
 }
