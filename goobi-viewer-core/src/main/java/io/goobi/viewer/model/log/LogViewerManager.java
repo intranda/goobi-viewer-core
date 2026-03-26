@@ -69,6 +69,9 @@ public class LogViewerManager {
 
     /**
      * Broadcasts parsed log entries to all active WebSocket sessions for the given log file.
+     * All entries from a single flush cycle are sent as one JSON array per session so that
+     * only a single sendText() call is made per session — the WebSocket async remote endpoint
+     * does not allow concurrent sends (TEXT_FULL_WRITING IllegalStateException).
      */
     void broadcastParsed(LogFile logFile, String rawBlock) {
         Set<Session> sessions = activeSessions.get(logFile);
@@ -77,13 +80,19 @@ public class LogViewerManager {
         List<LogLine> entries = LogLineParser.parse(rawBlock);
         if (entries.isEmpty()) return;
 
+        // Build one JSON array payload for all entries in this flush cycle
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < entries.size(); i++) {
+            if (i > 0) json.append(',');
+            json.append(entries.get(i).toJson());
+        }
+        json.append("]");
+        String payload = json.toString();
+
         sessions.removeIf(session -> !session.isOpen());
-        for (LogLine entry : entries) {
-            String json = entry.toJson();
-            for (Session session : sessions) {
-                if (session.isOpen()) {
-                    session.getAsyncRemote().sendText(json);
-                }
+        for (Session session : sessions) {
+            if (session.isOpen()) {
+                session.getAsyncRemote().sendText(payload);
             }
         }
     }

@@ -40,7 +40,42 @@ class LogViewerManagerTest {
 
         manager.broadcastParsed(LogFile.VIEWER,
             "ERROR 2026-03-26 11:05:08.562 [main] io.goobi.viewer.Foo.bar(Foo.java:10) - test line");
-        Mockito.verify(openRemote, Mockito.atLeastOnce()).sendText(Mockito.anyString());
+
+        // Exactly one sendText call per session (all entries bundled in one JSON array)
+        Mockito.verify(openRemote, Mockito.times(1)).sendText(Mockito.anyString());
+    }
+
+    @Test
+    void broadcastParsed_multipleEntries_sentAsSingleArrayMessage() throws Exception {
+        // Regression test for IllegalStateException: TEXT_FULL_WRITING.
+        // Multiple log entries in one flush must result in exactly ONE sendText() call per session,
+        // not one call per entry — the WebSocket async endpoint rejects concurrent sends.
+        Session session = Mockito.mock(Session.class);
+        RemoteEndpoint.Async remote = Mockito.mock(RemoteEndpoint.Async.class);
+        Mockito.when(session.isOpen()).thenReturn(true);
+        Mockito.when(session.getAsyncRemote()).thenReturn(remote);
+
+        manager.registerSession(LogFile.VIEWER, session);
+
+        String threeEntries =
+            "ERROR 2026-03-26 11:05:08.562 [main] io.goobi.viewer.Foo.bar(Foo.java:1) - first\n"
+            + "WARN  2026-03-26 11:05:09.000 [main] io.goobi.viewer.Bar.baz(Bar.java:2) - second\n"
+            + "INFO  2026-03-26 11:05:10.000 [main] io.goobi.viewer.Baz.qux(Baz.java:3) - third";
+
+        manager.broadcastParsed(LogFile.VIEWER, threeEntries);
+
+        // Must be called exactly once — not three times
+        Mockito.verify(remote, Mockito.times(1)).sendText(Mockito.anyString());
+
+        // The payload must be a JSON array
+        var captor = org.mockito.ArgumentCaptor.forClass(String.class);
+        Mockito.verify(remote).sendText(captor.capture());
+        String payload = captor.getValue();
+        assertTrue(payload.startsWith("["), "Payload must be a JSON array: " + payload);
+        assertTrue(payload.endsWith("]"), "Payload must be a JSON array: " + payload);
+        assertTrue(payload.contains("\"level\":\"ERROR\""));
+        assertTrue(payload.contains("\"level\":\"WARN\""));
+        assertTrue(payload.contains("\"level\":\"INFO\""));
     }
 
     @Test

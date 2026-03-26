@@ -76,7 +76,13 @@ var adminJS = (function (admin) {
             };
             ws.onmessage = (e) => {
                 try {
-                    addLine(JSON.parse(e.data));
+                    const data = JSON.parse(e.data);
+                    // Server sends a JSON array per flush cycle (one sendText call per session)
+                    if (Array.isArray(data)) {
+                        data.forEach(addLine);
+                    } else {
+                        addLine(data);
+                    }
                 } catch (x) {
                     /* malformed JSON */
                 }
