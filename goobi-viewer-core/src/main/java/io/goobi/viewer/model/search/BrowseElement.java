@@ -1067,7 +1067,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * @return true if either criterion for thumbnail display is fulfilled; false otherwise
      */
     public boolean isShowThumbnail() {
-        return hasImages || hasMedia || isAnchor() || cmsPage || hasMeiFile;
+        return hasImages || hasMedia || isAnchor() || isGroup() || cmsPage || hasMeiFile;
     }
 
     /**
