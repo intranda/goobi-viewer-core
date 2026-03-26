@@ -160,8 +160,8 @@
     }
     /* NEWSPAPER SEARCH (#27683) */
     &__newspaper-search {
-        border: 1px solid @middlegray;
-        background-color: @white;
+        border: 1px solid var(--ns-border-color, @middlegray);
+        background-color: var(--ns-bg, @white);
     }
     &__newspaper-search-body {
         padding: 24px;
@@ -192,8 +192,8 @@
     }
     /* TABS – underline indicator, bg separation instead of borders */
     &__nav-tabs {
-        border-bottom: 1px solid @middlegray;
-        background-color: @lightgray2;
+        border-bottom: 1px solid var(--ns-tab-border-color, @middlegray);
+        background-color: var(--ns-tab-bg, @lightgray2);
         .nav-item {
             margin-bottom: 0;
         }
@@ -202,7 +202,7 @@
             border-bottom: 3px solid transparent;
             border-radius: 0;
             padding: 14px 24px;
-            color: @gray;
+            color: var(--ns-tab-fg, @gray);
             font-size: @fontMedium;
             font-weight: 500;
             transition:
@@ -210,15 +210,15 @@
                 border-color 0.2s ease;
 
             &:hover {
-                color: @colorFonts;
-                border-bottom-color: @middlegray;
+                color: var(--ns-tab-fg-hover, @colorFonts);
+                border-bottom-color: var(--ns-tab-border-color, @middlegray);
                 background-color: transparent;
             }
 
             &.active {
-                color: @blue;
+                color: var(--ns-tab-active-color, @blue);
                 font-weight: 600;
-                border-bottom-color: @blue;
+                border-bottom-color: var(--ns-tab-active-color, @blue);
                 background-color: transparent;
             }
         }
@@ -232,33 +232,17 @@
     }
     &__search-field {
         margin-bottom: 20px;
-        .form-control {
-            padding: 10px 16px;
-            border: 1px solid @middlegray;
-            background-color: @lightgray2;
-            font-size: @fontMedium;
-            transition:
-                border-color 0.2s ease,
-                background-color 0.2s ease,
-                box-shadow 0.2s ease;
-
-            &:focus {
-                background-color: @white;
-                border-color: @blue;
-                box-shadow: 0 0 0 3px fade(@blue, 10%);
-            }
-        }
     }
     &__newspaper-search-date {
         display: flex;
-        align-items: stretch;
+        align-items: center;
         flex-wrap: wrap;
         gap: 12px;
     }
     &__newspaper-search-date-label {
         flex-shrink: 0;
         font-size: @fontMedium;
-        color: @gray;
+        color: var(--ns-label-fg, @gray);
     }
     &__newspaper-search-date-fields {
         display: flex;
@@ -268,29 +252,12 @@
     }
     &__newspaper-search-date-sep {
         font-size: @fontMedium;
-        color: @gray;
+        color: var(--ns-label-fg, @gray);
     }
     &__newspaper-search-btn {
         flex-shrink: 0;
+        align-self: stretch;
         padding: 0 24px;
-    }
-    .datepicker-input .form-control {
-        padding-top: 10px;
-        padding-bottom: 10px;
-        padding-left: 16px;
-        border: 1px solid @middlegray;
-        background-color: @lightgray2;
-        font-size: @fontMedium;
-        transition:
-            border-color 0.2s ease,
-            background-color 0.2s ease,
-            box-shadow 0.2s ease;
-
-        &:focus {
-            background-color: @white;
-            border-color: @blue;
-            box-shadow: 0 0 0 3px fade(@blue, 10%);
-        }
     }
     /* YEAR GRID */
     &__year-grid {

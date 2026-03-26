@@ -44,6 +44,7 @@ var viewerJS = (function (viewer) {
         init: function (config) {
             config = config || {};
 
+            _initSearchField();
             _initYearSelection();
             _initYearUrlPersistence();
             _initTabPersistence();
@@ -58,6 +59,16 @@ var viewerJS = (function (viewer) {
             }
         },
     };
+
+    /**
+     * Clear the search term field on initial page load so the placeholder is visible.
+     */
+    function _initSearchField() {
+        var field = document.getElementById('newspaperSearchTerm');
+        if (field) {
+            field.value = '';
+        }
+    }
 
     /**
      * Restore active tab from URL hash (#tab=ID format) and persist tab changes to hash.
@@ -122,7 +133,7 @@ var viewerJS = (function (viewer) {
     /**
      * On first page load (no year explicitly selected via chip click),
      * remove active state from chips and hide calendar results.
-     * A chip click sets #tab=tocTabYear in the URL, so its presence
+     * A chip click sets #tab=newspaperTabYear in the URL, so its presence
      * indicates an explicit year selection.
      */
     function _initYearSelection() {
@@ -130,7 +141,7 @@ var viewerJS = (function (viewer) {
         if (!yearGrid) return;
 
         var hash = window.location.hash;
-        var wasYearClicked = hash && hash.indexOf('#tab=tocTabYear') === 0;
+        var wasYearClicked = hash && hash.indexOf('#tab=newspaperTabYear') === 0;
 
         if (!wasYearClicked) {
             yearGrid.querySelectorAll(_yearChipSelector + '.-active').forEach(function (chip) {

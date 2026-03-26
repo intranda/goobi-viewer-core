@@ -131,6 +131,10 @@ public class CalendarView implements Serializable {
             }
         }
 
+        if (year == null && !volumeYears.isEmpty()) {
+            setYear(volumeYears.get(0));
+        }
+
         return volumeYears;
     }
 

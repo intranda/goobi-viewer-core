@@ -2,6 +2,52 @@
    View Toc
    style declarations for viewToc.xhtml
    ==============================================================*/
+/* TOC METADATA */
+.toc_metadata {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+    background-color: var(--bg-content-box, @white);
+    color: var(--fg-content-box, inherit);
+    padding: 1.5rem;
+    border: 1px solid var(--ns-border-color, @middlegray);
+
+    &__thumbnail {
+        flex-shrink: 0;
+
+        img {
+            display: block;
+            width: 200px;
+            height: auto;
+        }
+    }
+    &__thumbnail-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 200px;
+        height: 260px;
+        background-color: @lightgray2;
+        color: @middlegray;
+    }
+    &__content {
+        flex: 1;
+        min-width: 0;
+
+        .metadata__wrapper.-isBoxed {
+            padding: 0;
+            background: none;
+            border: none;
+        }
+    }
+}
+
+@media screen and (max-width: @xSmallBreakpoint) {
+    .toc_metadata {
+        flex-direction: column;
+    }
+}
+
 /* VIEW TOC */
 /* BLOCK */
 .toc {
