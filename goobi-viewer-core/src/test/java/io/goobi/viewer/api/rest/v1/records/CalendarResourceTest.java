@@ -43,6 +43,8 @@ class CalendarResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "168714434_1823";
     private static final int YEAR = 1823;
+    private static final String GROUP_PI = "301877785";
+    private static final int GROUP_YEAR = 1882;
 
     @Override
     @BeforeEach
@@ -58,10 +60,10 @@ class CalendarResourceTest extends AbstractRestApiTest {
 
     /**
      * @see CalendarResource#getCalendarEntries(int)
-     * @verifies return all issues for given pi and year
+     * @verifies return all issues for given anchor pi and year
      */
     @Test
-    void getCalendarEntries_shouldReturnAllIssuesForGivenPiAndYear() {
+    void getCalendarEntries_shouldReturnAllIssuesForGivenAnchorPiAndYear() {
         String url = urls.path(RECORDS_CALENDAR, RECORDS_CALENDAR_YEAR).params(PI, YEAR).build();
         try (Response response = target(url)
                 .request()
@@ -109,10 +111,10 @@ class CalendarResourceTest extends AbstractRestApiTest {
 
     /**
      * @see CalendarResource#getAvailableMonths()
-     * @verifies return sorted year-month list
+     * @verifies return sorted year-month list for anchor record
      */
     @Test
-    void getAvailableMonths_shouldReturnSortedYearMonthList() {
+    void getAvailableMonths_shouldReturnSortedYearMonthListForAnchorRecord() {
         String url = urls.path(RECORDS_CALENDAR, RECORDS_CALENDAR_MONTHS).params(PI).build();
         try (Response response = target(url)
                 .request()
@@ -158,6 +160,37 @@ class CalendarResourceTest extends AbstractRestApiTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
             assertEquals(404, response.getStatus(), "Should return status 404 for unknown PI");
+        }
+    }
+
+    /**
+     * @see CalendarResource#getCalendarEntries(int)
+     * @verifies return all issues for given group pi and year
+     */
+    @Test
+    void getCalendarEntries_shouldReturnAllIssuesForGivenGroupPiAndYear() {
+        String url = urls.path(RECORDS_CALENDAR, RECORDS_CALENDAR_YEAR).params(GROUP_PI, GROUP_YEAR).build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            String entity = response.readEntity(String.class);
+            assertNotNull(entity);
+
+            JSONArray entries = new JSONArray(entity);
+            assertEquals(4, entries.length(), "Should return 4 issues for year 1882");
+
+            for (int i = 0; i < entries.length(); i++) {
+                JSONObject entry = entries.getJSONObject(i);
+                assertTrue(entry.has("date"), "Entry " + i + " should have 'date'");
+                assertTrue(entry.has("label"), "Entry " + i + " should have 'label'");
+                assertTrue(entry.has("url"), "Entry " + i + " should have 'url'");
+
+                String date = entry.getString("date");
+                assertTrue(date.matches("\\d{4}-\\d{2}-\\d{2}"), "Date should be in ISO format: " + date);
+                assertTrue(date.startsWith("1882-"), "Date should be in year 1882: " + date);
+            }
         }
     }
 

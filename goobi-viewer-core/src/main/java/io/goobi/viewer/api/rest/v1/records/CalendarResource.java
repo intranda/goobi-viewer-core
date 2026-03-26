@@ -83,7 +83,7 @@ public class CalendarResource {
      * @return JSON array of calendar entries
      * @throws PresentationException if any.
      * @throws IndexUnreachableException if any.
-     * @should return all issues for given pi and year
+     * @should return all issues for given anchor pi and year
      * @should return all issues for given group pi and year
      * @should return 404 if pi not found
      */
