@@ -895,15 +895,19 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             }
         } else if (isGroup()) {
             String groupIdField = getGroupIdField();
-            String groupOrderField = SolrConstants.PREFIX_GROUPORDER + groupIdField;
+            if (StringUtils.isBlank(groupIdField)) {
+                logger.warn("Group (PI: {}) has no GROUPTYPE field", getPi());
+                return null;
+            }
+            String groupOrderField = groupIdField.replace(SolrConstants.PREFIX_GROUPID, SolrConstants.PREFIX_GROUPORDER);
             SolrDocument docChild = DataManager.getInstance()
                     .getSearchIndex()
                     .getFirstDoc(
-                            new StringBuilder(SolrConstants.PREFIX_GROUPID).append(groupIdField).append(":\"").append(pi).append('"')
-                                    .toString(),
+                            new StringBuilder("+").append(groupIdField).append(":\"").append(getPi())
+                                    .append("\" +").append(SolrConstants.ISWORK).append(":true").toString(),
                             Collections.singletonList(field), Collections.singletonList(new StringPair(groupOrderField, "asc")));
             if (docChild == null) {
-                logger.warn("Group (PI: {}) has no child element: Cannot determine appropriate value", pi);
+                logger.warn("Group (PI: {}) has no child element: Cannot determine appropriate value", getPi());
             } else {
                 return SolrTools.getSingleFieldStringValue(docChild, field);
             }
@@ -944,15 +948,21 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             }
         } else if (isGroup()) {
             String groupIdField = getGroupIdField();
-            String groupOrderField = SolrConstants.PREFIX_GROUPORDER + groupIdField;
+            if (StringUtils.isBlank(groupIdField)) {
+                logger.warn("Group (PI: {}) has no GROUPTYPE field", getPi());
+                return null;
+            }
+            String groupOrderField = groupIdField.replace(SolrConstants.PREFIX_GROUPID, SolrConstants.PREFIX_GROUPORDER);
             List<StringPair> sortFields = Collections.singletonList(new StringPair(groupOrderField, "asc"));
 
+            String query = new StringBuilder("+").append(groupIdField).append(":\"").append(getPi())
+                    .append("\" +").append(SolrConstants.ISWORK).append(":true").toString();
+            logger.trace("Group first volume query: {}", query);
             SolrDocument docVolume = DataManager.getInstance()
                     .getSearchIndex()
-                    .getFirstDoc(new StringBuilder(SolrConstants.PREFIX_GROUPID).append(groupIdField).append(":\"").append(this.pi)
-                            .append('"').toString(), fields, sortFields);
+                    .getFirstDoc(query, fields, sortFields);
             if (docVolume == null) {
-                logger.warn("Group has no child element: Cannot determine appropriate value");
+                logger.warn("Group (PI: {}) has no child element: Cannot determine appropriate value", getPi());
             } else {
                 String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
                 if (StringUtils.isNotBlank(iddoc)) {
