@@ -378,7 +378,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
             // Check thumbnail access so that a custom access denied image can be used
             String thumbnailPi = pi;
-            if (isAnchor() && StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME
+            if ((isAnchor() || isGroup()) && StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME
                     .equals(DataManager.getInstance().getConfiguration().getAnchorThumbnailMode())) {
                 StructElement firstVolume = structElement.getFirstVolume(new ArrayList<>(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
                 if (firstVolume != null) {
@@ -396,9 +396,9 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
         MimeType mimeType = new MimeType(this.mimeType);
         //check if we have images
-        hasImages = !isAnchor() && (mimeType.isImage() || structElement.isHasImages());
+        hasImages = !isAnchor() && !isGroup() && (mimeType.isImage() || structElement.isHasImages());
         //..or if we have video or audio or a 3d-object
-        hasMedia = !hasImages && !isAnchor() && mimeType.isMediaType();
+        hasMedia = !hasImages && !isAnchor() && !isGroup() && mimeType.isMediaType();
 
         // MEI file
         hasMeiFile = StringUtils.isNotEmpty(structElement.getMetadataValue(SolrConstants.FILENAME_MEI));

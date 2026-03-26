@@ -893,6 +893,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             } else {
                 return SolrTools.getSingleFieldStringValue(docParent, field);
             }
+        } else if (isGroup()) {
+            SolrDocument docChild = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc(
+                            new StringBuilder(SolrConstants.PREFIX_GROUPID).append(getGroupIdField()).append(":\"").append(pi).append('"')
+                                    .toString(),
+                            Collections.singletonList(field), Collections.singletonList(new StringPair(SolrConstants.CURRENTNOSORT, "asc")));
+            if (docChild == null) {
+                logger.warn("Group (PI: {}) has no child element: Cannot determine appropriate value", pi);
+            } else {
+                return SolrTools.getSingleFieldStringValue(docChild, field);
+            }
         }
 
         return null;
@@ -933,7 +945,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
             SolrDocument docVolume = DataManager.getInstance()
                     .getSearchIndex()
-                    .getFirstDoc(new StringBuilder("GROUPID_SERIES_2").append(":\"").append(this.pi).append('"').toString(), fields, sortFields);
+                    .getFirstDoc(new StringBuilder(SolrConstants.PREFIX_GROUPID).append(getGroupIdField()).append(":\"").append(this.pi)
+                            .append('"').toString(), fields, sortFields);
             if (docVolume == null) {
                 logger.warn("Group has no child element: Cannot determine appropriate value");
             } else {

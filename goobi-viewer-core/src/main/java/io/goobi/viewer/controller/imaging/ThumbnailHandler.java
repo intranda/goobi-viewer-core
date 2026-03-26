@@ -723,7 +723,7 @@ public class ThumbnailHandler {
         String imagePath = se.getMetadataValue(field);
         try {
             if (StringUtils.isBlank(imagePath) && !se.isWork()) {
-                if (se.isAnchor()) {
+                if (se.isAnchor() || se.isGroup()) {
                     imagePath = se.getFirstVolumeFieldValue(field);
                 } else if (se.getTopStruct() != null) {
                     imagePath = se.getTopStruct().getMetadataValue(field);
@@ -789,7 +789,7 @@ public class ThumbnailHandler {
         if (doc.isCmsPage() && doc.getPi().startsWith("CMS")) {
             thumbnailUrl = getCMSPageImagePath(doc, thumbnailUrl);
 
-        } else if (doc.isAnchor()) {
+        } else if (doc.isAnchor() || doc.isGroup()) {
             thumbnailUrl = getAnchorImagePath(doc, thumbnailUrl, anchorThumbnailMode);
         } else {
             thumbnailUrl = getDocumentImagePath(doc, thumbnailUrl);
@@ -1001,7 +1001,7 @@ public class ThumbnailHandler {
      */
     static Optional<String> getMimeType(StructElement structElement) {
         Optional<String> mimeType = Optional.empty();
-        if (structElement.isAnchor()) {
+        if (structElement.isAnchor() || structElement.isGroup()) {
             try {
                 mimeType = Optional.ofNullable(structElement.getFirstVolumeFieldValue(SolrConstants.MIMETYPE));
             } catch (PresentationException | IndexUnreachableException e) {
