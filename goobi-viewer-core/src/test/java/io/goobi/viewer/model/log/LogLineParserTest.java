@@ -88,4 +88,84 @@ class LogLineParserTest {
         assertEquals("DEBUG", lines.get(0).level());
         assertEquals("", lines.get(0).message());
     }
+
+    @Test
+    void parseTraceLevel() {
+        String raw = "TRACE 2026-03-26 10:00:00.001 [main] io.goobi.viewer.Foo.bar(Foo.java:5) - entering method";
+        List<LogLine> lines = LogLineParser.parse(raw);
+        assertEquals(1, lines.size());
+        assertEquals("TRACE", lines.get(0).level());
+        assertEquals("entering method", lines.get(0).message());
+    }
+
+    @Test
+    void parseWarnLevel() {
+        String raw = "WARN  2026-03-26 10:00:00.001 [main] io.goobi.viewer.Foo:10\n        something suspicious";
+        List<LogLine> lines = LogLineParser.parse(raw);
+        assertEquals(1, lines.size());
+        assertEquals("WARN", lines.get(0).level());
+    }
+
+    @Test
+    void parseLinesBeforeAnyHeader_areIgnored() {
+        // Continuation lines that appear before the first header should be silently dropped
+        String raw = "    orphan continuation line\n"
+                   + "ERROR 2026-03-26 10:00:01.000 [main] io.goobi.viewer.Foo.bar(Foo.java:1) - actual message";
+        List<LogLine> lines = LogLineParser.parse(raw);
+        assertEquals(1, lines.size());
+        assertEquals("ERROR", lines.get(0).level());
+        assertEquals("actual message", lines.get(0).message());
+    }
+
+    @Test
+    void parseWindowsLineEndings() {
+        // \r\n line endings must be handled the same as \n
+        String raw = "INFO  2026-03-26 10:00:01.000 [main] io.goobi.viewer.Foo.bar(Foo.java:1) - msg\r\n"
+                   + "DEBUG 2026-03-26 10:00:02.000 [main] io.goobi.viewer.Bar.baz(Bar.java:2) - next";
+        List<LogLine> lines = LogLineParser.parse(raw);
+        assertEquals(2, lines.size());
+        assertEquals("INFO", lines.get(0).level());
+        assertEquals("msg", lines.get(0).message());
+        assertEquals("DEBUG", lines.get(1).level());
+        assertEquals("next", lines.get(1).message());
+    }
+
+    @Test
+    void isHeaderLine_matchesNewFormat() {
+        String header = "ERROR 2026-03-26 11:05:08.562 [Thread-13] io.goobi.viewer.Foo.bar(Foo.java:340) - message";
+        assertTrue(LogLineParser.isHeaderLine(header));
+    }
+
+    @Test
+    void isHeaderLine_matchesOldFormat() {
+        String header = "INFO  2026-03-26 11:05:08.562 [main] io.goobi.viewer.Foo:10";
+        assertTrue(LogLineParser.isHeaderLine(header));
+    }
+
+    @Test
+    void isHeaderLine_doesNotMatchContinuationLine() {
+        assertFalse(LogLineParser.isHeaderLine("    at io.goobi.viewer.Foo.bar(Foo.java:10)"));
+        assertFalse(LogLineParser.isHeaderLine("Caused by: java.io.IOException"));
+        assertFalse(LogLineParser.isHeaderLine("        continuation message text"));
+    }
+
+    @Test
+    void isHeaderLine_handlesNull() {
+        assertFalse(LogLineParser.isHeaderLine(null));
+    }
+
+    @Test
+    void isHeaderLine_allLevels() {
+        assertTrue(LogLineParser.isHeaderLine("ERROR 2026-03-26 10:00:00.000 [main] Foo:1"));
+        assertTrue(LogLineParser.isHeaderLine("WARN  2026-03-26 10:00:00.000 [main] Foo:1"));
+        assertTrue(LogLineParser.isHeaderLine("INFO  2026-03-26 10:00:00.000 [main] Foo:1"));
+        assertTrue(LogLineParser.isHeaderLine("DEBUG 2026-03-26 10:00:00.000 [main] Foo:1"));
+        assertTrue(LogLineParser.isHeaderLine("TRACE 2026-03-26 10:00:00.000 [main] Foo:1"));
+    }
+
+    @Test
+    void parseWhitespaceOnlyInput() {
+        assertEquals(0, LogLineParser.parse("   ").size());
+        assertEquals(0, LogLineParser.parse("\n\n\n").size());
+    }
 }

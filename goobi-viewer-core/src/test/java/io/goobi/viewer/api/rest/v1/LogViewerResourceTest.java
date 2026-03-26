@@ -66,4 +66,47 @@ class LogViewerResourceTest {
         List<LogLine> lines = LogViewerResource.readLastNLines(log, 500);
         assertEquals(10, lines.size());
     }
+
+    @Test
+    void readLastNLines_exactlyNEntries(@TempDir Path tmp) throws Exception {
+        Path log = tmp.resolve("test.log");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 50; i++) sb.append(logLine(i));
+        Files.writeString(log, sb.toString());
+
+        List<LogLine> lines = LogViewerResource.readLastNLines(log, 50);
+        assertEquals(50, lines.size());
+    }
+
+    @Test
+    void readLastNLines_newFormatEntries(@TempDir Path tmp) throws Exception {
+        // Verify readLastNLines works with the new single-line log format
+        Path log = tmp.resolve("test.log");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 20; i++) {
+            sb.append("INFO  2026-03-26 10:00:0").append(i % 10)
+              .append(".000 [main] io.goobi.viewer.Foo.bar(Foo.java:").append(i)
+              .append(") - message ").append(i).append("\n");
+        }
+        Files.writeString(log, sb.toString());
+
+        List<LogLine> lines = LogViewerResource.readLastNLines(log, 10);
+        assertEquals(10, lines.size());
+        // Should return the last 10 entries
+        assertEquals("message 19", lines.get(9).message());
+    }
+
+    @Test
+    void readFromOffset_zeroOffset_returnsAllEntries(@TempDir Path tmp) throws Exception {
+        Path log = tmp.resolve("test.log");
+        Files.writeString(log,
+            "ERROR 2026-03-19 14:23:01.000 [main] Foo:1\n        first\n"
+            + "WARN  2026-03-19 14:23:02.000 [main] Bar:2\n        second\n"
+            + "INFO  2026-03-19 14:23:03.000 [main] Baz:3\n        third\n");
+
+        List<LogLine> lines = LogViewerResource.readFromOffset(log, 0L);
+        assertEquals(3, lines.size());
+        assertEquals("ERROR", lines.get(0).level());
+        assertEquals("INFO", lines.get(2).level());
+    }
 }

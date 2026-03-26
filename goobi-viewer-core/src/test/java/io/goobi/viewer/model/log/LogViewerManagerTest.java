@@ -58,4 +58,70 @@ class LogViewerManagerTest {
         manager.unregisterSession(LogFile.VIEWER, s2);
         assertFalse(manager.hasActiveSessions(LogFile.VIEWER));
     }
+
+    @Test
+    void shutdown_clearsSessions() {
+        Session session = Mockito.mock(Session.class);
+        manager.registerSession(LogFile.VIEWER, session);
+        assertTrue(manager.hasActiveSessions(LogFile.VIEWER));
+
+        manager.shutdown();
+
+        assertFalse(manager.hasActiveSessions(LogFile.VIEWER));
+    }
+
+    @Test
+    void broadcastParsed_noSessionsRegistered_doesNotThrow() {
+        // Must not throw even when no sessions exist for the log file
+        assertDoesNotThrow(() ->
+            manager.broadcastParsed(LogFile.OAI,
+                "INFO  2026-03-26 10:00:00.000 [main] Foo.bar(Foo.java:1) - message"));
+    }
+
+    @Test
+    void broadcastParsed_emptyRaw_doesNotThrow() {
+        Session session = Mockito.mock(Session.class);
+        RemoteEndpoint.Async remote = Mockito.mock(RemoteEndpoint.Async.class);
+        Mockito.when(session.isOpen()).thenReturn(true);
+        Mockito.when(session.getAsyncRemote()).thenReturn(remote);
+
+        manager.registerSession(LogFile.VIEWER, session);
+
+        // Empty raw text must not throw and must not invoke sendText
+        assertDoesNotThrow(() -> manager.broadcastParsed(LogFile.VIEWER, ""));
+        assertDoesNotThrow(() -> manager.broadcastParsed(LogFile.VIEWER, null));
+        Mockito.verify(remote, Mockito.never()).sendText(Mockito.anyString());
+    }
+
+    @Test
+    void broadcastParsed_closedSessionIsRemovedFromSet() {
+        Session closed = Mockito.mock(Session.class);
+        Mockito.when(closed.isOpen()).thenReturn(false);
+
+        manager.registerSession(LogFile.VIEWER, closed);
+        assertTrue(manager.hasActiveSessions(LogFile.VIEWER));
+
+        manager.broadcastParsed(LogFile.VIEWER,
+            "WARN  2026-03-26 10:00:00.000 [main] Foo.bar(Foo.java:1) - cleanup check");
+
+        // After broadcast the closed session should have been pruned
+        assertFalse(manager.hasActiveSessions(LogFile.VIEWER));
+    }
+
+    @Test
+    void differentLogFiles_haveIndependentSessions() {
+        Session viewerSession = Mockito.mock(Session.class);
+        Session oaiSession = Mockito.mock(Session.class);
+
+        manager.registerSession(LogFile.VIEWER, viewerSession);
+        manager.registerSession(LogFile.OAI, oaiSession);
+
+        assertTrue(manager.hasActiveSessions(LogFile.VIEWER));
+        assertTrue(manager.hasActiveSessions(LogFile.OAI));
+
+        manager.unregisterSession(LogFile.VIEWER, viewerSession);
+
+        assertFalse(manager.hasActiveSessions(LogFile.VIEWER));
+        assertTrue(manager.hasActiveSessions(LogFile.OAI));
+    }
 }
