@@ -173,6 +173,17 @@ public class CalendarView implements Serializable {
     }
 
     /**
+     * Returns the Solr field name used for parent lookups.
+     * For anchor volumes this is {@code PI_ANCHOR}, for group members it is the group identifier field
+     * (e.g. {@code GROUPID_NEWSPAPER}).
+     *
+     * @return the anchorField
+     */
+    public String getAnchorField() {
+        return anchorField;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>calendarItems</code>.
      * </p>

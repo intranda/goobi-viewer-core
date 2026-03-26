@@ -70,7 +70,7 @@
                 <!-- Suche innerhalb des Anchor-Werks — gleiches Pattern wie widget_searchInCurrentItem.xhtml -->
                 <button
                     class="btn btn--full search-calendar__newspaper-search-btn"
-                    jsf:action="#{searchBean.searchInRecord('PI_ANCHOR', activeDocumentBean.persistentIdentifier, searchBean.advancedSearchQueryGroup.queryItems[2].value, searchBean.advancedSearchQueryGroup.queryItems[2].value2)}">
+                    jsf:action="#{searchBean.searchInRecord(activeDocumentBean.viewManager.calendarView.anchorField, activeDocumentBean.persistentIdentifier, searchBean.advancedSearchQueryGroup.queryItems[2].value, searchBean.advancedSearchQueryGroup.queryItems[2].value2)}">
                     #{msg.search}
                 </button>
             </div>
