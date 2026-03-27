@@ -50,7 +50,7 @@ var viewerJS = (function (viewer) {
             _initTabPersistence();
             _initDecadeGrouping();
 
-            if (config.contextPath) {
+            if (config.contextPath !== undefined) {
                 _initCalendarPopover(config);
             }
 
