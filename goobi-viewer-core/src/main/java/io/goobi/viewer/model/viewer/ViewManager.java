@@ -348,7 +348,7 @@ public class ViewManager implements Serializable {
             anchorField = groupEntry.getKey();
             anchorPi = groupEntry.getValue();
         }
-        
+
         return new CalendarView(pi, anchorPi, anchorField,
                 topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
     }
@@ -2485,10 +2485,11 @@ public class ViewManager implements Serializable {
      * @return true if calendar view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @deprecated Calendar view has been combined with TOC view
      */
+    @Deprecated(since = "26.03")
     public boolean isDisplayCalendarViewLink() throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetCalendarViewLinkVisible() && calendarView != null
-                && calendarView.isDisplay();
+        return false;
     }
 
     /**

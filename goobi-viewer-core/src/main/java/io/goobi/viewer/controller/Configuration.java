@@ -3208,17 +3208,6 @@ public class Configuration extends AbstractConfiguration {
         return getSidebarWidgetBooleanValue("views", "object[@enabled]", true);
     }
 
-    /**
-     * <p>
-     * isSidebarViewsWidgetCalendarViewLinkVisible.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSidebarViewsWidgetCalendarViewLinkVisible() {
-        return getSidebarWidgetBooleanValue("views", "calendar[@enabled]", true);
-    }
 
     /**
      * <p>
