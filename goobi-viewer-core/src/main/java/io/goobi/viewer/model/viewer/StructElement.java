@@ -256,9 +256,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             hasImages = Boolean.valueOf(getMetadataValue(SolrConstants.BOOL_IMAGEAVAILABLE));
             mimeType = new MimeType(getMetadataValue(SolrConstants.MIMETYPE));
             // Determine the ancestor and group field names and identifiers
-            logger.debug("StructElement init: IDDOC={}, docFieldNames={}, recordGroupIdentifierFields={}",
-                    luceneId, doc.getFieldNames(),
-                    DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields());
             for (String fieldName : doc.getFieldNames()) {
                 if (DataManager.getInstance().getConfiguration().getAncestorIdentifierFields().contains(fieldName)) {
                     Collection<Object> fieldValues = doc.getFieldValues(fieldName);
