@@ -46,6 +46,8 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 
 import com.ibm.icu.text.RuleBasedNumberFormat;
 
@@ -987,6 +989,24 @@ public class CalendarBean implements Serializable {
                                 .append(monthItem.getFormattedValue())
                                 .append(dayItem.getFormattedValue()) + filterQuery;
                         dayItem.setQuery(query);
+                        if (count.getCount() == 1) {
+                            try {
+                                SolrDocumentList docs = DataManager.getInstance().getSearchIndex()
+                                        .search(query + SearchHelper.getAllSuffixes(),
+                                                Arrays.asList(SolrConstants.PI_TOPSTRUCT, SolrConstants.THUMBPAGENO, SolrConstants.LOGID));
+                                if (docs != null && !docs.isEmpty()) {
+                                    SolrDocument doc = docs.get(0);
+                                    String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+                                    Object thumbPageNo = doc.getFieldValue(SolrConstants.THUMBPAGENO);
+                                    String logId = (String) doc.getFieldValue(SolrConstants.LOGID);
+                                    if (pi != null && thumbPageNo != null && logId != null) {
+                                        dayItem.setSingleResultUrl("image/" + pi + "/" + thumbPageNo + "/" + logId + "/");
+                                    }
+                                }
+                            } catch (PresentationException | IndexUnreachableException e) {
+                                logger.error("Could not resolve single result URL for calendar day {}: {}", facetName, e.getMessage());
+                            }
+                        }
                         break;
                     }
                 }

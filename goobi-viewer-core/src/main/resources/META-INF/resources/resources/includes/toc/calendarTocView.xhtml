@@ -8,9 +8,9 @@
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- NEWSPAPER SEARCH (redirects to /search/ via searchInRecord) -->
-    <h2 class="search-calendar__newspaper-search-title">#{msg.newspaper__search_title}</h2>
 
     <div class="search-calendar__newspaper-search">
+		<h2 class="search-calendar__newspaper-search-title">#{msg.newspaper__search_title}</h2>
         <div class="search-calendar__newspaper-search-body">
             <!-- SEARCH TERM — queryItems[1] (free text search) -->
             <div class="form-group">
@@ -142,15 +142,22 @@
                                                 <h:panelGroup rendered="#{day.hits == 0}">
                                                     <span>#{day.name}</span>
                                                 </h:panelGroup>
-                                                <h:panelGroup rendered="#{day.hits != 0}">
+                                                <h:panelGroup rendered="#{day.hits > 1}">
                                                     <button
                                                         type="button"
-                                                        class="btn btn--clean"
+                                                        class="btn btn--clean search-calendar__month-day-button"
                                                         data-popover-trigger="calendar-po-trigger"
                                                         data-query="#{day.query}"
                                                         data-fields="PI_TOPSTRUCT,LABEL,THUMBPAGENO,LOGID">
                                                         #{day.name}
                                                     </button>
+                                                </h:panelGroup>
+                                                <h:panelGroup rendered="#{day.hits == 1}">
+                                                    <h:outputLink
+                                                        value="#{navigationHelper.applicationUrl}#{day.singleResultUrl}"
+                                                        styleClass="btn btn--clean search-calendar__month-day-link">
+                                                        #{day.name}
+                                                    </h:outputLink>
                                                 </h:panelGroup>
                                             </div>
                                         </h:panelGroup>

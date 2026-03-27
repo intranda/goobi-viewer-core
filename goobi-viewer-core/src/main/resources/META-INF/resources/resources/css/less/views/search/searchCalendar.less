@@ -145,6 +145,10 @@
             }
         }
     }
+	&__month-day-link,
+	&__month-day-button {
+		
+	}
     &__month-day-empty {
         min-height: 1px;
     }
@@ -158,12 +162,11 @@
             font-size: 0.9rem;
         }
     }
-    /* NEWSPAPER SEARCH (#27683) */
-    &__newspaper-search {
-        border: 1px solid var(--ns-border-color, @middlegray);
-        background-color: var(--ns-bg, @white);
-    }
+    /* NEWSPAPER SEARCH */
+    &__newspaper-search {}
     &__newspaper-search-body {
+		border: 1px solid @middlegray;
+		background-color: @white;
         padding: 24px;
     }
     &__newspaper-search-title,
@@ -190,69 +193,36 @@
             min-width: 160px;
         }
     }
-    /* TABS – underline indicator, bg separation instead of borders */
-    &__nav-tabs {
-        border-bottom: 1px solid var(--ns-tab-border-color, @middlegray);
-        background-color: var(--ns-tab-bg, @lightgray2);
-        .nav-item {
-            margin-bottom: 0;
-        }
-        .nav-link {
-            border: 0;
-            border-bottom: 3px solid transparent;
-            border-radius: 0;
-            padding: 14px 24px;
-            color: var(--ns-tab-fg, @gray);
-            font-size: @fontMedium;
-            font-weight: 500;
-            transition:
-                color 0.2s ease,
-                border-color 0.2s ease;
-
-            &:hover {
-                color: var(--ns-tab-fg-hover, @colorFonts);
-                border-bottom-color: var(--ns-tab-border-color, @middlegray);
-                background-color: transparent;
-            }
-
-            &.active {
-                color: var(--ns-tab-active-color, @blue);
-                font-weight: 600;
-                border-bottom-color: var(--ns-tab-active-color, @blue);
-                background-color: transparent;
-            }
-        }
-    }
-    &__tab-content {
-        padding: 24px;
-        .tab-pane {
-            border: 0;
-            padding: 0;
-        }
-    }
     &__search-field {
         margin-bottom: 20px;
     }
     &__newspaper-search-date {
         display: flex;
-        align-items: center;
+        align-items: stretch;
         flex-wrap: wrap;
         gap: 12px;
     }
     &__newspaper-search-date-label {
         flex-shrink: 0;
         font-size: @fontMedium;
-        color: var(--ns-label-fg, @gray);
     }
     &__newspaper-search-date-fields {
         display: flex;
-        align-items: center;
+        align-items: stretch;
         gap: 12px;
         flex: 1;
+			.form-control  {
+				height: 100%;
+				min-height: 38px;
+			}
     }
+	&__newspaper-search-date-sep,
+	&__newspaper-search-date-label {
+		display: flex;
+		align-items: center;
+	}
     &__newspaper-search-date-sep {
         font-size: @fontMedium;
-        color: var(--ns-label-fg, @gray);
     }
     &__newspaper-search-btn {
         flex-shrink: 0;
