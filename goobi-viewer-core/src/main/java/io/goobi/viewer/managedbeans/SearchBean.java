@@ -422,6 +422,22 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         searchStringInternal = generateAdvancedSearchMainQuery();
 
+        if (navigationHelper != null) {
+            String subThemeParam = navigationHelper.getSubThemeQueryParam();
+            if (StringUtils.isNotBlank(subThemeParam)) {
+                try {
+                    String redirectUrl =
+                            PrettyUrlTools.getAbsolutePageUrl(StringConstants.PRETTY_SEARCHADVANCED5, getActiveContext(), getExactSearchString(),
+                                    getCurrentPage(), getSortString(), getFacets().getActiveFacetString()) + subThemeParam;
+                    FacesContext.getCurrentInstance().getExternalContext().redirect(redirectUrl);
+                    return null;
+                } catch (IOException e) {
+                    logger.error("Error generating advanced search url", e);
+                }
+
+            }
+        }
+
         return StringConstants.PRETTY_SEARCHADVANCED5;
     }
 

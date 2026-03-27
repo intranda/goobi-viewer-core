@@ -15,6 +15,9 @@
             <f:viewAction
                 onPostback="false"
                 action="#{navigationHelper.setCurrentPage('searchlist', false, true)}" />
+            <f:viewAction
+                onPostback="false"
+                action="#{navigationHelper.applySubThemeFromUrl(param['subtheme'])}" />
             <f:event
                 type="preRenderView"
                 listener="#{searchBean.resetCurrentHitIndex}" />

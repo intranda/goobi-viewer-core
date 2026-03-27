@@ -1778,9 +1778,7 @@ public class CmsBean implements Serializable {
         if (navigationMenuItems == null) {
             try {
                 String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
-                String currentTheme = getCurrentCmsPageIfLoaded()
-                        .map(CMSPage::getSubTheme)
-                        .orElse(BeanUtils.getNavigationHelper().getThemeOrSubtheme());
+                String currentTheme = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
                 navigationMenuItems = DataManager.getInstance()
                         .getDao()
                         .getAllTopCMSNavigationItems()

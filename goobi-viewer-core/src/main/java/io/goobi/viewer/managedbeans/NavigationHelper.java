@@ -1129,6 +1129,22 @@ public class NavigationHelper implements Serializable {
      * resetTheme.
      * </p>
      */
+    public void applySubThemeFromUrl(String subTheme) {
+        setSubThemeDiscriminatorValue(StringUtils.defaultString(subTheme));
+    }
+
+    public String getSubThemeQueryParam() {
+        try {
+            String value = getSubThemeDiscriminatorValue();
+            if (StringUtils.isNotBlank(value) && !"-".equals(value)) {
+                return "?subtheme=" + value;
+            }
+        } catch (IndexUnreachableException e) {
+            logger.debug("Cannot read subtheme discriminator value: {}", e.getMessage());
+        }
+        return "";
+    }
+
     public void resetTheme() {
         logger.trace("resetTheme");
         // Resetting the current page here would result in the current record being flushed, which is bad for CMS overview pages
@@ -1732,8 +1748,13 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public String getSubThemeDiscriminatorQuerySuffix() throws IndexUnreachableException {
-        return SearchHelper.getDiscriminatorFieldFilterSuffix(this, DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+    public String getSubThemeDiscriminatorQuerySuffix() {
+        try {
+            return SearchHelper.getDiscriminatorFieldFilterSuffix(this, DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+        } catch (IndexUnreachableException e) {
+            logger.warn("Cannot determine subTheme", e);
+            return "";
+        }
     }
 
     /**

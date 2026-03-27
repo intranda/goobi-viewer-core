@@ -31,7 +31,7 @@
                 <!-- newSearch5 pattern link -->
                 <li>
                     <h:outputLink
-                        value="#{navigationHelper.termUrl}/-/#{browseBean.getBrowsingMenuFieldForLanguage(navigationHelper.localeString)}%3A%22#{term}%22/1/-/#{browseBean.filterQuery}/"
+                        value="#{navigationHelper.termUrl}/-/#{browseBean.getBrowsingMenuFieldForLanguage(navigationHelper.localeString)}%3A%22#{term}%22/1/-/#{browseBean.filterQuery}/#{navigationHelper.subThemeQueryParam}"
                         title="#{browseBean.browseTermList[status.count-1]}">
                         <h:outputText
                             value="#{browseBean.browseTermList[status.count-1]}"
