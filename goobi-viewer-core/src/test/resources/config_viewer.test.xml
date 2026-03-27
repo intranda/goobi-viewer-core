@@ -982,6 +982,7 @@
 		<ancestorIdentifierFields listSiblingRecords="true">
 			<field filterQuery="-DOCSTRCT:year">PI_PARENT</field>
             <field>MD_OTHERANCESTOR</field>
+            <field>GROUPID_1</field>
 		</ancestorIdentifierFields>
 
 		<!-- display as interactive tree view -->
