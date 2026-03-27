@@ -1320,15 +1320,6 @@ public class Configuration extends AbstractConfiguration {
         return false;
     }
 
-    /**
-     * Returns the list of structure elements allowed to be shown in calendar view
-     *
-     * @should return all configured elements
-     * @return a {@link java.util.List} object.
-     */
-    public List<String> getCalendarDocStructTypes() {
-        return getLocalList("metadata.calendarDocstructTypes.docStruct");
-    }
 
     /**
      * <p>
