@@ -337,9 +337,6 @@ public class ViewManager implements Serializable {
         // Init calendar view
         String anchorPi = null;
         String anchorField = topStructElement.isVolume() ? SolrConstants.PI_ANCHOR : topStructElement.getGroupIdField();
-        logger.debug("createCalendarView: pi={}, isVolume={}, isAnchor={}, isGroup={}, isGroupMember={}, groupMemberships={}",
-                pi, topStructElement.isVolume(), topStructElement.isAnchor(), topStructElement.isGroup(),
-                topStructElement.isGroupMember(), topStructElement.getGroupMemberships());
         if (anchorStructElement != null) {
             anchorPi = anchorStructElement.getPi();
         } else if (topStructElement.isAnchor() || topStructElement.isGroup()) {
@@ -351,10 +348,9 @@ public class ViewManager implements Serializable {
             anchorField = groupEntry.getKey();
             anchorPi = groupEntry.getValue();
         }
-
-        String year = topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR);
-        logger.debug("createCalendarView result: anchorPi={}, anchorField={}, year={}", anchorPi, anchorField, year);
-        return new CalendarView(pi, anchorPi, anchorField, year);
+        
+        return new CalendarView(pi, anchorPi, anchorField,
+                topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
     }
 
     /**
