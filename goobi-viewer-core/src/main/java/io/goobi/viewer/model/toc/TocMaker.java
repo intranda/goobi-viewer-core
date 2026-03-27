@@ -112,14 +112,10 @@ public final class TocMaker {
             for (MetadataParameter param : metadataList.get(0).getParams()) {
                 if (StringUtils.isNotEmpty(param.getKey())) {
                     ret.add(param.getKey());
-                    ret.add(param.getKey() + "_LANG_EN");
-                    ret.add(param.getKey() + "_LANG_DE");
-                    ret.add(param.getKey() + "_LANG_FR");
-                    ret.add(param.getKey() + "_LANG_ES");
-                    ret.add(param.getKey() + "_LANG_PT");
-                    ret.add(param.getKey() + "_LANG_HR");
-                    ret.add(param.getKey() + "_LANG_AR");
-                    // TODO Add all available language versions
+                    // Add language-specific field variants for all configured UI locales
+                    for (java.util.Locale locale : ViewerResourceBundle.getAllLocales()) {
+                        ret.add(param.getKey() + "_LANG_" + locale.getLanguage().toUpperCase());
+                    }
                 }
             }
         }
