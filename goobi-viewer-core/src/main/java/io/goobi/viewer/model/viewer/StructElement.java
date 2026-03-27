@@ -256,8 +256,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             hasImages = Boolean.valueOf(getMetadataValue(SolrConstants.BOOL_IMAGEAVAILABLE));
             mimeType = new MimeType(getMetadataValue(SolrConstants.MIMETYPE));
             // Determine the ancestor and group field names and identifiers
-            List<String> configuredGroupFields = DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields();
-            logger.debug("StructElement init: IDDOC={}, recordGroupIdentifierFields={}", luceneId, configuredGroupFields);
+            logger.debug("StructElement init: IDDOC={}, docFieldNames={}, recordGroupIdentifierFields={}",
+                    luceneId, doc.getFieldNames(),
+                    DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields());
             for (String fieldName : doc.getFieldNames()) {
                 if (DataManager.getInstance().getConfiguration().getAncestorIdentifierFields().contains(fieldName)) {
                     Collection<Object> fieldValues = doc.getFieldValues(fieldName);
@@ -267,12 +268,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                             volume = true;
                         }
                     }
-                } else if (configuredGroupFields.contains(fieldName)) {
+                } else if (DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields().contains(fieldName)) {
                     groupMemberships.put(fieldName, (String) doc.getFieldValue(fieldName));
-                    logger.debug("StructElement init: added groupMembership {}={}", fieldName, doc.getFieldValue(fieldName));
                 }
             }
-            logger.debug("StructElement init done: IDDOC={}, ancestors={}, groupMemberships={}", luceneId, ancestors, groupMemberships);
             rtl = Boolean.valueOf(getMetadataValue(SolrConstants.BOOL_DIRECTION_RTL));
             // Load shape metadata
             // TODO use indicator field in doc to avoid this extra search for non-shape elements
