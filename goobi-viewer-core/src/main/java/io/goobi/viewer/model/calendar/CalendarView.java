@@ -92,7 +92,6 @@ public class CalendarView implements Serializable {
             }
         }
 
-        logger.trace("isDisplay: hits={}, volumeYears={}", hits, getVolumeYears().size());
         return hits > 1 || getVolumeYears().size() > 1;
     }
 
