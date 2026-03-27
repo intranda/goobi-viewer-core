@@ -618,7 +618,7 @@ public final class BeanUtils {
     public static <T> Optional<T> getBeanFromSession(HttpSession session, String beanName, Class<T> clazz) {
         if (session != null) {
             Object bean = session.getAttribute(beanName);
-            if (bean != null && bean.getClass().equals(clazz)) {
+            if (clazz.isInstance(bean)) {
                 return Optional.of(bean).map(o -> (T) o);
             }
             return findInstanceInSessionAttributes(session, clazz);
@@ -629,7 +629,8 @@ public final class BeanUtils {
 
     /**
      * <p>
-     * getUserFromSession.
+     * getUserFromSession. This performs a scan of the whole session and may be expensive. Prefer using {@link #getUserBean()} and
+     * #{@link UserBean#getUser()}
      * </p>
      *
      * @param session a {@link jakarta.servlet.http.HttpSession} object.
@@ -672,11 +673,11 @@ public final class BeanUtils {
         while (attributeNames.hasMoreElements()) {
             String attributeName = attributeNames.nextElement();
             Object attributeValue = session.getAttribute(attributeName);
-            if (attributeValue != null && attributeValue.getClass().equals(clazz)) {
+            if (clazz.isInstance(attributeValue)) {
                 return Optional.of(attributeValue).map(o -> (T) o);
             } else if (attributeValue instanceof SerializableContextualInstance serializableContextualInstance) {
                 Object instance = serializableContextualInstance.getInstance();
-                if (instance != null && instance.getClass().equals(clazz)) {
+                if (clazz.isInstance(instance)) {
                     return Optional.of(instance).map(o -> (T) o);
                 }
             }
