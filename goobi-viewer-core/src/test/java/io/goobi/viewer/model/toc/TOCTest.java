@@ -671,4 +671,53 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
         // not cause a NullPointerException after the fix.
         Assertions.assertDoesNotThrow(() -> toc.getTreeViewForGroup(StringConstants.DEFAULT_NAME));
     }
+
+    /**
+     * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies not collapse when sibling count equals threshold exactly
+     */
+    @Test
+    void buildTree_shouldNotCollapseWhenSiblingCountEqualsThreshold() {
+        // collapseTocForLength uses strict '>' — exactly threshold siblings must NOT trigger collapse
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        TOCElement root = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        TOCElement c1 = new TOCElement(null, "1", null, "2", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        TOCElement c2 = new TOCElement(null, "1", null, "3", "LOG_0003", 1, null, null, false, false, false, null, null, null);
+        TOCElement c3 = new TOCElement(null, "1", null, "4", "LOG_0004", 1, null, null, false, false, false, null, null, null);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, c1, c2, c3));
+        toc.setTocElementMap(map);
+
+        // 3 siblings at level 1 with collapseThreshold=3: levelLength (3) is NOT > 3, so no collapse
+        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 3, 0, null);
+
+        assertTrue(root.isExpanded()); // parent must not be collapsed
+        assertTrue(c1.isVisible());
+        assertTrue(c2.isVisible());
+        assertTrue(c3.isVisible());
+    }
+
+    /**
+     * @see TOC#buildTree(String, int, int, int, String)
+     * @verifies handle elements with null iddoc gracefully in index
+     */
+    @Test
+    void buildTree_shouldHandleElementsWithNullIddocGracefully() {
+        // Elements with null iddoc must not corrupt the index — other elements with non-null iddoc
+        // must still be findable (tested via uncollapseCurrentElementAncestors with currentElementIdDoc)
+        TOC toc = new TOC();
+        Map<String, List<TOCElement>> map = new HashMap<>();
+        // root has null iddoc, child has a real iddoc
+        TOCElement root = new TOCElement(null, "1", null, null, "LOG_0001", 0, null, null, false, false, false, null, null, null);
+        TOCElement child = new TOCElement(null, "1", null, "42", "LOG_0002", 1, null, null, false, false, false, null, null, null);
+        child.setVisible(false);
+        map.put(StringConstants.DEFAULT_NAME, Arrays.asList(root, child));
+        toc.setTocElementMap(map);
+
+        // Building with currentElementIdDoc="42" triggers uncollapseCurrentElementAncestors,
+        // which uses iddocIndex. If null-iddoc handling is broken, this would throw NPE or silently fail.
+        toc.buildTree(StringConstants.DEFAULT_NAME, 0, 0, 0, "42");
+
+        assertTrue(child.isVisible()); // child must be made visible by ancestor-uncollapse
+    }
 }
