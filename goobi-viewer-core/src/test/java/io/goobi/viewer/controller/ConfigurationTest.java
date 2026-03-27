@@ -2584,7 +2584,7 @@ class ConfigurationTest extends AbstractTest {
     void getAncestorIdentifierFields_shouldReturnAllConfiguredValues() {
         List<String> list = DataManager.getInstance().getConfiguration().getAncestorIdentifierFields();
         assertNotNull(list);
-        assertEquals(2, list.size());
+        assertEquals(3, list.size());
         assertEquals(SolrConstants.PI_PARENT, list.get(0));
         assertEquals("MD_OTHERANCESTOR", list.get(1));
     }
