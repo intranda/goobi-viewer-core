@@ -186,8 +186,6 @@ var viewerJS = (function (viewer) {
      * Initialize calendar popover if trigger elements exist.
      */
     function _initCalendarPopover(config) {
-        if (!document.querySelector('[data-popover-trigger="calendar-po-trigger"]')) return;
-
         var popoverConfig = {
             appUrl: config.contextPath + '/',
             indexResourceUrl: config.contextPath + '/api/v1/index/query/',
@@ -198,7 +196,7 @@ var viewerJS = (function (viewer) {
             viewer.calendarPopover.init(popoverConfig);
         }
     }
-
+ 
     /**
      * Initialize date range picker for newspaper search.
      */
