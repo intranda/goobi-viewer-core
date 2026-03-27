@@ -38,7 +38,7 @@
                     <h:selectOneMenu
                         id="subthemeDiscriminator"
                         styleClass="form-control"
-                        value="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
+                        value="#{cmsBean.selectedPage.subTheme}"
                         disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
                         required="#{!userBean.user.hasPrivilegeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
                         requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}">

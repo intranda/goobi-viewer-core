@@ -279,7 +279,7 @@ public class CMSCollectionContent extends CMSContent {
      * @return {@link String}
      */
     public String getCombinedFilterQuery() {
-        String subThemeDiscriminatorValue = Optional.ofNullable(getOwningPage()).map(CMSPage::getSubThemeDiscriminatorValue).orElse("");
+        String subThemeDiscriminatorValue = Optional.ofNullable(getOwningPage()).map(CMSPage::getSubTheme).orElse("");
         if (StringUtils.isNoneBlank(subThemeDiscriminatorValue, this.filterQuery)) {
             return "(" + this.filterQuery + ") AND " + DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":"
                     + subThemeDiscriminatorValue;

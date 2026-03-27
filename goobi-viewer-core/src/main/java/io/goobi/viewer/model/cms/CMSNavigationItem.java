@@ -115,7 +115,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
 
     /**
      * If not blank, this item is only displayed in the theme/subtheme of this name Only used if {@link #cmsPage} is null. Otherwise
-     * {@link CMSPage#getSubThemeDiscriminatorValue()} is used instead
+     * {@link CMSPage#getSubTheme()} is used instead
      */
     @Column(name = "associated_theme")
     private String associatedTheme = null;
@@ -790,12 +790,12 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
      * @return true if the item links to a cmsPage and that page has a subtheme associated with it.
      */
     public boolean isAssociatedWithSubtheme() {
-        return Optional.ofNullable(cmsPage).map(CMSPage::getSubThemeDiscriminatorValue).filter(StringUtils::isNotBlank).isPresent();
+        return Optional.ofNullable(cmsPage).map(CMSPage::getSubTheme).filter(StringUtils::isNotBlank).isPresent();
     }
 
     public String getAssociatedSubtheme() {
-        if (cmsPage != null && StringUtils.isNotBlank(cmsPage.getSubThemeDiscriminatorValue())) {
-            return ViewerResourceBundle.getTranslation(cmsPage.getSubThemeDiscriminatorValue(), null);
+        if (cmsPage != null && StringUtils.isNotBlank(cmsPage.getSubTheme())) {
+            return ViewerResourceBundle.getTranslation(cmsPage.getSubTheme(), null);
         }
 
         return "";

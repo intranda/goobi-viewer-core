@@ -229,7 +229,7 @@ public class CollectionViewBean implements Serializable {
         };
 
         CollectionView collection = new CollectionView(content.getSolrField(), provider);
-        String subtheme = Optional.ofNullable(content.getOwningPage()).map(CMSPage::getSubThemeDiscriminatorValue).orElse("");
+        String subtheme = Optional.ofNullable(content.getOwningPage()).map(CMSPage::getSubTheme).orElse("");
         if (StringUtils.isNotBlank(subtheme)) {
             try {
                 Optional<CMSPage> searchPage = DataManager.getInstance()

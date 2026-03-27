@@ -108,9 +108,9 @@ public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
             browse.reset();
         }
         //filter for subtheme
-        if (StringUtils.isNotBlank(getOwningPage().getSubThemeDiscriminatorValue())) {
+        if (StringUtils.isNotBlank(getOwningPage().getSubTheme())) {
             browse.setFilter(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(),
-                    getOwningPage().getSubThemeDiscriminatorValue());
+                    getOwningPage().getSubTheme());
         } else {
             //reset subtheme filter
             browse.setFilter(null, null);

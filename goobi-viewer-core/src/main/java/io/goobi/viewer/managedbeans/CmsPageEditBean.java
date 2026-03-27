@@ -739,8 +739,8 @@ public class CmsPageEditBean implements Serializable {
     private void setUserRestrictedValues(CMSPage page, User user) throws PresentationException, DAOException {
         if (!user.hasPrivilegeForAllSubthemeDiscriminatorValues()) {
             List<String> allowedSubThemeDiscriminatorValues = user.getAllowedSubthemeDiscriminatorValues(cmsBean.getSubthemeDiscriminatorValues());
-            if (StringUtils.isBlank(page.getSubThemeDiscriminatorValue()) && !allowedSubThemeDiscriminatorValues.isEmpty()) {
-                page.setSubThemeDiscriminatorValue(allowedSubThemeDiscriminatorValues.get(0));
+            if (StringUtils.isBlank(page.getSubTheme()) && !allowedSubThemeDiscriminatorValues.isEmpty()) {
+                page.setSubTheme(allowedSubThemeDiscriminatorValues.get(0));
             } else {
                 logger.error("User has no access to any subtheme discriminator values and can therefore not create a page");
                 //do something??
