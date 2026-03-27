@@ -54,7 +54,7 @@ var viewerJS = (function (viewer) {
             // zweites Mal klickt.
 
             // show popover for current day
-            $(_defaults.popoverTriggerSelector).on('click', function () {
+            $(document).on('click', _defaults.popoverTriggerSelector, function () {
                 _this = $(this);
 
                 let query = _this.attr('data-query');
@@ -94,7 +94,7 @@ var viewerJS = (function (viewer) {
             });
 
             // remove all popovers by clicking on body
-            $('body').on('click', function (event) {
+            $(document).on('click', function (event) {
                 if ($(event.target).closest(_defaults.popoverTriggerSelector).length) {
                     return;
                 } else {
