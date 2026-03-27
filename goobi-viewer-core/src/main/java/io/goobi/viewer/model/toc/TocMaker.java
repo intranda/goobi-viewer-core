@@ -509,17 +509,48 @@ public final class TocMaker {
         if (queryResponse != null) {
             HttpServletRequest request = BeanUtils.getRequest();
             // logger.trace("Volumes found: {}", queryResponse.getResults().size());
+
+            // Collect PI → logId mapping from query results to enable pre-fetching permissions
+            Map<String, String> piToLogId = new LinkedHashMap<>();
+            for (SolrDocument doc : queryResponse.getResults()) {
+                String volPiKey = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+                String volLogIdValue = (String) doc.getFieldValue(SolrConstants.LOGID);
+                if (volPiKey != null) {
+                    piToLogId.put(volPiKey, volLogIdValue);
+                }
+            }
+
+            // Pre-fetch permissions outside the loop using the same (pi, logId) pairs as in the original code.
+            // This separates data retrieval from data processing and avoids duplicate checks for the same PI.
+            Map<String, Boolean> listPermissionMap = new HashMap<>();
+            Map<String, AccessPermission> pdfPermissionMap = new HashMap<>();
+            Map<String, AccessPermission> thumbnailPermissionMap = new HashMap<>();
+            if (FacesContext.getCurrentInstance() != null) {
+                for (Map.Entry<String, String> entry : piToLogId.entrySet()) {
+                    String volPi = entry.getKey();
+                    String volLogId = entry.getValue();
+                    try {
+                        listPermissionMap.put(volPi,
+                                AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(
+                                        volPi, null, IPrivilegeHolder.PRIV_LIST, request).isGranted());
+                        pdfPermissionMap.put(volPi,
+                                AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(
+                                        volPi, volLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request));
+                        thumbnailPermissionMap.put(volPi,
+                                AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(
+                                        volPi, volLogId, IPrivilegeHolder.PRIV_VIEW_IMAGES, request));
+                    } catch (RecordNotFoundException e) {
+                        logger.error("Record not found in index during permission pre-fetch: {}", volPi);
+                        listPermissionMap.put(volPi, false);
+                    }
+                }
+            }
+
             for (SolrDocument volumeDoc : queryResponse.getResults()) {
                 String topStructPi = (String) volumeDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-                // Skip volumes that may not be listed
-                try {
-                    if (FacesContext.getCurrentInstance() != null
-                            && !AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, null, IPrivilegeHolder.PRIV_LIST,
-                                    request).isGranted()) {
-                        continue;
-                    }
-                } catch (RecordNotFoundException e) {
-                    logger.error("Record not found in index: {}", topStructPi);
+                // Skip volumes that may not be listed (use pre-fetched map instead of per-volume Solr call)
+                if (FacesContext.getCurrentInstance() != null
+                        && !listPermissionMap.getOrDefault(topStructPi, false)) {
                     continue;
                 }
                 // Determine the TOC group for this volume based on the grouping field, if configured
@@ -554,18 +585,12 @@ public final class TocMaker {
 
                 IMetadataValue volumeLabel = buildLabel(volumeDoc, docStructType);
                 volumeLabel.mapEach(StringEscapeUtils::unescapeHtml4);
-                boolean accessPermissionPdf;
-                AccessPermission accessPermissionThumbnail;
-                try {
-                    accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
-                            volumeLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request).isGranted();
-                    accessPermissionThumbnail = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
-                            volumeLogId, IPrivilegeHolder.PRIV_VIEW_IMAGES, request);
-                    logger.trace("accessPermissionThumbnail: " + accessPermissionThumbnail.isGranted());
-                } catch (RecordNotFoundException e) {
-                    logger.error("Record not found in index: {}", topStructPi);
-                    continue;
-                }
+                // Use pre-fetched permission maps instead of individual Solr calls per volume
+                boolean accessPermissionPdf = sourceFormatPdfAllowed
+                        && pdfPermissionMap.getOrDefault(topStructPi, AccessPermission.denied()).isGranted();
+                AccessPermission accessPermissionThumbnail =
+                        thumbnailPermissionMap.getOrDefault(topStructPi, AccessPermission.denied());
+                logger.trace("accessPermissionThumbnail: {}", accessPermissionThumbnail.isGranted());
 
                 TOCElement tocElement =
                         new TOCElement(volumeLabel, String.valueOf(thumbPageNo), thumbPageNoLabel, volumeIddoc, volumeLogId, 1, topStructPi,
