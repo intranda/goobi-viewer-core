@@ -146,4 +146,139 @@ class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(url.contains("/7/"), "URL should contain page number");
         Assertions.assertTrue(url.contains("LOG_0005"), "URL should contain logId");
     }
+
+    /**
+     * @see TOCElement#equals(Object)
+     * @verifies return true for same object reference
+     */
+    @Test
+    void equals_shouldReturnTrueForSameObject() {
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        Assertions.assertEquals(tef, tef);
+    }
+
+    /**
+     * @see TOCElement#equals(Object)
+     * @verifies return false for null
+     */
+    @Test
+    void equals_shouldReturnFalseForNull() {
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        Assertions.assertNotEquals(null, tef);
+    }
+
+    /**
+     * @see TOCElement#equals(Object)
+     * @verifies return false for different class
+     */
+    @Test
+    void equals_shouldReturnFalseForDifferentClass() {
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        Assertions.assertNotEquals("some string", tef);
+    }
+
+    /**
+     * @see TOCElement#equals(Object)
+     * @verifies return true for elements with same logId pageNo and topStructPi
+     */
+    @Test
+    void equals_shouldReturnTrueForSameLogIdPageNoAndTopStructPi() {
+        TOCElement tef1 = new TOCElement(new SimpleMetadataValue("Label A"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        TOCElement tef2 = new TOCElement(new SimpleMetadataValue("Label B"), "1", null, "456", "LOG_0001", 3, "PPN123", null, true, true, true, "image", null, null);
+        Assertions.assertEquals(tef1, tef2);
+    }
+
+    /**
+     * @see TOCElement#equals(Object)
+     * @verifies return false for different logId
+     */
+    @Test
+    void equals_shouldReturnFalseForDifferentLogId() {
+        TOCElement tef1 = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        TOCElement tef2 = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0002", 0, "PPN123", null, false, false, false, null, null, null);
+        Assertions.assertNotEquals(tef1, tef2);
+    }
+
+    /**
+     * @see TOCElement#equals(Object)
+     * @verifies return false for different topStructPi
+     */
+    @Test
+    void equals_shouldReturnFalseForDifferentTopStructPi() {
+        TOCElement tef1 = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        TOCElement tef2 = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0001", 0, "PPN456", null, false, false, false, null, null, null);
+        Assertions.assertNotEquals(tef1, tef2);
+    }
+
+    /**
+     * @see TOCElement#hashCode()
+     * @verifies be equal for equal elements
+     */
+    @Test
+    void hashCode_shouldBeEqualForEqualElements() {
+        TOCElement tef1 = new TOCElement(new SimpleMetadataValue("Label A"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        TOCElement tef2 = new TOCElement(new SimpleMetadataValue("Label B"), "1", null, "456", "LOG_0001", 5, "PPN123", null, true, true, true, "image", null, null);
+        Assertions.assertEquals(tef1.hashCode(), tef2.hashCode());
+    }
+
+    /**
+     * @see TOCElement#hashCode()
+     * @verifies differ for unequal elements
+     */
+    @Test
+    void hashCode_shouldDifferForUnequalElements() {
+        TOCElement tef1 = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        TOCElement tef2 = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0002", 0, "PPN456", null, false, false, false, null, null, null);
+        Assertions.assertNotEquals(tef1.hashCode(), tef2.hashCode());
+    }
+
+    /**
+     * @see TOCElement#isEmpty()
+     * @verifies return true for blank label
+     */
+    @Test
+    void isEmpty_shouldReturnTrueForBlankLabel() {
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("   "), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        Assertions.assertTrue(tef.isEmpty());
+    }
+
+    /**
+     * @see TOCElement#isEmpty()
+     * @verifies return false for non-blank label
+     */
+    @Test
+    void isEmpty_shouldReturnFalseForNonBlankLabel() {
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Some Title"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        Assertions.assertFalse(tef.isEmpty());
+    }
+
+    /**
+     * @see TOCElement#isAccessPermissionPdf()
+     * @verifies return true when set in constructor
+     */
+    @Test
+    void isAccessPermissionPdf_shouldReturnTrueWhenSetInConstructor() {
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0001", 0, "PPN123", null, true, false, false, null, null, null);
+        Assertions.assertTrue(tef.isAccessPermissionPdf());
+    }
+
+    /**
+     * @see TOCElement#isAccessPermissionPdf()
+     * @verifies return false when not set in constructor
+     */
+    @Test
+    void isAccessPermissionPdf_shouldReturnFalseWhenNotSetInConstructor() {
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        Assertions.assertFalse(tef.isAccessPermissionPdf());
+    }
+
+    /**
+     * @see TOCElement#getMetadataValue(String)
+     * @verifies return null for unknown key
+     */
+    @Test
+    void getMetadataValue_shouldReturnNullForUnknownKey() {
+        TOCElement tef = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        Assertions.assertNull(tef.getMetadataValue("UNKNOWN_FIELD"));
+    }
 }
