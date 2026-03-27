@@ -15,6 +15,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.toc.TOC;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
@@ -102,6 +103,7 @@ class VisibilityConditionTest {
         Mockito.when(viewManager.getCurrentStructElementIddoc()).thenReturn(currentStruct.getLuceneId());
         Mockito.when(viewManager.getPageLoader()).thenReturn(pageLoader);
         Mockito.when(viewManager.getToc()).thenReturn(toc);
+        Mockito.when(viewManager.getMediaType()).thenReturn(new MimeType("image/jpeg"));
         return viewManager;
     }
 

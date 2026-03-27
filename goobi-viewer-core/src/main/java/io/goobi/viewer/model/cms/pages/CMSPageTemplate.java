@@ -118,8 +118,8 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     @Column(name = "use_default_sidebar", nullable = false)
     private boolean useDefaultSidebar = false;
 
-    @Column(name = "subtheme_discriminator", nullable = true)
-    private String subThemeDiscriminatorValue = "";
+    @Column(name = "subtheme", nullable = true)
+    private String subTheme = "";
 
     @OneToMany(mappedBy = "ownerTemplate", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @OrderBy("order")
@@ -192,7 +192,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         this.dateUpdated = original.dateUpdated;
         this.publicationStatus = original.publicationStatus;
         this.useDefaultSidebar = original.useDefaultSidebar;
-        this.subThemeDiscriminatorValue = original.subThemeDiscriminatorValue;
+        this.subTheme = original.subTheme;
         this.categories = new ArrayList<>(original.categories);
         this.wrapperElementClass = original.wrapperElementClass;
         this.lockComponents = original.lockComponents;
@@ -218,7 +218,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         this.dateCreated = LocalDateTime.now();
         this.dateUpdated = LocalDateTime.now();
         this.useDefaultSidebar = original.isUseDefaultSidebar();
-        this.subThemeDiscriminatorValue = original.getSubThemeDiscriminatorValue();
+        this.subTheme = original.getSubTheme();
         this.categories = new ArrayList<>(original.getCategories());
         this.wrapperElementClass = original.getWrapperElementClass();
 
@@ -651,24 +651,24 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
 
     /**
      * <p>
-     * Getter for the field <code>subThemeDiscriminatorValue</code>.
+     * Getter for the field <code>subTheme</code>.
      * </p>
      *
-     * @return the subThemeDiscriminatorValue
+     * @return the subTheme
      */
-    public String getSubThemeDiscriminatorValue() {
-        return subThemeDiscriminatorValue;
+    public String getSubTheme() {
+        return subTheme;
     }
 
     /**
      * <p>
-     * Setter for the field <code>subThemeDiscriminatorValue</code>.
+     * Setter for the field <code>subTheme</code>.
      * </p>
      *
-     * @param subThemeDiscriminatorValue the subThemeDiscriminatorValue to set
+     * @param subTheme the subTheme to set
      */
-    public void setSubThemeDiscriminatorValue(String subThemeDiscriminatorValue) {
-        this.subThemeDiscriminatorValue = subThemeDiscriminatorValue == null ? "" : subThemeDiscriminatorValue;
+    public void setSubTheme(String subTheme) {
+        this.subTheme = subTheme == null ? "" : subTheme;
     }
 
     /**

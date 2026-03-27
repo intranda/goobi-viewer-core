@@ -1739,7 +1739,7 @@ public class CmsBean implements Serializable {
                 return false;
             }
             return user.hasPrivilegeForAllSubthemeDiscriminatorValues()
-                    || getAllowedSubthemeDiscriminatorValues(user).contains(page.getSubThemeDiscriminatorValue());
+                    || getAllowedSubthemeDiscriminatorValues(user).contains(page.getSubTheme());
         }
     }
 
@@ -1779,7 +1779,7 @@ public class CmsBean implements Serializable {
             try {
                 String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
                 String currentTheme = getCurrentCmsPageIfLoaded()
-                        .map(CMSPage::getSubThemeDiscriminatorValue)
+                        .map(CMSPage::getSubTheme)
                         .orElse(BeanUtils.getNavigationHelper().getThemeOrSubtheme());
                 navigationMenuItems = DataManager.getInstance()
                         .getDao()

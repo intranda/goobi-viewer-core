@@ -674,6 +674,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 // Generate the hierarchical facet parameter from query items
                 if (item.isHierarchical()) {
                     // logger.trace("{} is hierarchical", queryItem.getField()); //NOSONAR Debug
+                    usedHierarchicalFields.add(item.getField());
                     if (StringUtils.isBlank(item.getValue())) {
                         continue;
                     }
@@ -694,7 +695,6 @@ public class SearchBean implements SearchInterface, Serializable {
                         if (!usedFieldValuePairs.contains(item.getField() + ":" + item.getValue())) {
                             facetItem.setLink(item.getField() + ":" + item.getValue());
                             usedFieldValuePairs.add(facetItem.getLink());
-                            usedHierarchicalFields.add(item.getField());
                             // logger.trace("reuse facet item: {}", facetItem); //NOSONAR Debug
                             skipQueryItem = true;
                             break;
@@ -712,7 +712,6 @@ public class SearchBean implements SearchInterface, Serializable {
                             continue;
                         }
                         usedFieldValuePairs.add(itemQuery);
-                        usedHierarchicalFields.add(item.getField());
 
                         sbCurrentCollection.append(itemQuery).append(";;");
 

@@ -1072,7 +1072,7 @@ public class NavigationHelper implements Serializable {
                 }
             } else if (isCmsPage()) {
                 if (cmsBean != null && cmsBean.getCurrentPage() != null) {
-                    subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
+                    subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubTheme();
                 }
             }
         }
