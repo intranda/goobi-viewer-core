@@ -233,6 +233,24 @@ class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see TOCElement#hashCode()
+     * @verifies differ for elements with same logId but different topStructPi
+     *
+     * Safety net for replacing ArrayList.contains() with HashSet in addTocElementsRecusively:
+     * a HashSet<TOCElement> must not conflate elements that share logId but belong to different
+     * top-level records, so hashCode() must differ when topStructPi differs.
+     */
+    @Test
+    void hashCode_shouldDifferForElementsWithSameLogIdButDifferentTopStructPi() {
+        TOCElement tef1 = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "123", "LOG_0001", 0, "PPN123", null, false, false, false, null, null, null);
+        TOCElement tef2 = new TOCElement(new SimpleMetadataValue("Label"), "1", null, "456", "LOG_0001", 0, "PPN456", null, false, false, false, null, null, null);
+        // Elements are not equal (different topStructPi)
+        Assertions.assertNotEquals(tef1, tef2);
+        // Therefore their hashCodes must differ so they occupy separate buckets in a HashSet
+        Assertions.assertNotEquals(tef1.hashCode(), tef2.hashCode());
+    }
+
+    /**
      * @see TOCElement#isEmpty()
      * @verifies return true for blank label
      */

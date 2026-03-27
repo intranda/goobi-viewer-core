@@ -298,4 +298,33 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("2", result.get(4).getFieldValue(SolrConstants.IDDOC));
         Assertions.assertEquals("1", result.get(5).getFieldValue(SolrConstants.IDDOC));
     }
+
+    /**
+     * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int,int)
+     * @verifies prefer the ancestor-containing tree over a standalone tree
+     *
+     * Safety net for optimizing the tree-selection logic in buildToc:
+     * buildToc builds one TOC tree per configured ancestor field and returns the LARGEST.
+     * For a volume that belongs to an anchor, the tree with the ancestor (N+1 elements)
+     * must win over a hypothetical standalone tree (N elements).
+     * Any optimization that changes "return largest" to "return first non-empty" must
+     * not break this: the ancestor must always appear at index 0.
+     */
+    @Test
+    void generateToc_shouldPreferTreeWithAncestorOverStandaloneTree() throws Exception {
+        String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
+        Assertions.assertNotNull(iddoc);
+        StructElement structElement = new StructElement(iddoc);
+        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), structElement, false, "image/tiff", 1, -1);
+        Assertions.assertNotNull(tocElements);
+        List<TOCElement> elements = tocElements.get(StringConstants.DEFAULT_NAME);
+        Assertions.assertNotNull(elements);
+        // The tree with the ancestor (anchor) contains more elements than the volume alone.
+        // buildToc must select this larger tree, placing the anchor at index 0.
+        Assertions.assertTrue(elements.size() > 104, "Tree with ancestor must be larger than the volume's own struct tree");
+        Assertions.assertEquals("306653648", elements.get(0).getTopStructPi(),
+                "Anchor must be at index 0 — the ancestor-containing tree was selected as the largest");
+        // Volume elements immediately follow the anchor
+        Assertions.assertEquals("306653648_1891", elements.get(1).getTopStructPi());
+    }
 }
