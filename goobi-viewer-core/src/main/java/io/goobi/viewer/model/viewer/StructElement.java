@@ -268,7 +268,12 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                             volume = true;
                         }
                     }
-                } else if (DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields().contains(fieldName)) {
+                }
+                // Use a separate if (not else if) so that a field configured in both
+                // ancestorIdentifierFields and recordGroupIdentifierFields (e.g. GROUPID_NEWSPAPER)
+                // is correctly recognized as a group membership, enabling the calendar widget
+                // for newspapers indexed without a traditional PI_ANCHOR structure.
+                if (DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields().contains(fieldName)) {
                     groupMemberships.put(fieldName, (String) doc.getFieldValue(fieldName));
                 }
             }
