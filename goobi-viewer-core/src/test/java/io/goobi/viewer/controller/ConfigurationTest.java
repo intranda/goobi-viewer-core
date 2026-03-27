@@ -1892,14 +1892,6 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault("object", "copyright"));
     }
 
-    /**
-     * @see Configuration#getCalendarDocStructTypes()
-     * @verifies return all configured elements
-     */
-    @Test
-    void getCalendarDocStructTypes_shouldReturnAllConfiguredElements() {
-        assertEquals(2, DataManager.getInstance().getConfiguration().getCalendarDocStructTypes().size());
-    }
 
     /**
      * @see Configuration#getAllFacetFields()
