@@ -87,16 +87,23 @@
                             prependId="false">
                             <!-- MULTI VOLUME TOC -->
                             <h:panelGroup rendered="#{activeDocumentBean.anchor or activeDocumentBean.group}">
-                                <div class="toc_metadata">
-                                    <!-- TODO: Thumbnail URL vom Backend einsetzen (Anchor → erstes Kind-Volume aufloesen) -->
-                                    <div class="toc_metadata__thumbnail">
-                                        <div class="toc_metadata__thumbnail-placeholder">
-                                            <util:icon
-                                                icon="photo"
-                                                svgClass="icon icon-xl" />
-                                        </div>
+                                <div class="toc__metadata">
+                                    <div class="toc__metadata-thumbnail">
+                                        <ui:fragment rendered="#{not empty imageDelivery.representativeThumbnail}">
+                                            <img
+                                                src="#{imageDelivery.representativeThumbnail}"
+                                                alt=""
+                                                data-viewer-thumbnail="thumbnail" />
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{empty imageDelivery.representativeThumbnail}">
+                                            <div class="toc__metadata-thumbnail-placeholder">
+                                                <util:icon
+                                                    icon="photo"
+                                                    svgClass="icon icon-xl" />
+                                            </div>
+                                        </ui:fragment>
                                     </div>
-                                    <div class="toc_metadata__content">
+                                    <div class="toc__metadata-content">
                                         <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
                                             <ui:param
                                                 name="metadataElement"
