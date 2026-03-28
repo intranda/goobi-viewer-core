@@ -910,7 +910,8 @@ public class ActiveDocumentBean implements Serializable {
                 this.logid = SolrTools.escapeSpecialCharacters(logid);
             } else {
                 // Illegal logId in URL — surface as a user-facing error without the exception class prefix
-                throw new IllegalUrlParameterException("The passed logId " + SolrTools.escapeSpecialCharacters(logid) + " contains illegal characters");
+                throw new IllegalUrlParameterException(
+                        "The passed logId " + SolrTools.escapeSpecialCharacters(logid) + " contains illegal characters");
             }
         }
     }
