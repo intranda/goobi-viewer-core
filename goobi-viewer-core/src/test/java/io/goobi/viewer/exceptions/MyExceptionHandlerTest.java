@@ -21,9 +21,12 @@
  */
 package io.goobi.viewer.exceptions;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +34,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.faces.application.Application;
 import jakarta.faces.application.NavigationHandler;
@@ -44,8 +48,11 @@ import jakarta.servlet.http.HttpSession;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import io.goobi.viewer.managedbeans.ContextMocker;
+import io.goobi.viewer.managedbeans.NavigationHelper;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 class MyExceptionHandlerTest {
 
@@ -102,6 +109,30 @@ class MyExceptionHandlerTest {
         verify(mockEc, never()).getFlash();
         verify(mockSession).setAttribute(eq("errorType"), any());
         verify(mockSession).setAttribute(eq("errorDetails"), any());
+    }
+
+    /**
+     * @see MyExceptionHandler#putNavigationState(Map, HttpSession)
+     * @verifies not throw if NavigationHelper proxy throws IllegalStateException due to invalidated session
+     */
+    @Test
+    void putNavigationState_shouldNotThrowIfSessionInvalidatedDuringNavHelperAccess() {
+        HttpSession mockSession = mock(HttpSession.class);
+        NavigationHelper mockNav = mock(NavigationHelper.class);
+        Map<String, Object> requestMap = new HashMap<>();
+
+        // Simulate a Weld CDI proxy calling getAttribute() on an invalidated session
+        when(mockNav.getCurrentUrl()).thenThrow(new IllegalStateException("getAttribute: Session already invalidated"));
+
+        try (MockedStatic<BeanUtils> beanUtils = mockStatic(BeanUtils.class)) {
+            beanUtils.when(BeanUtils::getNavigationHelper).thenReturn(mockNav);
+
+            MyExceptionHandler handler = new MyExceptionHandler(mock(ExceptionHandler.class));
+            assertDoesNotThrow(() -> handler.putNavigationState(requestMap, mockSession));
+        }
+
+        verify(mockSession, never()).setAttribute(eq("sourceUrl"), any());
+        assertFalse(requestMap.containsKey("sourceUrl"));
     }
 
     private static ExceptionHandler buildWrappedHandlerWith(FacesContext facesContext, Throwable throwable) {

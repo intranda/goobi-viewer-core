@@ -265,8 +265,17 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     public void putNavigationState(Map<String, Object> requestMap, HttpSession session) {
         NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
         if (navigationHelper != null) {
-            requestMap.put("sourceUrl", navigationHelper.getCurrentUrl());
-            session.setAttribute("sourceUrl", navigationHelper.getCurrentUrl());
+            try {
+                // The Weld CDI proxy for NavigationHelper is non-null even when the underlying
+                // session-scoped bean's session has been invalidated. Calling getCurrentUrl()
+                // on the proxy triggers an internal getAttribute() on the invalidated session,
+                // which throws IllegalStateException — guard against this here.
+                String currentUrl = navigationHelper.getCurrentUrl();
+                requestMap.put("sourceUrl", currentUrl);
+                session.setAttribute("sourceUrl", currentUrl);
+            } catch (IllegalStateException e) {
+                logger.warn("Could not store navigation state: session invalidated during error handling");
+            }
         }
     }
 
