@@ -192,7 +192,13 @@ public class DynamicContentBuilder {
             throw new FacesException(e);
         } catch (ELException e) {
             logger.error("Error rendering composite", e);
-            return composite;
+            // Remove the partially-initialised composite from the parent's children.
+            // If we return the broken composite instead, its unresolved cc.attrs EL
+            // expressions will cause a StackOverflowError in Mojarra's
+            // CompositeComponentAttributesELResolver when JSF later tries to render
+            // the component tree.
+            parent.getChildren().remove(composite);
+            return null;
         } finally {
             parent.popComponentFromEL(context);
         }
