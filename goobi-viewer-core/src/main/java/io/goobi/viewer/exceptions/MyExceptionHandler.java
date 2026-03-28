@@ -177,11 +177,10 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     // Session was invalidated (e.g. timeout) while the request was still rendering — expected, not an error
                     logger.warn("Session invalidated during request rendering: {}", cause.getMessage());
                 } else {
-                    // All other exceptions
+                    // All other exceptions — show root cause class and message for better diagnostics
                     logger.error(t.getMessage(), t);
-                    // Put the exception in the flash scope to be displayed in the error page if necessary ...
-
-                    String msg = LocalDateTime.now().format(DateTools.FORMATTERISO8601DATETIME) + ": " + t.getMessage();
+                    Throwable rootCause = getCause(t);
+                    String msg = rootCause.getClass().getSimpleName() + ": " + rootCause.getMessage();
                     handleError(msg, "general");
                 }
             } finally {
