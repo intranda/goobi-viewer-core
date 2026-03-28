@@ -59,6 +59,7 @@ import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants;
 import jakarta.faces.context.FacesContext;
 
@@ -794,6 +795,23 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         LabeledLink link = viewManager.getLinkToDownloadFile(filename);
         assertTrue(link.getUrl().endsWith(filenameEncoded));
 
+    }
+
+    /**
+     * @see ViewManager#getImageInfosAsJson(PageType)
+     * @verifies return empty JSON object if current page is null
+     */
+    @Test
+    void getImageInfosAsJson_shouldReturnEmptyJsonIfCurrentPageIsNull() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        // pageLoader returns empty Optional for any order → getCurrentPage() returns null
+        IPageLoader pageLoader = Mockito.mock(IPageLoader.class);
+        Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenReturn(null);
+        ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, null, new ImageDeliveryBean());
+        // currentImageOrder defaults to -1, so getCurrentPage() == null
+        String result = viewManager.getImageInfosAsJson(PageType.viewImage);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("{}", result);
     }
 
     @Test

@@ -373,7 +373,8 @@ public class ViewManager implements Serializable {
 
         switch (getPageNavigation()) {
             case SINGLE:
-                infos.put(getCurrentImageOrder(), getImageInfo(getCurrentPage(), pageType));
+                // Guard against null page (e.g. when currentImageOrder is not set or out of range)
+                getPage(currentImageOrder).ifPresent(p -> infos.put(getCurrentImageOrder(), getImageInfo(p, pageType)));
                 break;
             case DOUBLE:
                 getCurrentLeftPage().filter(p -> !p.isDoubleImage()).ifPresent(p -> infos.put(p.getOrder(), getImageInfo(p, pageType)));
