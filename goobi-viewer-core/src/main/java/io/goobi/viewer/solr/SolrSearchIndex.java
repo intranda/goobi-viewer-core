@@ -350,7 +350,9 @@ public class SolrSearchIndex implements java.io.Closeable {
             throw new PresentationException(e.getMessage());
         } catch (RemoteSolrException e) {
             if (SolrTools.isQuerySyntaxError(e)) {
-                throw new PresentationException("Bad query: " + e.getMessage());
+                // Log as warning without stack trace; include the Solr query for diagnostics
+                logger.warn("Bad Solr query syntax: {}; Solr query: {}", e.getMessage(), solrQuery.getQuery());
+                throw new PresentationException("Bad query: " + e.getMessage() + "; Solr query: " + solrQuery.getQuery());
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()),
                     solrQuery.getQuery());
