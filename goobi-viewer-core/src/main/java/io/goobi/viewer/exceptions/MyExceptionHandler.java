@@ -185,6 +185,15 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                         && cause.getMessage().contains("Session already invalidated")) {
                     // Session was invalidated (e.g. timeout) while the request was still rendering — expected, not an error
                     logger.warn("Session invalidated during request rendering: {}", cause.getMessage());
+                } else if (t instanceof PrettyException
+                        && isCausedByExceptionType(t, "jakarta.faces.convert.ConverterException")) {
+                    // PrettyFaces URL parameter type conversion failed (e.g. a non-numeric value such as
+                    // "+(foo)" in a URL segment that maps to an Integer bean property). This is a
+                    // malformed or crafted URL — downgrade to WARN and treat as an invalid URL rather
+                    // than an application error.
+                    String msg = getCause(t).getMessage();
+                    logger.warn("Invalid URL parameter in PrettyFaces mapping: {}", t.getMessage());
+                    handleError(msg, "general_no_url");
                 } else {
                     // All other exceptions — show root cause class and message for better diagnostics
                     logger.error(t.getMessage(), t);
