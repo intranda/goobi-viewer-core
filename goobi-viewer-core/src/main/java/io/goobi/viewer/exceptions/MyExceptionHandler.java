@@ -163,9 +163,16 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 } else if (t instanceof DownloadException || isCausedByExceptionType(t, DownloadException.class.getName())
                         || (t instanceof PrettyException && t.getMessage().contains(DownloadException.class.getSimpleName()))) {
                     logger.error(getRootCause(t).getMessage());
-                    String msg = getRootCause(t).getMessage();
-                    if (msg.contains(DownloadException.class.getSimpleName() + ":")) {
-                        msg = msg.substring(msg.lastIndexOf(":") + 1).trim();
+                    String rawMsg = getRootCause(t).getMessage();
+                    String msg;
+                    // Build a translated message when the exception carries a "file not found" payload
+                    if (rawMsg != null && rawMsg.contains("Download file not found: ")) {
+                        String filename = rawMsg.substring(rawMsg.indexOf("Download file not found: ") + "Download file not found: ".length()).trim();
+                        msg = ViewerResourceBundle.getTranslation("errDownloadFileNotFoundMsg", null).replace("{0}", filename);
+                    } else if (rawMsg != null && rawMsg.contains(DownloadException.class.getSimpleName() + ":")) {
+                        msg = rawMsg.substring(rawMsg.lastIndexOf(":") + 1).trim();
+                    } else {
+                        msg = rawMsg;
                     }
                     handleError(msg, "download");
                 } else if (t instanceof IllegalUrlParameterException || isCausedByExceptionType(t, IllegalUrlParameterException.class.getName())) {

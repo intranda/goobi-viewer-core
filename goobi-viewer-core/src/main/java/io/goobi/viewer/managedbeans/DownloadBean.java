@@ -179,7 +179,7 @@ public class DownloadBean implements Serializable {
         Path file = job.getPath();
         if (!Files.exists(file)) {
             // Job exists in the database but the file is gone (e.g. deleted externally or not yet created)
-            throw new DownloadException("DownloadException: Download file not found: " + file.getFileName());
+            throw new DownloadException("Download file not found: " + file.getFileName());
         }
         FacesContext fc = FacesContext.getCurrentInstance();
         ExternalContext ec = fc.getExternalContext();
