@@ -168,10 +168,10 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     }
                     handleError(msg, "download");
                 } else if (t instanceof IllegalUrlParameterException || isCausedByExceptionType(t, IllegalUrlParameterException.class.getName())) {
-                    // Illegal URL parameter input, do not output illegal value on error page
+                    // Pass the exception message (which includes the illegal value) to the error page
                     String msg = getRootCause(t).getMessage();
                     logger.warn(msg);
-                    handleError("Illegal URL parameter.", "general_no_url");
+                    handleError(msg, "general_no_url");
                 } else if (cause instanceof IllegalStateException && cause.getMessage() != null
                         && cause.getMessage().contains("Session already invalidated")) {
                     // Session was invalidated (e.g. timeout) while the request was still rendering — expected, not an error
