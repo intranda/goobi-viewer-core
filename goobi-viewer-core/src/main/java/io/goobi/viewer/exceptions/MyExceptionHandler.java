@@ -168,8 +168,9 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     }
                     handleError(msg, "download");
                 } else if (t instanceof IllegalUrlParameterException || isCausedByExceptionType(t, IllegalUrlParameterException.class.getName())) {
-                    // Pass the exception message (which includes the illegal value) to the error page
-                    String msg = getRootCause(t).getMessage();
+                    // Use getCause() (walks the full cause chain) instead of getRootCause() (JSF spec,
+                    // only unwraps FacesException/ELException — leaves PrettyException as-is)
+                    String msg = getCause(t).getMessage();
                     logger.warn(msg);
                     handleError(msg, "general_no_url");
                 } else if (cause instanceof IllegalStateException && cause.getMessage() != null

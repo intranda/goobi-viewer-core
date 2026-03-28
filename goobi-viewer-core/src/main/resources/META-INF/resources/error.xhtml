@@ -217,25 +217,21 @@
                                 <h:outputText value="#{msg.errTechnicalDetails}" />
                             </div>
                             <div class="view-error-app__details-block">
-                                <!--
-                                    URL is omitted for general_no_url (IllegalUrlParameterException)
-                                    because displaying the URL would be confusing in that context.
-                                -->
                                 <h:panelGroup
                                     layout="block"
-                                    rendered="#{type != 'general_no_url' and !empty header['referer']}">
+                                    rendered="#{!empty header['referer']}">
                                     URL:
                                     <h:outputText value="#{header['referer']}" />
                                 </h:panelGroup>
                                 <h:panelGroup
                                     layout="block"
-                                    rendered="#{type != 'general_no_url' and empty header['referer'] and sourceUrl != null}">
+                                    rendered="#{empty header['referer'] and sourceUrl != null}">
                                     URL:
                                     <h:outputText value="#{sourceUrl}" />
                                 </h:panelGroup>
                                 <h:panelGroup
                                     layout="block"
-                                    rendered="#{type != 'general_no_url' and empty header['referer'] and sourceUrl == null and sessionScope.sourceUrl != null}">
+                                    rendered="#{empty header['referer'] and sourceUrl == null and sessionScope.sourceUrl != null}">
                                     URL:
                                     <h:outputText value="#{sessionScope.sourceUrl}" />
                                 </h:panelGroup>
