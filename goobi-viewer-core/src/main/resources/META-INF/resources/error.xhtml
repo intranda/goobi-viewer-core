@@ -216,47 +216,50 @@
                             <div class="view-error-app__details-label">
                                 <h:outputText value="#{msg.errTechnicalDetails}" />
                             </div>
-                            <div class="view-error-app__details-block">
+                            <dl class="view-error-app__details-block">
                                 <ui:fragment rendered="#{!empty header['referer']}">
-                                    <div>
-                                        URL:
+                                    <dt>URL</dt>
+                                    <dd>
                                         <h:outputText value="#{header['referer']}" />
-                                    </div>
+                                    </dd>
                                 </ui:fragment>
                                 <ui:fragment rendered="#{empty header['referer'] and sourceUrl != null}">
-                                    <div>
-                                        URL:
+                                    <dt>URL</dt>
+                                    <dd>
                                         <h:outputText value="#{sourceUrl}" />
-                                    </div>
+                                    </dd>
                                 </ui:fragment>
                                 <ui:fragment rendered="#{empty header['referer'] and sourceUrl == null and sessionScope.sourceUrl != null}">
-                                    <div>
-                                        URL:
+                                    <dt>URL</dt>
+                                    <dd>
                                         <h:outputText value="#{sessionScope.sourceUrl}" />
-                                    </div>
+                                    </dd>
                                 </ui:fragment>
                                 <ui:fragment rendered="#{sessionScope.errorTime != null}">
-                                    <div>
+                                    <dt>
                                         <h:outputText value="#{msg.errTechnicalDetailsTime}" />
-                                        :
+                                    </dt>
+                                    <dd>
                                         <h:outputText value="#{sessionScope.errorTime}" />
-                                    </div>
+                                    </dd>
                                 </ui:fragment>
                                 <ui:fragment rendered="#{errMsg != null}">
-                                    <div>
+                                    <dt>
                                         <h:outputText value="#{msg.errTechnicalDetailsError}" />
-                                        :
+                                    </dt>
+                                    <dd>
                                         <h:outputText value="#{errMsg}" />
-                                    </div>
+                                    </dd>
                                 </ui:fragment>
                                 <ui:fragment rendered="#{errMsg == null and sessionScope.errorDetails != null}">
-                                    <div>
+                                    <dt>
                                         <h:outputText value="#{msg.errTechnicalDetailsError}" />
-                                        :
+                                    </dt>
+                                    <dd>
                                         <h:outputText value="#{sessionScope.errorDetails}" />
-                                    </div>
+                                    </dd>
                                 </ui:fragment>
-                            </div>
+                            </dl>
                         </div>
 
                         <!-- ACTION BUTTONS -->

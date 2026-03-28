@@ -100,6 +100,30 @@ body:has(.view-error-app) {
     font-size: @fontSmall;
     color: @darkgray;
     line-height: 1.8;
+    margin: 0;
+
+    dt {
+        display: inline-block;
+        min-width: 55px;
+        font-weight: 600;
+
+        &::after {
+            content: ':';
+            margin-right: 0.5em;
+        }
+    }
+
+    dd {
+        display: inline;
+        margin: 0;
+        overflow-wrap: break-word;
+        word-break: break-all;
+
+        &::after {
+            content: '\A';
+            white-space: pre;
+        }
+    }
 }
 
 /* ACTIONS */
