@@ -148,6 +148,22 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see ActiveDocumentBean#setPersistentIdentifier(String)
+     * @verifies preserve lastReceivedIdentifier after reset when identifier not found
+     */
+    @Test
+    void setPersistentIdentifier_shouldPreserveLastReceivedIdentifierWhenNotFound() throws Exception {
+        // When an unknown identifier is set, reset() is called internally.
+        // lastReceivedIdentifier must be restored afterwards so that update() throws
+        // RecordNotFoundException with the actual identifier instead of '???'.
+        String unknownPi = "this_identifier_does_not_exist";
+        adb.setPersistentIdentifier(unknownPi);
+        assertNull(adb.topDocumentIddoc);
+        RecordNotFoundException ex = org.junit.jupiter.api.Assertions.assertThrows(RecordNotFoundException.class, () -> adb.update());
+        assertEquals(unknownPi, ex.getMessage());
+    }
+
+    /**
      * @see ActiveDocumentBean#getNextUrl(String,int)
      * @verifies increase image number by given step
      */
