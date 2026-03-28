@@ -38,6 +38,7 @@ import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.model.rss.RSSFeed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -58,6 +59,7 @@ public class RSSResource {
     @Operation(
             tags = { "records", "rss" },
             summary = "Get an rss feed of the most recent records")
+    @ApiResponse(responseCode = "400", description = "The provided query parameter contains invalid Solr query syntax")
     public String getRssFeed(
             @Parameter(description = "Subtheme: Results are filtered to values within the given subtheme (optional)") 
             @QueryParam("subtheme") String subtheme,
@@ -83,6 +85,7 @@ public class RSSResource {
     @Operation(
             tags = { "records", "rss" },
             summary = "Get an a json representation of an RSS feed of the most recent records")
+    @ApiResponse(responseCode = "400", description = "The provided query parameter contains invalid Solr query syntax")
     public Channel getRssJsonFeed(
             @Parameter(description = "Subtheme: Results are filtered to values within the given subtheme (optional)") 
             @QueryParam("subtheme") String subtheme,
