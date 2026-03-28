@@ -59,7 +59,9 @@
                 <div class="view-error-app__box">
                     <!-- SEVERITY HEADER -->
                     <div class="view-error-app__header #{isWarning ? 'view-error-app__header--warning' : 'view-error-app__header--critical'}">
-                        <span class="view-error-app__header-icon">
+                        <span
+                            class="view-error-app__header-icon"
+                            aria-hidden="true">
                             <h:outputText
                                 value="⚠"
                                 rendered="#{isWarning}" />
@@ -240,7 +242,8 @@
                                 <h:panelGroup
                                     layout="block"
                                     rendered="#{sessionScope.errorTime != null}">
-                                    Zeit:
+                                    <h:outputText value="#{msg.errTechnicalDetailsTime}" />
+                                    :
                                     <h:outputText value="#{sessionScope.errorTime}" />
                                 </h:panelGroup>
                                 <h:panelGroup
@@ -280,13 +283,15 @@
                             </h:outputLink>
                             <!-- Zurück — viewExpired uses sourceUrl as fallback -->
                             <h:outputLink
-                                rendered="#{type == 'viewExpired'}"
+                                rendered="#{type == 'viewExpired' and (!empty header['referer'] or flash.keep.sourceUrl != null)}"
                                 value="#{empty header['referer'] ? flash.keep.sourceUrl : header['referer']}"
                                 styleClass="btn btn--default">
                                 <h:outputText value="#{msg.returnToPreviousPage}" />
                             </h:outputLink>
                             <!-- Neu laden — for system errors (red category) -->
-                            <h:panelGroup rendered="#{not isWarning}">
+                            <h:panelGroup
+                                layout="block"
+                                rendered="#{not isWarning}">
                                 <a
                                     href="javascript:location.reload();"
                                     class="btn btn--default">
@@ -299,4 +304,6 @@
             </div>
         </f:view>
     </ui:define>
+
+    <ui:define name="sidebar" />
 </ui:composition>
