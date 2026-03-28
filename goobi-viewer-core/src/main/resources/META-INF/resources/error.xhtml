@@ -14,11 +14,11 @@
         </f:metadata>
     </ui:define>
 
-    <ui:define name="breadcrumbs">
-        <viewerComponent:breadcrumbs
-            showIcon="false"
-            showStartText="true" />
-    </ui:define>
+    <!-- Breadcrumbs are intentionally omitted on the error page.
+         The breadcrumbs component evaluates beans that may trigger Solr/DB access,
+         which can cause a StackOverflowError in JSF EL resolution when the
+         application is already in a broken state (e.g. Solr unreachable). -->
+    <ui:define name="breadcrumbs" />
 
     <ui:define name="content">
         <f:view
