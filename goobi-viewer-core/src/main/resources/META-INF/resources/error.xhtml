@@ -249,11 +249,15 @@
                                 <h:panelGroup
                                     layout="block"
                                     rendered="#{errMsg != null}">
+                                    <h:outputText value="#{msg.errTechnicalDetailsError}" />
+                                    :
                                     <h:outputText value="#{errMsg}" />
                                 </h:panelGroup>
                                 <h:panelGroup
                                     layout="block"
                                     rendered="#{errMsg == null and sessionScope.errorDetails != null}">
+                                    <h:outputText value="#{msg.errTechnicalDetailsError}" />
+                                    :
                                     <h:outputText value="#{sessionScope.errorDetails}" />
                                 </h:panelGroup>
                             </div>
@@ -274,10 +278,10 @@
                                 styleClass="btn btn--default">
                                 <h:outputText value="#{msg.errRecordNotFoundOptions_part02}" />
                             </h:outputLink>
-                            <!-- Zurück — if referer available (all types except viewExpired) -->
+                            <!-- Zurück — if referer or sourceUrl available (all types except viewExpired) -->
                             <h:outputLink
-                                rendered="#{type != 'viewExpired' and !empty header['referer']}"
-                                value="#{header['referer']}"
+                                rendered="#{type != 'viewExpired' and (!empty header['referer'] or sourceUrl != null or sessionScope.sourceUrl != null)}"
+                                value="#{!empty header['referer'] ? header['referer'] : (sourceUrl != null ? sourceUrl : sessionScope.sourceUrl)}"
                                 styleClass="btn btn--default">
                                 <h:outputText value="#{msg.returnToPreviousPage}" />
                             </h:outputLink>
