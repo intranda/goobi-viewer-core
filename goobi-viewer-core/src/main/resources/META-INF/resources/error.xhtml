@@ -10,7 +10,7 @@
         <f:metadata>
             <f:event
                 type="preRenderView"
-                listener="#{navigationHelper.setCurrentPage('error')}" />
+                listener="#{navigationHelper.setCurrentPageForError(sessionScope.errorType)}" />
         </f:metadata>
     </ui:define>
 

@@ -308,6 +308,22 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
+     * Sets the current page for the error page, mapping generic error types (general, general_no_url)
+     * to the "error" page name so that the browser title shows "Fehler" instead of unrelated translations.
+     * Specific error types (e.g. recordNotFound, download) are passed through directly so that
+     * their own message keys are used as the page title.
+     *
+     * @param errorType the error type string set by the exception handler; may be null
+     */
+    public void setCurrentPageForError(String errorType) {
+        if (errorType == null || "general".equals(errorType) || "general_no_url".equals(errorType)) {
+            setCurrentPage("error");
+        } else {
+            setCurrentPage(errorType);
+        }
+    }
+
+    /**
      * <p>
      * Setter for the field <code>currentPage</code>.
      * </p>
