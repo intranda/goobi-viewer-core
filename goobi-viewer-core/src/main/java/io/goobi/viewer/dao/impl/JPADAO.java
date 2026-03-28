@@ -6991,21 +6991,24 @@ public class JPADAO implements IDAO {
     @Override
     public int deleteViewerMessagesBefore(LocalDateTime date)
             throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
+        // Synchronized together with add/update/deleteViewerMessage to prevent concurrent DELETE+INSERT deadlocks on mq_message_properties
+        synchronized (viewerMessageLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
 
-            em.getTransaction().begin();
+                em.getTransaction().begin();
 
-            Query q = em.createQuery("DELETE FROM ViewerMessage a WHERE a.lastUpdateTime < :date");
-            q.setParameter("date", date);
-            int deleted = q.executeUpdate();
+                Query q = em.createQuery("DELETE FROM ViewerMessage a WHERE a.lastUpdateTime < :date");
+                q.setParameter("date", date);
+                int deleted = q.executeUpdate();
 
-            em.getTransaction().commit();
+                em.getTransaction().commit();
 
-            return deleted;
-        } finally {
-            close(em);
+                return deleted;
+            } finally {
+                close(em);
+            }
         }
     }
 
