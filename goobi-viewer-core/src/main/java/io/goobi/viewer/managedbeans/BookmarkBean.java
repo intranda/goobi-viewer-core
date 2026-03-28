@@ -49,6 +49,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.exceptions.IllegalUrlParameterException;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.Bookmark;
@@ -582,7 +583,7 @@ public class BookmarkBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void setCurrentBookmarkListId(String bookmarkListId) throws PresentationException, DAOException {
+    public void setCurrentBookmarkListId(String bookmarkListId) throws IllegalUrlParameterException, DAOException {
         currentBookmarkListSharedKey = null;
 
         if (bookmarkListId == null) {
@@ -594,11 +595,13 @@ public class BookmarkBean implements Serializable {
             Long id = Long.parseLong(bookmarkListId);
             BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(id);
             if (bl == null || !bl.isMayView(userBean.getUser())) {
-                throw new PresentationException("No bookmark list found with id " + bookmarkListId);
+                // Bookmark list not found or access denied — surface as URL parameter error
+                throw new IllegalUrlParameterException("No bookmark list found with id " + bookmarkListId);
             }
             setCurrentBookmarkList(bl);
         } catch (NumberFormatException e) {
-            throw new PresentationException(bookmarkListId + " is not viable bookmark list id");
+            // Non-numeric ID in URL — surface as URL parameter error
+            throw new IllegalUrlParameterException(bookmarkListId + " is not a valid bookmark list id");
         }
     }
 
