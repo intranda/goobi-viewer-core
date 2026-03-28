@@ -5,14 +5,12 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     template="/resources/themes/#{navigationHelper.theme}/template.html">
     <ui:define name="metadata">
         <f:metadata>
             <f:event
                 type="preRenderView"
                 listener="#{navigationHelper.setCurrentPage('error')}" />
-            <!--             <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('failure',1)}" /> -->
         </f:metadata>
     </ui:define>
 
@@ -26,435 +24,279 @@
         <f:view
             contentType="text/html"
             encoding="utf-8">
-            <div
-                id="error"
-                class="view-error">
-                <c:if test="#{type == null}">
-                    <c:set
-                        var="type"
-                        value="#{sessionScope.errorType}"
-                        scope="request" />
-                </c:if>
-                <c:if test="#{type == null}">
-                    <c:set
-                        var="type"
-                        value="#{errorType}" />
-                </c:if>
-                <c:if test="#{type == null}">
-                    <c:set
-                        var="type"
-                        value="general"
-                        scope="request" />
-                </c:if>
-                <!--
-                        type: #{type}
-                -->
+            <!-- Resolve error type from multiple possible sources -->
+            <c:if test="#{type == null}">
+                <c:set
+                    var="type"
+                    value="#{sessionScope.errorType}"
+                    scope="request" />
+            </c:if>
+            <c:if test="#{type == null}">
+                <c:set
+                    var="type"
+                    value="#{errorType}" />
+            </c:if>
+            <c:if test="#{type == null}">
+                <c:set
+                    var="type"
+                    value="general"
+                    scope="request" />
+            </c:if>
 
-                <!-- ERROR GENERAL -->
-                <h:panelGroup rendered="#{type == 'general'}">
-                    <h1>#{msg.failure}</h1>
+            <!--
+                Severity: warning types are user-side errors.
+                All other types are system errors.
+            -->
+            <c:set
+                var="isWarning"
+                value="#{type == 'recordNotFound'
+                or type == 'recordDeleted'
+                or type == 'errRecordLimitExceeded'
+                or type == 'download'
+                or type == 'viewExpired'}" />
 
-                    <p>
-                        <h:outputText
-                            value="#{msg.generalError}"
-                            escape="false" />
-                    </p>
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <p>
+            <div class="view-error-app">
+                <div class="view-error-app__box">
+                    <!-- SEVERITY HEADER -->
+                    <div class="view-error-app__header #{isWarning ? 'view-error-app__header--warning' : 'view-error-app__header--critical'}">
+                        <span class="view-error-app__header-icon">
                             <h:outputText
-                                rendered="#{!empty header['referer']}"
-                                value="URL: #{header['referer']}" />
+                                value="⚠"
+                                rendered="#{isWarning}" />
                             <h:outputText
-                                rendered="#{empty header['referer'] and sourceUrl != null}"
-                                value="URL: #{sourceUrl}" />
+                                value="✕"
+                                rendered="#{not isWarning}" />
+                        </span>
+                        <span class="view-error-app__header-label">
                             <h:outputText
-                                rendered="#{empty header['referer'] and sourceUrl == null}"
-                                value="URL: #{sessionScope.sourceUrl}" />
-                        </p>
-                        <p>
+                                value="#{msg.errSeverityWarning}"
+                                rendered="#{isWarning}" />
                             <h:outputText
-                                rendered="#{sessionScope.errorTime != null}"
-                                value="#{sessionScope.errorTime}" />
-                        </p>
-                        <code>
-                            <h:outputText
-                                rendered="#{errMsg != null}"
-                                value="#{errMsg}" />
-                            <h:outputText
-                                rendered="#{errMsg == null}"
-                                value="#{sessionScope.errorDetails}" />
-                        </code>
+                                value="#{msg.errSeveritySystem}"
+                                rendered="#{not isWarning}" />
+                        </span>
                     </div>
 
-                    <p>
-                        <h:outputLink
-                            rendered="#{!empty header['referer']}"
-                            value="#{header['referer']}">
-                            #{msg.returnToPreviousPage}
-                        </h:outputLink>
-                        <br />
-                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
-                    </p>
-                </h:panelGroup>
+                    <div class="view-error-app__content">
+                        <!-- TITLE AND USER MESSAGE PER ERROR TYPE -->
 
-                <!-- ERROR GENERAL, NO URL DISPLAY -->
-                <h:panelGroup rendered="#{type == 'general_no_url'}">
-                    <h1>#{msg.failure}</h1>
+                        <!-- Record not found -->
+                        <h:panelGroup
+                            layout="block"
+                            rendered="#{type == 'recordNotFound'}">
+                            <h1 class="view-error-app__title">
+                                <h:outputText value="#{msg.errRecordNotFoundTitle}" />
+                            </h1>
+                            <p class="view-error-app__message">
+                                <h:outputText
+                                    value="#{msg.errRecordNotFoundDescription}"
+                                    escape="false" />
+                            </p>
+                        </h:panelGroup>
 
-                    <p>
-                        <h:outputText
-                            value="#{msg.generalError}"
-                            escape="false" />
-                    </p>
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <p>
-                            <h:outputText
-                                rendered="#{sessionScope.errorTime != null}"
-                                value="#{sessionScope.errorTime}" />
-                        </p>
-                        <code>
-                            <h:outputText
-                                rendered="#{errMsg != null}"
-                                value="#{errMsg}" />
-                            <h:outputText
-                                rendered="#{errMsg == null}"
-                                value="#{sessionScope.errorDetails}" />
-                        </code>
-                    </div>
-                    <p>
-                        <h:outputLink
-                            rendered="#{!empty header['referer']}"
-                            value="#{header['referer']}">
-                            #{msg.returnToPreviousPage}
-                        </h:outputLink>
-                        <br />
-                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
-                    </p>
-                </h:panelGroup>
+                        <!-- Record deleted -->
+                        <h:panelGroup
+                            layout="block"
+                            rendered="#{type == 'recordDeleted'}">
+                            <h1 class="view-error-app__title">
+                                <h:outputText value="#{msg.errRecordDeletedTitle}" />
+                            </h1>
+                            <p class="view-error-app__message">
+                                <h:outputText
+                                    value="#{msg.errRecordDeletedDescription}"
+                                    escape="false" />
+                            </p>
+                        </h:panelGroup>
 
-                <!-- ERROR RECORD DELETED -->
-                <h:panelGroup rendered="#{type == 'recordDeleted' or typeHttp == 'recordDeleted'}">
-                    <h1>#{msg.errRecordDeletedTitle}</h1>
+                        <!-- Record limit exceeded -->
+                        <h:panelGroup
+                            layout="block"
+                            rendered="#{type == 'errRecordLimitExceeded'}">
+                            <h1 class="view-error-app__title">
+                                <h:outputText value="#{msg.errRecordLimitExceededTitle}" />
+                            </h1>
+                            <p class="view-error-app__message">
+                                <h:outputText
+                                    value="#{msg.errRecordLimitExceededDescription}"
+                                    escape="false" />
+                            </p>
+                        </h:panelGroup>
 
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <h:outputText
-                            rendered="#{errMsg != null}"
-                            value="#{errMsg}" />
-                        <h:outputText
-                            rendered="#{errMsg == null}"
-                            value="#{sessionScope.errorDetails}" />
-                        <h:outputText
-                            rendered="#{!empty header['referer']}"
-                            value="#{header['referer']}" />
-                    </div>
+                        <!-- Download error -->
+                        <h:panelGroup
+                            layout="block"
+                            rendered="#{type == 'download'}">
+                            <h1 class="view-error-app__title">
+                                <h:outputText value="#{msg.errDownloadExceptionTitle}" />
+                            </h1>
+                            <p class="view-error-app__message">
+                                <h:outputText
+                                    value="#{msg.errDownloadDescription}"
+                                    escape="false" />
+                            </p>
+                        </h:panelGroup>
 
-                    <p>
-                        #{msg.errRecordNotFoundOptions_part01}
-                        <h:outputLink value="#{navigationHelper.applicationUrl}search/">#{msg.errRecordNotFoundOptions_part02}</h:outputLink>
-                        #{msg.errRecordNotFoundOptions_part03}
-                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.errRecordNotFoundOptions_part04}</h:outputLink>
-                        .
-                    </p>
-                </h:panelGroup>
+                        <!-- Session / view expired -->
+                        <h:panelGroup
+                            layout="block"
+                            rendered="#{type == 'viewExpired'}">
+                            <h1 class="view-error-app__title">
+                                <h:outputText value="#{msg.sessionExpiredTitle}" />
+                            </h1>
+                            <p class="view-error-app__message">
+                                <h:outputText
+                                    value="#{msg.sessionExpired}"
+                                    escape="false" />
+                            </p>
+                        </h:panelGroup>
 
-                <!-- ERROR RECORD NOT FOUND -->
-                <h:panelGroup rendered="#{type == 'recordNotFound'}">
-                    <h1>#{msg.errRecordNotFoundTitle}</h1>
+                        <!-- General error (with or without URL) -->
+                        <h:panelGroup
+                            layout="block"
+                            rendered="#{type == 'general' or type == 'general_no_url'}">
+                            <h1 class="view-error-app__title">
+                                <h:outputText value="#{msg.failure}" />
+                            </h1>
+                            <p class="view-error-app__message">
+                                <h:outputText
+                                    value="#{msg.generalError}"
+                                    escape="false" />
+                            </p>
+                        </h:panelGroup>
 
-                    <h:form>
-                        <div
-                            class="alert alert-danger"
-                            role="alert">
-                            <h:outputText
-                                rendered="#{errMsg != null}"
-                                value="#{errMsg}" />
-                            <h:outputText
-                                rendered="#{errMsg == null}"
-                                value="#{sessionScope.errorDetails}" />
-                            <h:outputText
-                                rendered="#{!empty header['referer']}"
-                                value="#{header['referer']}" />
+                        <!-- Solr index unreachable -->
+                        <h:panelGroup
+                            layout="block"
+                            rendered="#{type == 'indexUnreachable'}">
+                            <h1 class="view-error-app__title">
+                                <h:outputText value="#{msg.errIndexUnreachableTitle}" />
+                            </h1>
+                            <p class="view-error-app__message">
+                                <h:outputText
+                                    value="#{msg.errIndexUnreachableMsg}"
+                                    escape="false" />
+                            </p>
+                        </h:panelGroup>
+
+                        <!-- Database error -->
+                        <h:panelGroup
+                            layout="block"
+                            rendered="#{type == 'dao'}">
+                            <h1 class="view-error-app__title">
+                                <h:outputText value="#{msg.errDAOExceptionTitle}" />
+                            </h1>
+                            <p class="view-error-app__message">
+                                <h:outputText
+                                    value="#{msg.errDAOExceptionMsg}"
+                                    escape="false" />
+                            </p>
+                        </h:panelGroup>
+
+                        <!-- Viewer configuration error -->
+                        <h:panelGroup
+                            layout="block"
+                            rendered="#{type == 'configuration'}">
+                            <h1 class="view-error-app__title">
+                                <h:outputText value="#{msg.errViewerConfigurationExceptionTitle}" />
+                            </h1>
+                            <p class="view-error-app__message">
+                                <h:outputText
+                                    value="#{msg.errViewerConfigurationExceptionMsg}"
+                                    escape="false" />
+                            </p>
+                        </h:panelGroup>
+
+                        <!-- DIVIDER -->
+                        <div class="view-error-app__divider" />
+
+                        <!-- TECHNICAL DETAILS (always visible) -->
+                        <div class="view-error-app__details">
+                            <div class="view-error-app__details-label">
+                                <h:outputText value="#{msg.errTechnicalDetails}" />
+                            </div>
+                            <div class="view-error-app__details-block">
+                                <!--
+                                    URL is omitted for general_no_url (IllegalUrlParameterException)
+                                    because displaying the URL would be confusing in that context.
+                                -->
+                                <h:panelGroup
+                                    layout="block"
+                                    rendered="#{type != 'general_no_url' and !empty header['referer']}">
+                                    URL:
+                                    <h:outputText value="#{header['referer']}" />
+                                </h:panelGroup>
+                                <h:panelGroup
+                                    layout="block"
+                                    rendered="#{type != 'general_no_url' and empty header['referer'] and sourceUrl != null}">
+                                    URL:
+                                    <h:outputText value="#{sourceUrl}" />
+                                </h:panelGroup>
+                                <h:panelGroup
+                                    layout="block"
+                                    rendered="#{type != 'general_no_url' and empty header['referer'] and sourceUrl == null and sessionScope.sourceUrl != null}">
+                                    URL:
+                                    <h:outputText value="#{sessionScope.sourceUrl}" />
+                                </h:panelGroup>
+                                <h:panelGroup
+                                    layout="block"
+                                    rendered="#{sessionScope.errorTime != null}">
+                                    Zeit:
+                                    <h:outputText value="#{sessionScope.errorTime}" />
+                                </h:panelGroup>
+                                <h:panelGroup
+                                    layout="block"
+                                    rendered="#{errMsg != null}">
+                                    <h:outputText value="#{errMsg}" />
+                                </h:panelGroup>
+                                <h:panelGroup
+                                    layout="block"
+                                    rendered="#{errMsg == null and sessionScope.errorDetails != null}">
+                                    <h:outputText value="#{sessionScope.errorDetails}" />
+                                </h:panelGroup>
+                            </div>
                         </div>
 
-                        <p>
-                            #{msg.errRecordNotFoundOptions_part01}
-                            <h:outputLink value="#{navigationHelper.applicationUrl}search/">#{msg.errRecordNotFoundOptions_part02}</h:outputLink>
-                            #{msg.errRecordNotFoundOptions_part03}
-                            <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.errRecordNotFoundOptions_part04}</h:outputLink>
-                            .
-                        </p>
-                    </h:form>
-                </h:panelGroup>
-
-                <!-- ERROR RECORD LIMIT EXCEEDED -->
-                <h:panelGroup rendered="#{type == 'errRecordLimitExceeded'}">
-                    <h1>#{msg.errRecordLimitExceededTitle}</h1>
-
-                    <h:form>
-                        <div
-                            class="alert alert-danger"
-                            role="alert">
-                            <h:outputText
-                                rendered="#{errMsg != null}"
-                                value="#{errMsg}" />
-                            <h:outputText
-                                rendered="#{errMsg == null}"
-                                value="#{sessionScope.errorDetails}" />
-                            <h:outputText
-                                rendered="#{!empty header['referer']}"
-                                value="#{header['referer']}" />
-                        </div>
-
-                        <p>
+                        <!-- ACTION BUTTONS -->
+                        <div class="view-error-app__actions">
+                            <!-- Startseite — always shown -->
                             <h:outputLink
-                                rendered="#{!empty header['referer']}"
-                                value="#{header['referer']}">
-                                #{msg.returnToPreviousPage}
+                                value="#{navigationHelper.applicationUrl}"
+                                styleClass="btn btn--full">
+                                <h:outputText value="#{msg.returnHome}" />
                             </h:outputLink>
-                            <br />
-                            <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
-                        </p>
-                    </h:form>
-                </h:panelGroup>
-
-                <!-- INDEX UNREACHABLE -->
-                <h:panelGroup rendered="#{type == 'indexUnreachable'}">
-                    <h1>#{msg.errIndexUnreachableTitle}</h1>
-
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <h:outputText
-                            rendered="#{errMsg == null}"
-                            value="#{msg.errIndexUnreachableMsg}" />
+                            <!-- Zur Suche — for record errors -->
+                            <h:outputLink
+                                rendered="#{type == 'recordNotFound' or type == 'recordDeleted'}"
+                                value="#{navigationHelper.applicationUrl}search/"
+                                styleClass="btn btn--default">
+                                <h:outputText value="#{msg.errRecordNotFoundOptions_part02}" />
+                            </h:outputLink>
+                            <!-- Zurück — if referer available (all types except viewExpired) -->
+                            <h:outputLink
+                                rendered="#{type != 'viewExpired' and !empty header['referer']}"
+                                value="#{header['referer']}"
+                                styleClass="btn btn--default">
+                                <h:outputText value="#{msg.returnToPreviousPage}" />
+                            </h:outputLink>
+                            <!-- Zurück — viewExpired uses sourceUrl as fallback -->
+                            <h:outputLink
+                                rendered="#{type == 'viewExpired'}"
+                                value="#{empty header['referer'] ? flash.keep.sourceUrl : header['referer']}"
+                                styleClass="btn btn--default">
+                                <h:outputText value="#{msg.returnToPreviousPage}" />
+                            </h:outputLink>
+                            <!-- Neu laden — for system errors (red category) -->
+                            <h:panelGroup rendered="#{not isWarning}">
+                                <a
+                                    href="javascript:location.reload();"
+                                    class="btn btn--default">
+                                    <h:outputText value="#{msg.errHttpRetry}" />
+                                </a>
+                            </h:panelGroup>
+                        </div>
                     </div>
-
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <h:outputText
-                            rendered="#{!empty header['referer']}"
-                            value="URL: #{header['referer']}" />
-                        <h:outputText
-                            rendered="#{empty header['referer'] and sourceUrl != null}"
-                            value="URL: #{sourceUrl}" />
-                        <h:outputText
-                            rendered="#{empty header['referer'] and sourceUrl == null}"
-                            value="URL: #{sessionScope.sourceUrl}" />
-                    </div>
-
-                    <p>
-                        <h:outputLink
-                            rendered="#{!empty header['referer']}"
-                            value="#{header['referer']}">
-                            #{msg.returnToPreviousPage}
-                        </h:outputLink>
-                        <br />
-                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
-                    </p>
-                </h:panelGroup>
-
-                <!-- DAO ERROR -->
-                <h:panelGroup rendered="#{type == 'dao'}">
-                    <h1>#{msg.errDAOExceptionTitle}</h1>
-
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <h:outputText value="#{msg.errDAOExceptionMsg}" />
-                    </div>
-
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <h:outputText
-                            rendered="#{!empty header['referer']}"
-                            value="URL: #{header['referer']}" />
-                        <h:outputText
-                            rendered="#{empty header['referer'] and sourceUrl != null}"
-                            value="URL: #{sourceUrl}" />
-                        <h:outputText
-                            rendered="#{empty header['referer'] and sourceUrl == null}"
-                            value="URL: #{sessionScope.sourceUrl}" />
-                    </div>
-
-                    <p>
-                        <h:outputLink
-                            rendered="#{!empty header['referer']}"
-                            value="#{header['referer']}">
-                            #{msg.returnToPreviousPage}
-                        </h:outputLink>
-                        <br />
-                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
-                    </p>
-                </h:panelGroup>
-
-                <!-- BASEX ERROR -->
-                <h:panelGroup rendered="#{type == 'basex'}">
-                    <h1>#{msg.errBaseXExceptionTitle}</h1>
-
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <h:outputText value="#{msg.errDAOExceptionMsg}" />
-                    </div>
-
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <h:outputText
-                            rendered="#{!empty header['referer']}"
-                            value="URL: #{header['referer']}" />
-                        <h:outputText
-                            rendered="#{empty header['referer'] and sourceUrl != null}"
-                            value="URL: #{sourceUrl}" />
-                        <h:outputText
-                            rendered="#{empty header['referer'] and sourceUrl == null}"
-                            value="URL: #{sessionScope.sourceUrl}" />
-                    </div>
-
-                    <p>
-                        <h:outputLink
-                            rendered="#{!empty header['referer']}"
-                            value="#{header['referer']}">
-                            #{msg.returnToPreviousPage}
-                        </h:outputLink>
-                        <br />
-                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
-                    </p>
-                </h:panelGroup>
-
-                <!-- CONFIG ERROR -->
-                <h:panelGroup rendered="#{type == 'configuration'}">
-                    <h1>#{msg.errViewerConfigurationExceptionTitle}</h1>
-
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <h:outputText value="#{msg.errViewerConfigurationExceptionMsg}" />
-                    </div>
-
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <h:outputText
-                            rendered="#{!empty header['referer']}"
-                            value="URL: #{header['referer']}" />
-                        <h:outputText
-                            rendered="#{empty header['referer'] and sourceUrl != null}"
-                            value="URL: #{sourceUrl}" />
-                        <h:outputText
-                            rendered="#{empty header['referer'] and sourceUrl == null}"
-                            value="URL: #{sessionScope.sourceUrl}" />
-                    </div>
-
-                    <p>
-                        <h:outputLink
-                            rendered="#{!empty header['referer']}"
-                            value="#{header['referer']}">
-                            #{msg.returnToPreviousPage}
-                        </h:outputLink>
-                        <br />
-                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
-                    </p>
-                </h:panelGroup>
-
-                <!-- DOWNLOAD ERROR -->
-                <h:panelGroup rendered="#{type == 'download'}">
-                    <h1>#{msg.errDownloadExceptionTitle}</h1>
-
-                    <p>
-                        <h:outputText
-                            rendered="#{errMsg != null}"
-                            value="#{msg[errMsg]}" />
-                        <h:outputText
-                            rendered="#{errMsg == null}"
-                            value="#{msg[flash.keep.errorDetails]}" />
-                    </p>
-
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <h:outputText
-                            rendered="#{!empty header['referer']}"
-                            value="URL: #{header['referer']}" />
-                        <h:outputText
-                            rendered="#{empty header['referer'] and sourceUrl != null}"
-                            value="URL: #{sourceUrl}" />
-                        <h:outputText
-                            rendered="#{empty header['referer'] and sourceUrl == null}"
-                            value="URL: #{sessionScope.sourceUrl}" />
-                    </div>
-
-                    <p>
-                        <h:outputLink
-                            rendered="#{!empty header['referer']}"
-                            value="#{header['referer']}">
-                            #{msg.returnToPreviousPage}
-                        </h:outputLink>
-                        <br />
-                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
-                    </p>
-                </h:panelGroup>
-
-                <!-- ERROR VIEW EXPIRED -->
-                <h:panelGroup rendered="#{type == 'viewExpired'}">
-                    <h1>#{msg.sessionExpiredTitle}</h1>
-
-                    <div
-                        class="alert alert-danger"
-                        role="alert">
-                        <h:outputText
-                            value="#{msg.sessionExpired}"
-                            escape="false" />
-                        <p>
-                            <h:outputText
-                                rendered="#{errMsg != null}"
-                                value="#{msg[errMsg]}"
-                                escape="false" />
-                            <h:outputText
-                                rendered="#{errMsg == null}"
-                                value="#{msg[flash.keep.errorDetails]}"
-                                escape="false" />
-                        </p>
-                    </div>
-
-                    <p>
-                        <h:outputLink
-                            rendered="#{!empty header['referer']}"
-                            value="#{header['referer']}">
-                            <h:outputText
-                                value="#{msg.returnToPreviousPage}"
-                                escape="false" />
-                        </h:outputLink>
-                        <h:outputLink
-                            rendered="#{empty header['referer']}"
-                            value="#{flash.keep.sourceUrl}">
-                            <h:outputText
-                                value="#{msg.returnToPreviousPage}"
-                                escape="false" />
-                        </h:outputLink>
-                        <br />
-                        <h:outputLink value="#{navigationHelper.applicationUrl}">
-                            <h:outputText
-                                value="#{msg.returnHome}"
-                                escape="false" />
-                        </h:outputLink>
-                    </p>
-                </h:panelGroup>
+                </div>
             </div>
         </f:view>
-    </ui:define>
-
-    <ui:define name="sidebar">
-        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
-            <widgetComponent:widget_browsing />
-        </h:panelGroup>
     </ui:define>
 </ui:composition>
