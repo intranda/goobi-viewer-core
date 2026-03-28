@@ -666,7 +666,15 @@ public class ViewManager implements Serializable {
                         return "&watermarkText=" + text;
                     }
                 }).orElse(""));
-                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> "&watermarkId=" + id).orElse(""));
+                // Encode watermarkId to avoid invalid URLs for values containing umlauts, spaces, etc.
+                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> {
+                    try {
+                        return "&watermarkId=" + URLEncoder.encode(id, StringTools.DEFAULT_ENCODING);
+                    } catch (UnsupportedEncodingException e) {
+                        logger.error(e.getMessage());
+                        return "&watermarkId=" + id;
+                    }
+                }).orElse(""));
             }
         } catch (ViewerConfigurationException e) {
             logger.error("Unable to read watermark config, ignore watermark", e);
@@ -712,7 +720,15 @@ public class ViewManager implements Serializable {
                             }
                         })
                         .orElse(""));
-                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> "&watermarkId=" + id).orElse(""));
+                // Encode watermarkId to avoid invalid URLs for values containing umlauts, spaces, etc.
+                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> {
+                    try {
+                        return "&watermarkId=" + URLEncoder.encode(id, StringTools.DEFAULT_ENCODING);
+                    } catch (UnsupportedEncodingException e) {
+                        logger.error(e.getMessage());
+                        return "&watermarkId=" + id;
+                    }
+                }).orElse(""));
             }
         } catch (ViewerConfigurationException e) {
             logger.error("Unable to read watermark config, ignore watermark", e);
@@ -738,7 +754,15 @@ public class ViewManager implements Serializable {
                         return "&watermarkText=" + text;
                     }
                 }).orElse(""));
-                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> "&watermarkId=" + id).orElse(""));
+                // Encode watermarkId to avoid invalid URLs for values containing umlauts, spaces, etc.
+                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> {
+                    try {
+                        return "&watermarkId=" + URLEncoder.encode(id, StringTools.DEFAULT_ENCODING);
+                    } catch (UnsupportedEncodingException e) {
+                        logger.error(e.getMessage());
+                        return "&watermarkId=" + id;
+                    }
+                }).orElse(""));
             }
         } catch (ViewerConfigurationException e) {
             logger.error("Unable to read watermark config, ignore watermark", e);

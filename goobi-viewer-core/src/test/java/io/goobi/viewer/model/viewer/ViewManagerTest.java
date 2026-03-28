@@ -33,6 +33,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,9 @@ import org.mockito.Mockito;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
+import io.goobi.viewer.controller.imaging.WatermarkHandler;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.DataManager;
@@ -835,6 +839,43 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         link = citeLinks.stream().filter(l -> l.getLabel().equals("LINK")).findAny().orElse(null);
         Assertions.assertNotNull(link);
         Assertions.assertEquals(linkPattern.replace("{value}", linkValue).replace("{page}", Integer.toString(page2)), link.getValue());
+    }
+
+    /**
+     * @see ViewManager#getMasterImageUrl(Scale, PhysicalElement)
+     * @verifies url-encode watermarkId containing special characters
+     */
+    @Test
+    void getMasterImageUrl_shouldUrlEncodeWatermarkIdContainingSpecialCharacters() throws Exception {
+        StructElement se = new StructElement("test_watermark_encoding");
+        se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList("TEST_PI"));
+
+        // Mock WatermarkHandler to return a watermarkId with umlauts and spaces
+        WatermarkHandler watermarkHandler = Mockito.mock(WatermarkHandler.class);
+        Mockito.when(watermarkHandler.getWatermarkTextIfExists(Mockito.any(PhysicalElement.class)))
+                .thenReturn(Optional.empty());
+        Mockito.when(watermarkHandler.getFooterIdIfExists(Mockito.any(StructElement.class)))
+                .thenReturn(Optional.of("Universitätsbibliothek Stuttgart"));
+
+        // Mock ThumbnailHandler to return a valid base URL
+        ThumbnailHandler thumbsHandler = Mockito.mock(ThumbnailHandler.class);
+        Mockito.when(thumbsHandler.getFullImageUrl(Mockito.any(), Mockito.any(), Mockito.anyString()))
+                .thenReturn("https://example.com/api/v1/records/TEST_PI/files/images/test.tif/full/max/0/default.tif");
+
+        // Mock ImageDeliveryBean
+        ImageDeliveryBean imageDeliveryBean = Mockito.mock(ImageDeliveryBean.class);
+        Mockito.when(imageDeliveryBean.getThumbs()).thenReturn(thumbsHandler);
+        Mockito.when(imageDeliveryBean.getFooter()).thenReturn(watermarkHandler);
+
+        PhysicalElement page = Mockito.mock(PhysicalElement.class);
+        ViewManager viewManager = new ViewManager(se, null, se.getLuceneId(), null, null, imageDeliveryBean);
+
+        String url = viewManager.getMasterImageUrl(Scale.MAX, page);
+
+        Assertions.assertTrue(url.contains("watermarkId="), "URL should contain watermarkId parameter");
+        // The watermarkId value must be URL-encoded — raw umlauts/spaces make the URI invalid
+        Assertions.assertDoesNotThrow(() -> new URI(url),
+                "URL with watermarkId containing special characters must be a valid URI");
     }
 
 }
