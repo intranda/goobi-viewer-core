@@ -166,6 +166,14 @@ public class MetadataBean {
         return getMetadataElementList(index, false);
     }
 
+    /**
+     * Returns the list of {@link MetadataElement}s for the given metadata view index, optionally forcing a reload.
+     *
+     * @param index the metadata view index
+     * @param forceReload if true, always reload from the current document
+     * @return list of metadata elements, or an empty list if no document is loaded or loading fails
+     * @should return empty list when no document loaded
+     */
     public List<MetadataElement> getMetadataElementList(int index, boolean forceReload) {
 
         // logger.trace("getMetadataElementList({})", index); //NOSONAR Debug
@@ -182,7 +190,8 @@ public class MetadataBean {
             }
 
         }
-        return metadataElementMap.get(index);
+        // Return empty list instead of null when loadMetadata returned early (e.g. no active document or viewManager)
+        return metadataElementMap.getOrDefault(index, Collections.emptyList());
     }
 
     /**
@@ -544,7 +553,19 @@ public class MetadataBean {
         return ret;
     }
 
+    /**
+     * Returns a populated list of {@link Metadata} for the given struct element and metadata type.
+     *
+     * @param struct the struct element to retrieve metadata for; may be null
+     * @param type the metadata configuration type key
+     * @return populated list of metadata, or an empty list if struct is null
+     * @should return empty list given null struct
+     */
     public List<Metadata> getMetadataList(StructElement struct, String type) {
+        // Guard against null struct (e.g. when viewManager is not yet initialized)
+        if (struct == null) {
+            return Collections.emptyList();
+        }
         String template = struct.getDocStructType();
         List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getMetadataConfigurationForTemplate(type, template, true, true);
         metadataList.forEach(metadata -> {
