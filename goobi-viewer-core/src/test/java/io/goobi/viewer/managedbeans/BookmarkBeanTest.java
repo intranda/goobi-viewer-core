@@ -62,4 +62,24 @@ class BookmarkBeanTest extends AbstractDatabaseEnabledTest {
         assertDoesNotThrow(() -> bean.setCurrentBookmarkListId(null));
     }
 
+    /**
+     * @see BookmarkBean#setShareKey(String)
+     * @verifies throw IllegalUrlParameterException if share key not found
+     */
+    @Test
+    void setShareKey_shouldThrowIfShareKeyNotFound() {
+        BookmarkBean bean = new BookmarkBean();
+        assertThrows(IllegalUrlParameterException.class, () -> bean.setShareKey("nonexistent-key-xyz"));
+    }
+
+    /**
+     * @see BookmarkBean#setShareKey(String)
+     * @verifies not throw for null key
+     */
+    @Test
+    void setShareKey_shouldNotThrowForNull() {
+        BookmarkBean bean = new BookmarkBean();
+        assertDoesNotThrow(() -> bean.setShareKey(null));
+    }
+
 }

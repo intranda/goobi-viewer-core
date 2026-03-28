@@ -786,16 +786,18 @@ public class BookmarkBean implements Serializable {
      * @param key a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public void setShareKey(String key) throws DAOException {
+    public void setShareKey(String key) throws DAOException, IllegalUrlParameterException {
         if (key == null) {
             return;
         }
 
         currentBookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(key);
-        // Set currentBookmarkListSharedKey to enable public sharing of this list
-        if (currentBookmarkList != null) {
-            currentBookmarkListSharedKey = currentBookmarkList.getShareKey();
+        if (currentBookmarkList == null) {
+            // No bookmark list found for this share key — show error page instead of blank page
+            throw new IllegalUrlParameterException("No bookmark list found for share key: " + key);
         }
+        // Set currentBookmarkListSharedKey to enable public sharing of this list
+        currentBookmarkListSharedKey = currentBookmarkList.getShareKey();
     }
 
     /**
