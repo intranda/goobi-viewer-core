@@ -1204,7 +1204,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             }
             return alto;
         } catch (FileNotFoundException | PresentationException e) {
-            logger.error(e.getMessage());
+            // Include PI and ALTO filename to help diagnose missing ALTO files
+            logger.error("{} (pi={}, altoFileName={})", e.getMessage(), pi, altoFileName);
         }
 
         return new StringPair("", null);
