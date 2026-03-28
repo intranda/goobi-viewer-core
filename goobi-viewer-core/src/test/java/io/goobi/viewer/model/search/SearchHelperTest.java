@@ -533,6 +533,27 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies handle escaped parentheses in phrase values correctly
+     */
+    @Test
+    void extractSearchTermsFromQuery_shouldHandleEscapedParenthesesInPhraseValuesCorrectly() {
+        // Phrase containing Solr-escaped parentheses: \( and \) must not leave a dangling backslash
+        // before the closing quote, which would produce a broken Solr query (\")
+        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
+                "MD_TITLE_UNTOKENIZED:\"Der\\ Elisabeth\\-Brunnen\\ unweit\\ Marburg\\ in\\ Hessen\\ \\(Kupferst.\\)\"",
+                null);
+        Set<String> terms = result.get("MD_TITLE");
+        Assertions.assertNotNull(terms);
+        Assertions.assertEquals(1, terms.size());
+        String term = terms.iterator().next();
+        // The extracted term must be a properly closed phrase: must not end with \"
+        Assertions.assertTrue(term.startsWith("\""), "Term must start with a quote");
+        Assertions.assertTrue(term.endsWith("\""), "Term must end with a quote");
+        Assertions.assertFalse(term.endsWith("\\\""), "Term must not end with an escaped quote (broken Solr syntax)");
+    }
+
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
      * @verifies skip discriminator value
      */
     @Test

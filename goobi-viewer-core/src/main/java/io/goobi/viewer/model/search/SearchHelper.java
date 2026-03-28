@@ -2309,6 +2309,7 @@ public final class SearchHelper {
      * @should remove fuzzy search tokens
      * @should remove range values
      * @should remove operators from field names
+     * @should handle escaped parentheses in phrase values correctly
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(final String query, String discriminatorValue) {
         logger.trace("extractSearchTermsFromQuery:{}", query);
@@ -2375,7 +2376,9 @@ public final class SearchHelper {
                     break;
             }
 
-            String phraseWithoutQuotation = phraseSplit[1].replace("@", "");
+            // Remove Solr-escaped paren markers (\@ came from \( or \)) before removing plain @,
+            // so the backslash is not left dangling and the phrase term remains valid Solr syntax
+            String phraseWithoutQuotation = phraseSplit[1].replace("\\@", "").replace("@", "");
             phraseWithoutQuotation = unquoteValue(phraseWithoutQuotation, true); // remove outer double quotes
             if (!phraseWithoutQuotation.isEmpty() && !stopwords.contains(phraseWithoutQuotation)) {
                 if (ret.get(field) == null) {
