@@ -837,8 +837,8 @@ public class ActiveDocumentBean implements Serializable {
             // Reset LOGID (the LOGID setter is called later by PrettyFaces, so if a value is passed, it will still be set)
             try {
                 setLogid("");
-            } catch (PresentationException e) {
-                //cannot be thrown here
+            } catch (IllegalUrlParameterException e) {
+                //cannot be thrown here since "" is always valid
             }
             logger.trace("imageToShow: {}", this.imageToShow);
         }
@@ -902,14 +902,15 @@ public class ActiveDocumentBean implements Serializable {
      * @param logid the logid to set
      * @throws io.goobi.viewer.exceptions.PresentationException
      */
-    public void setLogid(String logid) throws PresentationException {
+    public void setLogid(String logid) throws IllegalUrlParameterException {
         synchronized (this) {
             if ("-".equals(logid) || StringUtils.isEmpty(logid)) {
                 this.logid = "";
             } else if (StringUtils.isNotBlank(logid) && logid.matches("[\\w-]+")) {
                 this.logid = SolrTools.escapeSpecialCharacters(logid);
             } else {
-                throw new PresentationException("The passed logId " + SolrTools.escapeSpecialCharacters(logid) + " contains illegal characters");
+                // Illegal logId in URL — surface as a user-facing error without the exception class prefix
+                throw new IllegalUrlParameterException("The passed logId " + SolrTools.escapeSpecialCharacters(logid) + " contains illegal characters");
             }
         }
     }
