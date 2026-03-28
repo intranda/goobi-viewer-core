@@ -5892,6 +5892,10 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT t FROM ThemeConfiguration t");
             return q.getResultList();
+        } catch (PersistenceException e) {
+            // Wrap JPA exception so callers (e.g. AdminThemesBean) can catch DAOException
+            // and degrade gracefully — without this, a DB outage crashes the error page rendering.
+            throw new DAOException(e.getMessage());
         } finally {
             close(em);
         }
