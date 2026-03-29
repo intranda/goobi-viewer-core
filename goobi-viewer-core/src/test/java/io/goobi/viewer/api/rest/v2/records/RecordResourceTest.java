@@ -85,19 +85,20 @@ class RecordResourceTest extends AbstractRestApiTest {
     @Test
     void testInvalidPiReturns400() {
         // exclamation mark — valid URL path char, invalid PI char
-        try (Response response = target("/records/!/ris")
+        // Use /manifest since v2 RecordResource does not expose a /ris endpoint
+        try (Response response = target("/records/!/manifest")
                 .request()
                 .get()) {
             assertEquals(400, response.getStatus(), "Exclamation mark in PI should return 400");
         }
         // at-sign — valid URL path char, invalid PI char
-        try (Response response = target("/records/@/ris")
+        try (Response response = target("/records/@/manifest")
                 .request()
                 .get()) {
             assertEquals(400, response.getStatus(), "At-sign in PI should return 400");
         }
         // tilde — valid URL path char, invalid PI char
-        try (Response response = target("/records/~/ris")
+        try (Response response = target("/records/~/manifest")
                 .request()
                 .get()) {
             assertEquals(400, response.getStatus(), "Tilde in PI should return 400");
