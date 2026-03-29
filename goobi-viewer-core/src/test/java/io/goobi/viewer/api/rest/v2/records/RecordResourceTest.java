@@ -22,8 +22,10 @@
 package io.goobi.viewer.api.rest.v2.records;
 
 import static io.goobi.viewer.api.rest.v2.ApiUrls.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
@@ -72,6 +74,54 @@ class RecordResourceTest extends AbstractRestApiTest {
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
+    }
+
+    /**
+     * Requests with PIs containing illegal characters must return HTTP 400.
+     * Characters like space (%20), pipe (%7C), or null byte (%2500) are blocked
+     * at the HTTP routing layer before reaching the constructor, so we test with
+     * valid URL-path characters that are outside the PI allowlist.
+     */
+    @Test
+    void testInvalidPiReturns400() {
+        // exclamation mark — valid URL path char, invalid PI char
+        try (Response response = target("/records/!/ris")
+                .request()
+                .get()) {
+            assertEquals(400, response.getStatus(), "Exclamation mark in PI should return 400");
+        }
+        // at-sign — valid URL path char, invalid PI char
+        try (Response response = target("/records/@/ris")
+                .request()
+                .get()) {
+            assertEquals(400, response.getStatus(), "At-sign in PI should return 400");
+        }
+        // tilde — valid URL path char, invalid PI char
+        try (Response response = target("/records/~/ris")
+                .request()
+                .get()) {
+            assertEquals(400, response.getStatus(), "Tilde in PI should return 400");
+        }
+    }
+
+    /**
+     * Null PI must be rejected with BadRequestException, not silently accepted.
+     * This guards the fix that changed the condition from (pi != null && ...) to (pi == null || ...).
+     */
+    @Test
+    void testNullPiThrowsBadRequest() {
+        assertThrows(jakarta.ws.rs.BadRequestException.class, () -> RecordResource.validatePi(null),
+                "null PI should throw BadRequestException");
+    }
+
+    /**
+     * Valid PIs must pass validatePi without throwing.
+     */
+    @Test
+    void testValidPiAccepted() {
+        assertDoesNotThrow(() -> RecordResource.validatePi("PPN615391702"));
+        assertDoesNotThrow(() -> RecordResource.validatePi("valid_pi-1.0:suffix"));
+        assertDoesNotThrow(() -> RecordResource.validatePi("pi(with)parens"));
     }
 
     @Test

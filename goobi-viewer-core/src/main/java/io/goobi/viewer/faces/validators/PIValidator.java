@@ -39,6 +39,11 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 public class PIValidator implements Validator<String> {
 
     /** Constant <code>ILLEGAL_CHARS</code> */
+    // Blocklist approach: rejects known-bad characters while allowing everything else.
+    // Alternative allowlist approach (stricter, safer for REST API entry points):
+    //   return pi.matches("[a-zA-Z0-9._:\\-()]+");
+    // The allowlist rejects characters like ~, @, |, $, & that the blocklist permits,
+    // but also allows ( and ) which the blocklist forbids — consider reconciling if needed.
     protected static final char[] ILLEGAL_CHARS = { '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'' };
 
     /* (non-Javadoc)

@@ -98,6 +98,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
@@ -114,6 +115,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -149,6 +151,11 @@ public class RecordResource {
 
     public RecordResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+        // Reject PIs that contain characters illegal in file-system URI paths before any
+        // file-system access occurs, to prevent ContentLib path injection (e.g. space, pipe,
+        // null byte via double-encoding). BadRequestException (HTTP 400) is an unchecked
+        // WebApplicationException that Jersey maps to 400 before invoking the endpoint.
+        validatePi(pi);
         this.pi = pi;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
     }
@@ -693,6 +700,21 @@ public class RecordResource {
         }
         if (!access) {
             throw new ServiceNotAllowedException("Access to fulltext of " + pi + " not allowed");
+        }
+    }
+
+    /**
+     * Validates the PI path parameter using {@link PIValidator#validatePi(String)}.
+     * Delegates to the central PI validator to keep validation logic in one place.
+     * Throws BadRequestException (HTTP 400, unchecked WebApplicationException) so that
+     * Jersey maps it to a 400 response regardless of where it is thrown (constructor or method).
+     *
+     * @param pi the persistent identifier to validate; null or blank is rejected
+     * @throws BadRequestException if the PI is null, blank, or contains illegal characters
+     */
+    static void validatePi(String pi) {
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
         }
     }
 }
