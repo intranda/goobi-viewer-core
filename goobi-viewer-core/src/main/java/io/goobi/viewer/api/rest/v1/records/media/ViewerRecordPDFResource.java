@@ -35,6 +35,8 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.faces.validators.PIValidator;
+import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,7 +67,11 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
             @Context AbstractApiUrlManager urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Context ContentServerCacheManager cacheManager) throws ContentLibException {
-        super(context, request, response, "pdf", pi + ".xml", cacheManager);
+        // Validate PI before passing it to MetsPdfResource, which builds a file:// URI from
+        // the value and throws ContentLibException (HTTP 500) on illegal URI characters.
+        // requireValidPi() must be called here inside super() because Java requires the
+        // super-constructor call to be the first statement.
+        super(context, request, response, "pdf", requireValidPi(pi) + ".xml", cacheManager);
         this.filename = pi + ".pdf";
         request.setAttribute("pi", pi);
     }
@@ -100,6 +106,18 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @Operation(tags = { "records" }, summary = "Get information about epub for entire record")
     public PdfInformation getEpubInfoAsJson() throws ContentLibException {
         return super.getInfo("epub");
+    }
+
+    /**
+     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400)
+     * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
+     * Declared static so it can be invoked inside the super() constructor call.
+     */
+    static String requireValidPi(String pi) {
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
+        }
+        return pi;
     }
 
 }

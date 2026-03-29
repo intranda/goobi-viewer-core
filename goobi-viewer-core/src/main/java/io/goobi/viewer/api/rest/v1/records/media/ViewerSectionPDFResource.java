@@ -32,6 +32,8 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.faces.validators.PIValidator;
+import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -72,7 +74,9 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Logical div ID of METS section") @PathParam("divId") String divId,
             @Context ContentServerCacheManager cacheManager) throws ContentLibException {
-        super(context, request, response, "pdf", pi + ".xml", cacheManager);
+        // Validate PI before passing to MetsPdfResource which builds a file:// URI from the
+        // value; illegal URI characters would cause a ContentLibException (HTTP 500).
+        super(context, request, response, "pdf", requireValidPi(pi) + ".xml", cacheManager);
         this.divId = divId;
         this.filename = pi + "_" + divId + ".pdf";
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
@@ -99,6 +103,18 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
 
     public PdfInformation getInfoAsJson() throws ContentLibException {
         return super.getInfoAsJson(divId);
+    }
+
+    /**
+     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400)
+     * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
+     * Declared static so it can be invoked inside the super() constructor call.
+     */
+    static String requireValidPi(String pi) {
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
+        }
+        return pi;
     }
 
 }
