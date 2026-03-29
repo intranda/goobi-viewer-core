@@ -42,7 +42,14 @@ public class PIValidator implements Validator<String> {
     // Blocklist of characters not permitted in persistent identifiers.
     // Colons are excluded because they are structurally significant in Solr query syntax
     // (FIELD:value) and must not appear unescaped in PI values used in queries.
-    protected static final char[] ILLEGAL_CHARS = { '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'' };
+    // Additional characters block java.net.URI path construction failures (space, pipe,
+    // angle/square brackets, newlines, null byte) and double-encoding bypasses (percent).
+    protected static final char[] ILLEGAL_CHARS = {
+        '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'',  // original set
+        '|', '<', '>', '[', ']',                                    // path-safety: invalid in java.net.URI
+        ' ', '%', '\r', '\n', '\0',                                 // encoding bypass / control chars
+        '*'                                                         // Solr wildcard abuse prevention
+    };
 
     /* (non-Javadoc)
      * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)

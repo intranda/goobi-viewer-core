@@ -34,11 +34,24 @@ class PIValidatorTest {
      */
     @Test
     void validatePi_shouldReturnFalseIfPiContainsIllegalCharacters() throws Exception {
+        // existing checks
         Assertions.assertFalse(PIValidator.validatePi("PPN!"));
         Assertions.assertFalse(PIValidator.validatePi("PPN?"));
         Assertions.assertFalse(PIValidator.validatePi("PPN/"));
         Assertions.assertFalse(PIValidator.validatePi("PPN\\"));
         Assertions.assertFalse(PIValidator.validatePi("PPN:"));
+        // new: characters that cause java.net.URI path construction to fail
+        Assertions.assertFalse(PIValidator.validatePi("PPN|"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN<"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN>"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN["));
+        Assertions.assertFalse(PIValidator.validatePi("PPN]"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN*"));
+        Assertions.assertFalse(PIValidator.validatePi("foo bar"));   // embedded space
+        Assertions.assertFalse(PIValidator.validatePi("PPN%00"));    // percent → double-encoding bypass
+        Assertions.assertFalse(PIValidator.validatePi("PPN\r"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN\n"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN\0"));
     }
 
     /**
