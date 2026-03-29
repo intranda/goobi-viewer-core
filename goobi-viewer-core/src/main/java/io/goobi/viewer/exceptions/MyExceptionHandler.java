@@ -186,6 +186,13 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     // Session was invalidated (e.g. timeout) while the request was still rendering — expected, not an error
                     logger.warn("Session invalidated during request rendering: {}", cause.getMessage());
                 } else if (t instanceof PrettyException
+                        && isCausedByExceptionType(t, StringIndexOutOfBoundsException.class.getName())) {
+                    // A crafted URL parameter caused a StringIndexOutOfBoundsException during EL
+                    // expression evaluation (e.g. a malformed facet value in a CMS page URL).
+                    // Downgrade to WARN and treat as an invalid URL rather than an application error.
+                    logger.warn("Invalid URL parameter caused StringIndexOutOfBoundsException: {}", t.getMessage());
+                    handleError(null, "general_no_url");
+                } else if (t instanceof PrettyException
                         && isCausedByExceptionType(t, "jakarta.faces.convert.ConverterException")) {
                     // PrettyFaces URL parameter type conversion failed (e.g. a non-numeric value such as
                     // "+(foo)" in a URL segment that maps to an Integer bean property). This is a

@@ -179,6 +179,45 @@ class MyExceptionHandlerTest {
         assertEquals("For input string: \"+(foo)\"", requestMap.get("errMsg"));
     }
 
+    /**
+     * A PrettyException wrapping a StringIndexOutOfBoundsException (e.g. a malformed facet value
+     * in a CMS page URL) must be handled as an invalid URL — downgraded to WARN, not logged as ERROR.
+     * The handler must redirect to an error page rather than crashing.
+     */
+    @Test
+    void handle_prettyExceptionWithStringIndexOutOfBoundsException_treatedAsInvalidUrl() throws Exception {
+        FacesContext mockFc = ContextMocker.mockFacesContext();
+        ExternalContext mockEc = mockFc.getExternalContext();
+        HttpSession mockSession = mock(HttpSession.class);
+        Application mockApp = mock(Application.class);
+        NavigationHandler mockNav = mock(NavigationHandler.class);
+
+        Map<String, Object> requestMap = new HashMap<>();
+        when(mockFc.getCurrentPhaseId()).thenReturn(PhaseId.RESTORE_VIEW);
+        when(mockEc.isResponseCommitted()).thenReturn(false);
+        when(mockEc.getRequestMap()).thenReturn(requestMap);
+        when(mockEc.getSession(true)).thenReturn(mockSession);
+        when(mockFc.getApplication()).thenReturn(mockApp);
+        when(mockApp.getNavigationHandler()).thenReturn(mockNav);
+
+        // Reproduce the exception chain caused by a crafted facet value that produces
+        // an empty string after wildcard-stripping, triggering charAt(0) on empty string
+        StringIndexOutOfBoundsException sioobe = new StringIndexOutOfBoundsException("String index out of range: 0");
+        PrettyException prettyEx = new PrettyException(
+                "PrettyFaces: Exception occurred while processing <cmsFacetedSearch:#{facetBean.currentFacets}> for URL </cms/search/*/>",
+                sioobe);
+
+        MyExceptionHandler handler = new MyExceptionHandler(buildWrappedHandlerWith(mockFc, prettyEx));
+        handler.handle();
+
+        // Must redirect to error page — not crash with an unhandled exception
+        verify(mockNav).handleNavigation(eq(mockFc), eq(null), any());
+        // Must set errorType session attribute (handleError was called)
+        verify(mockSession).setAttribute(eq("errorType"), any());
+        // errMsg must be null — this handler calls handleError(null, "general_no_url")
+        assertEquals(null, requestMap.get("errMsg"));
+    }
+
     private static ExceptionHandler buildWrappedHandlerWith(FacesContext facesContext, Throwable throwable) {
         ExceptionQueuedEventContext eventContext = new ExceptionQueuedEventContext(facesContext, throwable);
         ExceptionQueuedEvent event = new ExceptionQueuedEvent(facesContext, eventContext);
