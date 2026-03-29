@@ -80,28 +80,22 @@ class RecordResourceTest extends AbstractRestApiTest {
      * Requests with PIs containing illegal characters must return HTTP 400.
      * Characters like space (%20), pipe (%7C), or null byte (%2500) are blocked
      * at the HTTP routing layer before reaching the constructor, so we test with
-     * valid URL-path characters that are outside the PI allowlist.
+     * valid URL-path characters that are in the PI blocklist (ILLEGAL_CHARS).
      */
     @Test
     void testInvalidPiReturns400() {
-        // exclamation mark — valid URL path char, invalid PI char
+        // exclamation mark — valid URL path char, in PI blocklist
         // Use /manifest since v2 RecordResource does not expose a /ris endpoint
         try (Response response = target("/records/!/manifest")
                 .request()
                 .get()) {
             assertEquals(400, response.getStatus(), "Exclamation mark in PI should return 400");
         }
-        // at-sign — valid URL path char, invalid PI char
+        // at-sign — valid URL path char, in PI blocklist
         try (Response response = target("/records/@/manifest")
                 .request()
                 .get()) {
             assertEquals(400, response.getStatus(), "At-sign in PI should return 400");
-        }
-        // tilde — valid URL path char, invalid PI char
-        try (Response response = target("/records/~/manifest")
-                .request()
-                .get()) {
-            assertEquals(400, response.getStatus(), "Tilde in PI should return 400");
         }
     }
 
@@ -121,8 +115,7 @@ class RecordResourceTest extends AbstractRestApiTest {
     @Test
     void testValidPiAccepted() {
         assertDoesNotThrow(() -> RecordResource.validatePi("PPN615391702"));
-        assertDoesNotThrow(() -> RecordResource.validatePi("valid_pi-1.0:suffix"));
-        assertDoesNotThrow(() -> RecordResource.validatePi("pi(with)parens"));
+        assertDoesNotThrow(() -> RecordResource.validatePi("valid_pi-1.0"));
     }
 
     @Test

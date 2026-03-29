@@ -38,10 +38,7 @@ class PIValidatorTest {
         Assertions.assertFalse(PIValidator.validatePi("PPN?"));
         Assertions.assertFalse(PIValidator.validatePi("PPN/"));
         Assertions.assertFalse(PIValidator.validatePi("PPN\\"));
-        // colon is allowed in PIs (needed for URN-style identifiers like urn:nbn:de:...)
-        Assertions.assertTrue(PIValidator.validatePi("urn:nbn:de:example"));
-        Assertions.assertFalse(PIValidator.validatePi("PPN~"));
-        Assertions.assertFalse(PIValidator.validatePi("PPN@"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN:"));
     }
 
     /**

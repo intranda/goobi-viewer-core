@@ -38,15 +38,10 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 @FacesValidator("piValidator")
 public class PIValidator implements Validator<String> {
 
-    // Allowlist approach: only permit characters known to appear in valid persistent identifiers.
-    // Allowed: alphanumeric, dot, underscore, hyphen, colon (needed for URN-style IDs), parentheses.
-    // Rejects everything else, including ~, @, |, $, & that a blocklist approach would silently allow.
-    private static final String PI_PATTERN = "[a-zA-Z0-9._:\\-()]+";
-
-    /**
-     * @deprecated kept for compatibility; logic now uses {@link #PI_PATTERN} allowlist
-     */
-    @Deprecated
+    /** Constant <code>ILLEGAL_CHARS</code> */
+    // Blocklist of characters not permitted in persistent identifiers.
+    // Colons are excluded because they are structurally significant in Solr query syntax
+    // (FIELD:value) and must not appear unescaped in PI values used in queries.
     protected static final char[] ILLEGAL_CHARS = { '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'' };
 
     /* (non-Javadoc)
@@ -78,9 +73,6 @@ public class PIValidator implements Validator<String> {
             return false;
         }
 
-        // Use allowlist: only characters matching PI_PATTERN are permitted.
-        // This is stricter than a blocklist and correctly handles colons (URN-style IDs)
-        // while rejecting characters like ~, @, |, $ that the old blocklist silently allowed.
-        return pi.matches(PI_PATTERN);
+        return !StringUtils.containsAny(pi, ILLEGAL_CHARS);
     }
 }

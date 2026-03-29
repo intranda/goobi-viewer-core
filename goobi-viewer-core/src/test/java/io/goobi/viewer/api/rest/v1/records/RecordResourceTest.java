@@ -263,31 +263,25 @@ class RecordResourceTest extends AbstractRestApiTest {
 
     /**
      * Requests with PIs containing illegal characters must return HTTP 400.
-     * Characters outside the PI allowlist (alphanumeric, dots, underscores, hyphens, colons,
-     * parentheses) should be rejected by validatePi() in the constructor.
+     * Characters in the PI blocklist (ILLEGAL_CHARS) should be rejected by validatePi()
+     * in the constructor.
      * Note: some characters like space (%20) or pipe (%7C) are rejected at the HTTP routing
      * level before reaching our constructor; we test characters that are valid in URL paths
-     * but invalid in PIs and do reach the constructor.
+     * but in the PI blocklist and do reach the constructor.
      */
     @Test
     void testInvalidPiReturns400() {
-        // exclamation mark - valid URL path character but outside the PI allowlist
+        // exclamation mark - valid URL path character, in PI blocklist
         try (Response response = target("/records/invalid!pi/ris")
                 .request()
                 .get()) {
             assertEquals(400, response.getStatus(), "Exclamation mark in PI should return 400");
         }
-        // at-sign - valid URL path character but outside the PI allowlist
+        // at-sign - valid URL path character, in PI blocklist
         try (Response response = target("/records/invalid@pi/ris")
                 .request()
                 .get()) {
             assertEquals(400, response.getStatus(), "At-sign in PI should return 400");
-        }
-        // tilde - valid URL path character but outside the PI allowlist
-        try (Response response = target("/records/invalid~pi/ris")
-                .request()
-                .get()) {
-            assertEquals(400, response.getStatus(), "Tilde in PI should return 400");
         }
     }
 
@@ -307,7 +301,6 @@ class RecordResourceTest extends AbstractRestApiTest {
     @Test
     void testValidPiAccepted() {
         assertDoesNotThrow(() -> RecordResource.validatePi("PPN615391702"));
-        assertDoesNotThrow(() -> RecordResource.validatePi("valid_pi-1.0:suffix"));
-        assertDoesNotThrow(() -> RecordResource.validatePi("pi(with)parens"));
+        assertDoesNotThrow(() -> RecordResource.validatePi("valid_pi-1.0"));
     }
 }
