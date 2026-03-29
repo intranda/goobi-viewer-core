@@ -98,7 +98,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
         } else {
             //unknown error. Probably request error
             status = Status.BAD_REQUEST;
-            printStackTrace = true;
+            // Do NOT set printStackTrace=true: stack traces must not be sent to clients.
             logger.error(e.getMessage(), e);
         }
 
