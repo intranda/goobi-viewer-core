@@ -174,6 +174,32 @@ class RSSResourceTest extends AbstractRestApiTest {
     }
 
     @Test
+    void testRSSXmlBadQuerySlash() {
+        // query=/ triggers IndexUnreachableException("Error from server ...") in Solr,
+        // which must map to HTTP 400, not 500
+        try (Response response = target(urls.path(RECORDS_RSS).build())
+                .queryParam("query", "/")
+                .request()
+                .accept(MediaType.TEXT_XML)
+                .get()) {
+            assertEquals(400, response.getStatus(), "Solr syntax error (/) should return status 400");
+        }
+    }
+
+    @Test
+    void testRSSJsonBadQuerySlash() {
+        // query=/ triggers IndexUnreachableException("Error from server ...") in Solr,
+        // which must map to HTTP 400, not 500
+        try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
+                .queryParam("query", "/")
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "Solr syntax error (/) should return status 400");
+        }
+    }
+
+    @Test
     void testRSSInvalidType() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .request()
