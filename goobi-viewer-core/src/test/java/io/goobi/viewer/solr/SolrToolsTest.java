@@ -22,6 +22,8 @@
 package io.goobi.viewer.solr;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -321,6 +323,35 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     @Test
     void cleanUpQuery_shouldRemoveBracePairs() {
         assertEquals("foo:bar", SolrTools.cleanUpQuery("{foo:bar}"));
+    }
+
+    /**
+     * @see SolrTools#isQuerySyntaxError(Exception)
+     * @verifies return true for known syntax error messages
+     */
+    @Test
+    void isQuerySyntaxError_shouldReturnTrueForKnownSyntaxErrorMessages() {
+        assertTrue(SolrTools.isQuerySyntaxError(new Exception("org.apache.solr.search.SyntaxError: Cannot parse 'foo'")));
+        assertTrue(SolrTools.isQuerySyntaxError(new Exception("Cannot parse 'bar' at position 5")));
+        assertTrue(SolrTools.isQuerySyntaxError(new Exception("Invalid Number: abc")));
+        assertTrue(SolrTools.isQuerySyntaxError(new Exception("undefined field 'UNKNOWN_FIELD'")));
+        assertTrue(SolrTools.isQuerySyntaxError(new Exception("field can't be found: MISSING")));
+        assertTrue(SolrTools.isQuerySyntaxError(new Exception("can not sort on multivalued field")));
+        assertTrue(SolrTools.isQuerySyntaxError(new Exception("'rows' parameter cannot be negative")));
+        assertTrue(SolrTools.isQuerySyntaxError(new Exception("expected ']' at position 175")));
+        assertTrue(SolrTools.isQuerySyntaxError(new Exception("SyntaxError in query")));
+    }
+
+    /**
+     * @see SolrTools#isQuerySyntaxError(Exception)
+     * @verifies return false for non-syntax errors
+     */
+    @Test
+    void isQuerySyntaxError_shouldReturnFalseForNonSyntaxErrors() {
+        assertFalse(SolrTools.isQuerySyntaxError(new Exception("Server refused connection")));
+        assertFalse(SolrTools.isQuerySyntaxError(new Exception("IOException occured when talking to server")));
+        assertFalse(SolrTools.isQuerySyntaxError(new Exception((String) null)));
+        assertFalse(SolrTools.isQuerySyntaxError(new Exception("")));
     }
 
     /**
