@@ -305,11 +305,13 @@ public class BookmarkResource {
     public String getBookmarkListAsRSS(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
             @Parameter(description = "Language for RSS metadata") @QueryParam("lang") String language,
-            @Parameter(description = "Limit for results to return") @QueryParam("max") Integer maxHits)
+            // Accept max as String to gracefully handle the literal string "null" sent by some clients,
+            // which cannot be parsed directly into Integer by JAX-RS and would cause a 500 error.
+            @Parameter(description = "Limit for results to return") @QueryParam("max") String maxStr)
             throws DAOException, IOException, RestApiException, ContentLibException {
         BookmarkList list = getBookmarkList(id);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssFeedString(language, maxHits, null, query, null, servletRequest, null, true);
+        return RSSFeed.createRssFeedString(language, parseMaxHits(maxStr), null, query, null, servletRequest, null, true);
     }
 
     @GET
@@ -324,11 +326,13 @@ public class BookmarkResource {
     public Channel getBookmarkListAsRSSJson(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
             @Parameter(description = "Language for RSS metadata") @QueryParam("lang") String language,
-            @Parameter(description = "Limit for results to return") @QueryParam("max") Integer maxHits)
+            // Accept max as String to gracefully handle the literal string "null" sent by some clients,
+            // which cannot be parsed directly into Integer by JAX-RS and would cause a 500 error.
+            @Parameter(description = "Limit for results to return") @QueryParam("max") String maxStr)
             throws DAOException, IOException, RestApiException, ContentLibException {
         BookmarkList list = getBookmarkList(id);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssResponse(language, maxHits, null, query, null, servletRequest, null, true);
+        return RSSFeed.createRssResponse(language, parseMaxHits(maxStr), null, query, null, servletRequest, null, true);
     }
 
     @GET
@@ -386,6 +390,26 @@ public class BookmarkResource {
         return builder.getAsCollection(key, urls);
     }
 
+    /**
+     * Parses the "max" query parameter string to an Integer.
+     * Returns null if the string is null, blank, the literal "null", or not a valid integer.
+     * This is needed because some clients send ?max=null (the string "null") which JAX-RS
+     * cannot auto-convert to Integer and would throw a NumberFormatException (HTTP 500).
+     *
+     * @param maxStr the raw query parameter value
+     * @return parsed Integer, or null if absent or invalid
+     */
+    static Integer parseMaxHits(String maxStr) {
+        if (maxStr == null || maxStr.isBlank() || "null".equalsIgnoreCase(maxStr)) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(maxStr);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     @GET
     @Path(USERS_BOOKMARKS_LIST_SHARED_RSS_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -397,11 +421,13 @@ public class BookmarkResource {
     public Channel getSharedBookmarkListAsRSSJson(
             @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key,
             @Parameter(description = "Language for RSS metadata") @QueryParam("lang") String language,
-            @Parameter(description = "Limit for results to return") @QueryParam("max") Integer maxHits)
+            // Accept max as String to gracefully handle the literal string "null" sent by some clients,
+            // which cannot be parsed directly into Integer by JAX-RS and would cause a 500 error.
+            @Parameter(description = "Limit for results to return") @QueryParam("max") String maxStr)
             throws DAOException, RestApiException, ContentLibException {
         BookmarkList list = getSharedBookmarkListByKey(key);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssResponse(language, maxHits, null, query, null, servletRequest, null, true);
+        return RSSFeed.createRssResponse(language, parseMaxHits(maxStr), null, query, null, servletRequest, null, true);
     }
 
     @GET
@@ -415,10 +441,12 @@ public class BookmarkResource {
     public String getSharedBookmarkListAsRSS(
             @Parameter(description = "The share key assigned to the bookmark list") @PathParam("key") String key,
             @Parameter(description = "Language for RSS metadata") @QueryParam("lang") String language,
-            @Parameter(description = "Limit for results to return") @QueryParam("max") Integer maxHits)
+            // Accept max as String to gracefully handle the literal string "null" sent by some clients,
+            // which cannot be parsed directly into Integer by JAX-RS and would cause a 500 error.
+            @Parameter(description = "Limit for results to return") @QueryParam("max") String maxStr)
             throws DAOException, RestApiException, ContentLibException {
         BookmarkList list = getSharedBookmarkListByKey(key);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssFeedString(language, maxHits, null, query, null, servletRequest, null, true);
+        return RSSFeed.createRssFeedString(language, parseMaxHits(maxStr), null, query, null, servletRequest, null, true);
     }
 }

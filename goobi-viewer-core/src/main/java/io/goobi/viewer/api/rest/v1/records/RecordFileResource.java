@@ -66,6 +66,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -86,6 +87,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -121,6 +123,12 @@ public class RecordFileResource {
      */
     public RecordFileResource(@Context HttpServletRequest request, @Context HttpServletResponse response,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+        // Reject PIs containing characters illegal in URI paths / Solr queries before any
+        // Solr or file-system access occurs.  BadRequestException (HTTP 400) is an unchecked
+        // WebApplicationException that Jersey maps to 400 before invoking the endpoint.
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
+        }
         this.servletRequest = request;
         this.servletResponse = response;
         this.pi = pi;
@@ -196,7 +204,15 @@ public class RecordFileResource {
         if (!filename.equals(StringTools.stripJS(filename))) {
             throw new ServiceNotAllowedException("Script detected in input");
         }
-        Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, filename);
+        // DataFileTools.getDataFilePath calls FileTools.sanitizeFileName which throws
+        // IllegalArgumentException for filenames with illegal characters (e.g. control chars).
+        // Wrap it as IllegalRequestException so ContentExceptionMapper returns HTTP 400.
+        Path path;
+        try {
+            path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, filename);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalRequestException("Invalid file name: " + filename);
+        }
         if (!Files.isRegularFile(path)) {
             throw new ContentNotFoundException("Source file " + filename + " not found");
         }
@@ -234,7 +250,15 @@ public class RecordFileResource {
             throw new ServiceNotAllowedException("Script detected in input");
         }
 
-        Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
+        // DataFileTools.getDataFilePath calls FileTools.sanitizeFileName which throws
+        // IllegalArgumentException for filenames with illegal characters (e.g. control chars).
+        // Wrap it as IllegalRequestException so ContentExceptionMapper returns HTTP 400.
+        Path path;
+        try {
+            path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalRequestException("Invalid file name: " + filename);
+        }
         if (!Files.isRegularFile(path)) {
             throw new ContentNotFoundException("Media file " + filename + " not found");
         }

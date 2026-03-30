@@ -686,10 +686,17 @@ public class RecordResource {
      * @return {@link StructElement} constructed out of given pi
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ContentNotFoundException if no Solr document is found for the given PI
      */
-    private static StructElement getStructElement(String pi) throws PresentationException, IndexUnreachableException {
+    private static StructElement getStructElement(String pi) throws PresentationException, IndexUnreachableException, ContentNotFoundException {
         // logger.trace("getStructElement: {}", pi); //NOSONAR Debug
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:" + pi, null);
+        // Guard against missing records: getFirstDoc() returns null when no document matches.
+        // Without this check the subsequent field access would throw a NullPointerException
+        // and surface as an unhandled HTTP 500.
+        if (doc == null) {
+            throw new ContentNotFoundException("No record found for PI: " + pi);
+        }
         return new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
     }
 

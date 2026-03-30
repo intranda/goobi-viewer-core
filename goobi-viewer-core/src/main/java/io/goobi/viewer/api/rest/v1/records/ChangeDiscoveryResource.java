@@ -25,6 +25,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES_PAGE;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.intranda.api.iiif.discovery.Activity;
 import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -88,15 +90,22 @@ public class ChangeDiscoveryResource {
             tags = { "records", "iiif" },
             summary = "Get a IIIF change discovery activity stream of all record changes")
     @ApiResponse(responseCode = "200", description = "Return activity stream according to IIIF change discovery specification")
+    @ApiResponse(responseCode = "400", description = "Invalid date format for 'start' parameter (expected yyyy-MM-dd)")
     @ApiResponse(responseCode = "500", description = "An internal error occurred, possibly due to an unreachable Solr index")
     public OrderedCollection<Activity> getAllChanges(
             @Parameter(description = "Optional date in the form 'yyyy-MM-dd' of the oldest changes to return") @QueryParam("start") String startDate,
             @Parameter(description = "Optional Solr query to filter results") @QueryParam("filter") String filterQuery)
-            throws PresentationException, IndexUnreachableException {
+            throws PresentationException, IndexUnreachableException, IllegalRequestException {
         ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager, DataManager.getInstance().getSearchIndex(),
                 DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage());
         if (StringUtils.isNotBlank(startDate)) {
-            builder.setStartDate(LocalDate.parse(startDate).atStartOfDay());
+            // Validate the date format before passing to the builder to avoid an uncaught
+            // DateTimeParseException (which would surface as HTTP 500) for invalid input.
+            try {
+                builder.setStartDate(LocalDate.parse(startDate).atStartOfDay());
+            } catch (DateTimeParseException e) {
+                throw new IllegalRequestException("Invalid date format for 'start': expected yyyy-MM-dd, got: " + startDate);
+            }
         }
         if (StringUtils.isNotBlank(filterQuery)) {
             builder.setFilterQuery(filterQuery);
@@ -126,11 +135,17 @@ public class ChangeDiscoveryResource {
             @Parameter(description = "page order within the collection of activities") @PathParam("pageNo") int pageNo,
             @Parameter(description = "Optional date in the form 'yyyy-MM-dd' of the oldest changes to return") @QueryParam("start") String startDate,
             @Parameter(description = "Optional Solr query to filter results") @QueryParam("filter") String filterQuery)
-            throws PresentationException, IndexUnreachableException {
+            throws PresentationException, IndexUnreachableException, IllegalRequestException {
         ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager, DataManager.getInstance().getSearchIndex(),
                 DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage());
         if (StringUtils.isNotBlank(startDate)) {
-            builder.setStartDate(LocalDate.parse(startDate).atStartOfDay());
+            // Validate the date format before passing to the builder to avoid an uncaught
+            // DateTimeParseException (which would surface as HTTP 500) for invalid input.
+            try {
+                builder.setStartDate(LocalDate.parse(startDate).atStartOfDay());
+            } catch (DateTimeParseException e) {
+                throw new IllegalRequestException("Invalid date format for 'start': expected yyyy-MM-dd, got: " + startDate);
+            }
         }
         if (StringUtils.isNotBlank(filterQuery)) {
             builder.setFilterQuery(filterQuery);

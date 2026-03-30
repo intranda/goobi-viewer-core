@@ -156,6 +156,7 @@ public class CMSMediaResource {
             tags = { "media" },
             summary = "Get a list of CMS-Media Items of one or more categories")
     @ApiResponse(responseCode = "200", description = "List of CMS media items matching the given categories")
+    @ApiResponse(responseCode = "400", description = "Invalid parameter value (e.g. negative max or prioritySlots)")
     @ApiResponse(responseCode = "500", description = "Internal server error - e.g. database unavailable")
     @jakarta.ws.rs.Path(CMS_MEDIA_BY_CATEGORY)
     public MediaList getMediaOfCategories(
@@ -166,7 +167,15 @@ public class CMSMediaResource {
                     + " in the result") @QueryParam("prioritySlots") Integer prioritySlots,
             @Parameter(description = "Set to 'true' to return random items for each call."
                     + " Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
-            throws DAOException {
+            throws DAOException, IllegalRequestException {
+        // Reject negative values to avoid undefined behaviour in PriorityComparator
+        // and Stream.limit(), which would cause unexpected results or an HTTP 500.
+        if (maxItems != null && maxItems < 0) {
+            throw new IllegalRequestException("Parameter 'max' must not be negative, got: " + maxItems);
+        }
+        if (prioritySlots != null && prioritySlots < 0) {
+            throw new IllegalRequestException("Parameter 'prioritySlots' must not be negative, got: " + prioritySlots);
+        }
         List<String> tagList = new ArrayList<>();
         if (StringUtils.isNotBlank(tags)) {
             tagList.addAll(Arrays.stream(StringUtils.split(tags, "...")).map(String::toLowerCase).collect(Collectors.toList()));

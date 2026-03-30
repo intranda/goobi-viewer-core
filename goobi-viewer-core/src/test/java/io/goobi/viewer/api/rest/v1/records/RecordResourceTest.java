@@ -303,4 +303,31 @@ class RecordResourceTest extends AbstractRestApiTest {
         assertDoesNotThrow(() -> RecordResource.validatePi("PPN615391702"));
         assertDoesNotThrow(() -> RecordResource.validatePi("valid_pi-1.0"));
     }
+
+    /**
+     * getRISAsFile() must return HTTP 404 (not 500) when the PI does not exist in the Solr index.
+     * This guards against getFirstDoc() returning null and causing a NullPointerException.
+     */
+    @Test
+    void testGetRISAsFile_nonExistentPiReturns404() {
+        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_FILE).params("NONEXISTENT_PI_99999").build())
+                .request()
+                .get()) {
+            assertEquals(404, response.getStatus(), "Non-existent PI should return HTTP 404, not 500");
+        }
+    }
+
+    /**
+     * getRISAsText() must return HTTP 404 (not 500) when the PI does not exist in the Solr index.
+     * This guards against getFirstDoc() returning null and causing a NullPointerException.
+     */
+    @Test
+    void testGetRISAsText_nonExistentPiReturns404() {
+        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_TEXT).params("NONEXISTENT_PI_99999").build())
+                .request()
+                .accept(MediaType.TEXT_PLAIN)
+                .get()) {
+            assertEquals(404, response.getStatus(), "Non-existent PI should return HTTP 404, not 500");
+        }
+    }
 }

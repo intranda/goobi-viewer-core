@@ -87,6 +87,24 @@ class WebApplicationExceptionMapperTest {
                 "Response JSON must not expose Java exception class name to clients: " + json);
     }
 
+    /**
+     * Jersey 3.x may wrap the NumberFormatException in an ExtractorException (RuntimeException)
+     * before wrapping it in a WebApplicationException. Verify that the mapper still returns 400
+     * even when the NumberFormatException is one extra level deep in the cause chain.
+     */
+    @Test
+    void toResponse_numberFormatExceptionNestedInRuntimeException_returns400() {
+        // Simulate: WebApplicationException → RuntimeException → NumberFormatException
+        NumberFormatException innerCause = new NumberFormatException("For input string: \"NaN\"");
+        RuntimeException extractorException = new RuntimeException("extraction failed", innerCause);
+        WebApplicationException wae = new WebApplicationException(extractorException,
+                Response.Status.INTERNAL_SERVER_ERROR);
+
+        Response response = mapper.toResponse(wae);
+        assertEquals(400, response.getStatus(),
+                "Should return 400 even when NumberFormatException is wrapped in a RuntimeException");
+    }
+
     // Simulates Jersey's PathParamException: a WebApplicationException whose cause is
     // a NumberFormatException (exactly what Jersey creates for invalid @PathParam Integer values).
     private static WebApplicationException buildPathParamException(String badValue) {

@@ -86,11 +86,11 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             return new ContentExceptionMapper(request, response).toResponse((ContentLibException) e);
         } else if (e instanceof TimeoutException) {
             status = Status.INTERNAL_SERVER_ERROR;
-        } else if (e instanceof NumberFormatException) {
+        } else if (e instanceof NumberFormatException || e.getCause() instanceof NumberFormatException) {
             // Client sent a non-numeric value for an integer path/query parameter → 400, not 500.
-            // Jersey wraps the NumberFormatException in a PathParamException (WebApplicationException)
-            // which this mapper unwraps; without this branch the RuntimeException check below would
-            // incorrectly promote it to HTTP 500.
+            // Jersey may wrap the NumberFormatException in an ExtractorException (RuntimeException)
+            // before wrapping it in InternalServerErrorException (WebApplicationException). Check one
+            // level of cause to catch the ExtractorException→NumberFormatException wrapping.
             status = Status.BAD_REQUEST;
             e = new IllegalArgumentException("Invalid parameter: not a valid integer");
         } else if (e instanceof RuntimeException) {

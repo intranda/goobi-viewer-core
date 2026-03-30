@@ -41,6 +41,7 @@ import java.util.Map;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -60,6 +61,7 @@ import de.intranda.api.iiif.presentation.v2.Layer;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -106,6 +108,12 @@ public class RecordPageResource {
 
     public RecordPageResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+        // Reject PIs containing characters illegal in URI paths / Solr queries before any
+        // Solr or file-system access occurs.  BadRequestException (HTTP 400) is an unchecked
+        // WebApplicationException that Jersey maps to 400 before invoking the endpoint.
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
+        }
         this.pi = pi;
         request.setAttribute("pi", pi);
     }

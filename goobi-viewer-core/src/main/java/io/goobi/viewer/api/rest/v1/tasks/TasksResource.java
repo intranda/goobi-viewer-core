@@ -52,6 +52,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -77,6 +78,7 @@ import jakarta.ws.rs.core.Response;
  *
  */
 @Path(TASKS)
+@ViewerRestServiceBinding
 public class TasksResource {
 
     private static final Logger logger = LogManager.getLogger(TasksResource.class);
@@ -198,8 +200,10 @@ public class TasksResource {
             }
             return Response.ok(job).build();
         }
-        ViewerMessage message = this.messageBroker.getMessageById(id)
-                .orElse(getMessageFromDAO(id).orElse(null));
+        // Guard against a null broker (message queue not configured) to avoid NPE → HTTP 500.
+        ViewerMessage message = (this.messageBroker != null)
+                ? this.messageBroker.getMessageById(id).orElse(getMessageFromDAO(id).orElse(null))
+                : getMessageFromDAO(id).orElse(null);
         if (message != null && isAuthorized(getTaskType(message.getTaskName()).orElse(null), Optional.empty(), request)) {
             return Response.ok(message).build();
         }
