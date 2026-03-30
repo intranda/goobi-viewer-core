@@ -6591,6 +6591,14 @@ public class Configuration extends AbstractConfiguration {
         return getLocalList("proxy.whitelist.host");
     }
 
+    /**
+     *
+     * @return Configured values
+     */
+    public List<String> getHttpHeaderLoginRedirectWhitelist() {
+        return getLocalList("user.authenticationProviders.redirectWhitelist.host");
+    }
+
     // active mq configuration //
 
     public boolean isStartInternalMessageBroker() {

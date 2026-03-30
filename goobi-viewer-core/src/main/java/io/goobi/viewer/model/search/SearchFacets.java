@@ -65,8 +65,8 @@ public class SearchFacets implements Serializable {
 
     private final transient Object lock = new Object();
 
-    /** Available regular facets for the current search result. */
-    private final Map<String, List<IFacetItem>> availableFacets = new LinkedHashMap<>();
+    /** Available regular facets for the current search result. Wrapped in synchronizedMap to prevent concurrent modification exceptions. */
+    private final Map<String, List<IFacetItem>> availableFacets = Collections.synchronizedMap(new LinkedHashMap<>());
     /** Currently applied facets. */
     private final List<IFacetItem> activeFacets = new ArrayList<>();
 
@@ -415,7 +415,10 @@ public class SearchFacets implements Serializable {
      * @should return false if only range facets available
      */
     public boolean isUnselectedValuesAvailable() {
-        List<String> availableFacetFields = new ArrayList<>(getAvailableFacets().keySet());
+        List<String> availableFacetFields;
+        synchronized (availableFacets) {
+            availableFacetFields = new ArrayList<>(availableFacets.keySet());
+        }
         for (String field : availableFacetFields) {
             if (!getAvailableFacetsForField(field, true).isEmpty()
                     && !DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(field)) {

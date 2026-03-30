@@ -58,29 +58,34 @@
                         <h:outputText
                             value="#{msg.generalError}"
                             escape="false" />
-                        <br />
-                        <br />
-                        <h:outputText value="#{msg.details}:" />
                     </p>
                     <div
                         class="alert alert-danger"
                         role="alert">
-                        <h:outputText
-                            rendered="#{!empty header['referer']}"
-                            value="URL: #{header['referer']}" />
-                        <h:outputText
-                            rendered="#{empty header['referer'] and sourceUrl != null}"
-                            value="URL: #{sourceUrl}" />
-                        <h:outputText
-                            rendered="#{empty header['referer'] and sourceUrl == null}"
-                            value="URL: #{sessionScope.sourceUrl}" />
-                        <br />
-                        <h:outputText
-                            rendered="#{errMsg != null}"
-                            value="#{errMsg}" />
-                        <h:outputText
-                            rendered="#{errMsg == null}"
-                            value="#{sessionScope.errorDetails}" />
+                        <p>
+                            <h:outputText
+                                rendered="#{!empty header['referer']}"
+                                value="URL: #{header['referer']}" />
+                            <h:outputText
+                                rendered="#{empty header['referer'] and sourceUrl != null}"
+                                value="URL: #{sourceUrl}" />
+                            <h:outputText
+                                rendered="#{empty header['referer'] and sourceUrl == null}"
+                                value="URL: #{sessionScope.sourceUrl}" />
+                        </p>
+                        <p>
+                            <h:outputText
+                                rendered="#{sessionScope.errorTime != null}"
+                                value="#{sessionScope.errorTime}" />
+                        </p>
+                        <code>
+                            <h:outputText
+                                rendered="#{errMsg != null}"
+                                value="#{errMsg}" />
+                            <h:outputText
+                                rendered="#{errMsg == null}"
+                                value="#{sessionScope.errorDetails}" />
+                        </code>
                     </div>
 
                     <p>
@@ -102,19 +107,23 @@
                         <h:outputText
                             value="#{msg.generalError}"
                             escape="false" />
-                        <br />
-                        <br />
-                        <h:outputText value="#{msg.details}:" />
                     </p>
                     <div
                         class="alert alert-danger"
                         role="alert">
-                        <h:outputText
-                            rendered="#{errMsg != null}"
-                            value="#{errMsg}" />
-                        <h:outputText
-                            rendered="#{errMsg == null}"
-                            value="#{sessionScope.errorDetails}" />
+                        <p>
+                            <h:outputText
+                                rendered="#{sessionScope.errorTime != null}"
+                                value="#{sessionScope.errorTime}" />
+                        </p>
+                        <code>
+                            <h:outputText
+                                rendered="#{errMsg != null}"
+                                value="#{errMsg}" />
+                            <h:outputText
+                                rendered="#{errMsg == null}"
+                                value="#{sessionScope.errorDetails}" />
+                        </code>
                     </div>
                     <p>
                         <h:outputLink

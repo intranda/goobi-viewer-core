@@ -177,11 +177,10 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     // Session was invalidated (e.g. timeout) while the request was still rendering — expected, not an error
                     logger.warn("Session invalidated during request rendering: {}", cause.getMessage());
                 } else {
-                    // All other exceptions
+                    // All other exceptions — show root cause class and message for better diagnostics
                     logger.error(t.getMessage(), t);
-                    // Put the exception in the flash scope to be displayed in the error page if necessary ...
-
-                    String msg = LocalDateTime.now().format(DateTools.FORMATTERISO8601DATETIME) + ": " + t.getMessage();
+                    Throwable rootCause = getCause(t);
+                    String msg = rootCause.getClass().getSimpleName() + ": " + rootCause.getMessage();
                     handleError(msg, "general");
                 }
             } finally {
@@ -269,8 +268,17 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     public void putNavigationState(Map<String, Object> requestMap, HttpSession session) {
         NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
         if (navigationHelper != null) {
-            requestMap.put("sourceUrl", navigationHelper.getCurrentUrl());
-            session.setAttribute("sourceUrl", navigationHelper.getCurrentUrl());
+            try {
+                // The Weld CDI proxy for NavigationHelper is non-null even when the underlying
+                // session-scoped bean's session has been invalidated. Calling getCurrentUrl()
+                // on the proxy triggers an internal getAttribute() on the invalidated session,
+                // which throws IllegalStateException — guard against this here.
+                String currentUrl = navigationHelper.getCurrentUrl();
+                requestMap.put("sourceUrl", currentUrl);
+                session.setAttribute("sourceUrl", currentUrl);
+            } catch (IllegalStateException e) {
+                logger.warn("Could not store navigation state: session invalidated during error handling");
+            }
         }
     }
 

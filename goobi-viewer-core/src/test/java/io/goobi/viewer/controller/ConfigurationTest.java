@@ -3678,6 +3678,18 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(DataManager.getInstance().getConfiguration().isHostProxyWhitelisted("http://localhost:1234"));
     }
 
+    /**
+     * @see Configuration#getHttpHeaderLoginRedirectWhitelist()
+     * @verifies return configured values
+     */
+    @Test
+    void getHttpHeaderLoginRedirectWhitelist_shouldReturnConfiguredValues() {
+        List<String> whitelist = DataManager.getInstance().getConfiguration().getHttpHeaderLoginRedirectWhitelist();
+        assertEquals(2, whitelist.size());
+        assertTrue(whitelist.contains("trusted.example.org"));
+        assertTrue(whitelist.contains("sso.example.com"));
+    }
+
     @Test
     void test_getGeomapFeatureTitleOptions() {
         List<SelectItem> items = DataManager.getInstance().getConfiguration().getGeomapFeatureTitleOptions();

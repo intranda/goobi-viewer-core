@@ -241,7 +241,18 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
             return null;
         }
         String pi = urlSplit[1];
-        int page = urlSplit.length > 2 ? Integer.parseInt(urlSplit[2]) : 1;
+        // Parse the page number from the URL path segment; non-integer values (e.g. Solr query strings
+        // passed as path by bots/crawlers) must not cause an uncaught NumberFormatException → return null
+        // to trigger a proper 404 response in doGet()
+        int page = 1;
+        if (urlSplit.length > 2) {
+            try {
+                page = Integer.parseInt(urlSplit[2]);
+            } catch (NumberFormatException e) {
+                logger.warn("OEmbed URL contains non-integer page segment: {}", urlSplit[2]);
+                return null;
+            }
+        }
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(pi);
         if (iddoc == null) {
             return null;

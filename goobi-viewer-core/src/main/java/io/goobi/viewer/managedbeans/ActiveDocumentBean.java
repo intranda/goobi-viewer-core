@@ -1064,6 +1064,8 @@ public class ActiveDocumentBean implements Serializable {
                 } else {
                     logger.warn("No IDDOC for identifier '{}' found.", persistentIdentifier);
                     reset();
+                    // Restore the identifier after reset so that update() can include it in the RecordNotFoundException message
+                    lastReceivedIdentifier = persistentIdentifier;
                 }
             }
         }

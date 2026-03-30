@@ -1089,6 +1089,11 @@ public class UserBean implements Serializable {
      */
     public void setRedirectUrl(String redirectUrl) {
         if (!"RES_NOT_FOUND".equals(redirectUrl)) {
+            if (StringUtils.isNotEmpty(redirectUrl) && !redirectUrl.equals("#")
+                    && !NetTools.isRedirectUrlAllowed(redirectUrl, navigationHelper != null ? navigationHelper.getApplicationUrl() : null)) {
+                logger.warn("Rejected redirect URL not on whitelist: {}", redirectUrl);
+                return;
+            }
             this.redirectUrl = redirectUrl;
             logger.trace("Redirect URL: {}", redirectUrl);
         }

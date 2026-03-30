@@ -135,6 +135,10 @@
             <provider type="httpHeader" name="HTTP Header" enabled="false" parameterType="header" parameterName="id"
                  endpoint="https://localhost:8080/api/v1/auth/header" image="saml.png" />
             <provider type="local" name="Goobi viewer"/>
+            <redirectWhitelist>
+                <host>trusted.example.org</host>
+                <host>sso.example.com</host>
+            </redirectWhitelist>
         </authenticationProviders>
 		<!-- SMTP configuration. 'smtpSenderName' (defaults to the value of 'smtpSenderAddress') 
 			and 'smtpSecurity' (defaults to NONE) are optional, all others are mandatory 
