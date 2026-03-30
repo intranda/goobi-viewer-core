@@ -23,7 +23,7 @@
  */
 var viewerJS = (function (viewer) {
     'use strict';
-
+ 
     viewer.calendarWidget = {
         /**
          * Initialize the calendar widget.

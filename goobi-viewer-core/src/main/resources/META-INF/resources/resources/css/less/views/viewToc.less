@@ -330,6 +330,17 @@
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
+	.toc {
+		.metadata__element-dl{
+			grid-template-columns: unset;
+			grid-template-rows: auto;
+		}
+		.metadata__element-dl dd, 
+		.metadata__event-dl dd {
+			grid-column-start: unset;
+			word-wrap: anywhere;
+		}
+	}
 }
 
 /* BREAKPOINT FOR TABLETS */

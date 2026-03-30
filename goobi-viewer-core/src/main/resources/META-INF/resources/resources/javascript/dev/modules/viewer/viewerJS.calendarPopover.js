@@ -82,10 +82,47 @@ var viewerJS = (function (viewer) {
                                 selector: _defaults.calendarWrapperSelector,
                             },
                             html: true,
-                        };
+                        }; 
 
                         $(_defaults.popoverTriggerSelector).popover('dispose');
                         _this.popover(_popoverConfig);
+                        _this.one('inserted.bs.popover', function () {
+                            var popoverId = _this.attr('aria-describedby');
+                            $('#' + popoverId).addClass('search-calendar__day-popover');
+                        });
+                        _this.one('shown.bs.popover', function () {
+                            var $trigger = _this;
+                            var popoverId = $trigger.attr('aria-describedby');
+                            var $popover = $('#' + popoverId);
+                            var focusableSelectors = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+                            $popover.attr('tabindex', '-1');
+                            $popover.trigger('focus');
+
+                            $popover.on('keydown.calendarPopover', function (e) {
+                                if (e.key === 'Escape') { 
+                                    // Escape: close popover, return focus to trigger
+                                    $trigger.popover('dispose');
+                                    $trigger.trigger('focus');
+                                } else if (e.key === 'Tab') {
+                                    var $focusable = $popover.find('a, button').filter(':visible');
+                                    var $first = $focusable.first();
+                                    var $last = $focusable.last();
+
+                                    if (e.shiftKey && ($(e.target).is($first) || $(e.target).is($popover))) {
+                                        // Shift+Tab on first item: return focus to trigger
+                                        e.preventDefault();
+                                        $trigger.popover('dispose');
+                                        $trigger.trigger('focus');
+                                    } else if (!e.shiftKey && $(e.target).is($last)) {
+                                        // Tab on last item: move focus to next element after trigger
+                                        e.preventDefault();
+                                        $trigger.popover('dispose');
+                                        var $all = $(focusableSelectors).filter(':visible');
+                                        $all.eq($all.index($trigger) + 1).trigger('focus');
+                                    }
+                                }
+                            });
+                        });
                         _this.popover('show');
                     })
                     .catch((error) => {
