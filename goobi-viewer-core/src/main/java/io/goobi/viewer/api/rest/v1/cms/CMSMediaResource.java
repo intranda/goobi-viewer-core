@@ -91,6 +91,7 @@ import io.goobi.viewer.model.cms.media.MediaList;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Consumes;
@@ -154,6 +155,8 @@ public class CMSMediaResource {
     @Operation(
             tags = { "media" },
             summary = "Get a list of CMS-Media Items of one or more categories")
+    @ApiResponse(responseCode = "200", description = "List of CMS media items matching the given categories")
+    @ApiResponse(responseCode = "500", description = "Internal server error - e.g. database unavailable")
     @jakarta.ws.rs.Path(CMS_MEDIA_BY_CATEGORY)
     public MediaList getMediaOfCategories(
             @Parameter(description = "tag specifying the category the delivered media items must be associated with."

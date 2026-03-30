@@ -85,6 +85,7 @@ public class IndexerResource {
     @Operation(summary = "Submit the current indexer version and hotfolder file count to the viewer", tags = { "indexer" })
     @ApiResponse(responseCode = "200", description = "Version information accepted")
     @ApiResponse(responseCode = "400", description = "Request body cannot be parsed as valid JSON")
+    @ApiResponse(responseCode = "500", description = "Internal server error - e.g. message queue unavailable")
     public SuccessMessage setIndexerVersion(IndexerDataRequestParameters params) throws IllegalRequestException, MessageQueueException {
         try {
             DataManager.getInstance().setIndexerVersion(new ObjectMapper().writeValueAsString(params));

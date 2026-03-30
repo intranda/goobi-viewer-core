@@ -81,6 +81,7 @@ public class CollectionsResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 2.1.1 collection")
+    @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection containing all collections for this field")
     @ApiResponse(responseCode = "400", description = "No collections available for field")
     public Collection2 getAllCollections(
             @Parameter(description = "Add values of this field to response to allow grouping of results") @QueryParam("grouping") String grouping,
