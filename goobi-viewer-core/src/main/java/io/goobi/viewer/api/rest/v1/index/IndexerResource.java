@@ -87,6 +87,10 @@ public class IndexerResource {
     @ApiResponse(responseCode = "400", description = "Request body cannot be parsed as valid JSON")
     @ApiResponse(responseCode = "500", description = "Internal server error - e.g. message queue unavailable")
     public SuccessMessage setIndexerVersion(IndexerDataRequestParameters params) throws IllegalRequestException, MessageQueueException {
+        // Guard against NPE when the client sends a PUT without a valid JSON body
+        if (params == null) {
+            throw new IllegalRequestException("Request body required");
+        }
         try {
             DataManager.getInstance().setIndexerVersion(new ObjectMapper().writeValueAsString(params));
             DataManager.getInstance().setHotfolderFileCount(params.getHotfolderFileCount());

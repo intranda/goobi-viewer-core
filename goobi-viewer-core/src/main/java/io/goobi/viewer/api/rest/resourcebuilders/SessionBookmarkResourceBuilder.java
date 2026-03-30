@@ -267,7 +267,14 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      */
     @Override
     public BookmarkList getSharedBookmarkList(String shareKey) throws DAOException, RestApiException, ContentNotFoundException {
-        BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(shareKey);
+        BookmarkList bookmarkList;
+        try {
+            bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(shareKey);
+        } catch (jakarta.persistence.PersistenceException e) {
+            // DB collation mismatch (utf8mb3 vs utf8mb4) causes PersistenceException for unicode share keys.
+            // Convert to DAOException so the response is a proper JSON error instead of an HTML 500 page.
+            throw new DAOException("Database error when looking up share key: " + e.getMessage());
+        }
 
         if (bookmarkList == null) {
             throw new ContentNotFoundException("No bookmarklist found for key " + shareKey);

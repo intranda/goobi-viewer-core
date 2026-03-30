@@ -173,6 +173,10 @@ public class BookmarkResource {
     public BookmarkList patchBookmarkList(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
             BookmarkList list) throws DAOException, IOException, RestApiException, IllegalRequestException {
+        // Guard against NPE when the client sends a PATCH request without a JSON body
+        if (list == null) {
+            throw new IllegalRequestException("Request body required");
+        }
         BookmarkList orig = getBookmarkList(id);
         if (StringUtils.isNotBlank(list.getName())) {
             orig.setName(list.getName());

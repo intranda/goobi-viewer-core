@@ -296,7 +296,7 @@ public class IndexResource {
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
             @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
             @Parameter(description = "The granularity of each grid cell") @QueryParam("gridLevel") Integer gridLevel)
-            throws IndexUnreachableException {
+            throws IndexUnreachableException, IllegalRequestException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
         String finalQuery = filterQuery;
@@ -317,10 +317,14 @@ public class IndexResource {
             }
         }
         String queryEscaped = StringTools.unescapeCriticalUrlChracters(finalQuery);
-        String heatmap = DataManager.getInstance()
-                .getSearchIndex()
-                .getHeatMap(solrField, wktRegion, queryEscaped, facetQuery, gridLevel);
-        return heatmap;
+        try {
+            return DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHeatMap(solrField, wktRegion, queryEscaped, facetQuery, gridLevel);
+        } catch (IllegalArgumentException e) {
+            // HeatmapFacetMap.setGridLevel() throws IllegalArgumentException for out-of-range values
+            throw new IllegalRequestException("Invalid heatmap parameters: " + e.getMessage());
+        }
 
     }
 
