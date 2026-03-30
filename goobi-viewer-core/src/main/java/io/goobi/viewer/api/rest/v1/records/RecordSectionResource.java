@@ -153,7 +153,8 @@ public class RecordSectionResource {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private static StructElement getStructElement(String pi, String divId) throws PresentationException, IndexUnreachableException, ContentNotFoundException {
+    private static StructElement getStructElement(String pi, String divId)
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("+PI_TOPSTRUCT:" + pi + " +DOCTYPE:DOCSTRCT +LOGID:" + divId, null);
         // Guard against NPE when no matching section is found in the index
         if (doc == null) {
