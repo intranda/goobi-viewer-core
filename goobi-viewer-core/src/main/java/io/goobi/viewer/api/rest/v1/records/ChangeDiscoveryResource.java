@@ -51,6 +51,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.iiif.discovery.ActivityCollectionBuilder;
+import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -110,9 +111,17 @@ public class ChangeDiscoveryResource {
         if (StringUtils.isNotBlank(filterQuery)) {
             builder.setFilterQuery(filterQuery);
         }
-        OrderedCollection<Activity> collection = builder.buildCollection();
-        collection.setContext(CONTEXT);
-        return collection;
+        try {
+            OrderedCollection<Activity> collection = builder.buildCollection();
+            collection.setContext(CONTEXT);
+            return collection;
+        } catch (PresentationException e) {
+            // An invalid filter query (e.g. bare "/") causes a Solr syntax error wrapped in PresentationException.
+            if (SolrTools.isQuerySyntaxError(e)) {
+                throw new IllegalRequestException("Invalid filter query: " + filterQuery);
+            }
+            throw e;
+        }
     }
 
     /**
@@ -150,9 +159,16 @@ public class ChangeDiscoveryResource {
         if (StringUtils.isNotBlank(filterQuery)) {
             builder.setFilterQuery(filterQuery);
         }
-        OrderedCollectionPage<Activity> page = builder.buildPage(pageNo);
-        page.setContext(CONTEXT);
-        return page;
+        try {
+            OrderedCollectionPage<Activity> page = builder.buildPage(pageNo);
+            page.setContext(CONTEXT);
+            return page;
+        } catch (PresentationException e) {
+            if (SolrTools.isQuerySyntaxError(e)) {
+                throw new IllegalRequestException("Invalid filter query: " + filterQuery);
+            }
+            throw e;
+        }
     }
 
 }

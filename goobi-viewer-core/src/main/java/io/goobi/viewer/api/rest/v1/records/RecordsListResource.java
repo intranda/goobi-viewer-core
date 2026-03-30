@@ -38,6 +38,7 @@ import org.json.JSONObject;
 
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
@@ -50,6 +51,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -99,14 +101,23 @@ public class RecordsListResource {
             @Parameter(description = "filter for records from this date or earlier") @QueryParam("end") String end,
             @Parameter(description = "filter for records of this subtheme") @QueryParam("subtheme") String subtheme,
             @Parameter(description = "sort string") @QueryParam("sort") String sort)
-            throws IndexUnreachableException, DAOException, PresentationException, URISyntaxException, ViewerConfigurationException {
+            throws IndexUnreachableException, DAOException, PresentationException, URISyntaxException, ViewerConfigurationException,
+            IllegalRequestException {
 
         String finalQuery = createQuery(query, start, end, subtheme);
 
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
 
-        List<IPresentationModelElement> items =
-                builder.getManifestsForQuery(finalQuery, sort, firstRow == null ? 0 : firstRow, rows == null ? DEFAULT_MAX_ROWS : rows);
+        List<IPresentationModelElement> items;
+        try {
+            items = builder.getManifestsForQuery(finalQuery, sort, firstRow == null ? 0 : firstRow, rows == null ? DEFAULT_MAX_ROWS : rows);
+        } catch (PresentationException e) {
+            // An empty or syntactically invalid query can cause Solr to reject the request.
+            if (SolrTools.isQuerySyntaxError(e)) {
+                throw new IllegalRequestException("Invalid query parameters: " + e.getMessage());
+            }
+            throw e;
+        }
 
         OrderedCollectionPage<IPresentationModelElement> page = new OrderedCollectionPage<>();
         page.setOrderedItems(items);

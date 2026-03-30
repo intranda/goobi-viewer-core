@@ -80,6 +80,16 @@ public class PIValidator implements Validator<String> {
             return false;
         }
 
+        // Reject non-printable ASCII control characters (< 0x20 or = 0x7F) and any non-ASCII
+        // characters (>= 0x80). Such characters are never present in legitimate persistent
+        // identifiers but cause java.net.URI construction failures and Solr query syntax errors.
+        for (int i = 0; i < pi.length(); i++) {
+            char c = pi.charAt(i);
+            if (c < 0x20 || c >= 0x7F) {
+                return false;
+            }
+        }
+
         return !StringUtils.containsAny(pi, ILLEGAL_CHARS);
     }
 }

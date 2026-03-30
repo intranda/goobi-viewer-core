@@ -272,8 +272,8 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
             bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(shareKey);
         } catch (jakarta.persistence.PersistenceException e) {
             // DB collation mismatch (utf8mb3 vs utf8mb4) causes PersistenceException for unicode share keys.
-            // Convert to DAOException so the response is a proper JSON error instead of an HTML 500 page.
-            throw new DAOException("Database error when looking up share key: " + e.getMessage());
+            // Treat as "not found" since such keys can never match a valid entry.
+            throw new ContentNotFoundException("No bookmarklist found for key " + shareKey);
         }
 
         if (bookmarkList == null) {

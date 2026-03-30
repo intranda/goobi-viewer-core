@@ -145,7 +145,8 @@ public class IndexResource {
             throws IndexUnreachableException, PresentationException {
 
         String useQuery = query;
-        if (useQuery == null) {
+        // Treat empty/blank string same as null to avoid Solr syntax error from "+()".
+        if (StringUtils.isBlank(useQuery)) {
             useQuery = "+(ISWORK:*) ";
         } else {
             useQuery = String.format("+(%s)", useQuery);
@@ -324,6 +325,13 @@ public class IndexResource {
         } catch (IllegalArgumentException e) {
             // HeatmapFacetMap.setGridLevel() throws IllegalArgumentException for out-of-range values
             throw new IllegalRequestException("Invalid heatmap parameters: " + e.getMessage());
+        } catch (IndexUnreachableException e) {
+            // Solr rejects unknown field names (e.g. "0") with RemoteSolrException wrapped in IndexUnreachableException.
+            // Convert bad-request errors to 400 instead of propagating as 500.
+            if (SolrTools.isQuerySyntaxError(e)) {
+                throw new IllegalRequestException("Invalid Solr field or query: " + e.getMessage());
+            }
+            throw e;
         }
 
     }
@@ -342,7 +350,7 @@ public class IndexResource {
             @Parameter(description = "The Solr field to be used as label for each feature") @QueryParam("labelField") String labelField,
             @Parameter(description = "The scope of documents to search in. "
                     + "One of 'RECORDS', 'DOCSTRUCTS' and 'METADATA'") @QueryParam("scope") String searchScope)
-            throws IndexUnreachableException, PresentationException {
+            throws IndexUnreachableException, PresentationException, IllegalRequestException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
         String finalQuery = StringTools.unescapeCriticalUrlChracters(filterQuery);
@@ -365,8 +373,22 @@ public class IndexResource {
             facetQueries.add(coordQuery);
         }
 
-        Collection<GeoMapFeature> features =
-                createFeatures(StringUtils.isBlank(finalQuery) ? "*:*" : finalQuery, coordQuery, labelField, searchScope);
+        Collection<GeoMapFeature> features;
+        try {
+            features = createFeatures(StringUtils.isBlank(finalQuery) ? "*:*" : finalQuery, coordQuery, labelField, searchScope);
+        } catch (PresentationException e) {
+            // Solr rejects unknown field names (e.g. "0") or bad queries with a RemoteSolrException
+            // that gets wrapped in PresentationException. Convert bad-request errors to 400.
+            if (SolrTools.isQuerySyntaxError(e)) {
+                throw new IllegalRequestException("Invalid Solr field or query: " + e.getMessage());
+            }
+            throw e;
+        } catch (IndexUnreachableException e) {
+            if (SolrTools.isQuerySyntaxError(e)) {
+                throw new IllegalRequestException("Invalid Solr field or query: " + e.getMessage());
+            }
+            throw e;
+        }
 
         String objects = features
                 .stream()

@@ -42,6 +42,7 @@ import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.api.iiif.presentation.v2.Collection2;
+import jakarta.ws.rs.BadRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -75,6 +76,13 @@ public class CollectionsResource {
     public CollectionsResource(
             @Parameter(description = "Name of the Solr field the collection is based on. Typically 'DC'") @PathParam("field") String solrField,
             @Context HttpServletRequest request) {
+        // Reject field names containing control characters or non-ASCII to prevent URI construction failures.
+        for (int i = 0; i < solrField.length(); i++) {
+            char c = solrField.charAt(i);
+            if (c < 0x20 || c >= 0x7F) {
+                throw new BadRequestException("Invalid collection field: " + solrField);
+            }
+        }
         this.solrField = solrField.toUpperCase();
         this.request = request;
     }
