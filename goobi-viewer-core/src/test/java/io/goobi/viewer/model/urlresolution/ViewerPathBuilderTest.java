@@ -22,25 +22,36 @@
 package io.goobi.viewer.model.urlresolution;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.net.URI;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.viewer.PageType;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author Florian Alpers
  *
  */
-class ViewerPathBuilderTest {
+class ViewerPathBuilderTest extends AbstractTest {
+
+    @Override
+    @BeforeEach
+    public void setUp() throws Exception {
+        super.setUp();
+    }
 
     @Test
     void testStartsWith() {
@@ -87,5 +98,82 @@ class ViewerPathBuilderTest {
         Optional<ViewerPath> path = ViewerPathBuilder.createPath(request, "http://localhost:8080/viewer/!fulltext/AC03343066/13/");
         assertTrue(path.isPresent());
         assertEquals("fulltext/AC03343066/13/", path.get().getCombinedPath().toString());
+    }
+
+    /**
+     * @see ViewerPathBuilder#getPageType(URI)
+     * @verifies return correct type for configured name
+     */
+    @Test
+    void getPageType_shouldReturnCorrectTypeForConfiguredName() throws Exception {
+        // Test config maps viewImage to "viewImage_value"
+        URI servicePath = URI.create("viewImage_value/PPN123/1/");
+        Optional<PageType> result = ViewerPathBuilder.getPageType(servicePath);
+        assertTrue(result.isPresent());
+        assertEquals(PageType.viewImage, result.get());
+    }
+
+    /**
+     * @see ViewerPathBuilder#getPageType(URI)
+     * @verifies return correct type for raw name
+     */
+    @Test
+    void getPageType_shouldReturnCorrectTypeForRawName() throws Exception {
+        URI servicePath = URI.create("object/PPN123/1/");
+        Optional<PageType> result = ViewerPathBuilder.getPageType(servicePath);
+        assertTrue(result.isPresent());
+        assertEquals(PageType.viewObject, result.get());
+    }
+
+    /**
+     * @see ViewerPathBuilder#getPageType(URI)
+     * @verifies return empty for unknown path
+     */
+    @Test
+    void getPageType_shouldReturnEmptyForUnknownPath() throws Exception {
+        URI servicePath = URI.create("nonexistent/PPN123/1/");
+        Optional<PageType> result = ViewerPathBuilder.getPageType(servicePath);
+        assertFalse(result.isPresent());
+    }
+
+    /**
+     * When both viewImage and viewObject are configured to "object", a URL starting with "object/"
+     * should resolve to viewObject (whose raw name matches), not viewImage.
+     *
+     * @see ViewerPathBuilder#getPageType(URI)
+     * @verifies prefer raw name match as tiebreaker when both types have same configured name
+     */
+    @Test
+    void getPageType_shouldPreferRawNameMatchWhenBothTypesHaveSameConfiguredName() throws Exception {
+        DataManager.getInstance().injectConfiguration(new Configuration(
+                new File("src/test/resources/config_viewer_pageTypes_overlap.test.xml").getAbsolutePath()));
+
+        // Both viewImage and viewObject are configured to "object", so both match.
+        // viewObject should win because its raw name "object" also matches the URL.
+        URI servicePath = URI.create("object/PPN123/1/");
+        Optional<PageType> result = ViewerPathBuilder.getPageType(servicePath);
+        assertTrue(result.isPresent());
+        assertEquals(PageType.viewObject, result.get());
+    }
+
+    /**
+     * When both viewImage and viewObject are configured to "object", createPath should
+     * use the configured name "object" (not the raw name "image") as the page path.
+     *
+     * @see ViewerPathBuilder#createPath(String, String, String, String)
+     * @verifies use configured name as page path when it matches the URL
+     */
+    @Test
+    void createPath_shouldUseConfiguredNameAsPagePath() throws Exception {
+        DataManager.getInstance().injectConfiguration(new Configuration(
+                new File("src/test/resources/config_viewer_pageTypes_overlap.test.xml").getAbsolutePath()));
+
+        Optional<ViewerPath> path = ViewerPathBuilder.createPath(
+                "http://localhost:8080/viewer", "/viewer", "object/PPN123/1/", "");
+        assertTrue(path.isPresent());
+        assertEquals(PageType.viewObject, path.get().getPageType());
+        // The page path must use the configured name "object", not switch to a raw name
+        assertEquals("object", path.get().getPagePath().toString());
+        assertEquals("object/PPN123/1/", path.get().getCombinedPath().toString());
     }
 }
