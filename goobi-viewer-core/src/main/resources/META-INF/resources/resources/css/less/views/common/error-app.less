@@ -1,240 +1,122 @@
 /* ==============================================================
    Error App
-   Style declarations for the application error page (error.xhtml).
-   The HTTP error pages (400, 403, 404, 500) use error.less instead.
-   ============================================================== */
-
-/* FORCE LIGHT BACKGROUND */
-body:has(.view-error-app) {
-    background-color: @white;
-}
-
-/* PAGE WRAPPER */
+   style declarations for error.xhtml (application errors)
+   ==============================================================*/
+/* ERROR APP */
+/* BLOCK */
 .view-error-app {
-    max-width: 700px;
-    padding: 2rem 0;
-}
-
-/* ERROR BOX */
-.view-error-app__box {
-    border: 1px solid @lightgray;
-    border-radius: 6px;
+    border: 1px solid @middlegray;
+    border-radius: 7px;
     overflow: hidden;
-}
-
-/* SEVERITY HEADER */
-.view-error-app__header {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 1rem 1.6rem;
-    color: @white;
-
-    &--warning {
-        background-color: @orange;
-    }
-
-    &--critical {
-        background-color: @red;
-    }
-}
-
-.view-error-app__header-icon {
-    font-size: 1.6rem;
-    line-height: 1;
-}
-
-.view-error-app__header-label {
-    font-size: @fontSmall;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-}
-
-/* CONTENT AREA */
-.view-error-app__content {
-    padding: 2rem;
     background: @white;
-}
-
-/* TITLE */
-.view-error-app__title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: @black;
-    margin: 0 0 1rem;
-    line-height: 1.2;
-}
-
-/* USER MESSAGE */
-.view-error-app__message {
-    font-size: @fontMedium;
-    color: @gray;
-    line-height: 1.7;
-    margin: 0;
-}
-
-/* DIVIDER */
-.view-error-app__divider {
-    border: none;
-    border-top: 1px solid @lightgray;
-    margin: 2rem 0;
-}
-
-/* TECHNICAL DETAILS */
-.view-error-app__details-label {
-    font-size: @fontSmall;
-    font-weight: 600;
-    color: @gray;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 0.8rem;
-}
-
-.view-error-app__details-block {
-    background: @lightgray2;
-    border: 1px solid @lightgray;
-    border-radius: 4px;
-    padding: 1rem 1.2rem;
-    font-family: monospace;
-    font-size: @fontSmall;
-    color: @darkgray;
-    line-height: 1.8;
-    margin: 0;
-
-    dt {
-        display: inline-block;
-        min-width: 55px;
-        font-weight: 600;
-
-        &::after {
-            content: ':';
-            margin-right: 0.5em;
-        }
-    }
-
-    dd {
-        display: inline;
-        margin: 0;
-        overflow-wrap: break-word;
-        word-break: break-all;
-
-        &::after {
-            content: '\A';
-            white-space: pre;
-        }
-    }
-}
-
-/* ACTIONS */
-.view-error-app__actions {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-top: 2rem;
-
-    .btn {
-        min-width: 150px;
-        border-radius: 100px;
-        padding: 0.9rem 2.2rem;
-        font-size: @fontMedium;
-        font-weight: 600;
-        letter-spacing: 0.02em;
-        transition: all 0.2s ease;
-        cursor: pointer;
-
-        &:focus {
-            background-color: inherit;
-        }
-    }
-
-    .btn--full {
+    isolation: isolate;
+    /* ELEMENT */
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.8rem 2rem;
         background-color: @blue;
-        border-color: @blue;
-        box-shadow: 0 2px 8px fade(@blue, 25%);
-
-        &:hover {
-            background-color: @hoverblue;
-            border-color: @hoverblue;
-            box-shadow: 0 4px 12px fade(@blue, 30%);
-            transform: translateY(-1px);
-        }
-
-        &:active {
-            background-color: @activeblue;
-            border-color: @activeblue;
-            box-shadow: 0 1px 4px fade(@blue, 30%);
-            transform: translateY(0);
-        }
-
-        &:focus {
-            background-color: @blue;
-            border-color: @blue;
+        color: @white;
+        font-size: @fontSmall;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        .icon {
+            color: @white;
         }
     }
-
-    .btn--default {
+    &__content {
+        padding: 2rem;
+    }
+    &__title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: @black;
+        margin: 0 0 1rem;
+        line-height: 1.2;
+    }
+    &__message {
+        font-size: @fontMedium;
+        color: @gray;
+        line-height: 1.7;
+        margin: 0;
+    }
+    &__divider {
+        border: none;
+        border-top: 1px solid @middlegray;
+        margin: 2rem 0;
+    }
+    &__details-label {
+        font-size: @fontSmall;
+        font-weight: 600;
+        color: @gray;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.8rem;
+    }
+    &__details-block {
+        background: @lightgray2;
+        border: 1px solid @middlegray;
+        border-radius: 4px;
+        padding: 1rem 1.2rem;
+        font-family: monospace;
+        font-size: @fontSmall;
         color: @darkgray;
-        background-color: @white;
-        border-color: #d4d4d4;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-
-        &:hover {
-            color: @black;
-            border-color: #bbb;
-            background-color: @white;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-            transform: translateY(-1px);
+        line-height: 1.8;
+        margin: 0;
+        dt {
+            font-weight: 600;
+            &::after {
+                content: ': ';
+            }
         }
-
-        &:active {
-            color: @black;
-            border-color: @gray;
-            background-color: @lightgray2;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-            transform: translateY(0);
+        dd {
+            margin: 0 0 0.4rem;
+            overflow-wrap: break-word;
+            word-break: break-all;
         }
-
-        &:focus {
-            color: @darkgray;
-            background-color: @white;
-            border-color: #d4d4d4;
-        }
+    }
+    &__actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
     }
 }
 
-/* BREAKPOINT TABLETS */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
     .view-error-app {
-        padding: 1.5rem 0;
-    }
-
-    .view-error-app__content {
-        padding: 1.5rem;
-    }
-
-    .view-error-app__title {
-        font-size: 1.8rem;
+        &__content {
+            padding: 1.5rem;
+        }
+        &__title {
+            font-size: @fontLarge;
+        }
     }
 }
 
-/* BREAKPOINT SMARTPHONES */
+/* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-    .view-error-app__content {
-        padding: 1.2rem;
-    }
-
-    .view-error-app__title {
-        font-size: 1.6rem;
-    }
-
-    .view-error-app__actions {
-        gap: 0.8rem;
-
-        .btn {
-            min-width: 130px;
-            padding: 0.8rem 1.6rem;
-            font-size: @fontSmall;
+    .view-error-app {
+        border-radius: 0;
+        &__content {
+            padding: 1.2rem;
+        }
+        &__title {
+            font-size: @fontNormal;
+        }
+        &__actions {
+            gap: 0.8rem;
         }
     }
 }
