@@ -214,6 +214,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record")
+    @ApiResponse(responseCode = "200", description = "Annotation collection for the record")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations,"
@@ -233,6 +235,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a record")
+    @ApiResponse(responseCode = "200", description = "Annotation collection of comments for the record")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     public IAnnotationCollection getCommentsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations,"
@@ -325,6 +329,9 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_LAYER)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get a layer within a IIIF 2.1.1 manifest")
+    @ApiResponse(responseCode = "200", description = "IIIF layer for the given record and layer name")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record or layer found for the given identifiers")
     @IIIFPresentationBinding
     public IPresentationModelElement getLayer(
             @Parameter(description = "Name of the manifest layer") @PathParam("name") String layerName,
@@ -342,6 +349,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_NER_TAGS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get NER tags for a record")
+    @ApiResponse(responseCode = "200", description = "NER tags for the given record")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     public DocumentReference getNERTags(
             @Parameter(description = "First page to get tags for") @QueryParam("start") Integer start,
             @Parameter(description = "Last page to get tags for") @QueryParam("end") Integer end,
@@ -642,6 +651,9 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
+    @ApiResponse(responseCode = "200", description = "Record metadata as JSON")
+    @ApiResponse(responseCode = "400", description = "Invalid or missing record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for given identifier or template not found")
     public Response getRecordMetadataAsJson(@PathParam("pi") String pi, @PathParam("template") String template)
             throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}/{}", pi, template);

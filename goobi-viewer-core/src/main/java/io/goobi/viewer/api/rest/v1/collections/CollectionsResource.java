@@ -43,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.ContentAssistResourceBuilder;
@@ -82,7 +83,7 @@ public class CollectionsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 2.1.1 collection")
     @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection containing all collections for this field")
-    @ApiResponse(responseCode = "400", description = "No collections available for field")
+    @ApiResponse(responseCode = "404", description = "No collections available for field")
     public Collection2 getAllCollections(
             @Parameter(description = "Add values of this field to response to allow grouping of results") @QueryParam("grouping") String grouping,
             @Parameter(description = "comma separated list of collections to ignore in response") @QueryParam("ignore") String ignoreString)
@@ -96,8 +97,8 @@ public class CollectionsResource {
             collection = builder.getCollectionsWithGrouping(solrField, ignore, grouping);
         }
         if (collection.getMembers() == null || collection.getMembers().isEmpty()) {
-            //can't be a collection
-            throw new IllegalRequestException("No collections found for field " + solrField);
+            // No collections exist for this field - return 404 rather than 400
+            throw new ContentNotFoundException("No collections found for field " + solrField);
         }
         return collection;
     }
@@ -106,7 +107,8 @@ public class CollectionsResource {
     @jakarta.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF Presentation 2.1.1 collection")
-    @ApiResponse(responseCode = "400", description = "Invalid collection name or field")
+    @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection for the given collection name")
+    @ApiResponse(responseCode = "404", description = "Collection not found for given field and name")
     public Collection2 getCollection(
             @Parameter(description = "Name of the collection. Must be a value of the Solr field the collection is based on") 
             @PathParam("collection") final String inCollectionName,
@@ -125,8 +127,8 @@ public class CollectionsResource {
             collection = builder.getCollectionWithGrouping(solrField, collectionName, grouping, ignore);
         }
         if (collection.getMembers() == null || collection.getMembers().isEmpty()) {
-            //can't be a collection
-            throw new IllegalRequestException("No valid collection: " + solrField + ":" + collectionName);
+            // Collection does not exist - return 404 rather than 400
+            throw new ContentNotFoundException("No valid collection: " + solrField + ":" + collectionName);
         }
         return collection;
     }

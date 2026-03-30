@@ -52,6 +52,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -124,6 +125,8 @@ public class RecordsListResource {
     @jakarta.ws.rs.Path(RECORDS_LIST_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
+    @ApiResponse(responseCode = "200", description = "Record metadata as JSON array")
+    @ApiResponse(responseCode = "400", description = "Missing template name")
     public Response getRecordMetadataAsJson(@PathParam("template") String template) throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}", template);
         if (template == null) {

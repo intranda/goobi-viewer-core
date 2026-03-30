@@ -166,7 +166,9 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Set passed attributes to the bookmarkList")
+    @ApiResponse(responseCode = "200", description = "Updated bookmark list")
     @ApiResponse(responseCode = "400", description = "Not logged in, session bookmark list may not be patched")
+    @ApiResponse(responseCode = "404", description = "No bookmark list found for the given id")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList patchBookmarkList(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,
