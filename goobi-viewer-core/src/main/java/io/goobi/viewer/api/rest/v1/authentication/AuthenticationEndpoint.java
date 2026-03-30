@@ -182,8 +182,7 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "500", description = "Internal error")
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");
-        Optional<NavigationHelper> nh = BeanUtils.getBeanFromSession(servletRequest.getSession(), "navigationHelper", NavigationHelper.class);
-        if (redirectUrl != null && (!nh.isPresent() || !redirectUrl.startsWith(nh.get().getApplicationUrl()))) {
+        if (redirectUrl != null && !isRedirectUrlAllowed(redirectUrl)) {
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_ILLEGAL_REDIRECT_URL)
                     .build();
         }
@@ -478,5 +477,17 @@ public class AuthenticationEndpoint {
             logger.error(exception);
             return null;
         }
+    }
+
+    /**
+     * Checks whether the given redirect URL is allowed for the current request context.
+     *
+     * @param redirectUrl URL to check
+     * @return true if allowed; false otherwise
+     */
+    boolean isRedirectUrlAllowed(String redirectUrl) {
+        Optional<NavigationHelper> nh = BeanUtils.getBeanFromSession(servletRequest.getSession(), "navigationHelper", NavigationHelper.class);
+        String applicationUrl = nh.map(NavigationHelper::getApplicationUrl).orElse(null);
+        return NetTools.isRedirectUrlAllowed(redirectUrl, applicationUrl);
     }
 }
