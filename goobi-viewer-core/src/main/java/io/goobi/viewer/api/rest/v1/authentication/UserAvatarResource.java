@@ -187,6 +187,8 @@ public class UserAvatarResource extends ImageResource {
     @Operation(tags = { "users" }, summary = "IIIF image identifier for an uploaded user avatar image. Returns a IIIF 2.1.1 image information object")
     @ApiResponse(responseCode = "200", description = "Avatar image information")
     @ApiResponse(responseCode = "302", description = "Redirect to canonical IIIF image info URL")
+    // 400 is returned when the path parameter {userId} cannot be parsed as a valid integer
+    @ApiResponse(responseCode = "400", description = "Invalid user ID")
     @ApiResponse(responseCode = "404", description = "No avatar found for the given user")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();
@@ -198,6 +200,8 @@ public class UserAvatarResource extends ImageResource {
     @Operation(summary = "Upload a new avatar image for the current user", tags = { "users" })
     @RequestBody(content = @Content(mediaType = "multipart/form-data"))
     @ApiResponse(responseCode = "200", description = "Avatar uploaded successfully")
+    // 400 is returned when the path parameter {userId} cannot be parsed as a valid integer
+    @ApiResponse(responseCode = "400", description = "Invalid user ID")
     @ApiResponse(responseCode = "406", description = "Invalid upload — missing file stream or no active user session")
     @ApiResponse(responseCode = "409", description = "A file with this name already exists")
     @ApiResponse(responseCode = "500", description = "Internal server error during file upload")

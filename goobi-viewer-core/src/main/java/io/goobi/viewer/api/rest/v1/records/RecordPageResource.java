@@ -166,6 +166,8 @@ public class RecordPageResource {
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
     @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 manifest for the given page")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
+    // 403 is returned by AccessConditionRequestFilter when the record is not found in the Solr index
+    @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
     @ApiResponse(responseCode = "404", description = "No record or page found for the given identifiers")
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest(

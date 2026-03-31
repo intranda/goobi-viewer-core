@@ -121,6 +121,7 @@ public class BookmarkResource {
             tags = { "bookmarks" },
             summary = "Get all bookmark lists owned by the current user. If not logged in, a single temporary bookmark list is stored"
                     + " in the http session which is returned")
+    @ApiResponse(responseCode = "200", description = "List of bookmark lists owned by the current user")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public List<BookmarkList> getOwnedBookmarkLists() throws DAOException, IOException, RestApiException {
         return builder.getAllBookmarkLists();
@@ -152,6 +153,8 @@ public class BookmarkResource {
             tags = { "bookmarks" },
             summary = "Get a bookmarklist owned by the current user by its id. If not logged in, the single bookmark list stored"
                     + " in the session is always returned")
+    // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
+    @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList getBookmarkList(
@@ -198,6 +201,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Delete a bookmark list")
+    @ApiResponse(responseCode = "200", description = "Bookmark list deleted successfully")
     @ApiResponse(responseCode = "400", description = "Not logged in, session bookmark list may not be deleted")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public SuccessMessage deleteBookmarkList(
@@ -214,6 +218,8 @@ public class BookmarkResource {
             tags = { "bookmarks" },
             summary = "Add bookmark to list. Only pi, LogId and order are used")
     @ApiResponse(responseCode = "201", description = "Bookmark added; returns the updated bookmark list")
+    // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
+    @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Response addItemToBookmarkList(
@@ -273,6 +279,8 @@ public class BookmarkResource {
             tags = { "bookmarks", "iiif" },
             summary = "Get a bookmarklist owned by the current user by its id and return it as a IIIF Presentation 2.1.1 collection resource."
                     + " If not logged in, the single bookmark list stored in the session is always returned")
+    // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
+    @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Collection2 getBookmarkListAsIIIFCollection(
@@ -288,6 +296,8 @@ public class BookmarkResource {
             tags = { "bookmarks" },
             summary = "Get a bookmarklist owned by the current user by its id and return it as a Mirador viewe config object. If not logged in,"
                     + " the single bookmark list stored in the session is always returned")
+    // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
+    @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getBookmarkListForMirador(
@@ -305,6 +315,8 @@ public class BookmarkResource {
             summary = "Get a bookmarklist owned by the current user by its id and return it as an RSS feed. If not logged in,"
                     + " the single bookmark list stored in the session is always returned")
     @ApiResponse(responseCode = "200", description = "RSS feed for the bookmark list")
+    // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
+    @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getBookmarkListAsRSS(
@@ -327,6 +339,8 @@ public class BookmarkResource {
             summary = "Get a bookmarklist owned by the current user by its id and return it as an RSS feed in json format. If not logged in,"
                     + " the single bookmark list stored in the session is always returned")
     @ApiResponse(responseCode = "200", description = "RSS feed for the bookmark list as JSON")
+    // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
+    @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Channel getBookmarkListAsRSSJson(

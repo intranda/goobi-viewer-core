@@ -314,6 +314,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 manifest for the record")
+    // 403 is returned by AccessConditionRequestFilter when the record is not found in the Solr index
+    @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
     @IIIFPresentationBinding
@@ -346,6 +348,8 @@ public class RecordResource {
     @Operation(tags = { "records", "iiif" }, summary = "Get a layer within a IIIF 2.1.1 manifest")
     @ApiResponse(responseCode = "200", description = "IIIF layer for the given record and layer name")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    // 403 is returned by AccessConditionRequestFilter when the record is not found in the Solr index
+    @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
     @ApiResponse(responseCode = "404", description = "No record or layer found for the given identifiers")
     @IIIFPresentationBinding
     public IPresentationModelElement getLayer(
@@ -516,6 +520,8 @@ public class RecordResource {
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     @ApiResponse(responseCode = "200", description = "ZIP archive of TEI files")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    // 403 is returned by checkFulltextAccessConditions when the record is not accessible
+    @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public StreamingOutput getTeiAsZip(
             @Parameter(description = "preferred language for the TEI file, in ISO-639 format") @QueryParam("lang") final String language)
