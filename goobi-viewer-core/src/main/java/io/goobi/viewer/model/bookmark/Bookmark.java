@@ -516,6 +516,9 @@ public class Bookmark implements Serializable {
      *
      * @return the dateAdded
      */
+    // dateAdded is set server-side; mark as read-only so clients do not send it in request bodies
+    // (LocalDateTime cannot deserialize ISO 8601 strings with timezone suffix like "2000-01-01T00:00:00Z")
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public LocalDateTime getDateAdded() {
         return dateAdded;
     }

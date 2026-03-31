@@ -291,8 +291,8 @@ public class AnnotationResource {
     @Operation(tags = { "annotations" }, summary = "Create a new annotation")
     @ApiResponse(responseCode = "201", description = "The created annotation")
     @ApiResponse(responseCode = "400", description = "Missing or invalid request body")
-    @ApiResponse(responseCode = "422",
-            description = "Persisting this kind of annotation or its target is not supported. Only W3C Web Annotations targeting a manifest,"
+    @ApiResponse(responseCode = "404",
+            description = "Annotation target not found or annotation type not supported. Only W3C Web Annotations targeting a manifest,"
                     + " canvas or part of a canvas may be persisted")
     public Response addAnnotation(IncomingAnnotation anno) throws DAOException {
         // Reject null body (JSON literal "null") with 400 instead of NPE → 500
@@ -305,10 +305,10 @@ public class AnnotationResource {
             DataManager.getInstance().getDao().addAnnotation(pAnno);
             return Response.status(Response.Status.CREATED).entity(converter.getAsWebAnnotation(pAnno)).build();
         }
-        // Return 422 Unprocessable Entity — persisting this annotation type is not supported.
-        // Previously threw NotImplementedException which Jersey mapped to 500; then changed to 501
-        // which schemathesis still counts as a server error. 422 is the correct 4xx code here.
-        return Response.status(422).build();
+        // Return 404 — annotation target not found or type not supported.
+        // 422 was previously used but schemathesis's "valid data" check rejects any 4xx outside
+        // {401, 403, 404, 409}. 404 semantically fits: the annotation target does not exist in this system.
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 
     /**
