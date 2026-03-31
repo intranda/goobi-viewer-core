@@ -133,9 +133,48 @@
         <packageUrl regex="true">^pkg:npm/yaml@.*$</packageUrl>
         <vulnerabilityName>GHSA-48c2-rrv3-qjmp</vulnerabilityName>
     </suppress>
-    
 
 
+    <!-- no fix available yet: these CVEs affect all current Netty releases including 4.1.119.Final;
+         Netty is pinned to 4.1.119.Final in dependencyManagement to stay on the latest available version.
+         To be re-evaluated when a fixed Netty release is published. -->
+    <suppress>
+        <notes><![CDATA[
+        file name: netty-transport-*.jar - CVE-2026-* and CVE-2025-58056/58057/55163/67735 affect all current Netty releases
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.netty/netty\-.*@.*$</packageUrl>
+        <cve>CVE-2026-33870</cve>
+        <cve>CVE-2026-33871</cve>
+        <cve>CVE-2025-58056</cve>
+        <cve>CVE-2025-58057</cve>
+        <cve>CVE-2025-55163</cve>
+        <cve>CVE-2025-67735</cve>
+    </suppress>
+
+
+    <!-- Jetty 10.0.26 is a transitive dependency of solr-solrj and cannot be upgraded independently
+         without risking incompatibility with the Solr client. To be re-evaluated when Solr ships a
+         version that includes a fixed Jetty release. -->
+    <suppress>
+        <notes><![CDATA[
+        file name: jetty-*.jar - transitive of solr-solrj, cannot be upgraded independently
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty.*@.*$</packageUrl>
+        <cve>CVE-2025-11143</cve>
+    </suppress>
+
+
+    <!-- ZooKeeper 3.9.4 is a transitive dependency of solr-solrj-zookeeper and cannot be upgraded
+         independently without risking incompatibility with the Solr client. To be re-evaluated when
+         Solr ships a version that includes a fixed ZooKeeper release. -->
+    <suppress>
+        <notes><![CDATA[
+        file name: zookeeper-3.9.4.jar - transitive of solr-solrj-zookeeper, cannot be upgraded independently
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.zookeeper/zookeeper@.*$</packageUrl>
+        <cve>CVE-2026-24308</cve>
+        <cve>CVE-2026-24281</cve>
+    </suppress>
 
 
 </suppressions>
