@@ -67,6 +67,7 @@ import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -94,6 +95,7 @@ import jakarta.ws.rs.core.MediaType;
  *
  * @author florian
  */
+@Hidden
 @Path("/crowdsourcing/campaigns/{campaignId}")
 @ViewerRestServiceBinding
 @CrowdsourcingCampaignBinding
@@ -393,6 +395,8 @@ public class CampaignItemResource {
     @Operation(tags = { "crowdsourcing", "annotations" },
             summary = "Replace all annotations for a given campaign and record with the ones provided in the request body")
     @ApiResponse(responseCode = "204", description = "Annotations updated successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid request body or missing required fields")
+    @ApiResponse(responseCode = "403", description = "Forbidden - insufficient permissions for this campaign")
     public void setAnnotationsForManifest(List<AnnotationPage> pages,
             @Parameter(description = "Record persistent identifier") @PathParam("pi") final String pi)
             throws URISyntaxException, DAOException {

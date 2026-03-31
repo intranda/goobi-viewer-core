@@ -21,9 +21,6 @@
  */
 package io.goobi.viewer.api.rest.model;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import io.goobi.viewer.exceptions.RestApiException;
 
 /**
@@ -86,7 +83,8 @@ public class ErrorMessage implements IResponseMessage {
     public ErrorMessage(RestApiException exception) {
         this.status = exception.getStatusCode();
         this.message = exception.getMessage();
-        this.stackTrace = getStackTrace(exception);
+        // Stack traces must never be sent to clients; log server-side if needed instead.
+        this.stackTrace = null;
     }
 
     /**
@@ -123,11 +121,4 @@ public class ErrorMessage implements IResponseMessage {
         return stackTrace;
     }
 
-    private String getStackTrace(RestApiException exception) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        exception.printStackTrace(writer);
-        String st = stringWriter.toString();
-        return st;
-    }
 }

@@ -143,6 +143,12 @@ public class TextResourceBuilder {
         }
         tempFiles.sort((f1, f2) -> f1.getFileName().toString().compareTo(f2.getFileName().toString()));
 
+        // Return 404 if no fulltext files exist for this record instead of letting
+        // FileTools.compressZipFile throw an IllegalArgumentException
+        if (tempFiles.isEmpty()) {
+            throw new ContentNotFoundException("No fulltext files found for record " + pi);
+        }
+
         try {
             return writeZipFile(tempFiles, filename);
         } finally {
@@ -164,6 +170,12 @@ public class TextResourceBuilder {
         String foldername = DataManager.getInstance().getConfiguration().getAltoFolder();
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder();
         List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null, request);
+
+        // Return 404 if no ALTO files exist for this record instead of letting
+        // FileTools.compressZipFile throw an IllegalArgumentException
+        if (files.isEmpty()) {
+            throw new ContentNotFoundException("No ALTO files found for record " + pi);
+        }
 
         return writeZipFile(files, zipFileName);
     }

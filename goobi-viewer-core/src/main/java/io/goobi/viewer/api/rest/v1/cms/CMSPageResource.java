@@ -29,11 +29,13 @@ import jakarta.ws.rs.core.MediaType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.ViewerPage;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -45,6 +47,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  *
  */
 
+@Hidden
 @jakarta.ws.rs.Path("/cms/pages/{pageId}")
 @ViewerRestServiceBinding
 public class CMSPageResource {
@@ -62,7 +65,13 @@ public class CMSPageResource {
     @Operation(tags = { "cms" }, summary = "Get basic information about a CMS page by its id")
     @ApiResponse(responseCode = "200", description = "Basic information about the CMS page")
     @ApiResponse(responseCode = "404", description = "No CMS page found for the given id")
-    public ViewerPage getPage() {
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    public ViewerPage getPage() throws ContentNotFoundException {
+        // Guard against missing CMS pages: getCMSPage() returns null when no page matches the id.
+        // Without this check, new ViewerPage(null) would throw a NullPointerException (HTTP 500).
+        if (page == null) {
+            throw new ContentNotFoundException("No CMS page found for the given id");
+        }
         return new ViewerPage(page);
     }
 

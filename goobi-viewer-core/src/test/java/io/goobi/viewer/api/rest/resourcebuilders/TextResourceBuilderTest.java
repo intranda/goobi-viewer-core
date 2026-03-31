@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.managedbeans.UserBean;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,5 +51,37 @@ class TextResourceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<java.nio.file.Path, String> result = new TextResourceBuilder().getFulltextMap(PI_KLEIUNIV, request);
         Assertions.assertNotNull(result);
         // Assertions.assertFalse(result.isEmpty());
+    }
+
+    /**
+     * @see TextResourceBuilder#getAltoAsZip(String,HttpServletRequest)
+     * @verifies throw ContentNotFoundException if no alto files found
+     */
+    @Test
+    void getAltoAsZip_shouldThrowContentNotFoundExceptionIfNoAltoFilesFound() throws Exception {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(session.getAttribute("userBean")).thenReturn(new UserBean());
+
+        // A record with no ALTO files must produce a 404 instead of an IllegalArgumentException
+        Assertions.assertThrows(ContentNotFoundException.class,
+                () -> new TextResourceBuilder().getAltoAsZip("NONEXISTENT_PI_NO_ALTO", request));
+    }
+
+    /**
+     * @see TextResourceBuilder#getFulltextAsZip(String,HttpServletRequest)
+     * @verifies throw ContentNotFoundException if no fulltext files found
+     */
+    @Test
+    void getFulltextAsZip_shouldThrowContentNotFoundExceptionIfNoFulltextFilesFound() throws Exception {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(session.getAttribute("userBean")).thenReturn(new UserBean());
+
+        // A record with no fulltext files must produce a 404 instead of an IllegalArgumentException
+        Assertions.assertThrows(ContentNotFoundException.class,
+                () -> new TextResourceBuilder().getFulltextAsZip("NONEXISTENT_PI_NO_FULLTEXT", request));
     }
 }

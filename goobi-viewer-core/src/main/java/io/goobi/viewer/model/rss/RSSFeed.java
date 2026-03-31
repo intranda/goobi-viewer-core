@@ -769,7 +769,15 @@ public final class RSSFeed {
                 throw new IllegalRequestException(e.getMessage());
             }
             throw new ContentLibException(e.toString());
-        } catch (IndexUnreachableException | ViewerConfigurationException | DAOException e) {
+        } catch (IndexUnreachableException e) {
+            // Solr reports some parse errors (e.g. invalid query syntax) as IndexUnreachableException
+            // when the error message is not matched by SolrTools.isQuerySyntaxError().
+            // Return 400 Bad Request so the client knows the query is malformed, not a server fault.
+            if (e.getMessage() != null && e.getMessage().contains("Error from server")) {
+                throw new IllegalRequestException(e.getMessage());
+            }
+            throw new ContentLibException(e.toString());
+        } catch (ViewerConfigurationException | DAOException e) {
             throw new ContentLibException(e.toString());
         }
     }
@@ -801,7 +809,15 @@ public final class RSSFeed {
                 throw new IllegalRequestException(e.getMessage());
             }
             throw new ContentLibException(e.toString());
-        } catch (IndexUnreachableException | ViewerConfigurationException | DAOException | FeedException e) {
+        } catch (IndexUnreachableException e) {
+            // Solr reports some parse errors (e.g. invalid query syntax) as IndexUnreachableException
+            // when the error message is not matched by SolrTools.isQuerySyntaxError().
+            // Return 400 Bad Request so the client knows the query is malformed, not a server fault.
+            if (e.getMessage() != null && e.getMessage().contains("Error from server")) {
+                throw new IllegalRequestException(e.getMessage());
+            }
+            throw new ContentLibException(e.toString());
+        } catch (ViewerConfigurationException | DAOException | FeedException e) {
             throw new ContentLibException(e.toString());
         }
     }

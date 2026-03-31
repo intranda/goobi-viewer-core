@@ -546,6 +546,7 @@ public class SearchFacets implements Serializable {
      * @should parse wildcard facets correctly
      * @should create multiple items from multiple instances of same field
      * @should skip value pairs if field or value missing
+     * @should skip facet links with leading semicolon caused by triple separators in URL
      */
     static void parseFacetString(final String facetString, final List<IFacetItem> facetItems, final Map<String, String> labelMap) {
         if (facetItems == null) {
@@ -568,7 +569,13 @@ public class SearchFacets implements Serializable {
         String[] facetStringSplit = useFacetString.split(";;");
         for (final String fl : facetStringSplit) {
             String facetLink = fl != null ? fl.trim() : "";
-            if ("".equals(facetLink) || "undefined".equals(facetLink) || facetLink.startsWith(":") || facetLink.endsWith(":")) {
+            // Skip empty, undefined, or structurally invalid links. Also skip links with a
+            // leading ';', which occur when a bot-crawled URL contains triple separators
+            // (';;;') — splitting on ';;' leaves one leftover ';' at the start of the next
+            // token, e.g. ';MD_GENRE_LANG_EN:value'. Passing such a field name to Solr
+            // causes an "undefined field ;MD_GENRE_LANG_EN" error.
+            if ("".equals(facetLink) || "undefined".equals(facetLink) || facetLink.startsWith(":") || facetLink.startsWith(";")
+                    || facetLink.endsWith(":")) {
                 logger.warn("Invalid facet, skipping: {}", facetLink);
                 continue;
             }
@@ -961,6 +968,7 @@ public class SearchFacets implements Serializable {
      * @param facetQuery a {@link java.lang.String} object.
      * @should remove facet correctly
      * @should remove facet containing reserved chars
+     * @should sanitize triple semicolons to double after removal
      * @param ret a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
@@ -968,7 +976,12 @@ public class SearchFacets implements Serializable {
         logger.trace("removeFacetAction: {}", facetQuery);
         String currentFacetString = generateFacetPrefix(getActiveFacetsCopy(), null, false);
         if (currentFacetString.contains(facetQuery)) {
-            currentFacetString = currentFacetString.replaceAll("(" + Pattern.quote(facetQuery) + ")(?=;|(?=/))", "").replace(";;;;", ";;");
+            // After removing a facet, ';;;;' can appear where the removed entry was flanked by
+            // ';;' separators. A facet value ending with ';' can additionally produce ';;;'.
+            // Both patterns are collapsed back to the standard ';;' separator.
+            currentFacetString = currentFacetString.replaceAll("(" + Pattern.quote(facetQuery) + ")(?=;|(?=/))", "")
+                    .replace(";;;;", ";;")
+                    .replace(";;;", ";;");
             setActiveFacetString(currentFacetString);
         }
 

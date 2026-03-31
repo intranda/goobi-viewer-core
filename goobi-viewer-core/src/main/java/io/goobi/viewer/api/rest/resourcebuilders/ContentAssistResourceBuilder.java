@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -55,7 +56,7 @@ public class ContentAssistResourceBuilder {
      */
 
     public List<String> getCollections(String solrField, final String inputString)
-            throws IllegalRequestException, IndexUnreachableException {
+            throws IllegalRequestException, IndexUnreachableException, ContentNotFoundException {
         String query = "DOCTYPE:DOCSTRCT AND (ISANCHOR:true OR ISWORK:true)";
         try {
             List<String> facets = SearchHelper.getFacetValues(query, solrField, "-".equals(inputString) ? "" : inputString, 0, null);
@@ -74,7 +75,8 @@ public class ContentAssistResourceBuilder {
                     .collect(Collectors.toList());
         } catch (PresentationException e) {
             if (e.getMessage() != null && e.getMessage().toLowerCase().contains("bad query")) {
-                throw new IllegalRequestException("Not a valid SOLR field: " + solrField);
+                // Field name is syntactically valid but doesn't exist in the Solr schema → 404
+                throw new ContentNotFoundException("Not a valid SOLR field: " + solrField);
             }
             throw new IndexUnreachableException("Internal error in index:" + e.toString());
         }

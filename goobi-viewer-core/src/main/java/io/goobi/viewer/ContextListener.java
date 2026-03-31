@@ -147,6 +147,18 @@ public class ContextListener implements ServletContextListener {
         try {
             DataManager.getInstance().closeSearchIndex();
             logger.info("Successfully closed Solr client");
+            // Http2SolrClient uses Jetty threads (h2sc-*) and HttpClient scheduler threads
+            // that do not terminate synchronously on close(). Wait briefly so Tomcat does not
+            // report them as memory leaks.
+            Thread.getAllStackTraces().keySet().stream()
+                    .filter(t -> t.getName().matches("h2sc-.*|HttpClient@[0-9a-f]+-scheduler-.*"))
+                    .forEach(t -> {
+                        try {
+                            t.join(5000);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    });
         } catch (IOException e) {
             logger.error("Error closing Solr client", e);
         }

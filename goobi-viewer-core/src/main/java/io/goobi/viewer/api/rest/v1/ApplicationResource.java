@@ -34,6 +34,7 @@ import jakarta.ws.rs.core.MediaType;
 import de.intranda.monitoring.timer.TimingStatistics;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
 import io.goobi.viewer.controller.DataManager;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -41,6 +42,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  * @author florian
  *
  */
+@Hidden
 @Path("/")
 @RequestScoped
 public class ApplicationResource {
@@ -59,6 +61,8 @@ public class ApplicationResource {
     @GET
     @Path("timing")
     @Produces(MediaType.TEXT_PLAIN)
+    @Operation(summary = "Get accumulated request timing statistics and reset the counters", tags = { "application" })
+    @ApiResponse(responseCode = "200", description = "Timing statistics as plain text, one entry per tracked operation")
     public String getTimeAnalysis() {
         List<TimingStatistics> times = DataManager.getInstance().getTiming().geStatistics();
         DataManager.getInstance().resetTiming();

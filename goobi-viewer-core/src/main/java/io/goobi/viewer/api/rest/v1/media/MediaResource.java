@@ -40,6 +40,11 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -81,9 +86,17 @@ public class MediaResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
+    @Hidden
     @GET
     @Path(RECORDS_FILES_AUDIO)
-    public String serveAudioContent(@PathParam("mimetype") String format, @PathParam("filename") String filename)
+    @Operation(summary = "Stream audio content for the given media item", tags = { "media" })
+    @ApiResponse(responseCode = "200", description = "Audio stream",
+            content = @Content(mediaType = "audio/*"))
+    @ApiResponse(responseCode = "206", description = "Partial content (range request)")
+    @ApiResponse(responseCode = "404", description = "Media item not found")
+    public String serveAudioContent(
+            @Parameter(description = "Audio MIME subtype (e.g. mp3, ogg)") @PathParam("mimetype") String format,
+            @Parameter(description = "Filename of the audio resource") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, AccessDeniedException {
         return serveMediaContent("audio", format, pi, filename);
     }
@@ -100,9 +113,17 @@ public class MediaResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
+    @Hidden
     @GET
     @Path(RECORDS_FILES_VIDEO)
-    public String serveVideoContent(@PathParam("mimetype") String format, @PathParam("filename") String filename)
+    @Operation(summary = "Stream video content for the given media item", tags = { "media" })
+    @ApiResponse(responseCode = "200", description = "Video stream",
+            content = @Content(mediaType = "video/*"))
+    @ApiResponse(responseCode = "206", description = "Partial content (range request)")
+    @ApiResponse(responseCode = "404", description = "Media item not found")
+    public String serveVideoContent(
+            @Parameter(description = "Video MIME subtype (e.g. mp4, webm)") @PathParam("mimetype") String format,
+            @Parameter(description = "Filename of the video resource") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, WebApplicationException {
         return serveMediaContent("video", format, pi, filename);
     }

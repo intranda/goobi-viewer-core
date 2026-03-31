@@ -23,6 +23,7 @@ package io.goobi.viewer.api.rest.v1.index;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_QUERY;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_SPATIAL_HEATMAP;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STATISTICS;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -135,6 +136,23 @@ class IndexResourceTest extends AbstractRestApiTest {
             assertNotNull(count);
             assertTrue(count instanceof Integer);
             assertTrue(((Integer) count) > 0);
+        }
+    }
+
+    /**
+     * An invalid Solr field name (e.g. "0") must be rejected with 400 before reaching Solr,
+     * to prevent an unhandled exception surfacing as HTTP 500.
+     */
+    @Test
+    void getHeatmap_invalidSolrField_returns400() {
+        String url = urls.path(INDEX, INDEX_SPATIAL_HEATMAP).params("0").build();
+        try (Response response = target(url)
+                .queryParam("query", "*:*")
+                .queryParam("gridLevel", 1)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "Invalid Solr field name should return 400, not 500");
         }
     }
 

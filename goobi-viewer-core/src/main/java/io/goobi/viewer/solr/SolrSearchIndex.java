@@ -350,7 +350,9 @@ public class SolrSearchIndex implements java.io.Closeable {
             throw new PresentationException(e.getMessage());
         } catch (RemoteSolrException e) {
             if (SolrTools.isQuerySyntaxError(e)) {
-                throw new PresentationException("Bad query: " + e.getMessage());
+                // Log as warning without stack trace; include the Solr query for diagnostics
+                logger.warn("Bad Solr query syntax: {}; Solr query: {}", e.getMessage(), solrQuery.getQuery());
+                throw new PresentationException("Bad query: " + e.getMessage() + "; Solr query: " + solrQuery.getQuery());
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()),
                     solrQuery.getQuery());
@@ -1373,12 +1375,22 @@ public class SolrSearchIndex implements java.io.Closeable {
         try {
             QueryResponse response = request.process(client);
             final NestableJsonFacet topLevelFacet = response.getJsonFacetingResponse();
+            // topLevelFacet may be null when Solr returns no JSON faceting data (e.g. for
+            // unknown field names that Solr silently ignores instead of erroring out).
+            if (topLevelFacet == null) {
+                return "{}";
+            }
             final HeatmapJsonFacet heatmap = topLevelFacet.getHeatmapFacetByName("heatmapFacet");
             if (heatmap != null) {
                 return getAsJson(heatmap);
             }
             return "{}";
         } catch (SolrServerException | IOException e) {
+            throw new IndexUnreachableException("Error getting facet heatmap: " + e.toString());
+        } catch (RemoteSolrException e) {
+            // RemoteSolrException is a RuntimeException (extends SolrException) and is not caught
+            // by SolrServerException above. Wrap it so IndexResource.getHeatmap() can detect
+            // "undefined field" errors via SolrTools.isQuerySyntaxError() and return HTTP 400.
             throw new IndexUnreachableException("Error getting facet heatmap: " + e.toString());
         }
     }

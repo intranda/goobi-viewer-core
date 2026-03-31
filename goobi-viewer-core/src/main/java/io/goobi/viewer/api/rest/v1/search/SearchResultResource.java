@@ -53,6 +53,7 @@ import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * <p>
@@ -81,6 +82,9 @@ public class SearchResultResource {
     @jakarta.ws.rs.Path(RECORDS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "search" }, summary = "Download current search as RIS export file")
+    @ApiResponse(responseCode = "200", description = "RIS export file for the current search results")
+    @ApiResponse(responseCode = "400", description = "Invalid search query or parameters")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     @AccessConditionBinding
     public Response getRISAsFile(
             @Parameter(description = "Search query string") @PathParam("query") String query,

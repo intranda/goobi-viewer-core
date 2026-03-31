@@ -41,6 +41,7 @@ import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.mq.RefreshArchiveTreeHandler;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
@@ -56,6 +57,7 @@ import jakarta.ws.rs.core.MediaType;
 /**
  * Resource for communicating with the indexer process.
  */
+@Hidden
 @Path(INDEXER)
 @ViewerRestServiceBinding
 public class IndexerResource {
@@ -85,7 +87,12 @@ public class IndexerResource {
     @Operation(summary = "Submit the current indexer version and hotfolder file count to the viewer", tags = { "indexer" })
     @ApiResponse(responseCode = "200", description = "Version information accepted")
     @ApiResponse(responseCode = "400", description = "Request body cannot be parsed as valid JSON")
+    @ApiResponse(responseCode = "500", description = "Internal server error - e.g. message queue unavailable")
     public SuccessMessage setIndexerVersion(IndexerDataRequestParameters params) throws IllegalRequestException, MessageQueueException {
+        // Guard against NPE when the client sends a PUT without a valid JSON body
+        if (params == null) {
+            throw new IllegalRequestException("Request body required");
+        }
         try {
             DataManager.getInstance().setIndexerVersion(new ObjectMapper().writeValueAsString(params));
             DataManager.getInstance().setHotfolderFileCount(params.getHotfolderFileCount());

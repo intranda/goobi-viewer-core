@@ -288,8 +288,19 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
         return "Data: " + this.getData().toString();
     }
 
-    public List<Metadata> getMetadataList() throws IndexUnreachableException, PresentationException {
-        return getMetadataList(BeanUtils.getLocale());
+    // No checked exceptions declared: when called from JSF EL (#{highlight.metadataList}),
+    // any thrown exception would propagate as an ELException through
+    // CompositeComponentTagHandler.applyCompositeComponent(), which would leave a stale
+    // entry on Mojarra's CompositeComponentStackManager and eventually cause a
+    // StackOverflowError during the render phase. Returning an empty list on failure is
+    // the safe fallback — the widget simply renders nothing.
+    public List<Metadata> getMetadataList() {
+        try {
+            return getMetadataList(BeanUtils.getLocale());
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.warn("Could not load metadata list for highlight '{}': {}", this.data.getRecordIdentifier(), e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     /**

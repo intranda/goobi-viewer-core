@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.api.rest.v1.bookmarks.BookmarkResource;
 
 /**
  * @author florian
@@ -69,6 +70,28 @@ class BookmarkResourceTest extends AbstractRestApiTest {
                 .post(Entity.entity(list, MediaType.APPLICATION_JSON))) {
             assertEquals(400, response.getStatus(), "POST /bookmarks without login should return 400 Bad Request");
         }
+    }
+
+    /**
+     * Tests for the parseMaxHits() helper that handles ?max=null and other invalid values.
+     * This guards against NumberFormatException when a client sends the literal string "null"
+     * as the value of the max query parameter.
+     */
+    @Test
+    void testParseMaxHits() {
+        // null input → null output
+        assertNull(BookmarkResource.parseMaxHits(null), "null string should parse to null");
+        // literal "null" (sent by some clients) → null output
+        assertNull(BookmarkResource.parseMaxHits("null"), "string 'null' should parse to null");
+        assertNull(BookmarkResource.parseMaxHits("NULL"), "string 'NULL' should parse to null");
+        // blank string → null output
+        assertNull(BookmarkResource.parseMaxHits(""), "empty string should parse to null");
+        assertNull(BookmarkResource.parseMaxHits("   "), "blank string should parse to null");
+        // non-numeric → null output (no exception)
+        assertNull(BookmarkResource.parseMaxHits("abc"), "non-numeric string should parse to null");
+        // valid integer → correct Integer value
+        assertEquals(Integer.valueOf(10), BookmarkResource.parseMaxHits("10"), "valid integer string should parse correctly");
+        assertEquals(Integer.valueOf(0), BookmarkResource.parseMaxHits("0"), "zero should parse correctly");
     }
 
 }

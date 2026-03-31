@@ -31,6 +31,7 @@ import java.net.URISyntaxException;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -53,6 +54,7 @@ import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -61,6 +63,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -85,6 +88,12 @@ public class RecordSectionResource {
     public RecordSectionResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Logical div ID of METS section") @PathParam("divId") String divId) {
+        // Reject PIs containing characters illegal in URI paths / Solr queries before any
+        // Solr or file-system access occurs.  BadRequestException (HTTP 400) is an unchecked
+        // WebApplicationException that Jersey maps to 400 before invoking the endpoint.
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
+        }
         this.pi = pi;
         this.divId = divId;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
@@ -96,6 +105,9 @@ public class RecordSectionResource {
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Download ris as file")
+    @ApiResponse(responseCode = "200", description = "RIS citation for the section downloaded as plain text file")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
     public String getRISAsFile()
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
 
@@ -120,6 +132,9 @@ public class RecordSectionResource {
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_TEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get ris as text")
+    @ApiResponse(responseCode = "200", description = "RIS citation for the section as plain text")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
     public String getRISAsText()
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
 
@@ -131,6 +146,10 @@ public class RecordSectionResource {
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RANGE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 range for section")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 range for the requested section")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
     @IIIFPresentationBinding
     public IPresentationModelElement getRange() throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException {
@@ -145,8 +164,13 @@ public class RecordSectionResource {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private static StructElement getStructElement(String pi, String divId) throws PresentationException, IndexUnreachableException {
+    private static StructElement getStructElement(String pi, String divId)
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("+PI_TOPSTRUCT:" + pi + " +DOCTYPE:DOCSTRCT +LOGID:" + divId, null);
+        // Guard against NPE when no matching section is found in the index
+        if (doc == null) {
+            throw new ContentNotFoundException("No section found for PI: " + pi + ", divId: " + divId);
+        }
         return new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
     }
 

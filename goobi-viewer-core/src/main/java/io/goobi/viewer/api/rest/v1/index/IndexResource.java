@@ -62,6 +62,7 @@ import org.omnifaces.el.functions.Arrays;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -140,12 +141,16 @@ public class IndexResource {
     @Operation(
             tags = { "index" },
             summary = "Statistics about indexed records")
+    @ApiResponse(responseCode = "200", description = "JSON object with record count statistics")
+    @ApiResponse(responseCode = "400", description = "Invalid Solr query syntax")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getStatistics(
             @Parameter(description = "Solr query to filter results (optional)") @QueryParam("query") final String query)
-            throws IndexUnreachableException, PresentationException {
+            throws IndexUnreachableException, PresentationException, IllegalRequestException {
 
         String useQuery = query;
-        if (useQuery == null) {
+        // Treat empty/blank string same as null to avoid Solr syntax error from "+()".
+        if (StringUtils.isBlank(useQuery)) {
             useQuery = "+(ISWORK:*) ";
         } else {
             useQuery = String.format("+(%s)", useQuery);
@@ -153,7 +158,16 @@ public class IndexResource {
 
         String finalQuery =
                 new StringBuilder().append(useQuery).append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
-        long count = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 0, null, null, null).getResults().getNumFound();
+        long count;
+        try {
+            count = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 0, null, null, null).getResults().getNumFound();
+        } catch (PresentationException e) {
+            // Invalid query syntax (e.g. bare ")" or unknown field) causes Solr to reject the request.
+            if (SolrTools.isQuerySyntaxError(e)) {
+                throw new IllegalRequestException("Invalid query: " + e.getMessage());
+            }
+            throw e;
+        }
         JSONObject json = new JSONObject();
         json.put("count", count);
         return json.toString();
@@ -176,7 +190,9 @@ public class IndexResource {
     @Operation(
             tags = { "index" },
             summary = "Post a query directly to the Solr index")
+    @ApiResponse(responseCode = "200", description = "JSON object with matched documents and optional facets")
     @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getRecordsForQuery(RecordsRequestParameters params)
             throws IndexUnreachableException, ViewerConfigurationException, DAOException, IllegalRequestException {
         JSONObject ret = new JSONObject();
@@ -241,6 +257,7 @@ public class IndexResource {
     @Operation(
             tags = { "index" },
             summary = "Post a streaming expression to the Solr index and forward its response")
+    @ApiResponse(responseCode = "200", description = "Newline-delimited JSON tuples streamed from Solr")
     @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
     @ApiResponse(responseCode = "500", description = "Solr not available or unable to respond")
     public StreamingOutput stream(
@@ -262,6 +279,8 @@ public class IndexResource {
     @Path(INDEX_FIELDS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieves a JSON list of all existing Solr fields.", tags = { "index" })
+    @ApiResponse(responseCode = "200", description = "JSON array of Solr field metadata")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public List<SolrFieldInfo> getAllIndexFields() throws IOException {
         logger.trace("getAllIndexFields");
 
@@ -289,14 +308,29 @@ public class IndexResource {
     @Path(INDEX_SPATIAL_HEATMAP)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Returns a heatmap of geospatial search results", tags = { "index" })
+    @ApiResponse(responseCode = "200", description = "JSON heatmap data for the given spatial query")
+    @ApiResponse(responseCode = "400", description = "Invalid heatmap parameters or Solr field name format")
+    @ApiResponse(responseCode = "404", description = "Solr field not found in index")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getHeatmap(
-            @Parameter(description = "Solr field containing spatial coordinates") @PathParam("solrField") String solrField,
+            @Parameter(description = "Solr field containing spatial coordinates",
+                    schema = @Schema(pattern = "[A-Za-z_][A-Za-z0-9_]*")) @PathParam("solrField") String solrField,
             @Parameter(description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain"
                     + " the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
             @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
-            @Parameter(description = "The granularity of each grid cell") @QueryParam("gridLevel") Integer gridLevel)
-            throws IndexUnreachableException {
+            // Minimum of 1: HeatmapFacetMap.setGridLevel() throws IllegalArgumentException for 0 or negative values.
+            @Parameter(description = "The granularity of each grid cell (minimum: 1)",
+                    schema = @Schema(type = "integer", minimum = "1"))
+            @QueryParam("gridLevel") Integer gridLevel)
+            throws IndexUnreachableException, IllegalRequestException, ContentNotFoundException {
+        // Validate solrField before sending to Solr: an invalid name (e.g. "0") causes an
+        // unhandled exception deep in the Solr client that surfaces as HTTP 500.
+        // Solr field names must start with a letter or underscore and contain only
+        // letters, digits, and underscores.
+        if (solrField == null || !solrField.matches("[A-Za-z_][A-Za-z0-9_]*")) {
+            throw new IllegalRequestException("Not a valid Solr field name: " + solrField);
+        }
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
         String finalQuery = filterQuery;
@@ -317,10 +351,25 @@ public class IndexResource {
             }
         }
         String queryEscaped = StringTools.unescapeCriticalUrlChracters(finalQuery);
-        String heatmap = DataManager.getInstance()
-                .getSearchIndex()
-                .getHeatMap(solrField, wktRegion, queryEscaped, facetQuery, gridLevel);
-        return heatmap;
+        try {
+            return DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHeatMap(solrField, wktRegion, queryEscaped, facetQuery, gridLevel);
+        } catch (IllegalArgumentException e) {
+            // HeatmapFacetMap.setGridLevel() throws IllegalArgumentException for out-of-range values
+            throw new IllegalRequestException("Invalid heatmap parameters: " + e.getMessage());
+        } catch (IndexUnreachableException e) {
+            // Solr rejects unknown field names with RemoteSolrException wrapped in IndexUnreachableException.
+            // Undefined/unknown fields → 404 (the resource doesn't exist); other syntax errors → 400.
+            if (SolrTools.isQuerySyntaxError(e)) {
+                if (e.getMessage() != null
+                        && (e.getMessage().contains("undefined field") || e.getMessage().contains("field can't be found"))) {
+                    throw new ContentNotFoundException("Solr field not found in index: " + solrField);
+                }
+                throw new IllegalRequestException("Invalid Solr field or query: " + e.getMessage());
+            }
+            throw e;
+        }
 
     }
 
@@ -328,8 +377,13 @@ public class IndexResource {
     @Path(INDEX_SPATIAL_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Returns results of a geospatial search as GeoJson objects", tags = { "index" })
+    @ApiResponse(responseCode = "200", description = "JSON array of GeoJSON feature objects")
+    @ApiResponse(responseCode = "400", description = "Invalid Solr field name format or query syntax")
+    @ApiResponse(responseCode = "404", description = "Solr field not found in index")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getGeoJsonResuls(
-            @Parameter(description = "Solr field containing spatial coordinates") @PathParam("solrField") String solrField,
+            @Parameter(description = "Solr field containing spatial coordinates",
+                    schema = @Schema(pattern = "[A-Za-z_][A-Za-z0-9_]*")) @PathParam("solrField") String solrField,
             @Parameter(
                     description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain"
                             + " the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
@@ -338,7 +392,7 @@ public class IndexResource {
             @Parameter(description = "The Solr field to be used as label for each feature") @QueryParam("labelField") String labelField,
             @Parameter(description = "The scope of documents to search in. "
                     + "One of 'RECORDS', 'DOCSTRUCTS' and 'METADATA'") @QueryParam("scope") String searchScope)
-            throws IndexUnreachableException, PresentationException {
+            throws IndexUnreachableException, PresentationException, IllegalRequestException, ContentNotFoundException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
         String finalQuery = StringTools.unescapeCriticalUrlChracters(filterQuery);
@@ -361,8 +415,30 @@ public class IndexResource {
             facetQueries.add(coordQuery);
         }
 
-        Collection<GeoMapFeature> features =
-                createFeatures(StringUtils.isBlank(finalQuery) ? "*:*" : finalQuery, coordQuery, labelField, searchScope);
+        Collection<GeoMapFeature> features;
+        try {
+            features = createFeatures(StringUtils.isBlank(finalQuery) ? "*:*" : finalQuery, coordQuery, labelField, searchScope);
+        } catch (PresentationException e) {
+            // Solr rejects unknown field names or bad queries via RemoteSolrException → PresentationException.
+            // Undefined/unknown fields → 404; other syntax errors → 400.
+            if (SolrTools.isQuerySyntaxError(e)) {
+                if (e.getMessage() != null
+                        && (e.getMessage().contains("undefined field") || e.getMessage().contains("field can't be found"))) {
+                    throw new ContentNotFoundException("Solr field not found in index: " + solrField);
+                }
+                throw new IllegalRequestException("Invalid Solr field or query: " + e.getMessage());
+            }
+            throw e;
+        } catch (IndexUnreachableException e) {
+            if (SolrTools.isQuerySyntaxError(e)) {
+                if (e.getMessage() != null
+                        && (e.getMessage().contains("undefined field") || e.getMessage().contains("field can't be found"))) {
+                    throw new ContentNotFoundException("Solr field not found in index: " + solrField);
+                }
+                throw new IllegalRequestException("Invalid Solr field or query: " + e.getMessage());
+            }
+            throw e;
+        }
 
         String objects = features
                 .stream()
