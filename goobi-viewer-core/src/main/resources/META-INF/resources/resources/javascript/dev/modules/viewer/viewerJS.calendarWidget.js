@@ -23,7 +23,7 @@
  */
 var viewerJS = (function (viewer) {
     'use strict';
- 
+
     viewer.calendarWidget = {
         /**
          * Initialize the calendar widget.
@@ -33,7 +33,7 @@ var viewerJS = (function (viewer) {
          * @param {string} config.currentYear - Year to display initially
          * @param {string} [config.locale] - Locale string (e.g. 'de')
          * @param {string} [config.appUrl] - Application base URL
-         * @param {string} [config.currentLogId] - LogId of the currently viewed issue
+         * @param {string} [config.currentIssueDate] - ISO date (YYYY-MM-DD) of the currently viewed issue
          * @returns {Object|null} State object with destroy() method, or null if config invalid
          */
         init: function (config) {
@@ -46,7 +46,7 @@ var viewerJS = (function (viewer) {
                 config: config,
                 dateEntriesMap: {},
                 calendarInstance: null,
-                currentIssueDate: null,
+                currentIssueDate: config.currentIssueDate || null,
                 activePopover: null,
                 popoverTrigger: null,
                 boundOnDocClick: null,
@@ -161,8 +161,8 @@ var viewerJS = (function (viewer) {
     }
 
     function _fetchYearData(state, year) {
-        state.currentIssueDate = null;
         var url = state.config.appUrl + 'api/v1/records/' + state.config.anchorPi + '/calendar/' + year;
+        console.log('[calendarWidget] _fetchYearData year=' + year + ' url=' + url);
 
         return fetch(url)
             .then(function (r) {
@@ -178,12 +178,14 @@ var viewerJS = (function (viewer) {
                         dates.push(entry.date);
                     }
                     var entryUrl = state.config.appUrl + entry.url.replace(/^\//, '');
-                    var logId = entry.url.split('/').filter(Boolean).pop();
-                    state.dateEntriesMap[entry.date].push({ label: entry.label, url: entryUrl, logId: logId });
-                    if (logId === state.config.currentLogId) {
-                        state.currentIssueDate = entry.date;
-                    }
+                    state.dateEntriesMap[entry.date].push({ label: entry.label, url: entryUrl, date: entry.date });
                 });
+                console.group('[calendarWidget] _fetchYearData result year=' + year);
+                console.log('entries count:   ', entries.length);
+                console.log('dates in year:   ', dates);
+                console.log('currentIssueDate:', state.currentIssueDate || '(null)');
+                console.log('match found:     ', state.currentIssueDate ? dates.indexOf(state.currentIssueDate) !== -1 : false);
+                console.groupEnd();
                 return dates;
             })
             .catch(function (err) {
@@ -288,7 +290,7 @@ var viewerJS = (function (viewer) {
             var link = document.createElement('a');
             link.href = entry.url;
             link.className = 'widget-calendar__popover-item';
-            if (entry.logId === state.config.currentLogId) {
+            if (entry.date === state.currentIssueDate) {
                 link.classList.add('-active-');
                 link.setAttribute('aria-current', 'page');
             }
@@ -382,6 +384,18 @@ var viewerJS = (function (viewer) {
             (state.currentIssueDate ? viewer.datePicker._parseISODate(state.currentIssueDate) : null) ||
             (dates.length ? viewer.datePicker._parseISODate(dates[0]) : null) ||
             new Date(parseInt(state.config.currentYear, 10), 0, 1);
+
+        var _defDateStr = defDate
+            ? defDate.getFullYear() + '-' + String(defDate.getMonth() + 1).padStart(2, '0') + '-' + String(defDate.getDate()).padStart(2, '0')
+            : '(null)';
+        console.group('[calendarWidget] _createCalendar');
+        console.log('targetDate:      ', targetDate || '(null)');
+        console.log('currentIssueDate:', state.currentIssueDate || '(null)');
+        console.log('dates[0]:        ', dates.length ? dates[0] : '(keine Einträge)');
+        console.log('defDate (lokal): ', _defDateStr);
+        console.log('→ Monat:         ', defDate ? defDate.getMonth() + 1 : '?');
+        console.log('→ Jahr:          ', defDate ? defDate.getFullYear() : '?');
+        console.groupEnd();
 
         state._lastMonth = _toYearMonth(defDate.getFullYear(), defDate.getMonth());
         state._skipInProgress = false;

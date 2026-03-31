@@ -46,16 +46,36 @@
     &:hover,
 	&:focus,
 	&:active {
-        background:unset;
+        // background:unset;
     }
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+	background: @datepicker-header-bg;
 }
 
 /* Hide month dropdown arrow + year spinner arrows */
 .flatpickr-current-month select.flatpickr-monthDropdown-months {
+	background: @datepicker-header-bg;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     background-image: none;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
+	color: white;
+	background: @datepicker-header-bg;
+}
+
+.flatpickr-current-month select.flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
+	color: white;
+	background: @datepicker-header-bg;
+	&:hover,
+	&:focus,
+	&:active {
+	    background: @datepicker-header-bg !important;
+	}
 }
 
 .numInputWrapper span.arrowUp,
