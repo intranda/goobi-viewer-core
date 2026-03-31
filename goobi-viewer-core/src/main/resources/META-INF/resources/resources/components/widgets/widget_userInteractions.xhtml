@@ -123,17 +123,14 @@
                         <!-- RE-INDEX RECORD -->
                         <h:panelGroup rendered="#{userBean.admin}">
                             <li>
-                                <h:commandLink action="#{activeDocumentBean.reIndexRecordAction}">
-                                    #{msg.reIndexRecord}
-                                </h:commandLink>
+                                <h:commandLink action="#{activeDocumentBean.reIndexRecordAction}">#{msg.reIndexRecord}</h:commandLink>
                             </li>
                         </h:panelGroup>
 
                         <!-- CREATE CMS PAGE -->
                         <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
                             <li>
-                                <a
-                                    href="#{cmsPageEditBean.createAndOpenNewPage(msg.overviewPage, activeDocumentBean.viewManager.pi)}">
+                                <a href="#{cmsPageEditBean.createAndOpenNewPage(msg.overviewPage, activeDocumentBean.viewManager.pi)}">
                                     #{msg.action__create_linked_cms_page__label}
                                 </a>
                             </li>
@@ -142,8 +139,7 @@
                         <!-- ADD RECORD NOTE -->
                         <h:panelGroup rendered="#{userBean.admin}">
                             <li>
-                                <a
-                                    href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{activeDocumentBean.viewManager.pi}">
+                                <a href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{activeDocumentBean.viewManager.pi}">
                                     #{msg.cms__record_notes__add_note}
                                 </a>
                             </li>
@@ -184,8 +180,7 @@
 
                                 <!-- ACTION -->
                                 <!-- TODO: hide when no mode selected -->
-                                <ui:fragment
-                                    rendered="#{activeDocumentBean.clearCacheMode != null and activeDocumentBean.clearCacheMode != ''}">
+                                <ui:fragment rendered="#{activeDocumentBean.clearCacheMode != null and activeDocumentBean.clearCacheMode != ''}">
                                     <div class="widget-user-interactions__clear-cache-action">
                                         <h:commandLink
                                             styleClass="btn btn--default"

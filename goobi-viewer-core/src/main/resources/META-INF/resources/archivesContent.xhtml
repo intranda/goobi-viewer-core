@@ -33,8 +33,7 @@
                 class="archives__hero#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1) ? '' : ' archives__hero--no-image'}"
                 role="region"
                 aria-label="#{archiveBean.displayEntry.label}">
-                <ui:fragment
-                    rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1)}">
+                <ui:fragment rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1)}">
                     <img
                         class="archives__hero-image"
                         srcset="#{archiveBean.archiveConfig.getMediaItem(1).getIconURI(2560,800)} 2560w,
@@ -50,8 +49,7 @@
                         #{archiveBean.archiveConfig != null and not empty archiveBean.archiveConfig.title.textOrDefault
                         ? archiveBean.archiveConfig.title.textOrDefault : archiveBean.displayEntry.label}
                     </h1>
-                    <ui:fragment
-                        rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.description.isValid(navigationHelper.locale)}">
+                    <ui:fragment rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.description.isValid(navigationHelper.locale)}">
                         <div class="archives__hero-description">
                             <h:outputText
                                 escape="false"
@@ -73,8 +71,7 @@
                             </h:outputLabel>
 
                             <div class="archives__select-database-dropdown-element">
-                                <div
-                                    class="custom-control custom-control--select archives__select-database-dropdown-element-select">
+                                <div class="custom-control custom-control--select archives__select-database-dropdown-element-select">
                                     <h:selectOneMenu
                                         id="selectArchiveDatabaseDropdown"
                                         value="#{archiveBean.currentResource}"
@@ -108,8 +105,7 @@
                         layout="block"
                         id="treeGroup"
                         styleClass="archives__graphic-tree">
-                        <div
-                            class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
+                        <div class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
                             <h:form
                                 id="searchForm"
                                 prependId="false">

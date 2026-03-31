@@ -519,9 +519,11 @@ public class ConfigurationBean implements Serializable {
      *
      * @should return correct value
      * @return a boolean.
+     * @deprecated View has been retired
      */
+    @Deprecated(since = "26.03")
     public boolean isSidebarCalendarLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetCalendarViewLinkVisible();
+        return false;
     }
 
     /**

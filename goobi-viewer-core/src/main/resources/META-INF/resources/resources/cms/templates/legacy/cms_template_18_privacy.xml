@@ -5,9 +5,7 @@
     <name>cms__template_18__title</name>
     <description>cms__template_18__description</description>
     <icon>cms_template_18_privacy.png</icon>
-    <html>
-cms_template_18_privacy.xhtml
-    </html>
+    <html>cms_template_18_privacy.xhtml</html>
     <content>
         <item
             id="text01"

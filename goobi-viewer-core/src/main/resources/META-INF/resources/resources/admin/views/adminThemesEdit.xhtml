@@ -113,9 +113,7 @@
                                             </ui:fragment>
                                         </div>
                                         <!-- HELP -->
-                                        <span class="admin__form-help-text">
-                                            #{msg.admin__themes__general_logo__help}
-                                        </span>
+                                        <span class="admin__form-help-text">#{msg.admin__themes__general_logo__help}</span>
                                     </div>
                                     <!-- End admin__campaign-media-file-box -->
                                 </div>
@@ -174,9 +172,7 @@
                                             </ui:fragment>
                                         </div>
                                         <!-- HELP -->
-                                        <span class="admin__form-help-text">
-                                            #{msg.admin__themes__fullscreen_logo_help}
-                                        </span>
+                                        <span class="admin__form-help-text">#{msg.admin__themes__fullscreen_logo_help}</span>
                                     </div>
                                     <!-- End admin__campaign-media-file-box -->
                                 </div>
@@ -230,9 +226,7 @@
                                             <img src="#{theme.icon.mediaItem.iconURI}" />
                                         </ui:fragment>
                                         <!-- HELP -->
-                                        <span class="admin__form-help-text">
-                                            #{msg.admin__themes__general_icon__help}
-                                        </span>
+                                        <span class="admin__form-help-text">#{msg.admin__themes__general_icon__help}</span>
                                     </div>
                                     <!-- End admin__campaign-media-file-box -->
                                 </div>
@@ -348,9 +342,7 @@
                                 value="#{adminThemeEditBean.socialMediaServices}">
                                 <div class="form-group form-row">
                                     <div class="col-2 control-label admin__form-label">
-                                        <label for="handle#{socialMediaAccount}">
-                                            #{msg[socialMediaAccount.labelKey]}:
-                                        </label>
+                                        <label for="handle#{socialMediaAccount}">#{msg[socialMediaAccount.labelKey]}:</label>
                                     </div>
                                     <div class="col-9 admin__form-input">
                                         <h:inputText
@@ -461,9 +453,7 @@
                         <!-- DESCRIPTION -->
                         <div class="row">
                             <ui:fragment rendered="#{userGroup.description ne ''}">
-                                <p class="col-12 admin__boxed-entry-description">
-                                    #{msg.admin__themes__theme_info__text}: #{theme.name}
-                                </p>
+                                <p class="col-12 admin__boxed-entry-description">#{msg.admin__themes__theme_info__text}: #{theme.name}</p>
                             </ui:fragment>
                             <ui:fragment rendered="#{userGroup.description eq ''}">
                                 <p

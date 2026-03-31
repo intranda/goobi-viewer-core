@@ -668,7 +668,11 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getManifestURI(String pi) {
-
+        // A null or blank PI causes the {pi} URL placeholder to remain unsubstituted, which
+        // makes URI.create() throw IllegalArgumentException. Fail early with a clear message.
+        if (StringUtils.isBlank(pi)) {
+            throw new IllegalArgumentException("Cannot build manifest URI: PI is null or blank");
+        }
         String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build();
         return getExternalManifestURI(pi).orElse(URI.create(urlString));
     }

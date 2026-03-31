@@ -7,37 +7,13 @@
 <font-face units-per-em="1024" ascent="960" descent="-64" />
 <missing-glyph horiz-adv-x="1024" />
 <glyph unicode="&#x20;" horiz-adv-x="512" d="" />
-<glyph
-                unicode="&#xe600;"
-                glyph-name="start"
-                d="M412 496l121.6 144h-96l-160-192 158.4-200h97.6l-123.2 152h452v96zM165.6 248h96v392h-96z"
-            />
+<glyph unicode="&#xe600;" glyph-name="start" d="M412 496l121.6 144h-96l-160-192 158.4-200h97.6l-123.2 152h452v96zM165.6 248h96v392h-96z" />
 <glyph unicode="&#xe601;" glyph-name="back" d="M358.4 496l121.6 144h-96l-160-192 157.6-200h98.4l-123.2 152h451.2v96z" />
-<glyph
-                unicode="&#xe602;"
-                glyph-name="end"
-                d="M608 496l-121.6 144h96l160-192-158.4-200h-97.6l123.2 152h-452v96zM854.4 248h-96v392h96z"
-            />
-<glyph
-                unicode="&#xe603;"
-                glyph-name="forward"
-                d="M673.6 497.6l-121.6 144h96l160-192-157.6-200h-98.4l123.2 152h-451.2v96z"
-            />
-<glyph
-                unicode="&#xe604;"
-                glyph-name="rotate_left"
-                d="M442.4 738.4h-96v-452l-152 123.2v-97.6l200-158.4 192 160v96l-144-121.6v354.4h391.2v96z"
-            />
-<glyph
-                unicode="&#xe605;"
-                glyph-name="rotate_right"
-                d="M577.6 738.4h96v-452l152 123.2v-97.6l-200-158.4-192 160v96l144-121.6v354.4h-391.2v96z"
-            />
-<glyph
-                unicode="&#xe606;"
-                glyph-name="reset"
-                d="M223.2 736v-96h488.8v-392h-392.8v200h68.8l-115.2 116h-0.8l-115.2-116h66.4v-296h584.8v584z"
-            />
+<glyph unicode="&#xe602;" glyph-name="end" d="M608 496l-121.6 144h96l160-192-158.4-200h-97.6l123.2 152h-452v96zM854.4 248h-96v392h96z" />
+<glyph unicode="&#xe603;" glyph-name="forward" d="M673.6 497.6l-121.6 144h96l160-192-157.6-200h-98.4l123.2 152h-451.2v96z" />
+<glyph unicode="&#xe604;" glyph-name="rotate_left" d="M442.4 738.4h-96v-452l-152 123.2v-97.6l200-158.4 192 160v96l-144-121.6v354.4h391.2v96z" />
+<glyph unicode="&#xe605;" glyph-name="rotate_right" d="M577.6 738.4h96v-452l152 123.2v-97.6l-200-158.4-192 160v96l144-121.6v354.4h-391.2v96z" />
+<glyph unicode="&#xe606;" glyph-name="reset" d="M223.2 736v-96h488.8v-392h-392.8v200h68.8l-115.2 116h-0.8l-115.2-116h66.4v-296h584.8v584z" />
 <glyph
                 unicode="&#xe607;"
                 glyph-name="fullscreen"

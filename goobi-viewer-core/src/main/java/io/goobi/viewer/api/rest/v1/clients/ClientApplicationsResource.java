@@ -36,6 +36,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -56,6 +57,9 @@ import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -89,21 +93,25 @@ public class ClientApplicationsResource {
     @POST
     @jakarta.ws.rs.Path(CLIENTS_REGISTER)
     @Produces({ MediaType.APPLICATION_JSON })
-    //    @Operation(summary = "Request registration as a trusted client application", tags = { "clients" })
-    public String register() throws ContentLibException, DAOException {
+    @Operation(summary = "Request registration as a trusted client application", tags = { "clients" })
+    @ApiResponse(responseCode = "201", description = "Client registered successfully; registration is pending approval")
+    @ApiResponse(responseCode = "400", description = "A client with this machine identifier is already registered")
+    public Response register() throws ContentLibException, DAOException {
         String clientIdentifier = ClientApplicationManager.getClientIdentifier(servletRequest);
         Optional<ClientApplication> existingClient = DataManager.getInstance().getClientManager().getClientByClientIdentifier(clientIdentifier);
         if (existingClient.isPresent()) {
             throw new IllegalRequestException("Client with this machine identifier is already registered");
         }
         ClientApplication client = DataManager.getInstance().getClientManager().persistNewClient(clientIdentifier, servletRequest);
-        return createRegistrationResponse(client);
+        return Response.status(Response.Status.CREATED).entity(createRegistrationResponse(client)).build();
     }
 
     @GET
     @jakarta.ws.rs.Path(CLIENTS_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    //    @Operation(summary = "Request", tags = { "clients" })
+    @Operation(summary = "Request access for a registered client application", tags = { "clients" })
+    @ApiResponse(responseCode = "200", description = "Access status for the requesting client")
+    @ApiResponse(responseCode = "400", description = "Missing client identifier header or client not yet registered")
     public String request() throws ContentLibException, DAOException {
         String clientIdentifier = ClientApplicationManager.getClientIdentifier(servletRequest);
         if (StringUtils.isBlank(clientIdentifier)) {
@@ -145,9 +153,14 @@ public class ClientApplicationsResource {
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given clientIdentifier was found in database")
-    @ApiResponse(responseCode = "500", description = "In interal error occured")
+    @ApiResponse(responseCode = "500", description = "An internal error occurred")
     public ClientApplication setClient(
             @PathParam("id") @Parameter(description = "client identifier") String clientIdentifier,
+            // Explicit @RequestBody annotation required so the OpenAPI generator includes the request
+            // body schema in the spec, enabling tools like schemathesis to generate valid test cases.
+            @RequestBody(description = "Client properties to update (only name, description, subnetMask and accessStatus are applied)",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = ClientApplication.class)))
             ClientApplication update) throws DAOException, ContentNotFoundException {
         try {
 
@@ -179,9 +192,10 @@ public class ClientApplicationsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get a list of all registered clients", tags = { "clients" },
             description = "Clients are returned as json objects. Requires an access token in the query paramter or header field 'token'.")
+    @ApiResponse(responseCode = "200", description = "List of all registered client applications")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
-    @ApiResponse(responseCode = "500", description = "In interal error occured")
+    @ApiResponse(responseCode = "500", description = "An internal error occurred")
     public List<ClientApplication> getAllClients() throws DAOException {
         return dao.getAllClientApplications().stream().filter(clientManager::isNotAllClients).collect(Collectors.toList());
     }
@@ -200,10 +214,11 @@ public class ClientApplicationsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get the client with the given client identifier", tags = { "clients" },
             description = "The client is returned as a json object. Requires an access token in the query paramter or header field 'token'.")
+    @ApiResponse(responseCode = "200", description = "Client application object")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given 'id' was found in database")
-    @ApiResponse(responseCode = "500", description = "In interal error occured")
+    @ApiResponse(responseCode = "500", description = "An internal error occurred")
     public ClientApplication getClient(@PathParam("id") @Parameter(description = "client identifier") String clientIdentifier)
             throws DAOException, ContentNotFoundException {
         ClientApplication client = dao.getClientApplicationByClientId(clientIdentifier);

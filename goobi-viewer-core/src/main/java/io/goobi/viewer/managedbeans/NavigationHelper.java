@@ -81,6 +81,8 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 import io.goobi.viewer.model.viewer.CollectionLabeledLink;
 import io.goobi.viewer.model.viewer.LabeledLink;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -303,6 +305,22 @@ public class NavigationHelper implements Serializable {
     public void setCurrentPage(String currentPage) {
         logger.trace("setCurrentPage: {}", currentPage);
         setCurrentPage(currentPage, false, false);
+    }
+
+    /**
+     * Sets the current page for the error page, mapping generic error types (general, general_no_url)
+     * to the "error" page name so that the browser title shows "Fehler" instead of unrelated translations.
+     * Specific error types (e.g. recordNotFound, download) are passed through directly so that
+     * their own message keys are used as the page title.
+     *
+     * @param errorType the error type string set by the exception handler; may be null
+     */
+    public void setCurrentPageForError(String errorType) {
+        if (errorType == null || "general".equals(errorType) || "general_no_url".equals(errorType)) {
+            setCurrentPage("error");
+        } else {
+            setCurrentPage(errorType);
+        }
     }
 
     /**
@@ -1060,13 +1078,17 @@ public class NavigationHelper implements Serializable {
         String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
         if (StringUtils.isNotBlank(discriminatorField)) {
             ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
-            if (activeDocumentBean != null && activeDocumentBean.getViewManager() != null && getCurrentPageType().isDocumentPage()) {
+            ViewManager viewManager = activeDocumentBean != null ? activeDocumentBean.getViewManager() : null;
+            if (viewManager != null && getCurrentPageType().isDocumentPage()) {
                 // If a record is loaded, get the value from the record's value
                 // in discriminatorField
-                subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopStructElement().getMetadataValue(discriminatorField);
+                StructElement topStructElement = viewManager.getTopStructElement();
+                if (topStructElement != null) {
+                    subThemeDiscriminatorValue = topStructElement.getMetadataValue(discriminatorField);
+                }
             } else if (isCmsPage()) {
                 if (cmsBean != null && cmsBean.getCurrentPage() != null) {
-                    subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
+                    subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubTheme();
                 }
             }
         }
@@ -1175,9 +1197,11 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Calendar view has been retired; use <code>getTocUrl()</code>
      */
+    @Deprecated(since = "26.03")
     public String getCalendarUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewCalendar.getName();
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewToc.getName();
     }
 
     /**
@@ -1186,9 +1210,11 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Calendar view has been retired; use <code>getTocActiveUrl()</code>
      */
+    @Deprecated(since = "26.03")
     public String getCalendarActiveUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewCalendar.getName();
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewToc.getName();
     }
 
     /**

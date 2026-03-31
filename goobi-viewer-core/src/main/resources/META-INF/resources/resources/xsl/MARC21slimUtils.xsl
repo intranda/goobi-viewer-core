@@ -1,9 +1,5 @@
 <?xml version='1.0' ?>
-<xsl:stylesheet
-    version="1.0"
-    xmlns:marc="http://www.loc.gov/MARC21/slim"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
->
+<xsl:stylesheet version="1.0" xmlns:marc="http://www.loc.gov/MARC21/slim" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 	<!-- 08/08/08: tmee added corrected chopPunctuation templates for 260c -->
 	<!-- 08/19/04: ntra added "marc:" prefix to datafield element -->
@@ -11,8 +7,7 @@
 	<!-- url encoding -->
 
 	<xsl:variable name="ascii">
-		<xsl:text
-        > !"#$%&amp;'()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~</xsl:text>
+		<xsl:text> !"#$%&amp;'()*+,-./0123456789:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~</xsl:text>
 	</xsl:variable>
 
 	<xsl:variable name="latin1">

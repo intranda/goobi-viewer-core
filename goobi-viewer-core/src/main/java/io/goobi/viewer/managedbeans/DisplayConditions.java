@@ -43,6 +43,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.record.views.RecordPropertyCache;
 import io.goobi.viewer.model.viewer.record.views.VisibilityCondition;
 import io.goobi.viewer.model.viewer.record.views.VisibilityConditionInfo;
@@ -131,7 +132,7 @@ public class DisplayConditions implements Serializable {
      * <dl>
      * <dt>pageType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: viewToc, viewThumbs, viewMetadata, viewFulltext, viewFullscreen,
-     * viewObject, viewCalendar, cmsPage</dd>
+     * viewObject, cmsPage</dd>
      * <dd><i>Descrption:</i> Name of the current record page or 'view'. The condition returns true if the current view is one of the values of the
      * given array</dd>
      * </dl>
@@ -243,7 +244,7 @@ public class DisplayConditions implements Serializable {
      * <dl>
      * <dt>pageType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: viewToc, viewThumbs, viewMetadata, viewFulltext, viewFullscreen,
-     * viewObject, viewCalendar, cmsPage</dd>
+     * viewObject, cmsPage</dd>
      * <dd><i>Descrption:</i> Name of the current record page or 'view'. The condition returns true if the current view is one of the values of the
      * given array</dd>
      * </dl>
@@ -269,7 +270,11 @@ public class DisplayConditions implements Serializable {
         if (activeDocumentBean == null || !activeDocumentBean.isRecordLoaded()) {
             return false;
         }
-        return condition.matchesPage(getPageType(), activeDocumentBean.getViewManager().getCurrentPage(), httpRequest,
+        ViewManager viewManager = activeDocumentBean.getViewManager();
+        if (viewManager == null) {
+            return false;
+        }
+        return condition.matchesPage(getPageType(), viewManager.getCurrentPage(), httpRequest,
                 propertyCache);
     }
 

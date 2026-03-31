@@ -27,6 +27,9 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -56,6 +59,33 @@ class AbstractBuilderTest extends AbstractTest {
         Assertions.assertEquals(1, events.get("Expression Creation").size());
         Assertions.assertEquals("MD_EVENTARTIST", events.get("Expression Creation").iterator().next());
 
+    }
+
+    /**
+     * A null or blank PI must not reach URI.create() — that call throws an unchecked
+     * IllegalArgumentException with an unhelpful message about "Illegal character in path"
+     * because the {pi} URL placeholder remains unsubstituted. The early-exit guard in
+     * getManifestURI() must throw IllegalArgumentException with a clear message instead,
+     * so the per-record catch in IIIFPresentation2ResourceBuilder can log and skip the record.
+     */
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = { " ", "\t" })
+    void getManifestURI_blankPi_throwsIllegalArgumentException(String pi) {
+        IllegalArgumentException ex = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> builder.getManifestURI(pi));
+        Assertions.assertTrue(ex.getMessage().contains("PI is null or blank"),
+                "Exception message should mention PI: " + ex.getMessage());
+    }
+
+    /**
+     * A valid PI must produce a URI that does not contain the literal placeholder {pi}.
+     */
+    @Test
+    void getManifestURI_validPi_doesNotContainPlaceholder() {
+        java.net.URI uri = builder.getManifestURI("PPN123456789");
+        Assertions.assertFalse(uri.toString().contains("{pi}"),
+                "Manifest URI must not contain unsubstituted {pi} placeholder: " + uri);
     }
 
     @Test

@@ -38,9 +38,7 @@
                                                 data-viewer-thumbnail="thumbnail"
                                                 src="#{imageDelivery.thumbs.getThumbnailUrl(page, 400, 400)}"
                                                 data-viewer-access-denied-url="#{page.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
-                                            <span class="sidebar-scroll-preview__button-text">
-                                                #{msg.page} #{page.order}:#{page.orderLabel}
-                                            </span>
+                                            <span class="sidebar-scroll-preview__button-text">#{msg.page} #{page.order}:#{page.orderLabel}</span>
                                         </span>
                                         <f:passThroughAttribute
                                             name="data-target"
@@ -63,9 +61,7 @@
                                                 data-viewer-thumbnail="thumbnail"
                                                 src="#{imageDelivery.thumbs.getThumbnailUrl(page, 400, 400)}"
                                                 data-viewer-access-denied-url="#{page.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
-                                            <span class="sidebar-scroll-preview__button-text">
-                                                #{page.order}:#{page.orderLabel}
-                                            </span>
+                                            <span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
                                         </span>
                                     </button>
                                 </ui:fragment>

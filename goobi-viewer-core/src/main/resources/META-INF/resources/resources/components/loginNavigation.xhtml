@@ -88,11 +88,9 @@
                                         </a>
                                     </li>
                                     <!-- BOOKMARKS -->
-                                    <ui:fragment
-                                        rendered="#{configurationBean.bookmarksEnabled and userDataBean.getNumBookmarkLists(userBean.user) > 0}">
+                                    <ui:fragment rendered="#{configurationBean.bookmarksEnabled and userDataBean.getNumBookmarkLists(userBean.user) > 0}">
                                         <li class="login-navigation__bookmarks-list-wrapper">
-                                            <div
-                                                class="login-navigation__user-dropdown-item login-navigation__bookmarks-list">
+                                            <div class="login-navigation__user-dropdown-item login-navigation__bookmarks-list">
                                                 <button
                                                     type="button"
                                                     class="login-navigation__bookmarks-trigger login-navigation__user-dropdown-item-link">
@@ -112,8 +110,7 @@
                                         </li>
                                     </ui:fragment>
                                     <!-- SAVED SEARCHES -->
-                                    <ui:fragment
-                                        rendered="#{searchBean.searchSavingEnabled and userDataBean.getNumSearches(userBean.user) > 0}">
+                                    <ui:fragment rendered="#{searchBean.searchSavingEnabled and userDataBean.getNumSearches(userBean.user) > 0}">
                                         <li class="login-navigation__user-dropdown-item">
                                             <a
                                                 href="#{navigationHelper.applicationUrl}user/searches/"

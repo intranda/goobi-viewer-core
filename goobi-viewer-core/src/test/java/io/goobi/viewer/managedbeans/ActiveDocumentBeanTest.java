@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.faces.context.ExternalContext;
@@ -144,6 +145,22 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     void setPersistentIdentifier_shouldDetermineCurrentElementIddocCorrectly() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
+    }
+
+    /**
+     * @see ActiveDocumentBean#setPersistentIdentifier(String)
+     * @verifies preserve lastReceivedIdentifier after reset when identifier not found
+     */
+    @Test
+    void setPersistentIdentifier_shouldPreserveLastReceivedIdentifierWhenNotFound() throws Exception {
+        // When an unknown identifier is set, reset() is called internally.
+        // lastReceivedIdentifier must be restored afterwards so that update() throws
+        // RecordNotFoundException with the actual identifier instead of '???'.
+        String unknownPi = "this_identifier_does_not_exist";
+        adb.setPersistentIdentifier(unknownPi);
+        assertNull(adb.topDocumentIddoc);
+        RecordNotFoundException ex = org.junit.jupiter.api.Assertions.assertThrows(RecordNotFoundException.class, () -> adb.update());
+        assertEquals(unknownPi, ex.getMessage());
     }
 
     /**
@@ -410,5 +427,15 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         String result = adb.getRelativeUrlTags();
         assertTrue(StringUtils.isNotBlank(result));
+    }
+
+    /**
+     * @see ActiveDocumentBean#getToc()
+     * @verifies return null when viewManager is null
+     */
+    @Test
+    void getToc_shouldReturnNullWhenViewManagerIsNull() throws Exception {
+        // Fresh bean has viewManager == null
+        assertNull(adb.getToc());
     }
 }

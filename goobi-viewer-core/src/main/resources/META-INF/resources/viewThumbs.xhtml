@@ -102,13 +102,10 @@
                                         data-viewer-access-denied-url="#{image.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
                                     <figcaption>
                                         <!-- THUMBNAIL IMAGE ORDER -->
-                                        <div class="view-thumbs__thumbnail-image-order">
-                                            #{image.order}:#{image.orderLabel}
-                                        </div>
+                                        <div class="view-thumbs__thumbnail-image-order">#{image.order}:#{image.orderLabel}</div>
 
                                         <!-- THUMBNAIL IMAGE FULLTEXT -->
-                                        <ui:fragment
-                                            rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
+                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
                                             <div class="view-thumbs__thumbnail-image-fulltext">
                                                 <util:icon icon="file-text" />
                                             </div>

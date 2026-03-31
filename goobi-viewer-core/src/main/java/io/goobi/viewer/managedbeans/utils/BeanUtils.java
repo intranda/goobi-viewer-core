@@ -291,8 +291,8 @@ public final class BeanUtils {
             if (ret != null) {
                 return ret;
             }
-        } catch (IllegalStateException e) {
-            //
+        } catch (IllegalStateException | IndexOutOfBoundsException e) {
+            // CDI container not available or already shut down (Weld may throw IndexOutOfBoundsException during shutdown)
         }
         // Via FacesContext
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext().getContext() != null) {
@@ -333,7 +333,10 @@ public final class BeanUtils {
                 CreationalContext ctx = bm.createCreationalContext(bean);
                 return bm.getReference(bean, clazz, ctx);
             }
-        } catch (IllegalArgumentException | IllegalStateException | NullPointerException e) {
+        } catch (IllegalStateException e) {
+            // Expected during CDI container shutdown (e.g. in-flight requests after Weld has stopped)
+            logger.warn("CDI container not available when looking up bean '{}': {}", name, e.getMessage());
+        } catch (IllegalArgumentException | NullPointerException e) {
             logger.error("Error when getting bean by name '{}'", name, e);
         }
 
@@ -584,12 +587,17 @@ public final class BeanUtils {
      */
     public static UserBean getUserBeanFromSession(HttpSession session) {
         if (session != null) {
-            Object bean = session.getAttribute("userBean");
-            if (bean != null) {
-                return (UserBean) bean;
+            try {
+                Object bean = session.getAttribute("userBean");
+                if (bean != null) {
+                    return (UserBean) bean;
+                }
+                return findInstanceInSessionAttributes(session, UserBean.class)
+                        .orElse(null);
+            } catch (IllegalStateException e) {
+                // Session was invalidated before the request finished
+                logger.warn("Session already invalidated when retrieving userBean: {}", e.getMessage());
             }
-            return findInstanceInSessionAttributes(session, UserBean.class)
-                    .orElse(null);
         }
 
         return null;
@@ -610,7 +618,7 @@ public final class BeanUtils {
     public static <T> Optional<T> getBeanFromSession(HttpSession session, String beanName, Class<T> clazz) {
         if (session != null) {
             Object bean = session.getAttribute(beanName);
-            if (bean != null && bean.getClass().equals(clazz)) {
+            if (clazz.isInstance(bean)) {
                 return Optional.of(bean).map(o -> (T) o);
             }
             return findInstanceInSessionAttributes(session, clazz);
@@ -621,7 +629,8 @@ public final class BeanUtils {
 
     /**
      * <p>
-     * getUserFromSession.
+     * getUserFromSession. This performs a scan of the whole session and may be expensive. Prefer using {@link #getUserBean()} and
+     * #{@link UserBean#getUser()}
      * </p>
      *
      * @param session a {@link jakarta.servlet.http.HttpSession} object.
@@ -664,11 +673,11 @@ public final class BeanUtils {
         while (attributeNames.hasMoreElements()) {
             String attributeName = attributeNames.nextElement();
             Object attributeValue = session.getAttribute(attributeName);
-            if (attributeValue != null && attributeValue.getClass().equals(clazz)) {
+            if (clazz.isInstance(attributeValue)) {
                 return Optional.of(attributeValue).map(o -> (T) o);
             } else if (attributeValue instanceof SerializableContextualInstance serializableContextualInstance) {
                 Object instance = serializableContextualInstance.getInstance();
-                if (instance != null && instance.getClass().equals(clazz)) {
+                if (clazz.isInstance(instance)) {
                     return Optional.of(instance).map(o -> (T) o);
                 }
             }

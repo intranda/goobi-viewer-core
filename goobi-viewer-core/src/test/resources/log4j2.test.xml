@@ -15,6 +15,7 @@
 	
 	<Loggers>
 		<Logger name="io.goobi.viewer" level="ERROR" additivity="true" />
+		<Logger name="io.goobi.viewer.exceptions.MyExceptionHandler" level="FATAL" additivity="false" />
 		<Logger name="de.intranda" level="ERROR" additivity="true" />
 		<Logger name="com.ocpsoft" level="ERROR" additivity="true" />
 		<Logger name="de.unigoettingen" level="ERROR" additivity="true" />

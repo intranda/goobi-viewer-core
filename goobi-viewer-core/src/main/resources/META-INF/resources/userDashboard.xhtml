@@ -77,9 +77,7 @@
                                                             value="#{navigationHelper.datePattern}" />
                                                     </h:outputText>
                                                 </div>
-                                                <div class="user-dashboard__last-activitiestimeline-item-name">
-                                                    #{activity.label}
-                                                </div>
+                                                <div class="user-dashboard__last-activitiestimeline-item-name">#{activity.label}</div>
                                             </div>
                                         </ui:repeat>
                                     </div>
@@ -101,8 +99,7 @@
                 </div>
 
                 <!-- OVERVIEW BLOCK -->
-                <c:if
-                    test="#{configurationBean.bookmarksEnabled or configurationBean.searchSavingEnabled or commentBean.userCommentsEnabled}">
+                <c:if test="#{configurationBean.bookmarksEnabled or configurationBean.searchSavingEnabled or commentBean.userCommentsEnabled}">
                     <h2>#{msg.admin__overview}</h2>
                     <div class="user-dashboard__form-wrapper-container">
                         <!-- BOOKMARKS BOX -->
@@ -119,10 +116,7 @@
                                                 var="bookmarkList"
                                                 varStatus="status">
                                                 <li>
-                                                    <a
-                                                        href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
-                                                        #{bookmarkList.name}
-                                                    </a>
+                                                    <a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">#{bookmarkList.name}</a>
                                                 </li>
                                             </ui:repeat>
                                         </ul>
@@ -167,8 +161,7 @@
                                                     value="#{userDataBean.getSearches(userBean.user, 5)}"
                                                     var="search">
                                                     <li class="user-dashboard__searches-list-item">
-                                                        <h:commandLink
-                                                            action="#{searchBean.executeSavedSearchAction(search)}">
+                                                        <h:commandLink action="#{searchBean.executeSavedSearchAction(search)}">
                                                             <h:outputText
                                                                 value="#{search.name}"
                                                                 escape="true" />

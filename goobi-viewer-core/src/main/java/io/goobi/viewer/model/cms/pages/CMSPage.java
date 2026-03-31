@@ -164,8 +164,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Column(name = "use_as_default_record_view", nullable = false, columnDefinition = "boolean default false")
     private boolean useAsDefaultRecordView = false;
 
-    @Column(name = "subtheme_discriminator", nullable = true)
-    private String subThemeDiscriminatorValue = "";
+    @Column(name = "subtheme", nullable = true)
+    private String subTheme = "";
 
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @OrderBy("order")
@@ -228,8 +228,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     private List<CMSComponent> cmsComponents = new ArrayList<>();
 
     @Transient
+    private boolean cmsComponentsInitialized = false;
+
+    @Transient
     private int listPage = 1;
-    
+
     @Transient
     private final Object cmsComponentsLock = new Object();
 
@@ -265,7 +268,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.useDefaultSidebar = original.useDefaultSidebar;
         this.persistentUrl = original.persistentUrl;
         this.relatedPI = original.relatedPI;
-        this.subThemeDiscriminatorValue = original.subThemeDiscriminatorValue;
+        this.subTheme = original.subTheme;
         this.categories = new ArrayList<>(original.categories);
         this.parentPageId = original.parentPageId;
         this.wrapperElementClass = original.wrapperElementClass;
@@ -306,7 +309,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
         this.dateCreated = LocalDateTime.now();
         this.useDefaultSidebar = original.isUseDefaultSidebar();
-        this.subThemeDiscriminatorValue = original.getSubThemeDiscriminatorValue();
+        this.subTheme = original.getSubTheme();
         this.categories = new ArrayList<>(original.getCategories());
         this.wrapperElementClass = original.getWrapperElementClass();
         this.templateId = original.getId();
@@ -340,8 +343,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                         .orElse(null);
                 if (comp != null) {
                     this.cmsComponents.add(comp);
+                } else {
+                    logger.warn("No component template found for '{}' on CMS page {}", component.getTemplateFilename(), this.id);
                 }
             }
+            this.cmsComponentsInitialized = true;
         }
         sortComponents();
     }
@@ -790,24 +796,24 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     /**
      * <p>
-     * Getter for the field <code>subThemeDiscriminatorValue</code>.
+     * Getter for the field <code>subTheme</code>.
      * </p>
      *
-     * @return the subThemeDiscriminatorValue
+     * @return the subTheme
      */
-    public String getSubThemeDiscriminatorValue() {
-        return subThemeDiscriminatorValue;
+    public String getSubTheme() {
+        return subTheme;
     }
 
     /**
      * <p>
-     * Setter for the field <code>subThemeDiscriminatorValue</code>.
+     * Setter for the field <code>subTheme</code>.
      * </p>
      *
-     * @param subThemeDiscriminatorValue the subThemeDiscriminatorValue to set
+     * @param subTheme the subTheme to set
      */
-    public void setSubThemeDiscriminatorValue(String subThemeDiscriminatorValue) {
-        this.subThemeDiscriminatorValue = subThemeDiscriminatorValue == null ? "" : subThemeDiscriminatorValue;
+    public void setSubTheme(String subTheme) {
+        this.subTheme = subTheme == null ? "" : subTheme;
     }
 
     /**
@@ -1329,11 +1335,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public boolean isComponentsLoaded() {
-        return this.cmsComponents.size() == this.persistentComponents.size();
+        return this.cmsComponentsInitialized;
     }
 
     public List<CMSComponent> getComponents() {
-        if (!this.isComponentsLoaded()) {
+        if (!this.cmsComponentsInitialized && !this.persistentComponents.isEmpty()) {
             logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
         }
         return this.cmsComponents;

@@ -5,9 +5,7 @@
     <name>cms_template_32_galleryText__title</name>
     <description>cms_template_32_galleryText__description</description>
     <icon>cms_template_32_galleryText.png</icon>
-    <html>
-cms_template_32_galleryText.xhtml
-    </html>
+    <html>cms_template_32_galleryText.xhtml</html>
     <options>
         <topBarSlider>true</topBarSlider>
     </options>

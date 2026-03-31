@@ -442,6 +442,11 @@ public class FacetItem implements Serializable, IFacetItem {
             val = val.substring(0, val.length() - 1);
         }
 
+        // If the entire value consisted of wildcards, return them as-is without escaping
+        if (val.isEmpty()) {
+            return (addLeftTruncation ? "*" : "") + (addRightTruncation ? "*" : "");
+        }
+
         String escapedValue = null;
         if (val.charAt(0) == '"' && val.charAt(val.length() - 1) == '"' && val.length() > 2) {
             escapedValue = '"' + ClientUtils.escapeQueryChars(val.substring(1, val.length() - 1)) + '"';

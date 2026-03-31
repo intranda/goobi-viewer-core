@@ -24,10 +24,12 @@ package io.goobi.viewer.managedbeans;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
@@ -36,6 +38,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
@@ -206,6 +209,30 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         assertEquals(label, third.getName());
     }
 
+    /**
+     * @see NavigationHelper#determineCurrentSubThemeDiscriminatorValue()
+     * @verifies return empty string if viewManager is null
+     */
+    @Test
+    void determineCurrentSubThemeDiscriminatorValue_shouldReturnEmptyStringIfViewManagerIsNull() throws Exception {
+        NavigationHelper nh = new NavigationHelper();
+
+        // Set currentPage to a document page via reflection to avoid setCurrentPage side effects
+        Field currentPageField = NavigationHelper.class.getDeclaredField("currentPage");
+        currentPageField.setAccessible(true);
+        currentPageField.set(nh, "image"); // PageType.viewImage is a document page
+
+        ActiveDocumentBean mockAdb = Mockito.mock(ActiveDocumentBean.class);
+        Mockito.when(mockAdb.getViewManager()).thenReturn(null);
+
+        try (MockedStatic<BeanUtils> mockedBeanUtils = Mockito.mockStatic(BeanUtils.class)) {
+            mockedBeanUtils.when(BeanUtils::getActiveDocumentBean).thenReturn(mockAdb);
+
+            String result = nh.determineCurrentSubThemeDiscriminatorValue();
+            assertEquals("", result);
+        }
+    }
+
     @Test
     void test_setCmsPageView() throws DAOException, IndexUnreachableException, PresentationException, ViewerConfigurationException {
         NavigationHelper nh = new NavigationHelper();
@@ -222,6 +249,44 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         nh.setCurrentPage(cms);
         assertEquals(nh.getCurrentView(), PageType.cmsPage.name());
         assertEquals(cms.getTitle(Locale.ENGLISH), adb.getTitleBarLabel(Locale.ENGLISH));
+    }
+
+    /**
+     * @see NavigationHelper#setCurrentPageForError(String)
+     * @verifies map null and generic error types to error
+     * @verifies pass through specific error types unchanged
+     */
+    @Test
+    void setCurrentPageForError_shouldMapGenericTypesToError() {
+        NavigationHelper nh = new NavigationHelper();
+
+        // null, general, general_no_url must all fall back to "error"
+        nh.setCurrentPageForError(null);
+        assertEquals("error", nh.getCurrentPage());
+
+        nh.setCurrentPageForError("general");
+        assertEquals("error", nh.getCurrentPage());
+
+        nh.setCurrentPageForError("general_no_url");
+        assertEquals("error", nh.getCurrentPage());
+    }
+
+    /**
+     * @see NavigationHelper#setCurrentPageForError(String)
+     * @verifies pass through specific error types unchanged
+     */
+    @Test
+    void setCurrentPageForError_shouldPassThroughSpecificErrorTypes() {
+        NavigationHelper nh = new NavigationHelper();
+
+        nh.setCurrentPageForError("recordNotFound");
+        assertEquals("recordNotFound", nh.getCurrentPage());
+
+        nh.setCurrentPageForError("download");
+        assertEquals("download", nh.getCurrentPage());
+
+        nh.setCurrentPageForError("viewExpired");
+        assertEquals("viewExpired", nh.getCurrentPage());
     }
 
 }

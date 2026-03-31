@@ -190,6 +190,14 @@
         ['templateAdmin', 'templateArchives', 'templateCrowdsourcing', 'templateFullscreen', 'templateBlank'],
         'resources/javascript/libs/epubjs/epub.min.js'
       ],
+      ['flatpickr',
+        ['templateBlankUnstyled'],
+        'resources/javascript/libs/flatpickr/flatpickr.js'
+      ],
+      ['flatpickr-de',
+        ['templateBlankUnstyled'],
+        'resources/javascript/libs/flatpickr/l10n/de.js'
+      ],
       ['viewerJS',
         [],
         'resources/javascript/dist/viewer.min.js'
@@ -219,7 +227,7 @@
     </c:forEach>
 
     <script type="text/javascript">
-(function assignViewerConfigBasePath() {
+        (function assignViewerConfigBasePath() {
     var contextPath = '#{request.contextPath}';
     if (!contextPath || contextPath.length === 0) {
         contextPath = '/';
@@ -244,9 +252,7 @@
         <c:forEach
             var="path"
             items="#{jsPaths}">
-            <script>
-                console.log('%c#{path[0]}', 'background: #3365a9; color: #fff; padding: 2px 6px; border-radius: 2px;');
-            </script>
+            <script>console.log('%c#{path[0]}', 'background: #3365a9; color: #fff; padding: 2px 6px; border-radius: 2px;');</script>
         </c:forEach>
     </c:if>
 </ui:composition>

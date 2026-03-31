@@ -28,8 +28,7 @@
                             <div class="collection-tiled__tile">
                                 <h:panelGroup rendered="#{browseDcElement.opensInNewWindow}">
                                     <div class="collection-tiled__header">
-                                        <a
-                                            href="#{collection.getCollectionUrl(browseDcElement, !browseDcElement.hasSubelements)}">
+                                        <a href="#{collection.getCollectionUrl(browseDcElement, !browseDcElement.hasSubelements)}">
                                             <h:outputText
                                                 rendered="#{browseDcElement.displayNumberOfVolumes}"
                                                 value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})"
@@ -139,7 +138,7 @@
         </h:form>
 
         <script type="text/javascript">
-$(function () {
+            $(function () {
     $('[data-toggle="popover"]').popover();
 });
         </script>

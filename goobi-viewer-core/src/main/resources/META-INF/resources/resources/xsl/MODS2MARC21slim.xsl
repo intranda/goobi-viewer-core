@@ -241,15 +241,9 @@
 					<xsl:when
                         test="mods:originInfo/mods:issuance='monographic' and mods:originInfo/mods:dateIssued[@point='start'] and mods:originInfo/mods:dateIssued[@point='end']"
                     >m</xsl:when>
-					<xsl:when
-                        test="mods:originInfo/mods:issuance='continuing' and mods:originInfo/mods:dateIssued[@point='end' and @encoding='marc']='9999'"
-                    >c</xsl:when>
-					<xsl:when
-                        test="mods:originInfo/mods:issuance='continuing' and mods:originInfo/mods:dateIssued[@point='end' and @encoding='marc']='uuuu'"
-                    >u</xsl:when>
-					<xsl:when
-                        test="mods:originInfo/mods:issuance='continuing' and mods:originInfo/mods:dateIssued[@point='end' and @encoding='marc']"
-                    >d</xsl:when>
+					<xsl:when test="mods:originInfo/mods:issuance='continuing' and mods:originInfo/mods:dateIssued[@point='end' and @encoding='marc']='9999'">c</xsl:when>
+					<xsl:when test="mods:originInfo/mods:issuance='continuing' and mods:originInfo/mods:dateIssued[@point='end' and @encoding='marc']='uuuu'">u</xsl:when>
+					<xsl:when test="mods:originInfo/mods:issuance='continuing' and mods:originInfo/mods:dateIssued[@point='end' and @encoding='marc']">d</xsl:when>
 					<xsl:when test="not(mods:originInfo/mods:issuance) and mods:originInfo/mods:dateIssued">s</xsl:when>
 					<!-- v3 copyright date-->
 					<xsl:when test="mods:originInfo/mods:copyrightDate">s</xsl:when>
@@ -846,9 +840,7 @@
 	<xsl:template match="mods:titleInfo[@type='uniform'][1]">
 		<xsl:choose>
 		<!-- v3 role -->
-		<xsl:when
-                test="../mods:name/mods:role/mods:roleTerm[@type='text']='creator' or mods:name/mods:role/mods:roleTerm[@type='code']='cre'"
-            >
+		<xsl:when test="../mods:name/mods:role/mods:roleTerm[@type='text']='creator' or mods:name/mods:role/mods:roleTerm[@type='code']='cre'">
 			<xsl:call-template name="datafield">
 				<xsl:with-param name="tag">240</xsl:with-param>
 				<xsl:with-param name="ind1">1</xsl:with-param>
@@ -1135,9 +1127,7 @@
 			<xsl:with-param name="tag">050</xsl:with-param>
 			<xsl:with-param name="ind2">
 				<xsl:choose>
-				<xsl:when
-                        test="../mods:recordInfo/mods:recordContentSource='DLC' or ../mods:recordInfo/mods:recordContentSource='Library of Congress'"
-                    >0</xsl:when>
+				<xsl:when test="../mods:recordInfo/mods:recordContentSource='DLC' or ../mods:recordInfo/mods:recordContentSource='Library of Congress'">0</xsl:when>
 				<xsl:otherwise>2</xsl:otherwise>
 				</xsl:choose>
 			</xsl:with-param>

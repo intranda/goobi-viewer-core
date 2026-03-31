@@ -18,8 +18,7 @@
 
     <div class="search-list__hit-inner-structure">
         <!-- ALL CONTENT/VALUES WRAPPER -->
-        <div
-            class="search-list__hit-info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
+        <div class="search-list__hit-info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
             <!-- TITLE -->
             <div
                 class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'} #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
@@ -86,13 +85,11 @@
         </div>
         <div class="search-list__thumb-wrapper">
             <!-- THUMBNAIL -->
-            <ui:fragment rendered="#{browseElement.showThumbnail}">
-                <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
-                    <ui:param
-                        name="browseElement"
-                        value="#{browseElement}" />
-                </ui:include>
-            </ui:fragment>
+            <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
+                <ui:param
+                    name="browseElement"
+                    value="#{browseElement}" />
+            </ui:include>
             <!-- ADD TO BOOKMARKS BUTTON (ICON) -->
             <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
                 <div class="search-list__thumb-bookmark-wrapper">

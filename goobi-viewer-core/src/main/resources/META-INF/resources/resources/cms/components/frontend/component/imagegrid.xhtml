@@ -22,8 +22,7 @@
                 id="templateStaticGrid"
                 class="tpl-static-grid content-component content-component__static-grid -width-100 #{cc.attrs.hideOnScreenSizes} #{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} #{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''} #{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
                 <!-- INFO: CONTENT ITEM IS NOT PUBLISHED YET -->
-                <ui:fragment
-                    rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
+                <ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
                     <div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
                 </ui:fragment>
 
@@ -37,9 +36,7 @@
                             href="#{empty mediaItem.link ? '#' : mediaItem.link }"
                             class="grid-tile">
                             <div class="grid-tile__title">
-                                <span class="grid-tile__text">
-                                    #{mediaItem.label.getValueOrFallback(navigationHelper.locale)}
-                                </span>
+                                <span class="grid-tile__text">#{mediaItem.label.getValueOrFallback(navigationHelper.locale)}</span>
                             </div>
                             <div
                                 class="grid-tile__image"

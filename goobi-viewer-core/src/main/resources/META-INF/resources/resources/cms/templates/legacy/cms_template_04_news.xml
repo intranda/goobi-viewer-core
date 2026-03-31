@@ -5,9 +5,7 @@
     <name>cms__template_04__title</name>
     <description>cms__template_04__description</description>
     <icon>cms_template_04_news.png</icon>
-    <html>
-cms_template_04_news.xhtml
-    </html>
+    <html>cms_template_04_news.xhtml</html>
     <content>
         <item
             order="1"

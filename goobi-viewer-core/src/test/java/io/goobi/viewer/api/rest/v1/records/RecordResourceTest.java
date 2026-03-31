@@ -31,8 +31,10 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_TEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TOC;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
@@ -248,13 +250,84 @@ class RecordResourceTest extends AbstractRestApiTest {
     }
 
     //    @Test
-    void testGetRequiredPrivilege() {
+    void testGetRequiredPrivilege() throws Exception {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURI()).thenReturn("/viewer/api/v1/records/PPN615391702/manifest/");
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8082/viewer/api/v1/records/PPN615391702/manifest/"));
 
         ApiUrls urls = new ApiUrls("http://localhost:8082/viewer/api/v1");
 
-        new RecordResource(request, "");
+        // Use a valid PI (non-empty, alphanumeric) to avoid IllegalRequestException from validatePi
+        new RecordResource(request, "PPN615391702");
+    }
+
+    /**
+     * Requests with PIs containing illegal characters must return HTTP 400.
+     * Characters in the PI blocklist (ILLEGAL_CHARS) should be rejected by validatePi()
+     * in the constructor.
+     * Note: some characters like space (%20) or pipe (%7C) are rejected at the HTTP routing
+     * level before reaching our constructor; we test characters that are valid in URL paths
+     * but in the PI blocklist and do reach the constructor.
+     */
+    @Test
+    void testInvalidPiReturns400() {
+        // exclamation mark - valid URL path character, in PI blocklist
+        try (Response response = target("/records/invalid!pi/ris")
+                .request()
+                .get()) {
+            assertEquals(400, response.getStatus(), "Exclamation mark in PI should return 400");
+        }
+        // at-sign - valid URL path character, in PI blocklist
+        try (Response response = target("/records/invalid@pi/ris")
+                .request()
+                .get()) {
+            assertEquals(400, response.getStatus(), "At-sign in PI should return 400");
+        }
+    }
+
+    /**
+     * Null PI must be rejected with BadRequestException, not silently accepted.
+     * This guards the fix that changed the condition from (pi != null && ...) to (pi == null || ...).
+     */
+    @Test
+    void testNullPiThrowsBadRequest() {
+        assertThrows(jakarta.ws.rs.BadRequestException.class, () -> RecordResource.validatePi(null),
+                "null PI should throw BadRequestException");
+    }
+
+    /**
+     * Valid PIs must pass validatePi without throwing.
+     */
+    @Test
+    void testValidPiAccepted() {
+        assertDoesNotThrow(() -> RecordResource.validatePi("PPN615391702"));
+        assertDoesNotThrow(() -> RecordResource.validatePi("valid_pi-1.0"));
+    }
+
+    /**
+     * getRISAsFile() must return HTTP 404 (not 500) when the PI does not exist in the Solr index.
+     * This guards against getFirstDoc() returning null and causing a NullPointerException.
+     */
+    @Test
+    void testGetRISAsFile_nonExistentPiReturns404() {
+        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_FILE).params("NONEXISTENT_PI_99999").build())
+                .request()
+                .get()) {
+            assertEquals(404, response.getStatus(), "Non-existent PI should return HTTP 404, not 500");
+        }
+    }
+
+    /**
+     * getRISAsText() must return HTTP 404 (not 500) when the PI does not exist in the Solr index.
+     * This guards against getFirstDoc() returning null and causing a NullPointerException.
+     */
+    @Test
+    void testGetRISAsText_nonExistentPiReturns404() {
+        try (Response response = target(urls.path(RECORDS_RECORD, RECORDS_RIS_TEXT).params("NONEXISTENT_PI_99999").build())
+                .request()
+                .accept(MediaType.TEXT_PLAIN)
+                .get()) {
+            assertEquals(404, response.getStatus(), "Non-existent PI should return HTTP 404, not 500");
+        }
     }
 }

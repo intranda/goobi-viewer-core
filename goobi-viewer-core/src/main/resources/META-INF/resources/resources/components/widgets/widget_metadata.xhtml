@@ -101,16 +101,14 @@
                                                         varStatus="status">
                                                         <ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
                                                             <ui:fragment rendered="#{child.singleString}">
-                                                                <ui:include
-                                                                    src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                                                <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
                                                                     <ui:param
                                                                         name="metadata"
                                                                         value="#{metadata.childMetadata[status.index]}" />
                                                                 </ui:include>
                                                             </ui:fragment>
                                                             <ui:fragment rendered="#{!child.singleString}">
-                                                                <ui:include
-                                                                    src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                                                <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
                                                                     <ui:param
                                                                         name="metadata"
                                                                         value="#{metadata.childMetadata[status.index]}" />
@@ -217,7 +215,7 @@
             </div>
 
             <script type="text/javascript">
-var normdataWidgetConfig = {
+                var normdataWidgetConfig = {
     path: '#{request.contextPath}',
     lang: {
         popoverTitle: '#{msg.normdataPopoverTitle}',

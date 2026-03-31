@@ -5,9 +5,7 @@
     <name>cms__template_22__title</name>
     <description>cms__template_22__description</description>
     <icon>cms_template_22_faqSingle.png</icon>
-    <html>
-cms_template_22_faqSingle.xhtml
-    </html>
+    <html>cms_template_22_faqSingle.xhtml</html>
     <options>
         <useSorterField>true</useSorterField>
     </options>

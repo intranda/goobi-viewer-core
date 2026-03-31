@@ -50,6 +50,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.job.TaskType;
@@ -110,7 +111,7 @@ public class DownloadBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws PresentationException
      */
-    public String openDownloadAction() throws DAOException, PresentationException {
+    public String openDownloadAction() throws DAOException, PresentationException, RecordNotFoundException {
 
         if (StringUtils.isNotBlank(downloadIdentifier)) {
             //get message after creating file in message queue
@@ -127,9 +128,9 @@ public class DownloadBean implements Serializable {
         if (message != null) {
             return message.getMessageId();
         } else {
-            logger.debug("No download message with id {} found", downloadIdentifier);
-            Messages.error("No download message with id " + downloadIdentifier + " found");
-            return "";
+            // No download job found for this identifier — show the record-not-found error page
+            // instead of a toast, as this is an invalid/unknown URL.
+            throw new RecordNotFoundException(downloadIdentifier);
         }
     }
 
@@ -168,8 +169,18 @@ public class DownloadBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     public void downloadFileAction() throws IOException, DownloadException {
-        DownloadJob job = DownloadJob.from(message);
+        DownloadJob job;
+        try {
+            job = DownloadJob.from(message);
+        } catch (IllegalArgumentException e) {
+            // Unknown task type (neither DOWNLOAD_PDF nor DOWNLOAD_EPUB) — surface as download error
+            throw new DownloadException(e.getMessage(), e);
+        }
         Path file = job.getPath();
+        if (!Files.exists(file)) {
+            // Job exists in the database but the file is gone (e.g. deleted externally or not yet created)
+            throw new DownloadException("Download file not found: " + file.getFileName());
+        }
         FacesContext fc = FacesContext.getCurrentInstance();
         ExternalContext ec = fc.getExternalContext();
         // Some JSF component library or some Filter might have set some headers in the buffer beforehand.

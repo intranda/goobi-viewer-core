@@ -18,18 +18,14 @@
                     id="widgetArchivesInteractionsStandardForm"
                     prependId="false">
                     <div class="widget-admin__topbar widget-archives-interactions__topbar">
-                        <h2 class="widget-admin__title widget-archives-interactions__title">
-                            #{msg.menuUser_workInteractions}
-                        </h2>
+                        <h2 class="widget-admin__title widget-archives-interactions__title">#{msg.menuUser_workInteractions}</h2>
                     </div>
                     <div class="widget-admin__body widget-archives-interactions__body">
                         <ul>
                             <!-- RE-INDEX ARCHIVE -->
                             <h:panelGroup rendered="#{userBean.admin}">
                                 <li>
-                                    <h:commandLink action="#{archiveBean.reIndexArchiveAction}">
-                                        #{msg.archives__widget__action_reindex_archive}
-                                    </h:commandLink>
+                                    <h:commandLink action="#{archiveBean.reIndexArchiveAction}">#{msg.archives__widget__action_reindex_archive}</h:commandLink>
                                 </li>
                             </h:panelGroup>
 
@@ -50,8 +46,7 @@
                             <!-- EDIT ARCHIVE CONFIG -->
                             <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
                                 <li>
-                                    <a
-                                        href="#{navigationHelper.applicationUrl}admin/cms/archives/edit/#{archiveBean.currentArchive.resourceId}/">
+                                    <a href="#{navigationHelper.applicationUrl}admin/cms/archives/edit/#{archiveBean.currentArchive.resourceId}/">
                                         #{msg.archives__widget__action_edit_archive}
                                     </a>
                                 </li>

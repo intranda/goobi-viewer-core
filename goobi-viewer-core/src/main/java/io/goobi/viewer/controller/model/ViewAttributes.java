@@ -29,7 +29,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.IntegerRange;
-import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.viewer.MimeType;
@@ -112,12 +111,12 @@ public class ViewAttributes {
         List<String> collections = conditionConfigNode.getList("collection").stream().map(Object::toString).toList();
         List<IntegerRange> pageRanges = conditionConfigNode.getList("pageCount").stream().map(Object::toString).map(this::parseIntRange).toList();
 
-        return (views.isEmpty() || this.pageType == null || views.stream().anyMatch(view -> this.pageType.matches(view)))
-                && (mimeTypes.isEmpty() || this.mimeType == null || mimeTypes.stream().anyMatch(type -> type.equals(this.mimeType.toString())))
-                && (docTypes.isEmpty() || StringUtils.isBlank(this.docStructType) || docTypes.contains(this.docStructType))
-                && (collections.isEmpty() || this.collections.isEmpty() || !CollectionUtils.intersection(collections, this.collections).isEmpty())
-                && (pageRanges.isEmpty() || this.recordPageCount == null
-                        || pageRanges.stream().anyMatch(range -> range.contains(this.recordPageCount)));
+        return (views.isEmpty() || (this.pageType != null && views.stream().anyMatch(view -> this.pageType.matches(view))))
+                && (mimeTypes.isEmpty() || (this.mimeType != null && mimeTypes.stream().anyMatch(type -> type.equals(this.mimeType.toString()))))
+                && (docTypes.isEmpty() || docTypes.contains(this.docStructType))
+                && (collections.isEmpty() || !CollectionUtils.intersection(collections, this.collections).isEmpty())
+                && (pageRanges.isEmpty() || (this.recordPageCount != null
+                        && pageRanges.stream().anyMatch(range -> range.contains(this.recordPageCount))));
 
     }
 

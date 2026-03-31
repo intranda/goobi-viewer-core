@@ -50,15 +50,13 @@
                             id="selectObject"
                             prependId="false">
                             <div class="form-horizontal form-group admin__content-wrapper">
-                                <div
-                                    class="#{highlightsBean.editStatus == 'SELECT_TARGET' ? 'w-100' : 'admin__content-main -sticky -refreshHCsticky'}">
+                                <div class="#{highlightsBean.editStatus == 'SELECT_TARGET' ? 'w-100' : 'admin__content-main -sticky -refreshHCsticky'}">
                                     <ui:fragment rendered="#{highlightsBean.editStatus == 'SELECT_TARGET'}">
                                         <h2 class="admin__content-inner-content__form_title mt-0">#{msg.general}</h2>
                                         <div class="admin__default-block">
                                             <div class="mb-2">#{msg.cms__highlight_record_or_identifier}:</div>
 
-                                            <div
-                                                class="form-group admin__highlights-connected-area admin__highlights-connected-radio-buttons">
+                                            <div class="form-group admin__highlights-connected-area admin__highlights-connected-radio-buttons">
                                                 <div class="connected-top">
                                                     <div class="form-row">
                                                         <div
@@ -99,9 +97,7 @@
                                                                     validatorId="piInSolrValidator"
                                                                     for="select_inputRecordIdentifier" />
                                                             </h:inputText>
-                                                            <span class="admin__form-help-text">
-                                                                #{msg.admin__highlights__target_type_record__help}
-                                                            </span>
+                                                            <span class="admin__form-help-text">#{msg.admin__highlights__target_type_record__help}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -140,9 +136,7 @@
                                                                 requiredMessage="#{msg.info__input_required}"
                                                                 required="#{highlight.data.targetType eq 'URL'}"
                                                                 value="#{highlight.data.targetUrl}" />
-                                                            <span class="admin__form-help-text">
-                                                                #{msg.admin__highlights__target_type_url__help}
-                                                            </span>
+                                                            <span class="admin__form-help-text">#{msg.admin__highlights__target_type_url__help}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -203,9 +197,7 @@
                                                             styleClass="form-control -validation-input"
                                                             requiredMessage="#{msg.info__input_required}"
                                                             value="#{highlight.data.name.text}" />
-                                                        <span class="admin__form-help-text">
-                                                            #{msg.cms__record_notes_select_record__help}
-                                                        </span>
+                                                        <span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
                                                     </h:panelGroup>
                                                 </div>
 
@@ -213,9 +205,7 @@
                                                     <div
                                                         class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' or highlight.data.targetType ne 'URL' ? '-deactivated' : ''}">
                                                         <div class="col-12 col-lg-2 control-label admin__form-label">
-                                                            <label for="inputObjectIdentifier">
-                                                                #{msg.admin__highlights__target_url}:
-                                                            </label>
+                                                            <label for="inputObjectIdentifier">#{msg.admin__highlights__target_url}:</label>
                                                         </div>
                                                         <h:panelGroup
                                                             id="targetUrlInputGroup"
@@ -245,9 +235,7 @@
                                                                     execute="@this"
                                                                     render="@form" />
                                                             </h:inputText>
-                                                            <span class="admin__form-help-text">
-                                                                #{msg.cms__highlight_target_url__help}
-                                                            </span>
+                                                            <span class="admin__form-help-text">#{msg.cms__highlight_target_url__help}</span>
                                                         </h:panelGroup>
                                                     </div>
                                                 </ui:fragment>
@@ -256,9 +244,7 @@
                                                     <div
                                                         class="form-group form-row #{highlight.isDefaultLocaleSelected() == 'false' or highlight.data.targetType ne 'RECORD' ? '-deactivated' : ''}">
                                                         <div class="col-12 col-lg-2 control-label admin__form-label">
-                                                            <label for="inputObjectIdentifier">
-                                                                #{msg.admin__highlights__new_pi}:
-                                                            </label>
+                                                            <label for="inputObjectIdentifier">#{msg.admin__highlights__new_pi}:</label>
                                                         </div>
                                                         <h:panelGroup
                                                             id="recordIdentifierInputGroup"
@@ -292,9 +278,7 @@
                                                                     execute="@this"
                                                                     render="@form" />
                                                             </h:inputText>
-                                                            <span class="admin__form-help-text">
-                                                                #{msg.cms__highligh_record_identifier__help}
-                                                            </span>
+                                                            <span class="admin__form-help-text">#{msg.cms__highligh_record_identifier__help}</span>
                                                         </h:panelGroup>
                                                     </div>
                                                 </ui:fragment>
@@ -303,16 +287,13 @@
                                         <!-- IMAGE -->
                                         <h2>#{msg.admin__highlights__image}</h2>
                                         <div class="admin__default-block">
-                                            <p class="admin__boxed-entry-description">
-                                                #{msg.admin__highlights__image_desc}
-                                            </p>
+                                            <p class="admin__boxed-entry-description">#{msg.admin__highlights__image_desc}</p>
 
                                             <h:panelGroup
                                                 layout="block"
                                                 id="imageModeGroup"
                                                 styleClass="admin__cms-edit-collection-image-actions-wrapper">
-                                                <div
-                                                    class="form-group admin__cms-edit-collection-connected-radio-buttons">
+                                                <div class="form-group admin__cms-edit-collection-connected-radio-buttons">
                                                     <div class="connected-top">
                                                         <h:selectOneRadio
                                                             group="imageModeRadio"
@@ -400,8 +381,7 @@
                                                     id="piGroup"
                                                     rendered="#{highlight.data.imageMode == 'RECORD_REPRESENTATIVE'}">
                                                     <div class="admin__cms-edit-collection-image-thumbnail">
-                                                        <ui:fragment
-                                                            rendered="#{not empty highlight.data.recordIdentifier}">
+                                                        <ui:fragment rendered="#{not empty highlight.data.recordIdentifier}">
                                                             <img
                                                                 src="#{highlight.imageURI}"
                                                                 class="img-fluid"
@@ -462,9 +442,7 @@
                                         <div class="admin__default-block">
                                             <div class="admin__record-notes-visibility">
                                                 <h2>#{msg.cms_pageMetadata_privacyStatus}</h2>
-                                                <div class="admin__form-help-text in mb-2">
-                                                    #{msg.admin__highlights__sidebar_status_help}
-                                                </div>
+                                                <div class="admin__form-help-text in mb-2">#{msg.admin__highlights__sidebar_status_help}</div>
                                                 <div class="mb-1 d-flex justify-content-between">
                                                     <!-- 												<label>#{msg.admin__highlights__sidebar_status_toggle}: </label> -->
                                                     <viewerComponent:toggleSwitch
@@ -477,18 +455,13 @@
                                         <div class="admin__default-block">
                                             <h2>#{msg.admin__highlights__period}</h2>
 
-                                            <div
-                                                class="#{highlight.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
-                                                <div class="admin__form-help-text in mb-2">
-                                                    #{msg.admin__highlights__period_info}
-                                                </div>
+                                            <div class="#{highlight.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
+                                                <div class="admin__form-help-text in mb-2">#{msg.admin__highlights__period_info}</div>
 
                                                 <div class="admin__highlighted-objects-date-wrapper">
                                                     <div class="form-row mt-3 mb-1">
                                                         <div class="col-4 control-label admin__form-label">
-                                                            <label for="pickerDateStart">
-                                                                #{msg.admin__crowdsourcing_campaign_duration_from}:
-                                                            </label>
+                                                            <label for="pickerDateStart">#{msg.admin__crowdsourcing_campaign_duration_from}:</label>
                                                         </div>
 
                                                         <div class="col-8 control-label admin__form-label">
@@ -514,14 +487,11 @@
 
                                                     <div class="form-row">
                                                         <div class="col-4 control-label admin__form-label">
-                                                            <label for="pickerDateStart">
-                                                                #{msg.admin__crowdsourcing_campaign_duration_until}:
-                                                            </label>
+                                                            <label for="pickerDateStart">#{msg.admin__crowdsourcing_campaign_duration_until}:</label>
                                                         </div>
 
                                                         <div class="col-8 control-label admin__form-label">
-                                                            <div
-                                                                class="admin__date-picker admin__highlighted-objects-date-picker">
+                                                            <div class="admin__date-picker admin__highlighted-objects-date-picker">
                                                                 <div class="admin__campaign-date-picker">
                                                                     <h:inputText
                                                                         id="pickerDateEnd"
@@ -545,23 +515,17 @@
                                                     </div>
 
                                                     <script type="text/javascript">
-                                                        $(document).ready(function(){
-                                                            $("[data-target='datePickerStart']").datepicker({
-                                                                onSelect: function(selected) {
-                                                                  $("[data-target='datePickerEnd']").datepicker("option","minDate", selected)
-                                                                },
-                                                           		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
-                                                           		isRTL: #{navigationHelper.rtl},
-                                                            });
-
-                                                            $("[data-target='datePickerEnd']").datepicker({
-                                                                onSelect: function(selected) {
-                                                                   $("[data-target='datePickerStart']").datepicker("option","maxDate", selected)
-                                                                },
-                                                        		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
-                                                        		isRTL: #{navigationHelper.rtl},
-                                                            });
-                                                        });
+                                                    //<![CDATA[
+                                                        if (typeof viewerJS !== 'undefined' && viewerJS.datePicker) {
+                                                            var startEl = document.querySelector("[data-target='datePickerStart']");
+                                                            var endEl = document.querySelector("[data-target='datePickerEnd']");
+                                                            if (startEl && endEl) {
+                                                                viewerJS.datePicker.createRange(startEl, endEl, {
+                                                                    locale: '#{navigationHelper.localeString}',
+                                                                });
+                                                            }
+                                                        }
+                                                    //]]>
                                                     </script>
                                                 </div>
                                             </div>
@@ -596,8 +560,7 @@
                                                             src="#{highlightsBean.getRecordRepresentativeURI(350, 420)}" />
                                                     </div>
                                                     <div class="admin__record-notes-metadata">
-                                                        <ui:include
-                                                            src="/resources/includes/metadata/metadataElement.xhtml">
+                                                        <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
                                                             <ui:param
                                                                 name="metadataElement"
                                                                 value="#{highlightsBean.metadataElement}" />

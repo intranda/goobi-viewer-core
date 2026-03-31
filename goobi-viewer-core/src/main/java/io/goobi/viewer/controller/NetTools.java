@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -113,6 +114,43 @@ public final class NetTools {
      * Hiding public constructor.
      */
     private NetTools() {
+    }
+
+    /**
+     * Checks whether the given redirect URL is allowed. A URL is allowed if it starts with the given application base URL
+     * or if its host is in the configured redirect whitelist.
+     *
+     * @param redirectUrl URL to check
+     * @param applicationUrl Application base URL (may be null)
+     * @return true if allowed; false otherwise
+     * @should return true if redirectUrl starts with application url
+     * @should return true if redirectUrl host is whitelisted
+     * @should return false if redirectUrl host is not whitelisted
+     * @should return false if redirectUrl is malformed
+     * @should return false if redirectUrl is null
+     */
+    public static boolean isRedirectUrlAllowed(String redirectUrl, String applicationUrl) {
+        if (redirectUrl == null) {
+            return false;
+        }
+
+        // Allow URLs that start with the application's own URL
+        if (applicationUrl != null && redirectUrl.startsWith(applicationUrl)) {
+            return true;
+        }
+
+        // Check against configured whitelist of allowed redirect hosts
+        List<String> whitelist = DataManager.getInstance().getConfiguration().getHttpHeaderLoginRedirectWhitelist();
+        if (!whitelist.isEmpty()) {
+            try {
+                String host = new URI(redirectUrl).toURL().getHost();
+                return whitelist.contains(host);
+            } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
+                logger.warn("Could not parse redirect URL: {}", e.getMessage());
+            }
+        }
+
+        return false;
     }
 
     /**

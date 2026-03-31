@@ -5,9 +5,7 @@
     <name>cms__template_33__title</name>
     <description>cms__template_33__description</description>
     <icon>cms_template_33_slider.png</icon>
-    <html>
-cms_template_33_slider.xhtml
-    </html>
+    <html>cms_template_33_slider.xhtml</html>
     <content>
         <item
             id="slider"

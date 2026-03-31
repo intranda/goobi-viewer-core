@@ -10,8 +10,7 @@
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- FULL TREEVIEW -->
-    <h:panelGroup
-        rendered="#{!configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
+    <h:panelGroup rendered="#{!configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
         <nav class="toc__list-full">
             <ul class="toc__list-outer-list">
                 <ui:repeat

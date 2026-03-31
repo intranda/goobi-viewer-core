@@ -163,7 +163,8 @@
                                                     </c:forEach>
 
                                                     <f:ajax
-                                                        render=":searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index} :advsearch_value_group_0-#{status.index}-#{lineStatus.index}" />
+                                                        render=":searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index} :advsearch_value_group_0-#{status.index}-#{lineStatus.index}"
+                                                        onevent="e => {if(e.status == 'success' &amp;&amp; viewerJS.datePicker) viewerJS.datePicker.init()}" />
                                                 </h:selectOneMenu>
                                             </div>
                                         </div>
@@ -220,7 +221,8 @@
                                                                 itemDisabled="#{field.disabled}" />
                                                         </c:forEach>
                                                         <f:ajax
-                                                            render=":searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index} :advsearch_value_group_0-#{status.index}-#{lineStatus.index}" />
+                                                            render=":searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index} :advsearch_value_group_0-#{status.index}-#{lineStatus.index}"
+                                                            onevent="e => {if(e.status == 'success' &amp;&amp; viewerJS.datePicker) viewerJS.datePicker.init()}" />
                                                     </h:selectOneMenu>
                                                 </div>
                                             </div>
@@ -240,7 +242,7 @@
                                                 class="sr-only"
                                                 for="advsearchValueText_0-#{status.index}-#{lineStatus.index}" />
                                             <div class="search-advanced__input-group-field">
-                                                <ui:fragment rendered="#{queryItem.range}">
+                                                <ui:fragment rendered="#{queryItem.range and !queryItem.datepicker}">
                                                     <div
                                                         class="search-advanced__year-span-from d-none d-lg-inline-block">
                                                         #{msg.searchAdvanced_range_value1}
@@ -268,6 +270,55 @@
                                                             name="placeholder"
                                                             value="#{msg.year}" />
                                                     </h:inputText>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{queryItem.range and queryItem.datepicker}">
+                                                    <div
+                                                        class="search-advanced__year-span-from d-none d-lg-inline-block">
+                                                        #{msg.searchAdvanced_range_value1}
+                                                    </div>
+                                                    <div class="datepicker-input">
+                                                        <h:inputText
+                                                            id="advsearchDatepicker1_0-#{status.index}-#{lineStatus.index}"
+                                                            styleClass="form-control value-text -with-right-border search-advanced__input-value"
+                                                            value="#{line.value}">
+                                                            <f:passThroughAttribute
+                                                                name="data-datepicker-range-group"
+                                                                value="advSearchRange_#{status.index}_#{lineStatus.index}" />
+                                                            <f:passThroughAttribute
+                                                                name="placeholder"
+                                                                value="#{msg.year}" />
+                                                        </h:inputText>
+                                                        <span class="datepicker-input__icon">
+                                                            <util:icon
+                                                                icon="calendar"
+                                                                svgClass="icon" />
+                                                        </span>
+                                                    </div>
+                                                    <util:icon
+                                                        icon="arrows-horizontal"
+                                                        styleClass="search-advanced__between-arrow d-lg-none"
+                                                        ariaHidden="true" />
+                                                    <div class="search-advanced__year-span-to d-none d-lg-inline-block">
+                                                        #{msg.searchAdvanced_range_value2}
+                                                    </div>
+                                                    <div class="datepicker-input">
+                                                        <h:inputText
+                                                            id="advsearchDatepicker2_0-#{status.index}-#{lineStatus.index}"
+                                                            styleClass="form-control value-text -with-right-border search-advanced__input-value"
+                                                            value="#{line.value2}">
+                                                            <f:passThroughAttribute
+                                                                name="data-datepicker-range-end"
+                                                                value="advSearchRange_#{status.index}_#{lineStatus.index}" />
+                                                            <f:passThroughAttribute
+                                                                name="placeholder"
+                                                                value="#{msg.year}" />
+                                                        </h:inputText>
+                                                        <span class="datepicker-input__icon">
+                                                            <util:icon
+                                                                icon="calendar"
+                                                                svgClass="icon" />
+                                                        </span>
+                                                    </div>
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{!queryItem.range}">
                                                     <h:inputText
@@ -458,7 +509,7 @@
                                 </h:selectOneMenu>
                                 <h:commandButton
                                     style="display: none"
-                                    action="#{search.search(cmsBean.currentPage.subThemeDiscriminatorValue)}">
+                                    action="#{search.search(cmsBean.currentPage.subTheme)}">
                                     <f:passThroughAttribute
                                         name="data-hits-per-page"
                                         value="reload" />

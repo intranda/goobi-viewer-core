@@ -102,7 +102,7 @@ public class CalendarView implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public void populateCalendar() throws PresentationException, IndexUnreachableException {
-        if (anchorPi != null && anchorPi.equals(pi)) {
+        if (anchorPi != null && anchorField != null) {
             calendarItems = CalendarBean.populateMonthsWithDays(year, null, " +" + anchorField + ":\"" + anchorPi + "\"");
         } else {
             calendarItems = CalendarBean.populateMonthsWithDays(year, null, " +" + SolrConstants.PI_TOPSTRUCT + ":\"" + pi + "\"");
@@ -129,6 +129,10 @@ public class CalendarView implements Serializable {
                 logger.trace("Volume years query: {}", query);
                 volumeYears = SearchHelper.getFacetValues(query, SolrConstants.CALENDAR_YEAR, 1);
             }
+        }
+
+        if (year == null && !volumeYears.isEmpty()) {
+            setYear(volumeYears.get(0));
         }
 
         return volumeYears;
@@ -159,6 +163,28 @@ public class CalendarView implements Serializable {
         } catch (PresentationException | IndexUnreachableException e) {
             logger.debug("{} thrown here: {}", e.getClass().getSimpleName(), e.getMessage());
         }
+    }
+
+    /**
+     * Returns the parent identifier used for calendar queries.
+     * For anchor volumes this is the anchor PI, for group members it is the group identifier value
+     * (i.e. the PI of the GROUP document).
+     *
+     * @return the anchorPi
+     */
+    public String getAnchorPi() {
+        return anchorPi;
+    }
+
+    /**
+     * Returns the Solr field name used for parent lookups.
+     * For anchor volumes this is {@code PI_ANCHOR}, for group members it is the group identifier field
+     * (e.g. {@code GROUPID_NEWSPAPER}).
+     *
+     * @return the anchorField
+     */
+    public String getAnchorField() {
+        return anchorField;
     }
 
     /**

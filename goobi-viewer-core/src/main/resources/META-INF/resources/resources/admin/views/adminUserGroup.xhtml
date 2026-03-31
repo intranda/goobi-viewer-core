@@ -49,9 +49,7 @@
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
                                             <label for="userGroupNameGeneral">#{msg.name}:</label>
-                                            <span class="admin__label-required-field">
-                                                (#{msg.form__required_field})
-                                            </span>
+                                            <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                         </div>
                                         <div class="col-9 admin__form-input">
                                             <h:inputText
@@ -59,9 +57,7 @@
                                                 id="userGroupNameGeneral"
                                                 styleClass="form-control"
                                                 required="true" />
-                                            <span class="admin__form-help-text">
-                                                #{msg.admin__user_group_name__help}
-                                            </span>
+                                            <span class="admin__form-help-text">#{msg.admin__user_group_name__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button
@@ -83,9 +79,7 @@
                                                 value="#{adminBean.currentUserGroup.description}"
                                                 id="userGroupDescription"
                                                 styleClass="form-control" />
-                                            <span class="admin__form-help-text">
-                                                #{msg.admin__user_group_description__help}
-                                            </span>
+                                            <span class="admin__form-help-text">#{msg.admin__user_group_description__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button
@@ -101,9 +95,7 @@
                                     <div class="form-group form-row">
                                         <div class="col-2 control-label admin__form-label">
                                             <label for="userGroupOwner">#{msg.userGroup_owner}:</label>
-                                            <span class="admin__label-required-field">
-                                                (#{msg.form__required_field})
-                                            </span>
+                                            <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                         </div>
                                         <div class="col-9 admin__form-input">
                                             <h:selectOneMenu
@@ -120,9 +112,7 @@
                                                     event="change"
                                                     render="@this membersGroup" />
                                             </h:selectOneMenu>
-                                            <span class="admin__form-help-text">
-                                                #{msg.admin__user_group_owner__help}
-                                            </span>
+                                            <span class="admin__form-help-text">#{msg.admin__user_group_owner__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button
@@ -168,8 +158,7 @@
                                     </div>
 
                                     <!-- ADD MEMBER ACTION -->
-                                    <div
-                                        class="col-4 col-lg-1 align-self-center d-flex justify-content-center admin__form-action-link">
+                                    <div class="col-4 col-lg-1 align-self-center d-flex justify-content-center admin__form-action-link">
                                         <button
                                             class="btn btn--link -bluelink"
                                             jsf:action="#{adminBean.addUserRoleAction}"
@@ -181,9 +170,7 @@
 
                                 <div class="form-row admin__group-member-entry">
                                     <div class="col-11">
-                                        <div class="admin__group-member-name">
-                                            #{adminBean.currentUserGroup.owner.backendDisplayName}
-                                        </div>
+                                        <div class="admin__group-member-name">#{adminBean.currentUserGroup.owner.backendDisplayName}</div>
                                     </div>
                                 </div>
                                 <div
@@ -200,14 +187,10 @@
                                             data-require-confirmation="true"
                                             data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.userGroup_removeMemberConfirmationText, membership.user.displayName, membership.userGroup.name)}">
                                             <div class="col-11">
-                                                <span class="admin__group-member-name">
-                                                    #{membership.user.backendDisplayName}
-                                                </span>
+                                                <span class="admin__group-member-name">#{membership.user.backendDisplayName}</span>
                                             </div>
                                             <div class="col-1 d-flex justify-content-center">
-                                                <span class="admin__group-member-delete-hint -redlink">
-                                                    #{msg.delete}
-                                                </span>
+                                                <span class="admin__group-member-delete-hint -redlink">#{msg.delete}</span>
                                             </div>
                                         </button>
                                     </ui:repeat>

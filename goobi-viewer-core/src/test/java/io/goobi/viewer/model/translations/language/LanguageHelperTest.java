@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.translations.language;
 
+import java.util.Set;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -46,10 +48,11 @@ class LanguageHelperTest extends AbstractTest {
 
     @Test
     void testShutdownStopsReloadingThread() throws InterruptedException {
+        Set<Thread> threadsBefore = Thread.getAllStackTraces().keySet();
         LanguageHelper helper = new LanguageHelper("src/test/resources/languages.xml");
 
         Thread triggerThread = Thread.getAllStackTraces().keySet().stream()
-                .filter(t -> t.getName().startsWith("ReloadingTrigger") && t.isAlive())
+                .filter(t -> !threadsBefore.contains(t) && t.getName().startsWith("ReloadingTrigger") && t.isAlive())
                 .findFirst()
                 .orElse(null);
 

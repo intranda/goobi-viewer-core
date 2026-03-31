@@ -54,6 +54,10 @@ import io.goobi.viewer.model.viewer.ViewManager;
  */
 public enum FileType {
 
+    /**
+     * abstract type comprising all types which are viewable in object view
+     */
+    MEDIA,
     IMAGE,
     AUDIO,
     VIDEO,
@@ -99,6 +103,9 @@ public enum FileType {
         }
         if (viewManager.getTopStructElement().isHasTei()) {
             types.add(FileType.TEI);
+        }
+        if (viewManager.getMediaType().isMediaType()) {
+            types.add(FileType.MEDIA);
         }
 
         try {

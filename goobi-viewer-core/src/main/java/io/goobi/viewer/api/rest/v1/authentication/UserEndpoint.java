@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.NetTools;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * <p>
@@ -61,7 +62,9 @@ public class UserEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Operation(summary = "Returns the IP address of the servlet request.", tags = { "users" })
+    @Operation(summary = "Get the IP address of the current request", tags = { "users" })
+    @ApiResponse(responseCode = "200", description = "JSON object containing the client IP address")
+    @ApiResponse(responseCode = "400", description = "No servlet request available")
     public Response getUserInfo() {
         if (servletRequest == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();

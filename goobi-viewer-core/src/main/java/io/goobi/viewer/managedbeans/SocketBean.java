@@ -50,7 +50,11 @@ public class SocketBean {
     @Push
     private PushContext backgroundTasksState;
 
-    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+    private static final ScheduledExecutorService SERVICE = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "socket-bean-scheduler");
+        t.setDaemon(true);
+        return t;
+    });
 
     /**
      * Default constructor. Instantiates a fixed schedule thread
@@ -61,9 +65,9 @@ public class SocketBean {
 
     public SocketBean(long minIdleSeconds) {
         if (minIdleSeconds < 1) {
-            service.scheduleAtFixedRate(createRunnable(), 0, 1, TimeUnit.MILLISECONDS);
+            SERVICE.scheduleAtFixedRate(createRunnable(), 0, 1, TimeUnit.MILLISECONDS);
         } else {
-            service.scheduleAtFixedRate(createRunnable(), 0, minIdleSeconds, TimeUnit.SECONDS);
+            SERVICE.scheduleAtFixedRate(createRunnable(), 0, minIdleSeconds, TimeUnit.SECONDS);
         }
     }
 
@@ -100,14 +104,22 @@ public class SocketBean {
 
     }
 
-    @PreDestroy
-    public void close() {
-        service.shutdownNow();
+    /**
+     * Shuts down the scheduler. Should be called from the servlet context listener on undeploy
+     * to ensure the thread terminates before Tomcat checks for lingering threads.
+     */
+    public static void shutdownExecutor() {
+        SERVICE.shutdownNow();
         try {
-            service.awaitTermination(2, TimeUnit.SECONDS);
+            SERVICE.awaitTermination(2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    @PreDestroy
+    public void close() {
+        shutdownExecutor();
     }
 
 }

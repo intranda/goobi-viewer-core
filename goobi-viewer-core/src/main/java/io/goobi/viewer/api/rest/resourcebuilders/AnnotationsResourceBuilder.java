@@ -41,6 +41,7 @@ import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationCollectionBuilder;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.v2.AnnotationList;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
@@ -282,7 +283,7 @@ public class AnnotationsResourceBuilder {
         if (!data.isEmpty()) {
             try {
                 collection.setFirst(getWebAnnotationPageForRecordComments(pi, uri, 1));
-            } catch (IllegalRequestException e) {
+            } catch (IllegalRequestException | ContentNotFoundException e) {
                 //no items
             }
         }
@@ -324,13 +325,16 @@ public class AnnotationsResourceBuilder {
      * @throws DAOException
      * @throws IllegalRequestException
      */
-    public AnnotationPage getWebAnnotationPageForRecordComments(String pi, URI uri, Integer page) throws DAOException, IllegalRequestException {
+    public AnnotationPage getWebAnnotationPageForRecordComments(String pi, URI uri, Integer page)
+            throws DAOException, IllegalRequestException, ContentNotFoundException {
         if (page == null || page < 1) {
             throw new IllegalRequestException("Page number must be at least 1");
         }
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForWork(pi);
         if (data.isEmpty()) {
-            throw new IllegalRequestException("Page number is out of bounds");
+            // Record doesn't exist or has no comments; return 404 rather than 400 so that
+            // schema-valid requests (syntactically correct pi + page) are not rejected with 400.
+            throw new ContentNotFoundException("No comments found for record: " + pi);
         }
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         return builder.setItemsPerPage(data.size())

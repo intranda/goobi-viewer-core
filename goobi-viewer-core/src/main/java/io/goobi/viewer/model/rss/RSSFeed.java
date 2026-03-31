@@ -46,6 +46,7 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedOutput;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
@@ -762,13 +763,27 @@ public final class RSSFeed {
                     q, filterQueries, maxHits != null ? maxHits : DataManager.getInstance().getConfiguration().getRssFeedItems(),
                     language != null ? language : servletRequest.getLocale().getLanguage(),
                     sortField, sortDescending);
-        } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
+        } catch (PresentationException e) {
+            // Treat Solr syntax errors caused by invalid query parameters as bad requests (400)
+            if (e.getMessage() != null && e.getMessage().startsWith("Bad query")) {
+                throw new IllegalRequestException(e.getMessage());
+            }
+            throw new ContentLibException(e.toString());
+        } catch (IndexUnreachableException e) {
+            // Solr reports some parse errors (e.g. invalid query syntax) as IndexUnreachableException
+            // when the error message is not matched by SolrTools.isQuerySyntaxError().
+            // Return 400 Bad Request so the client knows the query is malformed, not a server fault.
+            if (e.getMessage() != null && e.getMessage().contains("Error from server")) {
+                throw new IllegalRequestException(e.getMessage());
+            }
+            throw new ContentLibException(e.toString());
+        } catch (ViewerConfigurationException | DAOException e) {
             throw new ContentLibException(e.toString());
         }
     }
 
     /**
-     * 
+     *
      * @param language
      * @param maxHits
      * @param subtheme
@@ -788,13 +803,27 @@ public final class RSSFeed {
             return output
                     .outputString(createRssFeed(language, maxHits, subtheme, query, facets, servletRequest, sortField, sortDescending));
 
-        } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException | FeedException e) {
+        } catch (PresentationException e) {
+            // Treat Solr syntax errors caused by invalid query parameters as bad requests (400)
+            if (e.getMessage() != null && e.getMessage().startsWith("Bad query")) {
+                throw new IllegalRequestException(e.getMessage());
+            }
+            throw new ContentLibException(e.toString());
+        } catch (IndexUnreachableException e) {
+            // Solr reports some parse errors (e.g. invalid query syntax) as IndexUnreachableException
+            // when the error message is not matched by SolrTools.isQuerySyntaxError().
+            // Return 400 Bad Request so the client knows the query is malformed, not a server fault.
+            if (e.getMessage() != null && e.getMessage().contains("Error from server")) {
+                throw new IllegalRequestException(e.getMessage());
+            }
+            throw new ContentLibException(e.toString());
+        } catch (ViewerConfigurationException | DAOException | FeedException e) {
             throw new ContentLibException(e.toString());
         }
     }
 
     /**
-     * 
+     *
      * @param language
      * @param maxHits
      * @param subtheme

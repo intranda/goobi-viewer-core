@@ -285,8 +285,7 @@
 
         <!-- HIT LIST CONFIGURATION -->
         <h:panelGroup id="metadataListTypeGroup">
-            <ui:fragment
-                rendered="#{cc.attrs.contentItem.content.view.label == 'searchListTileView' and not empty cmsBean.cmsMetadataListTypes}">
+            <ui:fragment rendered="#{cc.attrs.contentItem.content.view.label == 'searchListTileView' and not empty cmsBean.cmsMetadataListTypes}">
                 <div class="admin__content-component-input-group">
                     <div class="admin__content-component-input-label">
                         <label for="metadataListType">#{msg.cms_metadataListType}:</label>

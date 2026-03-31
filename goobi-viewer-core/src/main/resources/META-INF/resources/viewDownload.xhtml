@@ -64,8 +64,7 @@
                         </h:panelGroup>
 
                         <!-- DOWNLOAD QUEUE -->
-                        <h:panelGroup
-                            rendered="#{downloadBean.message.messageStatus.name() == 'WAIT' or downloadBean.message.messageStatus.name() == 'NEW'}">
+                        <h:panelGroup rendered="#{downloadBean.message.messageStatus.name() == 'WAIT' or downloadBean.message.messageStatus.name() == 'NEW'}">
                             <div class="card card-info">
                                 <div class="card-header">
                                     <h2 class="card-title">#{msg.downloadQueueTitle}</h2>

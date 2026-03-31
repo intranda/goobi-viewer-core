@@ -837,8 +837,8 @@ public class ActiveDocumentBean implements Serializable {
             // Reset LOGID (the LOGID setter is called later by PrettyFaces, so if a value is passed, it will still be set)
             try {
                 setLogid("");
-            } catch (PresentationException e) {
-                //cannot be thrown here
+            } catch (IllegalUrlParameterException e) {
+                //cannot be thrown here since "" is always valid
             }
             logger.trace("imageToShow: {}", this.imageToShow);
         }
@@ -902,14 +902,16 @@ public class ActiveDocumentBean implements Serializable {
      * @param logid the logid to set
      * @throws io.goobi.viewer.exceptions.PresentationException
      */
-    public void setLogid(String logid) throws PresentationException {
+    public void setLogid(String logid) throws IllegalUrlParameterException {
         synchronized (this) {
             if ("-".equals(logid) || StringUtils.isEmpty(logid)) {
                 this.logid = "";
             } else if (StringUtils.isNotBlank(logid) && logid.matches("[\\w-]+")) {
                 this.logid = SolrTools.escapeSpecialCharacters(logid);
             } else {
-                throw new PresentationException("The passed logId " + SolrTools.escapeSpecialCharacters(logid) + " contains illegal characters");
+                // Illegal logId in URL — surface as a user-facing error without the exception class prefix
+                throw new IllegalUrlParameterException(
+                        "The passed logId " + SolrTools.escapeSpecialCharacters(logid) + " contains illegal characters");
             }
         }
     }
@@ -1064,6 +1066,8 @@ public class ActiveDocumentBean implements Serializable {
                 } else {
                     logger.warn("No IDDOC for identifier '{}' found.", persistentIdentifier);
                     reset();
+                    // Restore the identifier after reset so that update() can include it in the RecordNotFoundException message
+                    lastReceivedIdentifier = persistentIdentifier;
                 }
             }
         }
@@ -1634,14 +1638,15 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public TOC getToc() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        if (viewManager == null) {
+        ViewManager vm = viewManager;
+        if (vm == null) {
             return null;
         }
-        synchronized (viewManager) {
-            if (viewManager.getToc() == null) {
-                viewManager.setToc(createTOC());
+        synchronized (vm) {
+            if (vm.getToc() == null) {
+                vm.setToc(createTOC());
             }
-            return viewManager.getToc();
+            return vm.getToc();
         }
     }
 
@@ -2361,7 +2366,6 @@ public class ActiveDocumentBean implements Serializable {
             String urlRoot = navigationHelper.getApplicationUrl() + currentPageType.getName() + "/" + viewManager.getPi() + "/";
             String urlRootExplicit = navigationHelper.getApplicationUrl() + "!" + currentPageType.getName() + "/" + viewManager.getPi() + "/";
             switch (currentPageType) {
-                case viewCalendar:
                 case viewFullscreen:
                 case viewImage:
                 case viewMetadata:
@@ -2527,7 +2531,11 @@ public class ActiveDocumentBean implements Serializable {
     public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
         RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
         if (map == null) {
-            map = new RecordGeoMap(getTopDocument());
+            StructElement topDocument = getTopDocument();
+            if (topDocument == null) {
+                return new RecordGeoMap();
+            }
+            map = new RecordGeoMap(topDocument);
             this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), map);
         }
         return map;

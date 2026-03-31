@@ -27,9 +27,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,6 +39,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
 import io.goobi.viewer.model.viewer.themes.ThemeLink;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 
 /**
  * @author florian
@@ -69,7 +68,7 @@ public class AdminThemesBean implements Serializable {
     public String loadSubThemeName() {
         try {
             if (BeanUtils.getNavigationHelper().isCmsPage()) {
-                return BeanUtils.getCmsBean().getCurrentPage().getSubThemeDiscriminatorValue();
+                return BeanUtils.getCmsBean().getCurrentPage().getSubTheme();
             } else {
                 return Optional.ofNullable(BeanUtils.getNavigationHelper().getSubThemeDiscriminatorValue())
                         .map(v -> v.replaceAll("^-$", ""))

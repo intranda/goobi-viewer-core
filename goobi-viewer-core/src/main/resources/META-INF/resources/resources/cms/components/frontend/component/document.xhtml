@@ -23,8 +23,7 @@
     </composite:interface>
 
     <composite:implementation>
-        <ui:fragment
-            rendered="#{cc.attrs.cmsContent != null and cc.attrs.document != null and cc.attrs.component.hasAccess(userBean.user)}">
+        <ui:fragment rendered="#{cc.attrs.cmsContent != null and cc.attrs.document != null and cc.attrs.component.hasAccess(userBean.user)}">
             <div class="content-component content-component__document">
                 <img
                     id="documentLoader_#{cc.clientId}"

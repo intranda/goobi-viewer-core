@@ -186,8 +186,7 @@
                                         </h:panelGroup>
                                     </ui:repeat>
 
-                                    <ui:fragment
-                                        rendered="#{fn:length(adminLicenseBean.currentLicense.licensees) == 1}">
+                                    <ui:fragment rendered="#{fn:length(adminLicenseBean.currentLicense.licensees) == 1}">
                                         <h:commandLink
                                             action="#{adminLicenseBean.currentLicense.addLicensee}"
                                             immediate="true">
@@ -196,8 +195,7 @@
                                         </h:commandLink>
                                     </ui:fragment>
 
-                                    <ui:fragment
-                                        rendered="#{fn:length(adminLicenseBean.currentLicense.licensees) gt 1}">
+                                    <ui:fragment rendered="#{fn:length(adminLicenseBean.currentLicense.licensees) gt 1}">
                                         <h:commandLink
                                             action="#{adminLicenseBean.currentLicense.removeLicensee(licensee)}"
                                             immediate="true">
@@ -280,12 +278,10 @@
                                                 <ui:fragment rendered="#{licensee.userGroup != null}">
                                                     <dt class="col-4">#{licensee.userGroup.name}</dt>
                                                     <dd class="col-8">
-                                                        <h:outputText
-                                                            rendered="#{licensee.userGroup.description ne ''}">
+                                                        <h:outputText rendered="#{licensee.userGroup.description ne ''}">
                                                             #{licensee.userGroup.description}
                                                         </h:outputText>
-                                                        <h:outputText
-                                                            rendered="#{licensee.userGroup.description eq ''}">
+                                                        <h:outputText rendered="#{licensee.userGroup.description eq ''}">
                                                             <span
                                                                 class="admin__default-block-description-empty"
                                                                 aria-disabled="true">
@@ -301,8 +297,7 @@
                                                         <h:outputText rendered="#{licensee.ipRange.description ne ''}">
                                                             #{licensee.ipRange.description}
                                                         </h:outputText>
-                                                        <h:outputText
-                                                            rendered="#{licensee.ipRange.description == null or licensee.ipRange.description eq ''}">
+                                                        <h:outputText rendered="#{licensee.ipRange.description == null or licensee.ipRange.description eq ''}">
                                                             <span
                                                                 class="admin__default-block-description-empty"
                                                                 aria-disabled="true">
@@ -318,8 +313,7 @@
                                                         <h:outputText rendered="#{licensee.client.description ne ''}">
                                                             #{licensee.client.description}
                                                         </h:outputText>
-                                                        <h:outputText
-                                                            rendered="#{licensee.client.description == null or licensee.client.description eq ''}">
+                                                        <h:outputText rendered="#{licensee.client.description == null or licensee.client.description eq ''}">
                                                             <span
                                                                 class="admin__default-block-description-empty"
                                                                 aria-disabled="true">
@@ -332,16 +326,12 @@
                                         </ui:repeat>
                                         <!-- LICENSE TYPE INFO -->
                                         <dl class="row">
-                                            <dt class="col-4">
-                                                #{msg[adminLicenseBean.currentLicense.licenseType.name]}
-                                            </dt>
+                                            <dt class="col-4">#{msg[adminLicenseBean.currentLicense.licenseType.name]}</dt>
                                             <dd class="col-8">
-                                                <ui:fragment
-                                                    rendered="#{adminLicenseBean.currentLicense.licenseType.description ne ''}">
+                                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.description ne ''}">
                                                     #{msg[adminLicenseBean.currentLicense.licenseType.description]}
                                                 </ui:fragment>
-                                                <ui:fragment
-                                                    rendered="#{adminLicenseBean.currentLicense.licenseType.description eq ''}">
+                                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.description eq ''}">
                                                     <span
                                                         class="admin__default-block-description-empty"
                                                         aria-disabled="true">
@@ -366,15 +356,12 @@
                                         </ui:fragment>
 
                                         <!-- CORE FUNCTIONS -->
-                                        <ui:fragment
-                                            rendered="#{adminLicenseBean.currentLicense.licenseType.legalDisclaimerType}">
+                                        <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.legalDisclaimerType}">
                                             <p>#{msg.admin__right_functions_info_disclaimer}</p>
 
                                             <h:panelGroup id="scopeGroup">
-                                                <viewerForms:inputFormField
-                                                    label="#{msg.admin__legal__disclaimer_scope}">
-                                                    <div
-                                                        class="form-group admin__cms-edit-collection-connected-radio-buttons">
+                                                <viewerForms:inputFormField label="#{msg.admin__legal__disclaimer_scope}">
+                                                    <div class="form-group admin__cms-edit-collection-connected-radio-buttons">
                                                         <div class="connected-top">
                                                             <h:selectOneRadio
                                                                 group="scopeRadio"
@@ -400,8 +387,7 @@
                                                                 layout="block"
                                                                 id="scopeDurationInputGroup"
                                                                 rendered="#{adminLicenseBean.currentLicense.disclaimerScope.storageMode == 'LOCAL'}">
-                                                                <div
-                                                                    class="cms-module__option-control admin__form-input">
+                                                                <div class="cms-module__option-control admin__form-input">
                                                                     <h:inputText
                                                                         id="scopeDurationInput"
                                                                         styleClass="form-control"
@@ -417,8 +403,7 @@
                                         <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.cmsType}">
                                             <div class="admin__license-functions">
                                                 <!-- SUBTHEMES -->
-                                                <ui:fragment
-                                                    rendered="#{fn:length(adminLicenseBean.currentLicense.selectableSubthemes) > 0}">
+                                                <ui:fragment rendered="#{fn:length(adminLicenseBean.currentLicense.selectableSubthemes) > 0}">
                                                     <div class="form-group form-row blockAfterRadioToggler">
                                                         <div class="col-4">
                                                             <label
@@ -449,9 +434,7 @@
                                                                     <span class="toggle-inside" />
                                                                 </span>
                                                             </div>
-                                                            <span class="admin__form-help-text">
-                                                                #{msg.admin__license_allowed_subthemes__help}
-                                                            </span>
+                                                            <span class="admin__form-help-text">#{msg.admin__license_allowed_subthemes__help}</span>
                                                         </div>
                                                         <div class="col-1 admin__form-help-icon">
                                                             <button
@@ -478,21 +461,15 @@
                                                                         <ui:repeat
                                                                             var="selectable"
                                                                             value="#{adminLicenseBean.currentLicense.selectableSubthemes}">
-                                                                            <ui:fragment
-                                                                                rendered="#{selectable.selected}">
-                                                                                <div
-                                                                                    class="admin__badge admin__badge-dark">
-                                                                                    #{msg[selectable.value]}
-                                                                                </div>
+                                                                            <ui:fragment rendered="#{selectable.selected}">
+                                                                                <div class="admin__badge admin__badge-dark">#{msg[selectable.value]}</div>
                                                                             </ui:fragment>
                                                                         </ui:repeat>
                                                                     </h:panelGroup>
                                                                 </div>
                                                                 <div>
-                                                                    <div
-                                                                        class="page-metadata-item__categories-selectable-categories">
-                                                                        <div
-                                                                            class="page-metadata-item__categories-selectable-categories-select">
+                                                                    <div class="page-metadata-item__categories-selectable-categories">
+                                                                        <div class="page-metadata-item__categories-selectable-categories-select">
                                                                             <div class="cms-module__option-dropdown">
                                                                                 <div
                                                                                     class="cms-module__option-dropdown-trigger"
@@ -508,8 +485,7 @@
                                                                                                 <h:selectBooleanCheckbox
                                                                                                     type="checkbox"
                                                                                                     value="#{selectable.selected}">
-                                                                                                    <f:ajax
-                                                                                                        render="selected_subthemes" />
+                                                                                                    <f:ajax render="selected_subthemes" />
                                                                                                 </h:selectBooleanCheckbox>
                                                                                                 #{msg[selectable.value]}
                                                                                             </label>
@@ -527,8 +503,7 @@
                                                 </ui:fragment>
 
                                                 <!-- CATEGORIES -->
-                                                <ui:fragment
-                                                    rendered="#{fn:length(adminLicenseBean.currentLicense.selectableCategories) > 0}">
+                                                <ui:fragment rendered="#{fn:length(adminLicenseBean.currentLicense.selectableCategories) > 0}">
                                                     <div class="form-group form-row blockAfterRadioToggler">
                                                         <div class="col-4">
                                                             <label
@@ -559,9 +534,7 @@
                                                                     <span class="toggle-inside" />
                                                                 </span>
                                                             </div>
-                                                            <span class="admin__form-help-text">
-                                                                #{msg.admin__license_allowed_categories__help}
-                                                            </span>
+                                                            <span class="admin__form-help-text">#{msg.admin__license_allowed_categories__help}</span>
                                                         </div>
                                                         <div class="col-1 admin__form-help-icon">
                                                             <button
@@ -588,18 +561,13 @@
                                                                         var="selectable"
                                                                         value="#{adminLicenseBean.currentLicense.selectableCategories}">
                                                                         <ui:fragment rendered="#{selectable.selected}">
-                                                                            <div
-                                                                                class="admin__badge admin__badge-violet">
-                                                                                #{msg[selectable.value.name]}
-                                                                            </div>
+                                                                            <div class="admin__badge admin__badge-violet">#{msg[selectable.value.name]}</div>
                                                                         </ui:fragment>
                                                                     </ui:repeat>
                                                                 </h:panelGroup>
                                                                 <div>
-                                                                    <div
-                                                                        class="page-metadata-item__categories-selectable-categories">
-                                                                        <div
-                                                                            class="page-metadata-item__categories-selectable-categories-select">
+                                                                    <div class="page-metadata-item__categories-selectable-categories">
+                                                                        <div class="page-metadata-item__categories-selectable-categories-select">
                                                                             <div class="cms-module__option-dropdown">
                                                                                 <div
                                                                                     class="cms-module__option-dropdown-trigger"
@@ -615,8 +583,7 @@
                                                                                                 <h:selectBooleanCheckbox
                                                                                                     type="checkbox"
                                                                                                     value="#{selectable.selected}">
-                                                                                                    <f:ajax
-                                                                                                        render="selected_categories" />
+                                                                                                    <f:ajax render="selected_categories" />
                                                                                                 </h:selectBooleanCheckbox>
                                                                                                 #{msg[selectable.value.name]}
                                                                                             </label>
@@ -664,9 +631,7 @@
                                                                 <span class="toggle-inside" />
                                                             </span>
                                                         </div>
-                                                        <span class="admin__form-help-text">
-                                                            #{msg.admin__license_allowed_cms_templates__help}
-                                                        </span>
+                                                        <span class="admin__form-help-text">#{msg.admin__license_allowed_cms_templates__help}</span>
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button
@@ -693,17 +658,13 @@
                                                                     var="selectable"
                                                                     value="#{adminLicenseBean.currentLicense.selectableTemplates}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
-                                                                        <div class="admin__badge admin__badge-primary">
-                                                                            #{msg[selectable.value.name]}
-                                                                        </div>
+                                                                        <div class="admin__badge admin__badge-primary">#{msg[selectable.value.name]}</div>
                                                                     </ui:fragment>
                                                                 </ui:repeat>
                                                             </h:panelGroup>
 
-                                                            <div
-                                                                class="page-metadata-item__categories-selectable-categories">
-                                                                <div
-                                                                    class="page-metadata-item__categories-selectable-categories-select">
+                                                            <div class="page-metadata-item__categories-selectable-categories">
+                                                                <div class="page-metadata-item__categories-selectable-categories-select">
                                                                     <div class="cms-module__option-dropdown">
                                                                         <div
                                                                             class="cms-module__option-dropdown-trigger"
@@ -719,8 +680,7 @@
                                                                                         <h:selectBooleanCheckbox
                                                                                             type="checkbox"
                                                                                             value="#{selectable.selected}">
-                                                                                            <f:ajax
-                                                                                                render="selected_templates" />
+                                                                                            <f:ajax render="selected_templates" />
                                                                                         </h:selectBooleanCheckbox>
                                                                                         #{msg[selectable.value.name]}
                                                                                     </label>
@@ -767,9 +727,7 @@
                                                                 <span class="toggle-inside" />
                                                             </span>
                                                         </div>
-                                                        <span class="admin__form-help-text">
-                                                            #{msg.admin__license_function_cms_edit_menu__help}
-                                                        </span>
+                                                        <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_menu__help}</span>
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button
@@ -813,9 +771,7 @@
                                                                 <span class="toggle-inside" />
                                                             </span>
                                                         </div>
-                                                        <span class="admin__form-help-text">
-                                                            #{msg.admin__license_function_cms_static_pages__help}
-                                                        </span>
+                                                        <span class="admin__form-help-text">#{msg.admin__license_function_cms_static_pages__help}</span>
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button
@@ -859,9 +815,7 @@
                                                                 <span class="toggle-inside" />
                                                             </span>
                                                         </div>
-                                                        <span class="admin__form-help-text">
-                                                            #{msg.admin__license_function_cms_edit_categories__help}
-                                                        </span>
+                                                        <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_categories__help}</span>
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button
@@ -905,9 +859,7 @@
                                                                 <span class="toggle-inside" />
                                                             </span>
                                                         </div>
-                                                        <span class="admin__form-help-text">
-                                                            #{msg.admin__license_function_cms_edit_collections__help}
-                                                        </span>
+                                                        <span class="admin__form-help-text">#{msg.admin__license_function_cms_edit_collections__help}</span>
                                                     </div>
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button
@@ -937,8 +889,7 @@
                                                         <ui:repeat
                                                             var="priv"
                                                             value="#{adminLicenseBean.currentLicense.licenseType.getSortedPrivileges(adminLicenseBean.currentLicense.licenseType.privileges)}">
-                                                            <span
-                                                                class="btn btn--link admin__badge admin__badge-secondary admin__license-action">
+                                                            <span class="btn btn--link admin__badge admin__badge-secondary admin__license-action">
                                                                 #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
                                                             </span>
                                                         </ui:repeat>
@@ -949,9 +900,7 @@
                                                                 class="btn btn--link admin__badge admin__badge-dark admin__license-action"
                                                                 jsf:action="#{adminLicenseBean.currentLicense.removePrivilege(priv)}"
                                                                 title="#{msg.remove}">
-                                                                <span>
-                                                                    #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
-                                                                </span>
+                                                                <span>#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</span>
                                                                 <util:icon icon="trash" />
                                                             </button>
                                                         </ui:repeat>
@@ -967,9 +916,7 @@
                                                     </div>
 
                                                     <div class="col-2" />
-                                                    <div class="col-10 pb-1">
-                                                        #{msg.admin__license_functions_available}
-                                                    </div>
+                                                    <div class="col-10 pb-1">#{msg.admin__license_functions_available}</div>
                                                     <div class="col-2" />
                                                     <div class="col-9 badge-hover">
                                                         <ui:repeat
@@ -994,8 +941,7 @@
                                                     </div>
                                                 </div>
 
-                                                <ui:fragment
-                                                    rendered="#{adminLicenseBean.currentLicense.displayTicketRequiredToggle}">
+                                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.displayTicketRequiredToggle}">
                                                     <div class="form-row form-group">
                                                         <div class="col-2" />
                                                         <div class="col-9">

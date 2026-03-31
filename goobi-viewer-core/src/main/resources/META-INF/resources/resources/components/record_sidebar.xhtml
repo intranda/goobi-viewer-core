@@ -26,8 +26,7 @@
 
             <!-- WIDGET COPYRIGHT -->
             <ui:fragment rendered="#{widgetName == 'copyright'}">
-                <widgetComponent:widget_copyrightInfo
-                    rendered="#{configurationBean.copyrightIndicatorStyle == 'widget'}" />
+                <widgetComponent:widget_copyrightInfo rendered="#{configurationBean.copyrightIndicatorStyle == 'widget'}" />
             </ui:fragment>
 
             <!-- WIDGET SEARCH RESULT NAVIGATION -->
@@ -102,14 +101,12 @@
 
                 <!-- WIDGET NAMES ENTITIES -->
                 <ui:fragment rendered="#{widgetName == 'named-entities'}">
-                    <widgetComponent:widget_nerFacetting
-                        rendered="#{displayConditions.matchRecord('{pageType: [viewObject]}')}" />
+                    <widgetComponent:widget_nerFacetting rendered="#{displayConditions.matchRecord('{pageType: [viewObject]}')}" />
                 </ui:fragment>
 
                 <!-- WIDGET RECORD NOTES -->
                 <ui:fragment rendered="#{widgetName == 'record-notes'}">
-                    <widgetComponent:widget_recordNotes
-                        notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
+                    <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
                 </ui:fragment>
 
                 <!-- WIDGET RELATED GROUPS -->
@@ -125,6 +122,11 @@
                 <!-- WIDGET USAGE STATS -->
                 <ui:fragment rendered="#{widgetName == 'statistics-usage' and statisticsBean.usageStatisticsActive}">
                     <widgetComponent:widget_statistics_usage />
+                </ui:fragment>
+
+                <!-- WIDGET CALENDAR -->
+                <ui:fragment rendered="#{widgetName == 'calendar'}">
+                    <widgetComponent:widget_calendar id="widgetCalendar" />
                 </ui:fragment>
 
                 <!-- WIDGET TOC -->

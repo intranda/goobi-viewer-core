@@ -85,6 +85,7 @@ import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.search.AdvancedSearchOrigin;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
 import io.goobi.viewer.model.search.FilterQueryParser;
@@ -130,7 +131,18 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private static final long serialVersionUID = 6962223613432267768L;
 
-    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(r -> {
+        Thread t = new Thread(r);
+        t.setDaemon(true);
+        return t;
+    });
+
+    /**
+     * Shuts down the static executor. Should be called from the servlet context listener on undeploy.
+     */
+    public static void shutdown() {
+        EXECUTOR.shutdownNow();
+    }
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SearchBean.class);
@@ -185,6 +197,8 @@ public class SearchBean implements SearchInterface, Serializable {
     private SearchSortingOption searchSortingOption;
     /** Keep lists of select values, once generated, for performance reasons. */
     private final Map<String, List<StringPair>> advancedSearchSelectItems = new HashMap<>();
+    /** Origin record from which the search was triggered (for back-link to TOC view). Null if not searching within a record. */
+    private AdvancedSearchOrigin advancedSearchOrigin;
     /** Group of query item clusters for the advanced search. */
     private SearchQueryGroup advancedSearchQueryGroup =
             new SearchQueryGroup(
@@ -538,6 +552,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void resetSearchParameters(boolean resetAllSearchTypes, boolean resetCurrentPage) {
         logger.trace("resetSearchParameters; resetAllSearchTypes: {}", resetAllSearchTypes);
+        this.advancedSearchOrigin = null;
         CalendarBean calendarBean = BeanUtils.getCalendarBean();
         if (resetAllSearchTypes) {
             resetSimpleSearchParameters();
@@ -659,6 +674,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 // Generate the hierarchical facet parameter from query items
                 if (item.isHierarchical()) {
                     // logger.trace("{} is hierarchical", queryItem.getField()); //NOSONAR Debug
+                    usedHierarchicalFields.add(item.getField());
                     if (StringUtils.isBlank(item.getValue())) {
                         continue;
                     }
@@ -679,7 +695,6 @@ public class SearchBean implements SearchInterface, Serializable {
                         if (!usedFieldValuePairs.contains(item.getField() + ":" + item.getValue())) {
                             facetItem.setLink(item.getField() + ":" + item.getValue());
                             usedFieldValuePairs.add(facetItem.getLink());
-                            usedHierarchicalFields.add(item.getField());
                             // logger.trace("reuse facet item: {}", facetItem); //NOSONAR Debug
                             skipQueryItem = true;
                             break;
@@ -697,7 +712,6 @@ public class SearchBean implements SearchInterface, Serializable {
                             continue;
                         }
                         usedFieldValuePairs.add(itemQuery);
-                        usedHierarchicalFields.add(item.getField());
 
                         sbCurrentCollection.append(itemQuery).append(";;");
 
@@ -1065,6 +1079,13 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public int getActiveSearchType() {
         return activeSearchType;
+    }
+
+    /**
+     * @return the origin record from which the search was triggered, or null
+     */
+    public AdvancedSearchOrigin getAdvancedSearchOrigin() {
+        return advancedSearchOrigin;
     }
 
     /** {@inheritDoc} */
@@ -3021,32 +3042,65 @@ public class SearchBean implements SearchInterface, Serializable {
      * searchInRecord.
      * </p>
      *
-     * @param queryField a {@link java.lang.String} object
-     * @param queryValue a {@link java.lang.String} object
+     * @param piField a {@link java.lang.String} object
+     * @param piValue a {@link java.lang.String} object
      * @return Navigation outcome
      */
-    public String searchInRecord(String queryField, String queryValue) {
-        logger.trace("searchInRecord: {}:{}", queryField, queryValue);
-        // reset all items except the one containing the value from the search input field
+    public String searchInRecord(String piField, String piValue) {
+        return searchInRecord(piField, piValue, null, null);
+    }
+
+    /**
+     * <p>
+     * searchInRecord.
+     * </p>
+     *
+     * @param piField a {@link java.lang.String} object
+     * @param piValue a {@link java.lang.String} object
+     * @param date1
+     * @param date2
+     * @return Navigation outcome
+     */
+    public String searchInRecord(String piField, String piValue, String date1, String date2) {
+        logger.trace("searchInRecord: {}:{}", piField, piValue);
+        // Clear any active facets from the browsing context so they don't pollute the search
+        this.facets.resetActiveFacets();
+        // reset all items except those containing values from the search input fields
         int index = 0;
         for (SearchQueryItem item : this.advancedSearchQueryGroup.getQueryItems()) {
-            if (index != 1) {
+            if (index != 1 && index != 2) {
                 item.reset();
             }
             index++;
         }
-        this.advancedSearchQueryGroup.getQueryItems().get(0).setField(queryField);
-        if (StringUtils.isNotBlank(queryValue)) {
-            this.advancedSearchQueryGroup.getQueryItems().get(0).setValue(queryValue);
+        this.advancedSearchQueryGroup.getQueryItems().get(0).setField(piField);
+        if (StringUtils.isNotBlank(piValue)) {
+            this.advancedSearchQueryGroup.getQueryItems().get(0).setValue(piValue);
         }
         this.advancedSearchQueryGroup.getQueryItems().get(0).getLines().get(0).setOperator(SearchItemOperator.AND);
         this.advancedSearchQueryGroup.getQueryItems().get(1).setField(SearchHelper.SEARCH_FILTER_ALL.getField());
         this.advancedSearchQueryGroup.getQueryItems().get(1).setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
         this.advancedSearchQueryGroup.getQueryItems().get(1).getLines().get(0).setOperator(SearchItemOperator.AND);
+        // Configure queryItems[2] for YEARMONTHDAY date range (range + datepicker derived from field config)
+        if (StringUtils.isNotEmpty(date1) && StringUtils.isNotEmpty(date2)) {
+            this.advancedSearchQueryGroup.getQueryItems().get(2).setField(SolrConstants.CALENDAR_DAY);
+            this.advancedSearchQueryGroup.getQueryItems().get(2).setValue(date1);
+            this.advancedSearchQueryGroup.getQueryItems().get(2).setValue2(date2);
+            this.advancedSearchQueryGroup.getQueryItems().get(2).getLines().get(0).setOperator(SearchItemOperator.AND);
+        }
         this.setActiveSearchType(1);
         logger.trace("Searching for: {}", this.advancedSearchQueryGroup.getQueryItems().get(1).getValue());
 
-        return this.searchAdvanced();
+        String outcome = this.searchAdvanced();
+        // Set advancedSearchOrigin AFTER searchAdvanced() because it calls resetSearchParameters() which would null it
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        if (adb != null && adb.getViewManager() != null) {
+            this.advancedSearchOrigin = new AdvancedSearchOrigin(
+                    piValue,
+                    adb.getViewManager().getTopStructElement().getLabel(),
+                    adb.getViewManager().getTopStructElement().getDocStructType());
+        }
+        return outcome;
     }
 
     /**

@@ -64,8 +64,10 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -108,7 +110,9 @@ public class RecordsFilesImageResource extends ImageResource {
             @Context ApiUrls urls, @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
             @Context ContentServerCacheManager cacheManager) {
-        super(context, request, response, pi, filename, cacheManager);
+        // Validate PI before passing to ImageResource which builds a file:// URI from the
+        // pi (as folder) and filename; illegal URI characters cause ContentLibException (HTTP 500).
+        super(context, request, response, requireValidPi(pi), filename, cacheManager);
         this.pi = pi;
         this.filename = filename;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
@@ -249,5 +253,17 @@ public class RecordsFilesImageResource extends ImageResource {
         }
 
         return new ImageInformation3(info);
+    }
+
+    /**
+     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400)
+     * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
+     * Declared static so it can be invoked inside the super() constructor call.
+     */
+    static String requireValidPi(String pi) {
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
+        }
+        return pi;
     }
 }

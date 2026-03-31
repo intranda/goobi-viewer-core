@@ -42,6 +42,7 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -75,7 +76,8 @@ public class OpenSearchResource {
      */
     @GET
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = { "search" }, summary = "Endpoint for opensearch api")
+    @Operation(tags = { "search" }, summary = "OpenSearch description document")
+    @ApiResponse(responseCode = "200", description = "OpenSearch description XML")
     public String getXml() {
         String xml = null;
         try {

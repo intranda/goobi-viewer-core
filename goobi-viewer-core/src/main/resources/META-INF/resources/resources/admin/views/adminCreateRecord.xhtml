@@ -48,9 +48,7 @@
                                     <div class="form-group form-row">
                                         <div class="col-2 admin__form-label">
                                             <label for="createDCTitle">#{msg.MD_TITLE}:</label>
-                                            <span class="admin__label-required-field">
-                                                (#{msg.form__required_field})
-                                            </span>
+                                            <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                         </div>
                                         <div class="col-9 admin__form-input">
                                             <h:inputText
@@ -59,9 +57,7 @@
                                                 value="#{createRecordBean.title}"
                                                 required="true"
                                                 requiredMessage="#{msg.error__title_required}" />
-                                            <span class="admin__form-help-text">
-                                                #{msg.admin__create_record__metadata_title__help}
-                                            </span>
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_title__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button
@@ -84,9 +80,7 @@
                                                 id="createDCDescription"
                                                 styleClass="form-control"
                                                 value="#{createRecordBean.description}" />
-                                            <span class="admin__form-help-text">
-                                                #{msg.admin__create_record__metadata_description__help}
-                                            </span>
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_description__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button
@@ -120,9 +114,7 @@
                                                     itemValue="#{language.isoCode}"
                                                     itemDescription="#{language.isoCode}" />
                                             </h:selectOneMenu>
-                                            <span class="admin__form-help-text">
-                                                #{msg.admin__create_record__metadata_language__help}
-                                            </span>
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_language__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button
@@ -146,9 +138,7 @@
                                                 id="createDCDate"
                                                 styleClass="form-control"
                                                 value="#{createRecordBean.date}" />
-                                            <span class="admin__form-help-text">
-                                                #{msg.admin__create_record__metadata_date__help}
-                                            </span>
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_date__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button
@@ -172,9 +162,7 @@
                                                 id="createDCCreator"
                                                 styleClass="form-control"
                                                 value="#{createRecordBean.creator}" />
-                                            <span class="admin__form-help-text">
-                                                #{msg.admin__create_record__metadata_creator__help}
-                                            </span>
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_creator__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button
@@ -198,9 +186,7 @@
                                                 id="createDCCollection"
                                                 styleClass="form-control"
                                                 value="#{createRecordBean.collection}" />
-                                            <span class="admin__form-help-text">
-                                                #{msg.admin__create_record__metadata_collection__help}
-                                            </span>
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_collection__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button
@@ -233,9 +219,7 @@
                                                     itemLabel="#{license.label}"
                                                     itemValue="#{license.url}" />
                                             </h:selectOneMenu>
-                                            <span class="admin__form-help-text">
-                                                #{msg.admin__create_record__metadata_license__help}
-                                            </span>
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_license__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button
@@ -259,9 +243,7 @@
                                                 id="createDCAccessCondition"
                                                 styleClass="form-control"
                                                 value="#{createRecordBean.accessCondition}" />
-                                            <span class="admin__form-help-text">
-                                                #{msg.admin__create_record__metadata_accesscondition__help}
-                                            </span>
+                                            <span class="admin__form-help-text">#{msg.admin__create_record__metadata_accesscondition__help}</span>
                                         </div>
                                         <div class="col-1 admin__form-help-icon">
                                             <button
@@ -301,7 +283,7 @@
                         </h:form>
 
                         <script type="text/javascript">
-var fileUploadConfig = {
+                            var fileUploadConfig = {
     postUrl: '#{navigationHelper.applicationUrl}api/v1/temp/files/#{createRecordBean.uuid}_tif/',
     msg: {
         buttonUpload: '#{msg.button__upload}',

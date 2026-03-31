@@ -195,6 +195,22 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies skip facet links with leading semicolon caused by triple separators in URL
+     */
+    @Test
+    void parseFacetString_shouldSkipFacetLinksWithLeadingSemicolonCausedByTripleSeparatorsInUrl() {
+        // A triple semicolon ;;; in the facet string (e.g. from a bot-crawled URL generated
+        // with a trailing ';' in one facet value) produces a leading ';' in the next field
+        // after splitting on ';;'. That entry must be silently skipped.
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString("MD_FIELD1:value1;;;MD_FIELD2:value2;;", facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_FIELD1", facetItems.get(0).getField());
+        Assertions.assertEquals("value1", facetItems.get(0).getValue());
+    }
+
+    /**
      * @see SearchFacets#getActiveFacetString()
      * @verifies contain queries from all FacetItems
      */
@@ -257,6 +273,22 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         facets.removeFacetAction("MD_TITLE:{[b]}", null);
         Assertions.assertEquals(2, facets.getActiveFacets().size());
         Assertions.assertEquals("DOCSTRCT%3Aa%3B%3BMD_TITLE%3Abob%3B%3B", facets.getActiveFacetString());
+    }
+
+    /**
+     * @see SearchFacets#removeFacetAction(String,String)
+     * @verifies sanitize triple semicolons to double after removal
+     */
+    @Test
+    void removeFacetAction_shouldSanitizeTripleSemicolonsToDoubleAfterRemoval() throws Exception {
+        // A facet value ending with ';' causes ';;;' in the regenerated prefix string.
+        // After removing another facet, the result must not contain ';;;'.
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString("MD_FIELD1:normal;;MD_FIELD2:trailing_semicolon;");
+        Assertions.assertEquals(2, facets.getActiveFacets().size());
+        facets.removeFacetAction("MD_FIELD1:normal", null);
+        String decoded = URLDecoder.decode(facets.getActiveFacetString(), SearchBean.URL_ENCODING);
+        Assertions.assertFalse(decoded.contains(";;;"), "Facet string must not contain triple semicolons after removal");
     }
 
     /**

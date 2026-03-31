@@ -38,7 +38,8 @@
                             rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getActiveFacetsForField(field.key)) > 0)}">
                             <div
                                 class="widget widget-search-facets__collection"
-                                data-facet="searchFacetFilter">
+                                data-facet="searchFacetFilter"
+                                data-facetfield="#{field.key}">
                                 <div class="widget__topbar widget-search-facets__topbar">
                                     <h2
                                         class="widget__title widget-search-facets__title"
@@ -46,8 +47,7 @@
                                         #{msg[field.key.concat('_DD')]}
                                     </h2>
                                     <!-- FILTER FACETS -->
-                                    <ui:fragment
-                                        rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field.key)}">
+                                    <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field.key)}">
                                         <div
                                             class="widget-search-facets__filter"
                                             data-wrapper="searchFacetFilter">
@@ -72,10 +72,8 @@
                                 <ui:fragment rendered="#{configurationBean.isFacetFieldTypeBoolean(field.key)}">
                                     <div class="widget__body widget-search-facets__body">
                                         <div class="widget-search-facets__boolean">
-                                            <ui:fragment
-                                                rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
-                                                <div
-                                                    class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
+                                            <ui:fragment rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
+                                                <div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
                                                     <h:commandLink
                                                         action="#{searchBean.removeFacetAction(field.key.concat(':true'))}"
                                                         styleClass="btn widget-search-facets__boolean-button -active"
@@ -99,10 +97,8 @@
                                                         data-target="buttonLoader" />
                                                 </div>
                                             </ui:fragment>
-                                            <ui:fragment
-                                                rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
-                                                <div
-                                                    class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
+                                            <ui:fragment rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
+                                                <div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
                                                     <h:outputLink
                                                         styleClass="btn widget-search-facets__boolean-button"
                                                         title="#{msg.yes} (#{searchBean.facets.getFacet(field.key,'true').count})"
@@ -121,10 +117,8 @@
                                                 </div>
                                             </ui:fragment>
 
-                                            <ui:fragment
-                                                rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
-                                                <div
-                                                    class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
+                                            <ui:fragment rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
+                                                <div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
                                                     <h:commandLink
                                                         action="#{searchBean.removeFacetAction(field.key.concat(':false'))}"
                                                         styleClass="btn widget-search-facets__boolean-button -active"
@@ -148,10 +142,8 @@
                                                         data-target="buttonLoader" />
                                                 </div>
                                             </ui:fragment>
-                                            <ui:fragment
-                                                rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
-                                                <div
-                                                    class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
+                                            <ui:fragment rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
+                                                <div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
                                                     <h:outputLink
                                                         styleClass="btn widget-search-facets__boolean-button"
                                                         title="#{msg.no} (#{searchBean.facets.getFacet(field.key,'false').count})"
@@ -183,8 +175,7 @@
                                 <ui:fragment rendered="#{!configurationBean.isFacetFieldTypeBoolean(field.key)}">
                                     <div class="widget__body widget-search-facets__body">
                                         <!-- DESCRIPTIONAL INFORMATION/TEXT ABOVE FACET (CONFIG + MSG KEY) -->
-                                        <ui:fragment
-                                            rendered="#{configurationBean.getFacetFieldDescriptionKey(field.key) != null}">
+                                        <ui:fragment rendered="#{configurationBean.getFacetFieldDescriptionKey(field.key) != null}">
                                             <p class="widget__description-text widget-search-facets__description-text">
                                                 <h:outputFormat
                                                     escape="false"
@@ -203,9 +194,7 @@
                                                         action="#{searchBean.removeFacetAction(facet.link)}"
                                                         title="#{msg.removeFacet}">
                                                         <div class="widget-search-facets__list-item-link-inner">
-                                                            <div class="widget-search-facets__list-item-link-active">
-                                                                #{facet.translatedLabel}
-                                                            </div>
+                                                            <div class="widget-search-facets__list-item-link-active">#{facet.translatedLabel}</div>
                                                             <div class="widget-search-facets__list-item-link-icon">
                                                                 <util:icon icon="x" />
                                                             </div>
@@ -231,12 +220,8 @@
                                                     <h:outputLink
                                                         styleClass="widget-search-facets__list-item-link"
                                                         value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
-                                                        <span class="widget-search-facets__list-item-label">
-                                                            #{facet.translatedLabel}
-                                                        </span>
-                                                        <span class="widget-search-facets__list-item-count">
-                                                            (#{facet.count})
-                                                        </span>
+                                                        <span class="widget-search-facets__list-item-label">#{facet.translatedLabel}</span>
+                                                        <span class="widget-search-facets__list-item-count">(#{facet.count})</span>
                                                         <f:passThroughAttribute
                                                             name="aria-label"
                                                             value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />

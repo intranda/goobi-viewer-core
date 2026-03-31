@@ -79,6 +79,7 @@ import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.user.User;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -120,6 +121,11 @@ public class AuthenticationEndpoint {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Hidden
+    @Operation(summary = "Authenticate a user with username and password", tags = { "auth" })
+    @ApiResponse(responseCode = "200", description = "Authentication successful, session established")
+    @ApiResponse(responseCode = "403", description = "Authentication failed — invalid username or password or insufficient privileges")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public Response authenticateUser(@FormParam("email") String email, @FormParam("password") String password) {
         try {
 
@@ -179,11 +185,11 @@ public class AuthenticationEndpoint {
     @Path(ApiUrls.AUTH_HEADER)
     @Operation(summary = "Header login", description = "Checks a configurable header for a username and logs in the user if it is found in the DB")
     @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "403", description = "Forbidden — no matching provider configured or authentication denied")
     @ApiResponse(responseCode = "500", description = "Internal error")
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");
-        Optional<NavigationHelper> nh = BeanUtils.getBeanFromSession(servletRequest.getSession(), "navigationHelper", NavigationHelper.class);
-        if (redirectUrl != null && (!nh.isPresent() || !redirectUrl.startsWith(nh.get().getApplicationUrl()))) {
+        if (redirectUrl != null && !isRedirectUrlAllowed(redirectUrl)) {
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_ILLEGAL_REDIRECT_URL)
                     .build();
         }
@@ -276,6 +282,7 @@ public class AuthenticationEndpoint {
     @Operation(summary = "OpenID Connect callback (GET method)", description = "Verifies an openID claim and starts a session for the user")
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "400", description = "Bad request")
+    @ApiResponse(responseCode = "403", description = "Forbidden - OpenID authentication failed or denied")
     @ApiResponse(responseCode = "500", description = "Internal error")
     //    @Tag(name = "login")
     public Response openIdLoginGET(@QueryParam("error") String error, @QueryParam("code") String authCode,
@@ -297,9 +304,14 @@ public class AuthenticationEndpoint {
      */
     @POST
     @Path(ApiUrls.AUTH_OAUTH)
+    // @Consumes is required so Jersey returns 415 instead of throwing IllegalStateException
+    // when a client sends the wrong content type (e.g. application/json).
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Operation(summary = "OpenID Connect callback (POST method)", description = "Verifies an openID claim and starts a session for the user")
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "400", description = "Bad request")
+    @ApiResponse(responseCode = "403", description = "Forbidden - OpenID authentication failed or denied")
+    @ApiResponse(responseCode = "415", description = "Unsupported media type — request must use application/x-www-form-urlencoded")
     @ApiResponse(responseCode = "500", description = "Internal error")
     @Tag(name = "login")
     public Response openIdLoginPOST(@FormParam("error") String error, @FormParam("code") String authCode, @FormParam("state") String state)
@@ -478,5 +490,17 @@ public class AuthenticationEndpoint {
             logger.error(exception);
             return null;
         }
+    }
+
+    /**
+     * Checks whether the given redirect URL is allowed for the current request context.
+     *
+     * @param redirectUrl URL to check
+     * @return true if allowed; false otherwise
+     */
+    boolean isRedirectUrlAllowed(String redirectUrl) {
+        Optional<NavigationHelper> nh = BeanUtils.getBeanFromSession(servletRequest.getSession(), "navigationHelper", NavigationHelper.class);
+        String applicationUrl = nh.map(NavigationHelper::getApplicationUrl).orElse(null);
+        return NetTools.isRedirectUrlAllowed(redirectUrl, applicationUrl);
     }
 }

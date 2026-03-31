@@ -111,6 +111,8 @@ public class SolrSearchIndex implements java.io.Closeable {
      * Usually boolean fields should not be part of the solr field list. In case one needs them, they are listed here
      */
     private List<String> booleanSolrFields = null;
+    /** Cached list of sort field names (SORT_* / SORTNUM_*) loaded via Luke request */
+    private List<String> sortFieldNames = null;
 
     /**
      * <p>
@@ -140,7 +142,10 @@ public class SolrSearchIndex implements java.io.Closeable {
             // Re-init Solr client if the configured Solr URL has been changed
             logger.info("Solr URL has changed, re-initializing Solr client...");
             synchronized (this) {
-                solrFields = null; // Reset available Solr field name list
+                // Reset all cached Solr field lists so they are reloaded from the new client
+                solrFields = null;
+                booleanSolrFields = null;
+                sortFieldNames = null;
                 try {
                     client.close();
                 } catch (IOException e) {
@@ -155,6 +160,10 @@ public class SolrSearchIndex implements java.io.Closeable {
             } catch (IOException | SolrServerException e) {
                 logger.warn("HTTP client was closed, re-initializing Solr client...");
                 synchronized (this) {
+                    // Reset all cached Solr field lists so they are reloaded from the new client
+                    solrFields = null;
+                    booleanSolrFields = null;
+                    sortFieldNames = null;
                     try {
                         client.close();
                     } catch (IOException e1) {
@@ -341,7 +350,9 @@ public class SolrSearchIndex implements java.io.Closeable {
             throw new PresentationException(e.getMessage());
         } catch (RemoteSolrException e) {
             if (SolrTools.isQuerySyntaxError(e)) {
-                throw new PresentationException("Bad query: " + e.getMessage());
+                // Log as warning without stack trace; include the Solr query for diagnostics
+                logger.warn("Bad Solr query syntax: {}; Solr query: {}", e.getMessage(), solrQuery.getQuery());
+                throw new PresentationException("Bad query: " + e.getMessage() + "; Solr query: " + solrQuery.getQuery());
             }
             logger.error("{} (this usually means Solr is returning 403); Query: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()),
                     solrQuery.getQuery());
@@ -688,6 +699,8 @@ public class SolrSearchIndex implements java.io.Closeable {
         logger.trace("getIdentifierFromIddoc: {}", iddoc);
         SolrQuery solrQuery = new SolrQuery(new StringBuilder(SolrConstants.IDDOC).append(":").append(iddoc).toString());
         solrQuery.setRows(1);
+        // Only request the PI field to avoid fetching all document fields unnecessarily
+        solrQuery.setFields(SolrConstants.PI);
         try {
             QueryResponse resp = client.query(solrQuery);
             if (resp.getResults().getNumFound() > 0) {
@@ -1017,6 +1030,9 @@ public class SolrSearchIndex implements java.io.Closeable {
         try {
             if (this.solrFields == null) {
                 loadSolrFields();
+            } else if (this.solrFields.isEmpty()) {
+                logger.warn("Solr field list is empty, reloading...");
+                loadSolrFields();
             }
         } catch (IllegalStateException | SolrServerException | RemoteSolrException | IOException e) {
             throw new IndexUnreachableException("Failed to load SOLR field names: " + e.toString());
@@ -1027,6 +1043,9 @@ public class SolrSearchIndex implements java.io.Closeable {
     public List<String> getAllBooleanFieldNames() throws IndexUnreachableException {
         try {
             if (this.booleanSolrFields == null) {
+                loadSolrFields();
+            } else if (this.booleanSolrFields.isEmpty()) {
+                logger.warn("Solr boolean field list is empty, reloading...");
                 loadSolrFields();
             }
         } catch (IllegalStateException | SolrServerException | RemoteSolrException | IOException e) {
@@ -1066,6 +1085,11 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @throws java.io.IOException if any.
      */
     public List<String> getAllSortFieldNames() throws SolrServerException, IOException {
+        // Return cached list to avoid repeated Luke requests on every call
+        if (this.sortFieldNames != null) {
+            return this.sortFieldNames;
+        }
+
         LukeRequest lukeRequest = new LukeRequest();
         lukeRequest.setNumTerms(0);
         LukeResponse lukeResponse = lukeRequest.process(client);
@@ -1087,7 +1111,8 @@ public class SolrSearchIndex implements java.io.Closeable {
             }
         }
 
-        return list;
+        this.sortFieldNames = list;
+        return this.sortFieldNames;
     }
 
     /**
@@ -1350,12 +1375,22 @@ public class SolrSearchIndex implements java.io.Closeable {
         try {
             QueryResponse response = request.process(client);
             final NestableJsonFacet topLevelFacet = response.getJsonFacetingResponse();
+            // topLevelFacet may be null when Solr returns no JSON faceting data (e.g. for
+            // unknown field names that Solr silently ignores instead of erroring out).
+            if (topLevelFacet == null) {
+                return "{}";
+            }
             final HeatmapJsonFacet heatmap = topLevelFacet.getHeatmapFacetByName("heatmapFacet");
             if (heatmap != null) {
                 return getAsJson(heatmap);
             }
             return "{}";
         } catch (SolrServerException | IOException e) {
+            throw new IndexUnreachableException("Error getting facet heatmap: " + e.toString());
+        } catch (RemoteSolrException e) {
+            // RemoteSolrException is a RuntimeException (extends SolrException) and is not caught
+            // by SolrServerException above. Wrap it so IndexResource.getHeatmap() can detect
+            // "undefined field" errors via SolrTools.isQuerySyntaxError() and return HTTP 400.
             throw new IndexUnreachableException("Error getting facet heatmap: " + e.toString());
         }
     }

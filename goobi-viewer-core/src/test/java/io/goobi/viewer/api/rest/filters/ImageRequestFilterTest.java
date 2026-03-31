@@ -1,17 +1,21 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Response;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ImageRequestFilterTest {
 
@@ -24,9 +28,8 @@ class ImageRequestFilterTest {
     void test_shouldForwardToCanonicalUrl() throws IOException, PresentationException, IndexUnreachableException {
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        HttpServletResponse response = Mockito.spy(HttpServletResponse.class);
         SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
-        ImageRequestFilter filter = new ImageRequestFilter(request, response, searchIndex);
+        ImageRequestFilter filter = new ImageRequestFilter(request, searchIndex);
 
         ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
 
@@ -36,8 +39,11 @@ class ImageRequestFilterTest {
         Mockito.when(request.getRequestURI()).thenReturn(REQUEST_URL);
 
         filter.filter(requestContext);
-        Mockito.verify(response, Mockito.times(1)).sendRedirect(FORWARD_URL);
 
+        ArgumentCaptor<Response> responseCaptor = ArgumentCaptor.forClass(Response.class);
+        Mockito.verify(requestContext, Mockito.times(1)).abortWith(responseCaptor.capture());
+        assertEquals(Response.Status.FOUND.getStatusCode(), responseCaptor.getValue().getStatus());
+        assertEquals(URI.create(FORWARD_URL), responseCaptor.getValue().getLocation());
     }
 
 }

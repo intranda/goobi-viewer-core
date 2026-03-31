@@ -212,8 +212,13 @@ public class DefaultQueueListener {
                 message.acknowledge();
             }
         } catch (JMSException | NullPointerException | IllegalArgumentException t) {
-            log.error("Error handling ticket {}: ", message.getJMSMessageID(), t);
-            sess.recover();
+            // During shutdown the connection/consumer is closed before the listener thread
+            // exits, so acknowledge/recover will throw IllegalStateException (a JMSException
+            // subclass). Suppress these expected errors to avoid noisy ERROR log entries.
+            if (!shouldStop) {
+                log.error("Error handling ticket {}: ", message.getJMSMessageID(), t);
+                sess.recover();
+            }
         } finally {
             MessageQueueManager.notifyMessageQueueStateUpdate();
         }

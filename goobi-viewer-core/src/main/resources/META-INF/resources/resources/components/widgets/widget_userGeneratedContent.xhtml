@@ -18,9 +18,7 @@
                 id="userGeneratedContentWidget"
                 class="widget widget-user-generated-content">
                 <div class="widget__topbar widget-user-generated-content__topbar">
-                    <h2 class="widget__title widget-user-generated-content__title">
-                        #{msg.crowdsourcing_userGeneratedContent}
-                    </h2>
+                    <h2 class="widget__title widget-user-generated-content__title">#{msg.crowdsourcing_userGeneratedContent}</h2>
                 </div>
 
                 <div class="widget__body widget-user-generated-content__body">
@@ -74,7 +72,7 @@
                                 </h:panelGroup>
                             </h:panelGroup>
                             <script type="text/javascript">
-userGeneratedContentJSArray.push(['#{content.id}', '#{content.displayCoordinates}', '#{content.title}']);
+                                userGeneratedContentJSArray.push(['#{content.id}', '#{content.displayCoordinates}', '#{content.title}']);
 $('#words-#{content.id}').on('click', function (e) {
     e.preventDefault();
     highlightContentBox('${content.id}');
@@ -83,7 +81,7 @@ $('#words-#{content.id}').on('click', function (e) {
                             </script>
                         </ui:repeat>
                         <script type="text/javascript">
-drawContentBoxes(true);
+                            drawContentBoxes(true);
 
 var highlightCurrentSelection = function ($Obj) {
     // reset styles for all li elements

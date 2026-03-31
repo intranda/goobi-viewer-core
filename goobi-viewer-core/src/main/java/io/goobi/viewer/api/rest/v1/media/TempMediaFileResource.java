@@ -34,6 +34,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -65,6 +66,11 @@ import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -75,6 +81,7 @@ import io.goobi.viewer.messages.Messages;
  * @author florian
  *
  */
+@Hidden
 @jakarta.ws.rs.Path(TEMP_MEDIA_FILES)
 @ViewerRestServiceBinding
 @AdminLoggedInBinding
@@ -102,7 +109,15 @@ public class TempMediaFileResource {
     @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadMediaFiles(@PathParam("folder") String foldername, @DefaultValue("true") @FormDataParam("enabled") boolean enabled,
+    @Operation(summary = "Upload a media file to the temporary hotfolder for DC record creation", tags = { "media" })
+    @ApiResponse(responseCode = "200", description = "File uploaded successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid filename or missing upload stream")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")
+    @ApiResponse(responseCode = "500", description = "Internal error during file upload")
+    public Response uploadMediaFiles(
+            @Parameter(description = "Target folder name") @PathParam("folder") String foldername,
+            @DefaultValue("true") @FormDataParam("enabled") boolean enabled,
             @FormDataParam("filename") String filename, @FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetail) {
 
@@ -124,7 +139,14 @@ public class TempMediaFileResource {
             if (!Files.isDirectory(targetDir)) {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("No target directory for upload available")).build();
             }
-            Path targetFile = targetDir.resolve(filename);
+            // Sanitize filename to prevent path traversal attacks (e.g. "../../etc/passwd")
+            final String sanitizedFilename;
+            try {
+                sanitizedFilename = FileTools.sanitizeFileName(filename);
+            } catch (IllegalArgumentException e) {
+                return Response.status(Status.BAD_REQUEST).entity(errorMessage("Invalid filename")).build();
+            }
+            Path targetFile = targetDir.resolve(sanitizedFilename);
 
             try {
                 Files.copy(uploadedInputStream, targetFile, StandardCopyOption.REPLACE_EXISTING);
@@ -145,7 +167,8 @@ public class TempMediaFileResource {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage(message)).build();
             }
         } catch (IOException e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
+            logger.error("Error uploading file to folder {}", foldername, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error")).build();
         }
     }
 
@@ -158,7 +181,12 @@ public class TempMediaFileResource {
     @GET
     @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUploadedFiles(@PathParam("folder") String folder) {
+    @Operation(summary = "List all uploaded temporary media files in the given folder", tags = { "media" })
+    @ApiResponse(responseCode = "200", description = "List of uploaded file URIs")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")
+    @ApiResponse(responseCode = "500", description = "Internal error reading upload directory")
+    public Response getUploadedFiles(@Parameter(description = "Target folder name") @PathParam("folder") String folder) {
 
         try {
             CreateRecordBean bean = BeanUtils.getCreateRecordBean();
@@ -173,8 +201,9 @@ public class TempMediaFileResource {
                     uploadedFiles =
                             stream.map(this::getIiifUri).sorted((i1, i2) -> i1.toString().compareTo(i2.toString())).collect(Collectors.toList());
                 } catch (IOException e) {
+                    logger.error("Error reading upload directory {}", targetDir, e);
                     return Response.status(Status.INTERNAL_SERVER_ERROR)
-                            .entity(errorMessage("Error reading upload directory: " + e.toString()))
+                            .entity(errorMessage("Error reading upload directory"))
                             .build();
                 }
             }
@@ -182,12 +211,13 @@ public class TempMediaFileResource {
                 String json = getAsJson(uploadedFiles);
                 return Response.status(Status.OK).entity(json).build();
             } catch (JsonProcessingException e) {
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Error creating json object: " + e.toString())).build();
+                logger.error("Error serializing uploaded files list", e);
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Error creating json object")).build();
             }
 
         } catch (IOException e) {
-            logger.error("Error retgrieving uploaded files: {}", e.getMessage(), e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
+            logger.error("Error retrieving uploaded files: {}", e.getMessage(), e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error")).build();
         }
     }
 
@@ -200,7 +230,12 @@ public class TempMediaFileResource {
     @DELETE
     @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteUploadedFiles(@PathParam("folder") String folder) {
+    @Operation(summary = "Delete all uploaded temporary media files in the given folder", tags = { "media" })
+    @ApiResponse(responseCode = "200", description = "All files deleted successfully")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")
+    @ApiResponse(responseCode = "500", description = "Internal error deleting files")
+    public Response deleteUploadedFiles(@Parameter(description = "Target folder name") @PathParam("folder") String folder) {
 
         try {
             CreateRecordBean bean = BeanUtils.getCreateRecordBean();
@@ -216,14 +251,16 @@ public class TempMediaFileResource {
                         Files.delete(file);
                     }
                 } catch (IOException e) {
+                    logger.error("Error deleting files in upload directory {}", targetDir, e);
                     return Response.status(Status.INTERNAL_SERVER_ERROR)
-                            .entity(errorMessage("Error reading upload directory: " + e.toString()))
+                            .entity(errorMessage("Error deleting upload directory contents"))
                             .build();
                 }
             }
             return Response.status(Status.OK).build();
         } catch (IOException e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
+            logger.error("Error deleting uploaded files for folder {}", folder, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error")).build();
         }
     }
 
@@ -232,7 +269,11 @@ public class TempMediaFileResource {
     }
 
     public static String message(String string) {
-        return "{message: \"" + string + "\"}";
+        try {
+            return new ObjectMapper().writeValueAsString(Map.of("message", string));
+        } catch (JsonProcessingException e) {
+            return "{\"message\":\"internal error\"}";
+        }
     }
 
     /**

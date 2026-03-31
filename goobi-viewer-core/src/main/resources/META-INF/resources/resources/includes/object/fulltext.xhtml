@@ -13,8 +13,7 @@
     <div
         id="fulltext-box"
         class="view-fulltext__box">
-        <ui:fragment
-            rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) == 'text/plain'}">
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) == 'text/plain'}">
             <pre>
                 <!-- Single page mode -->
                 <ui:fragment rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
@@ -57,8 +56,7 @@
             </pre>
         </ui:fragment>
 
-        <ui:fragment
-            rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) != 'text/plain'}">
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) != 'text/plain'}">
             <div class="view-fulltext__content">
                 <!-- TEI files -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextFromTEI}">

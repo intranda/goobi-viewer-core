@@ -35,9 +35,7 @@
                             src="#{cc.attrs.component.getContentData('image01')}"
                             class="img-fluid"
                             alt="#{cc.attrs.component.getContentItem('image01').content.mediaItem.alternativeText}" />
-                        <figcaption>
-                            #{cc.attrs.component.getContentItem('image01').content.mediaItem.description}
-                        </figcaption>
+                        <figcaption>#{cc.attrs.component.getContentItem('image01').content.mediaItem.description}</figcaption>
                     </figure>
                 </h:panelGroup>
 
@@ -69,9 +67,7 @@
                                                     class="img-fluid"
                                                     title="#{previewComponent.getContent('image').mediaName}" />
                                             </a>
-                                            <figcaption>
-                                                #{previewComponent.getContent('image').mediaDescription}
-                                            </figcaption>
+                                            <figcaption>#{previewComponent.getContent('image').mediaDescription}</figcaption>
                                         </figure>
                                     </div>
                                 </ui:fragment>
@@ -83,9 +79,7 @@
                                         </ui:fragment>
 
                                         <h:panelGroup rendered="#{previewComponent.hasContent('date')}">
-                                            <div class="tpl-news-overview__preview-date">
-                                                #{previewComponent.getContent('date').text}
-                                            </div>
+                                            <div class="tpl-news-overview__preview-date">#{previewComponent.getContent('date').text}</div>
                                         </h:panelGroup>
 
                                         <h:panelGroup rendered="#{previewComponent.hasContent('text')}">

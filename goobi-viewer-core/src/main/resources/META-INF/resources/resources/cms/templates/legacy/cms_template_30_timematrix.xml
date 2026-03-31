@@ -5,9 +5,7 @@
     <name>cms__template_30__title</name>
     <description>cms__template_30__description</description>
     <icon>cms_template_30_timeMatrix.png</icon>
-    <html>
-cms_template_30_timematrix.xhtml
-    </html>
+    <html>cms_template_30_timematrix.xhtml</html>
     <options>
         <appliesToExpandedUrl>true</appliesToExpandedUrl>
     </options>

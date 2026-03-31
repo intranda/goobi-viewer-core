@@ -218,4 +218,5 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(SolrConstants.SORT_RELEVANCE, fields.get(0));
         Assertions.assertEquals(SolrConstants.SORT_RANDOM, fields.get(1));
     }
+
 }
