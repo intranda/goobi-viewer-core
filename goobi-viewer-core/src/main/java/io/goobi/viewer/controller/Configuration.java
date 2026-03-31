@@ -5109,7 +5109,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return all configured values
      * @return a {@link java.util.List} object.
+     * @deprecated Group identifier fields are now detected implicitly via the {@code GROUPID_} prefix. This config is no longer needed.
      */
+    @Deprecated(since = "26.04")
     public List<String> getRecordGroupIdentifierFields() {
         return getLocalList("toc.recordGroupIdentifierFields.field");
     }
