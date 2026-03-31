@@ -129,6 +129,7 @@ public class CMSMediaImageResource extends ImageResource {
     @ApiResponse(responseCode = "200", description = "IIIF image information object",
             content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @ApiResponse(responseCode = "404", description = "Image not found")
+    @ApiResponse(responseCode = "405", description = "Method not allowed — e.g. when filename contains special characters matching another route")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();
     }
