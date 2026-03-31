@@ -169,6 +169,8 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an ALTO text annotation by its composite identifier")
     @ApiResponse(responseCode = "200", description = "Returns the annotation for the given ALTO element")
+    // 400 is returned when the persistent identifier fails validation or the page number is invalid
+    @ApiResponse(responseCode = "400", description = "Invalid persistent identifier or page number")
     @ApiResponse(responseCode = "404", description = "No page, ALTO file, or element found for the given identifier")
     public IAnnotation getAltoAnnotation(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,

@@ -56,6 +56,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -133,6 +134,10 @@ public class ExternalImageResource extends ImageResource {
     @Produces("application/pdf")
     @ContentServerPdfBinding
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
+    @ApiResponse(responseCode = "200", description = "PDF document")
+    // 403 is returned as application/json when access to the resource is restricted
+    @ApiResponse(responseCode = "403", description = "Access denied due to access conditions")
+    @ApiResponse(responseCode = "404", description = "Image or record not found")
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();
         String filename = request.getAttribute("filename").toString();

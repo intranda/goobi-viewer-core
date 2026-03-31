@@ -311,7 +311,8 @@ public class IndexResource {
     @ApiResponse(responseCode = "400", description = "Invalid heatmap parameters or Solr field name")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getHeatmap(
-            @Parameter(description = "Solr field containing spatial coordinates") @PathParam("solrField") String solrField,
+            @Parameter(description = "Solr field containing spatial coordinates",
+                    schema = @Schema(pattern = "[A-Za-z_][A-Za-z0-9_]*")) @PathParam("solrField") String solrField,
             @Parameter(description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain"
                     + " the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
@@ -321,6 +322,13 @@ public class IndexResource {
                     schema = @Schema(type = "integer", minimum = "1"))
             @QueryParam("gridLevel") Integer gridLevel)
             throws IndexUnreachableException, IllegalRequestException {
+        // Validate solrField before sending to Solr: an invalid name (e.g. "0") causes an
+        // unhandled exception deep in the Solr client that surfaces as HTTP 500.
+        // Solr field names must start with a letter or underscore and contain only
+        // letters, digits, and underscores.
+        if (solrField == null || !solrField.matches("[A-Za-z_][A-Za-z0-9_]*")) {
+            throw new IllegalRequestException("Not a valid Solr field name: " + solrField);
+        }
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
         String finalQuery = filterQuery;
@@ -367,7 +375,8 @@ public class IndexResource {
     @ApiResponse(responseCode = "400", description = "Invalid Solr field or query syntax")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getGeoJsonResuls(
-            @Parameter(description = "Solr field containing spatial coordinates") @PathParam("solrField") String solrField,
+            @Parameter(description = "Solr field containing spatial coordinates",
+                    schema = @Schema(pattern = "[A-Za-z_][A-Za-z0-9_]*")) @PathParam("solrField") String solrField,
             @Parameter(
                     description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain"
                             + " the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
