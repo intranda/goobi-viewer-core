@@ -57,6 +57,9 @@ import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -153,6 +156,11 @@ public class ClientApplicationsResource {
     @ApiResponse(responseCode = "500", description = "An internal error occurred")
     public ClientApplication setClient(
             @PathParam("id") @Parameter(description = "client identifier") String clientIdentifier,
+            // Explicit @RequestBody annotation required so the OpenAPI generator includes the request
+            // body schema in the spec, enabling tools like schemathesis to generate valid test cases.
+            @RequestBody(description = "Client properties to update (only name, description, subnetMask and accessStatus are applied)",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = ClientApplication.class)))
             ClientApplication update) throws DAOException, ContentNotFoundException {
         try {
 
