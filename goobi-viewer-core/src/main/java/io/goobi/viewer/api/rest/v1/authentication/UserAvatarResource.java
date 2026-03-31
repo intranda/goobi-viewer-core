@@ -45,6 +45,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
@@ -62,7 +63,6 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import de.unigoettingen.sub.commons.cache.CacheUtils;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -137,15 +137,12 @@ public class UserAvatarResource extends ImageResource {
      */
     public static URI getMediaFileUrl(Long userId) throws WebApplicationException {
         try {
-            //            Optional<URI> ret = getUserAvatarFile(userId).map(PathConverter::toURI);
-            //            if (ret.isPresent()) {
-            //                return ret.get();
-            //            }
-            logger.debug("No avatar file found for user {}", userId);
+            // Use NotFoundException (HTTP 404) directly so missing avatars return the correct status code.
+            // Previously ContentNotFoundException was caught and wrapped in WebApplicationException(Throwable),
+            // which defaults to HTTP 500.
             return getUserAvatarFile(userId).map(PathConverter::toURI)
-                    .orElseThrow(() -> new ContentNotFoundException("No avatar file found for user " + userId));
-            //            return URI.create("");
-        } catch (IOException | ContentNotFoundException e) {
+                    .orElseThrow(() -> new NotFoundException("No avatar file found for user " + userId));
+        } catch (IOException e) {
             throw new WebApplicationException(e);
         }
     }
