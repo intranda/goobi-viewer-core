@@ -434,10 +434,17 @@ public class IIIFPresentation2ResourceBuilder {
                 int thumbsWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
                 int thumbsHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
                 String thumbnailUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele.getPi(), thumbsWidth, thumbsHeight);
-                ImageContent thumbnail = new ImageContent(URI.create(thumbnailUrl));
-                String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl);
-                thumbnail.setService(new ImageInformation(imageInfoURI));
-                manifest.addThumbnail(thumbnail);
+                // Thumbnail URLs may contain spaces or other characters that are illegal in a
+                // java.net.URI. Guard against IllegalArgumentException / NPE so a single bad
+                // record does not abort the entire list response.
+                try {
+                    ImageContent thumbnail = new ImageContent(URI.create(thumbnailUrl));
+                    String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl);
+                    thumbnail.setService(new ImageInformation(imageInfoURI));
+                    manifest.addThumbnail(thumbnail);
+                } catch (IllegalArgumentException | NullPointerException e) {
+                    logger.warn("Could not create thumbnail URI for record {}: {}", ele.getPi(), e.getMessage());
+                }
             }
 
             manifests.add(manifest);
