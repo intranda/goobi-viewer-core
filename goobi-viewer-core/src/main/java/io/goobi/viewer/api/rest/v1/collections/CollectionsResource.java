@@ -78,12 +78,10 @@ public class CollectionsResource {
             @Parameter(description = "Name of the Solr field the collection is based on. Typically 'DC'",
                     schema = @Schema(pattern = "[A-Za-z_][A-Za-z0-9_]*")) @PathParam("field") String solrField,
             @Context HttpServletRequest request) {
-        // Reject field names containing control characters or non-ASCII to prevent URI construction failures.
-        for (int i = 0; i < solrField.length(); i++) {
-            char c = solrField.charAt(i);
-            if (c < 0x20 || c >= 0x7F) {
-                throw new BadRequestException("Invalid collection field: " + solrField);
-            }
+        // Validate field name against the documented pattern [A-Za-z_][A-Za-z0-9_]* to prevent
+        // invalid Solr field names (e.g. "-") from reaching the index and causing 500 errors.
+        if (!solrField.matches("[A-Za-z_][A-Za-z0-9_]*")) {
+            throw new BadRequestException("Invalid collection field: " + solrField);
         }
         this.solrField = solrField.toUpperCase();
         this.request = request;

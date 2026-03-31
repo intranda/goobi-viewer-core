@@ -43,6 +43,7 @@ import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -137,6 +138,10 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "400", description = "Not logged in, so no bookmark lists may be added")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Response addBookmarkList(BookmarkList list) throws DAOException, IOException, RestApiException, IllegalRequestException {
+        // Reject null body (e.g. JSON literal "null") with 400 instead of NPE → 500
+        if (list == null) {
+            throw new BadRequestException("Request body must not be null");
+        }
         SuccessMessage result;
         if (StringUtils.isNotBlank(list.getName())) {
             result = builder.addBookmarkList(list.getName());
@@ -227,6 +232,10 @@ public class BookmarkResource {
     public Response addItemToBookmarkList(
             @Parameter(description = "The id of the bookmark list.") @PathParam("listId") Long id,
             Bookmark item) throws DAOException, IOException, RestApiException {
+        // Reject null body (e.g. JSON literal "null") with 400 instead of NPE → 500
+        if (item == null) {
+            throw new BadRequestException("Request body must not be null");
+        }
         builder.addBookmarkToBookmarkList(id, item.getPi(), item.getLogId(),
                 Optional.ofNullable(item.getOrder()).map(Object::toString).orElse(null));
         BookmarkList updatedList = builder.getBookmarkListById(id);
