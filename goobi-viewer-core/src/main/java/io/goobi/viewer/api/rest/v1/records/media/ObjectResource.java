@@ -66,6 +66,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.media.voyager.VoyagerSceneBuilder;
 import io.goobi.viewer.model.viewer.object.ObjectInfo;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -92,6 +93,7 @@ import jakarta.ws.rs.core.StreamingOutput;
  * @author Florian Alpers
  */
 
+@Hidden
 @jakarta.ws.rs.Path(RECORDS_FILES_3D)
 @AccessConditionBinding
 @CORSBinding

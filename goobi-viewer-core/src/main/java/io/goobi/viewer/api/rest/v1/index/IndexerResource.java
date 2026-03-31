@@ -41,6 +41,7 @@ import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.mq.RefreshArchiveTreeHandler;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
@@ -56,6 +57,7 @@ import jakarta.ws.rs.core.MediaType;
 /**
  * Resource for communicating with the indexer process.
  */
+@Hidden
 @Path(INDEXER)
 @ViewerRestServiceBinding
 public class IndexerResource {

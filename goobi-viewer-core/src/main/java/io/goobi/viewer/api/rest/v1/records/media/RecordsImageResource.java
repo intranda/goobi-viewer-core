@@ -55,6 +55,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -103,6 +104,7 @@ public class RecordsImageResource {
                 .build();
     }
 
+    @Hidden
     @GET
     @Path(RECORDS_IMAGE_INFO)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
@@ -119,6 +121,7 @@ public class RecordsImageResource {
         return "";
     }
 
+    @Hidden
     @GET
     @Path(RECORDS_IMAGE_IIIF)
     @Produces({ "image/jpg", "image/png", "image/tif" })

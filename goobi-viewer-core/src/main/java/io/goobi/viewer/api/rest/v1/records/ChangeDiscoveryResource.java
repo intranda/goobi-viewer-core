@@ -52,6 +52,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.iiif.discovery.ActivityCollectionBuilder;
 import io.goobi.viewer.solr.SolrTools;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -137,6 +138,7 @@ public class ChangeDiscoveryResource {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
+    @Hidden
     @GET
     @Path(RECORDS_CHANGES_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })

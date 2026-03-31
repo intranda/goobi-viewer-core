@@ -63,6 +63,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -146,6 +147,7 @@ public class TempMediaImageResource extends ImageResource {
      * @param filename
      * @return A 200 "OK" answer if deletion was successfull, 406 if the file was not found and 500 if there was an error
      */
+    @Hidden
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Delete a temporary image file from the given folder", tags = { "media" })

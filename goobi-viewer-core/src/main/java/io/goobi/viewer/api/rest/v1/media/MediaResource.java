@@ -40,6 +40,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -85,6 +86,7 @@ public class MediaResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
+    @Hidden
     @GET
     @Path(RECORDS_FILES_AUDIO)
     @Operation(summary = "Stream audio content for the given media item", tags = { "media" })
@@ -111,6 +113,7 @@ public class MediaResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
+    @Hidden
     @GET
     @Path(RECORDS_FILES_VIDEO)
     @Operation(summary = "Stream video content for the given media item", tags = { "media" })

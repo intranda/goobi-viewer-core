@@ -66,6 +66,7 @@ import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -80,6 +81,7 @@ import io.goobi.viewer.messages.Messages;
  * @author florian
  *
  */
+@Hidden
 @jakarta.ws.rs.Path(TEMP_MEDIA_FILES)
 @ViewerRestServiceBinding
 @AdminLoggedInBinding

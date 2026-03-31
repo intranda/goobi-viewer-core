@@ -67,6 +67,7 @@ import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -94,6 +95,7 @@ import jakarta.ws.rs.core.MediaType;
  *
  * @author florian
  */
+@Hidden
 @Path("/crowdsourcing/campaigns/{campaignId}")
 @ViewerRestServiceBinding
 @CrowdsourcingCampaignBinding

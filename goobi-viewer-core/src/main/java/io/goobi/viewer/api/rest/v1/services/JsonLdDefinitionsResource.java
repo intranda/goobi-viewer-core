@@ -30,6 +30,7 @@ import de.intranda.api.services.CollectionExtentDefinition;
 import de.intranda.api.services.TagListDefinition;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -39,6 +40,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  *
  * @author Florian Alpers
  */
+@Hidden
 @Path(ApiUrls.CONTEXT)
 @ViewerRestServiceBinding
 public class JsonLdDefinitionsResource {
