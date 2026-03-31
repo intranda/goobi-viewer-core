@@ -63,6 +63,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * <p>
  * Bookmark class.
@@ -402,6 +404,8 @@ public class Bookmark implements Serializable {
      *
      * @return the pi
      */
+    // pi is required to identify the record; mark as required so OpenAPI clients know it must be provided
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     public String getPi() {
         return pi;
     }

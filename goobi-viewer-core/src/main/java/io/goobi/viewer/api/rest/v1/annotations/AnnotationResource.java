@@ -289,8 +289,8 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Create a new annotation")
     @ApiResponse(responseCode = "201", description = "The created annotation")
-    @ApiResponse(responseCode = "501",
-            description = "Persisting this kind of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest,"
+    @ApiResponse(responseCode = "422",
+            description = "Persisting this kind of annotation or its target is not supported. Only W3C Web Annotations targeting a manifest,"
                     + " canvas or part of a canvas may be persisted")
     public Response addAnnotation(IncomingAnnotation anno) throws DAOException {
         AnnotationConverter converter = new AnnotationConverter(urls);
@@ -299,9 +299,10 @@ public class AnnotationResource {
             DataManager.getInstance().getDao().addAnnotation(pAnno);
             return Response.status(Response.Status.CREATED).entity(converter.getAsWebAnnotation(pAnno)).build();
         }
-        // Return 501 Not Implemented — persisting this annotation type is not supported.
-        // Previously threw NotImplementedException which Jersey mapped to 500 instead of 501.
-        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        // Return 422 Unprocessable Entity — persisting this annotation type is not supported.
+        // Previously threw NotImplementedException which Jersey mapped to 500; then changed to 501
+        // which schemathesis still counts as a server error. 422 is the correct 4xx code here.
+        return Response.status(422).build();
     }
 
     /**

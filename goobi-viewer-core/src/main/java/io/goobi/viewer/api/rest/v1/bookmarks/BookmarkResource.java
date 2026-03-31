@@ -135,7 +135,8 @@ public class BookmarkResource {
             tags = { "bookmarks" },
             summary = "Add a new bookmark list for the current user.")
     @ApiResponse(responseCode = "201", description = "Bookmark list created successfully")
-    @ApiResponse(responseCode = "400", description = "Not logged in, so no bookmark lists may be added")
+    @ApiResponse(responseCode = "400", description = "Missing or invalid request body")
+    @ApiResponse(responseCode = "409", description = "Session users may only have one bookmark list")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Response addBookmarkList(BookmarkList list) throws DAOException, IOException, RestApiException, IllegalRequestException {
         // Reject null body (e.g. JSON literal "null") with 400 instead of NPE → 500
@@ -177,8 +178,9 @@ public class BookmarkResource {
             tags = { "bookmarks" },
             summary = "Set passed attributes to the bookmarkList")
     @ApiResponse(responseCode = "200", description = "Updated bookmark list")
-    @ApiResponse(responseCode = "400", description = "Not logged in, session bookmark list may not be patched")
+    @ApiResponse(responseCode = "400", description = "Missing or invalid request body")
     @ApiResponse(responseCode = "404", description = "No bookmark list found for the given id")
+    @ApiResponse(responseCode = "409", description = "Session bookmark lists cannot be updated")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList patchBookmarkList(
             @Parameter(description = "The id of the bookmark list") @PathParam("listId") Long id,

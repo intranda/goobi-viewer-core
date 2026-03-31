@@ -28,6 +28,8 @@ import java.util.List;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -297,12 +299,14 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      */
     @Override
     public SuccessMessage addBookmarkList() throws DAOException, IOException, RestApiException, IllegalRequestException {
-        throw new IllegalRequestException("Cannot add additional session bookmark lists");
+        // Session users may only have one bookmark list; adding another is a conflict, not a bad request
+        throw new WebApplicationException("Cannot add additional session bookmark lists", Response.Status.CONFLICT);
     }
 
     @Override
     public SuccessMessage addBookmarkList(String name) throws DAOException, IOException, RestApiException, IllegalRequestException {
-        throw new IllegalRequestException("Cannot add additional session bookmark lists");
+        // Session users may only have one bookmark list; adding another is a conflict, not a bad request
+        throw new WebApplicationException("Cannot add additional session bookmark lists", Response.Status.CONFLICT);
     }
 
     /* (non-Javadoc)
@@ -318,8 +322,8 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      */
     @Override
     public void updateBookmarkList(BookmarkList list) throws IllegalRequestException {
-        throw new IllegalRequestException("Cannot update session bookmark list");
-
+        // Session bookmark lists cannot be updated; treat as conflict, not bad request
+        throw new WebApplicationException("Cannot update session bookmark list", Response.Status.CONFLICT);
     }
 
     /* (non-Javadoc)

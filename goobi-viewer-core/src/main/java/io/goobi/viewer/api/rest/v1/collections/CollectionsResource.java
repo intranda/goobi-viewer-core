@@ -150,11 +150,12 @@ public class CollectionsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Return a list of collection names starting with the given input for content assist")
     @ApiResponse(responseCode = "200", description = "List of matching collection names")
-    @ApiResponse(responseCode = "400", description = "Invalid or missing query parameter")
+    @ApiResponse(responseCode = "400", description = "Invalid collection field name")
+    @ApiResponse(responseCode = "404", description = "Solr field not found in index")
     @ApiResponse(responseCode = "500", description = "Internal server error")
     public List<String> contentAssist(
             @Parameter(description = "User input for which content assist is requested") @QueryParam("query") String input)
-            throws IndexUnreachableException, IllegalRequestException {
+            throws IndexUnreachableException, IllegalRequestException, ContentNotFoundException {
         ContentAssistResourceBuilder builder = new ContentAssistResourceBuilder();
         return builder.getCollections(solrField, input);
     }
