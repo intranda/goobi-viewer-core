@@ -35,6 +35,7 @@ import io.goobi.viewer.api.rest.model.ViewerPage;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -46,6 +47,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  *
  */
 
+@Hidden
 @jakarta.ws.rs.Path("/cms/pages/{pageId}")
 @ViewerRestServiceBinding
 public class CMSPageResource {

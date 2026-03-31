@@ -89,6 +89,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaLister;
 import io.goobi.viewer.model.cms.media.MediaItem;
 import io.goobi.viewer.model.cms.media.MediaList;
 import io.goobi.viewer.model.security.user.User;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -203,7 +204,7 @@ public class CMSMediaResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
-            tags = { "cms", "media" },
+            tags = { "media" },
             summary = "Get a list of CMS-Media Items")
     @ApiResponse(responseCode = "200", description = "List of CMS media items")
     @ApiResponse(responseCode = "401", description = "Not authorized")
@@ -226,6 +227,7 @@ public class CMSMediaResource {
         return new MediaList(items, servletRequest);
     }
 
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_ITEM_BY_ID)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -253,6 +255,7 @@ public class CMSMediaResource {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_PDF)
     @Produces("application/pdf")
@@ -282,6 +285,7 @@ public class CMSMediaResource {
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
 
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_SVG)
     @Produces("image/svg+xml")
@@ -311,6 +315,7 @@ public class CMSMediaResource {
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
 
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_ICO)
     @Produces("image/x-icon")
@@ -340,6 +345,7 @@ public class CMSMediaResource {
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
 
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
     @Operation(tags = { "cms" }, summary = "Serve a CMS media video file by filename")
@@ -354,6 +360,7 @@ public class CMSMediaResource {
         return serveMediaContent("video", file);
     }
 
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
     @Operation(tags = { "cms" }, summary = "Serve a CMS media audio file by filename")
@@ -378,6 +385,7 @@ public class CMSMediaResource {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_HTML)
     @Produces({ MediaType.TEXT_HTML })
@@ -418,6 +426,7 @@ public class CMSMediaResource {
      * @return a {@link jakarta.ws.rs.core.Response} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_ITEM_BY_FILE)
     @Produces(MediaType.APPLICATION_JSON)
@@ -442,6 +451,7 @@ public class CMSMediaResource {
      * @throws PresentationException
      *
      */
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
@@ -460,6 +470,7 @@ public class CMSMediaResource {
         }
     }
 
+    @Hidden
     @DELETE
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
@@ -471,6 +482,7 @@ public class CMSMediaResource {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
 
+    @Hidden
     @DELETE
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE)
     @Produces(MediaType.APPLICATION_JSON)
@@ -493,6 +505,7 @@ public class CMSMediaResource {
      * @param fileDetail a {@link org.glassfish.jersey.media.multipart.FormDataContentDisposition} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Hidden
     @POST
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)

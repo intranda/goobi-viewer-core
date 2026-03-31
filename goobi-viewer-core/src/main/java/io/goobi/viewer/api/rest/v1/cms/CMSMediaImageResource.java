@@ -124,7 +124,7 @@ public class CMSMediaImageResource extends ImageResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = { "cms", "iiif" },
+    @Operation(tags = { "iiif" },
             summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
     @ApiResponse(responseCode = "200", description = "IIIF image information object",
             content = @Content(mediaType = MediaType.APPLICATION_JSON))

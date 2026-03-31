@@ -46,6 +46,7 @@ import org.apache.solr.common.SolrDocumentList;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -68,6 +69,7 @@ import io.goobi.viewer.solr.SolrTools;
  * @author florian
  *
  */
+@Hidden
 @jakarta.ws.rs.Path("/cms/slider/{sliderId}")
 @ViewerRestServiceBinding
 public class CMSSliderResource {

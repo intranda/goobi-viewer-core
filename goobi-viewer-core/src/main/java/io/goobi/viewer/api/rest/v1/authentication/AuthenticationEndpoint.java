@@ -79,6 +79,7 @@ import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.user.User;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -120,6 +121,7 @@ public class AuthenticationEndpoint {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Hidden
     @Operation(summary = "Authenticate a user with username and password", tags = { "auth" })
     @ApiResponse(responseCode = "200", description = "Authentication successful, session established")
     @ApiResponse(responseCode = "403", description = "Authentication failed — invalid username or password or insufficient privileges")
