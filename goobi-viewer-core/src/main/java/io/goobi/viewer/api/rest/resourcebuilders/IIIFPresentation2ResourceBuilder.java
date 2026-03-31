@@ -454,6 +454,12 @@ public class IIIFPresentation2ResourceBuilder {
                     | ViewerConfigurationException | DAOException e) {
                 logger.warn("Skipping record {} in list response due to manifest generation error: {}",
                         luceneId, e.getMessage());
+            } catch (IllegalArgumentException e) {
+                // URI.create() throws IllegalArgumentException (wrapping URISyntaxException) when
+                // a record's PI is null or blank, causing the {pi} URL placeholder to remain
+                // unsubstituted. Skip the record instead of aborting the entire list response.
+                logger.warn("Skipping record {} in list response due to invalid URI: {}",
+                        luceneId, e.getMessage());
             }
         }
 
