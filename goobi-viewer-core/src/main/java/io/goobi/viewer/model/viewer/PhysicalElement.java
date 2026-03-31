@@ -1115,7 +1115,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         try {
             return DataFileTools.loadFulltext(null, fulltextFileName, false);
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            // Include PI and fulltext filename to help diagnose missing fulltext files
+            logger.error("{} (pi={}, fulltextFileName={})", e.getMessage(), pi, fulltextFileName);
             return "";
         }
     }
