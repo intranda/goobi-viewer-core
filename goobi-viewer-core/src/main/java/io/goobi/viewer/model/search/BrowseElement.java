@@ -398,7 +398,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         //check if we have images
         hasImages = !isAnchor() && !isGroup() && (mimeType.isImage() || structElement.isHasImages());
         //..or if we have video or audio or a 3d-object
-        hasMedia = !hasImages && !isAnchor() && !isGroup() && mimeType.isMediaType();
+        hasMedia = !hasImages && !isAnchor() && !isGroup()
+                && (mimeType.isAudio() || mimeType.isVideo() || mimeType.isSandboxedHtml() || mimeType.is3DModel());
 
         // MEI file
         hasMeiFile = StringUtils.isNotEmpty(structElement.getMetadataValue(SolrConstants.FILENAME_MEI));
