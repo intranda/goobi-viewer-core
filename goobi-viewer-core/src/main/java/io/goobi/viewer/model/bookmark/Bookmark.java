@@ -404,8 +404,8 @@ public class Bookmark implements Serializable {
      *
      * @return the pi
      */
-    // pi is required to identify the record; mark as required so OpenAPI clients know it must be provided
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    // pi is required to identify the record; mark as required with minLength:1 so empty strings are rejected
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minLength = 1)
     public String getPi() {
         return pi;
     }

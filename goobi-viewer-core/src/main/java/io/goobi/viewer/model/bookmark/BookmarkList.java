@@ -50,6 +50,7 @@ import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -569,6 +570,8 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      *
      * @return Number of items
      */
+    // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public int getNumItems() {
         return items.size();
     }
@@ -627,6 +630,8 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      *
      * @return a {@link java.lang.String} object.
      */
+    // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public String getOwnerName() {
         if (getOwner() != null) {
             return getOwner().getDisplayName();
@@ -721,6 +726,8 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * @should construct query correctly
      * @return a {@link java.lang.String} object.
      */
+    // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public String getFilterQuery() {
         if (items.isEmpty()) {
             return "";
@@ -742,6 +749,8 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      *
      * @return a {@link java.lang.String} object.
      */
+    // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public String getIIIFCollectionURI() {
         if (StringUtils.isBlank(getShareKey())) {
             return null;
@@ -758,6 +767,8 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      *
      * @return the URL encoded name
      */
+    // Computed field — read-only in OpenAPI schema so clients do not send it in request bodies
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public String getEscapedName() {
         if (name != null) {
             return StringEscapeUtils.escapeHtml4(name);

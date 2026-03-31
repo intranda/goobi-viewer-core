@@ -38,6 +38,7 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -289,10 +290,15 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Create a new annotation")
     @ApiResponse(responseCode = "201", description = "The created annotation")
+    @ApiResponse(responseCode = "400", description = "Missing or invalid request body")
     @ApiResponse(responseCode = "422",
             description = "Persisting this kind of annotation or its target is not supported. Only W3C Web Annotations targeting a manifest,"
                     + " canvas or part of a canvas may be persisted")
     public Response addAnnotation(IncomingAnnotation anno) throws DAOException {
+        // Reject null body (JSON literal "null") with 400 instead of NPE → 500
+        if (anno == null) {
+            throw new BadRequestException("Request body must not be null");
+        }
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = createPersistentAnnotation(anno);
         if (pAnno != null) {

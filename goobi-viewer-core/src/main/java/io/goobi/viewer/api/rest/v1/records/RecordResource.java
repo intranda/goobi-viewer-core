@@ -268,12 +268,12 @@ public class RecordResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get a page of comments for a record", tags = { "records", "annotations" })
     @ApiResponse(responseCode = "200", description = "Annotation page containing comments")
-    @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
-    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
+    @ApiResponse(responseCode = "400", description = "If the page number is less than 1")
+    @ApiResponse(responseCode = "404", description = "No record found or no comments for the given identifier")
     public AnnotationPage getCommentPageForRecord(
             // Page numbers are 1-based; document minimum in schema so clients and schemathesis know 0 is invalid
             @Parameter(description = "Page number (1-based)", schema = @Schema(minimum = "1")) @PathParam("page") Integer page)
-            throws DAOException, IllegalRequestException {
+            throws DAOException, IllegalRequestException, ContentNotFoundException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
         return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationPageForRecordComments(pi, uri, page);
