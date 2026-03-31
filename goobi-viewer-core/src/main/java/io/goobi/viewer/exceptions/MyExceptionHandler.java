@@ -241,7 +241,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             session.setAttribute("ErrorPhase", fc.getCurrentPhaseId().toString());
             session.setAttribute("errorDetails", errorDetails);
             // Use a human-readable format without the ISO 'T' separator and without sub-second precision
-            session.setAttribute("errorTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            session.setAttribute("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601DATETIMEMS));
             session.setAttribute("errorType", errorType);
             putNavigationState(requestMap, session);
             redirect("pretty:error");
