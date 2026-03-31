@@ -183,7 +183,7 @@ public class AuthenticationEndpoint {
     @Path(ApiUrls.AUTH_HEADER)
     @Operation(summary = "Header login", description = "Checks a configurable header for a username and logs in the user if it is found in the DB")
     @ApiResponse(responseCode = "200", description = "OK")
-    @ApiResponse(responseCode = "403", description = "Forbidden — illegal redirect URL, no matching provider configured, or no matching provider found")
+    @ApiResponse(responseCode = "403", description = "Forbidden — no matching provider configured or authentication denied")
     @ApiResponse(responseCode = "500", description = "Internal error")
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");

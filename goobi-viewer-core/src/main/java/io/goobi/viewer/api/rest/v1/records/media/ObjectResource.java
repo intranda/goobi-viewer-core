@@ -316,7 +316,8 @@ public class ObjectResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_1)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     @Operation(summary = "Serve an auxiliary resource file for a 3D object (one subfolder level)", tags = { "records", "media" })
-    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
     @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
     @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
@@ -353,7 +354,8 @@ public class ObjectResource {
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     @Operation(summary = "Serve an auxiliary resource file for a 3D object (alternate path, one subfolder level)",
             tags = { "records", "media" })
-    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
     @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
     @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
@@ -382,7 +384,8 @@ public class ObjectResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_2)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     @Operation(summary = "Serve an auxiliary resource file for a 3D object (two subfolder levels)", tags = { "records", "media" })
-    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
     @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
     @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
@@ -421,7 +424,8 @@ public class ObjectResource {
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     @Operation(summary = "Serve an auxiliary resource file for a 3D object (alternate path, two subfolder levels)",
             tags = { "records", "media" })
-    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
     @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
     @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,

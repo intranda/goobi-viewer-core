@@ -450,8 +450,10 @@ public class IIIFPresentation2ResourceBuilder {
                 }
 
                 manifests.add(manifest);
-            } catch (Exception e) {
-                logger.warn("Skipping record {} in list response due to manifest generation error: {}", luceneId, e.getMessage());
+            } catch (URISyntaxException | PresentationException | IndexUnreachableException
+                    | ViewerConfigurationException | DAOException e) {
+                logger.warn("Skipping record {} in list response due to manifest generation error: {}",
+                        luceneId, e.getMessage());
             }
         }
 

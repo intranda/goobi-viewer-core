@@ -561,7 +561,8 @@ public class RecordResource {
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public SearchResult searchInManifest(@PathParam("pi") String pi,
             @Parameter(description = "Search query string") @QueryParam("q") String query,
-            @Parameter(description = "Space-separated list of annotation motivations to search (painting, commenting, describing)") @QueryParam("motivation") String motivation,
+            @Parameter(description = "Space-separated list of annotation motivations to search")
+                    @QueryParam("motivation") String motivation,
             @Parameter(description = "Date filter (not supported; included in 'ignored' property if given)") @QueryParam("date") String date,
             @Parameter(description = "User filter (not supported; included in 'ignored' property if given)") @QueryParam("user") String user,
             @Parameter(description = "Page number for paged result sets (default: 1)") @QueryParam("page") Integer page)
@@ -593,10 +594,12 @@ public class RecordResource {
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi,
             @Parameter(description = "Partial search query string for auto-completion") @QueryParam("q") String query,
-            @Parameter(description = "Space-separated list of annotation motivations to search (painting, commenting, describing)") @QueryParam("motivation") String motivation,
+            @Parameter(description = "Space-separated list of annotation motivations to search")
+                    @QueryParam("motivation") String motivation,
             @Parameter(description = "Date filter (not supported; included in 'ignored' property if given)") @QueryParam("date") String date,
             @Parameter(description = "User filter (not supported; included in 'ignored' property if given)") @QueryParam("user") String user,
-            @Parameter(description = "Page number for paged result sets (default: 1)") @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
+            @Parameter(description = "Page number for paged result sets (default: 1)")
+                    @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
         return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation)
                 .setDate(date)
                 .setUser(user)
