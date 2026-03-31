@@ -159,6 +159,7 @@ public class CMSMediaResource {
             summary = "Get a list of CMS-Media Items of one or more categories")
     @ApiResponse(responseCode = "200", description = "List of CMS media items matching the given categories")
     @ApiResponse(responseCode = "400", description = "Invalid parameter value (e.g. negative max or prioritySlots)")
+    @ApiResponse(responseCode = "403", description = "Access to CMS media is restricted")
     @ApiResponse(responseCode = "500", description = "Internal server error - e.g. database unavailable")
     @jakarta.ws.rs.Path(CMS_MEDIA_BY_CATEGORY)
     public MediaList getMediaOfCategories(

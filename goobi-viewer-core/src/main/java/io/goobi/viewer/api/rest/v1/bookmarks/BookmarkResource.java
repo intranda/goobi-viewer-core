@@ -304,6 +304,7 @@ public class BookmarkResource {
             tags = { "bookmarks", "rss" },
             summary = "Get a bookmarklist owned by the current user by its id and return it as an RSS feed. If not logged in,"
                     + " the single bookmark list stored in the session is always returned")
+    @ApiResponse(responseCode = "200", description = "RSS feed for the bookmark list")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getBookmarkListAsRSS(
@@ -325,6 +326,7 @@ public class BookmarkResource {
             tags = { "bookmarks", "rss" },
             summary = "Get a bookmarklist owned by the current user by its id and return it as an RSS feed in json format. If not logged in,"
                     + " the single bookmark list stored in the session is always returned")
+    @ApiResponse(responseCode = "200", description = "RSS feed for the bookmark list as JSON")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Channel getBookmarkListAsRSSJson(
