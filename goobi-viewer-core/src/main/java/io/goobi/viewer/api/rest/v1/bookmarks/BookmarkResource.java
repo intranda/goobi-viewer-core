@@ -165,6 +165,7 @@ public class BookmarkResource {
 
     @PATCH
     @Path(USERS_BOOKMARKS_LIST)
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "bookmarks" },

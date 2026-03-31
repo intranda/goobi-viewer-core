@@ -57,6 +57,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -74,7 +75,8 @@ public class CollectionsResource {
     private ApiUrls urls;
 
     public CollectionsResource(
-            @Parameter(description = "Name of the Solr field the collection is based on. Typically 'DC'") @PathParam("field") String solrField,
+            @Parameter(description = "Name of the Solr field the collection is based on. Typically 'DC'",
+                    schema = @Schema(pattern = "[A-Za-z_][A-Za-z0-9_]*")) @PathParam("field") String solrField,
             @Context HttpServletRequest request) {
         // Reject field names containing control characters or non-ASCII to prevent URI construction failures.
         for (int i = 0; i < solrField.length(); i++) {

@@ -69,6 +69,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -159,6 +160,10 @@ public class RecordsFilesImageResource extends ImageResource {
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
+    @ApiResponse(responseCode = "200", description = "PDF document")
+    // 403 is returned as application/json when the record is not found in the index or access is restricted
+    @ApiResponse(responseCode = "403", description = "Access denied or record not found in index")
+    @ApiResponse(responseCode = "404", description = "Image or record not found")
     @Override
     public StreamingOutput getPdf() throws ContentLibException {
         try {
