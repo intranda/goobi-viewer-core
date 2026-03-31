@@ -426,28 +426,33 @@ public class IIIFPresentation2ResourceBuilder {
         for (SolrDocument doc : queryResults) {
             String luceneId = (String) doc.getFirstValue(SolrConstants.IDDOC);
             StructElement ele = new StructElement(luceneId, doc);
-            
-            
-            AbstractPresentationModelElement2 manifest = builder.generateManifest(ele, Collections.emptyList());
+            // Wrap per-record processing so that a single problematic record (e.g. one
+            // with an invalid configured URI or a missing logo) cannot abort the entire
+            // list response.  The record is skipped with a warning instead.
+            try {
+                AbstractPresentationModelElement2 manifest = builder.generateManifest(ele, Collections.emptyList());
 
-            if (this.urls != null && manifest.getThumbnails().isEmpty()) {
-                int thumbsWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
-                int thumbsHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
-                String thumbnailUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele.getPi(), thumbsWidth, thumbsHeight);
-                // Thumbnail URLs may contain spaces or other characters that are illegal in a
-                // java.net.URI. Guard against IllegalArgumentException / NPE so a single bad
-                // record does not abort the entire list response.
-                try {
-                    ImageContent thumbnail = new ImageContent(URI.create(thumbnailUrl));
-                    String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl);
-                    thumbnail.setService(new ImageInformation(imageInfoURI));
-                    manifest.addThumbnail(thumbnail);
-                } catch (IllegalArgumentException | NullPointerException e) {
-                    logger.warn("Could not create thumbnail URI for record {}: {}", ele.getPi(), e.getMessage());
+                if (this.urls != null && manifest.getThumbnails().isEmpty()) {
+                    int thumbsWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
+                    int thumbsHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
+                    String thumbnailUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele.getPi(), thumbsWidth, thumbsHeight);
+                    // Thumbnail URLs may contain spaces or other characters that are illegal in a
+                    // java.net.URI. Guard against IllegalArgumentException / NPE so a single bad
+                    // record does not abort the entire list response.
+                    try {
+                        ImageContent thumbnail = new ImageContent(URI.create(thumbnailUrl));
+                        String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl);
+                        thumbnail.setService(new ImageInformation(imageInfoURI));
+                        manifest.addThumbnail(thumbnail);
+                    } catch (IllegalArgumentException | NullPointerException e) {
+                        logger.warn("Could not create thumbnail URI for record {}: {}", ele.getPi(), e.getMessage());
+                    }
                 }
-            }
 
-            manifests.add(manifest);
+                manifests.add(manifest);
+            } catch (Exception e) {
+                logger.warn("Skipping record {} in list response due to manifest generation error: {}", luceneId, e.getMessage());
+            }
         }
 
         return manifests;
