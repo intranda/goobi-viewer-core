@@ -1387,6 +1387,11 @@ public class SolrSearchIndex implements java.io.Closeable {
             return "{}";
         } catch (SolrServerException | IOException e) {
             throw new IndexUnreachableException("Error getting facet heatmap: " + e.toString());
+        } catch (RemoteSolrException e) {
+            // RemoteSolrException is a RuntimeException (extends SolrException) and is not caught
+            // by SolrServerException above. Wrap it so IndexResource.getHeatmap() can detect
+            // "undefined field" errors via SolrTools.isQuerySyntaxError() and return HTTP 400.
+            throw new IndexUnreachableException("Error getting facet heatmap: " + e.toString());
         }
     }
 
