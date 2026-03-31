@@ -90,6 +90,12 @@ public class PIValidator implements Validator<String> {
             }
         }
 
+        // Require at least one alphanumeric character so that values consisting
+        // solely of punctuation (e.g. a bare "-") are rejected.
+        if (pi.chars().noneMatch(Character::isLetterOrDigit)) {
+            return false;
+        }
+
         return !StringUtils.containsAny(pi, ILLEGAL_CHARS);
     }
 }

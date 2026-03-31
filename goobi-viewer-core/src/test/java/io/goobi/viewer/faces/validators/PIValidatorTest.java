@@ -72,5 +72,30 @@ class PIValidatorTest {
     @Test
     void validatePi_shouldReturnTrueIfPiGood() throws Exception {
         Assertions.assertTrue(PIValidator.validatePi("PPN123456789"));
+        // Hyphen is allowed as long as at least one alphanumeric character is present
+        Assertions.assertTrue(PIValidator.validatePi("PPN123-456"));
+        Assertions.assertTrue(PIValidator.validatePi("record_001"));
+    }
+
+    /**
+     * @see PIValidator#validatePi(String)
+     * @verifies return false if pi contains no alphanumeric character
+     */
+    @Test
+    void validatePi_shouldReturnFalseIfPiContainsNoAlphanumericCharacter() throws Exception {
+        // A bare hyphen (or any punctuation-only value) must be rejected
+        Assertions.assertFalse(PIValidator.validatePi("-"));
+        Assertions.assertFalse(PIValidator.validatePi("---"));
+        Assertions.assertFalse(PIValidator.validatePi("_"));
+    }
+
+    /**
+     * @see PIValidator#validatePi(String)
+     * @verifies return false if pi contains non-ASCII characters
+     */
+    @Test
+    void validatePi_shouldReturnFalseIfPiContainsNonAsciiCharacters() throws Exception {
+        Assertions.assertFalse(PIValidator.validatePi("PPN\u00e9")); // é
+        Assertions.assertFalse(PIValidator.validatePi("PPN\u4e2d")); // Chinese character
     }
 }

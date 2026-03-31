@@ -141,10 +141,11 @@ public class IndexResource {
             tags = { "index" },
             summary = "Statistics about indexed records")
     @ApiResponse(responseCode = "200", description = "JSON object with record count statistics")
+    @ApiResponse(responseCode = "400", description = "Invalid Solr query syntax")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getStatistics(
             @Parameter(description = "Solr query to filter results (optional)") @QueryParam("query") final String query)
-            throws IndexUnreachableException, PresentationException {
+            throws IndexUnreachableException, PresentationException, IllegalRequestException {
 
         String useQuery = query;
         // Treat empty/blank string same as null to avoid Solr syntax error from "+()".
@@ -156,7 +157,16 @@ public class IndexResource {
 
         String finalQuery =
                 new StringBuilder().append(useQuery).append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
-        long count = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 0, null, null, null).getResults().getNumFound();
+        long count;
+        try {
+            count = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 0, null, null, null).getResults().getNumFound();
+        } catch (PresentationException e) {
+            // Invalid query syntax (e.g. bare ")" or unknown field) causes Solr to reject the request.
+            if (SolrTools.isQuerySyntaxError(e)) {
+                throw new IllegalRequestException("Invalid query: " + e.getMessage());
+            }
+            throw e;
+        }
         JSONObject json = new JSONObject();
         json.put("count", count);
         return json.toString();

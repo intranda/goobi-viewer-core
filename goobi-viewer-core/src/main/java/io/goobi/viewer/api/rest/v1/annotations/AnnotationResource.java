@@ -68,6 +68,7 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -86,6 +87,7 @@ import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -175,6 +177,10 @@ public class AnnotationResource {
             @Parameter(description = "Annotation format: 'oa' for OpenAnnotation, default is WebAnnotation")
             @QueryParam("format") String format)
             throws ContentLibException, PresentationException, IndexUnreachableException {
+        // Reject invalid PIs before they reach the Solr query to prevent syntax errors (HTTP 500).
+        if (!PIValidator.validatePi(pi)) {
+            throw new IllegalRequestException("Invalid persistent identifier: " + pi);
+        }
         // Look up the ALTO filename for this pi/pageNo via Solr
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.ORDER + ":" + pageNo;
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex()
