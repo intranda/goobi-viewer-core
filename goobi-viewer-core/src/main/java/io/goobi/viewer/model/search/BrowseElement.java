@@ -240,56 +240,10 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         this.locale = locale;
         this.fulltext = fulltext;
 
-        // Collect the docstruct hierarchy
-        StructElement anchorStructElement = null;
-        StructElement topStructElement = null; // this can be null in unit tests
-        StructElement tempElement = structElement;
-        while (tempElement != null && !tempElement.isWork()) {
-            structElements.add(tempElement.createStub());
-            tempElement = tempElement.getParent();
-        }
-        // Add topstruct to the hierarchy
-        if (tempElement != null) {
-            structElements.add(tempElement.createStub());
-            topStructElement = tempElement;
-        }
-
-        // Determine Solr document type. Must happen before certain things, such as label generation.
-        docType = DocType.getByName(structElement.getMetadataValue(SolrConstants.DOCTYPE));
-        if (DocType.METADATA.equals(docType)) {
-            metadataGroupType = MetadataGroupType.getByName(structElement.getMetadataValue(SolrConstants.METADATATYPE));
-            // The LABEL field in grouped metadata docs contains the name of the field defined in the indexed configuration
-            originalFieldName = structElement.getMetadataValue(SolrConstants.LABEL);
-        }
-
-        // If the topstruct is a volume of any kind or a subelement, add the anchor and volume labels to
-        if (!structElement.isAnchor() && topStructElement != null) {
-            // Add anchor label to volumes
-            anchorStructElement = topStructElement.getParent();
-            if (anchorStructElement != null) {
-                // Add anchor to the docstruct hierarchy
-                structElements.add(anchorStructElement.createStub());
-            }
-        }
-
-        // Populate metadata
-        int length = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueLength();
-        // int number = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueNumber();
-        for (Entry<String, List<Metadata>> entry : this.metadataListMap.entrySet()) {
-            if (!entry.getValue().isEmpty()) {
-                // logger.trace("populating metadata list {}", entry.getKey()); //NOSONAR Debug
-                populateMetadataList(entry.getValue(), structElement, anchorStructElement, searchTerms, length, locale);
-            }
-        }
-
-        // Add event metadata for LIDO records
-        if (topStructElement != null && topStructElement.isLidoRecord()) {
-            populateEvents(topStructElement, searchTerms);
-        }
-
-        if (DataManager.getInstance().getConfiguration().isSearchRisExportEnabled()) {
-            risExport = MetadataTools.generateRIS(structElement);
-        }
+        HierarchyResult hierarchy = initDocstructHierarchy(structElement);
+        initDocType(structElement);
+        hierarchy = initAnchorLabel(structElement, hierarchy);
+        populateAllMetadata(structElement, hierarchy, searchTerms);
 
         if (navigationHelper == null) {
             try {
@@ -299,18 +253,103 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
             }
         }
 
+        dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
+        label = createMultiLanguageLabel(structElement);
+        if (!initCoreFields(structElement)) {
+            return;
+        }
+
+        resolveMimeType(structElement);
+        resolveImageNo(structElement);
+        initThumbnail(structElement, thumbs, user);
+        initMediaFlags(structElement);
+
+        this.url = generateUrl();
+        sidebarPrevUrl = generateSidebarUrl("prevHit");
+        sidebarNextUrl = generateSidebarUrl("nextHit");
+
+        Collections.reverse(structElements);
+    }
+
+    private record HierarchyResult(StructElement top, StructElement anchor) {
+    }
+
+    /**
+     * Walks up the parent chain to collect the docstruct hierarchy and find the top-level struct element.
+     */
+    private HierarchyResult initDocstructHierarchy(StructElement structElement) throws IndexUnreachableException, PresentationException {
+        StructElement topStructElement = null;
+        StructElement tempElement = structElement;
+        while (tempElement != null && !tempElement.isWork()) {
+            structElements.add(tempElement.createStub());
+            tempElement = tempElement.getParent();
+        }
+        if (tempElement != null) {
+            structElements.add(tempElement.createStub());
+            topStructElement = tempElement;
+        }
+        return new HierarchyResult(topStructElement, null);
+    }
+
+    /**
+     * Determines Solr document type, metadata group type, and original field name. Must happen before label generation.
+     */
+    private void initDocType(StructElement structElement) {
+        docType = DocType.getByName(structElement.getMetadataValue(SolrConstants.DOCTYPE));
+        if (DocType.METADATA.equals(docType)) {
+            metadataGroupType = MetadataGroupType.getByName(structElement.getMetadataValue(SolrConstants.METADATATYPE));
+            originalFieldName = structElement.getMetadataValue(SolrConstants.LABEL);
+        }
+    }
+
+    /**
+     * If the struct element is a volume or subelement, adds the anchor element to the hierarchy.
+     */
+    private HierarchyResult initAnchorLabel(StructElement structElement, HierarchyResult hierarchy)
+            throws IndexUnreachableException, PresentationException {
+        StructElement anchorStructElement = null;
+        if (!structElement.isAnchor() && hierarchy.top() != null) {
+            anchorStructElement = hierarchy.top().getParent();
+            if (anchorStructElement != null) {
+                structElements.add(anchorStructElement.createStub());
+            }
+        }
+        return new HierarchyResult(hierarchy.top(), anchorStructElement);
+    }
+
+    /**
+     * Populates metadata lists, LIDO event metadata, and RIS export.
+     */
+    private void populateAllMetadata(StructElement structElement, HierarchyResult hierarchy, Map<String, Set<String>> searchTerms)
+            throws PresentationException, IndexUnreachableException, DAOException {
+        int length = DataManager.getInstance().getConfiguration().getSearchHitMetadataValueLength();
+        for (Entry<String, List<Metadata>> entry : this.metadataListMap.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                populateMetadataList(entry.getValue(), structElement, hierarchy.anchor(), searchTerms, length, locale);
+            }
+        }
+        if (hierarchy.top() != null && hierarchy.top().isLidoRecord()) {
+            populateEvents(hierarchy.top(), searchTerms);
+        }
+        if (DataManager.getInstance().getConfiguration().isSearchRisExportEnabled()) {
+            risExport = MetadataTools.generateRIS(structElement);
+        }
+    }
+
+    /**
+     * Copies core identification fields from the struct element. Returns false if PI is missing (caller should return early).
+     */
+    private boolean initCoreFields(StructElement structElement) {
         work = structElement.isWork();
         anchor = structElement.isAnchor();
         cmsPage = structElement.isCmsPage();
         numVolumes = structElement.getNumVolumes();
         docStructType = structElement.getDocStructType();
-        dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
-        label = createMultiLanguageLabel(structElement);
 
         pi = structElement.getPi();
         if (pi == null) {
             logger.warn("Index document {} has no PI_TOPSTRUCT field. Please re-index.", structElement.getLuceneId());
-            return;
+            return false;
         }
         pi = StringTools.intern(pi);
         iddoc = structElement.getLuceneId();
@@ -319,8 +358,13 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         if (StringUtils.isEmpty(volumeNo)) {
             volumeNo = structElement.getVolumeNoSort();
         }
+        return true;
+    }
 
-        // generate thumbnail url
+    /**
+     * Resolves the MIME type from the struct element, falling back to the file extension if needed.
+     */
+    private void resolveMimeType(StructElement structElement) throws IndexUnreachableException, PresentationException {
         String filename = structElement.getMetadataValue(SolrConstants.FILENAME);
         if (StringUtils.isEmpty(filename)) {
             filename = structElement.getMetadataValue(SolrConstants.THUMBNAIL);
@@ -339,10 +383,14 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         if (mimeType == null) {
             mimeType = "";
         }
+    }
 
+    /**
+     * Determines the image/page number from ORDER, FILENAME, or THUMBPAGENO fields.
+     */
+    private void resolveImageNo(StructElement structElement) {
         String imageNoStr = structElement.getMetadataValue(SolrConstants.ORDER);
         if (StringUtils.isNotEmpty(imageNoStr)) {
-            // ORDER field exists (page doc)
             try {
                 imageNo = Integer.parseInt(imageNoStr);
             } catch (NumberFormatException e) {
@@ -350,7 +398,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
                 imageNo = 0;
             }
         } else {
-            // Use FILENAME (page) or THUMBPAGENO (docstruct doc)
             imageNoStr = structElement.getMetadataValue(SolrConstants.FILENAME);
             if (StringUtils.isNotEmpty(imageNoStr)) {
                 imageNoStr = imageNoStr.substring(0, imageNoStr.indexOf('.'));
@@ -368,53 +415,50 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
                 imageNo = 1;
             }
         }
+    }
 
-        // Thumbnail
-        if (thumbs != null) {
-            String thumbUrl = thumbs.getThumbnailUrl(structElement);
-            if (thumbUrl != null && !thumbUrl.isEmpty()) {
-                thumbnailUrl = StringTools.intern(thumbUrl);
-            }
-
-            // Check thumbnail access so that a custom access denied image can be used
-            String thumbnailPi = pi;
-            if ((isAnchor() || isGroup()) && StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME
-                    .equals(DataManager.getInstance().getConfiguration().getAnchorThumbnailMode())) {
-                StructElement firstVolume = structElement.getFirstVolume(new ArrayList<>(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
-                if (firstVolume != null) {
-                    thumbnailPi = firstVolume.getPi();
-                    logger.trace("Using first volume for thumbnail: {}", thumbnailPi);
-                    String thumbPageNo = firstVolume.getMetadataValue(SolrConstants.THUMBPAGENO);
-                    imageNo = StringUtils.isNotBlank(thumbPageNo) ? Integer.parseInt(thumbPageNo) : 1;
-                }
-            }
-            PhysicalElement pe = ThumbnailHandler.getPage(thumbnailPi, imageNo);
-            if (pe != null) {
-                accessPermissionThumbnail = pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, user);
-            }
+    /**
+     * Resolves the thumbnail URL and checks thumbnail access permissions.
+     */
+    private void initThumbnail(StructElement structElement, ThumbnailHandler thumbs, User user)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        if (thumbs == null) {
+            return;
         }
 
+        String thumbUrl = thumbs.getThumbnailUrl(structElement);
+        if (thumbUrl != null && !thumbUrl.isEmpty()) {
+            thumbnailUrl = StringTools.intern(thumbUrl);
+        }
+
+        String thumbnailPi = pi;
+        if ((isAnchor() || isGroup()) && StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME
+                .equals(DataManager.getInstance().getConfiguration().getAnchorThumbnailMode())) {
+            StructElement firstVolume = structElement.getFirstVolume(new ArrayList<>(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
+            if (firstVolume != null) {
+                thumbnailPi = firstVolume.getPi();
+                logger.trace("Using first volume for thumbnail: {}", thumbnailPi);
+                String thumbPageNo = firstVolume.getMetadataValue(SolrConstants.THUMBPAGENO);
+                imageNo = StringUtils.isNotBlank(thumbPageNo) ? Integer.parseInt(thumbPageNo) : 1;
+            }
+        }
+        PhysicalElement pe = ThumbnailHandler.getPage(thumbnailPi, imageNo);
+        if (pe != null) {
+            accessPermissionThumbnail = pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, user);
+        }
+    }
+
+    /**
+     * Determines content type flags (images, media, MEI, TEI) and record languages.
+     */
+    private void initMediaFlags(StructElement structElement) {
         MimeType mimeType = new MimeType(this.mimeType);
-        //check if we have images
         hasImages = !isAnchor() && !isGroup() && (mimeType.isImage() || structElement.isHasImages());
-        //..or if we have video or audio or a 3d-object
         hasMedia = !hasImages && !isAnchor() && !isGroup()
                 && (mimeType.isAudio() || mimeType.isVideo() || mimeType.isSandboxedHtml() || mimeType.is3DModel());
-
-        // MEI file
         hasMeiFile = StringUtils.isNotEmpty(structElement.getMetadataValue(SolrConstants.FILENAME_MEI));
-
-        // TEI files
         hasTeiFiles = structElement.getMetadataFields().keySet().stream().filter(k -> k.startsWith(SolrConstants.FILENAME_TEI)).count() > 0;
-
-        //record languages
         this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
-
-        this.url = generateUrl();
-        sidebarPrevUrl = generateSidebarUrl("prevHit");
-        sidebarNextUrl = generateSidebarUrl("nextHit");
-
-        Collections.reverse(structElements);
     }
 
     /**
