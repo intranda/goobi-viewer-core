@@ -9,7 +9,8 @@
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    xmlns:util="http://goobi.io/util">
     <ui:param
         name="renderTitle"
         value="#{renderTitle == null ? true : renderTitle}" />
@@ -35,7 +36,7 @@
                 <!-- METADATA ELEMENT -->
                 <div class="metadata__wrapper #{metadataElement.isDisplayBoxed(type.type) ? '-isBoxed' : ''}">
                     <!-- Initial VIEW: metadataList before <fold/> element -->
-                    <div class="metadata__fold-collapsed">
+                    <div class="metadata__fold-wrapper -visibleByDefault">
                         <c:forEach
                             items="#{metadataElement.metadataListBeforeFold}"
                             var="metadata">
@@ -91,8 +92,8 @@
 
                     <!-- EXPANDED VIEW: full metadataList (hidden by default) -->
                     <div
-                        class="metadata__fold-expanded"
-                        style="display:none">
+                        class="metadata__fold-wrapper -hidden"
+                        data-target="collapsedMetadataBlock">
                         <c:forEach
                             items="#{metadataElement.metadataList}"
                             var="metadata">
@@ -150,20 +151,44 @@
                     <h:panelGroup
                         layout="block"
                         rendered="#{metadataElement.hasMetadataListFold}">
+                        <!-- Show more -->
                         <button
                             type="button"
-                            class="btn btn--default metadata__fold-btn metadata__fold-btn--more"
-                            onclick="var w=this.closest('.metadata__wrapper');w.querySelector('.metadata__fold-collapsed').style.display='none';w.querySelector('.metadata__fold-expanded').style.display='';this.style.display='none';w.querySelector('.metadata__fold-btn--less').style.display='';">
-                            <h:outputText value="#{msg.metadata__fold_show_more}" />
+                            class="btn btn--default metadata__fold-button metadata__fold-button-more"
+                            data-trigger="expandMetadata">
+                            <span class="metadata__fold-button-inner">
+                                <util:icon icon="caret-down"/>
+                                <span><h:outputText value="#{msg.metadata__fold_show_more}" /></span>
+                            </span>
                         </button>
+                        <!-- Show less -->
                         <button
                             type="button"
-                            class="btn btn--default metadata__fold-btn metadata__fold-btn--less"
-                            style="display:none"
-                            onclick="var w=this.closest('.metadata__wrapper');w.querySelector('.metadata__fold-collapsed').style.display='';w.querySelector('.metadata__fold-expanded').style.display='none';this.style.display='none';w.querySelector('.metadata__fold-btn--more').style.display='';">
-                            <h:outputText value="#{msg.metadata__fold_show_less}" />
+                            class="btn btn--default metadata__fold-button metadata__fold-button-less -hidden"
+                            data-trigger="collapseMetadata">
+                            <span class="metadata__fold-button-inner">
+                                <util:icon icon="caret-up"/>
+                             <span><h:outputText value="#{msg.metadata__fold_show_less}" /></span>
+                            </span>
                         </button>
                     </h:panelGroup>
+                    <script>
+                        $(document)
+                            // "Show more": reveals full list, swaps buttons
+                            .on('click', '[data-trigger="expandMetadata"]', function() {
+                                var $w = $(this).closest('.metadata__wrapper');
+                                $w.find('[data-target="collapsedMetadataBlock"]').removeClass('-hidden');
+                                $(this).addClass('-hidden');
+                                $w.find('[data-trigger="collapseMetadata"]').removeClass('-hidden');
+                            })
+                            // "Show less": hides full list, swaps buttons
+                            .on('click', '[data-trigger="collapseMetadata"]', function() {
+                                var $w = $(this).closest('.metadata__wrapper');
+                                $w.find('[data-target="collapsedMetadataBlock"]').addClass('-hidden');
+                                $(this).addClass('-hidden');
+                                $w.find('[data-trigger="expandMetadata"]').removeClass('-hidden');
+                            });
+                    </script>
                 </div>
             </c:forEach>
         </div>

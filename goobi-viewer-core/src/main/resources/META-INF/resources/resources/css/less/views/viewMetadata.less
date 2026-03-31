@@ -249,6 +249,31 @@
         display: flex;
         flex-wrap: wrap;
     }
+	&__fold-wrapper {
+		&.-visibleByDefault {
+			
+		} 
+		&.-hidden {
+			display: none;
+		}
+	}
+	&__fold-button {
+		font-size: 14px;
+		padding: 5px 10px;
+		line-height: 1.2;
+		&.-hidden {
+			display: none;
+		}
+		svg {
+			width: 15px;
+			height: 15px;
+		}
+	}
+	&__fold-button-inner {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+	}
 }
 
 .hierarchy-separator {
