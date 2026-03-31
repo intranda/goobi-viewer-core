@@ -15,6 +15,7 @@
                         id="calendarWidgetContainer"
                         data-anchor-pi="#{activeDocumentBean.viewManager.calendarView.anchorPi}"
                         data-current-year="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('YEAR')}"
+                        data-current-date="#{activeDocumentBean.viewManager.currentStructElement.getMetadataValue('YEARMONTHDAY')}"
                         data-locale="#{navigationHelper.localeString}"
                         data-app-url="#{navigationHelper.applicationUrl}" />
                 </div>
@@ -26,9 +27,18 @@
     var el = document.getElementById('calendarWidgetContainer');
     if (!el) return;
 
-    var pathParts = window.location.pathname.replace(/\/+$/, '').split('/');
-    var logId = pathParts.length >= 2 ? pathParts[pathParts.length - 1] : null;
-    if (logId === '-' || logId === '') logId = null;
+    var rawDate = el.dataset.currentDate;
+    var currentIssueDate = null;
+    if (rawDate && rawDate.length === 8) {
+        currentIssueDate = rawDate.substring(0, 4) + '-' + rawDate.substring(4, 6) + '-' + rawDate.substring(6, 8);
+    }
+
+    console.group('[calendarWidget] init data');
+    console.log('anchorPi:        ', el.dataset.anchorPi);
+    console.log('currentYear:     ', el.dataset.currentYear);
+    console.log('rawDate (YEARMONTHDAY):', rawDate || '(leer)');
+    console.log('currentIssueDate:', currentIssueDate || '(null)');
+    console.groupEnd();
 
     viewerJS.calendarWidget.init({
         container: el,
@@ -36,7 +46,7 @@
         currentYear: el.dataset.currentYear,
         locale: el.dataset.locale,
         appUrl: el.dataset.appUrl,
-        currentLogId: logId
+        currentIssueDate: currentIssueDate
     });
 })();
 //]]>
