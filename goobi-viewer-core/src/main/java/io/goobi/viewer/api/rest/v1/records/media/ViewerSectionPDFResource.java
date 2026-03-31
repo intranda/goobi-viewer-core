@@ -23,6 +23,8 @@ package io.goobi.viewer.api.rest.v1.records.media;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibPdfException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
@@ -110,9 +112,16 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     @ApiResponse(responseCode = "200", description = "PDF information object for the requested section",
             content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or section")
+    @ApiResponse(responseCode = "404", description = "Record or section not found")
     @ApiResponse(responseCode = "500", description = "Error reading PDF information")
     public PdfInformation getInfoAsJson() throws ContentLibException {
-        return super.getInfoAsJson(divId);
+        // ContentLib wraps a missing METS file as ContentLibPdfException (not ContentNotFoundException),
+        // which ContentExceptionMapper would map to HTTP 500. Rethrow as 404 instead.
+        try {
+            return super.getInfoAsJson(divId);
+        } catch (ContentLibPdfException e) {
+            throw new ContentNotFoundException("Record or section not found: " + filename, e);
+        }
     }
 
     /**

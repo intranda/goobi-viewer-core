@@ -230,9 +230,14 @@ public class CMSMediaResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "cms" }, summary = "Get a CMS media item by its database id")
     @ApiResponse(responseCode = "200", description = "CMS media item information")
+    @ApiResponse(responseCode = "404", description = "No CMS media item found for the given id")
     @ApiResponse(responseCode = "500", description = "Internal server error")
-    public MediaItem getMediaItem(@PathParam("id") Long id) throws DAOException {
+    public MediaItem getMediaItem(@PathParam("id") Long id) throws DAOException, ContentNotFoundException {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
+        // Return 404 instead of NPE when no item exists for the given id
+        if (item == null) {
+            throw new ContentNotFoundException("No CMS media item found with id: " + id);
+        }
         return new MediaItem(item, servletRequest);
     }
 

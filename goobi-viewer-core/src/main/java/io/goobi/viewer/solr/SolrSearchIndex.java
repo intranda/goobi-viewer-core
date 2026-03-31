@@ -1369,6 +1369,11 @@ public class SolrSearchIndex implements java.io.Closeable {
         try {
             QueryResponse response = request.process(client);
             final NestableJsonFacet topLevelFacet = response.getJsonFacetingResponse();
+            // topLevelFacet may be null when Solr returns no JSON faceting data (e.g. for
+            // unknown field names that Solr silently ignores instead of erroring out).
+            if (topLevelFacet == null) {
+                return "{}";
+            }
             final HeatmapJsonFacet heatmap = topLevelFacet.getHeatmapFacetByName("heatmapFacet");
             if (heatmap != null) {
                 return getAsJson(heatmap);
