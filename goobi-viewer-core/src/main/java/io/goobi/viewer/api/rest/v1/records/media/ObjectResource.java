@@ -66,7 +66,10 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.media.voyager.VoyagerSceneBuilder;
 import io.goobi.viewer.model.viewer.object.ObjectInfo;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Consumes;
@@ -137,6 +140,11 @@ public class ObjectResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Get 3D object information for a record file", tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Object information",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "500", description = "Internal error reading object information")
     public ObjectInfo getInfo(@Context HttpServletRequest request, @Context HttpServletResponse response)
             throws PresentationException, IndexUnreachableException {
 
@@ -169,6 +177,11 @@ public class ObjectResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_SCENE)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Get Voyager scene description for a 3D object", tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Voyager scene JSON",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "500", description = "Error reading media directory or scene file")
     public Response getScene() {
         String baseFilename = FilenameUtils.getBaseName(filename);
         String svxFilename = baseFilename + ".svx.json";
@@ -205,6 +218,10 @@ public class ObjectResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_SCENE)
     @Consumes({ MediaType.APPLICATION_JSON })
     @AdminLoggedInBinding
+    @Operation(summary = "Save a Voyager scene description for a 3D object", tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Scene saved successfully")
+    @ApiResponse(responseCode = "401", description = "Admin login required")
+    @ApiResponse(responseCode = "500", description = "Error writing scene file")
     public Response setScene(String scene) {
 
         String baseFilename = FilenameUtils.getBaseName(filename);
@@ -241,6 +258,11 @@ public class ObjectResource {
      */
     @GET
     @Produces({ MediaType.TEXT_PLAIN })
+    @Operation(summary = "Serve a 3D object file for a record", tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "3D object file content", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "Object file not found")
+    @ApiResponse(responseCode = "500", description = "Error reading object file")
     public StreamingOutput getObject(@Context HttpServletRequest request, @Context HttpServletResponse response)
             throws IOException, PresentationException, IndexUnreachableException {
 
@@ -291,6 +313,10 @@ public class ObjectResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_1)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    @Operation(summary = "Serve an auxiliary resource file for a 3D object (one subfolder level)", tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder, @PathParam("auxfilename") final String auxfilename)
             throws IOException, PresentationException, IndexUnreachableException {
@@ -323,6 +349,11 @@ public class ObjectResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_1_ALT)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    @Operation(summary = "Serve an auxiliary resource file for a 3D object (alternate path, one subfolder level)",
+            tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder, @PathParam("auxfilename") final String auxfilename)
             throws IOException, PresentationException, IndexUnreachableException {
@@ -348,6 +379,10 @@ public class ObjectResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_2)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    @Operation(summary = "Serve an auxiliary resource file for a 3D object (two subfolder levels)", tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder1, @PathParam("subsubfolder") String subfolder2, @PathParam("auxfilename") String auxfilename)
             throws IOException, PresentationException, IndexUnreachableException {
@@ -382,6 +417,11 @@ public class ObjectResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
+    @Operation(summary = "Serve an auxiliary resource file for a 3D object (alternate path, two subfolder levels)",
+            tags = { "records", "media" })
+    @ApiResponse(responseCode = "200", description = "Auxiliary resource file content", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder1, @PathParam("subsubfolder") String subfolder2, @PathParam("auxfilename") String auxfilename)
             throws IOException, PresentationException, IndexUnreachableException {

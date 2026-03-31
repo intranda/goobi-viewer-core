@@ -30,6 +30,9 @@ import de.intranda.api.services.CollectionExtentDefinition;
 import de.intranda.api.services.TagListDefinition;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Provides a context for the extent service used in the viewer IIIF Presentation collection responses.
@@ -49,6 +52,9 @@ public class JsonLdDefinitionsResource {
     @GET
     @Path(CollectionExtentDefinition.URI_PATH)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Get JSON-LD context definition for the collection extent service", tags = { "services" })
+    @ApiResponse(responseCode = "200", description = "JSON-LD context document for collection extent",
+            content = @Content(mediaType = "application/ld+json"))
     public CollectionExtentDefinition getCollectionExtentContext() {
 
         return new CollectionExtentDefinition();
@@ -58,6 +64,9 @@ public class JsonLdDefinitionsResource {
     @GET
     @Path(TagListDefinition.URI_PATH)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Get JSON-LD context definition for the tag list service", tags = { "services" })
+    @ApiResponse(responseCode = "200", description = "JSON-LD context document for tag list",
+            content = @Content(mediaType = "application/ld+json"))
     public TagListDefinition getTagListContext() {
 
         return new TagListDefinition();

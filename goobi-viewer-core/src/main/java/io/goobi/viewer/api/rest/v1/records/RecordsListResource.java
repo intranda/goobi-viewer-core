@@ -93,6 +93,9 @@ public class RecordsListResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "List records in an ordered collection page, use query parameter for filtering")
+    @ApiResponse(responseCode = "200", description = "Ordered collection page of record manifests")
+    @ApiResponse(responseCode = "400", description = "Invalid query or date parameters")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
     public OrderedCollectionPage<IPresentationModelElement> listManifests(
             @Parameter(description = "filter query") @QueryParam("query") String query,
             @Parameter(description = "Index of the first result to return") @QueryParam("first") final Integer firstRow,

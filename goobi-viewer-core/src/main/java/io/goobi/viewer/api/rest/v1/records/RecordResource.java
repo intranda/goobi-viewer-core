@@ -164,6 +164,9 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Download ris as file")
+    @ApiResponse(responseCode = "200", description = "RIS citation downloaded as plain text file")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @AccessConditionBinding
     public String getRISAsFile()
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
@@ -189,6 +192,9 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_RIS_TEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get ris as text")
+    @ApiResponse(responseCode = "200", description = "RIS citation as plain text")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public String getRISAsText()
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
         if (servletResponse != null) {
@@ -202,6 +208,9 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_TOC)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get table of contents of records")
+    @ApiResponse(responseCode = "200", description = "Table of contents as plain text")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public String getTOCAsText()
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException, ViewerConfigurationException {
         if (servletResponse != null) {
@@ -256,7 +265,10 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_COMMENTS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Get a page of comments for a record", tags = { "records", "annotations" })
+    @ApiResponse(responseCode = "200", description = "Annotation page containing comments")
     @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public AnnotationPage getCommentPageForRecord(@PathParam("page") Integer page)
             throws DAOException, IllegalRequestException {
 
@@ -268,6 +280,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_METADATA_SOURCE)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get record metadata source file")
+    @ApiResponse(responseCode = "200", description = "Metadata source file content")
+    @ApiResponse(responseCode = "404", description = "No source file found for the given record")
     public StreamingOutput getSource() throws ContentNotFoundException, PresentationException, IndexUnreachableException {
 
         StructElement se = getStructElement(pi);
@@ -299,6 +313,7 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 manifest for the record")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
     @IIIFPresentationBinding
@@ -351,6 +366,8 @@ public class RecordResource {
     @Operation(tags = { "records" }, summary = "Get NER tags for a record")
     @ApiResponse(responseCode = "200", description = "NER tags for the given record")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public DocumentReference getNERTags(
             @Parameter(description = "First page to get tags for") @QueryParam("start") Integer start,
             @Parameter(description = "Last page to get tags for") @QueryParam("end") Integer end,
@@ -365,6 +382,10 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get entire plaintext of record within a single text file")
+    @ApiResponse(responseCode = "200", description = "Full plaintext of the record")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @CORSBinding
     @IIIFPresentationBinding
     public String getPlaintext() throws PresentationException, IndexUnreachableException, IOException {
@@ -379,6 +400,10 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_PLAINTEXT_ZIP)
     @Produces({ "application/zip" })
     @Operation(tags = { "records" }, summary = "Get entire plaintext of record as a zip archive of text files per page")
+    @ApiResponse(responseCode = "200", description = "ZIP archive containing one text file per page")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public StreamingOutput getPlaintextAsZip()
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         logger.trace("getPlaintextAsZip: {}", pi);
@@ -396,6 +421,10 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_ALTO)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get entire alto document for record")
+    @ApiResponse(responseCode = "200", description = "ALTO XML document for the full record")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public String getAlto() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
@@ -408,6 +437,10 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_ALTO_ZIP)
     @Produces({ "application/zip" })
     @Operation(tags = { "records" }, summary = "Get a zip archive of alto documents per page")
+    @ApiResponse(responseCode = "200", description = "ZIP archive containing one ALTO file per page")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public StreamingOutput getAltoAsZip() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
@@ -424,6 +457,9 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get CMDI record file in the requested language.",
             description = "If possible, directly read a CMDI file associated with the record")
+    @ApiResponse(responseCode = "200", description = "CMDI record file in the requested language")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or language code")
+    @ApiResponse(responseCode = "404", description = "No CMDI file found for the given record")
     public String getCmdiLanguage(
             @Parameter(description = "preferred language for the TEI file, in ISO-639 format") @PathParam("lang") final String language)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
@@ -441,6 +477,9 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get TEI record file in the requested language.",
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
+    @ApiResponse(responseCode = "200", description = "TEI record file in the requested language")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or language code")
+    @ApiResponse(responseCode = "404", description = "No TEI file found for the given record")
     public String getTeiLanguage(
             @Parameter(description = "preferred language for the TEI file, in ISO-639 format") @PathParam("lang") final String language)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
@@ -458,6 +497,9 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get text of record in TEI format.",
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
+    @ApiResponse(responseCode = "200", description = "Record text in TEI format")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public String getTei() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
@@ -472,6 +514,9 @@ public class RecordResource {
     @Produces({ "application/zip" })
     @Operation(tags = { "records" }, summary = "Get text of record in TEI format as a zip file.",
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
+    @ApiResponse(responseCode = "200", description = "ZIP archive of TEI files")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public StreamingOutput getTeiAsZip(
             @Parameter(description = "preferred language for the TEI file, in ISO-639 format") @QueryParam("lang") final String language)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
@@ -510,8 +555,16 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
-    public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation,
-            @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
+    @Operation(summary = "Search within a IIIF manifest", tags = { "records", "iiif" })
+    @ApiResponse(responseCode = "200", description = "IIIF search result")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or query")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
+    public SearchResult searchInManifest(@PathParam("pi") String pi,
+            @Parameter(description = "Search query string") @QueryParam("q") String query,
+            @Parameter(description = "Space-separated list of annotation motivations to search (painting, commenting, describing)") @QueryParam("motivation") String motivation,
+            @Parameter(description = "Date filter (not supported; included in 'ignored' property if given)") @QueryParam("date") String date,
+            @Parameter(description = "User filter (not supported; included in 'ignored' property if given)") @QueryParam("user") String user,
+            @Parameter(description = "Page number for paged result sets (default: 1)") @QueryParam("page") Integer page)
             throws IndexUnreachableException, PresentationException {
         return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
     }
@@ -534,9 +587,16 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
     @Produces({ MediaType.APPLICATION_JSON })
-    public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
-            @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
-            @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
+    @Operation(summary = "Auto-complete suggestions for searching within a IIIF manifest", tags = { "records", "iiif" })
+    @ApiResponse(responseCode = "200", description = "IIIF auto-suggest result")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or query")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
+    public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi,
+            @Parameter(description = "Partial search query string for auto-completion") @QueryParam("q") String query,
+            @Parameter(description = "Space-separated list of annotation motivations to search (painting, commenting, describing)") @QueryParam("motivation") String motivation,
+            @Parameter(description = "Date filter (not supported; included in 'ignored' property if given)") @QueryParam("date") String date,
+            @Parameter(description = "User filter (not supported; included in 'ignored' property if given)") @QueryParam("user") String user,
+            @Parameter(description = "Page number for paged result sets (default: 1)") @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
         return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation)
                 .setDate(date)
                 .setUser(user)
@@ -580,8 +640,10 @@ public class RecordResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
     @AuthorizationBinding
+    @ApiResponse(responseCode = "200", description = "Record deletion accepted")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @ApiResponse(responseCode = "403", description = "Deletion not allowed because child volumes are still present")
+    @ApiResponse(responseCode = "500", description = "Internal server error during deletion")
     @ApiResponse(responseCode = "503", description = "A deletion operation is already in progress")
     @Operation(tags = { "records" }, summary = "Delete the record from the Solr database",
             description = "Requires an authentication token. This operation may take a while, depending on the indexer queue. If the request"
@@ -652,8 +714,8 @@ public class RecordResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
     @ApiResponse(responseCode = "200", description = "Record metadata as JSON")
-    @ApiResponse(responseCode = "400", description = "Invalid or missing record identifier")
-    @ApiResponse(responseCode = "404", description = "No record found for given identifier or template not found")
+    @ApiResponse(responseCode = "400", description = "Missing record identifier or template configuration not found")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public Response getRecordMetadataAsJson(@PathParam("pi") String pi, @PathParam("template") String template)
             throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}/{}", pi, template);

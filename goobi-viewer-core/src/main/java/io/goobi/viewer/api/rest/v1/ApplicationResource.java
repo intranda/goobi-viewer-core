@@ -59,6 +59,8 @@ public class ApplicationResource {
     @GET
     @Path("timing")
     @Produces(MediaType.TEXT_PLAIN)
+    @Operation(summary = "Get accumulated request timing statistics and reset the counters", tags = { "application" })
+    @ApiResponse(responseCode = "200", description = "Timing statistics as plain text, one entry per tracked operation")
     public String getTimeAnalysis() {
         List<TimingStatistics> times = DataManager.getInstance().getTiming().geStatistics();
         DataManager.getInstance().resetTiming();

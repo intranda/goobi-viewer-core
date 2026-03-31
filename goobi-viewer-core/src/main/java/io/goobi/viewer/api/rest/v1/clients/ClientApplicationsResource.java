@@ -106,7 +106,9 @@ public class ClientApplicationsResource {
     @GET
     @jakarta.ws.rs.Path(CLIENTS_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    //    @Operation(summary = "Request", tags = { "clients" })
+    @Operation(summary = "Request access for a registered client application", tags = { "clients" })
+    @ApiResponse(responseCode = "200", description = "Access status for the requesting client")
+    @ApiResponse(responseCode = "400", description = "Missing client identifier header or client not yet registered")
     public String request() throws ContentLibException, DAOException {
         String clientIdentifier = ClientApplicationManager.getClientIdentifier(servletRequest);
         if (StringUtils.isBlank(clientIdentifier)) {
@@ -182,6 +184,7 @@ public class ClientApplicationsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get a list of all registered clients", tags = { "clients" },
             description = "Clients are returned as json objects. Requires an access token in the query paramter or header field 'token'.")
+    @ApiResponse(responseCode = "200", description = "List of all registered client applications")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "500", description = "An internal error occurred")
@@ -203,6 +206,7 @@ public class ClientApplicationsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get the client with the given client identifier", tags = { "clients" },
             description = "The client is returned as a json object. Requires an access token in the query paramter or header field 'token'.")
+    @ApiResponse(responseCode = "200", description = "Client application object")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given 'id' was found in database")

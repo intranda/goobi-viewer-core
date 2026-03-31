@@ -46,6 +46,9 @@ import org.apache.solr.common.SolrDocumentList;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -77,7 +80,7 @@ public class CMSSliderResource {
 
     private final CMSSlider slider;
 
-    public CMSSliderResource(@PathParam("sliderId") Long sliderId) throws DAOException {
+    public CMSSliderResource(@Parameter(description = "Identifier of the CMS slider") @PathParam("sliderId") Long sliderId) throws DAOException {
         this.slider = DataManager.getInstance().getDao().getSlider(sliderId);
     }
 
@@ -88,6 +91,10 @@ public class CMSSliderResource {
     @GET
     @jakarta.ws.rs.Path("/slides")
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Get the list of slide URLs for a CMS slider component", tags = { "cms" })
+    @ApiResponse(responseCode = "200", description = "List of slide resource URLs")
+    @ApiResponse(responseCode = "404", description = "No slider found for the given id")
+    @ApiResponse(responseCode = "500", description = "Error retrieving slider content")
     public List<URI> getSlides() throws ContentNotFoundException, PresentationException, IndexUnreachableException, IllegalRequestException {
         if (this.slider != null) {
             switch (slider.getSourceType()) {

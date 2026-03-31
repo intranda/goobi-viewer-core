@@ -63,6 +63,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -104,6 +105,9 @@ public class RecordSectionResource {
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Download ris as file")
+    @ApiResponse(responseCode = "200", description = "RIS citation for the section downloaded as plain text file")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
     public String getRISAsFile()
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
 
@@ -128,6 +132,9 @@ public class RecordSectionResource {
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_TEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get ris as text")
+    @ApiResponse(responseCode = "200", description = "RIS citation for the section as plain text")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
     public String getRISAsText()
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
 
@@ -139,6 +146,9 @@ public class RecordSectionResource {
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RANGE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 range for section")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 range for the requested section")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
     @IIIFPresentationBinding
     public IPresentationModelElement getRange() throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException {

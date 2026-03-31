@@ -63,6 +63,7 @@ public class CMSPageResource {
     @Operation(tags = { "cms" }, summary = "Get basic information about a CMS page by its id")
     @ApiResponse(responseCode = "200", description = "Basic information about the CMS page")
     @ApiResponse(responseCode = "404", description = "No CMS page found for the given id")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public ViewerPage getPage() throws ContentNotFoundException {
         // Guard against missing CMS pages: getCMSPage() returns null when no page matches the id.
         // Without this check, new ViewerPage(null) would throw a NullPointerException (HTTP 500).

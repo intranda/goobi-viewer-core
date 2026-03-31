@@ -57,6 +57,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -105,6 +106,11 @@ public class RecordsImageResource {
     @GET
     @Path(RECORDS_IMAGE_INFO)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
+    @Operation(summary = "Get IIIF image information for the representative image of a record", tags = { "records", "images", "iiif" })
+    @ApiResponse(responseCode = "200", description = "IIIF image information object",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "404", description = "Record or representative image not found")
+    @ApiResponse(responseCode = "500", description = "Internal error reading image or querying index")
     public String getImageInfo() throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException {
         String filename = getRepresentativeFilename(pi);
         String forwardUrl = new ApiUrls(ApiUrls.API).path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(pi, filename).build();
@@ -116,6 +122,10 @@ public class RecordsImageResource {
     @GET
     @Path(RECORDS_IMAGE_IIIF)
     @Produces({ "image/jpg", "image/png", "image/tif" })
+    @Operation(summary = "Serve IIIF image of the representative image of a record", tags = { "records", "images", "iiif" })
+    @ApiResponse(responseCode = "200", description = "Image content", content = @Content(mediaType = "image/*"))
+    @ApiResponse(responseCode = "404", description = "Record or representative image not found")
+    @ApiResponse(responseCode = "500", description = "Internal error reading image or querying index")
     public String getImage(
             @PathParam("region") String region, @PathParam("size") String size,
             @PathParam("rotation") String rotation, @PathParam("quality") String quality,

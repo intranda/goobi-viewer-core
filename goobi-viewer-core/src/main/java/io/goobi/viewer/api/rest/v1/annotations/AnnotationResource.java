@@ -121,6 +121,7 @@ public class AnnotationResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an annotation collection over all annotations")
+    @ApiResponse(responseCode = "200", description = "Annotation collection containing all annotations")
     public AnnotationCollection getAnnotationCollection() throws PresentationException, IndexUnreachableException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getWebAnnotationCollection();
@@ -139,6 +140,7 @@ public class AnnotationResource {
     @jakarta.ws.rs.Path("/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get a page within the annotation collection over all annotations")
+    @ApiResponse(responseCode = "200", description = "A page of annotations from the annotation collection")
     @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
     public AnnotationPage getAnnotationCollectionPage(@PathParam("page") Integer page) throws ContentLibException, DAOException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);

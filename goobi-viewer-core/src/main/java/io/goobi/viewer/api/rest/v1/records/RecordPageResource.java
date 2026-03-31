@@ -86,6 +86,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -122,6 +123,10 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_NER_TAGS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get NER tags for a single page")
+    @ApiResponse(responseCode = "200", description = "NER tags for the requested page")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public DocumentReference getNERTags(
             @Parameter(description = "Page number (1-based)") @PathParam("pageNo") Integer pageNo,
             @Parameter(description = "Tag type to consider (person, corporation, event or location)") @QueryParam("type") String type)
@@ -134,6 +139,9 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_SEQUENCE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 base sequence")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 base sequence for the record")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @IIIFPresentationBinding
     public IPresentationModelElement getSequence(@Parameter(
             description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF"
@@ -155,6 +163,9 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 manifest for the given page")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
+    @ApiResponse(responseCode = "404", description = "No record or page found for the given identifiers")
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
@@ -173,6 +184,9 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_CANVAS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 canvas for a page")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 canvas for the given page")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
+    @ApiResponse(responseCode = "404", description = "No record or page found for the given identifiers")
     @IIIFPresentationBinding
     public IPresentationModelElement getCanvas(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
@@ -186,6 +200,9 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
+    @ApiResponse(responseCode = "200", description = "Annotation collection for the given page")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
             throws DAOException {
@@ -199,6 +216,9 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a page")
+    @ApiResponse(responseCode = "200", description = "Annotation collection of comments for the given page")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getCommentsForPage(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
             throws DAOException {
@@ -211,7 +231,10 @@ public class RecordPageResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_TEXT)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records" }, summary = "List annotations for a page")
+    @Operation(summary = "Get the text content of a single page as annotations", tags = { "records" })
+    @ApiResponse(responseCode = "200", description = "Annotation collection containing page text")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getTextForPage(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
             @Parameter(

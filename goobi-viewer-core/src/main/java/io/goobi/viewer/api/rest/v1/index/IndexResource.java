@@ -140,6 +140,8 @@ public class IndexResource {
     @Operation(
             tags = { "index" },
             summary = "Statistics about indexed records")
+    @ApiResponse(responseCode = "200", description = "JSON object with record count statistics")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getStatistics(
             @Parameter(description = "Solr query to filter results (optional)") @QueryParam("query") final String query)
             throws IndexUnreachableException, PresentationException {
@@ -177,7 +179,9 @@ public class IndexResource {
     @Operation(
             tags = { "index" },
             summary = "Post a query directly to the Solr index")
+    @ApiResponse(responseCode = "200", description = "JSON object with matched documents and optional facets")
     @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getRecordsForQuery(RecordsRequestParameters params)
             throws IndexUnreachableException, ViewerConfigurationException, DAOException, IllegalRequestException {
         JSONObject ret = new JSONObject();
@@ -242,6 +246,7 @@ public class IndexResource {
     @Operation(
             tags = { "index" },
             summary = "Post a streaming expression to the Solr index and forward its response")
+    @ApiResponse(responseCode = "200", description = "Newline-delimited JSON tuples streamed from Solr")
     @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
     @ApiResponse(responseCode = "500", description = "Solr not available or unable to respond")
     public StreamingOutput stream(
@@ -263,6 +268,8 @@ public class IndexResource {
     @Path(INDEX_FIELDS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieves a JSON list of all existing Solr fields.", tags = { "index" })
+    @ApiResponse(responseCode = "200", description = "JSON array of Solr field metadata")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public List<SolrFieldInfo> getAllIndexFields() throws IOException {
         logger.trace("getAllIndexFields");
 
@@ -290,6 +297,9 @@ public class IndexResource {
     @Path(INDEX_SPATIAL_HEATMAP)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Returns a heatmap of geospatial search results", tags = { "index" })
+    @ApiResponse(responseCode = "200", description = "JSON heatmap data for the given spatial query")
+    @ApiResponse(responseCode = "400", description = "Invalid heatmap parameters or Solr field name")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getHeatmap(
             @Parameter(description = "Solr field containing spatial coordinates") @PathParam("solrField") String solrField,
             @Parameter(description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain"
@@ -340,6 +350,9 @@ public class IndexResource {
     @Path(INDEX_SPATIAL_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Returns results of a geospatial search as GeoJson objects", tags = { "index" })
+    @ApiResponse(responseCode = "200", description = "JSON array of GeoJSON feature objects")
+    @ApiResponse(responseCode = "400", description = "Invalid Solr field or query syntax")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getGeoJsonResuls(
             @Parameter(description = "Solr field containing spatial coordinates") @PathParam("solrField") String solrField,
             @Parameter(

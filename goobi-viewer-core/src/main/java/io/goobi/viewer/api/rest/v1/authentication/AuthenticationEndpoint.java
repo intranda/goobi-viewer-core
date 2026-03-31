@@ -120,6 +120,10 @@ public class AuthenticationEndpoint {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Operation(summary = "Authenticate a user with username and password", tags = { "auth" })
+    @ApiResponse(responseCode = "200", description = "Authentication successful, session established")
+    @ApiResponse(responseCode = "403", description = "Authentication failed — invalid username or password or insufficient privileges")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public Response authenticateUser(@FormParam("email") String email, @FormParam("password") String password) {
         try {
 
@@ -179,6 +183,7 @@ public class AuthenticationEndpoint {
     @Path(ApiUrls.AUTH_HEADER)
     @Operation(summary = "Header login", description = "Checks a configurable header for a username and logs in the user if it is found in the DB")
     @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "403", description = "Forbidden — illegal redirect URL, no matching provider configured, or no matching provider found")
     @ApiResponse(responseCode = "500", description = "Internal error")
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");

@@ -140,6 +140,11 @@ public class ChangeDiscoveryResource {
     @GET
     @Path(RECORDS_CHANGES_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Get a single page of the IIIF change discovery activity stream", tags = { "records", "iiif" })
+    @ApiResponse(responseCode = "200", description = "Ordered collection page of change activities")
+    @ApiResponse(responseCode = "400", description = "Invalid date format for 'start' parameter (expected yyyy-MM-dd)")
+    @ApiResponse(responseCode = "404", description = "No page found for the given page number")
+    @ApiResponse(responseCode = "500", description = "An internal error occurred, possibly due to an unreachable Solr index")
     public OrderedCollectionPage<Activity> getPage(
             @Parameter(description = "page order within the collection of activities") @PathParam("pageNo") int pageNo,
             @Parameter(description = "Optional date in the form 'yyyy-MM-dd' of the oldest changes to return") @QueryParam("start") String startDate,

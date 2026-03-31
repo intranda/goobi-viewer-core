@@ -91,6 +91,8 @@ import io.goobi.viewer.model.cms.media.MediaList;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -200,8 +202,11 @@ public class CMSMediaResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
-            tags = { "media" },
+            tags = { "cms", "media" },
             summary = "Get a list of CMS-Media Items")
+    @ApiResponse(responseCode = "200", description = "List of CMS media items")
+    @ApiResponse(responseCode = "401", description = "Not authorized")
+    @ApiResponse(responseCode = "500", description = "Internal server error - e.g. database unavailable")
     @AuthorizationBinding
     public MediaList getAllMedia(
             @Parameter(description = "Comma separated list of tags. Only media items with any of these tags"
@@ -223,6 +228,9 @@ public class CMSMediaResource {
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_ITEM_BY_ID)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "cms" }, summary = "Get a CMS media item by its database id")
+    @ApiResponse(responseCode = "200", description = "CMS media item information")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public MediaItem getMediaItem(@PathParam("id") Long id) throws DAOException {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
         return new MediaItem(item, servletRequest);
@@ -243,6 +251,10 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_PDF)
     @Produces("application/pdf")
     @CORSBinding
+    @Operation(tags = { "cms" }, summary = "Serve a CMS media PDF file by filename")
+    @ApiResponse(responseCode = "200", description = "PDF file content",
+            content = @Content(mediaType = "application/pdf"))
+    @ApiResponse(responseCode = "404", description = "File not found")
     public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -268,6 +280,10 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_SVG)
     @Produces("image/svg+xml")
     @CORSBinding
+    @Operation(tags = { "cms" }, summary = "Serve a CMS media SVG file by filename")
+    @ApiResponse(responseCode = "200", description = "SVG image content",
+            content = @Content(mediaType = "image/svg+xml"))
+    @ApiResponse(responseCode = "404", description = "File not found")
     public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -293,6 +309,10 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_ICO)
     @Produces("image/x-icon")
     @CORSBinding
+    @Operation(tags = { "cms" }, summary = "Serve a CMS media ICO file by filename")
+    @ApiResponse(responseCode = "200", description = "ICO image content",
+            content = @Content(mediaType = "image/x-icon"))
+    @ApiResponse(responseCode = "404", description = "File not found")
     public static StreamingOutput getIcoContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -316,6 +336,10 @@ public class CMSMediaResource {
 
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
+    @Operation(tags = { "cms" }, summary = "Serve a CMS media video file by filename")
+    @ApiResponse(responseCode = "200", description = "Video content streamed via HTTP range requests")
+    @ApiResponse(responseCode = "404", description = "Video file not found")
+    @ApiResponse(responseCode = "500", description = "Error accessing the media resource")
     public String serveVideoContent(@PathParam("filename") String filename)
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -326,6 +350,10 @@ public class CMSMediaResource {
 
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
+    @Operation(tags = { "cms" }, summary = "Serve a CMS media audio file by filename")
+    @ApiResponse(responseCode = "200", description = "Audio content streamed via HTTP range requests")
+    @ApiResponse(responseCode = "404", description = "Audio file not found")
+    @ApiResponse(responseCode = "500", description = "Error accessing the media resource")
     public String serveAudioContent(@PathParam("filename") String filename)
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -347,6 +375,11 @@ public class CMSMediaResource {
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_HTML)
     @Produces({ MediaType.TEXT_HTML })
+    @Operation(tags = { "cms" }, summary = "Serve a CMS media HTML file by filename")
+    @ApiResponse(responseCode = "200", description = "HTML file content",
+            content = @Content(mediaType = MediaType.TEXT_HTML))
+    @ApiResponse(responseCode = "404", description = "File not found")
+    @ApiResponse(responseCode = "500", description = "Error reading the file")
     public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException {
 
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -382,6 +415,9 @@ public class CMSMediaResource {
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_ITEM_BY_FILE)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = { "cms" }, summary = "Get the CMS media item associated with the given filename")
+    @ApiResponse(responseCode = "200", description = "Media item found for the given filename")
+    @ApiResponse(responseCode = "404", description = "No media item found for the given filename")
     public Response validateUploadMediaFiles(@PathParam("filename") String filename) throws DAOException {
 
         CMSMediaItem item =
@@ -403,6 +439,10 @@ public class CMSMediaResource {
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = { "cms" }, summary = "List all uploaded CMS media files")
+    @ApiResponse(responseCode = "200", description = "List of CMS media filenames")
+    @ApiResponse(responseCode = "401", description = "Not authorized")
+    @ApiResponse(responseCode = "500", description = "Error reading the media folder")
     @UserLoggedInBinding
     public List<String> getAllFiles() throws PresentationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -417,6 +457,9 @@ public class CMSMediaResource {
     @DELETE
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = { "cms" }, summary = "Delete all CMS media files (not supported)")
+    @ApiResponse(responseCode = "400", description = "Operation not supported")
+    @ApiResponse(responseCode = "401", description = "Not authorized")
     @AuthorizationBinding
     public void deleteAllFiles() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
@@ -425,6 +468,9 @@ public class CMSMediaResource {
     @DELETE
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = { "cms" }, summary = "Delete a CMS media file by filename (not supported)")
+    @ApiResponse(responseCode = "400", description = "Operation not supported")
+    @ApiResponse(responseCode = "401", description = "Not authorized")
     @AuthorizationBinding
     public void deleteFile() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
@@ -445,6 +491,12 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = { "cms" }, summary = "Upload a CMS media file")
+    @RequestBody(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA))
+    @ApiResponse(responseCode = "200", description = "File uploaded successfully")
+    @ApiResponse(responseCode = "401", description = "Not authorized")
+    @ApiResponse(responseCode = "403", description = "User does not have permission to upload media files")
+    @ApiResponse(responseCode = "500", description = "Error saving the uploaded file")
     @UserLoggedInBinding
     public Response
             uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,

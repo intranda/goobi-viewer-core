@@ -102,6 +102,7 @@ public class TasksResource {
     @ApiResponse(responseCode = "200", description = "Task has been accepted and started")
     @ApiResponse(responseCode = "400", description = "No task type provided or task type is invalid")
     @ApiResponse(responseCode = "401", description = "Not authorized to create this type of task")
+    @ApiResponse(responseCode = "500", description = "Message queue unavailable or internal error")
     public Response addTask(TaskParameter desc) throws WebApplicationException {
         if (desc == null || desc.getType() == null) {
             throw new WebApplicationException(new IllegalRequestException("Must provide job type"));

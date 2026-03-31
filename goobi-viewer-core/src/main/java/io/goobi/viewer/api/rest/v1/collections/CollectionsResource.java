@@ -91,7 +91,9 @@ public class CollectionsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 2.1.1 collection")
     @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection containing all collections for this field")
+    @ApiResponse(responseCode = "400", description = "Invalid or missing collection field parameter")
     @ApiResponse(responseCode = "404", description = "No collections available for field")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public Collection2 getAllCollections(
             @Parameter(description = "Add values of this field to response to allow grouping of results") @QueryParam("grouping") String grouping,
             @Parameter(description = "comma separated list of collections to ignore in response") @QueryParam("ignore") String ignoreString)
@@ -116,7 +118,9 @@ public class CollectionsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF Presentation 2.1.1 collection")
     @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection for the given collection name")
+    @ApiResponse(responseCode = "400", description = "Invalid or missing collection field or name parameter")
     @ApiResponse(responseCode = "404", description = "Collection not found for given field and name")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public Collection2 getCollection(
             @Parameter(description = "Name of the collection. Must be a value of the Solr field the collection is based on") 
             @PathParam("collection") final String inCollectionName,
@@ -144,8 +148,10 @@ public class CollectionsResource {
     @GET
     @jakarta.ws.rs.Path(COLLECTIONS_CONTENTASSIST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponse(responseCode = "400", description = "No collections available for field")
-    //    @Operation(tags = { "collections"}, summary = "Return a list of collections starting with the given input")
+    @Operation(tags = { "iiif" }, summary = "Return a list of collection names starting with the given input for content assist")
+    @ApiResponse(responseCode = "200", description = "List of matching collection names")
+    @ApiResponse(responseCode = "400", description = "Invalid or missing query parameter")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public List<String> contentAssist(
             @Parameter(description = "User input for which content assist is requested") @QueryParam("query") String input)
             throws IndexUnreachableException, IllegalRequestException {

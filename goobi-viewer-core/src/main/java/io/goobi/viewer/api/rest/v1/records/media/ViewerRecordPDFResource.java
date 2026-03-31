@@ -39,6 +39,8 @@ import io.goobi.viewer.faces.validators.PIValidator;
 import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -83,6 +85,10 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
     @Operation(tags = { "records" }, summary = "Get PDF for entire record")
+    @ApiResponse(responseCode = "200", description = "PDF file", content = @Content(mediaType = "application/pdf"))
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "500", description = "PDF generation error")
     public StreamingOutput getPdf() throws ContentLibException {
         logger.trace("getPdf: {}", filename);
         response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
@@ -95,6 +101,10 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
     @Operation(tags = { "records" }, summary = "Get information about PDF for entire record")
+    @ApiResponse(responseCode = "200", description = "PDF information object",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "500", description = "Error reading PDF information")
     public PdfInformation getInfoAsJson() throws ContentLibException {
         return super.getInfoAsJson();
     }
@@ -104,6 +114,10 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
     @Operation(tags = { "records" }, summary = "Get information about epub for entire record")
+    @ApiResponse(responseCode = "200", description = "ePub information object",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "500", description = "Error reading ePub information")
     public PdfInformation getEpubInfoAsJson() throws ContentLibException {
         return super.getInfo("epub");
     }

@@ -50,10 +50,12 @@ public class MovingWallStatisticsResource {
     @jakarta.ws.rs.Path(ApiUrls.STATISTICS_MOVING_WALL_YEAR)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
     @AuthorizationBinding
+    @Operation(summary = "Requires an authentication token. Get moving wall unlocked record identifiers for the given year", tags = { "statistics" })
     @ApiResponse(responseCode = "200", description = "CSV list of record identifiers unlocked by the moving wall for the given year")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
-    @Operation(summary = "Requires an authentication token. Get moving wall unlocked record identifiers for the given year", tags = { "statistics" })
-    public Response getStatisticsForYear(@Parameter(description = "statistics year") @PathParam("year") int year)
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
+    public Response getStatisticsForYear(
+            @Parameter(description = "The year for which to retrieve moving wall statistics") @PathParam("year") int year)
             throws PresentationException, IndexUnreachableException {
         logger.trace("getStatisticsForYear: {}", year);
         return Response.status(Response.Status.OK)
