@@ -2716,6 +2716,12 @@
             mask: url('../../icons/outline/calendar.svg') center/100% 100% no-repeat;
             -webkit-mask: url('../../icons/outline/calendar.svg') center/100% 100% no-repeat;
             pointer-events: none;
+            z-index: 1;
+        }
+
+        /* datepicker input needs right-padding for icon */
+        input[readonly] {
+            padding-right: 2.5rem;
         }
 
         &.admin__highlighted-objects-date-picker::after {

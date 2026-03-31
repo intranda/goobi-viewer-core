@@ -795,13 +795,7 @@
                                                                             </h:inputText>
                                                                         </div>
 
-                                                                        <!-- TO DO: DATE FORMAT FOR LANGUAGES, localDateConverter NOT COMPATIBLE YET #{navigationHelper.datePatternjQueryDatePicker} -->
-                                                                        <script type="text/javascript">
-                                                                            $( "[data-target='datePickerStart']" ).datepicker({
-                                                                            	dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
-                                                                            	isRTL: #{navigationHelper.rtl}
-                                                                            });
-                                                                        </script>
+                                                                        <!-- Date format handled by flatpickr via viewerJS.datePicker -->
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-row">
@@ -824,12 +818,19 @@
                                                                         </div>
                                                                     </div>
 
-                                                                    <!-- TO DO: DATE FORMAT FOR LANGUAGES, localDateConverter NOT COMPATIBLE YET #{navigationHelper.datePatternjQueryDatePicker} -->
+                                                                    <!-- flatpickr init for both date pickers -->
                                                                     <script type="text/javascript">
-                                                                        $( "[data-target='datePickerEnd']" ).datepicker({
-                                                                        	dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
-                                                                        	isRTL: #{navigationHelper.rtl}
-                                                                        });
+                                                                    //<![CDATA[
+                                                                        if (typeof viewerJS !== 'undefined' && viewerJS.datePicker) {
+                                                                            var startEl = document.querySelector("[data-target='datePickerStart']");
+                                                                            var endEl = document.querySelector("[data-target='datePickerEnd']");
+                                                                            if (startEl && endEl) {
+                                                                                viewerJS.datePicker.createRange(startEl, endEl, {
+                                                                                    locale: '#{navigationHelper.localeString}',
+                                                                                });
+                                                                            }
+                                                                        }
+                                                                    //]]>
                                                                     </script>
                                                                 </div>
                                                             </ui:fragment>

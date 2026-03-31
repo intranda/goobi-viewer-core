@@ -1417,15 +1417,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarViewsWidgetCalendarViewLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    void isSidebarViewsWidgetCalendarLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetCalendarViewLinkVisible());
-    }
-
-    /**
      * @see Configuration#isSidebarViewsWidgetThumbsViewLinkVisible()
      * @verifies return correct value
      */
@@ -1901,14 +1892,6 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault("object", "copyright"));
     }
 
-    /**
-     * @see Configuration#getCalendarDocStructTypes()
-     * @verifies return all configured elements
-     */
-    @Test
-    void getCalendarDocStructTypes_shouldReturnAllConfiguredElements() {
-        assertEquals(2, DataManager.getInstance().getConfiguration().getCalendarDocStructTypes().size());
-    }
 
     /**
      * @see Configuration#getAllFacetFields()
@@ -2593,7 +2576,7 @@ class ConfigurationTest extends AbstractTest {
     void getAncestorIdentifierFields_shouldReturnAllConfiguredValues() {
         List<String> list = DataManager.getInstance().getConfiguration().getAncestorIdentifierFields();
         assertNotNull(list);
-        assertEquals(2, list.size());
+        assertEquals(3, list.size());
         assertEquals(SolrConstants.PI_PARENT, list.get(0));
         assertEquals("MD_OTHERANCESTOR", list.get(1));
     }
@@ -3693,6 +3676,18 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isHostProxyWhitelisted_shouldReturnTrueIfHostWhitelisted() throws MalformedURLException, URISyntaxException {
         assertTrue(DataManager.getInstance().getConfiguration().isHostProxyWhitelisted("http://localhost:1234"));
+    }
+
+    /**
+     * @see Configuration#getHttpHeaderLoginRedirectWhitelist()
+     * @verifies return configured values
+     */
+    @Test
+    void getHttpHeaderLoginRedirectWhitelist_shouldReturnConfiguredValues() {
+        List<String> whitelist = DataManager.getInstance().getConfiguration().getHttpHeaderLoginRedirectWhitelist();
+        assertEquals(2, whitelist.size());
+        assertTrue(whitelist.contains("trusted.example.org"));
+        assertTrue(whitelist.contains("sso.example.com"));
     }
 
     @Test

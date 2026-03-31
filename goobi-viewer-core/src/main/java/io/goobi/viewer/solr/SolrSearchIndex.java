@@ -1030,6 +1030,9 @@ public class SolrSearchIndex implements java.io.Closeable {
         try {
             if (this.solrFields == null) {
                 loadSolrFields();
+            } else if (this.solrFields.isEmpty()) {
+                logger.warn("Solr field list is empty, reloading...");
+                loadSolrFields();
             }
         } catch (IllegalStateException | SolrServerException | RemoteSolrException | IOException e) {
             throw new IndexUnreachableException("Failed to load SOLR field names: " + e.toString());
@@ -1040,6 +1043,9 @@ public class SolrSearchIndex implements java.io.Closeable {
     public List<String> getAllBooleanFieldNames() throws IndexUnreachableException {
         try {
             if (this.booleanSolrFields == null) {
+                loadSolrFields();
+            } else if (this.booleanSolrFields.isEmpty()) {
+                logger.warn("Solr boolean field list is empty, reloading...");
                 loadSolrFields();
             }
         } catch (IllegalStateException | SolrServerException | RemoteSolrException | IOException e) {

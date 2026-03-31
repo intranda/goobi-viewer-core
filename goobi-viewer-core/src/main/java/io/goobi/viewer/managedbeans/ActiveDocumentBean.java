@@ -2366,7 +2366,6 @@ public class ActiveDocumentBean implements Serializable {
             String urlRoot = navigationHelper.getApplicationUrl() + currentPageType.getName() + "/" + viewManager.getPi() + "/";
             String urlRootExplicit = navigationHelper.getApplicationUrl() + "!" + currentPageType.getName() + "/" + viewManager.getPi() + "/";
             switch (currentPageType) {
-                case viewCalendar:
                 case viewFullscreen:
                 case viewImage:
                 case viewMetadata:

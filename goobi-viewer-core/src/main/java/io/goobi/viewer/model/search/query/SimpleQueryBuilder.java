@@ -162,7 +162,7 @@ public final class SimpleQueryBuilder {
                 continue;
             }
 
-            if ("\\|\\|".equals(term) && it.hasNext() && !prepared.isEmpty()) {
+            if ("||".equals(term) && it.hasNext() && !prepared.isEmpty()) {
                 String prev = prepared.remove(prepared.size() - 1);
                 String next = cleanTerm(it.next());
                 prepared.add(prev + " OR " + next);

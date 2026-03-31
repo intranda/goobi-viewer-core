@@ -34,6 +34,8 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
 
     private String query;
 
+    private String singleResultUrl;
+
     private String dayOfWeek;
 
     /**
@@ -69,6 +71,28 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
      */
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>singleResultUrl</code>.
+     * </p>
+     *
+     * @return the singleResultUrl
+     */
+    public String getSingleResultUrl() {
+        return singleResultUrl;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>singleResultUrl</code>.
+     * </p>
+     *
+     * @param singleResultUrl the singleResultUrl to set
+     */
+    public void setSingleResultUrl(String singleResultUrl) {
+        this.singleResultUrl = singleResultUrl;
     }
 
     /**

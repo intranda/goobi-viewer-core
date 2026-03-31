@@ -2,10 +2,47 @@
    View Toc
    style declarations for viewToc.xhtml
    ==============================================================*/
-/* VIEW TOC */
 /* BLOCK */
 .toc {
     margin-bottom: 15px;
+    /* TOC METADATA */
+    &__metadata {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 16px;
+        background-color: @white;
+        padding: 1.5rem;
+        border: 1px solid @middlegray;
+    }
+    &__metadata-thumbnail {
+        flex-shrink: 0;
+
+        img {
+            display: block;
+            width: 200px;
+            height: auto;
+        }
+    }
+    &__metadata-thumbnail-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 200px;
+        height: 260px;
+        background-color: @lightgray2;
+        color: @middlegray;
+    }
+    &__metadata-content {
+        flex: 1;
+        min-width: 0;
+
+        .metadata__wrapper.-isBoxed {
+            padding: 0;
+            background: none;
+            border: none;
+        }
+    }
+
     /* MULTI VOLUME TOC */
     /* ELEMENT */
     h3 {
@@ -293,6 +330,17 @@
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
+	.toc {
+		.metadata__element-dl{
+			grid-template-columns: unset;
+			grid-template-rows: auto;
+		}
+		.metadata__element-dl dd, 
+		.metadata__event-dl dd {
+			grid-column-start: unset;
+			word-wrap: anywhere;
+		}
+	}
 }
 
 /* BREAKPOINT FOR TABLETS */
@@ -307,6 +355,9 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
     .toc {
+        &__metadata {
+            flex-direction: column;
+        }
         &__mv-tile-grid {
             grid-template-columns: 1fr;
         }

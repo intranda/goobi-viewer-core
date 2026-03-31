@@ -85,13 +85,11 @@
         </div>
         <div class="search-list__thumb-wrapper">
             <!-- THUMBNAIL -->
-            <ui:fragment rendered="#{browseElement.showThumbnail}">
-                <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
-                    <ui:param
-                        name="browseElement"
-                        value="#{browseElement}" />
-                </ui:include>
-            </ui:fragment>
+            <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
+                <ui:param
+                    name="browseElement"
+                    value="#{browseElement}" />
+            </ui:include>
             <!-- ADD TO BOOKMARKS BUTTON (ICON) -->
             <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
                 <div class="search-list__thumb-bookmark-wrapper">

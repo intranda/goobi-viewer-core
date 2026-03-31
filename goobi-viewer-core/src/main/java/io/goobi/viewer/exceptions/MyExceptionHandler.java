@@ -254,6 +254,10 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
      */
     private static void redirect(String target) {
         FacesContext fc = FacesContext.getCurrentInstance();
+        if (fc.getExternalContext().isResponseCommitted()) {
+            logger.warn("Response already committed, cannot redirect to: {}", target);
+            return;
+        }
         NavigationHandler nav = fc.getApplication().getNavigationHandler();
         nav.handleNavigation(fc, null, target);
         fc.renderResponse();
