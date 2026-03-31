@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.logging.log4j.LogManager;
@@ -60,6 +61,8 @@ import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.GeomapItemFilter;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.metadata.MetadataListElement;
+import io.goobi.viewer.model.metadata.MetadataListSeparator;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
@@ -3771,5 +3774,24 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("testinsitution", url0Header.get("accountId"));
         assertEquals("Wobblewock", url0Header.get("x-api-key"));
         assertEquals("Bearer $SYS(DNB_DOWNLOAD_KEY)", url0Header.get("Authorization"));
+    }
+
+    @Test
+    void test_getMainMetadataListItemsForTemplate() {
+        List<MetadataListElement> items = DataManager.getInstance().getConfiguration().getMainMetadataListItemsForTemplate(0, "_DEFAULT");
+        List<Metadata> metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, "_DEFAULT");
+
+        assertEquals(items.size() - 1, metadata.size());
+
+        List<Metadata> metadataFromItems = items.stream().filter(item -> item instanceof Metadata).map(item -> (Metadata) item).toList();
+
+        assertTrue(CollectionUtils.isEqualCollection(metadata, metadataFromItems));
+
+        MetadataListSeparator fold =
+                items.stream().filter(item -> item instanceof MetadataListSeparator).map(item -> (MetadataListSeparator) item).findAny().orElse(null);
+
+        assertNotNull(fold);
+        assertEquals(4, items.indexOf(fold));
+
     }
 }
