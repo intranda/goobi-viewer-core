@@ -49,6 +49,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -74,6 +75,10 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 @Entity
 @Table(name = "bookshelves")
 @JsonInclude(Include.NON_NULL)
+// Ignore unknown fields during deserialization so that read-only/computed properties
+// present in the OpenAPI schema (e.g. filterQuery, escapedName) do not cause 400 errors
+// when clients include them in PATCH/POST request bodies.
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
     /**

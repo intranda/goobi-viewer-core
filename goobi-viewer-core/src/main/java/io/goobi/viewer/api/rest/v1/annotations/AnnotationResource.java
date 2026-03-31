@@ -92,6 +92,7 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -144,7 +145,10 @@ public class AnnotationResource {
     @Operation(tags = { "annotations" }, summary = "Get a page within the annotation collection over all annotations")
     @ApiResponse(responseCode = "200", description = "A page of annotations from the annotation collection")
     @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
-    public AnnotationPage getAnnotationCollectionPage(@PathParam("page") Integer page) throws ContentLibException, DAOException {
+    public AnnotationPage getAnnotationCollectionPage(
+            // Page numbers are 1-based; document minimum in schema so clients and schemathesis know 0 is invalid
+            @Parameter(description = "Page number (1-based)", schema = @Schema(minimum = "1")) @PathParam("page") Integer page)
+            throws ContentLibException, DAOException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getWebAnnotationPage(page);
     }

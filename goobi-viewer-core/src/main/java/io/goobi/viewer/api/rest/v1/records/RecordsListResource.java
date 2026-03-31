@@ -141,6 +141,7 @@ public class RecordsListResource {
     @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
     @ApiResponse(responseCode = "200", description = "Record metadata as JSON array")
     @ApiResponse(responseCode = "400", description = "Missing template name")
+    @ApiResponse(responseCode = "404", description = "Template configuration not found")
     public Response getRecordMetadataAsJson(@PathParam("template") String template) throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}", template);
         if (template == null) {
@@ -157,7 +158,8 @@ public class RecordsListResource {
             String t = templateSplit[i].trim();
             JsonMetadataConfiguration config = DataManager.getInstance().getConfiguration().getWebApiFields(t);
             if (config == null) {
-                return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template configuration not found: " + t).build();
+                // Template name is syntactically valid but no such configuration exists → 404 (not 400)
+                return Response.status(Response.Status.NOT_FOUND.getStatusCode(), "Template configuration not found: " + t).build();
             }
 
             SolrDocumentList docs =

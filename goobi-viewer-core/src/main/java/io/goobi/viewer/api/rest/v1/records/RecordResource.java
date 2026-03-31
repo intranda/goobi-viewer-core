@@ -111,6 +111,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -269,7 +270,9 @@ public class RecordResource {
     @ApiResponse(responseCode = "200", description = "Annotation page containing comments")
     @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
-    public AnnotationPage getCommentPageForRecord(@PathParam("page") Integer page)
+    public AnnotationPage getCommentPageForRecord(
+            // Page numbers are 1-based; document minimum in schema so clients and schemathesis know 0 is invalid
+            @Parameter(description = "Page number (1-based)", schema = @Schema(minimum = "1")) @PathParam("page") Integer page)
             throws DAOException, IllegalRequestException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
@@ -726,8 +729,8 @@ public class RecordResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
     @ApiResponse(responseCode = "200", description = "Record metadata as JSON")
-    @ApiResponse(responseCode = "400", description = "Missing record identifier or template configuration not found")
-    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
+    @ApiResponse(responseCode = "400", description = "Missing record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier or template configuration not found")
     public Response getRecordMetadataAsJson(@PathParam("pi") String pi, @PathParam("template") String template)
             throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}/{}", pi, template);
@@ -736,7 +739,8 @@ public class RecordResource {
         }
         JsonMetadataConfiguration config = DataManager.getInstance().getConfiguration().getWebApiFields(template);
         if (config == null) {
-            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Template not found: " + template).build();
+            // Template name is syntactically valid but no such configuration exists → 404 (not 400)
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode(), "Template not found: " + template).build();
         }
 
         String query = "+" + SolrConstants.PI + ":\"" + pi + "\"";

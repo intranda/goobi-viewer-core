@@ -80,7 +80,7 @@ public class TranslationResource {
     @ApiResponse(responseCode = "200", description = "Return translations for given keys")
     @ApiResponse(responseCode = "400", description = "No keys passed")
     public TranslationList getTranslations(
-            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys") final String inKeys)
+            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys", required = true) final String inKeys)
             throws IllegalRequestException {
         String keys = StringTools.stripPatternBreakingChars(inKeys);
 
