@@ -153,6 +153,7 @@ public class BookmarkResource {
             tags = { "bookmarks" },
             summary = "Get a bookmarklist owned by the current user by its id. If not logged in, the single bookmark list stored"
                     + " in the session is always returned")
+    @ApiResponse(responseCode = "200", description = "Bookmark list")
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
@@ -280,6 +281,7 @@ public class BookmarkResource {
             tags = { "bookmarks", "iiif" },
             summary = "Get a bookmarklist owned by the current user by its id and return it as a IIIF Presentation 2.1.1 collection resource."
                     + " If not logged in, the single bookmark list stored in the session is always returned")
+    @ApiResponse(responseCode = "200", description = "Bookmark list as IIIF collection")
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
@@ -297,6 +299,7 @@ public class BookmarkResource {
             tags = { "bookmarks" },
             summary = "Get a bookmarklist owned by the current user by its id and return it as a Mirador viewe config object. If not logged in,"
                     + " the single bookmark list stored in the session is always returned")
+    @ApiResponse(responseCode = "200", description = "Bookmark list as Mirador viewer config")
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")

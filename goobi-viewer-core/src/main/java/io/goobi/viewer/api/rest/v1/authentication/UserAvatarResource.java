@@ -202,6 +202,7 @@ public class UserAvatarResource extends ImageResource {
     @ApiResponse(responseCode = "200", description = "Avatar uploaded successfully")
     // 400 is returned when the path parameter {userId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid user ID")
+    @ApiResponse(responseCode = "404", description = "User not found")
     @ApiResponse(responseCode = "406", description = "Invalid upload — missing file stream or no active user session")
     @ApiResponse(responseCode = "409", description = "A file with this name already exists")
     @ApiResponse(responseCode = "500", description = "Internal server error during file upload")
