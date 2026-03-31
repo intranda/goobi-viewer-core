@@ -141,6 +141,7 @@ public class RecordPageResource {
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 base sequence")
     @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 base sequence for the record")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @IIIFPresentationBinding
     public IPresentationModelElement getSequence(@Parameter(
