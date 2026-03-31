@@ -316,7 +316,10 @@ public class IndexResource {
                     + " the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
             @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
-            @Parameter(description = "The granularity of each grid cell") @QueryParam("gridLevel") Integer gridLevel)
+            // Minimum of 1: HeatmapFacetMap.setGridLevel() throws IllegalArgumentException for 0 or negative values.
+            @Parameter(description = "The granularity of each grid cell (minimum: 1)",
+                    schema = @Schema(type = "integer", minimum = "1"))
+            @QueryParam("gridLevel") Integer gridLevel)
             throws IndexUnreachableException, IllegalRequestException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
