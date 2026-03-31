@@ -304,10 +304,14 @@ public class AuthenticationEndpoint {
      */
     @POST
     @Path(ApiUrls.AUTH_OAUTH)
+    // @Consumes is required so Jersey returns 415 instead of throwing IllegalStateException
+    // when a client sends the wrong content type (e.g. application/json).
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Operation(summary = "OpenID Connect callback (POST method)", description = "Verifies an openID claim and starts a session for the user")
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "403", description = "Forbidden - OpenID authentication failed or denied")
+    @ApiResponse(responseCode = "415", description = "Unsupported media type — request must use application/x-www-form-urlencoded")
     @ApiResponse(responseCode = "500", description = "Internal error")
     @Tag(name = "login")
     public Response openIdLoginPOST(@FormParam("error") String error, @FormParam("code") String authCode, @FormParam("state") String state)

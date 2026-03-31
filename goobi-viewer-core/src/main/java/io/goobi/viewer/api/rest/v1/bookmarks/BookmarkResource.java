@@ -239,6 +239,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Get a bookmark by its id and the id of the containing list")
+    @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID or bookmark ID")
     @ApiResponse(responseCode = "404", description = "Bookmark not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Bookmark getBookmarkItem(
@@ -259,6 +260,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Delete a bookmark from a list")
+    @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID or bookmark ID")
     @ApiResponse(responseCode = "404", description = "Bookmark not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public SuccessMessage deleteBookmarkItem(

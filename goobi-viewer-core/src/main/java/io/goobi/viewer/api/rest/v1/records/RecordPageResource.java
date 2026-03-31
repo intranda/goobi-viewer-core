@@ -189,6 +189,7 @@ public class RecordPageResource {
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 canvas for a page")
     @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 canvas for the given page")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No record or page found for the given identifiers")
     @IIIFPresentationBinding
     public IPresentationModelElement getCanvas(

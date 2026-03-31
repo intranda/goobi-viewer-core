@@ -148,6 +148,7 @@ public class RecordSectionResource {
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 range for section")
     @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 range for the requested section")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
     @IIIFPresentationBinding
     public IPresentationModelElement getRange() throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,

@@ -463,6 +463,7 @@ public class RecordResource {
             description = "If possible, directly read a CMDI file associated with the record")
     @ApiResponse(responseCode = "200", description = "CMDI record file in the requested language")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or language code")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No CMDI file found for the given record")
     public String getCmdiLanguage(
             @Parameter(description = "preferred language for the TEI file, in ISO-639 format") @PathParam("lang") final String language)
@@ -483,6 +484,7 @@ public class RecordResource {
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     @ApiResponse(responseCode = "200", description = "TEI record file in the requested language")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or language code")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No TEI file found for the given record")
     public String getTeiLanguage(
             @Parameter(description = "preferred language for the TEI file, in ISO-639 format") @PathParam("lang") final String language)
@@ -503,6 +505,7 @@ public class RecordResource {
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
     @ApiResponse(responseCode = "200", description = "Record text in TEI format")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public String getTei() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);

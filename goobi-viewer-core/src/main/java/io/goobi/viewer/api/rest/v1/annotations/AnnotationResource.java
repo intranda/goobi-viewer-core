@@ -243,6 +243,7 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
     @ApiResponse(responseCode = "200", description = "Return the annotation with the given id")
+    @ApiResponse(responseCode = "400", description = "Invalid annotation ID")
     @ApiResponse(responseCode = "404", description = "No annotation found for the given id")
     public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException {
@@ -264,6 +265,7 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get a comment annotation by its identifier")
     @ApiResponse(responseCode = "200", description = "Return the comment annotation with the given id")
+    @ApiResponse(responseCode = "400", description = "Invalid annotation ID")
     @ApiResponse(responseCode = "404", description = "No comment annotation found for the given id")
     public IAnnotation getComment(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException {
@@ -286,14 +288,16 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "501",
             description = "Persisting this kind of annotation or its target is not implemented. Only W3C Web Annotations targeting a manifest,"
                     + " canvas or part of a canvas may be persisted")
-    public Response addAnnotation(IncomingAnnotation anno) throws DAOException, NotImplementedException {
+    public Response addAnnotation(IncomingAnnotation anno) throws DAOException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = createPersistentAnnotation(anno);
         if (pAnno != null) {
             DataManager.getInstance().getDao().addAnnotation(pAnno);
             return Response.status(Response.Status.CREATED).entity(converter.getAsWebAnnotation(pAnno)).build();
         }
-        throw new NotImplementedException();
+        // Return 501 Not Implemented — persisting this annotation type is not supported.
+        // Previously threw NotImplementedException which Jersey mapped to 500 instead of 501.
+        return Response.status(Response.Status.NOT_IMPLEMENTED).build();
     }
 
     /**
@@ -309,6 +313,7 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Delete an existing annotation")
     @ApiResponse(responseCode = "200", description = "Return the deleted annotation")
+    @ApiResponse(responseCode = "400", description = "Invalid annotation ID")
     @ApiResponse(responseCode = "404", description = "Annotation not found by the given id")
     @ApiResponse(responseCode = "405", description = "May not delete the annotation because it was created by another user")
     public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
