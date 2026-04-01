@@ -440,6 +440,13 @@ public class AuthenticationEndpoint {
      */
     static DecodedJWT verifyOpenIdToken(String token, String jwksUri, String issuer) {
         // logger.trace(token);
+        // Guard against missing JWKS URI, which can happen if neither jwksUri attribute is configured
+        // nor the OpenID discovery endpoint was reachable/returned a jwks_uri value
+        if (jwksUri == null) {
+            logger.error("Cannot verify OpenID token: JWKS URI is not configured for this provider."
+                    + " Please set the jwksUri attribute or ensure the discoveryUri is reachable and returns a jwks_uri.");
+            return null;
+        }
         RSAKeyProvider keyProvider = null;
         try {
             final JwkProvider provider = new UrlJwkProvider(new URI(jwksUri).toURL());
