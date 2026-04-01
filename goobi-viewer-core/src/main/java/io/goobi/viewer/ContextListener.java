@@ -128,14 +128,15 @@ public class ContextListener implements ServletContextListener {
         try {
             DataManager.getInstance().getDao().shutdown();
             ContentServerCacheManager.getInstance().close();
-            // EhCache's disk-store scheduler (MappedByteBufferSource Async Flush Thread) may
-            // not terminate synchronously on close(). Wait briefly so Tomcat does not report it
-            // as a memory leak.
+            // EhCache's disk-store scheduler (MappedByteBufferSource Async Flush Thread) blocks
+            // in ScheduledThreadPoolExecutor and does not terminate on close() alone. Interrupt
+            // it explicitly so the park/await unblocks, then wait briefly for clean exit.
             Thread.getAllStackTraces().keySet().stream()
                     .filter(t -> t.getName().contains("MappedByteBufferSource") || t.getName().contains("Async Flush"))
                     .forEach(t -> {
+                        t.interrupt();
                         try {
-                            t.join(5000);
+                            t.join(2000);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }

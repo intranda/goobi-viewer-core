@@ -111,8 +111,9 @@ public class NERBuilder {
                 for (SolrDocument solrDoc : rangeList) {
                     String altoFileName = (String) solrDoc.getFieldValue(SolrConstants.FILENAME_ALTO);
                     if (altoFileName == null) {
-                        logger.error("{}, page {} has no {} value.", topStructPi, solrDoc.getFieldValue(SolrConstants.ORDER),
-                                SolrConstants.FILENAME_ALTO);
+                        // Downgraded to WARN: missing FILENAME_ALTO is a data issue (record has no ALTO indexed), not a code error
+                        logger.warn("{}, page {} ({}={}) has no {} value.", topStructPi, solrDoc.getFieldValue(SolrConstants.ORDER),
+                                SolrConstants.FILENAME, solrDoc.getFieldValue(SolrConstants.FILENAME), SolrConstants.FILENAME_ALTO);
                         continue;
                     }
 
