@@ -4,7 +4,7 @@
    Custom properties (--wc-*) defined in core-defaults.less,
    overridable via theme mixins (.mx-theme-light / .mx-theme-dark).
    ==============================================================*/
-.widget-calendar {
+.widget-calendar { 
     &__body {
         padding: 0;
         position: relative;
@@ -107,7 +107,6 @@
         .flatpickr-day.-has-multiple-.-current-issue-:hover::after {
             background-color: var(--wc-dot-color);
         }
-    }
 
     &__popover {
         position: fixed;
@@ -131,7 +130,9 @@
         overflow: hidden;
         text-overflow: ellipsis;
 
-        &:hover {
+        &:hover,
+		&:focus,
+		&:active {
             background-color: var(--wc-popover-item-hover-bg);
             color: var(--wc-popover-item-hover-color);
             text-decoration: none;
@@ -141,5 +142,5 @@
             font-weight: 700;
             color: var(--wc-popover-item-hover-color);
         }
-//    }
+    }
 }

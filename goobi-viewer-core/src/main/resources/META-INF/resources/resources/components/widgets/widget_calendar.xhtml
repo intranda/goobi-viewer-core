@@ -33,13 +33,6 @@
         currentIssueDate = rawDate.substring(0, 4) + '-' + rawDate.substring(4, 6) + '-' + rawDate.substring(6, 8);
     }
 
-    console.group('[calendarWidget] init data');
-    console.log('anchorPi:        ', el.dataset.anchorPi);
-    console.log('currentYear:     ', el.dataset.currentYear);
-    console.log('rawDate (YEARMONTHDAY):', rawDate || '(leer)');
-    console.log('currentIssueDate:', currentIssueDate || '(null)');
-    console.groupEnd();
-
     viewerJS.calendarWidget.init({
         container: el,
         anchorPi: el.dataset.anchorPi,
