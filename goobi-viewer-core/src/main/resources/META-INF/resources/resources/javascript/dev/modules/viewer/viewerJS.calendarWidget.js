@@ -162,7 +162,6 @@ var viewerJS = (function (viewer) {
 
     function _fetchYearData(state, year) {
         var url = state.config.appUrl + 'api/v1/records/' + state.config.anchorPi + '/calendar/' + year;
-        console.log('[calendarWidget] _fetchYearData year=' + year + ' url=' + url);
 
         return fetch(url)
             .then(function (r) {
@@ -180,12 +179,6 @@ var viewerJS = (function (viewer) {
                     var entryUrl = state.config.appUrl + entry.url.replace(/^\//, '');
                     state.dateEntriesMap[entry.date].push({ label: entry.label, url: entryUrl, date: entry.date });
                 });
-                console.group('[calendarWidget] _fetchYearData result year=' + year);
-                console.log('entries count:   ', entries.length);
-                console.log('dates in year:   ', dates);
-                console.log('currentIssueDate:', state.currentIssueDate || '(null)');
-                console.log('match found:     ', state.currentIssueDate ? dates.indexOf(state.currentIssueDate) !== -1 : false);
-                console.groupEnd();
                 return dates;
             })
             .catch(function (err) {
@@ -384,18 +377,6 @@ var viewerJS = (function (viewer) {
             (state.currentIssueDate ? viewer.datePicker._parseISODate(state.currentIssueDate) : null) ||
             (dates.length ? viewer.datePicker._parseISODate(dates[0]) : null) ||
             new Date(parseInt(state.config.currentYear, 10), 0, 1);
-
-        var _defDateStr = defDate
-            ? defDate.getFullYear() + '-' + String(defDate.getMonth() + 1).padStart(2, '0') + '-' + String(defDate.getDate()).padStart(2, '0')
-            : '(null)';
-        console.group('[calendarWidget] _createCalendar');
-        console.log('targetDate:      ', targetDate || '(null)');
-        console.log('currentIssueDate:', state.currentIssueDate || '(null)');
-        console.log('dates[0]:        ', dates.length ? dates[0] : '(keine Einträge)');
-        console.log('defDate (lokal): ', _defDateStr);
-        console.log('→ Monat:         ', defDate ? defDate.getMonth() + 1 : '?');
-        console.log('→ Jahr:          ', defDate ? defDate.getFullYear() : '?');
-        console.groupEnd();
 
         state._lastMonth = _toYearMonth(defDate.getFullYear(), defDate.getMonth());
         state._skipInProgress = false;
