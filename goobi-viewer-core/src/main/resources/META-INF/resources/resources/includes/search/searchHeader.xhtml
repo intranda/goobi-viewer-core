@@ -51,11 +51,19 @@
                     value="#{searchBean.advancedSearchQueryInfo}"
                     escape="false" />
 
-                <!-- ADVANCED SEARCH -->
+                <!-- ADVANCED SEARCH / BACK LINK -->
                 <div class="search-list__adv-search-info-back text-right">
-                    <h:outputLink value="#{navigationHelper.applicationUrl}searchadvanced/#{searchBean.activeContext}/#{searchBean.facets.activeFacetString}/">
-                        #{msg.searchAdvancedBack}
-                    </h:outputLink>
+                    <ui:fragment rendered="#{not empty searchBean.advancedSearchOrigin}">
+                        <h:outputLink value="#{navigationHelper.applicationUrl}toc/#{searchBean.advancedSearchOrigin.pi}/1/">
+                            #{msg.searchAdvancedBack}
+                        </h:outputLink>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{empty searchBean.advancedSearchOrigin}">
+                        <h:outputLink
+                            value="#{navigationHelper.applicationUrl}searchadvanced/#{searchBean.activeContext}/#{searchBean.facets.activeFacetString}/">
+                            #{msg.searchAdvancedBack}
+                        </h:outputLink>
+                    </ui:fragment>
                 </div>
             </div>
         </ui:fragment>

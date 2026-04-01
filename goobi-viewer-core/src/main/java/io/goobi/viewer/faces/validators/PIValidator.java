@@ -39,7 +39,17 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 public class PIValidator implements Validator<String> {
 
     /** Constant <code>ILLEGAL_CHARS</code> */
-    protected static final char[] ILLEGAL_CHARS = { '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'' };
+    // Blocklist of characters not permitted in persistent identifiers.
+    // Colons are excluded because they are structurally significant in Solr query syntax
+    // (FIELD:value) and must not appear unescaped in PI values used in queries.
+    // Additional characters block java.net.URI path construction failures (space, pipe,
+    // angle/square brackets, newlines, null byte) and double-encoding bypasses (percent).
+    protected static final char[] ILLEGAL_CHARS = {
+        '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'',  // original set
+        '|', '<', '>', '[', ']',                                    // path-safety: invalid in java.net.URI
+        ' ', '%', '\r', '\n', '\0',                                 // encoding bypass / control chars
+        '*'                                                         // Solr wildcard abuse prevention
+    };
 
     /* (non-Javadoc)
      * @see jakarta.faces.validator.Validator#validate(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
@@ -67,6 +77,22 @@ public class PIValidator implements Validator<String> {
      */
     public static boolean validatePi(String pi) {
         if (StringUtils.isBlank(pi)) {
+            return false;
+        }
+
+        // Reject non-printable ASCII control characters (< 0x20 or = 0x7F) and any non-ASCII
+        // characters (>= 0x80). Such characters are never present in legitimate persistent
+        // identifiers but cause java.net.URI construction failures and Solr query syntax errors.
+        for (int i = 0; i < pi.length(); i++) {
+            char c = pi.charAt(i);
+            if (c < 0x20 || c >= 0x7F) {
+                return false;
+            }
+        }
+
+        // Require at least one alphanumeric character so that values consisting
+        // solely of punctuation (e.g. a bare "-") are rejected.
+        if (pi.chars().noneMatch(Character::isLetterOrDigit)) {
             return false;
         }
 

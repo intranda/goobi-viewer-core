@@ -1115,7 +1115,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         try {
             return DataFileTools.loadFulltext(null, fulltextFileName, false);
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            // Include PI and fulltext filename to help diagnose missing fulltext files
+            logger.error("{} (pi={}, fulltextFileName={})", e.getMessage(), pi, fulltextFileName);
             return "";
         }
     }
@@ -1204,7 +1205,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             }
             return alto;
         } catch (FileNotFoundException | PresentationException e) {
-            logger.error(e.getMessage());
+            // Include PI and ALTO filename to help diagnose missing ALTO files
+            logger.error("{} (pi={}, altoFileName={})", e.getMessage(), pi, altoFileName);
         }
 
         return new StringPair("", null);

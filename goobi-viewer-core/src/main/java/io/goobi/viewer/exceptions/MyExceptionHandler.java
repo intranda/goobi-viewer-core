@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -162,26 +163,49 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 } else if (t instanceof DownloadException || isCausedByExceptionType(t, DownloadException.class.getName())
                         || (t instanceof PrettyException && t.getMessage().contains(DownloadException.class.getSimpleName()))) {
                     logger.error(getRootCause(t).getMessage());
-                    String msg = getRootCause(t).getMessage();
-                    if (msg.contains(DownloadException.class.getSimpleName() + ":")) {
-                        msg = msg.substring(msg.lastIndexOf(":") + 1).trim();
+                    String rawMsg = getRootCause(t).getMessage();
+                    String msg;
+                    // Build a translated message when the exception carries a "file not found" payload
+                    if (rawMsg != null && rawMsg.contains("Download file not found: ")) {
+                        String filename = rawMsg.substring(rawMsg.indexOf("Download file not found: ") + "Download file not found: ".length()).trim();
+                        msg = ViewerResourceBundle.getTranslation("errDownloadFileNotFoundMsg", null).replace("{0}", filename);
+                    } else if (rawMsg != null && rawMsg.contains(DownloadException.class.getSimpleName() + ":")) {
+                        msg = rawMsg.substring(rawMsg.lastIndexOf(":") + 1).trim();
+                    } else {
+                        msg = rawMsg;
                     }
                     handleError(msg, "download");
                 } else if (t instanceof IllegalUrlParameterException || isCausedByExceptionType(t, IllegalUrlParameterException.class.getName())) {
-                    // Illegal URL parameter input, do not output illegal value on error page
-                    String msg = getRootCause(t).getMessage();
+                    // Use getCause() (walks the full cause chain) instead of getRootCause() (JSF spec,
+                    // only unwraps FacesException/ELException — leaves PrettyException as-is)
+                    String msg = getCause(t).getMessage();
                     logger.warn(msg);
-                    handleError("Illegal URL parameter.", "general_no_url");
+                    handleError(msg, "general_no_url");
                 } else if (cause instanceof IllegalStateException && cause.getMessage() != null
                         && cause.getMessage().contains("Session already invalidated")) {
                     // Session was invalidated (e.g. timeout) while the request was still rendering — expected, not an error
                     logger.warn("Session invalidated during request rendering: {}", cause.getMessage());
+                } else if (t instanceof PrettyException
+                        && isCausedByExceptionType(t, StringIndexOutOfBoundsException.class.getName())) {
+                    // A crafted URL parameter caused a StringIndexOutOfBoundsException during EL
+                    // expression evaluation (e.g. a malformed facet value in a CMS page URL).
+                    // Downgrade to WARN and treat as an invalid URL rather than an application error.
+                    logger.warn("Invalid URL parameter caused StringIndexOutOfBoundsException: {}", t.getMessage());
+                    handleError(null, "general_no_url");
+                } else if (t instanceof PrettyException
+                        && isCausedByExceptionType(t, "jakarta.faces.convert.ConverterException")) {
+                    // PrettyFaces URL parameter type conversion failed (e.g. a non-numeric value such as
+                    // "+(foo)" in a URL segment that maps to an Integer bean property). This is a
+                    // malformed or crafted URL — downgrade to WARN and treat as an invalid URL rather
+                    // than an application error.
+                    String msg = getCause(t).getMessage();
+                    logger.warn("Invalid URL parameter in PrettyFaces mapping: {}", t.getMessage());
+                    handleError(msg, "general_no_url");
                 } else {
-                    // All other exceptions
+                    // All other exceptions — show root cause class and message for better diagnostics
                     logger.error(t.getMessage(), t);
-                    // Put the exception in the flash scope to be displayed in the error page if necessary ...
-
-                    String msg = LocalDateTime.now().format(DateTools.FORMATTERISO8601DATETIME) + ": " + t.getMessage();
+                    Throwable rootCause = getCause(t);
+                    String msg = rootCause.getClass().getSimpleName() + ": " + rootCause.getMessage();
                     handleError(msg, "general");
                 }
             } finally {
@@ -216,7 +240,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             HttpSession session = (HttpSession) fc.getExternalContext().getSession(true);
             session.setAttribute("ErrorPhase", fc.getCurrentPhaseId().toString());
             session.setAttribute("errorDetails", errorDetails);
-            session.setAttribute("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601FULL));
+            // Use a human-readable format without the ISO 'T' separator and without sub-second precision
+            session.setAttribute("errorTime", LocalDateTime.now().format(DateTools.FORMATTERISO8601DATETIMEMS));
             session.setAttribute("errorType", errorType);
             putNavigationState(requestMap, session);
             redirect("pretty:error");
@@ -229,6 +254,10 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
      */
     private static void redirect(String target) {
         FacesContext fc = FacesContext.getCurrentInstance();
+        if (fc.getExternalContext().isResponseCommitted()) {
+            logger.warn("Response already committed, cannot redirect to: {}", target);
+            return;
+        }
         NavigationHandler nav = fc.getApplication().getNavigationHandler();
         nav.handleNavigation(fc, null, target);
         fc.renderResponse();
@@ -265,8 +294,17 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
     public void putNavigationState(Map<String, Object> requestMap, HttpSession session) {
         NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
         if (navigationHelper != null) {
-            requestMap.put("sourceUrl", navigationHelper.getCurrentUrl());
-            session.setAttribute("sourceUrl", navigationHelper.getCurrentUrl());
+            try {
+                // The Weld CDI proxy for NavigationHelper is non-null even when the underlying
+                // session-scoped bean's session has been invalidated. Calling getCurrentUrl()
+                // on the proxy triggers an internal getAttribute() on the invalidated session,
+                // which throws IllegalStateException — guard against this here.
+                String currentUrl = navigationHelper.getCurrentUrl();
+                requestMap.put("sourceUrl", currentUrl);
+                session.setAttribute("sourceUrl", currentUrl);
+            } catch (IllegalStateException e) {
+                logger.warn("Could not store navigation state: session invalidated during error handling");
+            }
         }
     }
 

@@ -33,6 +33,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,9 @@ import org.mockito.Mockito;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
+import io.goobi.viewer.controller.imaging.WatermarkHandler;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.DataManager;
@@ -59,6 +63,7 @@ import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants;
 import jakarta.faces.context.FacesContext;
 
@@ -796,6 +801,23 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     }
 
+    /**
+     * @see ViewManager#getImageInfosAsJson(PageType)
+     * @verifies return empty JSON object if current page is null
+     */
+    @Test
+    void getImageInfosAsJson_shouldReturnEmptyJsonIfCurrentPageIsNull() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        // pageLoader returns empty Optional for any order → getCurrentPage() returns null
+        IPageLoader pageLoader = Mockito.mock(IPageLoader.class);
+        Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenReturn(null);
+        ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, null, new ImageDeliveryBean());
+        // currentImageOrder defaults to -1, so getCurrentPage() == null
+        String result = viewManager.getImageInfosAsJson(PageType.viewImage);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("{}", result);
+    }
+
     @Test
     void test_updateCiteLinksOnPageChange() throws IndexUnreachableException, PresentationException, DAOException, IDDOCNotFoundException {
         String linkPattern = "https://nbn-resolving.org/{value}/fragment/page={page}";
@@ -817,6 +839,43 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         link = citeLinks.stream().filter(l -> l.getLabel().equals("LINK")).findAny().orElse(null);
         Assertions.assertNotNull(link);
         Assertions.assertEquals(linkPattern.replace("{value}", linkValue).replace("{page}", Integer.toString(page2)), link.getValue());
+    }
+
+    /**
+     * @see ViewManager#getMasterImageUrl(Scale, PhysicalElement)
+     * @verifies url-encode watermarkId containing special characters
+     */
+    @Test
+    void getMasterImageUrl_shouldUrlEncodeWatermarkIdContainingSpecialCharacters() throws Exception {
+        StructElement se = new StructElement("test_watermark_encoding");
+        se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList("TEST_PI"));
+
+        // Mock WatermarkHandler to return a watermarkId with umlauts and spaces
+        WatermarkHandler watermarkHandler = Mockito.mock(WatermarkHandler.class);
+        Mockito.when(watermarkHandler.getWatermarkTextIfExists(Mockito.any(PhysicalElement.class)))
+                .thenReturn(Optional.empty());
+        Mockito.when(watermarkHandler.getFooterIdIfExists(Mockito.any(StructElement.class)))
+                .thenReturn(Optional.of("Universitätsbibliothek Stuttgart"));
+
+        // Mock ThumbnailHandler to return a valid base URL
+        ThumbnailHandler thumbsHandler = Mockito.mock(ThumbnailHandler.class);
+        Mockito.when(thumbsHandler.getFullImageUrl(Mockito.any(), Mockito.any(), Mockito.anyString()))
+                .thenReturn("https://example.com/api/v1/records/TEST_PI/files/images/test.tif/full/max/0/default.tif");
+
+        // Mock ImageDeliveryBean
+        ImageDeliveryBean imageDeliveryBean = Mockito.mock(ImageDeliveryBean.class);
+        Mockito.when(imageDeliveryBean.getThumbs()).thenReturn(thumbsHandler);
+        Mockito.when(imageDeliveryBean.getFooter()).thenReturn(watermarkHandler);
+
+        PhysicalElement page = Mockito.mock(PhysicalElement.class);
+        ViewManager viewManager = new ViewManager(se, null, se.getLuceneId(), null, null, imageDeliveryBean);
+
+        String url = viewManager.getMasterImageUrl(Scale.MAX, page);
+
+        Assertions.assertTrue(url.contains("watermarkId="), "URL should contain watermarkId parameter");
+        // The watermarkId value must be URL-encoded — raw umlauts/spaces make the URI invalid
+        Assertions.assertDoesNotThrow(() -> new URI(url),
+                "URL with watermarkId containing special characters must be a valid URI");
     }
 
 }

@@ -38,6 +38,8 @@ import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.model.rss.RSSFeed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -58,6 +60,10 @@ public class RSSResource {
     @Operation(
             tags = { "records", "rss" },
             summary = "Get an rss feed of the most recent records")
+    @ApiResponse(responseCode = "200", description = "RSS feed in XML format",
+            content = @Content(mediaType = MediaType.TEXT_XML))
+    @ApiResponse(responseCode = "400", description = "The provided query parameter contains invalid Solr query syntax")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
     public String getRssFeed(
             @Parameter(description = "Subtheme: Results are filtered to values within the given subtheme (optional)") 
             @QueryParam("subtheme") String subtheme,
@@ -82,7 +88,11 @@ public class RSSResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "records", "rss" },
-            summary = "Get an a json representation of an RSS feed of the most recent records")
+            summary = "Get a JSON representation of an RSS feed of the most recent records")
+    @ApiResponse(responseCode = "200", description = "RSS feed as JSON object",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "400", description = "The provided query parameter contains invalid Solr query syntax")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
     public Channel getRssJsonFeed(
             @Parameter(description = "Subtheme: Results are filtered to values within the given subtheme (optional)") 
             @QueryParam("subtheme") String subtheme,

@@ -63,6 +63,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * <p>
  * Bookmark class.
@@ -402,6 +404,8 @@ public class Bookmark implements Serializable {
      *
      * @return the pi
      */
+    // pi is required to identify the record; mark as required with minLength:1 so empty strings are rejected
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, minLength = 1)
     public String getPi() {
         return pi;
     }
@@ -512,6 +516,9 @@ public class Bookmark implements Serializable {
      *
      * @return the dateAdded
      */
+    // dateAdded is set server-side; mark as read-only so clients do not send it in request bodies
+    // (LocalDateTime cannot deserialize ISO 8601 strings with timezone suffix like "2000-01-01T00:00:00Z")
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     public LocalDateTime getDateAdded() {
         return dateAdded;
     }

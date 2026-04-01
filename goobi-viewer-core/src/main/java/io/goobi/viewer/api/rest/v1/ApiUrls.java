@@ -95,6 +95,11 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_IMAGE_INFO = "/representative/info.json";
     public static final String RECORDS_IMAGE_IIIF = "/representative/{region}/{size}/{rotation}/{quality}.{format}";
 
+    public static final String RECORDS_CALENDAR = "/records/{pi}/calendar";
+    public static final String RECORDS_CALENDAR_YEAR = "/{year}";
+    public static final String RECORDS_CALENDAR_YEAR_REGEX = "/{year: \\d+}";
+    public static final String RECORDS_CALENDAR_MONTHS = "/months";
+
     public static final String RECORDS_SECTIONS = "/records/{pi}/sections/{divId}";
     public static final String RECORDS_SECTIONS_RIS_TEXT = "/ris.txt";
     public static final String RECORDS_SECTIONS_RIS_FILE = "/ris";

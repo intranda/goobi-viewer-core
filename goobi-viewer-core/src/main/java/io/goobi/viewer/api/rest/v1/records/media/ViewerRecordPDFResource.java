@@ -26,6 +26,8 @@ import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibPdfException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
@@ -35,8 +37,12 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.faces.validators.PIValidator;
+import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -65,7 +71,11 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
             @Context AbstractApiUrlManager urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Context ContentServerCacheManager cacheManager) throws ContentLibException {
-        super(context, request, response, "pdf", pi + ".xml", cacheManager);
+        // Validate PI before passing it to MetsPdfResource, which builds a file:// URI from
+        // the value and throws ContentLibException (HTTP 500) on illegal URI characters.
+        // requireValidPi() must be called here inside super() because Java requires the
+        // super-constructor call to be the first statement.
+        super(context, request, response, "pdf", requireValidPi(pi) + ".xml", cacheManager);
         this.filename = pi + ".pdf";
         request.setAttribute("pi", pi);
     }
@@ -77,6 +87,10 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
     @Operation(tags = { "records" }, summary = "Get PDF for entire record")
+    @ApiResponse(responseCode = "200", description = "PDF file", content = @Content(mediaType = "application/pdf"))
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "500", description = "PDF generation error")
     public StreamingOutput getPdf() throws ContentLibException {
         logger.trace("getPdf: {}", filename);
         response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
@@ -89,8 +103,19 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
     @Operation(tags = { "records" }, summary = "Get information about PDF for entire record")
+    @ApiResponse(responseCode = "200", description = "PDF information object",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "Record not found")
+    @ApiResponse(responseCode = "500", description = "Error reading PDF information")
     public PdfInformation getInfoAsJson() throws ContentLibException {
-        return super.getInfoAsJson();
+        // ContentLib wraps a missing METS file as ContentLibPdfException (not ContentNotFoundException),
+        // which ContentExceptionMapper would map to HTTP 500. Rethrow as 404 instead.
+        try {
+            return super.getInfoAsJson();
+        } catch (ContentLibPdfException e) {
+            throw new ContentNotFoundException("Record not found: " + filename, e);
+        }
     }
 
     @GET
@@ -98,8 +123,30 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
     @Operation(tags = { "records" }, summary = "Get information about epub for entire record")
+    @ApiResponse(responseCode = "200", description = "ePub information object",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "Record not found")
+    @ApiResponse(responseCode = "500", description = "Error reading ePub information")
     public PdfInformation getEpubInfoAsJson() throws ContentLibException {
-        return super.getInfo("epub");
+        // Same as getInfoAsJson(): rethrow ContentLibPdfException (missing METS) as 404.
+        try {
+            return super.getInfo("epub");
+        } catch (ContentLibPdfException e) {
+            throw new ContentNotFoundException("Record not found: " + filename, e);
+        }
+    }
+
+    /**
+     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400)
+     * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
+     * Declared static so it can be invoked inside the super() constructor call.
+     */
+    static String requireValidPi(String pi) {
+        if (!PIValidator.validatePi(pi)) {
+            throw new BadRequestException("Invalid record identifier: " + pi);
+        }
+        return pi;
     }
 
 }

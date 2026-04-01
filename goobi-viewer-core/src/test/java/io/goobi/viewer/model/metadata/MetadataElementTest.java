@@ -21,14 +21,24 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.viewer.StructElement;
 
-class MetadataElementTest {
+class MetadataElementTest extends AbstractSolrEnabledTest {
 
     /**
      * @see MetadataElement#isSkip()
@@ -176,5 +186,20 @@ class MetadataElementTest {
         me.setDocStructType("_GROUPS");
         me.setGroupType("Series");
         Assertions.assertEquals("Series", me.getDocStructTypeLabel());
+    }
+
+    @Test
+    void test_getFoldPosition() throws PresentationException, IndexUnreachableException {
+        String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(PI_KLEIUNIV);
+        Assertions.assertNotNull(iddoc);
+        StructElement element = new StructElement(iddoc);
+        element.setWork(true);
+
+        MetadataElement mdElement = new MetadataElement().init(element, 0, Locale.GERMANY);
+        List<Metadata> md = mdElement.getMetadataList();
+        int foldPosition = mdElement.getMetadataFoldIndex();
+        assertTrue(foldPosition > 0 && foldPosition < md.size());
+        assertEquals(mdElement.getMetadataListBeforeFold().size(), foldPosition);
+        assertEquals(md.size(), mdElement.getMetadataListBeforeFold().size() + mdElement.getMetadataListAfterFold().size());
     }
 }

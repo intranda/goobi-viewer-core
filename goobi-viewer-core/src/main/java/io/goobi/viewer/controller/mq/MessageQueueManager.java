@@ -418,7 +418,8 @@ public class MessageQueueManager {
 
     private static Optional<ViewerMessage> getMessageById(String messageId, String queueName, QueueConnection connection) {
         try (QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
-                QueueBrowser browser = queueSession.createBrowser(queueSession.createQueue(queueName), "JMSMessageID='" + messageId + "'");) {
+                // Use buildMessageIdSelector to escape single quotes and prevent JMS selector injection.
+                QueueBrowser browser = queueSession.createBrowser(queueSession.createQueue(queueName), buildMessageIdSelector(messageId));) {
             Enumeration<?> messagesInQueue = browser.getEnumeration();
             if (messagesInQueue.hasMoreElements()) {
                 ActiveMQTextMessage queueMessage = (ActiveMQTextMessage) messagesInQueue.nextElement();
@@ -568,7 +569,8 @@ public class MessageQueueManager {
 
         try (QueueConnection connection = startConnection();
                 QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
-                QueueBrowser browser = queueSession.createBrowser(queueSession.createQueue(queueName), "JMSType = '" + messageType + "'");) {
+                // Use buildJmsTypeSelector to escape single quotes and prevent JMS selector injection.
+                QueueBrowser browser = queueSession.createBrowser(queueSession.createQueue(queueName), buildJmsTypeSelector(messageType));) {
 
             Enumeration<?> messagesInQueue = browser.getEnumeration();
 
@@ -593,7 +595,8 @@ public class MessageQueueManager {
             String queueName = getQueueForMessageType(taskName);
             ObjectName queueViewMBeanName = getQueueViewBeanName(queueName);
             QueueViewMBean mbean = (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
-            int removed = mbean.removeMatchingMessages("JMSMessageID='" + messageId + "'");
+            // Use buildMessageIdSelector to escape single quotes and prevent JMS selector injection.
+            int removed = mbean.removeMatchingMessages(buildMessageIdSelector(messageId));
             logger.debug("Removed {} messages with id {} from queue", removed, messageId);
             return removed > 0;
         } catch (Exception e) {
@@ -607,7 +610,8 @@ public class MessageQueueManager {
             String queueName = getQueueForMessageType(type);
             ObjectName queueViewMBeanName = getQueueViewBeanName(queueName);
             QueueViewMBean mbean = (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
-            int removed = mbean.removeMatchingMessages("JMSType='" + type + "'");
+            // Use buildJmsTypeSelector to escape single quotes and prevent JMS selector injection.
+            int removed = mbean.removeMatchingMessages(buildJmsTypeSelector(type));
             logger.debug("Removed {} messages of type {} from queue", removed, type);
             return removed;
         } catch (Exception e) {
@@ -627,6 +631,34 @@ public class MessageQueueManager {
 
     public List<DefaultQueueListener> getListeners() {
         return Collections.unmodifiableList(this.listeners);
+    }
+
+    /**
+     * Builds a JMS message selector expression for a given message ID.
+     * Single quotes in the ID are escaped by doubling them (JMS selector syntax,
+     * identical to SQL string literal escaping) to prevent selector injection.
+     *
+     * @param messageId the raw JMS message ID, possibly containing single quotes
+     * @return a well-formed JMS selector string: {@code JMSMessageID='<escaped-id>'}
+     */
+    static String buildMessageIdSelector(String messageId) {
+        // Escape single quotes by doubling them – JMS selector string literal syntax.
+        String escaped = messageId.replace("'", "''");
+        return "JMSMessageID='" + escaped + "'";
+    }
+
+    /**
+     * Builds a JMS message selector expression for a given message type.
+     * Single quotes in the type are escaped by doubling them (JMS selector syntax,
+     * identical to SQL string literal escaping) to prevent selector injection.
+     *
+     * @param messageType the JMS message type string, possibly containing single quotes
+     * @return a well-formed JMS selector string: {@code JMSType='<escaped-type>'}
+     */
+    static String buildJmsTypeSelector(String messageType) {
+        // Escape single quotes by doubling them – JMS selector string literal syntax.
+        String escaped = messageType.replace("'", "''");
+        return "JMSType='" + escaped + "'";
     }
 
 }

@@ -74,6 +74,54 @@ class NetToolsTest extends AbstractTest {
                 NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_PDF, "PPN123", "https://example.com/", "test"));
     }
 
+    /**
+     * @see NetTools#isRedirectUrlAllowed(String, String)
+     * @verifies return true if redirectUrl starts with application url
+     */
+    @Test
+    void isRedirectUrlAllowed_shouldReturnTrueIfRedirectUrlStartsWithApplicationUrl() {
+        Assertions.assertTrue(NetTools.isRedirectUrlAllowed("https://viewer.example.org/page/1", "https://viewer.example.org/"));
+    }
+
+    /**
+     * @see NetTools#isRedirectUrlAllowed(String, String)
+     * @verifies return true if redirectUrl host is whitelisted
+     */
+    @Test
+    void isRedirectUrlAllowed_shouldReturnTrueIfRedirectUrlHostIsWhitelisted() {
+        Assertions.assertTrue(NetTools.isRedirectUrlAllowed("https://trusted.example.org/callback", null));
+        Assertions.assertTrue(NetTools.isRedirectUrlAllowed("https://sso.example.com/return?session=abc", null));
+    }
+
+    /**
+     * @see NetTools#isRedirectUrlAllowed(String, String)
+     * @verifies return false if redirectUrl host is not whitelisted
+     */
+    @Test
+    void isRedirectUrlAllowed_shouldReturnFalseIfRedirectUrlHostIsNotWhitelisted() {
+        Assertions.assertFalse(NetTools.isRedirectUrlAllowed("https://evil.example.com/phishing", null));
+        Assertions.assertFalse(NetTools.isRedirectUrlAllowed("https://attacker.interact.sh", null));
+    }
+
+    /**
+     * @see NetTools#isRedirectUrlAllowed(String, String)
+     * @verifies return false if redirectUrl is malformed
+     */
+    @Test
+    void isRedirectUrlAllowed_shouldReturnFalseIfRedirectUrlIsMalformed() {
+        Assertions.assertFalse(NetTools.isRedirectUrlAllowed("not-a-url", null));
+        Assertions.assertFalse(NetTools.isRedirectUrlAllowed("javascript:alert(1)", null));
+    }
+
+    /**
+     * @see NetTools#isRedirectUrlAllowed(String, String)
+     * @verifies return false if redirectUrl is null
+     */
+    @Test
+    void isRedirectUrlAllowed_shouldReturnFalseIfRedirectUrlIsNull() {
+        Assertions.assertFalse(NetTools.isRedirectUrlAllowed(null, "https://viewer.example.org/"));
+    }
+
     @Test
     void test_parseIpAddress() {
         {

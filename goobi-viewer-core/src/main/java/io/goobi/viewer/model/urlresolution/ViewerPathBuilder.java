@@ -160,8 +160,11 @@ public final class ViewerPathBuilder {
         } else {
             Optional<PageType> pageType = getPageType(servicePath);
             if (pageType.isPresent()) {
-                // Use the PageType's true name, without config remapping, otherwise the final path can contain ../image/object/..
-                currentPath.setPagePath(URI.create(pageType.get().getRawName()));
+                // Use the configured name if it matches the URL, otherwise fall back to the raw name
+                String pageName = ViewerPathBuilder.startsWith(servicePath, pageType.get().getName())
+                        ? pageType.get().getName()
+                        : pageType.get().getRawName();
+                currentPath.setPagePath(URI.create(pageName));
                 currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
                 currentPath.setPageType(pageType.get());
                 if (pageType.get().isHandledWithCms()) {
@@ -248,7 +251,23 @@ public final class ViewerPathBuilder {
         // logger.trace("getPageType: {}", servicePath); //NOSONAR Debug
         List<PageType> matchingTypes =
                 EnumSet.complementOf(EnumSet.of(PageType.other)).stream().filter(type -> type.matches(servicePath)).collect(Collectors.toList());
-        matchingTypes.sort((type1, type2) -> Integer.compare(type2.getName().length(), type1.getName().length()));
+        matchingTypes.sort((type1, type2) -> {
+            // Prefer types with an explicit config mapping that matches the URL
+            boolean explicit1 = DataManager.getInstance().getConfiguration().getPageType(type1) != null
+                    && ViewerPathBuilder.startsWith(servicePath, type1.getName());
+            boolean explicit2 = DataManager.getInstance().getConfiguration().getPageType(type2) != null
+                    && ViewerPathBuilder.startsWith(servicePath, type2.getName());
+            if (explicit1 != explicit2) {
+                return explicit1 ? -1 : 1;
+            }
+            // Among equals, prefer the type whose raw name also matches the URL
+            boolean raw1 = ViewerPathBuilder.startsWith(servicePath, type1.getRawName());
+            boolean raw2 = ViewerPathBuilder.startsWith(servicePath, type2.getRawName());
+            if (raw1 != raw2) {
+                return raw1 ? -1 : 1;
+            }
+            return Integer.compare(type2.getName().length(), type1.getName().length());
+        });
 
         return matchingTypes.stream().findFirst();
     }

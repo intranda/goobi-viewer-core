@@ -137,15 +137,10 @@ public final class FileTools {
             }
         }
 
-        StringBuilder text = new StringBuilder();
-        String ls = System.getProperty("line.separator");
-        try (FileInputStream fis = new FileInputStream(file); Scanner scanner = new Scanner(fis, useEncoding)) {
-            while (scanner.hasNextLine()) {
-                text.append(scanner.nextLine()).append(ls);
-            }
-        }
-
-        String ret = text.toString();
+        // Use Files.readString() instead of Scanner+StringBuilder to avoid Scanner's growing
+        // internal char buffers and the intermediate StringBuilder — halves heap allocations
+        // for the same file content and prevents OOM on large ALTO files
+        String ret = Files.readString(file.toPath(), Charset.forName(useEncoding));
         // Convert to target encoding
         if (StringUtils.isNotEmpty(convertToEncoding) && !convertToEncoding.equals(useEncoding)) {
             ret = StringTools.convertStringEncoding(ret, useEncoding, convertToEncoding);

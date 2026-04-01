@@ -9,7 +9,8 @@
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    xmlns:util="http://goobi.io/util">
     <ui:param
         name="renderTitle"
         value="#{renderTitle == null ? true : renderTitle}" />
@@ -22,6 +23,7 @@
                 </h2>
             </ui:fragment>
 
+            <!-- COLLAPSED VIEW: only metadataListBeforeFold -->
             <c:forEach
                 var="type"
                 items="#{metadataElement.metadataTypes}">
@@ -33,57 +35,160 @@
 
                 <!-- METADATA ELEMENT -->
                 <div class="metadata__wrapper #{metadataElement.isDisplayBoxed(type.type) ? '-isBoxed' : ''}">
-                    <c:forEach
-                        items="#{metadataElement.metadataList}"
-                        var="metadata">
-                        <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
-                            <!-- grouped="true" -->
-                            <h:panelGroup rendered="#{metadata.group}">
-                                <!-- Single label for all values, each value is a single string -->
-                                <h:panelGroup rendered="#{metadata.singleString}">
-                                    <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
-                                        <ui:param
-                                            name="metadata"
-                                            value="#{metadata}" />
-                                    </ui:include>
+                    <!-- Initial VIEW: metadataList before <fold/> element -->
+                    <div class="metadata__fold-wrapper -visibleByDefault">
+                        <c:forEach
+                            items="#{metadataElement.metadataListBeforeFold}"
+                            var="metadata">
+                            <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
+                                <!-- grouped="true" -->
+                                <h:panelGroup rendered="#{metadata.group}">
+                                    <!-- Single label for all values, each value is a single string -->
+                                    <h:panelGroup rendered="#{metadata.singleString}">
+                                        <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                            <ui:param
+                                                name="metadata"
+                                                value="#{metadata}" />
+                                        </ui:include>
+                                    </h:panelGroup>
+
+                                    <!-- Each value has a label column and a value column -->
+                                    <h:panelGroup rendered="#{!metadata.singleString}">
+                                        <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                            <ui:param
+                                                name="metadata"
+                                                value="#{metadata}" />
+                                        </ui:include>
+                                    </h:panelGroup>
                                 </h:panelGroup>
 
-                                <!-- Each value has a label column and a value column -->
-                                <h:panelGroup rendered="#{!metadata.singleString}">
-                                    <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
-                                        <ui:param
-                                            name="metadata"
-                                            value="#{metadata}" />
-                                    </ui:include>
+                                <!-- grouped="false" -->
+                                <h:panelGroup
+                                    styleClass="metadata__ungrouped-wrapper"
+                                    layout="block"
+                                    rendered="#{!metadata.group}">
+                                    <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
+                                        <dt title="#{metadata.label}">
+                                            <h:outputText
+                                                value="#{msg[metadata.label]}:"
+                                                escape="false" />
+                                        </dt>
+                                        <ui:repeat
+                                            value="#{metadata.values}"
+                                            var="val">
+                                            <dd>
+                                                <span class="metadata__element-value">
+                                                    <h:outputFormat
+                                                        value="#{val.getDisplayValue(navigationHelper.locale)}"
+                                                        escape="false" />
+                                                </span>
+                                            </dd>
+                                        </ui:repeat>
+                                    </dl>
                                 </h:panelGroup>
                             </h:panelGroup>
+                        </c:forEach>
+                    </div>
 
-                            <!-- grouped="false" -->
-                            <h:panelGroup
-                                styleClass="metadata__ungrouped-wrapper"
-                                layout="block"
-                                rendered="#{!metadata.group}">
-                                <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
-                                    <dt title="#{metadata.label}">
-                                        <h:outputText
-                                            value="#{msg[metadata.label]}:"
-                                            escape="false" />
-                                    </dt>
-                                    <ui:repeat
-                                        value="#{metadata.values}"
-                                        var="val">
-                                        <dd>
-                                            <span class="metadata__element-value">
-                                                <h:outputFormat
-                                                    value="#{val.getDisplayValue(navigationHelper.locale)}"
-                                                    escape="false" />
-                                            </span>
-                                        </dd>
-                                    </ui:repeat>
-                                </dl>
+                    <!-- EXPANDED VIEW: full metadataList (hidden by default) -->
+                    <div
+                        class="metadata__fold-wrapper -hidden"
+                        data-target="collapsedMetadataBlock">
+                        <c:forEach
+                            items="#{metadataElement.metadataList}"
+                            var="metadata">
+                            <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
+                                <!-- grouped="true" -->
+                                <h:panelGroup rendered="#{metadata.group}">
+                                    <!-- Single label for all values, each value is a single string -->
+                                    <h:panelGroup rendered="#{metadata.singleString}">
+                                        <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                            <ui:param
+                                                name="metadata"
+                                                value="#{metadata}" />
+                                        </ui:include>
+                                    </h:panelGroup>
+
+                                    <!-- Each value has a label column and a value column -->
+                                    <h:panelGroup rendered="#{!metadata.singleString}">
+                                        <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                            <ui:param
+                                                name="metadata"
+                                                value="#{metadata}" />
+                                        </ui:include>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+
+                                <!-- grouped="false" -->
+                                <h:panelGroup
+                                    styleClass="metadata__ungrouped-wrapper"
+                                    layout="block"
+                                    rendered="#{!metadata.group}">
+                                    <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
+                                        <dt title="#{metadata.label}">
+                                            <h:outputText
+                                                value="#{msg[metadata.label]}:"
+                                                escape="false" />
+                                        </dt>
+                                        <ui:repeat
+                                            value="#{metadata.values}"
+                                            var="val">
+                                            <dd>
+                                                <span class="metadata__element-value">
+                                                    <h:outputFormat
+                                                        value="#{val.getDisplayValue(navigationHelper.locale)}"
+                                                        escape="false" />
+                                                </span>
+                                            </dd>
+                                        </ui:repeat>
+                                    </dl>
+                                </h:panelGroup>
                             </h:panelGroup>
-                        </h:panelGroup>
-                    </c:forEach>
+                        </c:forEach>
+                    </div>
+
+                    <!-- FOLD BUTTONS: only shown when the full list is longer than the before-fold list -->
+                    <h:panelGroup
+                        layout="block"
+                        rendered="#{metadataElement.hasMetadataListFold}">
+                        <!-- Show more -->
+                        <button
+                            type="button"
+                            class="btn btn--default metadata__fold-button metadata__fold-button-more"
+                            data-trigger="expandMetadata">
+                            <span class="metadata__fold-button-inner">
+                                <util:icon icon="caret-down"/>
+                                <span><h:outputText value="#{msg.metadata__fold_show_more}" /></span>
+                            </span>
+                        </button>
+                        <!-- Show less -->
+                        <button
+                            type="button"
+                            class="btn btn--default metadata__fold-button metadata__fold-button-less -hidden"
+                            data-trigger="collapseMetadata">
+                            <span class="metadata__fold-button-inner">
+                                <util:icon icon="caret-up"/>
+                             <span><h:outputText value="#{msg.metadata__fold_show_less}" /></span>
+                            </span>
+                        </button>
+                    </h:panelGroup>
+                    <script>
+                        $(document)
+                            // "Show more": reveals full list, swaps buttons
+                            .on('click', '[data-trigger="expandMetadata"]', function() {
+                                var $w = $(this).closest('.metadata__wrapper');
+                                $w.find('[data-target="collapsedMetadataBlock"]').removeClass('-hidden');
+                                $(this).addClass('-hidden');
+                                $w.find('[data-trigger="collapseMetadata"]').removeClass('-hidden');
+                            })
+                            // "Show less": hides full list, swaps buttons
+                            .on('click', '[data-trigger="collapseMetadata"]', function() {
+                                var $w = $(this).closest('.metadata__wrapper');
+                                $w.find('[data-target="collapsedMetadataBlock"]').addClass('-hidden');
+                                $(this).addClass('-hidden');
+                                $w.find('[data-trigger="expandMetadata"]').removeClass('-hidden');
+                            });
+                    </script>
                 </div>
             </c:forEach>
         </div>

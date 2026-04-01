@@ -105,4 +105,28 @@ class MetadataBeanTest extends AbstractTest {
         Assertions.assertNotNull(list);
         Assertions.assertFalse(list.isEmpty());
     }
+
+    /**
+     * @see MetadataBean#getMetadataList(io.goobi.viewer.model.viewer.StructElement, String)
+     * @verifies return empty list given null struct
+     */
+    @Test
+    void getMetadataList_shouldReturnEmptyListGivenNullStruct() {
+        MetadataBean bean = new MetadataBean();
+        List<Metadata> result = bean.getMetadataList(null, "someType");
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+    }
+
+    /**
+     * @see MetadataBean#getMetadataElementList(int, boolean)
+     * @verifies return empty list when no document loaded
+     */
+    @Test
+    void getMetadataElementList_shouldReturnEmptyListWhenNoDocumentLoaded() {
+        MetadataBean bean = new MetadataBean();
+        List<MetadataElement> result = bean.getMetadataElementList(0, true);
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
+    }
 }

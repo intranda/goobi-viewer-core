@@ -1,0 +1,132 @@
+/* ==============================================================
+   Error App
+   style declarations for error.xhtml (application errors)
+   ==============================================================*/
+/* ERROR APP */
+/* BLOCK */
+.view-error-app {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background: #fff;
+    color: #1a1a1a;
+    padding: 2rem;
+    /* MODIFICATION */
+    &--warning {
+        border-top: 5px solid @yellowBar;
+    }
+    &--danger {
+        border-top: 5px solid @redBar;
+    }
+    /* ELEMENT */
+    &__title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin: 0 0 1rem;
+        line-height: 1.2;
+    }
+    &__message {
+        font-size: @fontMedium;
+        color: #666;
+        line-height: 1.7;
+        margin: 0;
+        a {
+            color: #3365a9;
+        }
+    }
+    &__divider {
+        border: none;
+        border-top: 1px solid #ccc;
+        margin: 2rem 0;
+    }
+    &__details-label {
+        font-size: @fontSmall;
+        font-weight: 600;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.8rem;
+    }
+    &__details-block {
+        background: #f7f7f7;
+        border: 1px solid #ccc;
+        padding: 1rem 1.2rem;
+        font-family: monospace;
+        font-size: @fontSmall;
+        color: #4b4b4b;
+        line-height: 1.8;
+        margin: 0;
+        dt {
+            display: flex;
+            font-weight: 600;
+            &::after {
+                content: ':';
+            }
+        }
+        dd {
+            margin: 0 0 0.4rem;
+            overflow-wrap: break-word;
+            word-break: break-all;
+        }
+    }
+    &__actions {
+        margin-top: 2rem;
+    }
+}
+
+/* DARK MODE (triggered by viewer theme toggle) */
+.color-theme-dark .view-error-app {
+    background: #253044;
+    color: #e3e4e7;
+    border-right-color: rgba(255, 255, 255, 0.15);
+    border-bottom-color: rgba(255, 255, 255, 0.15);
+    border-left-color: rgba(255, 255, 255, 0.15);
+    .view-error-app__title {
+        color: #e3e4e7;
+    }
+    .view-error-app__message {
+        color: #d8d9dd;
+        a {
+            color: #93c5fd;
+        }
+    }
+    .view-error-app__divider {
+        border-top-color: rgba(255, 255, 255, 0.15);
+    }
+    .view-error-app__details-label {
+        color: #d8d9dd;
+    }
+    .view-error-app__details-block {
+        background: #000e29;
+        border-color: rgba(255, 255, 255, 0.15);
+        color: #e3e4e7;
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    .view-error-app {
+        padding: 1.5rem;
+        &__title {
+            font-size: @fontLarge;
+        }
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    .view-error-app {
+        padding: 1.2rem;
+        &__title {
+            font-size: @fontNormal;
+        }
+    }
+}

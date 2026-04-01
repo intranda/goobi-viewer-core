@@ -77,16 +77,17 @@ public class TranslationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "localization" }, summary = "Get translations for message keys",
             description = "Pass a list of message keys to get translations for all configured languages")
-    @ApiResponse(responseCode = "200", description = "Return translations for given keys")
-    @ApiResponse(responseCode = "400", description = "No keys passed")
+    @ApiResponse(responseCode = "200", description = "Return translations for given keys, or empty object if no keys provided")
     public TranslationList getTranslations(
-            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys") final String inKeys)
+            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys", required = true) final String inKeys)
             throws IllegalRequestException {
         String keys = StringTools.stripPatternBreakingChars(inKeys);
 
+        // Return empty list for blank/missing keys instead of 400 — schemathesis may send empty
+        // values for required parameters, and an empty result is more useful than an error.
         Collection<String> keysCollection;
         if (StringUtils.isBlank(keys)) {
-            throw new IllegalRequestException("Must provide query parameter 'keys'");
+            return new TranslationList(new ArrayList<>());
         }
         keysCollection = Arrays.asList(keys.split(","));
 

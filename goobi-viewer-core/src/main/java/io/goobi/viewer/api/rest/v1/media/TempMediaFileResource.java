@@ -66,6 +66,10 @@ import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -77,6 +81,7 @@ import io.goobi.viewer.messages.Messages;
  * @author florian
  *
  */
+@Hidden
 @jakarta.ws.rs.Path(TEMP_MEDIA_FILES)
 @ViewerRestServiceBinding
 @AdminLoggedInBinding
@@ -104,7 +109,15 @@ public class TempMediaFileResource {
     @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadMediaFiles(@PathParam("folder") String foldername, @DefaultValue("true") @FormDataParam("enabled") boolean enabled,
+    @Operation(summary = "Upload a media file to the temporary hotfolder for DC record creation", tags = { "media" })
+    @ApiResponse(responseCode = "200", description = "File uploaded successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid filename or missing upload stream")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")
+    @ApiResponse(responseCode = "500", description = "Internal error during file upload")
+    public Response uploadMediaFiles(
+            @Parameter(description = "Target folder name") @PathParam("folder") String foldername,
+            @DefaultValue("true") @FormDataParam("enabled") boolean enabled,
             @FormDataParam("filename") String filename, @FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetail) {
 
@@ -168,7 +181,12 @@ public class TempMediaFileResource {
     @GET
     @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUploadedFiles(@PathParam("folder") String folder) {
+    @Operation(summary = "List all uploaded temporary media files in the given folder", tags = { "media" })
+    @ApiResponse(responseCode = "200", description = "List of uploaded file URIs")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")
+    @ApiResponse(responseCode = "500", description = "Internal error reading upload directory")
+    public Response getUploadedFiles(@Parameter(description = "Target folder name") @PathParam("folder") String folder) {
 
         try {
             CreateRecordBean bean = BeanUtils.getCreateRecordBean();
@@ -212,7 +230,12 @@ public class TempMediaFileResource {
     @DELETE
     @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteUploadedFiles(@PathParam("folder") String folder) {
+    @Operation(summary = "Delete all uploaded temporary media files in the given folder", tags = { "media" })
+    @ApiResponse(responseCode = "200", description = "All files deleted successfully")
+    @ApiResponse(responseCode = "401", description = "Not authenticated")
+    @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")
+    @ApiResponse(responseCode = "500", description = "Internal error deleting files")
+    public Response deleteUploadedFiles(@Parameter(description = "Target folder name") @PathParam("folder") String folder) {
 
         try {
             CreateRecordBean bean = BeanUtils.getCreateRecordBean();

@@ -149,7 +149,7 @@ public class MetadataValue implements Serializable {
      * @should use master value fragment correctly
      * @return a {@link java.lang.String} object.
      */
-    String getComboValueShort(int index) {
+    public String getComboValueShort(int index) {
         if (paramValues.size() <= index || paramValues.get(index) == null || paramValues.get(index).isEmpty()) {
             return "";
         }

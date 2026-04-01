@@ -97,6 +97,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * CMS functions.
@@ -847,8 +848,14 @@ public class CmsBean implements Serializable {
                     try {
                         return content.getContent().handlePageLoad(resetSearch, content.getOwningComponent());
                     } catch (PresentationException e) {
-                        logger.error("Error handling page load for page {} in content {}", content.getContent().getOwningPage().getId(),
-                                content.getItemId(), e);
+                        // Log as warning without stack trace; include request URL and exception message for diagnostics
+                        String requestUrl = "unknown";
+                        FacesContext fc = FacesContext.getCurrentInstance();
+                        if (fc != null && fc.getExternalContext().getRequest() instanceof HttpServletRequest httpRequest) {
+                            requestUrl = httpRequest.getRequestURL().toString();
+                        }
+                        logger.warn("Error handling page load for page {} in content {}: {} (Request URL: {})",
+                                content.getContent().getOwningPage().getId(), content.getItemId(), e.getMessage(), requestUrl);
                         return "";
                     }
                 })
@@ -1739,7 +1746,7 @@ public class CmsBean implements Serializable {
                 return false;
             }
             return user.hasPrivilegeForAllSubthemeDiscriminatorValues()
-                    || getAllowedSubthemeDiscriminatorValues(user).contains(page.getSubThemeDiscriminatorValue());
+                    || getAllowedSubthemeDiscriminatorValues(user).contains(page.getSubTheme());
         }
     }
 
@@ -1779,7 +1786,7 @@ public class CmsBean implements Serializable {
             try {
                 String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
                 String currentTheme = getCurrentCmsPageIfLoaded()
-                        .map(CMSPage::getSubThemeDiscriminatorValue)
+                        .map(CMSPage::getSubTheme)
                         .orElse(BeanUtils.getNavigationHelper().getThemeOrSubtheme());
                 navigationMenuItems = DataManager.getInstance()
                         .getDao()

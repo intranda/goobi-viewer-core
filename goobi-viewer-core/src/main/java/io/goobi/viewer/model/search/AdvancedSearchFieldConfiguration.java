@@ -36,6 +36,7 @@ public class AdvancedSearchFieldConfiguration {
     private String label;
     private boolean hierarchical;
     private boolean range;
+    private boolean datepicker;
     private boolean untokenizeForPhraseSearch;
     private boolean disabled;
     private boolean visible = false;
@@ -110,6 +111,22 @@ public class AdvancedSearchFieldConfiguration {
      */
     public AdvancedSearchFieldConfiguration setRange(boolean range) {
         this.range = range;
+        return this;
+    }
+
+    /**
+     * @return the datepicker
+     */
+    public boolean isDatepicker() {
+        return datepicker;
+    }
+
+    /**
+     * @param datepicker the datepicker to set
+     * @return this object
+     */
+    public AdvancedSearchFieldConfiguration setDatepicker(boolean datepicker) {
+        this.datepicker = datepicker;
         return this;
     }
 

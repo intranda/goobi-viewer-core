@@ -37,6 +37,14 @@
                 <!-- SEARCH ADVANCED -->
                 <ui:include src="/resources/includes/search/searchAdvanced.xhtml" />
             </div>
+
+            <script type="text/javascript">
+            //<![CDATA[
+                if (typeof viewerJS !== 'undefined' && viewerJS.datePicker) {
+                    viewerJS.datePicker.init();
+                }
+            //]]>
+            </script>
         </f:view>
     </ui:define>
 

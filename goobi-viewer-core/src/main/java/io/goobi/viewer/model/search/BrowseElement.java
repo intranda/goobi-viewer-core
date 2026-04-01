@@ -328,7 +328,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         if (StringUtils.isEmpty(filename)) {
             filename = structElement.getFirstPageFieldValue(SolrConstants.FILENAME_HTML_SANDBOXED);
         }
-        if (anchor) {
+        if (anchor || DocType.GROUP.equals(docType)) {
             mimeType = structElement.getFirstVolumeFieldValue(SolrConstants.MIMETYPE);
         } else {
             mimeType = structElement.getMetadataValue(SolrConstants.MIMETYPE);
@@ -378,7 +378,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
             // Check thumbnail access so that a custom access denied image can be used
             String thumbnailPi = pi;
-            if (isAnchor() && StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME
+            if ((isAnchor() || isGroup()) && StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME
                     .equals(DataManager.getInstance().getConfiguration().getAnchorThumbnailMode())) {
                 StructElement firstVolume = structElement.getFirstVolume(new ArrayList<>(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
                 if (firstVolume != null) {
@@ -396,9 +396,10 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
 
         MimeType mimeType = new MimeType(this.mimeType);
         //check if we have images
-        hasImages = !isAnchor() && (mimeType.isImage() || structElement.isHasImages());
+        hasImages = !isAnchor() && !isGroup() && (mimeType.isImage() || structElement.isHasImages());
         //..or if we have video or audio or a 3d-object
-        hasMedia = !hasImages && !isAnchor() && mimeType.isMediaType();
+        hasMedia = !hasImages && !isAnchor() && !isGroup()
+                && (mimeType.isAudio() || mimeType.isVideo() || mimeType.isSandboxedHtml() || mimeType.is3DModel());
 
         // MEI file
         hasMeiFile = StringUtils.isNotEmpty(structElement.getMetadataValue(SolrConstants.FILENAME_MEI));
@@ -1067,7 +1068,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * @return true if either criterion for thumbnail display is fulfilled; false otherwise
      */
     public boolean isShowThumbnail() {
-        return hasImages || hasMedia || isAnchor() || cmsPage || hasMeiFile;
+        return hasImages || hasMedia || isAnchor() || isGroup() || cmsPage || hasMeiFile;
     }
 
     /**

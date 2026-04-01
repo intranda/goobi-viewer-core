@@ -336,17 +336,21 @@ public class ViewManager implements Serializable {
     public CalendarView createCalendarView() throws IndexUnreachableException, PresentationException {
         // Init calendar view
         String anchorPi = null;
+        String anchorField = topStructElement.isVolume() ? SolrConstants.PI_ANCHOR : topStructElement.getGroupIdField();
         if (anchorStructElement != null) {
             anchorPi = anchorStructElement.getPi();
         } else if (topStructElement.isAnchor() || topStructElement.isGroup()) {
             anchorPi = pi;
         } else if (topStructElement.isGroupMember()) {
-            anchorPi = topStructElement.getGroupMemberships().get(topStructElement.getGroupIdField());
+            // For group members, GROUPTYPE is only on the GROUP doc, not on issues.
+            // Use the groupMemberships map key as the field name and its value as the anchor PI.
+            Map.Entry<String, String> groupEntry = topStructElement.getGroupMemberships().entrySet().iterator().next();
+            anchorField = groupEntry.getKey();
+            anchorPi = groupEntry.getValue();
         }
-        String anchorField = topStructElement.isVolume() ? SolrConstants.PI_ANCHOR : topStructElement.getGroupIdField();
+
         return new CalendarView(pi, anchorPi, anchorField,
                 topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
-
     }
 
     /**
@@ -373,7 +377,8 @@ public class ViewManager implements Serializable {
 
         switch (getPageNavigation()) {
             case SINGLE:
-                infos.put(getCurrentImageOrder(), getImageInfo(getCurrentPage(), pageType));
+                // Guard against null page (e.g. when currentImageOrder is not set or out of range)
+                getPage(currentImageOrder).ifPresent(p -> infos.put(getCurrentImageOrder(), getImageInfo(p, pageType)));
                 break;
             case DOUBLE:
                 getCurrentLeftPage().filter(p -> !p.isDoubleImage()).ifPresent(p -> infos.put(p.getOrder(), getImageInfo(p, pageType)));
@@ -665,7 +670,15 @@ public class ViewManager implements Serializable {
                         return "&watermarkText=" + text;
                     }
                 }).orElse(""));
-                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> "&watermarkId=" + id).orElse(""));
+                // Encode watermarkId to avoid invalid URLs for values containing umlauts, spaces, etc.
+                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> {
+                    try {
+                        return "&watermarkId=" + URLEncoder.encode(id, StringTools.DEFAULT_ENCODING);
+                    } catch (UnsupportedEncodingException e) {
+                        logger.error(e.getMessage());
+                        return "&watermarkId=" + id;
+                    }
+                }).orElse(""));
             }
         } catch (ViewerConfigurationException e) {
             logger.error("Unable to read watermark config, ignore watermark", e);
@@ -711,7 +724,15 @@ public class ViewManager implements Serializable {
                             }
                         })
                         .orElse(""));
-                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> "&watermarkId=" + id).orElse(""));
+                // Encode watermarkId to avoid invalid URLs for values containing umlauts, spaces, etc.
+                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> {
+                    try {
+                        return "&watermarkId=" + URLEncoder.encode(id, StringTools.DEFAULT_ENCODING);
+                    } catch (UnsupportedEncodingException e) {
+                        logger.error(e.getMessage());
+                        return "&watermarkId=" + id;
+                    }
+                }).orElse(""));
             }
         } catch (ViewerConfigurationException e) {
             logger.error("Unable to read watermark config, ignore watermark", e);
@@ -737,7 +758,15 @@ public class ViewManager implements Serializable {
                         return "&watermarkText=" + text;
                     }
                 }).orElse(""));
-                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> "&watermarkId=" + id).orElse(""));
+                // Encode watermarkId to avoid invalid URLs for values containing umlauts, spaces, etc.
+                sb.append(imageDeliveryBean.getFooter().getFooterIdIfExists(getTopStructElement()).map(id -> {
+                    try {
+                        return "&watermarkId=" + URLEncoder.encode(id, StringTools.DEFAULT_ENCODING);
+                    } catch (UnsupportedEncodingException e) {
+                        logger.error(e.getMessage());
+                        return "&watermarkId=" + id;
+                    }
+                }).orElse(""));
             }
         } catch (ViewerConfigurationException e) {
             logger.error("Unable to read watermark config, ignore watermark", e);
@@ -2481,10 +2510,11 @@ public class ViewManager implements Serializable {
      * @return true if calendar view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @deprecated Calendar view has been combined with TOC view
      */
+    @Deprecated(since = "26.03")
     public boolean isDisplayCalendarViewLink() throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetCalendarViewLinkVisible() && calendarView != null
-                && calendarView.isDisplay();
+        return false;
     }
 
     /**

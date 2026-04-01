@@ -308,6 +308,22 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
+     * Sets the current page for the error page, mapping generic error types (general, general_no_url)
+     * to the "error" page name so that the browser title shows "Fehler" instead of unrelated translations.
+     * Specific error types (e.g. recordNotFound, download) are passed through directly so that
+     * their own message keys are used as the page title.
+     *
+     * @param errorType the error type string set by the exception handler; may be null
+     */
+    public void setCurrentPageForError(String errorType) {
+        if (errorType == null || "general".equals(errorType) || "general_no_url".equals(errorType)) {
+            setCurrentPage("error");
+        } else {
+            setCurrentPage(errorType);
+        }
+    }
+
+    /**
      * <p>
      * Setter for the field <code>currentPage</code>.
      * </p>
@@ -1072,7 +1088,7 @@ public class NavigationHelper implements Serializable {
                 }
             } else if (isCmsPage()) {
                 if (cmsBean != null && cmsBean.getCurrentPage() != null) {
-                    subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
+                    subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubTheme();
                 }
             }
         }
@@ -1181,9 +1197,11 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Calendar view has been retired; use <code>getTocUrl()</code>
      */
+    @Deprecated(since = "26.03")
     public String getCalendarUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewCalendar.getName();
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewToc.getName();
     }
 
     /**
@@ -1192,9 +1210,11 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Calendar view has been retired; use <code>getTocActiveUrl()</code>
      */
+    @Deprecated(since = "26.03")
     public String getCalendarActiveUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewCalendar.getName();
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewToc.getName();
     }
 
     /**

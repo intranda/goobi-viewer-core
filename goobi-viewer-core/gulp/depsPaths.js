@@ -105,6 +105,23 @@ const depsPathsJS = [
     },
 
     {
+        // FLATPICKR
+        expand: true,
+        cwd: nodeModules,
+        src: ['flatpickr/dist/flatpickr.js'],
+        flatten: true,
+        dest: `${jsLibsDir}flatpickr/`,
+    },
+    {
+        // FLATPICKR GERMAN LOCALE
+        expand: true,
+        cwd: nodeModules,
+        src: ['flatpickr/dist/l10n/de.js'],
+        flatten: true,
+        dest: `${jsLibsDir}flatpickr/l10n/`,
+    },
+
+    {
         // jQuery
         expand: true,
         cwd: nodeModules,
@@ -376,6 +393,15 @@ const depsPathsCSS = [
         src: ['font-awesome/css/font-awesome.min.css', 'font-awesome/fonts/*', 'font-awesome/README.md'],
         flatten: false,
         dest: `${cssLibsDir}`,
+    },
+
+    {
+        // FLATPICKR
+        expand: true,
+        cwd: nodeModules,
+        src: ['flatpickr/dist/flatpickr.css'],
+        flatten: true,
+        dest: `${cssLibsDir}flatpickr/`,
     },
 
     {

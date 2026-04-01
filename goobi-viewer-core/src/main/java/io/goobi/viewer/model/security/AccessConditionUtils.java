@@ -345,19 +345,25 @@ public final class AccessConditionUtils {
         }
     }
 
-    private static User retrieveUserFromContext(HttpSession session) {
-        User user = BeanUtils.getUserFromSession(session);
-        if (user == null) {
-            try {
-                UserBean userBean = BeanUtils.getUserBean();
-                if (userBean != null) {
-                    user = userBean.getUser();
+    /**
+     * Central method to retrieve user from a HttpSession.
+     * 
+     * @param session The session in which the user data is stored
+     * @return The user logged into the given session. May be null if no user is logged in
+     */
+    public static User retrieveUserFromContext(HttpSession session) {
+        try {
+            UserBean userBean = BeanUtils.getUserBean(); //CDI lookup, faster than scanning session
+            if (userBean != null) {
+                User user = userBean.getUser();
+                if (user != null) {
+                    return user;
                 }
-            } catch (ContextNotActiveException e) {
-                logger.warn("Failed to retrieve userBean: No jsf context available");
             }
+        } catch (ContextNotActiveException e) {
+            // No CDI context (background thread) - fall through to session scan
         }
-        return user;
+        return BeanUtils.getUserFromSession(session); //expensive scan of whole session. Only as fallback
     }
 
     /**
@@ -378,13 +384,7 @@ public final class AccessConditionUtils {
 
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + page.getPi() + " +" + SolrConstants.ORDER + ":" + page.getOrder();
         try {
-            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
-            if (user == null) {
-                UserBean userBean = BeanUtils.getUserBean();
-                if (userBean != null) {
-                    user = userBean.getUser();
-                }
-            }
+            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
@@ -415,13 +415,7 @@ public final class AccessConditionUtils {
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.ORDER + ":" + pageOrder;
 
         try {
-            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
-            if (user == null) {
-                UserBean userBean = BeanUtils.getUserBean();
-                if (userBean != null) {
-                    user = userBean.getUser();
-                }
-            }
+            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
 
             SolrDocumentList results = DataManager.getInstance()
                     .getSearchIndex()
@@ -538,17 +532,7 @@ public final class AccessConditionUtils {
                 }
             }
 
-            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
-            if (user == null) {
-                UserBean userBean = BeanUtils.getUserBean();
-                if (userBean != null) {
-                    try {
-                        user = userBean.getUser();
-                    } catch (ContextNotActiveException e) {
-                        logger.trace("Cannot access bean method from different thread: UserBean.getUser()");
-                    }
-                }
-            }
+            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), originalQuery);
         } catch (PresentationException e) {
@@ -599,13 +583,7 @@ public final class AccessConditionUtils {
                         .search(query, SolrSearchIndex.MAX_HITS, null,
                                 Arrays.asList(SolrConstants.LOGID, SolrConstants.ACCESSCONDITION));
                 if (results != null) {
-                    User user = BeanUtils.getUserFromSession(session);
-                    if (user == null) {
-                        UserBean userBean = BeanUtils.getUserBean();
-                        if (userBean != null) {
-                            user = userBean.getUser();
-                        }
-                    }
+                    User user = retrieveUserFromContext(session);
 
                     //                    long start = System.nanoTime();
                     List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
@@ -733,13 +711,7 @@ public final class AccessConditionUtils {
                 }
             }
 
-            User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
-            if (user == null) {
-                UserBean userBean = BeanUtils.getUserBean();
-                if (userBean != null) {
-                    user = userBean.getUser();
-                }
-            }
+            User user = retrieveUserFromContext(request != null ? request.getSession() : null);
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
@@ -764,13 +736,7 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query,
             HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
-        User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
-        if (user == null) {
-            UserBean userBean = BeanUtils.getUserBean();
-            if (userBean != null) {
-                user = userBean.getUser();
-            }
-        }
+        User user = retrieveUserFromContext(request != null ? request.getSession() : null);
         return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions, privilegeName, user,
                 NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
     }
@@ -1008,13 +974,7 @@ public final class AccessConditionUtils {
             return AccessPermission.granted();
         }
 
-        User user = BeanUtils.getUserFromSession(request != null ? request.getSession() : null);
-        if (user == null) {
-            UserBean userBean = BeanUtils.getUserBean();
-            if (userBean != null) {
-                user = userBean.getUser();
-            }
-        }
+        User user = retrieveUserFromContext(request != null ? request.getSession() : null);
         if (user != null && user.isSuperuser()) {
             logger.trace("Access granted to admin.");
             return AccessPermission.granted();

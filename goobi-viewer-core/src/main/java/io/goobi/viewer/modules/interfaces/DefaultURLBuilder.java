@@ -92,6 +92,7 @@ public class DefaultURLBuilder implements IURLBuilder {
         } else {
             // Regular record
             PageType pageType = getPageType(ele);
+            logger.trace("page type: " + pageType);
             if (PageType.viewFulltext.equals(pageType) && ele.isHasTeiFiles()) {
                 // Add language to the URL if record has TEI full-text
                 Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage());

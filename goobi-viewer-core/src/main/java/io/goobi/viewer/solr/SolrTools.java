@@ -639,12 +639,17 @@ public final class SolrTools {
      * @return a boolean.
      */
     public static boolean isQuerySyntaxError(Exception e) {
+        // Check for known Solr query/parameter validation error messages.
+        // These indicate invalid input (HTTP 400), not server/auth failures (HTTP 403/500).
         return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
                 || e.getMessage().contains("Cannot parse")
                 || e.getMessage().contains("Invalid Number")
                 || e.getMessage().contains("undefined field")
                 || e.getMessage().contains("field can't be found")
-                || e.getMessage().contains("can not sort on multivalued field"));
+                || e.getMessage().contains("can not sort on multivalued field")
+                || e.getMessage().contains("parameter cannot be negative")
+                || e.getMessage().contains("expected ']'")
+                || e.getMessage().contains("SyntaxError"));
     }
 
     /**

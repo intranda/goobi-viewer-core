@@ -269,4 +269,23 @@ class StructElementTest extends AbstractSolrEnabledTest {
         StructElement element = new StructElement(iddoc);
         Assertions.assertEquals(PI_KLEIUNIV, element.getPi());
     }
+
+    /**
+     * @see StructElement#init(SolrDocument)
+     * @verifies populate groupMemberships even if field is also in ancestorIdentifierFields
+     */
+    @Test
+    void init_shouldPopulateGroupMembershipsEvenIfFieldIsAlsoInAncestorIdentifierFields() throws Exception {
+        // GROUPID_1 is configured in both ancestorIdentifierFields and recordGroupIdentifierFields
+        // in config_viewer.test.xml, simulating the production setup for newspapers.
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC, "99999");
+        doc.setField("GROUPID_1", "group_pi_001");
+
+        StructElement element = new StructElement(doc);
+
+        Assertions.assertTrue(element.isGroupMember(),
+                "Record with a field in both ancestorIdentifierFields and recordGroupIdentifierFields must be recognized as group member");
+        Assertions.assertEquals("group_pi_001", element.getGroupMemberships().get("GROUPID_1"));
+    }
 }

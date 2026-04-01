@@ -132,7 +132,7 @@ public class DisplayConditions implements Serializable {
      * <dl>
      * <dt>pageType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: viewToc, viewThumbs, viewMetadata, viewFulltext, viewFullscreen,
-     * viewObject, viewCalendar, cmsPage</dd>
+     * viewObject, cmsPage</dd>
      * <dd><i>Descrption:</i> Name of the current record page or 'view'. The condition returns true if the current view is one of the values of the
      * given array</dd>
      * </dl>
@@ -244,7 +244,7 @@ public class DisplayConditions implements Serializable {
      * <dl>
      * <dt>pageType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: viewToc, viewThumbs, viewMetadata, viewFulltext, viewFullscreen,
-     * viewObject, viewCalendar, cmsPage</dd>
+     * viewObject, cmsPage</dd>
      * <dd><i>Descrption:</i> Name of the current record page or 'view'. The condition returns true if the current view is one of the values of the
      * given array</dd>
      * </dl>

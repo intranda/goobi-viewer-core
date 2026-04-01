@@ -89,8 +89,12 @@ import io.goobi.viewer.model.cms.media.CMSMediaLister;
 import io.goobi.viewer.model.cms.media.MediaItem;
 import io.goobi.viewer.model.cms.media.MediaList;
 import io.goobi.viewer.model.security.user.User;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Consumes;
@@ -154,6 +158,10 @@ public class CMSMediaResource {
     @Operation(
             tags = { "media" },
             summary = "Get a list of CMS-Media Items of one or more categories")
+    @ApiResponse(responseCode = "200", description = "List of CMS media items matching the given categories")
+    @ApiResponse(responseCode = "400", description = "Invalid parameter value (e.g. negative max or prioritySlots)")
+    @ApiResponse(responseCode = "403", description = "Access to CMS media is restricted")
+    @ApiResponse(responseCode = "500", description = "Internal server error - e.g. database unavailable")
     @jakarta.ws.rs.Path(CMS_MEDIA_BY_CATEGORY)
     public MediaList getMediaOfCategories(
             @Parameter(description = "tag specifying the category the delivered media items must be associated with."
@@ -163,7 +171,15 @@ public class CMSMediaResource {
                     + " in the result") @QueryParam("prioritySlots") Integer prioritySlots,
             @Parameter(description = "Set to 'true' to return random items for each call."
                     + " Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
-            throws DAOException {
+            throws DAOException, IllegalRequestException {
+        // Reject negative values to avoid undefined behaviour in PriorityComparator
+        // and Stream.limit(), which would cause unexpected results or an HTTP 500.
+        if (maxItems != null && maxItems < 0) {
+            throw new IllegalRequestException("Parameter 'max' must not be negative, got: " + maxItems);
+        }
+        if (prioritySlots != null && prioritySlots < 0) {
+            throw new IllegalRequestException("Parameter 'prioritySlots' must not be negative, got: " + prioritySlots);
+        }
         List<String> tagList = new ArrayList<>();
         if (StringUtils.isNotBlank(tags)) {
             tagList.addAll(Arrays.stream(StringUtils.split(tags, "...")).map(String::toLowerCase).collect(Collectors.toList()));
@@ -190,6 +206,9 @@ public class CMSMediaResource {
     @Operation(
             tags = { "media" },
             summary = "Get a list of CMS-Media Items")
+    @ApiResponse(responseCode = "200", description = "List of CMS media items")
+    @ApiResponse(responseCode = "401", description = "Not authorized")
+    @ApiResponse(responseCode = "500", description = "Internal server error - e.g. database unavailable")
     @AuthorizationBinding
     public MediaList getAllMedia(
             @Parameter(description = "Comma separated list of tags. Only media items with any of these tags"
@@ -208,11 +227,20 @@ public class CMSMediaResource {
         return new MediaList(items, servletRequest);
     }
 
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_ITEM_BY_ID)
     @Produces({ MediaType.APPLICATION_JSON })
-    public MediaItem getMediaItem(@PathParam("id") Long id) throws DAOException {
+    @Operation(tags = { "cms" }, summary = "Get a CMS media item by its database id")
+    @ApiResponse(responseCode = "200", description = "CMS media item information")
+    @ApiResponse(responseCode = "404", description = "No CMS media item found for the given id")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    public MediaItem getMediaItem(@PathParam("id") Long id) throws DAOException, ContentNotFoundException {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
+        // Return 404 instead of NPE when no item exists for the given id
+        if (item == null) {
+            throw new ContentNotFoundException("No CMS media item found with id: " + id);
+        }
         return new MediaItem(item, servletRequest);
     }
 
@@ -227,10 +255,15 @@ public class CMSMediaResource {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_PDF)
     @Produces("application/pdf")
     @CORSBinding
+    @Operation(tags = { "cms" }, summary = "Serve a CMS media PDF file by filename")
+    @ApiResponse(responseCode = "200", description = "PDF file content",
+            content = @Content(mediaType = "application/pdf"))
+    @ApiResponse(responseCode = "404", description = "File not found")
     public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -252,10 +285,15 @@ public class CMSMediaResource {
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
 
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_SVG)
     @Produces("image/svg+xml")
     @CORSBinding
+    @Operation(tags = { "cms" }, summary = "Serve a CMS media SVG file by filename")
+    @ApiResponse(responseCode = "200", description = "SVG image content",
+            content = @Content(mediaType = "image/svg+xml"))
+    @ApiResponse(responseCode = "404", description = "File not found")
     public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -277,10 +315,15 @@ public class CMSMediaResource {
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
 
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_ICO)
     @Produces("image/x-icon")
     @CORSBinding
+    @Operation(tags = { "cms" }, summary = "Serve a CMS media ICO file by filename")
+    @ApiResponse(responseCode = "200", description = "ICO image content",
+            content = @Content(mediaType = "image/x-icon"))
+    @ApiResponse(responseCode = "404", description = "File not found")
     public static StreamingOutput getIcoContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -302,8 +345,13 @@ public class CMSMediaResource {
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
 
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
+    @Operation(tags = { "cms" }, summary = "Serve a CMS media video file by filename")
+    @ApiResponse(responseCode = "200", description = "Video content streamed via HTTP range requests")
+    @ApiResponse(responseCode = "404", description = "Video file not found")
+    @ApiResponse(responseCode = "500", description = "Error accessing the media resource")
     public String serveVideoContent(@PathParam("filename") String filename)
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -312,8 +360,13 @@ public class CMSMediaResource {
         return serveMediaContent("video", file);
     }
 
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
+    @Operation(tags = { "cms" }, summary = "Serve a CMS media audio file by filename")
+    @ApiResponse(responseCode = "200", description = "Audio content streamed via HTTP range requests")
+    @ApiResponse(responseCode = "404", description = "Audio file not found")
+    @ApiResponse(responseCode = "500", description = "Error accessing the media resource")
     public String serveAudioContent(@PathParam("filename") String filename)
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -332,9 +385,15 @@ public class CMSMediaResource {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_HTML)
     @Produces({ MediaType.TEXT_HTML })
+    @Operation(tags = { "cms" }, summary = "Serve a CMS media HTML file by filename")
+    @ApiResponse(responseCode = "200", description = "HTML file content",
+            content = @Content(mediaType = MediaType.TEXT_HTML))
+    @ApiResponse(responseCode = "404", description = "File not found")
+    @ApiResponse(responseCode = "500", description = "Error reading the file")
     public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException {
 
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -367,9 +426,13 @@ public class CMSMediaResource {
      * @return a {@link jakarta.ws.rs.core.Response} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_ITEM_BY_FILE)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = { "cms" }, summary = "Get the CMS media item associated with the given filename")
+    @ApiResponse(responseCode = "200", description = "Media item found for the given filename")
+    @ApiResponse(responseCode = "404", description = "No media item found for the given filename")
     public Response validateUploadMediaFiles(@PathParam("filename") String filename) throws DAOException {
 
         CMSMediaItem item =
@@ -388,9 +451,14 @@ public class CMSMediaResource {
      * @throws PresentationException
      *
      */
+    @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = { "cms" }, summary = "List all uploaded CMS media files")
+    @ApiResponse(responseCode = "200", description = "List of CMS media filenames")
+    @ApiResponse(responseCode = "401", description = "Not authorized")
+    @ApiResponse(responseCode = "500", description = "Error reading the media folder")
     @UserLoggedInBinding
     public List<String> getAllFiles() throws PresentationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -402,17 +470,25 @@ public class CMSMediaResource {
         }
     }
 
+    @Hidden
     @DELETE
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = { "cms" }, summary = "Delete all CMS media files (not supported)")
+    @ApiResponse(responseCode = "400", description = "Operation not supported")
+    @ApiResponse(responseCode = "401", description = "Not authorized")
     @AuthorizationBinding
     public void deleteAllFiles() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
 
+    @Hidden
     @DELETE
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = { "cms" }, summary = "Delete a CMS media file by filename (not supported)")
+    @ApiResponse(responseCode = "400", description = "Operation not supported")
+    @ApiResponse(responseCode = "401", description = "Not authorized")
     @AuthorizationBinding
     public void deleteFile() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
@@ -429,10 +505,17 @@ public class CMSMediaResource {
      * @param fileDetail a {@link org.glassfish.jersey.media.multipart.FormDataContentDisposition} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
+    @Hidden
     @POST
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = { "cms" }, summary = "Upload a CMS media file")
+    @RequestBody(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA))
+    @ApiResponse(responseCode = "200", description = "File uploaded successfully")
+    @ApiResponse(responseCode = "401", description = "Not authorized")
+    @ApiResponse(responseCode = "403", description = "User does not have permission to upload media files")
+    @ApiResponse(responseCode = "500", description = "Error saving the uploaded file")
     @UserLoggedInBinding
     public Response
             uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,

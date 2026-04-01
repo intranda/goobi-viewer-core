@@ -48,7 +48,6 @@ import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchResultGroup;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -75,7 +74,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
 
     @Column(name = "view")
     private HitListView view = HitListView.DETAILS;
-    
+
     @Column(name = "sort_field", length = 40)
     private String sortField = DataManager.getInstance().getConfiguration().getDefaultSortField("");
 
@@ -205,7 +204,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     private String searchAction() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        this.search.search(this.getOwningPage().getSubThemeDiscriminatorValue());
+        this.search.search(this.getOwningPage().getSubTheme());
         BeanUtils.getNavigationHelper().addSearchUrlWithCurrentSortStringToHistory();
         return "";
     }
@@ -223,19 +222,19 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
     public Functionality getFunctionality() {
         return getSearch();
     }
-    
+
     public int getElementsPerPage() {
         return elementsPerPage;
     }
-    
+
     public void setElementsPerPage(int elementsPerPage) {
         this.elementsPerPage = elementsPerPage;
     }
-    
+
     public String getSortField() {
         return sortField;
     }
-    
+
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }

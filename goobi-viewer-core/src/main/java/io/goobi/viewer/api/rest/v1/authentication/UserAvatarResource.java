@@ -45,6 +45,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
@@ -62,7 +63,6 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import de.unigoettingen.sub.commons.cache.CacheUtils;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -79,6 +79,8 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -135,15 +137,12 @@ public class UserAvatarResource extends ImageResource {
      */
     public static URI getMediaFileUrl(Long userId) throws WebApplicationException {
         try {
-            //            Optional<URI> ret = getUserAvatarFile(userId).map(PathConverter::toURI);
-            //            if (ret.isPresent()) {
-            //                return ret.get();
-            //            }
-            logger.debug("No avatar file found for user {}", userId);
+            // Use NotFoundException (HTTP 404) directly so missing avatars return the correct status code.
+            // Previously ContentNotFoundException was caught and wrapped in WebApplicationException(Throwable),
+            // which defaults to HTTP 500.
             return getUserAvatarFile(userId).map(PathConverter::toURI)
-                    .orElseThrow(() -> new ContentNotFoundException("No avatar file found for user " + userId));
-            //            return URI.create("");
-        } catch (IOException | ContentNotFoundException e) {
+                    .orElseThrow(() -> new NotFoundException("No avatar file found for user " + userId));
+        } catch (IOException e) {
             throw new WebApplicationException(e);
         }
     }
@@ -183,7 +182,11 @@ public class UserAvatarResource extends ImageResource {
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
     @Operation(tags = { "users" }, summary = "IIIF image identifier for an uploaded user avatar image. Returns a IIIF 2.1.1 image information object")
-    @ApiResponse(responseCode = "404", description = "No image for the given user was uploaded")
+    @ApiResponse(responseCode = "200", description = "Avatar image information")
+    @ApiResponse(responseCode = "302", description = "Redirect to canonical IIIF image info URL")
+    // 400 is returned when the path parameter {userId} cannot be parsed as a valid integer
+    @ApiResponse(responseCode = "400", description = "Invalid user ID")
+    @ApiResponse(responseCode = "404", description = "No avatar found for the given user")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();
     }
@@ -191,6 +194,15 @@ public class UserAvatarResource extends ImageResource {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Upload a new avatar image for the current user", tags = { "users" })
+    @RequestBody(content = @Content(mediaType = "multipart/form-data"))
+    @ApiResponse(responseCode = "200", description = "Avatar uploaded successfully")
+    // 400 is returned when the path parameter {userId} cannot be parsed as a valid integer
+    @ApiResponse(responseCode = "400", description = "Invalid user ID")
+    @ApiResponse(responseCode = "404", description = "User not found")
+    @ApiResponse(responseCode = "406", description = "Invalid upload — missing file stream or no active user session")
+    @ApiResponse(responseCode = "409", description = "A file with this name already exists")
+    @ApiResponse(responseCode = "500", description = "Internal server error during file upload")
     public Response uploadAvatarFile(@DefaultValue("true") @FormDataParam("enabled") boolean enabled,
             @FormDataParam("filename") String uploadFilename,
             @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail) {

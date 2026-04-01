@@ -87,6 +87,8 @@ import io.goobi.viewer.model.maps.GeoMapMarker.MarkerType;
 import io.goobi.viewer.model.maps.GeomapItemFilter;
 import io.goobi.viewer.model.maps.View;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.metadata.MetadataListElement;
+import io.goobi.viewer.model.metadata.MetadataListSeparator;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
@@ -440,6 +442,26 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
+        return getMetadataListItemsForTemplate(type, template, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue).stream()
+                .filter(item -> item instanceof Metadata)
+                .map(item -> (Metadata) item)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 
+     * @param type
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @param topstructValueFallbackDefaultValue
+     * @return List of metadata configurations
+     * @should throw IllegalArgumentException if type null
+     * @should return empty list if no metadata lists configured
+     * @should return empty list if metadataList contains no templates
+     * @should return empty list if list type not found
+     */
+    public List<MetadataListElement> getMetadataListItemsForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
+            boolean topstructValueFallbackDefaultValue) {
         // logger.trace("getMetadataConfigurationForTemplate: {}/{}", type, template); //NOSONAR Debug
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");
@@ -471,7 +493,7 @@ public class Configuration extends AbstractConfiguration {
                     return new ArrayList<>(); // must be a mutable list!
                 }
 
-                return getMetadataForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue);
+                return getMetadataListItemsForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue);
             }
         }
 
@@ -627,6 +649,22 @@ public class Configuration extends AbstractConfiguration {
      * @should return default template if template is null
      */
     public List<Metadata> getMainMetadataForTemplate(int index, String template) {
+        return getMainMetadataListItemsForTemplate(index, template).stream()
+                .filter(item -> item instanceof Metadata)
+                .map(item -> (Metadata) item)
+                .toList();
+    }
+
+    /**
+     *
+     * @param index
+     * @param template
+     * @return List of configured <code>Metadata</code> fields for the given template
+     * @should return correct template configuration
+     * @should return default template configuration if template not found
+     * @should return default template if template is null
+     */
+    public List<MetadataListElement> getMainMetadataListItemsForTemplate(int index, String template) {
         logger.trace("getMainMetadataForTemplate: {}", template);
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.metadataView(" + index + ").template");
         if (templateList == null) {
@@ -642,7 +680,7 @@ public class Configuration extends AbstractConfiguration {
             }
         }
 
-        return getMetadataForTemplate(template, templateList, true, false);
+        return getMetadataListItemsForTemplate(template, templateList, true, false);
     }
 
     /**
@@ -675,6 +713,31 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Reads metadata configuration for the given template name if it's contained in the given template list. Includes non-metadata elements in the
+     * list
+     *
+     * @param template Requested template name
+     * @param templateList List of templates in which to look
+     * @param fallbackToDefaultTemplate If true, the _DEFAULT template will be loaded if the given template is not found
+     * @param topstructValueFallbackDefaultValue If true, the default value for the parameter attribute "topstructValueFallback" will be the value
+     *            passed here
+     * @return Configured values
+     */
+    private static List<MetadataListElement> getMetadataListItemsForTemplate(String template,
+            List<HierarchicalConfiguration<ImmutableNode>> templateList,
+            boolean fallbackToDefaultTemplate, boolean topstructValueFallbackDefaultValue) {
+        if (templateList == null) {
+            return new ArrayList<>();
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
+        if (usingTemplate == null) {
+            return new ArrayList<>();
+        }
+
+        return getMetadataListItemsForTemplate(usingTemplate, topstructValueFallbackDefaultValue);
+    }
+
+    /**
      * Reads metadata configuration for the given template name if it's contained in the given template list.
      *
      * @param template Requested template name
@@ -686,15 +749,10 @@ public class Configuration extends AbstractConfiguration {
      */
     private static List<Metadata> getMetadataForTemplate(String template, List<HierarchicalConfiguration<ImmutableNode>> templateList,
             boolean fallbackToDefaultTemplate, boolean topstructValueFallbackDefaultValue) {
-        if (templateList == null) {
-            return new ArrayList<>();
-        }
-        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
-        if (usingTemplate == null) {
-            return new ArrayList<>();
-        }
-
-        return getMetadataForTemplate(usingTemplate, topstructValueFallbackDefaultValue);
+        return getMetadataListItemsForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue).stream()
+                .filter(item -> item instanceof Metadata)
+                .map(item -> (Metadata) item)
+                .toList();
     }
 
     /**
@@ -704,22 +762,26 @@ public class Configuration extends AbstractConfiguration {
      * @param topstructValueFallbackDefaultValue Default value for topstructValueFallback, if not explicitly configured
      * @return Configured values
      */
-    private static List<Metadata> getMetadataForTemplate(HierarchicalConfiguration<ImmutableNode> usingTemplate,
+    private static List<MetadataListElement> getMetadataListItemsForTemplate(HierarchicalConfiguration<ImmutableNode> usingTemplate,
             boolean topstructValueFallbackDefaultValue) {
         if (usingTemplate == null) {
             return new ArrayList<>();
         }
-        List<HierarchicalConfiguration<ImmutableNode>> elements = usingTemplate.configurationsAt("metadata");
+        List<HierarchicalConfiguration<ImmutableNode>> elements = usingTemplate.childConfigurationsAt(".");
         if (elements == null) {
             logger.warn("Template '{}' contains no metadata elements.", usingTemplate.getRootElementName());
             return new ArrayList<>();
         }
 
-        List<Metadata> ret = new ArrayList<>(elements.size());
+        List<MetadataListElement> ret = new ArrayList<>(elements.size());
         for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
-            Metadata md = getMetadataFromSubnodeConfig(sub, topstructValueFallbackDefaultValue, 0);
-            if (md != null) {
-                ret.add(md);
+            if ("fold".equals(sub.getRootElementName())) {
+                ret.add(new MetadataListSeparator());
+            } else if ("metadata".equals(sub.getRootElementName())) {
+                Metadata md = getMetadataFromSubnodeConfig(sub, topstructValueFallbackDefaultValue, 0);
+                if (md != null) {
+                    ret.add(md);
+                }
             }
         }
 
@@ -892,7 +954,7 @@ public class Configuration extends AbstractConfiguration {
         }
     }
 
-    public Metadata getGeoMapFeatureConfiguration(String option, String template) {
+    public MetadataListElement getGeoMapFeatureConfiguration(String option, String template) {
         return getGeomapFeatureConfigurations(option).getOrDefault(template, new Metadata());
     }
 
@@ -1035,14 +1097,14 @@ public class Configuration extends AbstractConfiguration {
         return List.of(config);
     }
 
-    private static Map<String, Metadata> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
+    private static Map<String, MetadataListElement> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
         if (templateList == null) {
             return Collections.emptyMap();
         }
-        Map<String, Metadata> map = new HashMap<>();
+        Map<String, MetadataListElement> map = new HashMap<>();
         for (HierarchicalConfiguration<ImmutableNode> template : templateList) {
             String name = template.getString("[@name]", "_DEFAULT");
-            Metadata md = getMetadataForTemplate(name, templateList, true, false).stream().findAny().orElse(null);
+            MetadataListElement md = getMetadataForTemplate(name, templateList, true, false).stream().findAny().orElse(null);
             if (md != null) {
                 map.put(name, md);
             }
@@ -1320,15 +1382,6 @@ public class Configuration extends AbstractConfiguration {
         return false;
     }
 
-    /**
-     * Returns the list of structure elements allowed to be shown in calendar view
-     *
-     * @should return all configured elements
-     * @return a {@link java.util.List} object.
-     */
-    public List<String> getCalendarDocStructTypes() {
-        return getLocalList("metadata.calendarDocstructTypes.docStruct");
-    }
 
     /**
      * <p>
@@ -1967,6 +2020,7 @@ public class Configuration extends AbstractConfiguration {
             String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, field);
             boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
             boolean range = subElement.getBoolean("[@range]", false);
+            boolean datepicker = subElement.getBoolean("[@datepicker]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
             boolean visible = subElement.getBoolean("[@visible]", false);
             boolean allowMultipleItems = subElement.getBoolean("[@allowMultipleItems]", false);
@@ -1980,6 +2034,7 @@ public class Configuration extends AbstractConfiguration {
                     .setLabel(label)
                     .setHierarchical(hierarchical)
                     .setRange(range)
+                    .setDatepicker(datepicker)
                     .setUntokenizeForPhraseSearch(untokenizeForPhraseSearch)
                     .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
                     .setVisible(visible)
@@ -2127,6 +2182,16 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isAdvancedSearchFieldRange(String field, String template, boolean fallbackToDefaultTemplate) {
         return isAdvancedSearchFieldHasAttribute(field, "range", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * @param field a {@link java.lang.String} object.
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return a boolean.
+     */
+    public boolean isAdvancedSearchFieldDatepicker(String field, String template, boolean fallbackToDefaultTemplate) {
+        return isAdvancedSearchFieldHasAttribute(field, "datepicker", template, fallbackToDefaultTemplate);
     }
 
     /**
@@ -3205,17 +3270,6 @@ public class Configuration extends AbstractConfiguration {
         return getSidebarWidgetBooleanValue("views", "object[@enabled]", true);
     }
 
-    /**
-     * <p>
-     * isSidebarViewsWidgetCalendarViewLinkVisible.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSidebarViewsWidgetCalendarViewLinkVisible() {
-        return getSidebarWidgetBooleanValue("views", "calendar[@enabled]", true);
-    }
 
     /**
      * <p>
@@ -6597,6 +6651,14 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<String> getProxyWhitelist() {
         return getLocalList("proxy.whitelist.host");
+    }
+
+    /**
+     *
+     * @return Configured values
+     */
+    public List<String> getHttpHeaderLoginRedirectWhitelist() {
+        return getLocalList("user.authenticationProviders.redirectWhitelist.host");
     }
 
     // active mq configuration //
