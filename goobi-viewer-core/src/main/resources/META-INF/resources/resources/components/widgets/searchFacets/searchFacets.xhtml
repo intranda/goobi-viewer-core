@@ -185,17 +185,17 @@
 
                                         <ul class="widget-search-facets__list">
                                             <!-- ACTIVE FACETS -->
-                                            <c:forEach
+                                            <c:forEach 
                                                 items="#{searchBean.facets.getActiveFacetsForField(field.key)}"
                                                 var="facet">
                                                 <li class="widget-search-facets__list-item active">
                                                     <h:commandLink
-                                                        styleClass="widget-search-facets__list-item-link"
+                                                        styleClass="widget-search-facets__list-item-link -active"
                                                         action="#{searchBean.removeFacetAction(facet.link)}"
                                                         title="#{msg.removeFacet}">
                                                         <div class="widget-search-facets__list-item-link-inner">
-                                                            <div class="widget-search-facets__list-item-link-active">#{facet.translatedLabel}</div>
-                                                            <div class="widget-search-facets__list-item-link-icon">
+                                                            <div class="widget-search-facets__list-item-label">#{facet.translatedLabel}</div>
+                                                            <div class="widget-search-facets__list-item-icon">
                                                                 <util:icon icon="x" svgClass="widget__body-icon-svg widget-search-facets__body-icon-svg" />
                                                             </div>
                                                         </div>

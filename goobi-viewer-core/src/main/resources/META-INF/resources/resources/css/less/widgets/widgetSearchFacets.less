@@ -17,15 +17,18 @@
     &__body {
         li {
             &.active {
-                margin-bottom: 3px;
+//                margin-bottom: 3px;
                 a {
-                    background-color: @lightgray;
+//                    background-color: @lightgray;
                 }
             }
         }
         a {
         }
     }
+	&__body-icon-svg {
+		color: currentColor;
+	}
     &__list {
         display: flex;
         flex-direction: column;
@@ -36,6 +39,10 @@
         padding-inline-end: 5px;
     }
     &__list-item-link {
+		&.-active {
+			padding: 3px;
+			font-weight: 600;
+		}
     }
     &__list-item-link-inner {
         display: flex;
@@ -43,12 +50,8 @@
         justify-content: space-between;
     }
     &__list-item-link-active {
-        padding: 0;
-        //		text-overflow: ellipsis;
-        //		overflow: hidden;
     }
-    &__list-item-link-icon {
-        padding-inline-end: 5px;
+    &__list-item-icon {
     }
     /* FILTER */
     &__filter {
