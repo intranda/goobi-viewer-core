@@ -42,6 +42,7 @@ import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -69,7 +70,7 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     public ViewerRecordPDFResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+            @Parameter(description = "Persistent identifier of the record", schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
             @Context ContentServerCacheManager cacheManager) throws ContentLibException {
         // Validate PI before passing it to MetsPdfResource, which builds a file:// URI from
         // the value and throws ContentLibException (HTTP 500) on illegal URI characters.
@@ -90,6 +91,7 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @ApiResponse(responseCode = "200", description = "PDF file", content = @Content(mediaType = "application/pdf"))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "Record not found")
     @ApiResponse(responseCode = "500", description = "PDF generation error")
     public StreamingOutput getPdf() throws ContentLibException {
         logger.trace("getPdf: {}", filename);

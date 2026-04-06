@@ -79,7 +79,8 @@ public class TranslationResource {
             description = "Pass a list of message keys to get translations for all configured languages")
     @ApiResponse(responseCode = "200", description = "Return translations for given keys, or empty object if no keys provided")
     public TranslationList getTranslations(
-            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys", required = true) final String inKeys)
+            // 'keys' is optional: when omitted, an empty translation list is returned
+            @QueryParam("keys") @Parameter(description = "A comma separated list of message keys", required = false) final String inKeys)
             throws IllegalRequestException {
         String keys = StringTools.stripPatternBreakingChars(inKeys);
 

@@ -63,6 +63,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -86,13 +87,19 @@ public class RecordSectionResource {
     private final String divId;
 
     public RecordSectionResource(@Context HttpServletRequest request,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description = "Logical div ID of METS section") @PathParam("divId") String divId) {
+            @Parameter(description = "Persistent identifier of the record", schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
+            @Parameter(description = "Logical div ID of METS section",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_]+$")) @PathParam("divId") String divId) {
         // Reject PIs containing characters illegal in URI paths / Solr queries before any
         // Solr or file-system access occurs.  BadRequestException (HTTP 400) is an unchecked
         // WebApplicationException that Jersey maps to 400 before invoking the endpoint.
         if (!PIValidator.validatePi(pi)) {
             throw new BadRequestException("Invalid record identifier: " + pi);
+        }
+        // Enforce the divId pattern documented in the OpenAPI spec: alphanumeric and
+        // underscores only. Values like "-3.349e+52" would cause Solr syntax errors.
+        if (!divId.matches("[A-Za-z0-9_]+")) {
+            throw new BadRequestException("Invalid section identifier: " + divId);
         }
         this.pi = pi;
         this.divId = divId;

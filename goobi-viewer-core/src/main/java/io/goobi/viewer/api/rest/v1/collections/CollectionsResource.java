@@ -76,7 +76,7 @@ public class CollectionsResource {
 
     public CollectionsResource(
             @Parameter(description = "Name of the Solr field the collection is based on. Typically 'DC'",
-                    schema = @Schema(pattern = "[A-Za-z_][A-Za-z0-9_]*")) @PathParam("field") String solrField,
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$")) @PathParam("field") String solrField,
             @Context HttpServletRequest request) {
         // Validate field name against the documented pattern [A-Za-z_][A-Za-z0-9_]* to prevent
         // invalid Solr field names (e.g. "-") from reaching the index and causing 500 errors.
@@ -95,7 +95,8 @@ public class CollectionsResource {
     @ApiResponse(responseCode = "404", description = "No collections available for field")
     @ApiResponse(responseCode = "500", description = "Internal server error")
     public Collection2 getAllCollections(
-            @Parameter(description = "Add values of this field to response to allow grouping of results") @QueryParam("grouping") String grouping,
+            @Parameter(description = "Add values of this field to response to allow grouping of results",
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$")) @QueryParam("grouping") String grouping,
             @Parameter(description = "comma separated list of collections to ignore in response") @QueryParam("ignore") String ignoreString)
             throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
@@ -124,13 +125,22 @@ public class CollectionsResource {
     public Collection2 getCollection(
             @Parameter(description = "Name of the collection. Must be a value of the Solr field the collection is based on") 
             @PathParam("collection") final String inCollectionName,
-            @Parameter(description = "Add values of this field to response to allow grouping of results") 
+            @Parameter(description = "Add values of this field to response to allow grouping of results",
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$"))
             @QueryParam("grouping") String grouping,
-            @Parameter(description = "comma separated list of subcollections to ignore in response") 
+            @Parameter(description = "comma separated list of subcollections to ignore in response")
             @QueryParam("ignore") String ignoreString)
             throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
-        String collectionName = StringTools.decodeUrl(inCollectionName);
+        // StringTools.decodeUrl uses URLDecoder which throws IllegalArgumentException for malformed
+        // percent-encoded sequences (e.g. '%ó' — a bare '%' not followed by two hex digits).
+        // Catch this and return 400 instead of letting the unchecked exception produce HTTP 500.
+        String collectionName;
+        try {
+            collectionName = StringTools.decodeUrl(inCollectionName);
+        } catch (IllegalArgumentException e) {
+            throw new jakarta.ws.rs.BadRequestException("Invalid collection name: " + inCollectionName);
+        }
         Collection2 collection;
         List<String> ignore = StringUtils.isNotBlank(ignoreString) ? Arrays.asList(ignoreString.split(",")) : Collections.emptyList();
         if (StringUtils.isBlank(grouping)) {

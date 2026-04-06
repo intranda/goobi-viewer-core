@@ -151,7 +151,8 @@ public class RecordResource {
     private static Thread deleteRecordThread = null;
 
     public RecordResource(@Context HttpServletRequest request,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+            @Parameter(description = "Persistent identifier of the record",
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi) {
         // Reject PIs that contain characters illegal in file-system URI paths before any
         // file-system access occurs, to prevent ContentLib path injection (e.g. space, pipe,
         // null byte via double-encoding). BadRequestException (HTTP 400) is an unchecked
@@ -226,6 +227,7 @@ public class RecordResource {
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record")
     @ApiResponse(responseCode = "200", description = "Annotation collection for the record")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations,"
@@ -247,6 +249,7 @@ public class RecordResource {
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a record")
     @ApiResponse(responseCode = "200", description = "Annotation collection of comments for the record")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getCommentsForRecord(
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations,"
@@ -272,7 +275,8 @@ public class RecordResource {
     @ApiResponse(responseCode = "404", description = "No record found or no comments for the given identifier")
     public AnnotationPage getCommentPageForRecord(
             // Page numbers are 1-based; document minimum in schema so clients and schemathesis know 0 is invalid
-            @Parameter(description = "Page number (1-based)", schema = @Schema(minimum = "1")) @PathParam("page") Integer page)
+            @Parameter(description = "Page number (1-based)",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("page") Integer page)
             throws DAOException, IllegalRequestException, ContentNotFoundException {
 
         URI uri = URI.create(urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi).build());
@@ -284,6 +288,7 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get record metadata source file")
     @ApiResponse(responseCode = "200", description = "Metadata source file content")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No source file found for the given record")
     public StreamingOutput getSource() throws ContentNotFoundException, PresentationException, IndexUnreachableException {
 
@@ -317,6 +322,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 manifest for the record")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     // 403 is returned by AccessConditionRequestFilter when the record is not found in the Solr index
     @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
@@ -376,9 +382,12 @@ public class RecordResource {
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public DocumentReference getNERTags(
-            @Parameter(description = "First page to get tags for") @QueryParam("start") Integer start,
-            @Parameter(description = "Last page to get tags for") @QueryParam("end") Integer end,
-            @Parameter(description = "Number of pages to combine into each group") @QueryParam("step") Integer stepSize,
+            @Parameter(description = "First page to get tags for",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("start") Integer start,
+            @Parameter(description = "Last page to get tags for",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("end") Integer end,
+            @Parameter(description = "Number of pages to combine into each group",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("step") Integer stepSize,
             @Parameter(description = "Tag type to consider (person, corporation, event or location)") @QueryParam("type") String type)
             throws PresentationException, IndexUnreachableException {
         NERBuilder b = new NERBuilder();
@@ -656,8 +665,11 @@ public class RecordResource {
     @CORSBinding
     @AuthorizationBinding
     @ApiResponse(responseCode = "200", description = "Record deletion accepted")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @ApiResponse(responseCode = "403", description = "Deletion not allowed because child volumes are still present")
+    // 404 is returned when the PI is valid but the record does not exist in the index
+    @ApiResponse(responseCode = "404", description = "Record not found for the given identifier")
     @ApiResponse(responseCode = "500", description = "Internal server error during deletion")
     @ApiResponse(responseCode = "503", description = "A deletion operation is already in progress")
     @Operation(tags = { "records" }, summary = "Delete the record from the Solr database",

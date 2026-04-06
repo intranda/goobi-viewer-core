@@ -40,6 +40,7 @@ import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.solr.SolrConstants;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public abstract class AbstractLicensee implements ILicensee {
 
@@ -47,6 +48,10 @@ public abstract class AbstractLicensee implements ILicensee {
     private static final Logger logger = LogManager.getLogger(AbstractLicensee.class);
 
     /** {@inheritDoc} */
+    // Hide from OpenAPI schema: the licenses list is deeply nested and causes schemathesis to fail
+    // generating test cases (complex nested schemas with many $ref cycles). Licenses are not
+    // updatable via API, so excluding them from the schema is safe.
+    @Schema(hidden = true)
     public List<License> getLicenses() {
         try {
             return DataManager.getInstance().getDao().getLicenses(this);

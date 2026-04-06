@@ -128,6 +128,7 @@ public class CMSMediaImageResource extends ImageResource {
             summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
     @ApiResponse(responseCode = "200", description = "IIIF image information object",
             content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "400", description = "Invalid filename — non-image extension filenames are rejected by the fallback handler")
     @ApiResponse(responseCode = "404", description = "Image not found")
     @ApiResponse(responseCode = "405", description = "Method not allowed — e.g. when filename contains special characters matching another route")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {

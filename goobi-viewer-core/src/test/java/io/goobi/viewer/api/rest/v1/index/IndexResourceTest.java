@@ -157,6 +157,38 @@ class IndexResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * facetFields containing names that do not match the Solr field name pattern
+     * ([A-Za-z][A-Za-z0-9_]*) must be rejected with 400 to prevent unhandled Solr errors.
+     */
+    @Test
+    void postIndexQuery_invalidFacetField_returns400() {
+        params.setFacetFields(java.util.List.of("0invalid"));
+        Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
+        try (Response response = target(urls.path(INDEX, INDEX_QUERY).build())
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .post(entity)) {
+            assertEquals(400, response.getStatus(), "Invalid facetField name should return 400");
+        }
+    }
+
+    /**
+     * resultFields containing names that do not match the Solr field name pattern
+     * must be rejected with 400.
+     */
+    @Test
+    void postIndexQuery_invalidResultField_returns400() {
+        params.setResultFields(java.util.List.of("valid_field", "123-bad"));
+        Entity<RecordsRequestParameters> entity = Entity.entity(params, MediaType.APPLICATION_JSON);
+        try (Response response = target(urls.path(INDEX, INDEX_QUERY).build())
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .post(entity)) {
+            assertEquals(400, response.getStatus(), "Invalid resultField name should return 400");
+        }
+    }
+
+    /**
      * @see IndexResource#collectFieldInfo()
      * @verifies create list correctly
      */

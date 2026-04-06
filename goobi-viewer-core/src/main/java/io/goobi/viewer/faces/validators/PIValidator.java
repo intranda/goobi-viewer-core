@@ -48,7 +48,8 @@ public class PIValidator implements Validator<String> {
         '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'',  // original set
         '|', '<', '>', '[', ']',                                    // path-safety: invalid in java.net.URI
         ' ', '%', '\r', '\n', '\0',                                 // encoding bypass / control chars
-        '*'                                                         // Solr wildcard abuse prevention
+        '*',                                                        // Solr wildcard abuse prevention
+        '+'                                                         // Solr syntax: unary plus is a prefix operator
     };
 
     /* (non-Javadoc)
@@ -73,6 +74,8 @@ public class PIValidator implements Validator<String> {
      * @should return true if pi good
      * @should return false if pi empty, blank or null
      * @should return false if pi contains illegal characters
+     * @should return false if pi starts with non alphanumeric character
+     * @should return false if pi contains plus sign
      * @return a boolean.
      */
     public static boolean validatePi(String pi) {
@@ -88,6 +91,12 @@ public class PIValidator implements Validator<String> {
             if (c < 0x20 || c >= 0x7F) {
                 return false;
             }
+        }
+
+        // Require the first character to be alphanumeric. This prevents Solr query
+        // injection via leading '-' (negation operator) or '+' (required operator).
+        if (!Character.isLetterOrDigit(pi.charAt(0))) {
+            return false;
         }
 
         // Require at least one alphanumeric character so that values consisting

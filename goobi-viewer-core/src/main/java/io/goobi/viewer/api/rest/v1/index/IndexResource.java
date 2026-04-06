@@ -92,7 +92,9 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -145,9 +147,15 @@ public class IndexResource {
     @ApiResponse(responseCode = "400", description = "Invalid Solr query syntax")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getStatistics(
-            @Parameter(description = "Solr query to filter results (optional)") @QueryParam("query") final String query)
+            @Parameter(description = "Solr query to filter results (optional)",
+                    schema = @Schema(pattern = "^[ -~]*$")) @QueryParam("query") final String query)
             throws IndexUnreachableException, PresentationException, IllegalRequestException {
 
+        // Enforce the documented pattern: only printable ASCII (0x20–0x7E). Non-ASCII and
+        // control characters could cause Solr parse errors or unexpected Lucene behavior.
+        if (query != null && !query.matches("[ -~]*")) {
+            throw new IllegalRequestException("Query must contain only printable ASCII characters");
+        }
         String useQuery = query;
         // Treat empty/blank string same as null to avoid Solr syntax error from "+()".
         if (StringUtils.isBlank(useQuery)) {
@@ -225,6 +233,43 @@ public class IndexResource {
         try {
             List<String> fieldList = params.getResultFields();
 
+            // Validate facetFields: the schema defines this as an array of strings (not nullable).
+            // Reject if the field itself is null, contains null items, or contains strings that
+            // are not valid Solr field name identifiers (which would cause a Solr syntax error).
+            List<String> facetFields = params.getFacetFields();
+            if (facetFields == null) {
+                throw new IllegalRequestException("facetFields must be an array, not null");
+            }
+            for (String field : facetFields) {
+                if (field == null) {
+                    throw new IllegalRequestException("facetFields must not contain null items");
+                }
+                // Solr field names are identifiers: letters/digits/underscores, optional wildcard '*'
+                if (!field.matches("[A-Za-z][A-Za-z0-9_]*\\*?")) {
+                    throw new IllegalRequestException("Invalid facet field name: '" + field + "'");
+                }
+            }
+
+            // Validate resultFields: reject null list, null items, empty strings, and values that
+            // are not valid Solr field name identifiers (which could cause a 500 when Solr receives
+            // invalid field names like surrogates, control characters, or empty strings).
+            if (fieldList == null) {
+                throw new IllegalRequestException("resultFields must be an array, not null");
+            }
+            for (String field : fieldList) {
+                if (field == null) {
+                    throw new IllegalRequestException("resultFields must not contain null items");
+                }
+                if (field.isEmpty()) {
+                    throw new IllegalRequestException("resultFields must not contain empty strings");
+                }
+                // Solr field names are identifiers: letters/digits/underscores, optional wildcard '*'
+                if (!field.matches("[A-Za-z][A-Za-z0-9_]*\\*?")) {
+                    throw new IllegalRequestException("Invalid result field name: '"
+                            + field.replaceAll("[\\p{Cc}\\p{Cs}]", "?") + "'");
+                }
+            }
+
             Map<String, String> paramMap = null;
             if (params.isIncludeChildHits()) {
                 paramMap = SearchHelper.getExpandQueryParams(params.getQuery());
@@ -232,7 +277,7 @@ public class IndexResource {
             QueryResponse response =
                     DataManager.getInstance()
                             .getSearchIndex()
-                            .search(query, params.getOffset(), count, sortFieldList, params.getFacetFields(), fieldList, null, paramMap);
+                            .search(query, params.getOffset(), count, sortFieldList, facetFields, fieldList, null, paramMap);
 
             JSONObject object = new JSONObject();
             object.put("numFound", response.getResults().getNumFound());
@@ -260,6 +305,7 @@ public class IndexResource {
     @ApiResponse(responseCode = "200", description = "Newline-delimited JSON tuples streamed from Solr")
     @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
     @ApiResponse(responseCode = "500", description = "Solr not available or unable to respond")
+    @RequestBody(required = true, content = @Content(mediaType = "text/plain"))
     public StreamingOutput stream(
             @Schema(description = "Raw Solr streaming expression",
                     example = "search(current,q=\"+ISANCHOR:*\", sort=\"YEAR asc\", fl=\"YEAR,PI,DOCTYPE\""
@@ -314,14 +360,19 @@ public class IndexResource {
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getHeatmap(
             @Parameter(description = "Solr field containing spatial coordinates",
-                    schema = @Schema(pattern = "[A-Za-z_][A-Za-z0-9_]*")) @PathParam("solrField") String solrField,
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$")) @PathParam("solrField") String solrField,
             @Parameter(description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain"
                     + " the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
-            @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
-            @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
+            // Restrict query to printable ASCII to prevent unicode from causing Solr parse errors.
+            // When omitted or empty, defaults to "*:*" (match everything).
+            @Parameter(description = "Additional query to filter results by",
+                    schema = @Schema(pattern = "^[ -~]*$")) @QueryParam("query") @DefaultValue("*:*") String filterQuery,
+            @Parameter(description = "Facetting to be applied to results",
+                    schema = @Schema(pattern = "^[ -~]*$")) @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
             // Minimum of 1: HeatmapFacetMap.setGridLevel() throws IllegalArgumentException for 0 or negative values.
+            // Maximum of 2^31-1 because gridLevel is stored as Java int; larger values overflow and cause a 400.
             @Parameter(description = "The granularity of each grid cell (minimum: 1)",
-                    schema = @Schema(type = "integer", minimum = "1"))
+                    schema = @Schema(type = "integer", minimum = "1", maximum = "2147483647"))
             @QueryParam("gridLevel") Integer gridLevel)
             throws IndexUnreachableException, IllegalRequestException, ContentNotFoundException {
         // Validate solrField before sending to Solr: an invalid name (e.g. "0") causes an
@@ -333,7 +384,9 @@ public class IndexResource {
         }
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
-        String finalQuery = filterQuery;
+        // When query is explicitly set to empty string (e.g. ?query=), treat it as "*:*" to avoid
+        // Solr syntax error from building "+() ..." which is invalid syntax.
+        String finalQuery = org.apache.commons.lang3.StringUtils.isBlank(filterQuery) ? "*:*" : filterQuery;
         if (!finalQuery.startsWith("{!join")) {
             finalQuery =
                     new StringBuilder().append("+(")
@@ -383,12 +436,15 @@ public class IndexResource {
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getGeoJsonResuls(
             @Parameter(description = "Solr field containing spatial coordinates",
-                    schema = @Schema(pattern = "[A-Za-z_][A-Za-z0-9_]*")) @PathParam("solrField") String solrField,
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$")) @PathParam("solrField") String solrField,
             @Parameter(
                     description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain"
                             + " the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
-            @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
-            @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
+            // Restrict query to printable ASCII to prevent unicode from causing Solr parse errors.
+            @Parameter(description = "Additional query to filter results by",
+                    schema = @Schema(pattern = "^[ -~]*$")) @QueryParam("query") @DefaultValue("*:*") String filterQuery,
+            @Parameter(description = "Facetting to be applied to results",
+                    schema = @Schema(pattern = "^[ -~]*$")) @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
             @Parameter(description = "The Solr field to be used as label for each feature") @QueryParam("labelField") String labelField,
             @Parameter(description = "The scope of documents to search in. "
                     + "One of 'RECORDS', 'DOCSTRUCTS' and 'METADATA'") @QueryParam("scope") String searchScope)

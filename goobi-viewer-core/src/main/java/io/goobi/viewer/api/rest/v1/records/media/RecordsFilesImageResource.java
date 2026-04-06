@@ -69,6 +69,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -106,8 +107,10 @@ public class RecordsFilesImageResource extends ImageResource {
      */
     public RecordsFilesImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
+            @Parameter(description = "Persistent identifier of the record",
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
+            @Parameter(description = "Filename of the image",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename,
             @Context ContentServerCacheManager cacheManager) {
         // Validate PI before passing to ImageResource which builds a file:// URI from the
         // pi (as folder) and filename; illegal URI characters cause ContentLibException (HTTP 500).
@@ -161,6 +164,7 @@ public class RecordsFilesImageResource extends ImageResource {
     @RecordFileDownloadBinding
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
     @ApiResponse(responseCode = "200", description = "PDF document")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
     // 403 is returned as application/json when the record is not found in the index or access is restricted
     @ApiResponse(responseCode = "403", description = "Access denied or record not found in index")
     @ApiResponse(responseCode = "404", description = "Image or record not found")
@@ -200,6 +204,12 @@ public class RecordsFilesImageResource extends ImageResource {
     @AccessConditionBinding
     @ContentServerImageInfoBinding
     @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object")
+    @ApiResponse(responseCode = "200", description = "IIIF image information object")
+    @ApiResponse(responseCode = "403", description = "Access denied due to access conditions")
+    @ApiResponse(responseCode = "404", description = "Record or image not found")
+    // Requests with special characters in the PI may be rejected by the reverse proxy before
+    // reaching the application, resulting in an HTML error page rather than JSON.
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename (may be returned as text/html by the reverse proxy)")
     @Override
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();

@@ -24,12 +24,16 @@ package io.goobi.viewer.api.rest.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * POST request parameters for RecordsResource.
  */
 @Schema(name = "SolrRequestParameters", description = "SOLR query and additional parameters", requiredProperties = { "query" })
+// Ignore unknown JSON properties so schemathesis-generated requests with extra fields are accepted
+// instead of causing Jackson to return HTTP 400 with "Unrecognized field" error.
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RecordsRequestParameters {
 
     @Schema(description = "Raw SOLR query", example = "+ISWORK:true +DOCSTRCT:monograph +(FACET_PLACEPUBLISH:Berlin FACET_PLACEPUBLISH:'New York')")
@@ -47,7 +51,10 @@ public class RecordsRequestParameters {
     private String jsonFormat = "";
     @Schema(description = "The maximum number of results to return. Negative values don't set a limit", example = "10")
     private int count = -1;
-    @Schema(description = "The absolute index of the first result to return", example = "0")
+    // Maximum is 2^31-1 because the field is stored as Java int; larger values cause Jackson to throw
+    // a deserialization error which results in HTTP 400 instead of a meaningful response.
+    @Schema(description = "The absolute index of the first result to return", example = "0",
+            minimum = "0", maximum = "2147483647")
     private int offset = 0;
     @Schema(description = "Set to 'true' to randomize all results. If used in conjuction with sortFields,"
             + " randomization only applies to results with identical values in the sortFields",

@@ -57,6 +57,7 @@ import io.goobi.viewer.model.statistics.usage.StatisticsSummaryBuilder;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummaryFilter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -86,9 +87,12 @@ public class UsageStatisticsResource {
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, StringConstants.MIMETYPE_TEXT_CSV })
     @Operation(summary = "Get usage statistics for a single day", tags = { "statistics" })
     @ApiResponse(responseCode = "200", description = "Usage statistics for the given day")
+    @ApiResponse(responseCode = "400", description = "Invalid date format; expected yyyy-MM-dd")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
+    @ApiResponse(responseCode = "404", description = "No usage statistics found for the given date")
     public Response getStatisticsForDay(
-            @Parameter(description = "date to observe, in format yyyy-mm-dd") @PathParam("date") String date,
+            @Parameter(description = "date to observe, in format yyyy-MM-dd",
+                    schema = @Schema(pattern = "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) @PathParam("date") String date,
             @Parameter(description = "additional Solr query to filter records which should be counted."
                     + "Only requests to records matching the query will be counted") @QueryParam("recordFilterQuery") String recordFilterQuery,
             @Parameter(description = "the format in which to return the data. May be json, text or csv."
@@ -122,11 +126,16 @@ public class UsageStatisticsResource {
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, StringConstants.MIMETYPE_TEXT_CSV })
     @Operation(summary = "Get a list of usage statistics for a time frame", tags = { "statistics" })
     @ApiResponse(responseCode = "200", description = "Usage statistics for the given time frame")
+    @ApiResponse(responseCode = "400", description = "Invalid date format; expected yyyy-MM-dd")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
+    // 404 is returned when date path parameters cannot be parsed (e.g. non-numeric values rejected by JAX-RS routing)
+    @ApiResponse(responseCode = "404", description = "No usage statistics found or date parameters could not be parsed")
     @ApiResponse(responseCode = "416", description = "The requested date range is invalid (end date before start date)")
     public Response getStatisticsListForDates(
-            @Parameter(description = "first date to observer, in format yyyy-mm-dd") @PathParam("startDate") String start,
-            @Parameter(description = "last date to observer, in format yyyy-mm-dd") @PathParam("endDate") String end,
+            @Parameter(description = "first date to observe, in format yyyy-MM-dd",
+                    schema = @Schema(pattern = "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) @PathParam("startDate") String start,
+            @Parameter(description = "last date to observe, in format yyyy-MM-dd",
+                    schema = @Schema(pattern = "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) @PathParam("endDate") String end,
             @Parameter(description = "additional Solr query to filter records which should be counted."
                     + "Only requests to records matching the query will be counted") @QueryParam("recordFilterQuery") String recordFilterQuery,
             @Parameter(description = "the format in which to return the data. May be json, text or csv."

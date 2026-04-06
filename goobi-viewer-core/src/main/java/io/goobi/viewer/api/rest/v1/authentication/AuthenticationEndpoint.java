@@ -295,28 +295,34 @@ public class AuthenticationEndpoint {
     }
 
     /**
-     * 
-     * @param error
-     * @param authCode
-     * @param state
+     * OpenID Connect POST callback. Parameters are read from the request body via
+     * {@link jakarta.servlet.http.HttpServletRequest#getParameter(String)} to avoid
+     * Jersey throwing {@link IllegalStateException} when Content-Type is absent.
+     *
      * @return {@link Response}
      * @throws IOException
      */
     @POST
     @Path(ApiUrls.AUTH_OAUTH)
-    // @Consumes is required so Jersey returns 415 instead of throwing IllegalStateException
-    // when a client sends the wrong content type (e.g. application/json).
+    // @Consumes documents the expected content type for OpenID Connect POST callbacks.
+    // Parameters are read via HttpServletRequest.getParameter() instead of @FormParam to avoid
+    // Jersey throwing IllegalStateException when the request has no Content-Type header
+    // (e.g. automated tools like schemathesis that omit the header).
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Operation(summary = "OpenID Connect callback (POST method)", description = "Verifies an openID claim and starts a session for the user")
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "403", description = "Forbidden - OpenID authentication failed or denied")
-    @ApiResponse(responseCode = "415", description = "Unsupported media type — request must use application/x-www-form-urlencoded")
     @ApiResponse(responseCode = "500", description = "Internal error")
     @Tag(name = "login")
-    public Response openIdLoginPOST(@FormParam("error") String error, @FormParam("code") String authCode, @FormParam("state") String state)
-            throws IOException {
+    public Response openIdLoginPOST() throws IOException {
         logger.trace("openIdLoginPOST");
+        // Read parameters via the injected HttpServletRequest rather than @FormParam.
+        // @FormParam triggers IllegalStateException in Jersey when Content-Type is missing or wrong,
+        // which propagates as HTTP 500. getParameter() is lenient and returns null safely.
+        String error = servletRequest.getParameter("error");
+        String authCode = servletRequest.getParameter("code");
+        String state = servletRequest.getParameter("state");
         return openIdLogin(state, error, authCode, null);
     }
 

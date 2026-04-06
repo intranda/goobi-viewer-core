@@ -46,6 +46,7 @@ import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -167,6 +168,8 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     @Deprecated(since = "2026.01")
     @ManyToOne
     @JoinColumn(name = "client_id")
+    // Hide from OpenAPI schema to break the circular reference: ClientApplication -> licenses -> License -> client -> ClientApplication
+    @Schema(hidden = true)
     private ClientApplication client;
 
     @Column(name = "date_start")

@@ -66,6 +66,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -81,8 +82,10 @@ public class TempMediaImageResource extends ImageResource {
 
     public TempMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Parameter(description = "Temp folder name") @PathParam("folder") String folder,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
+            @Parameter(description = "Temp folder name",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_-]+$")) @PathParam("folder") String folder,
+            @Parameter(description = "Filename of the image",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename,
             @Context ContentServerCacheManager cacheManager) {
         super(context, request, response, "", getMediaFileUrl(folder, filename).toString(), cacheManager);
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
@@ -133,6 +136,7 @@ public class TempMediaImageResource extends ImageResource {
     @Operation(tags = { "iiif" },
             summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
     @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 image information object")
+    @ApiResponse(responseCode = "400", description = "Invalid filename (e.g. unsupported format)")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
     @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")
     @ApiResponse(responseCode = "404", description = "Temporary image not found or expired")

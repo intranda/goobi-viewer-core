@@ -77,6 +77,33 @@ class BookmarkResourceTest extends AbstractRestApiTest {
      * This guards against NumberFormatException when a client sends the literal string "null"
      * as the value of the max query parameter.
      */
+    /**
+     * requireValidListId() is private but enforced in all list-specific endpoints.
+     * A listId of 0 must be rejected with HTTP 400 before any business logic runs.
+     */
+    @Test
+    void getBookmarkList_zeroListId_returns400() {
+        try (Response response = target(USERS_BOOKMARKS + "/0")
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "listId=0 should be rejected with HTTP 400");
+        }
+    }
+
+    /**
+     * Negative listIds must also be rejected with HTTP 400.
+     */
+    @Test
+    void getBookmarkList_negativeListId_returns400() {
+        try (Response response = target(USERS_BOOKMARKS + "/-1")
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "listId=-1 should be rejected with HTTP 400");
+        }
+    }
+
     @Test
     void testParseMaxHits() {
         // null input → null output

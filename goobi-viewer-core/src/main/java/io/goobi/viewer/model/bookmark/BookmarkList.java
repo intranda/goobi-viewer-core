@@ -80,6 +80,9 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 // present in the OpenAPI schema (e.g. filterQuery, escapedName) do not cause 400 errors
 // when clients include them in PATCH/POST request bodies.
 @JsonIgnoreProperties(ignoreUnknown = true)
+// Explicitly declare type=object so OpenAPI/schemathesis won't treat this schema
+// as accepting primitive values (e.g. 0) as valid request bodies.
+@Schema(type = "object")
 public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
     /**

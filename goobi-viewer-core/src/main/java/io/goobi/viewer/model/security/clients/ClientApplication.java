@@ -73,7 +73,8 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_application_id")
-    @Schema(description = "The internal database identifier of the client", example = "2", type = "long", accessMode = Schema.AccessMode.READ_ONLY)
+    // type = "integer" with format = "int64" is the correct OpenAPI representation for Long/64-bit integer values.
+    @Schema(description = "The internal database identifier of the client", example = "2", type = "integer", format = "int64", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     /**
@@ -110,9 +111,10 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     /**
      * The time at which the client was granted or denied access, or if not yet happened, the time at which it first requested access
      */
+    // type = "string" with format "date-time" is the correct OpenAPI representation for datetime values.
     @Schema(description = "The time at which the client was granted or denied access, or if not yet happened, "
             + "the time at which it first requested access",
-            example = "2022-05-19T11:55:16Z", type = "date", format = "ISO 8601", accessMode = Schema.AccessMode.READ_ONLY)
+            example = "2022-05-19T11:55:16Z", type = "string", format = "date-time", accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "date_registered", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
     private LocalDateTime dateRegistered = LocalDateTime.now();
@@ -120,8 +122,9 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     /**
      * The last time the client sent a request to the server
      */
-    @Schema(description = "The last time the client sent a request to the server", example = "2022-05-19T11:55:16Z", type = "date",
-            format = "ISO 8601", accessMode = Schema.AccessMode.READ_ONLY)
+    // type = "string" with format "date-time" is the correct OpenAPI representation for datetime values.
+    @Schema(description = "The last time the client sent a request to the server", example = "2022-05-19T11:55:16Z", type = "string",
+            format = "date-time", accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "date_last_access", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
     private LocalDateTime dateLastAccess = LocalDateTime.now();
@@ -138,8 +141,10 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     /**
      * The access status of the client. Only clients with access status 'GRANTED' benefit from client privileges
      */
+    // Remove allowableValues to avoid duplicating the Java enum values that SmallRye already derives
+    // automatically; having both causes duplicate entries in the OpenAPI spec's enum array.
     @Schema(description = "The access status of the client. Only clients with access status 'GRANTED' benefit from client privileges",
-            example = "GRANTED", accessMode = Schema.AccessMode.READ_WRITE, allowableValues = { "GRANTED, DENIED" })
+            example = "GRANTED", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "access_status")
     @Enumerated(EnumType.STRING)
     private AccessStatus accessStatus;

@@ -73,6 +73,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Entity
 @Table(name = "bookshelf_items")
 @JsonInclude(Include.NON_NULL)
+// Explicitly declare type=object so OpenAPI/schemathesis won't treat this schema
+// as accepting primitive values (e.g. 0) as valid request bodies.
+@Schema(type = "object")
 public class Bookmark implements Serializable {
 
     private static final long serialVersionUID = 9047168382986927374L;

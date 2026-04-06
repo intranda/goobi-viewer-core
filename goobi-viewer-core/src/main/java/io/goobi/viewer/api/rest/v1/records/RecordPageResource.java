@@ -86,6 +86,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -108,7 +109,7 @@ public class RecordPageResource {
     private final String pi;
 
     public RecordPageResource(@Context HttpServletRequest request,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+            @Parameter(description = "Persistent identifier of the record", schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi) {
         // Reject PIs containing characters illegal in URI paths / Solr queries before any
         // Solr or file-system access occurs.  BadRequestException (HTTP 400) is an unchecked
         // WebApplicationException that Jersey maps to 400 before invoking the endpoint.
@@ -128,9 +129,10 @@ public class RecordPageResource {
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public DocumentReference getNERTags(
-            @Parameter(description = "Page number (1-based)") @PathParam("pageNo") Integer pageNo,
+            @Parameter(description = "Page number (1-based)", schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo,
             @Parameter(description = "Tag type to consider (person, corporation, event or location)") @QueryParam("type") String type)
             throws PresentationException, IndexUnreachableException {
+        requireValidPageNo(pageNo);
         NERBuilder builder = new NERBuilder();
         return builder.getNERTags(pi, type, pageNo, pageNo, 1, servletRequest);
     }
@@ -171,7 +173,7 @@ public class RecordPageResource {
     @ApiResponse(responseCode = "404", description = "No record or page found for the given identifiers")
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
+            @Parameter(description = "Page number (1-based)", schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo,
             @Parameter(
                     description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns"
                             + " the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources"
@@ -193,7 +195,7 @@ public class RecordPageResource {
     @ApiResponse(responseCode = "404", description = "No record or page found for the given identifiers")
     @IIIFPresentationBinding
     public IPresentationModelElement getCanvas(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
+            @Parameter(description = "Page number (1-based)", schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
@@ -208,9 +210,9 @@ public class RecordPageResource {
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getAnnotationsForRecord(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
+            @Parameter(description = "Page number (1-based)", schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo)
             throws DAOException {
-
+        requireValidPageNo(pageNo);
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
         URI uri = URI.create(apiPath.query("format", "oa").build());
         return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false, servletRequest);
@@ -224,9 +226,9 @@ public class RecordPageResource {
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getCommentsForPage(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
+            @Parameter(description = "Page number (1-based)", schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo)
             throws DAOException {
-
+        requireValidPageNo(pageNo);
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi);
         URI uri = URI.create(apiPath.query("format", "oa").build());
         return new AnnotationsResourceBuilder(urls, servletRequest).getOAnnotationListForPageComments(pi, pageNo, uri);
@@ -240,11 +242,12 @@ public class RecordPageResource {
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getTextForPage(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
+            @Parameter(description = "Page number (1-based)", schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo,
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations,"
                             + " otherwise as W3C-Webannotations") @QueryParam("format") String format)
             throws URISyntaxException, DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
+        requireValidPageNo(pageNo);
         // logger.trace("getTextForPage"); //NOSONAR Debug
         //        ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(pi, pageNo);
         boolean access;
@@ -279,6 +282,20 @@ public class RecordPageResource {
             return al;
         } else {
             return new AnnotationList(new SequenceBuilder(urls).getAnnotationListURI(pi, pageNo, AnnotationType.FULLTEXT, true));
+        }
+    }
+
+    /**
+     * Validates that the given page number is at least 1.
+     * The schema documents minimum=1, but JAX-RS does not enforce schema constraints server-side.
+     * Without this check, pageNo=0 returns an empty annotation collection instead of a 400.
+     *
+     * @param pageNo the page number path parameter value
+     * @throws BadRequestException if pageNo is less than 1
+     */
+    private void requireValidPageNo(Integer pageNo) {
+        if (pageNo != null && pageNo < 1) {
+            throw new BadRequestException("Page number must be at least 1, got: " + pageNo);
         }
     }
 }

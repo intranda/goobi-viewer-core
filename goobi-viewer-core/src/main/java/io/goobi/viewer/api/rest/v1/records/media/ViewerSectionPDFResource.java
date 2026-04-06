@@ -39,6 +39,7 @@ import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -75,8 +76,9 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     public ViewerSectionPDFResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description = "Logical div ID of METS section") @PathParam("divId") String divId,
+            @Parameter(description = "Persistent identifier of the record", schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
+            @Parameter(description = "Logical div ID of METS section",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_]+$")) @PathParam("divId") String divId,
             @Context ContentServerCacheManager cacheManager) throws ContentLibException {
         // Validate PI before passing to MetsPdfResource which builds a file:// URI from the
         // value; illegal URI characters would cause a ContentLibException (HTTP 500).
@@ -97,6 +99,7 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
             content = @Content(mediaType = "application/pdf"))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or section")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
+    @ApiResponse(responseCode = "404", description = "Record or section not found")
     @ApiResponse(responseCode = "500", description = "PDF generation error")
     public StreamingOutput getPdf() throws ContentLibException {
         response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");

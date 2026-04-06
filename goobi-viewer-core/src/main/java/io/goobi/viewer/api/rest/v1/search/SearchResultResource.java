@@ -28,10 +28,11 @@ import java.util.Locale;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -87,10 +88,12 @@ public class SearchResultResource {
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     @AccessConditionBinding
     public Response getRISAsFile(
-            @Parameter(description = "Search query string") @PathParam("query") String query,
-            @Parameter(description = "Sort string for the search results") @PathParam("sortString") String sortString,
-            @Parameter(description = "Active facet filter string") @PathParam("activeFacetString") String activeFacetString,
-            @Parameter(description = "Maximum word distance for proximity search") @PathParam("proximitySearchDistance") int proximitySearchDistance)
+            // Previously declared as @PathParam but the path template /search/ris has no {param} segments,
+            // so these were never populated. Changed to @QueryParam so callers can actually pass them.
+            @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("") String query,
+            @Parameter(description = "Sort string for the search results") @QueryParam("sortString") @DefaultValue("") String sortString,
+            @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
+            @Parameter(description = "Maximum word distance for proximity search") @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, ViewerConfigurationException {
         String currentQuery = SearchHelper.prepareQuery(query);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);

@@ -111,7 +111,9 @@ public class AnnotationsResourceBuilder {
         if (page == null || page < 1) {
             throw new IllegalRequestException("Page number must be at least 1");
         }
-        int first = (page - 1) * MAX_ANNOTATIONS_PER_PAGE;
+        // Use long arithmetic to prevent integer overflow when page is large (e.g. Integer.MAX_VALUE).
+        // Stream.skip() accepts long, so this is safe.
+        long first = (long)(page - 1) * MAX_ANNOTATIONS_PER_PAGE;
         String sortField = "id";
 
         List<IAnnotation> annotations = DataManager.getInstance()

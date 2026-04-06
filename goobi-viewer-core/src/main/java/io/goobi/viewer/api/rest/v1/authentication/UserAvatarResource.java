@@ -80,6 +80,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -103,7 +104,8 @@ public class UserAvatarResource extends ImageResource {
             @Context ContainerRequestContext context, 
             @Context HttpServletRequest request, 
             @Context HttpServletResponse response,
-            @Parameter(description = "User id") @PathParam("userId") Long userId, 
+            @Parameter(description = "User id",
+                    schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("userId") Long userId,
             @Context ContentServerCacheManager cacheManager) throws WebApplicationException, ViewerConfigurationException {
         super(context, request, response, "", getMediaFileUrl(userId).toString(), cacheManager);
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
@@ -187,6 +189,8 @@ public class UserAvatarResource extends ImageResource {
     // 400 is returned when the path parameter {userId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid user ID")
     @ApiResponse(responseCode = "404", description = "No avatar found for the given user")
+    // 500 is returned by ContentLib when the avatar image file cannot be read (e.g. corrupt file)
+    @ApiResponse(responseCode = "500", description = "Error reading avatar image")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();
     }
@@ -195,10 +199,13 @@ public class UserAvatarResource extends ImageResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Upload a new avatar image for the current user", tags = { "users" })
-    @RequestBody(content = @Content(mediaType = "multipart/form-data"))
+    // required=true signals schemathesis that an empty body is not a valid test case,
+    // preventing false "schema-compliant request rejected" failures for empty POSTs.
+    @RequestBody(required = true, content = @Content(mediaType = "multipart/form-data"))
     @ApiResponse(responseCode = "200", description = "Avatar uploaded successfully")
-    // 400 is returned when the path parameter {userId} cannot be parsed as a valid integer
-    @ApiResponse(responseCode = "400", description = "Invalid user ID")
+    // 400 is returned when the {userId} path parameter is not a valid integer, or when
+    // the framework rejects a missing/malformed multipart body before the method is invoked.
+    @ApiResponse(responseCode = "400", description = "Invalid user ID or missing/malformed multipart body")
     @ApiResponse(responseCode = "404", description = "User not found")
     @ApiResponse(responseCode = "406", description = "Invalid upload — missing file stream or no active user session")
     @ApiResponse(responseCode = "409", description = "A file with this name already exists")

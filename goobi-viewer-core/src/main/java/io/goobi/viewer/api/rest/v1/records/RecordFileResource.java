@@ -85,6 +85,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -123,7 +124,8 @@ public class RecordFileResource {
      * @param pi the requested indentifier
      */
     public RecordFileResource(@Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+            @Parameter(description = "Persistent identifier of the record",
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi) {
         // Reject PIs containing characters illegal in URI paths / Solr queries before any
         // Solr or file-system access occurs.  BadRequestException (HTTP 400) is an unchecked
         // WebApplicationException that Jersey maps to 400 before invoking the endpoint.
@@ -148,7 +150,8 @@ public class RecordFileResource {
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "ALTO file not found")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
-    public String getAlto(@Parameter(description = "Filename of the alto document") @PathParam("filename") String filename)
+    public String getAlto(@Parameter(description = "Filename of the alto document",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, ServiceNotAllowedException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
@@ -168,7 +171,8 @@ public class RecordFileResource {
     @ApiResponse(responseCode = "404", description = "Text file not found")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getPlaintext(
-            @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
+            @Parameter(description = "Filename containing the text",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, ServiceNotAllowedException {
         logger.trace("getPlaintext: {}", filename);
         checkFulltextAccessConditions(pi, filename);
@@ -188,7 +192,8 @@ public class RecordFileResource {
     @ApiResponse(responseCode = "404", description = "TEI file not found")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getTEI(
-            @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
+            @Parameter(description = "Filename containing the text",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentLibException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
@@ -224,7 +229,8 @@ public class RecordFileResource {
     @ApiResponse(responseCode = "404", description = "Source file not found")
     @ApiResponse(responseCode = "500", description = "Content library error")
     public Response getSourceFile(
-            @Parameter(description = "Source file name") @PathParam("filename") String filename)
+            @Parameter(description = "Source file name",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
         if (!filename.equals(StringTools.stripJS(filename))) {
             throw new ServiceNotAllowedException("Script detected in input");
@@ -274,7 +280,8 @@ public class RecordFileResource {
     @MediaResourceBinding
     @RecordFileDownloadBinding
     public Response getMediaFile(
-            @Parameter(description = "Media file name") @PathParam("filename") String filename)
+            @Parameter(description = "Media file name",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
         if (!filename.equals(StringTools.stripJS(filename))) {
             throw new ServiceNotAllowedException("Script detected in input");
@@ -367,7 +374,8 @@ public class RecordFileResource {
     @ApiResponse(responseCode = "404", description = "CMDI file not found")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public String getCMDI(
-            @Parameter(description = "Image file name for cmdi") @PathParam("filename") String filename,
+            @Parameter(description = "Image file name for cmdi",
+                    schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename,
             @Parameter(description = "Language for CMDI") @QueryParam("lang") final String lang)
             throws ContentLibException, PresentationException, IndexUnreachableException, IOException {
         checkFulltextAccessConditions(pi, filename);

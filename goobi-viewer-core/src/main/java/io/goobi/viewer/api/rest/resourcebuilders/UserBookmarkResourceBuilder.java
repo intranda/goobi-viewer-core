@@ -132,9 +132,11 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
             DataManager.getInstance().getDao().updateBookmarkList(o.get());
             return new SuccessMessage(success);
         } catch (IndexUnreachableException | PresentationException e) {
+            // Return 404 when the record cannot be found in the index (pi does not exist),
+            // which is more semantically correct than 400 for a missing resource.
             throw new RestApiException(
                     "Failed to create bookmark with pi '" + pi + "', logid '" + logId + "' and page number '" + pageString + "': " + e.getMessage(),
-                    HttpServletResponse.SC_BAD_REQUEST);
+                    HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
@@ -182,9 +184,11 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
             DataManager.getInstance().getDao().updateBookmarkList(o.get());
             return new SuccessMessage(success);
         } catch (IndexUnreachableException | PresentationException e) {
+            // Return 404 when the record cannot be found in the index (pi does not exist),
+            // which is more semantically correct than 400 for a missing resource.
             throw new RestApiException(
                     "Failed to create bookmark with pi '" + pi + "', logid '" + logId + "' and page number '" + pageString + "': " + e.getMessage(),
-                    HttpServletResponse.SC_BAD_REQUEST);
+                    HttpServletResponse.SC_NOT_FOUND);
         }
     }
 

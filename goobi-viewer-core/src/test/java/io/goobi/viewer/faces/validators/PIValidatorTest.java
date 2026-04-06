@@ -91,6 +91,30 @@ class PIValidatorTest {
 
     /**
      * @see PIValidator#validatePi(String)
+     * @verifies return false if pi starts with non alphanumeric character
+     */
+    @Test
+    void validatePi_shouldReturnFalseIfPiStartsWithNonAlphanumericCharacter() throws Exception {
+        // Leading '-' would create a Solr negation operator (e.g. PI:-267 → syntax error)
+        Assertions.assertFalse(PIValidator.validatePi("-267"));
+        Assertions.assertFalse(PIValidator.validatePi("-abc"));
+        Assertions.assertFalse(PIValidator.validatePi(".abc"));
+        Assertions.assertFalse(PIValidator.validatePi("_abc"));
+    }
+
+    /**
+     * @see PIValidator#validatePi(String)
+     * @verifies return false if pi contains plus sign
+     */
+    @Test
+    void validatePi_shouldReturnFalseIfPiContainsPlusSign() throws Exception {
+        // '+' is the Solr required-term operator and must not appear in PI values
+        Assertions.assertFalse(PIValidator.validatePi("PPN+123"));
+        Assertions.assertFalse(PIValidator.validatePi("foo+bar"));
+    }
+
+    /**
+     * @see PIValidator#validatePi(String)
      * @verifies return false if pi contains non-ASCII characters
      */
     @Test
