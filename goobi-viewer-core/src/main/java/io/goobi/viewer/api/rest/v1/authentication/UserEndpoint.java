@@ -31,10 +31,13 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import org.json.JSONObject;
-
+import io.goobi.viewer.api.rest.model.CurrentUserResponse;
+import io.goobi.viewer.api.rest.model.UserJsonFacade;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -52,18 +55,18 @@ public class UserEndpoint {
     private HttpServletResponse servletResponse;
 
     /**
-     * <p>
-     * authenticateUser.
-     * </p>
+     * Returns the client IP address and, if a user is logged in, the current user's information.
+     * When no user is authenticated, the {@code user} field is omitted from the response.
      *
-     * @return a {@link jakarta.ws.rs.core.Response} object.
+     * @return a {@link jakarta.ws.rs.core.Response} object containing a {@link CurrentUserResponse}
      */
     @Path(ApiUrls.USERS_CURRENT)
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Operation(summary = "Get the IP address of the current request", tags = { "users" })
-    @ApiResponse(responseCode = "200", description = "JSON object containing the client IP address")
+    @Operation(summary = "Get the IP address of the current request and, if logged in, information about the current user",
+            tags = { "users" })
+    @ApiResponse(responseCode = "200", description = "JSON object containing the client IP address and optional user info")
     @ApiResponse(responseCode = "400", description = "No servlet request available")
     public Response getUserInfo() {
         if (servletRequest == null) {
@@ -72,9 +75,16 @@ public class UserEndpoint {
 
         String ipAddress = NetTools.getIpAddress(servletRequest);
 
-        JSONObject json = new JSONObject();
-        json.put("ip", ipAddress);
+        // Retrieve the currently logged-in user from the session, if any
+        UserJsonFacade userFacade = null;
+        UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession(false));
+        if (userBean != null) {
+            User user = userBean.getUser();
+            if (user != null) {
+                userFacade = new UserJsonFacade(user, servletRequest);
+            }
+        }
 
-        return Response.ok(json.toString()).build();
+        return Response.ok(new CurrentUserResponse(ipAddress, userFacade)).build();
     }
 }
