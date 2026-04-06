@@ -4534,7 +4534,8 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.subThemeDiscriminatorValue = :subtheme");
+            // Use field name 'subTheme' as defined in CMSPage entity (was previously named subThemeDiscriminatorValue)
+            Query q = em.createQuery("SELECT DISTINCT page FROM CMSPage page WHERE page.subTheme = :subtheme");
             q.setParameter("subtheme", subtheme);
             return q.getResultList();
         } finally {
@@ -4615,7 +4616,7 @@ public class JPADAO implements IDAO {
                         .append(templateParameter)
                         .append(" = ")
                         .append(pageParameter)
-                        .append(".subThemeDiscriminatorValue")
+                        .append(".subTheme")
                         .append(" OR ");
                 params.put(templateParameter, subtheme);
             }
@@ -4625,7 +4626,7 @@ public class JPADAO implements IDAO {
             }
             query += ") AND";
         } else if (allowedSubthemes != null) {
-            query += " (" + pageParameter + ".subThemeDiscriminatorValue = \"\") AND";
+            query += " (" + pageParameter + ".subTheme = \"\") AND";
         }
 
         index = 0;
