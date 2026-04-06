@@ -62,6 +62,7 @@ import io.goobi.viewer.model.iiif.presentation.v3.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -220,6 +221,9 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: search within the manifest of the given record")
+    @ApiResponse(responseCode = "200", description = "IIIF Search result containing matching annotations")
+    @ApiResponse(responseCode = "404", description = "Record not found")
     public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation,
             @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
             throws IndexUnreachableException, PresentationException {
@@ -244,6 +248,9 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
     @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: autocomplete search within the manifest of the given record")
+    @ApiResponse(responseCode = "200", description = "IIIF AutoSuggest result containing matching terms")
+    @ApiResponse(responseCode = "404", description = "Record not found")
     public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
             @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
             @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {

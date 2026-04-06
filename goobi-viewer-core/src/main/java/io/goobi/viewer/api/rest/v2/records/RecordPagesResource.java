@@ -56,6 +56,7 @@ import io.goobi.viewer.model.iiif.presentation.v3.builder.ManifestBuilder;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -100,6 +101,10 @@ public class RecordPagesResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_CANVAS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 canvas for page")
+    @ApiResponse(responseCode = "200", description = "IIIF 3.0 canvas for the given page")
+    @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
+    @ApiResponse(responseCode = "403", description = "Record found but access is restricted")
+    @ApiResponse(responseCode = "404", description = "Record or page not found")
     @IIIFPresentationBinding
     public IPresentationModelElement getCanvas()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
@@ -110,6 +115,10 @@ public class RecordPagesResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_MEDIA)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get media resources for page")
+    @ApiResponse(responseCode = "200", description = "Annotation page containing media resources for the given page")
+    @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
+    @ApiResponse(responseCode = "403", description = "Record found but access is restricted")
+    @ApiResponse(responseCode = "404", description = "Record, page, or media annotations not found")
     @IIIFPresentationBinding
     public AnnotationPage getMedia()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
@@ -125,7 +134,11 @@ public class RecordPagesResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_MEDIA + "/{itemid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get media resources for page")
+    @Operation(tags = { "records", "iiif" }, summary = "Get a single media annotation for a page by its identifier")
+    @ApiResponse(responseCode = "200", description = "The media annotation for the given identifier")
+    @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
+    @ApiResponse(responseCode = "403", description = "Record found but access is restricted")
+    @ApiResponse(responseCode = "404", description = "Record, page, or media annotation not found")
     @IIIFPresentationBinding
     public IAnnotation getMediaItem(
             @Parameter(description = "Identifier string of the annotation") @PathParam("itemid") String itemId)
@@ -144,6 +157,10 @@ public class RecordPagesResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_TEXT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get fulltext annotations for page")
+    @ApiResponse(responseCode = "200", description = "Annotation page containing fulltext annotations for the given page")
+    @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
+    @ApiResponse(responseCode = "403", description = "Access to fulltext for this record is restricted")
+    @ApiResponse(responseCode = "404", description = "Record or page not found")
     @AccessRightsBinding({ IPrivilegeHolder.PRIV_VIEW_FULLTEXT })
     public AnnotationPage getFulltext()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ContentLibException, DAOException {
@@ -154,6 +171,9 @@ public class RecordPagesResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
+    @ApiResponse(responseCode = "200", description = "Annotation page containing annotations for the given page")
+    @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
+    @ApiResponse(responseCode = "403", description = "Access to user-generated content for this record is restricted")
     @AccessRightsBinding({ IPrivilegeHolder.PRIV_VIEW_UGC })
     public AnnotationPage getAnnotationsForRecord() throws DAOException {
 
@@ -172,6 +192,9 @@ public class RecordPagesResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @AccessRightsBinding({ IPrivilegeHolder.PRIV_VIEW_UGC })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a page")
+    @ApiResponse(responseCode = "200", description = "Annotation page containing comments for the given page")
+    @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
+    @ApiResponse(responseCode = "403", description = "Access to user-generated content for this record is restricted")
     public AnnotationPage getCommentsForPage() throws DAOException {
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_COMMENTS).params(pi, pageNo);
         URI uri = URI.create(apiPath.build());
@@ -181,7 +204,11 @@ public class RecordPagesResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 manifest for record starting at the given page")
+    @ApiResponse(responseCode = "200", description = "IIIF 3.0 manifest for the given record")
+    @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
+    @ApiResponse(responseCode = "403", description = "Record found but access is restricted")
+    @ApiResponse(responseCode = "404", description = "Record or page not found")
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,

@@ -66,6 +66,7 @@ import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -109,6 +110,9 @@ public class RecordFilesResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_ALTO)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get Alto fulltext for a single page")
+    // Access-denied and not-found responses are returned as application/json even though the success content type is text/xml
+    @ApiResponse(responseCode = "403", description = "Access to this fulltext file is restricted")
+    @ApiResponse(responseCode = "404", description = "ALTO file not found for the given record and filename")
     public String getAlto(
             @Parameter(description = "Filename of the alto document") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException,
@@ -126,6 +130,9 @@ public class RecordFilesResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get plaintext for a single page")
+    // Access-denied and not-found responses are returned as application/json even though the success content type is text/plain
+    @ApiResponse(responseCode = "403", description = "Access to this fulltext file is restricted")
+    @ApiResponse(responseCode = "404", description = "Plaintext file not found for the given record and filename")
     public String getPlaintext(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, ServiceNotAllowedException {
@@ -141,6 +148,9 @@ public class RecordFilesResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_TEI)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format")
+    // Access-denied and not-found responses are returned as application/json even though the success content type is text/xml
+    @ApiResponse(responseCode = "403", description = "Access to this fulltext file is restricted")
+    @ApiResponse(responseCode = "404", description = "TEI file not found for the given record and filename")
     public String getTEI(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, ContentLibException {
@@ -155,6 +165,9 @@ public class RecordFilesResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_SOURCE)
     @Operation(tags = { "records" }, summary = "Get source files of record")
+    // Error responses (404, 403) are returned as application/json even though success is application/octet-stream
+    @ApiResponse(responseCode = "403", description = "Access to this source file is restricted")
+    @ApiResponse(responseCode = "404", description = "Source file not found")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response getSourceFile(
             @Parameter(description = "Source file name") @PathParam("filename") final String filename)
@@ -188,6 +201,9 @@ public class RecordFilesResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_CMDI)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    // Access-denied and not-found responses are returned as application/json
+    @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
+    @ApiResponse(responseCode = "404", description = "CMDI file not found for the given record and filename")
     public String getCMDI(
             @Parameter(description = "Image file name for cmdi") @PathParam("filename") String filename,
             @Parameter(description = "Language for CMDI") @QueryParam("lang") final String lang)

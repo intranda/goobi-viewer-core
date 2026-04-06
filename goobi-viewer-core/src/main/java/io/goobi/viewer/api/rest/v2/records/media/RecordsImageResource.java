@@ -103,6 +103,9 @@ public class RecordsImageResource {
     @GET
     @Path(RECORDS_IMAGE_INFO)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
+    @Operation(summary = "IIIF image information for the representative image of the record", tags = { "iiif", "records" })
+    @ApiResponse(responseCode = "200", description = "IIIF 3.0 image information object")
+    @ApiResponse(responseCode = "404", description = "Record or representative image not found")
     public String getImageInfo() throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException {
         String filename = getRepresentativeFilename(pi);
         String forwardUrl = new ApiUrls(ApiUrls.API).path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(pi, filename).build();
@@ -114,6 +117,10 @@ public class RecordsImageResource {
     @GET
     @Path(RECORDS_IMAGE_IIIF)
     @Produces({ "image/jpg", "image/png", "image/tif" })
+    @Operation(summary = "Get the representative image of the record as a IIIF image request", tags = { "iiif", "records" })
+    @ApiResponse(responseCode = "200", description = "Image data in the requested format")
+    @ApiResponse(responseCode = "403", description = "Access to this image is restricted")
+    @ApiResponse(responseCode = "404", description = "Record or representative image not found")
     public String getImage(
             @PathParam("region") String region, @PathParam("size") String size,
             @PathParam("rotation") String rotation, @PathParam("quality") String quality,

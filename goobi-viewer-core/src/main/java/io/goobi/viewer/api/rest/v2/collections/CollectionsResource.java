@@ -32,10 +32,13 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.CollectionBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
@@ -58,16 +61,24 @@ public class CollectionsResource {
     private ApiUrls urls;
 
     public CollectionsResource(
-            @Parameter(description = "Name of the SOLR field the collection is based on. Typically 'DC'")
+            @Parameter(description = "Name of the SOLR field the collection is based on. Typically 'DC'",
+                    schema = @Schema(pattern = "^[A-Za-z_][A-Za-z0-9_]*$"))
             @PathParam("field") String solrField,
             @Context HttpServletRequest request) {
+        // Validate field name against the documented pattern [A-Za-z_][A-Za-z0-9_]* to prevent
+        // invalid Solr field names (e.g. "0") from reaching the index and causing HTTP 500 errors.
+        if (!solrField.matches("[A-Za-z_][A-Za-z0-9_]*")) {
+            throw new BadRequestException("Invalid collection field: " + solrField);
+        }
         this.solrField = solrField.toUpperCase();
     }
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 3.0 collection")
-    @ApiResponse(responseCode = "400", description = "No collections available for field")
+    @ApiResponse(responseCode = "200", description = "IIIF Presentation 3.0 collection containing all collections for this field")
+    @ApiResponse(responseCode = "400", description = "Invalid collection field parameter")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public Collection3 getAllCollections() throws IndexUnreachableException {
         return new CollectionBuilder(urls, this.servletRequest).build(this.solrField);
     }
@@ -76,12 +87,27 @@ public class CollectionsResource {
     @jakarta.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF presentation 3.0 collection")
-    @ApiResponse(responseCode = "400", description = "Invalid collection name or field")
+    @ApiResponse(responseCode = "200", description = "IIIF Presentation 3.0 collection for the given collection name")
+    @ApiResponse(responseCode = "400", description = "Invalid collection field parameter")
+    @ApiResponse(responseCode = "404", description = "Collection not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public Collection3 getCollection(
             @Parameter(
                     description = "Name of the collection. Must be a value of the SOLR field the collection is based on")
             @PathParam("collection") String collectionName)
             throws PresentationException, IndexUnreachableException {
-        return new CollectionBuilder(urls, this.servletRequest).build(this.solrField, collectionName);
+        // Jersey wraps PresentationException (a checked exception) in ContainerException before
+        // any ExceptionMapper can handle it in the v2 application, causing Tomcat to serve an
+        // HTML 500 error page. Catch it here and convert to a proper 400/404 HTTP response.
+        // Also catch unchecked exceptions (IllegalArgumentException, NullPointerException) that
+        // can occur for invalid Solr field names or malformed collection names.
+        try {
+            return new CollectionBuilder(urls, this.servletRequest).build(this.solrField, collectionName);
+        } catch (PresentationException e) {
+            // Solr rejected the query (e.g. undefined field name) — the collection does not exist
+            throw new NotFoundException("Collection not found for field " + this.solrField + " and name " + collectionName);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new BadRequestException("Invalid collection field or name: " + this.solrField + "/" + collectionName);
+        }
     }
 }

@@ -104,6 +104,7 @@ public class AnnotationResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an annotation collection over all annotations")
+    @ApiResponse(responseCode = "200", description = "W3C Web Annotation collection containing all annotations")
     public AnnotationCollection getAnnotationCollection() throws PresentationException, IndexUnreachableException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getWebAnnotationCollection();
@@ -174,8 +175,9 @@ public class AnnotationResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Create a new annotation")
+    @ApiResponse(responseCode = "200", description = "The created annotation")
     @ApiResponse(responseCode = "501",
-            description = "Persisting this king of annotation or its target is not implemented."
+            description = "Persisting this kind of annotation or its target is not implemented."
                     + " Only W3C Web Annotations targeting a manifest, canvas or part of a canvas may be persisted")
     public IAnnotation addAnnotation(IncomingAnnotation anno) throws DAOException, NotImplementedException {
         AnnotationConverter converter = new AnnotationConverter(urls);
@@ -199,8 +201,9 @@ public class AnnotationResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Delete an existing annotation")
     @ApiResponse(responseCode = "200", description = "Return the deleted annotation")
+    @ApiResponse(responseCode = "401", description = "Not logged in — must be authenticated to delete annotations")
+    @ApiResponse(responseCode = "403", description = "Not allowed to delete this annotation — it was created by another user")
     @ApiResponse(responseCode = "404", description = "Annotation not found by the given id")
-    @ApiResponse(responseCode = "405", description = "May not delete the annotation because it was created by another user")
     public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation") @PathParam("id") Long id)
             throws DAOException, ContentLibException {
         AnnotationConverter converter = new AnnotationConverter(urls);
