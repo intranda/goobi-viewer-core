@@ -31,14 +31,16 @@ import java.util.Locale;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.viewer.StructElement;
 
-class MetadataElementTest extends AbstractSolrEnabledTest {
+// Extends AbstractDatabaseAndSolrEnabledTest because MetadataElement.init() calls
+// StructElementStub.getUrl() → DefaultURLBuilder.buildPageUrl() → JPADAO.getCMSPageDefaultViewForRecord()
+class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see MetadataElement#isSkip()
