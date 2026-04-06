@@ -245,9 +245,11 @@ public class FacetItem implements Serializable, IFacetItem {
 
         List<IFacetItem> retList = new ArrayList<>();
         Map<String, FacetItem> existingItems = new HashMap<>();
-        // Add supplied existing items
+        // Add supplied existing items; copy first to avoid ConcurrentModificationException
+        // if the shared list is modified by another thread while iterating (refs #1234)
         if (existingFacetsItems != null) {
-            for (IFacetItem item : existingFacetsItems) {
+            List<IFacetItem> existingItemsCopy = new ArrayList<>(existingFacetsItems);
+            for (IFacetItem item : existingItemsCopy) {
                 if (item instanceof FacetItem facetItem) {
                     values.getMap().compute(item.getValue(), (k, v) -> v == null ? item.getCount() : v + item.getCount());
                 }
