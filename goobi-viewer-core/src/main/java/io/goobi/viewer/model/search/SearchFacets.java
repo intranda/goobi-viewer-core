@@ -1166,8 +1166,12 @@ public class SearchFacets implements Serializable {
      *
      * @return a new ArrayList containing all activeFacets
      */
-    public synchronized List<IFacetItem> getActiveFacetsCopy() {
-        return new ArrayList<>(activeFacets);
+    public List<IFacetItem> getActiveFacetsCopy() {
+        // Use the same lock as write operations (parseFacetString, setGeoFacetting, etc.)
+        // to prevent a race condition where clear() nulls elements while toArray() copies them.
+        synchronized (lock) {
+            return new ArrayList<>(activeFacets);
+        }
     }
 
     /**
