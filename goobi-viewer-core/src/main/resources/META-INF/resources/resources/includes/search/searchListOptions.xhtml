@@ -36,7 +36,7 @@
                 <div class="search-list__rss">
                     <a
                         href="#{searchBean.rssUrl}"
-                        class="btn btn--icon"
+                        class="btn btn--icon search-list__option-button"
                         data-toggle="tooltip"
                         data-placement="top"
                         title="#{msg.rssSubscribe}"
@@ -62,7 +62,7 @@
                         prependId="false">
                         <h:commandLink
                             id="excelDownloadButton"
-                            styleClass="btn btn--icon excel-export-trigger"
+                            styleClass="btn btn--icon search-list__option-button excel-export-trigger"
                             action="#{searchBean.exportSearchAsExcelAction()}"
                             title="#{msg.searchExportExcel}">
                             <util:icon
@@ -97,7 +97,7 @@
                         prependId="false">
                         <h:commandLink
                             id="risDownloadButton"
-                            styleClass="btn btn--icon ris-export-trigger"
+                            styleClass="btn btn--icon search-list__option-button ris-export-trigger"
                             action="#{searchBean.exportSearchAsRisAction}"
                             title="#{msg.searchExportRIS}">
                             <util:icon
@@ -127,7 +127,7 @@
             <div class="search-list__toggle-thumbs">
                 <button
                     type="button"
-                    class="btn btn--icon"
+                    class="btn btn--icon search-list__option-button"
                     data-title-inactive="#{msg.action__show_subhits_thumbnails}"
                     data-title-active="#{msg.action__hide_subhits_thumbnails}"
                     data-toggle="tooltip"
@@ -147,7 +147,7 @@
             <div class="search-list__views">
                 <button
                     type="button"
-                    class="btn btn--icon"
+                    class="btn btn--icon search-list__option-button"
                     title="#{msg.searchListDetailView}"
                     data-view="search-list-default"
                     data-toggle="tooltip"
@@ -160,7 +160,7 @@
                 </button>
                 <button
                     type="button"
-                    class="btn btn--icon"
+                    class="btn btn--icon search-list__option-button"
                     title="#{msg.searchListTileView}"
                     data-view="search-list-grid"
                     data-toggle="tooltip"
@@ -173,7 +173,7 @@
                 </button>
                 <button
                     type="button"
-                    class="btn btn--icon"
+                    class="btn btn--icon search-list__option-button"
                     title="#{msg.searchListListView}"
                     data-view="search-list-list"
                     data-toggle="tooltip"
@@ -190,7 +190,7 @@
                 <div class="search-list__help">
                     <button
                         type="button"
-                        class="btn btn--icon"
+                        class="btn btn--icon search-list__option-button"
                         data-toggle="modal"
                         data-target="#searchHelpModal"
                         data-backdrop="false"

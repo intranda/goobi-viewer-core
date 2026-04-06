@@ -44,7 +44,7 @@
                             data-placement="top"
                             aria-label="#{msg.previousHit}"
                             href="#{neighbours.left != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left).concat('/')) : '#'}">
-                            <util:icon icon="circle-arrow-left" />
+                            <util:icon icon="circle-arrow-left" svgClass="widget__topbar-icon-svg widget-archives__topbar-icon-svg" />
                         </a>
                         <a
                             class="widget-archives__next #{neighbours.right != null ? '':'-disabled'}"
@@ -53,7 +53,7 @@
                             data-placement="top"
                             aria-label="#{msg.nextHit}"
                             href="#{neighbours.right != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right).concat('/')) : '#'}">
-                            <util:icon icon="circle-arrow-right" />
+                            <util:icon icon="circle-arrow-right" svgClass="widget__topbar-icon-svg widget-archives__topbar-icon-svg" />
                         </a>
                     </div>
                 </div>

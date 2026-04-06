@@ -95,11 +95,13 @@
                                     iconClass="sidebar-editor__widget-item-title-icon"
                                     iconSvgClass="icon icon-lg"
                                     textClass="sidebar-editor__widget-item-label" />
+								<span class="sidebar-editor__widget-item-description-wrapper">
+	                                <h:outputText
+	                                    rendered="#{!element.description.isEmpty()}"
+	                                    class="sidebar-editor__widget-item-description"
+	                                    value="#{'('.concat(element.description.textOrDefault).concat(')')}" />
 
-                                <h:outputText
-                                    rendered="#{!element.description.isEmpty()}"
-                                    class="sidebar-editor__widget-item-description"
-                                    value="#{'('.concat(element.description.textOrDefault).concat(')')}" />
+								</span>
 
                                 <!-- ITEM EDIT AND DELETE -->
                                 <!-- 											<div jsf:id="widgetEditLink" rendered="#{element.canEdit()}" > -->
