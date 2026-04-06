@@ -58,7 +58,8 @@ public class PdfSizeCalculator {
             long size = new GetMetsPageCountAction(ContentServerCacheManager.getInstance()).getPdfInfo(request).getSize();
             return FileSizeCalculator.formatSize(size);
         } catch (URISyntaxException | ContentLibException | IOException | NullPointerException e) {
-            logger.error("Error getting pdf file sizes", e.toString());
+            // Log PI and full stack trace to aid debugging when folder paths are null or content server is unreachable
+            logger.error("Error getting pdf file sizes for PI '{}'", dataset.getPi(), e);
             return UNKNOWN;
         }
 
