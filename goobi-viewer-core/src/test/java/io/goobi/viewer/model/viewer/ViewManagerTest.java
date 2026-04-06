@@ -878,4 +878,17 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
                 "URL with watermarkId containing special characters must be a valid URI");
     }
 
+    /**
+     * @see ViewManager#getTeiUrl()
+     * @verifies return empty string if current page is null
+     */
+    @Test
+    void getTeiUrl_shouldReturnEmptyStringIfCurrentPageIsNull() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assertions.assertNotNull(se);
+        // currentImageOrder defaults to -1, so getCurrentPage() returns null
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
+        Assertions.assertEquals("", viewManager.getTeiUrl());
+    }
+
 }
