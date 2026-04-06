@@ -6121,7 +6121,11 @@ public class Configuration extends AbstractConfiguration {
                 if (value.equals(content)) {
                     String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
                     String[] icons = config.getStringArray("icon");
-                    return new CopyrightIndicatorLicense(description, icons != null ? Arrays.asList(icons) : new ArrayList<>());
+                    // Filter out empty strings that Apache Commons Configuration may return when no <icon> elements are present
+                    List<String> iconList = icons != null
+                            ? Arrays.stream(icons).filter(s -> s != null && !s.isBlank()).collect(Collectors.toList())
+                            : new ArrayList<>();
+                    return new CopyrightIndicatorLicense(description, iconList);
                 }
             }
         }
