@@ -87,7 +87,8 @@ public class RecordSectionResource {
     private final String divId;
 
     public RecordSectionResource(@Context HttpServletRequest request,
-            @Parameter(description = "Persistent identifier of the record", schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
+            @Parameter(description = "Persistent identifier of the record",
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
             @Parameter(description = "Logical div ID of METS section",
                     schema = @Schema(pattern = "^[A-Za-z0-9_]+$")) @PathParam("divId") String divId) {
         // Reject PIs containing characters illegal in URI paths / Solr queries before any

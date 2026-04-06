@@ -76,7 +76,8 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     public ViewerSectionPDFResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
-            @Parameter(description = "Persistent identifier of the record", schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
+            @Parameter(description = "Persistent identifier of the record",
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
             @Parameter(description = "Logical div ID of METS section",
                     schema = @Schema(pattern = "^[A-Za-z0-9_]+$")) @PathParam("divId") String divId,
             @Context ContentServerCacheManager cacheManager) throws ContentLibException {

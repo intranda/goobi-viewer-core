@@ -152,7 +152,8 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "404", description = "No annotation collection page found for the given page number")
     public AnnotationPage getAnnotationCollectionPage(
             // Page numbers are 1-based; document minimum in schema so clients and schemathesis know 0 is invalid
-            @Parameter(description = "Page number (1-based)", schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("page") Integer page)
+            @Parameter(description = "Page number (1-based)",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("page") Integer page)
             throws ContentLibException, DAOException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getWebAnnotationPage(page);

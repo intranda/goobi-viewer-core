@@ -74,7 +74,8 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_application_id")
     // type = "integer" with format = "int64" is the correct OpenAPI representation for Long/64-bit integer values.
-    @Schema(description = "The internal database identifier of the client", example = "2", type = "integer", format = "int64", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "The internal database identifier of the client", example = "2",
+            type = "integer", format = "int64", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     /**

@@ -504,6 +504,9 @@ public class CMSMediaResource {
      * extensions (jpg, png, tif, gif, jp2); any other filename reaches this handler.
      * Returns 400 so that schemathesis receives the correct error code instead of 405 Method Not
      * Allowed (which JAX-RS would return if no GET handler existed for this path).
+     *
+     * @param filename the requested filename
+     * @return never returns normally; always throws {@link IllegalRequestException}
      */
     @Hidden
     @GET

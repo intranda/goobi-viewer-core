@@ -193,7 +193,8 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     // Provide explicit content spec to avoid OpenAPI schema validation error ("Invalid requestBody definition").
     // type = "object" prevents schemathesis from sending primitives (e.g. the integer 0) as the request body.
-    @RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BookmarkList.class, type = "object")))
+    @RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = BookmarkList.class, type = "object")))
     public BookmarkList patchBookmarkList(
             @Parameter(description = "The id of the bookmark list",
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("listId") Long id,
@@ -250,7 +251,8 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "500", description = "Error querying database")
     // Provide explicit content spec to avoid OpenAPI schema validation error ("Invalid requestBody definition").
     // type = "object" prevents schemathesis from sending primitives (e.g. the integer 0) as the request body.
-    @RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Bookmark.class, type = "object")))
+    @RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = Bookmark.class, type = "object")))
     public Response addItemToBookmarkList(
             @Parameter(description = "The id of the bookmark list",
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("listId") Long id,

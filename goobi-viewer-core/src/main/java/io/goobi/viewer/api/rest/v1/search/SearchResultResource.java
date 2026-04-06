@@ -93,7 +93,8 @@ public class SearchResultResource {
             @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("") String query,
             @Parameter(description = "Sort string for the search results") @QueryParam("sortString") @DefaultValue("") String sortString,
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
-            @Parameter(description = "Maximum word distance for proximity search") @QueryParam("proximitySearchDistance") @DefaultValue("0") int proximitySearchDistance)
+            @Parameter(description = "Maximum word distance for proximity search") @QueryParam("proximitySearchDistance")
+                    @DefaultValue("0") int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, ViewerConfigurationException {
         String currentQuery = SearchHelper.prepareQuery(query);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);

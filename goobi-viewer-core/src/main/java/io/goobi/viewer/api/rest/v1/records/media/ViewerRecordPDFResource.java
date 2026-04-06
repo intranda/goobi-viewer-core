@@ -70,7 +70,8 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     public ViewerRecordPDFResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
-            @Parameter(description = "Persistent identifier of the record", schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
+            @Parameter(description = "Persistent identifier of the record",
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
             @Context ContentServerCacheManager cacheManager) throws ContentLibException {
         // Validate PI before passing it to MetsPdfResource, which builds a file:// URI from
         // the value and throws ContentLibException (HTTP 500) on illegal URI characters.

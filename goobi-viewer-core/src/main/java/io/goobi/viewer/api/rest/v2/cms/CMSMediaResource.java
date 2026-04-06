@@ -455,6 +455,9 @@ public class CMSMediaResource {
      * handled by {@link CMSMediaImageResource3} and the other typed handlers.
      * Returns 400 so that schemathesis receives the correct error code instead of 405 Method Not
      * Allowed (which JAX-RS would return if no GET handler existed for this path).
+     *
+     * @param filename the requested filename
+     * @return never returns normally; always throws {@link IllegalRequestException}
      */
     @io.swagger.v3.oas.annotations.Hidden
     @GET
@@ -463,7 +466,8 @@ public class CMSMediaResource {
     @Operation(hidden = true)
     public Response getInvalidFilename(
             @PathParam("filename") String filename) throws IllegalRequestException {
-        throw new IllegalRequestException("Invalid filename: must have a supported file extension (jpg, png, tif, gif, jp2, pdf, svg, ico, mp4, webm, mp3, ogg, html)");
+        throw new IllegalRequestException("Invalid filename: must have a supported file extension"
+                + " (jpg, png, tif, gif, jp2, pdf, svg, ico, mp4, webm, mp3, ogg, html)");
     }
 
     /**
