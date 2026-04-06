@@ -132,7 +132,7 @@
 		<junit.version>6.0.3</junit.version>
 		<log4j.version>2.25.4</log4j.version>
 		<netty.version>4.1.119.Final</netty.version>
-		<mariadb-java-client.version>3.5.7</mariadb-java-client.version>
+		<mariadb-java-client.version>3.5.8</mariadb-java-client.version>
 		<mockito.version>5.23.0</mockito.version>
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
 		<mockserver.version>5.15.0</mockserver.version>
