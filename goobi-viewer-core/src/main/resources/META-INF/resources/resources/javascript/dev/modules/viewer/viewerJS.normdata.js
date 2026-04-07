@@ -200,7 +200,7 @@ var viewerJS = (function (viewer) {
         html +=
             '<button type="button" class="normdata-popover-close" aria-label="' +
             _defaults.lang.popoverClose +
-            '"><span class="icon-wrapper normdata-popover-close__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="' +
+            '"><span class="icon-wrapper normdata-popover-close__icon" aria-hidden="true"><svg class="icon-svg" focusable="false"><use href="' +
             _defaults.path +
             '/resources/icons/outline/x.svg#icon"></use></svg></span></button>';
         html += '</div>';
@@ -212,12 +212,7 @@ var viewerJS = (function (viewer) {
                 html += '<dd>';
                 $.each(value, function (p, v) {
                     if (v.image) {
-                        html +=
-                            '<img class="normdata-popover-content__icon" src="' +
-                            _defaults.path +
-                            '/' +
-                            v.image +
-                            '" /> ';
+                        html += '<img class="normdata-popover-content__icon" src="' + _defaults.path + '/' + v.image + '" /> ';
                     }
                     if (v.text) {
                         if (v.text.startsWith('http://') || v.text.startsWith('https://')) {
@@ -236,7 +231,7 @@ var viewerJS = (function (viewer) {
                         html += '?template=_DEFAULT&lang=' + currentLang + '"'; // TODO use navigationHelper.localeString
                         html += '" title="' + _defaults.lang.showNormdata + '">';
                         html +=
-                            '<span class="icon-wrapper normdata-popover-button__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="' +
+                            '<span class="icon-wrapper normdata-popover-button__icon" aria-hidden="true"><svg class="icon-svg" focusable="false"><use href="' +
                             _defaults.path +
                             '/resources/icons/outline/list-details.svg#icon"></use></svg></span>';
                         html += '<div class="normdata-preloader"></div>';
