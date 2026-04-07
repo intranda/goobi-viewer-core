@@ -142,9 +142,11 @@ public class TOC implements Serializable {
             int visibleLevel = DataManager.getInstance().getConfiguration().getSidebarTocInitialCollapseLevel();
             int collapseThreshold = DataManager.getInstance().getConfiguration().getSidebarTocCollapseLengthThreshold();
             int lowestLevelToCollapse = DataManager.getInstance().getConfiguration().getSidebarTocLowestLevelToCollapseForLength();
-            String currentElementIdDoc =
-                    BeanUtils.getActiveDocumentBean().isRecordLoaded()
-                            ? BeanUtils.getActiveDocumentBean().getViewManager().getCurrentStructElementIddoc() : null;
+            // Guard against TOCTOU: fetch bean once and null-check ViewManager directly,
+            // because isRecordLoaded() and getViewManager() may race in concurrent requests.
+            io.goobi.viewer.managedbeans.ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+            io.goobi.viewer.model.viewer.ViewManager vm = adb != null ? adb.getViewManager() : null;
+            String currentElementIdDoc = vm != null ? vm.getCurrentStructElementIddoc() : null;
             buildTree(group, visibleLevel, collapseThreshold, lowestLevelToCollapse, currentElementIdDoc);
         }
         return getViewForGroup(group);
