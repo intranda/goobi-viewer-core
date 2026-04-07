@@ -507,7 +507,17 @@ public class IndexResource {
     protected synchronized Collection<GeoMapFeature> createFeatures(String query, String coordinateQuery, String labelConfig, String searchScope)
             throws PresentationException, IndexUnreachableException {
 
-        String finalQuery = "+(%s) +(%s)".formatted(query, coordinateQuery);
+        // If the query already carries a join prefix (e.g. from a search-results page), strip it
+        // and fall back to RECORDS scope. The data providers add their own join internally, so a
+        // nested join would produce invalid Solr syntax and a 400 error.
+        String effectiveQuery = query;
+        String effectiveScope = searchScope;
+        if (query.startsWith(SearchHelper.AGGREGATION_QUERY_PREFIX)) {
+            effectiveQuery = query.substring(SearchHelper.AGGREGATION_QUERY_PREFIX.length());
+            effectiveScope = SolrSearchScope.RECORDS.name();
+        }
+
+        String finalQuery = "+(%s) +(%s)".formatted(effectiveQuery, coordinateQuery);
 
         LabelCreator markerLabels =
                 new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getMarkerMetadataList(labelConfig)));
@@ -516,8 +526,8 @@ public class IndexResource {
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
 
         SolrSearchScope scope = SolrSearchScope.DOCSTRUCTS;
-        if (StringUtils.isNotBlank(searchScope) && Arrays.contains(SolrSearchScope.values(), searchScope.toUpperCase())) {
-            scope = SolrSearchScope.valueOf(searchScope.toUpperCase());
+        if (StringUtils.isNotBlank(effectiveScope) && Arrays.contains(SolrSearchScope.values(), effectiveScope.toUpperCase())) {
+            scope = SolrSearchScope.valueOf(effectiveScope.toUpperCase());
         }
 
         List<MetadataDocument> hits;
