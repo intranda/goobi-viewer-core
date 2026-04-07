@@ -1878,6 +1878,19 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getSidebarWidgetsForView(String)
+     * @verifies fall back to view name prefix if no exact match found
+     */
+    @Test
+    void getSidebarWidgetsForView_shouldFallBackToViewNamePrefixIfNoExactMatchFound() {
+        // "metadata_codicological" has no explicit sidebar config, should fall back to "metadata"
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetsForView("metadata_codicological");
+        assertEquals(2, result.size());
+        assertEquals("views", result.get(0));
+        assertEquals("copyright", result.get(1));
+    }
+
+    /**
      * @see Configuration#isSidebarWidgetForViewCollapsible(String,String)
      * @verifies return correct value
      */

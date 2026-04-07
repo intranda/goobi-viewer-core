@@ -1316,6 +1316,7 @@ public class Configuration extends AbstractConfiguration {
      * @param view Record view name
      * @return List of sidebar widget names to display in the given view (in the intended order)
      * @should return correct values
+     * @should fall back to view name prefix if no exact match found
      */
     public List<String> getSidebarWidgetsForView(String view) {
         logger.trace("getSidebarWidgetsForView: {}", view);
@@ -3185,8 +3186,26 @@ public class Configuration extends AbstractConfiguration {
      * @param field
      * @return Configured values
      */
+    /**
+     * Returns the sidebar view configuration for the given view name.
+     * If no exact match is found, falls back to the prefix before the last underscore
+     * (e.g. "metadata_codicological" → "metadata"), allowing dynamically created metadata
+     * subpages to inherit the sidebar configuration of their base view.
+     *
+     * @param name View name
+     * @return HierarchicalConfiguration or null if neither the name nor any prefix matches
+     */
     private HierarchicalConfiguration<ImmutableNode> getSidebarViewConfiguration(String name) {
-        return getSubConfigurationByNameAttribute("sidebar.views.view", name, true);
+        HierarchicalConfiguration<ImmutableNode> config = getSubConfigurationByNameAttribute("sidebar.views.view", name, true);
+        if (config != null) {
+            return config;
+        }
+        // Fall back to base view name by stripping suffix after last underscore
+        int underscoreIndex = name.lastIndexOf('_');
+        if (underscoreIndex > 0) {
+            return getSidebarViewConfiguration(name.substring(0, underscoreIndex));
+        }
+        return null;
     }
 
     /**

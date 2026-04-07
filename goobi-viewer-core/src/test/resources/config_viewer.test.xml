@@ -1036,6 +1036,10 @@
                 <displayWidget name="views" />
                 <displayWidget name="copyright" />
             </view>
+            <view name="metadata">
+                <displayWidget name="views" />
+                <displayWidget name="copyright" />
+            </view>
         </views>
     
         <widgets>
