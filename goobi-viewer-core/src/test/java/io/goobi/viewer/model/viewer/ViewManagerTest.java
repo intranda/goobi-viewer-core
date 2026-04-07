@@ -33,6 +33,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
@@ -63,6 +64,7 @@ import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants;
 import jakarta.faces.context.FacesContext;
@@ -889,6 +891,23 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         // currentImageOrder defaults to -1, so getCurrentPage() returns null
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
         Assertions.assertEquals("", viewManager.getTeiUrl());
+    }
+
+    /**
+     * @see ViewManager#getMimeTypesForLoadedPages()
+     * @verifies return empty map if LeanPageLoader returns null for current page
+     */
+    @Test
+    void getMimeTypesForLoadedPages_shouldReturnEmptyMapIfLeanPageLoaderReturnsNull() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        // Mock a LeanPageLoader that returns null (simulates out-of-range pageOrder or failed page load)
+        IPageLoader pageLoader = Mockito.mock(LeanPageLoader.class);
+        Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenReturn(null);
+        ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, null, null);
+
+        Map<Integer, String> result = viewManager.getMimeTypesForLoadedPages();
+        Assertions.assertNotNull(result);
+        Assertions.assertTrue(result.isEmpty());
     }
 
 }

@@ -4375,7 +4375,12 @@ public class ViewManager implements Serializable {
 
     public Map<Integer, String> getMimeTypesForLoadedPages() throws IndexUnreachableException {
         if (this.pageLoader instanceof LeanPageLoader) {
-            return Map.of(currentImageOrder, this.pageLoader.getPage(currentImageOrder).getMimeType());
+            // Guard against null return from getPage() (e.g. when pageOrder is out of range or page load failed)
+            PhysicalElement page = this.pageLoader.getPage(currentImageOrder);
+            if (page == null) {
+                return Collections.emptyMap();
+            }
+            return Map.of(currentImageOrder, page.getMimeType());
         } else if (this.pageLoader instanceof EagerPageLoader) {
             Map<Integer, String> map = new LinkedHashMap<>();
             for (int i = this.pageLoader.getFirstPageOrder(); i <= this.pageLoader.getLastPageOrder(); i++) {
