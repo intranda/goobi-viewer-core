@@ -44,7 +44,6 @@ import jakarta.persistence.Converter;
  * Objects using this converter should be cloned after reading from the database, otherwise changes to the text values may not be updated correctly.
  * 
  * @author florian
- *
  */
 @Converter
 public class TranslatedTextConverter implements AttributeConverter<TranslatedText, String> {

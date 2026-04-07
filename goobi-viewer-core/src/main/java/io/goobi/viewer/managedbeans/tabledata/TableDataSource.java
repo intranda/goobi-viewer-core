@@ -27,18 +27,14 @@ import java.util.Map;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 
 /**
- * <p>
  * TableDataSource interface.
- * </p>
  *
  * @param <T>
  */
 public interface TableDataSource<T> {
 
     /**
-     * <p>
      * getEntries.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -52,9 +48,7 @@ public interface TableDataSource<T> {
             throws TableDataSourceException;
 
     /**
-     * <p>
      * getTotalNumberOfRecords.
-     * </p>
      *
      * @param filters a {@link java.util.Map} object.
      * @return a long.
@@ -62,9 +56,7 @@ public interface TableDataSource<T> {
     long getTotalNumberOfRecords(Map<String, String> filters);
 
     /**
-     * <p>
      * resetTotalNumberOfRecords.
-     * </p>
      */
     void resetTotalNumberOfRecords();
 

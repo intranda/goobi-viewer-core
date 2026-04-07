@@ -22,17 +22,12 @@
 package io.goobi.viewer.model.security.authentication.model;
 
 /**
- * <p>
  * XServiceAuthenticationRequest class.
- * </p>
- *
  */
 public class BibliothecaAuthenticationRequest extends UserPasswordAuthenticationRequest {
 
     /**
-     * <p>
-     * Constructor for BibliothecaAuthenticationRequest.
-     * </p>
+     * Creates a new BibliothecaAuthenticationRequest instance.
      *
      * @param username a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.

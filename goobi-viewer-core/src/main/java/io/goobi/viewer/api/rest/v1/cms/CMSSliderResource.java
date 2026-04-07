@@ -67,7 +67,6 @@ import io.goobi.viewer.solr.SolrTools;
 
 /**
  * @author florian
- *
  */
 @Hidden
 @jakarta.ws.rs.Path("/cms/slider/{sliderId}")
@@ -75,7 +74,6 @@ import io.goobi.viewer.solr.SolrTools;
 public class CMSSliderResource {
 
     /**
-     *
      */
 
     private static final Logger logger = LogManager.getLogger(CMSSliderResource.class);

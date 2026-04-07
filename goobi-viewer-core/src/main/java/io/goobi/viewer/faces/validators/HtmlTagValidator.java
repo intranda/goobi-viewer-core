@@ -39,9 +39,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Validates that any input text has no html-tags other than
- * &lt;br&gt;, &lt;b&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;i&gt;, &lt;mark&gt;, &lt;small&gt;, &lt;del&gt;, &lt;ins&gt;, &lt;sub&gt;, &lt;sup&gt;
+ * &lt;br&gt;, &lt;b&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;i&gt;, &lt;mark&gt;, &lt;small&gt;, &lt;del&gt;, &lt;ins&gt;, &lt;sub&gt;, &lt;sup&gt;.
  * 
- *
  * @author Florian Alpers
  */
 @FacesValidator("htmlTagValidator")
@@ -53,7 +52,7 @@ public class HtmlTagValidator implements Validator<String> {
     /**
      * {@inheritDoc}
      *
-     * Throws a {@link ValidatorException} with message key {@code validate_error_scriptTag} if {@link #validate(String)} returns false
+     * <p>Throws a {@link ValidatorException} with message key {@code validate_error_scriptTag} if {@link #validate(String)} returns false
      */
     @Override
     public void validate(FacesContext context, UIComponent component, String input) throws ValidatorException {
@@ -66,7 +65,7 @@ public class HtmlTagValidator implements Validator<String> {
     }
 
     /**
-     * Returns false if the input string is not blank and does not contain any tags other than the allowed
+     * Returns false if the input string is not blank and does not contain any tags other than the allowed.
      *
      * @param input a {@link java.lang.String} object.
      * @return a boolean.

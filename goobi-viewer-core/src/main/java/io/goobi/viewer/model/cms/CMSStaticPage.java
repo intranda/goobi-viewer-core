@@ -38,9 +38,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
  * CMSStaticPage class.
- * </p>
  */
 @Entity
 @Table(name = "cms_static_pages")
@@ -63,9 +61,7 @@ public class CMSStaticPage implements Serializable {
     private Optional<CMSPage> cmsPage = Optional.empty();
 
     /**
-     * <p>
-     * Constructor for CMSStaticPage.
-     * </p>
+     * Creates a new CMSStaticPage instance.
      */
     public CMSStaticPage() {
         this.id = null;
@@ -73,9 +69,7 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for CMSStaticPage.
-     * </p>
+     * Creates a new CMSStaticPage instance.
      *
      * @param name a {@link java.lang.String} object.
      * @throws java.lang.NullPointerException if the given name is null
@@ -89,9 +83,7 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * getCmsPageOptional.
-     * </p>
      *
      * @return the cmsPage
      */
@@ -103,9 +95,7 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>cmsPage</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
@@ -114,9 +104,7 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>cmsPage</code>.
-     * </p>
      *
      * @param cmsPage the cmsPage to set
      */
@@ -126,9 +114,7 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -137,9 +123,7 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageName</code>.
-     * </p>
      *
      * @return the pageName
      */
@@ -148,9 +132,7 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * isLanguageComplete.
-     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a boolean.
@@ -163,9 +145,7 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * isHasCmsPage.
-     * </p>
      *
      * @return true only if isUseCmsPage == true and cmsPage != null
      */
@@ -174,9 +154,7 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>cmsPageId</code>.
-     * </p>
      *
      * @return the cmsPageId
      */
@@ -185,9 +163,7 @@ public class CMSStaticPage implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>cmsPageId</code>.
-     * </p>
      *
      * @param cmsPageId the cmsPageId to set
      */

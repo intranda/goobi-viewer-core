@@ -63,9 +63,7 @@ import jakarta.inject.Singleton;
 import jakarta.servlet.ServletContext;
 
 /**
- * <p>
  * CMSTemplateManager class.
- * </p>
  */
 @Singleton
 @Startup
@@ -210,9 +208,7 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * toURI.
-     * </p>
      *
      * @param url a {@link java.net.URL} object.
      * @return a {@link java.nio.file.Path} object.
@@ -226,9 +222,7 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>coreTemplateFolderUrl</code>.
-     * </p>
      *
      * @param filesystemPath a {@link java.lang.String} object.
      * @param servletContext a {@link jakarta.servlet.ServletContext} object.
@@ -335,9 +329,7 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * updateTemplates.
-     * </p>
      *
      * @param corePath a {@link java.util.Optional} object.
      * @param themePath a {@link java.util.Optional} object.
@@ -372,9 +364,7 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>templates</code>.
-     * </p>
      *
      * @return a {@link java.util.Collection} object.
      */
@@ -387,9 +377,7 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * getTemplate.
-     * </p>
      *
      * @param templateId a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
@@ -399,9 +387,7 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>themeFolderPath</code>.
-     * </p>
      *
      * @return the themeFolderPath
      */
@@ -410,9 +396,7 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>coreFolderPath</code>.
-     * </p>
      *
      * @return the coreFolderPath
      */
@@ -421,9 +405,7 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * getCoreViewFolderPath.
-     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -432,9 +414,7 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * getThemeViewFolderPath.
-     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -443,9 +423,7 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * getCoreIconFolderPath.
-     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -454,9 +432,7 @@ public class CMSTemplateManager implements Serializable {
     }
 
     /**
-     * <p>
      * getThemeIconFolderPath.
-     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */

@@ -45,7 +45,6 @@ import jakarta.ws.rs.core.MediaType;
 
 /**
  * @author florian
- *
  */
 public abstract class AbstractApiUrlManager {
 

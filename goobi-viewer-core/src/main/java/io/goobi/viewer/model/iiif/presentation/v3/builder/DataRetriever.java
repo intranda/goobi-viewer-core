@@ -52,24 +52,23 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * Responsible for retrieving data from Index to build any IIIF resources
+ * Responsible for retrieving data from Index to build any IIIF resources.
  *
  * @author florian
- *
  */
 public class DataRetriever {
 
     private static final Logger logger = LogManager.getLogger(DataRetriever.class);
 
     /**
-     * Required field to create manifest stubs for works in collection
+     * Required field to create manifest stubs for works in collection.
      */
     public static final String[] CONTAINED_WORKS_QUERY_FIELDS =
             { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
                     SolrConstants.IDDOC };
 
     /**
-     * Required fields to create manifests with structure
+     * Required fields to create manifests with structure.
      */
     public static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
             SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
@@ -149,7 +148,7 @@ public class DataRetriever {
     }
 
     /**
-     * Get all collections which are direct children of the given collection along with the number of contained works and direct children
+     * Gets all collections which are direct children of the given collection along with the number of contained works and direct children.
      *
      * @param solrField
      * @param collectionName
@@ -173,7 +172,7 @@ public class DataRetriever {
     }
 
     /**
-     * Get all records directly belonging to the given collection, only the fields in {@link #CONTAINED_WORKS_QUERY_FIELDS} are returned
+     * Gets all records directly belonging to the given collection, only the fields in {@link #CONTAINED_WORKS_QUERY_FIELDS} are returned.
      *
      * @param solrField
      * @param collectionName
@@ -251,9 +250,7 @@ public class DataRetriever {
     }
 
     /**
-     * <p>
      * getEventFields.
-     * </p>
      *
      * @return a {@link java.util.Map} object.
      */
@@ -278,9 +275,7 @@ public class DataRetriever {
     }
 
     /**
-     * <p>
      * getDocument.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -303,9 +298,7 @@ public class DataRetriever {
     }
 
     /**
-     * <p>
      * getSolrFieldList.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */

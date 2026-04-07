@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * <p>
  * Channel class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -50,9 +48,7 @@ public class Channel {
     private List<RssItem> items = new ArrayList<>();
 
     /**
-     * <p>
      * Getter for the field <code>title</code>.
-     * </p>
      *
      * @return the title
      */
@@ -61,9 +57,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * Setter for the field <code>title</code>.
-     * </p>
      *
      * @param title the title to set
      */
@@ -72,9 +66,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * Getter for the field <code>link</code>.
-     * </p>
      *
      * @return the link
      */
@@ -83,9 +75,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * Setter for the field <code>link</code>.
-     * </p>
      *
      * @param link the link to set
      */
@@ -94,9 +84,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
      * @return the description
      */
@@ -105,9 +93,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
      * @param description the description to set
      */
@@ -116,9 +102,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * Getter for the field <code>language</code>.
-     * </p>
      *
      * @return the language
      */
@@ -127,9 +111,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * Setter for the field <code>language</code>.
-     * </p>
      *
      * @param language the language to set
      */
@@ -138,9 +120,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * Getter for the field <code>copyright</code>.
-     * </p>
      *
      * @return the copyright
      */
@@ -149,9 +129,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * Setter for the field <code>copyright</code>.
-     * </p>
      *
      * @param copyright the copyright to set
      */
@@ -160,9 +138,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pubDate</code>.
-     * </p>
      *
      * @return the pubDate
      */
@@ -171,9 +147,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * Setter for the field <code>pubDate</code>.
-     * </p>
      *
      * @param pubDate the pubDate to set
      */
@@ -182,9 +156,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * Getter for the field <code>items</code>.
-     * </p>
      *
      * @return the items
      */
@@ -193,9 +165,7 @@ public class Channel {
     }
 
     /**
-     * <p>
      * addItem.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.rss.RssItem} object.
      */

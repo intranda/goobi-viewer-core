@@ -49,9 +49,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.toc.TOCElement;
 
 /**
- * <p>
  * TocWriter class.
- * </p>
  */
 public class TocWriter {
 
@@ -67,9 +65,7 @@ public class TocWriter {
     private int levelIndent = DEFAULT_LEVEL_INDENT;
 
     /**
-     * <p>
-     * Constructor for TocWriter.
-     * </p>
+     * Creates a new TocWriter instance.
      *
      * @param author a {@link java.lang.String} object.
      * @param title a {@link java.lang.String} object.
@@ -80,9 +76,7 @@ public class TocWriter {
     }
 
     /**
-     * <p>
      * Getter for the field <code>author</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -91,9 +85,7 @@ public class TocWriter {
     }
 
     /**
-     * <p>
      * Getter for the field <code>title</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -102,9 +94,7 @@ public class TocWriter {
     }
 
     /**
-     * <p>
      * Getter for the field <code>levelIndent</code>.
-     * </p>
      *
      * @return a int.
      */
@@ -113,9 +103,7 @@ public class TocWriter {
     }
 
     /**
-     * <p>
      * Setter for the field <code>levelIndent</code>.
-     * </p>
      *
      * @param levelIndent a int.
      */
@@ -124,9 +112,7 @@ public class TocWriter {
     }
 
     /**
-     * <p>
      * createDocument.
-     * </p>
      *
      * @param output a {@link java.io.OutputStream} object.
      * @param elements a {@link java.util.List} object.
@@ -208,9 +194,7 @@ public class TocWriter {
     }
 
     /**
-     * <p>
      * main.
-     * </p>
      *
      * @param args an array of {@link java.lang.String} objects.
      * @throws java.io.FileNotFoundException if any.

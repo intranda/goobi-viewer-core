@@ -24,7 +24,7 @@ package io.goobi.viewer.controller.mq;
 public interface MessageHandler<V> {
 
     /**
-     * call this method to execute the ticket
+     * Call this method to execute the ticket.
      * 
      * @param ticket The ticket to handle
      * @param queueManager reference to to manage the queue

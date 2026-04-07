@@ -30,16 +30,12 @@ import org.apache.commons.lang3.StringUtils;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
- * <p>
  * BrowseElementInfo interface.
- * </p>
  */
 public interface BrowseElementInfo {
 
     /**
-     * <p>
      * getDescription.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -53,18 +49,14 @@ public interface BrowseElementInfo {
     public String getDescription(String language);
 
     /**
-     * <p>
      * getName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getName();
 
     /**
-     * <p>
      * getLinkURI.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @return a {@link java.net.URI} object.
@@ -72,27 +64,21 @@ public interface BrowseElementInfo {
     public URI getLinkURI(HttpServletRequest request);
 
     /**
-     * <p>
      * getLinkURI.
-     * </p>
      *
      * @return a {@link java.net.URI} object.
      */
     public URI getLinkURI();
 
     /**
-     * <p>
      * getIconURI.
-     * </p>
      *
      * @return a {@link java.net.URI} object.
      */
     public URI getIconURI();
 
     /**
-     * <p>
      * getIconURI.
-     * </p>
      *
      * @param width a int.
      * @param height a int.
@@ -101,9 +87,7 @@ public interface BrowseElementInfo {
     public URI getIconURI(int width, int height);
 
     /**
-     * <p>
      * getIconURI.
-     * </p>
      *
      * @param size a int.
      * @return a {@link java.net.URI} object.
@@ -111,9 +95,7 @@ public interface BrowseElementInfo {
     public URI getIconURI(int size);
 
     /**
-     * <p>
      * hasDescription.
-     * </p>
      *
      * @return a boolean.
      */
@@ -122,9 +104,7 @@ public interface BrowseElementInfo {
     }
 
     /**
-     * <p>
      * getTranslationsForName.
-     * </p>
      *
      * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */

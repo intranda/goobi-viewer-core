@@ -47,18 +47,14 @@ public class CampaignTranslation extends Translation implements Serializable {
     private Campaign owner;
 
     /**
-     * <p>
-     * Constructor for CampaignTranslation.
-     * </p>
+     * Creates a new CampaignTranslation instance.
      */
     public CampaignTranslation() {
         super();
     }
 
     /**
-     * <p>
-     * Constructor for CampaignTranslation.
-     * </p>
+     * Creates a new CampaignTranslation instance.
      *
      * @param language a {@link java.lang.String} object.
      * @param tag a {@link java.lang.String} object.
@@ -82,9 +78,7 @@ public class CampaignTranslation extends Translation implements Serializable {
     }
 
     /**
-     * <p>
      * setTranslation.
-     * </p>
      *
      * @param translations a {@link java.util.List} object.
      * @param lang a {@link java.lang.String} object.
@@ -110,9 +104,7 @@ public class CampaignTranslation extends Translation implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
      * @return the owner
      */
@@ -121,9 +113,7 @@ public class CampaignTranslation extends Translation implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
      * @param owner the owner to set
      */

@@ -24,10 +24,9 @@ package io.goobi.viewer.model.iiif.presentation.v3.builder;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 
 /**
- * An {@link AnnotationPage} without '@context' attribute, to use for annotation pages embedded within other documents
+ * An {@link AnnotationPage} without '@context' attribute, to use for annotation pages embedded within other documents.
  * 
  * @author florian
- *
  */
 public class InternalAnnotationPage extends AnnotationPage {
 

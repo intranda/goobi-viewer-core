@@ -41,9 +41,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 
 /**
- * <p>
  * Allows requests authorized by an authrization token.
- * </p>
  */
 @Provider
 @AuthorizationBinding

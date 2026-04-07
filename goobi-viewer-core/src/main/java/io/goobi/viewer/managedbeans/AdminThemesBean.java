@@ -44,7 +44,6 @@ import jakarta.inject.Named;
 
 /**
  * @author florian
- *
  */
 @Named
 @ViewScoped

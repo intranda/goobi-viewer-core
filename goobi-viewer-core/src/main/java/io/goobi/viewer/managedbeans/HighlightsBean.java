@@ -59,7 +59,7 @@ import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.metadata.MetadataElement;
 
 /**
- * Managed bean handling {@link Highlight} objects
+ * Managed bean handling {@link Highlight} objects.
  */
 @Named
 @SessionScoped
@@ -89,19 +89,19 @@ public class HighlightsBean implements Serializable {
     private ImageDeliveryBean imaging;
 
     /**
-     * Status of editing the {@link HighlightsBean#getSelectedObject() selected highlight} in the administration backend
+     * Status of editing the {@link HighlightsBean#getSelectedObject() selected highlight} in the administration backend.
      */
     public enum EditStatus {
         /**
-         * User still needs to select whether the highlight should be based on a record or a url
+         * User still needs to select whether the highlight should be based on a record or a url.
          */
         SELECT_TARGET,
         /**
-         * A new highlight is being created after {@link #SELECT_TARGET} is completed
+         * A new highlight is being created after {@link #SELECT_TARGET} is completed.
          */
         CREATE,
         /**
-         * An existing highlight is being edited
+         * An existing highlight is being edited.
          */
         EDIT;
     }
@@ -113,7 +113,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Testing constructor explicitly initializing required properties
+     * Testing constructor explicitly initializing required properties.
      * 
      * @param dao The {@link IDAO} in which to store the highlight data
      * @param navigationHelper {@link NavigationHelper} to handle URL resolving
@@ -126,7 +126,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * called after initialization to load listing of existing highlights
+     * Called after initialization to load listing of existing highlights.
      */
     @PostConstruct
     public void init() {
@@ -225,7 +225,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Set the {@link Highlight} selected for editing
+     * Sets the {@link Highlight} selected for editing.
      * 
      * @param selectedObject
      */
@@ -242,7 +242,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Set the {@link Highlight} selected for editing via its database id
+     * Sets the {@link Highlight} selected for editing via its database id.
      * 
      * @param id
      */
@@ -262,7 +262,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Create a new {@link Highlight} and set as the selected highlight
+     * Creates a new {@link Highlight} and set as the selected highlight.
      */
     public void setNewSelectedObject() {
         HighlightData data = new HighlightData();
@@ -270,7 +270,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Check if the currently selected highlight has been persisted already
+     * Checks if the currently selected highlight has been persisted already.
      * 
      * @return true if {@link #getSelectedObject()} has no database id and has thus not been persisted yet
      */
@@ -279,7 +279,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Persist the given {@link Highlight} to the database
+     * Persist the given {@link Highlight} to the database.
      * 
      * @param object
      * @throws DAOException
@@ -306,7 +306,7 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * If a {@link Highlight} has been selected and it points to a record (rather than a URL), retrieve the metadata for this record
+     * If a {@link Highlight} has been selected and it points to a record (rather than a URL), retrieve the metadata for this record.
      * 
      * @return A {@link MetadataElement} with metadata for the related record if one exists. Otherwise null
      */
@@ -363,9 +363,9 @@ public class HighlightsBean implements Serializable {
      * Get the URL of a representative image for the record related to the currently selected highlight if a highlight is selected and it refers to a
      * record. Otherwise return null
      * 
-     * @return A URL to the record for the selected highlight if one exists. Otherwise null
      * @param width the desired width of the image. Chose '0' for original image width
      * @param height the desired height of the image. Chose '0' for original image height
+     * @return A URL to the record for the selected highlight if one exists. Otherwise null
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws ViewerConfigurationException

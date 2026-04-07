@@ -64,7 +64,6 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author florian
- *
  */
 public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
 
@@ -78,7 +77,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * Get all annotations for the given PI from the SOLR index, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
+     * Gets all annotations for the given PI from the SOLR index, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
      * converted to OpenAnnotations here
      *
      * @param pi The persistent identifier of the work to query
@@ -104,7 +103,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * Get all annotations for the given PI from the DAO, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
+     * Gets all annotations for the given PI from the DAO, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
      * converted to OpenAnnotations here
      *
      * @param pi The persistent identifier of the work to query
@@ -149,9 +148,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * <p>
      * createOpenAnnotation.
-     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param urlOnlyTarget a boolean.
@@ -164,9 +161,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * <p>
      * createOpenAnnotation.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.

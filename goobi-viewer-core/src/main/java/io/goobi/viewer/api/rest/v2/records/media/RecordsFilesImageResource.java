@@ -85,7 +85,6 @@ import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
- *
  */
 @Path(RECORDS_FILES_IMAGE)
 @ContentServerBinding
@@ -262,7 +261,8 @@ public class RecordsFilesImageResource extends ImageResource {
     /**
      * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400)
      * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
-     * Declared static so it can be invoked inside the super() constructor call.
+     *
+     * <p>Declared static so it can be invoked inside the super() constructor call.
      */
     static String requireValidPi(String pi) {
         if (!PIValidator.validatePi(pi)) {

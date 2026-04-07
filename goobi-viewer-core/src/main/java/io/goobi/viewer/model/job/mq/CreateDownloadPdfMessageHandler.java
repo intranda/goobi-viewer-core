@@ -123,7 +123,7 @@ public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageSt
     }
 
     /**
-     * remove all creating.lock files so pdf generation can be picked up after restart
+     * remove all creating.lock files so pdf generation can be picked up after restart.
      */
     @Override
     public void onStartup() {

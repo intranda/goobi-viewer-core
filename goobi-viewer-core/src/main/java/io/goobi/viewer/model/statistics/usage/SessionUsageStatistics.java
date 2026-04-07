@@ -42,10 +42,9 @@ import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
 
 /**
- * Persistence class containing request counts for a single http session
+ * Persistence class containing request counts for a single http session.
  * 
  * @author florian
- *
  */
 @Entity
 @Table(name = "session_statistics")
@@ -88,14 +87,14 @@ public class SessionUsageStatistics {
     private Map<String, String> recordRequests = new HashMap<>();
 
     /**
-     * Empty constructor for persistence context initialization
+     * Empty constructor for persistence context initialization.
      */
     public SessionUsageStatistics() {
 
     }
 
     /**
-     * Initialize instance for a session
+     * Initializes instance for a session.
      * 
      * @param sessionId http session identifier
      * @param userAgent User-Agent header content
@@ -108,7 +107,7 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      * 
      * @param orig
      */
@@ -150,7 +149,7 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Get number of requests for a given {@link RequestType} and record identifier
+     * Gets number of requests for a given {@link RequestType} and record identifier.
      * 
      * @param type the type of the request
      * @param recordIdentifier the record identifier
@@ -173,7 +172,7 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Return the number of requests of a given {@link RequestType} for the record identifiers included in identifiersToInclude
+     * Returns the number of requests of a given {@link RequestType} for the record identifiers included in identifiersToInclude.
      * 
      * @param type the type of the request
      * @param identifiersToInclude record identifiers for which the number of requests should be counted
@@ -203,7 +202,7 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Set total count of requests for a {@link RequestType} and record identifier to the given number
+     * Sets total count of requests for a {@link RequestType} and record identifier to the given number.
      * 
      * @param count request count to set
      * @param type the type of the request
@@ -218,7 +217,7 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * Increment the total count of requests for a {@link RequestType} and record identifier by one
+     * Increment the total count of requests for a {@link RequestType} and record identifier by one.
      * 
      * @param type the type of the request
      * @param recordIdentifier the identifier of the requested record

@@ -31,7 +31,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 /**
- *
  */
 public class CitationLink {
 
@@ -127,7 +126,6 @@ public class CitationLink {
      * @param level
      * @param action
      * @param label
-     * 
      */
     public CitationLink(String type, String level, String action, String label) {
         this.type = CitationLinkType.getByName(type);

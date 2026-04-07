@@ -33,27 +33,21 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 public interface CMSMediaHolder {
 
     /**
-     * <p>
      * setMediaItem.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
     public void setMediaItem(CMSMediaItem item);
 
     /**
-     * <p>
      * getMediaItem.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
     public CMSMediaItem getMediaItem();
 
     /**
-     * <p>
      * A regular expression determining which filenames are shown in the media list and may be uploaded
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -67,18 +61,14 @@ public interface CMSMediaHolder {
     public String getMediaTypes();
 
     /**
-     * <p>
      * hasMediaItem.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean hasMediaItem();
 
     /**
-     * <p>
      * getMediaItemWrapper.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.CategorizableTranslatedSelectable} object.
      */

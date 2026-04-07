@@ -34,7 +34,6 @@ import java.util.Random;
  * be sorted randomly if the random parameter is true or else by the {@link CMSMediaItem#compareTo(CMSMediaItem)}
  *
  * @author florian
- *
  */
 public class PriorityComparator implements Comparator<CMSMediaItem> {
 

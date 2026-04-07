@@ -64,7 +64,6 @@ import io.goobi.viewer.solr.SolrTools;
 
 /**
  * @author florian
- *
  */
 public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
 
@@ -76,7 +75,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * Get all annotations for the given PI from the SOLR index, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
+     * Gets all annotations for the given PI from the SOLR index, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
      * converted to WebAnnotations here
      *
      * @param pi The persistent identifier of the work to query
@@ -102,7 +101,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * Get all annotations for the given PI from the the DAO, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
+     * Gets all annotations for the given PI from the the DAO, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
      * converted to WebAnnotations here
      *
      * @param pi The persistent identifier of the work to query
@@ -150,9 +149,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * <p>
      * createWebAnnotation.
-     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param urlOnlyTarget a boolean.
@@ -164,9 +161,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * <p>
      * createWebAnnotation.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.

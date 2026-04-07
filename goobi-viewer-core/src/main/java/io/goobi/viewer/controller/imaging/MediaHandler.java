@@ -27,7 +27,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 
 /**
- * Resolves urls audio or video files
+ * Resolves urls audio or video files.
  *
  * @author Florian Alpers
  */
@@ -42,9 +42,7 @@ public class MediaHandler {
     }
 
     /**
-     * <p>
-     * Constructor for MediaHandler.
-     * </p>
+     * Creates a new MediaHandler instance.
      *
      * @param urls
      */
@@ -53,7 +51,7 @@ public class MediaHandler {
     }
 
     /**
-     * Returns the url to the media object for the given pi and filename
+     * Returns the url to the media object for the given pi and filename.
      *
      * @param type The mime type to use
      * @param format

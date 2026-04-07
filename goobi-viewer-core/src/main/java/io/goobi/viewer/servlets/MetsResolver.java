@@ -60,7 +60,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class MetsResolver
+ * Servlet implementation class MetsResolver.
  */
 public class MetsResolver extends HttpServlet {
 

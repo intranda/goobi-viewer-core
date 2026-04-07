@@ -28,9 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
  * ObjectInfo class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -44,9 +42,7 @@ public class ObjectInfo {
     private Map<URI, Long> resourceSizes = new HashMap<>();
 
     /**
-     * <p>
-     * Constructor for ObjectInfo.
-     * </p>
+     * Creates a new ObjectInfo instance.
      *
      * @param uri a {@link java.net.URI} object.
      */
@@ -57,9 +53,7 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
-     * Constructor for ObjectInfo.
-     * </p>
+     * Creates a new ObjectInfo instance.
      *
      * @param uri a {@link java.lang.String} object.
      * @throws java.net.URISyntaxException if any.
@@ -71,9 +65,7 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
      * Getter for the field <code>format</code>.
-     * </p>
      *
      * @return the type
      */
@@ -82,9 +74,7 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
      * Setter for the field <code>format</code>.
-     * </p>
      *
      * @param format a {@link io.goobi.viewer.model.viewer.object.ObjectFormat} object.
      */
@@ -93,9 +83,7 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
      * Getter for the field <code>uri</code>.
-     * </p>
      *
      * @return the uri
      */
@@ -104,9 +92,7 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
      * Setter for the field <code>uri</code>.
-     * </p>
      *
      * @param uri the uri to set
      */
@@ -115,9 +101,7 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
      * Getter for the field <code>center</code>.
-     * </p>
      *
      * @return the center
      */
@@ -126,9 +110,7 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
      * Setter for the field <code>center</code>.
-     * </p>
      *
      * @param center the center to set
      */
@@ -137,9 +119,7 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
      * Getter for the field <code>rotation</code>.
-     * </p>
      *
      * @return the rotation
      */
@@ -148,9 +128,7 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
      * Setter for the field <code>rotation</code>.
-     * </p>
      *
      * @param rotation the rotation to set
      */
@@ -159,9 +137,7 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
      * Getter for the field <code>resources</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -170,9 +146,7 @@ public class ObjectInfo {
     }
 
     /**
-     * <p>
      * Setter for the field <code>resources</code>.
-     * </p>
      *
      * @param resources a {@link java.util.List} object.
      */

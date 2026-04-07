@@ -72,7 +72,7 @@ public class SocketBean {
     }
 
     /**
-     * Constructor for tests with custom PushContext
+     * Creates a new tests with custom PushContext instance.
      * 
      * @param minIdleSeconds
      * @param backgroundTasksState
@@ -83,7 +83,7 @@ public class SocketBean {
     }
 
     /**
-     * Send an "update" message to the socket channel
+     * Sends an "update" message to the socket channel.
      * 
      * @param message
      */

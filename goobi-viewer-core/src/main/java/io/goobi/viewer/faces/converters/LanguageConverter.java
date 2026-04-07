@@ -31,7 +31,6 @@ import io.goobi.viewer.model.translations.language.Language;
 
 /**
  * @author florian
- *
  */
 @FacesConverter("languageConverter")
 public class LanguageConverter implements Converter<Language> {

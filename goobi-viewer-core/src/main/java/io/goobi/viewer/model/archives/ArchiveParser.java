@@ -81,7 +81,7 @@ public abstract class ArchiveParser implements Serializable {
     }
 
     /**
-     * Get the database names and file names.
+     * Gets the database names and file names.
      *
      * @return List<ArchiveResource>
      * @throws HTTPException

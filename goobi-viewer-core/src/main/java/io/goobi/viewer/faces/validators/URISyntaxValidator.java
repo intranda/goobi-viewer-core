@@ -34,9 +34,7 @@ import jakarta.faces.validator.ValidatorException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
- * <p>
  * URISyntaxValidator class.
- * </p>
  *
  * @author Florian Alpers
  */

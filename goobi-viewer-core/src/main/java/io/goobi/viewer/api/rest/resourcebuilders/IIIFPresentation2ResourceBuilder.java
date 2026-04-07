@@ -83,7 +83,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author florian
- *
  */
 public class IIIFPresentation2ResourceBuilder {
 
@@ -290,9 +289,7 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>manifestBuilder</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder} object.
      */
@@ -304,9 +301,7 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sequenceBuilder</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder} object.
      */
@@ -318,9 +313,7 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>layerBuilder</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.LayerBuilder} object.
      */
@@ -505,9 +498,7 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>collectionBuilder</code>.
-     * </p>
      *
      * @return the manifestBuilder
      */

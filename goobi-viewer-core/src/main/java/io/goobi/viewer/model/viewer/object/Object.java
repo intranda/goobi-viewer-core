@@ -25,9 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * <p>
  * Object class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -40,9 +38,7 @@ public class Object {
     private double distance = 0;
 
     /**
-     * <p>
-     * Constructor for Object.
-     * </p>
+     * Creates a new Object instance.
      *
      * @param uri a {@link java.net.URI} object.
      */
@@ -53,9 +49,7 @@ public class Object {
     }
 
     /**
-     * <p>
-     * Constructor for Object.
-     * </p>
+     * Creates a new Object instance.
      *
      * @param uri a {@link java.lang.String} object.
      * @throws java.net.URISyntaxException if any.
@@ -67,9 +61,7 @@ public class Object {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
      * @return the type
      */
@@ -78,9 +70,7 @@ public class Object {
     }
 
     /**
-     * <p>
      * Setter for the field <code>type</code>.
-     * </p>
      *
      * @param type the type to set
      */
@@ -89,9 +79,7 @@ public class Object {
     }
 
     /**
-     * <p>
      * Getter for the field <code>uri</code>.
-     * </p>
      *
      * @return the uri
      */
@@ -100,9 +88,7 @@ public class Object {
     }
 
     /**
-     * <p>
      * Setter for the field <code>uri</code>.
-     * </p>
      *
      * @param uri the uri to set
      */
@@ -111,9 +97,7 @@ public class Object {
     }
 
     /**
-     * <p>
      * Getter for the field <code>center</code>.
-     * </p>
      *
      * @return the center
      */
@@ -122,9 +106,7 @@ public class Object {
     }
 
     /**
-     * <p>
      * Setter for the field <code>center</code>.
-     * </p>
      *
      * @param center the center to set
      */
@@ -133,9 +115,7 @@ public class Object {
     }
 
     /**
-     * <p>
      * Getter for the field <code>rotation</code>.
-     * </p>
      *
      * @return the rotation
      */
@@ -144,9 +124,7 @@ public class Object {
     }
 
     /**
-     * <p>
      * Setter for the field <code>rotation</code>.
-     * </p>
      *
      * @param rotation the rotation to set
      */

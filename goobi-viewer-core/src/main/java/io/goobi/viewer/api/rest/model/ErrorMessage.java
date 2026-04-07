@@ -24,9 +24,7 @@ package io.goobi.viewer.api.rest.model;
 import io.goobi.viewer.exceptions.RestApiException;
 
 /**
- * <p>
  * ErrorMessage class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -43,9 +41,7 @@ public class ErrorMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
-     * Constructor for ErrorMessage.
-     * </p>
+     * Creates a new ErrorMessage instance.
      *
      * @param status a int.
      * @param message a {@link java.lang.String} object.
@@ -58,9 +54,7 @@ public class ErrorMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
-     * Constructor for ErrorMessage.
-     * </p>
+     * Creates a new ErrorMessage instance.
      *
      * @param status a int.
      * @param message a {@link java.lang.String} object.
@@ -74,9 +68,7 @@ public class ErrorMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
-     * Constructor for ErrorMessage.
-     * </p>
+     * Creates a new ErrorMessage instance.
      *
      * @param exception a {@link io.goobi.viewer.exceptions.RestApiException} object.
      */
@@ -88,9 +80,7 @@ public class ErrorMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
      * Getter for the field <code>status</code>.
-     * </p>
      *
      * @return the status
      */
@@ -99,9 +89,7 @@ public class ErrorMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
      * @return the message
      */
@@ -111,9 +99,7 @@ public class ErrorMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
      * Getter for the field <code>stackTrace</code>.
-     * </p>
      *
      * @return the stackTrace
      */

@@ -45,9 +45,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
 /**
- * <p>
  * MediaDeliveryService class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -59,7 +57,7 @@ public class MediaDeliveryService {
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
     /**
-     * Process the actual request.
+     * Processes the actual request.
      *
      * @param request The request to be processed.
      * @param response The response to be created.
@@ -411,7 +409,7 @@ public class MediaDeliveryService {
         private long total;
 
         /**
-         * Construct a byte range.
+         * Constructs a byte range.
          *
          * @param start Start of the byte range.
          * @param end End of the byte range.

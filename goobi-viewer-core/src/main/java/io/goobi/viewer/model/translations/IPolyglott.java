@@ -31,13 +31,12 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  * Interface for objects containing translations for a set of languages. Used to construct tab panels to switch between languages
  *
  * @author florian
- *
  */
 public interface IPolyglott {
 
     /**
      * If this returns true, an associated language tab should have the 'already-translated' class, otherwise the '-partly-translated' class unless
-     * {@link #isEmpty(Locale)} also returns true
+     * {@link #isEmpty(Locale)} also returns true.
      *
      * @param locale
      * @return true if {@link #isValid(Locale)} returns true for the given locale and all fields contain a value which have a value in the default
@@ -47,7 +46,7 @@ public interface IPolyglott {
     public boolean isComplete(Locale locale);
 
     /**
-     * Only meaningful for the default language for which all required fields must be filled
+     * Only meaningful for the default language for which all required fields must be filled.
      *
      * @param locale
      * @return true if all required fields contain a value in the given locale
@@ -55,7 +54,7 @@ public interface IPolyglott {
     public boolean isValid(Locale locale);
 
     /**
-     * If this returns true, an associated language tab should have neither the 'already-translated' nor the '-partly-translated' class
+     * If this returns true, an associated language tab should have neither the 'already-translated' nor the '-partly-translated' class.
      *
      * @param locale
      * @return true if no fields are filled for the given locale
@@ -69,7 +68,7 @@ public interface IPolyglott {
     public Locale getSelectedLocale();
 
     /**
-     * Set the locale to use for display and editing
+     * Sets the locale to use for display and editing.
      * 
      * @param locale
      */
@@ -116,7 +115,7 @@ public interface IPolyglott {
     }
 
     /**
-     * Get a list of all locales configured in the faces-configuration file
+     * Gets a list of all locales configured in the faces-configuration file.
      *
      * @return Collection<Locale>
      */

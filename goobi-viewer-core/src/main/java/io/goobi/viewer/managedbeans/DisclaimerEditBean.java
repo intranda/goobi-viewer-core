@@ -60,7 +60,7 @@ public class DisclaimerEditBean implements Serializable {
     }
 
     /**
-     * Constructor for testing purposes.
+     * Creates a new testing purposes instance.
      *
      * @param dao the IDAO implementation to use
      */
@@ -70,7 +70,7 @@ public class DisclaimerEditBean implements Serializable {
     }
 
     /**
-     * <p>save.</p>
+     * <p>save.
      */
     public void save() {
         if (this.disclaimerForEdit != null) {
@@ -87,7 +87,7 @@ public class DisclaimerEditBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>disclaimerForEdit</code>.</p>
+     * <p>Getter for the field <code>disclaimerForEdit</code>.
      *
      * @return a {@link io.goobi.viewer.model.administration.legal.Disclaimer} object
      */
@@ -113,7 +113,7 @@ public class DisclaimerEditBean implements Serializable {
     }
 
     /**
-     * Check if the banner is active, i.e. should be displayed at all.
+     * Checks if the banner is active, i.e. should be displayed at all.
      *
      * @return true if the banner should be shown if appropriate
      */
@@ -122,8 +122,9 @@ public class DisclaimerEditBean implements Serializable {
     }
 
     /**
-     * Set the {@link io.goobi.viewer.model.administration.legal.Disclaimer#getRequiresConsentAfter()} to the current time.
-     * Applies directly to the persisted object.
+     * Sets the {@link io.goobi.viewer.model.administration.legal.Disclaimer#getRequiresConsentAfter()} to the current time.
+     *
+     * <p>Applies directly to the persisted object.
      *
      * @throws io.goobi.viewer.exceptions.DAOException
      */

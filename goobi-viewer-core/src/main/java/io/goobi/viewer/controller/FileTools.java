@@ -84,9 +84,7 @@ public final class FileTools {
     public static final DirectoryStream.Filter<Path> PDF_NAME_FILTER = (Path path) -> path.getFileName().toString().matches("(?i)[^.]+\\.(pdf)");
 
     /**
-     * <p>
      * getStringFromFilePath.
-     * </p>
      *
      * @param filePath a {@link java.lang.String} object.
      * @should read text file correctly
@@ -99,7 +97,7 @@ public final class FileTools {
     }
 
     /**
-     * Read a text file and return content as String
+     * Reads a text file and return content as String.
      *
      * @param file a {@link java.io.File} object.
      * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
@@ -113,7 +111,7 @@ public final class FileTools {
     }
 
     /**
-     * Read a text file and return content as String
+     * Reads a text file and return content as String.
      *
      * @param file a {@link java.io.File} object.
      * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
@@ -184,7 +182,7 @@ public final class FileTools {
     }
 
     /**
-     * Reads a String from a byte array
+     * Reads a String from a byte array.
      *
      * @param bytes byte[]
      * @param encoding a {@link java.lang.String} object.
@@ -235,9 +233,7 @@ public final class FileTools {
     }
 
     /**
-     * <p>
      * decompressGzipFile.
-     * </p>
      *
      * @param gzipFile a {@link java.io.File} object.
      * @param newFile a {@link java.io.File} object.
@@ -256,9 +252,7 @@ public final class FileTools {
     }
 
     /**
-     * <p>
      * compressGzipFile.
-     * </p>
      *
      * @param file a {@link java.io.File} object.
      * @param gzipFile a {@link java.io.File} object.
@@ -277,9 +271,7 @@ public final class FileTools {
     }
 
     /**
-     * <p>
      * compressZipFile.
-     * </p>
      *
      * @param files Source files
      * @param zipFile Target file
@@ -313,9 +305,7 @@ public final class FileTools {
     }
 
     /**
-     * <p>
      * compressZipFile.
-     * </p>
      *
      * @param contentMap a {@link java.util.Map} object.
      * @param zipFile a {@link java.io.File} object.
@@ -349,9 +339,7 @@ public final class FileTools {
     }
 
     /**
-     * <p>
      * compressZipFile.
-     * </p>
      *
      * @param output
      * @param contentMap a {@link java.util.Map} object.
@@ -381,9 +369,7 @@ public final class FileTools {
     }
 
     /**
-     * <p>
      * checkPathExistance.
-     * </p>
      *
      * @param path a {@link java.nio.file.Path} object.
      * @param create a boolean.
@@ -408,9 +394,7 @@ public final class FileTools {
     }
 
     /**
-     * <p>
      * copyStream.
-     * </p>
      *
      * @param output a {@link java.io.OutputStream} object.
      * @param input a {@link java.io.InputStream} object.
@@ -425,9 +409,7 @@ public final class FileTools {
     }
 
     /**
-     * <p>
      * isFolderEmpty.
-     * </p>
      *
      * @param folder a {@link java.nio.file.Path} object.
      * @return true if folder empty; false otherwise
@@ -440,9 +422,7 @@ public final class FileTools {
     }
 
     /**
-     * <p>
      * adaptPathForWindows.
-     * </p>
      *
      * @param path Absolute path to adapt
      * @return Windows-compatible path on Windows; unchanged path elsewhere
@@ -610,7 +590,7 @@ public final class FileTools {
 
     /**
      * Guess the content type of the given text, using {@link URLConnection#guessContentTypeFromName(String)} If no content type could be determined,
-     * 'text/plain' is assumed
+     * 'text/plain' is assumed.
      *
      * @param content
      * @return Content mime type
@@ -722,7 +702,7 @@ public final class FileTools {
     }
 
     /**
-     * Return a path which equals the given path but using the given extension in place of the original one
+     * Returns a path which equals the given path but using the given extension in place of the original one.
      * 
      * @param path any file path
      * @param extension the extension, without leading '.'

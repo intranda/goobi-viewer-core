@@ -28,9 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * <p>
  * ElementReference class.
- * </p>
  */
 public class ElementReference {
 
@@ -42,9 +40,7 @@ public class ElementReference {
     private int page;
 
     /**
-     * <p>
-     * Constructor for ElementReference.
-     * </p>
+     * Creates a new ElementReference instance.
      */
     public ElementReference() {
         super();
@@ -55,9 +51,7 @@ public class ElementReference {
     }
 
     /**
-     * <p>
-     * Constructor for ElementReference.
-     * </p>
+     * Creates a new ElementReference instance.
      *
      * @param id a {@link java.lang.String} object.
      * @param coordinates a {@link java.awt.Rectangle} object.
@@ -73,9 +67,7 @@ public class ElementReference {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -84,9 +76,7 @@ public class ElementReference {
     }
 
     /**
-     * <p>
      * Getter for the field <code>coordinates</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -95,9 +85,7 @@ public class ElementReference {
     }
 
     /**
-     * <p>
      * getCoordinatesAsRect.
-     * </p>
      *
      * @return a {@link java.awt.Rectangle} object.
      */
@@ -107,9 +95,7 @@ public class ElementReference {
     }
 
     /**
-     * <p>
      * Setter for the field <code>coordinates</code>.
-     * </p>
      *
      * @param coordinates a {@link java.awt.Rectangle} object.
      */
@@ -118,9 +104,7 @@ public class ElementReference {
     }
 
     /**
-     * <p>
      * Getter for the field <code>content</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -129,9 +113,7 @@ public class ElementReference {
     }
 
     /**
-     * <p>
      * Setter for the field <code>content</code>.
-     * </p>
      *
      * @param content a {@link java.lang.String} object.
      */
@@ -154,9 +136,7 @@ public class ElementReference {
     }
 
     /**
-     * <p>
      * Getter for the field <code>page</code>.
-     * </p>
      *
      * @return the pageNo
      */
@@ -165,9 +145,7 @@ public class ElementReference {
     }
 
     /**
-     * <p>
      * Setter for the field <code>page</code>.
-     * </p>
      *
      * @param pageNo the pageNo to set
      */

@@ -80,9 +80,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for Role.
-     * </p>
+     * Creates a new Role instance.
      *
      * @param name a {@link java.lang.String} object.
      */
@@ -164,9 +162,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivDeleteOcrPage.
-     * </p>
      *
      * @return a boolean.
      */
@@ -175,9 +171,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * setPrivDeleteOcrPage.
-     * </p>
      *
      * @param priv a boolean.
      */
@@ -190,9 +184,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivSetRepresentativeImage.
-     * </p>
      *
      * @return a boolean.
      */
@@ -201,9 +193,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * setPrivSetRepresentativeImage.
-     * </p>
      *
      * @param priv a boolean.
      */
@@ -216,9 +206,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivCmsPages.
-     * </p>
      *
      * @return a boolean.
      */
@@ -227,9 +215,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * setPrivCmsPages.
-     * </p>
      *
      * @param priv a boolean.
      */
@@ -242,9 +228,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivCmsMenu.
-     * </p>
      *
      * @return a boolean.
      */
@@ -253,9 +237,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * setPrivCmsMenu.
-     * </p>
      *
      * @param priv a boolean.
      */
@@ -268,9 +250,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivCmsStaticPages.
-     * </p>
      *
      * @return a boolean.
      */
@@ -279,9 +259,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * setPrivCmsStaticPages.
-     * </p>
      *
      * @param priv a boolean.
      */
@@ -294,9 +272,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivCmsCollections.
-     * </p>
      *
      * @return a boolean.
      */
@@ -305,9 +281,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * setPrivCmsCollections.
-     * </p>
      *
      * @param priv a boolean.
      */
@@ -320,9 +294,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * isPrivCmsCategories.
-     * </p>
      *
      * @return a boolean.
      */
@@ -331,9 +303,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * setPrivCmsCategories.
-     * </p>
      *
      * @param priv a boolean.
      */
@@ -348,9 +318,7 @@ public class Role implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -359,9 +327,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -370,9 +336,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
      * @return the name
      */
@@ -381,9 +345,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
      * @param name the name to set
      */
@@ -392,9 +354,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
      * @return the description
      */
@@ -403,9 +363,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
      * @param description the description to set
      */
@@ -414,9 +372,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>privileges</code>.
-     * </p>
      *
      * @return the privileges
      */
@@ -425,9 +381,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>privileges</code>.
-     * </p>
      *
      * @param privileges the privileges to set
      */
@@ -436,9 +390,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>inheritedRoles</code>.
-     * </p>
      *
      * @return the inheritedRoles
      */
@@ -447,9 +399,7 @@ public class Role implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>inheritedRoles</code>.
-     * </p>
      *
      * @param inheritedRoles the inheritedRoles to set
      */

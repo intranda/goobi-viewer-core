@@ -35,9 +35,7 @@ public enum ContentItemMode {
     paginated;
 
     /**
-     * <p>
      * get.
-     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.pages.content.ContentItemMode} object.

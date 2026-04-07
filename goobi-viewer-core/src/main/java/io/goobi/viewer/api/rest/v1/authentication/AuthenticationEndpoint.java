@@ -85,9 +85,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
- * <p>
  * AuthenticationEndpoint class.
- * </p>
  */
 @Path(ApiUrls.AUTH)
 public class AuthenticationEndpoint {
@@ -110,9 +108,7 @@ public class AuthenticationEndpoint {
     private static Future<Boolean> redirected = null;
 
     /**
-     * <p>
      * authenticateUser.
-     * </p>
      *
      * @param email a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.

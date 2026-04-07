@@ -31,9 +31,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @param <T>
  * @author florian
  *
+ * @param <T>
  */
 public class SelectionManager<T> implements Map<T, Boolean> {
 

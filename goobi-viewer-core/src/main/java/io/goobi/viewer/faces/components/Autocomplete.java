@@ -37,7 +37,6 @@ import jakarta.faces.context.FacesContext;
  * method given in the attribute 'items'
  *
  * @author florian
- *
  */
 @FacesComponent("io.goobi.viewer.faces.components.Autocomplete")
 @SuppressWarnings("unchecked")
@@ -48,7 +47,7 @@ public class Autocomplete extends UINamingContainer {
     }
 
     /**
-     * Retrieve the request parameter 'term' from a commandscript call and return the result of a call to the method given in attribute 'items'
+     * Retrieves the request parameter 'term' from a commandscript call and return the result of a call to the method given in attribute 'items'.
      *
      * @throws IOException
      */

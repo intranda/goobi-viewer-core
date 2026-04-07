@@ -33,7 +33,6 @@ import org.apache.logging.log4j.LogManager;
 
 /**
  * @author florian
- *
  */
 public class GravatarUserAvatar implements UserAvatar {
 
@@ -62,7 +61,6 @@ public class GravatarUserAvatar implements UserAvatar {
     }
 
     /**
-     *
      */
     @Override
     public String getIconUrl(int size, HttpServletRequest request) {

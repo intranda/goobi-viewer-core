@@ -27,7 +27,7 @@ import java.util.Collections;
 import org.apache.commons.collections4.CollectionUtils;
 
 /**
- * Tests a condition on a collection of values, passing either if any value matches of if none matches, depending on the matchIfEqual property
+ * Tests a condition on a collection of values, passing either if any value matches of if none matches, depending on the matchIfEqual property.
  * 
  * @param <T> the type of values to test
  */

@@ -30,7 +30,6 @@ import io.goobi.viewer.model.translations.Translation;
 
 /**
  * @author florian
- *
  */
 @Entity
 @Table(name = "terms_of_use_translations")
@@ -42,17 +41,13 @@ public class TermsOfUseTranslation extends Translation {
     private TermsOfUse owner;
 
     /**
-     * <p>
-     * Constructor for CMSCollectionTranslation.
-     * </p>
+     * Creates a new CMSCollectionTranslation instance.
      */
     public TermsOfUseTranslation() {
     }
 
     /**
-     * <p>
-     * Constructor for CMSCollectionTranslation.
-     * </p>
+     * Creates a new CMSCollectionTranslation instance.
      *
      * @param language a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -69,9 +64,7 @@ public class TermsOfUseTranslation extends Translation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
      * @return the owner
      */
@@ -80,9 +73,7 @@ public class TermsOfUseTranslation extends Translation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
      * @param owner the owner to set
      */

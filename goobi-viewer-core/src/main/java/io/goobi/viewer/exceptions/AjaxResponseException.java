@@ -23,7 +23,6 @@ package io.goobi.viewer.exceptions;
 
 /**
  * @author florian
- *
  */
 public class AjaxResponseException extends PresentationException {
 

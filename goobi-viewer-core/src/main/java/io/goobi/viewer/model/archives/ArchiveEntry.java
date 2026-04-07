@@ -561,7 +561,7 @@ public class ArchiveEntry implements Serializable {
 
     /**
      * Get the parent node hierarchy of this node, optionally including the node itself The list is sorted with hightest hierarchy level first, so the
-     * node itself will always be the last element, if included
+     * node itself will always be the last element, if included.
      *
      * @param includeSelf
      * @return List<ArchiveEntry>

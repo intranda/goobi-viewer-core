@@ -50,9 +50,7 @@ import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
 /**
- * <p>
  * ContextListener class.
- * </p>
  */
 @WebListener
 public class ContextListener implements ServletContextListener {

@@ -92,9 +92,7 @@ import jakarta.servlet.http.HttpSessionBindingListener;
 import jakarta.servlet.http.Part;
 
 /**
- * <p>
  * User class.
- * </p>
  */
 @Entity
 @Table(name = "viewer_users")
@@ -339,9 +337,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * getUserGroupMemberships.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -367,9 +363,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * isGroupMember.
-     * </p>
      *
      * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @return a boolean.
@@ -466,9 +460,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * isHasCmsPrivilege.
-     * </p>
      *
      * @param privilege a {@link java.lang.String} object.
      * @return boolean
@@ -481,9 +473,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * isHasPrivilege.
-     * </p>
      *
      * @param licenseType a {@link java.lang.String} object.
      * @param privilege a {@link java.lang.String} object.
@@ -662,9 +652,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * hasPriviledgeForAllTemplates.
-     * </p>
      *
      * @return a boolean.
      */
@@ -691,9 +679,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * hasPrivilegesForTemplate.
-     * </p>
      *
      * @param template
      * @return true exactly if the user is not restricted to certain cmsTemplates or if the given templateId is among the allowed templates for the
@@ -742,9 +728,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * getAllowedTemplates.
-     * </p>
      *
      * @param allTemplates a {@link java.util.List} object.
      * @return a {@link java.util.List} object.
@@ -812,9 +796,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * hasPrivilegeForAllCategories.
-     * </p>
      *
      * @return a boolean.
      */
@@ -841,9 +823,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * getAllowedCategories.
-     * </p>
      *
      * @param allCategories a {@link java.util.List} object.
      * @return a {@link java.util.List} object.
@@ -899,9 +879,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * hasPrivilegeForAllSubthemeDiscriminatorValues.
-     * </p>
      *
      * @return a boolean.
      */
@@ -928,9 +906,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * getAllowedSubthemeDiscriminatorValues.
-     * </p>
      *
      * @param rawValues All possible values
      * @return filtered list of allowed values
@@ -986,9 +962,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -997,9 +971,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -1008,9 +980,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>passwordHash</code>.
-     * </p>
      *
      * @return the passwordHash
      */
@@ -1019,9 +989,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>passwordHash</code>.
-     * </p>
      *
      * @param passwordHash the passwordHash to set
      */
@@ -1030,9 +998,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>activationKey</code>.
-     * </p>
      *
      * @return the activationKey
      */
@@ -1041,9 +1007,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>activationKey</code>.
-     * </p>
      *
      * @param activationKey the activationKey to set
      */
@@ -1052,9 +1016,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>lastLogin</code>.
-     * </p>
      *
      * @return the lastLogin
      */
@@ -1063,9 +1025,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>lastLogin</code>.
-     * </p>
      *
      * @param lastLogin the lastLogin to set
      */
@@ -1074,9 +1034,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * isActive.
-     * </p>
      *
      * @return the active
      */
@@ -1085,9 +1043,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>active</code>.
-     * </p>
      *
      * @param active the active to set
      */
@@ -1096,9 +1052,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * isSuspended.
-     * </p>
      *
      * @return the suspended
      */
@@ -1107,9 +1061,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>suspended</code>.
-     * </p>
      *
      * @param suspended the suspended to set
      */
@@ -1118,9 +1070,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>nickName</code>.
-     * </p>
      *
      * @return the nickName
      */
@@ -1129,9 +1079,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>nickName</code>.
-     * </p>
      *
      * @param nickName the nickName to set
      */
@@ -1140,9 +1088,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>lastName</code>.
-     * </p>
      *
      * @return the lastName
      */
@@ -1151,9 +1097,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>lastName</code>.
-     * </p>
      *
      * @param lastName the lastName to set
      */
@@ -1162,9 +1106,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>firstName</code>.
-     * </p>
      *
      * @return the firstName
      */
@@ -1173,9 +1115,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>firstName</code>.
-     * </p>
      *
      * @param firstName the firstName to set
      */
@@ -1184,9 +1124,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>openIdAccounts</code>.
-     * </p>
      *
      * @return the openIdAccounts
      */
@@ -1195,9 +1133,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>openIdAccounts</code>.
-     * </p>
      *
      * @param openIdAccounts the openIdAccounts to set
      */
@@ -1206,9 +1142,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>email</code>.
-     * </p>
      *
      * @param email the email to set
      */
@@ -1217,9 +1151,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>email</code>.
-     * </p>
      *
      * @return the email
      */
@@ -1228,9 +1160,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>comments</code>.
-     * </p>
      *
      * @return the comments
      */
@@ -1239,9 +1169,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>comments</code>.
-     * </p>
      *
      * @param comments the comments to set
      */
@@ -1250,9 +1178,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>score</code>.
-     * </p>
      *
      * @return the score
      */
@@ -1261,9 +1187,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>score</code>.
-     * </p>
      *
      * @param score the score to set
      */
@@ -1280,9 +1204,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * raiseScore.
-     * </p>
      *
      * @param amount a int.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1293,9 +1215,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * getRank.
-     * </p>
      *
      * @return a int.
      */
@@ -1328,9 +1248,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * isSuperuser.
-     * </p>
      *
      * @return the superuser
      */
@@ -1339,9 +1257,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * isCmsAdmin.
-     * </p>
      *
      * @return true if user is superuser or has CMS-specific privileges
      */
@@ -1358,9 +1274,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>superuser</code>.
-     * </p>
      *
      * @param superuser the superuser to set
      */
@@ -1369,9 +1283,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * isOpenIdUser.
-     * </p>
      *
      * @return a boolean.
      */
@@ -1380,9 +1292,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>copy</code>.
-     * </p>
      *
      * @return the copy
      */
@@ -1391,9 +1301,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>copy</code>.
-     * </p>
      *
      * @param copy the copy to set
      */
@@ -1402,9 +1310,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Getter for the field <code>transkribusSession</code>.
-     * </p>
      *
      * @return the transkribusSession
      */
@@ -1413,9 +1319,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * Setter for the field <code>transkribusSession</code>.
-     * </p>
      *
      * @param transkribusSession the transkribusSession to set
      */
@@ -1426,7 +1330,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     /**
      * {@inheritDoc}
      *
-     * Required by the ILicensee interface.
+     * <p>Required by the ILicensee interface.
      */
     @Override
     public String getName() {
@@ -1483,9 +1387,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * backupFields.
-     * </p>
      */
     public void backupFields() {
         //keep avatar update date of copy because a change in the avatar file is recorded in the copy
@@ -1502,9 +1404,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * setBCrypt.
-     * </p>
      *
      * @param bcrypt a {@link io.goobi.viewer.controller.BCrypt} object.
      */
@@ -1513,7 +1413,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * Get the {@link io.goobi.viewer.model.security.user.User#id} of a user from a URI
+     * Gets the {@link io.goobi.viewer.model.security.user.User#id} of a user from a URI.
      *
      * @param idAsURI a {@link java.net.URI} object.
      * @return a {@link java.lang.Long} object.
@@ -1533,9 +1433,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * getIdAsURI.
-     * </p>
      *
      * @return a {@link java.net.URI} object.
      */
@@ -1668,9 +1566,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * <p>
      * main.
-     * </p>
      *
      * @param args an array of {@link java.lang.String} objects.
      */

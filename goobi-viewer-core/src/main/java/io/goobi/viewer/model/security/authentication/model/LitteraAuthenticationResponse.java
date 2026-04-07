@@ -32,17 +32,13 @@ public class LitteraAuthenticationResponse {
     private boolean authenticationSuccessful;
 
     /**
-     * <p>
-     * Constructor for LitteraAuthenticationResponse.
-     * </p>
+     * Creates a new LitteraAuthenticationResponse instance.
      */
     public LitteraAuthenticationResponse() {
     }
 
     /**
-     * <p>
-     * Constructor for LitteraAuthenticationResponse.
-     * </p>
+     * Creates a new LitteraAuthenticationResponse instance.
      *
      * @param success a boolean.
      */
@@ -51,9 +47,7 @@ public class LitteraAuthenticationResponse {
     }
 
     /**
-     * <p>
      * isAuthenticationSuccessful.
-     * </p>
      *
      * @return the authenticationSuccessful
      */
@@ -62,9 +56,7 @@ public class LitteraAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>authenticationSuccessful</code>.
-     * </p>
      *
      * @param authenticationSuccessful the authenticationSuccessful to set
      */

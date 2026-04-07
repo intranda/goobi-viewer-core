@@ -39,7 +39,6 @@ import io.goobi.viewer.model.search.FacetItem.FacetType;
 
 /**
  * @author florian
- *
  */
 public class GeoFacetItem implements IFacetItem {
 
@@ -152,7 +151,7 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     /**
-     * Create a polygon feature from the given vertices.
+     * Creates a polygon feature from the given vertices.
      *
      * @param vertices
      */

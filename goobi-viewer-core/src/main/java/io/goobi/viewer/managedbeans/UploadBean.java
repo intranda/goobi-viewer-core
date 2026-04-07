@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -38,9 +38,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
- * <p>
  * UploadBean class.
- * </p>
  */
 @Named
 @ViewScoped
@@ -61,7 +59,7 @@ public class UploadBean implements Serializable {
     private UploadJob currentUploadJob;
 
     /**
-     * Required setter for ManagedProperty injection
+     * Required setter for ManagedProperty injection.
      *
      * @param userBean the userBean to set
      */
@@ -70,7 +68,7 @@ public class UploadBean implements Serializable {
     }
 
     /**
-     * Initialize all campaigns as lazily loaded list
+     * Initializes all campaigns as lazily loaded list.
      */
     @PostConstruct
     public void init() {
@@ -111,9 +109,7 @@ public class UploadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelUploadJobs</code>.
-     * </p>
      *
      * @return the lazyModelUploadJobs
      */
@@ -122,9 +118,7 @@ public class UploadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentUploadJob</code>.
-     * </p>
      *
      * @return the currentUploadJob
      */
@@ -136,9 +130,7 @@ public class UploadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentUploadJob</code>.
-     * </p>
      *
      * @param currentUploadJob the currentUploadJob to set
      */

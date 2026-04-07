@@ -64,7 +64,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  * Class for retrieving usage statistics for a day or a range of days.
  * 
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(ApiUrls.STATISTICS_USAGE)
 @AuthorizationBinding

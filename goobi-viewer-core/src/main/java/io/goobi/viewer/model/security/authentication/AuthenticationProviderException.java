@@ -30,14 +30,11 @@ package io.goobi.viewer.model.security.authentication;
 public class AuthenticationProviderException extends Exception {
 
     /**
-     *
      */
     private static final long serialVersionUID = 2454421697805524935L;
 
     /**
-     * <p>
-     * Constructor for AuthenticationProviderException.
-     * </p>
+     * Creates a new AuthenticationProviderException instance.
      */
     public AuthenticationProviderException() {
         super();
@@ -45,9 +42,7 @@ public class AuthenticationProviderException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for AuthenticationProviderException.
-     * </p>
+     * Creates a new AuthenticationProviderException instance.
      *
      * @param arg0 a {@link java.lang.String} object.
      * @param arg1 a {@link java.lang.Throwable} object.
@@ -60,9 +55,7 @@ public class AuthenticationProviderException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for AuthenticationProviderException.
-     * </p>
+     * Creates a new AuthenticationProviderException instance.
      *
      * @param arg0 a {@link java.lang.String} object.
      * @param arg1 a {@link java.lang.Throwable} object.
@@ -73,9 +66,7 @@ public class AuthenticationProviderException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for AuthenticationProviderException.
-     * </p>
+     * Creates a new AuthenticationProviderException instance.
      *
      * @param arg0 a {@link java.lang.String} object.
      */
@@ -85,9 +76,7 @@ public class AuthenticationProviderException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for AuthenticationProviderException.
-     * </p>
+     * Creates a new AuthenticationProviderException instance.
      *
      * @param arg0 a {@link java.lang.Throwable} object.
      */

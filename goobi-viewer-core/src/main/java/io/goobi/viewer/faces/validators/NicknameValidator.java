@@ -73,9 +73,7 @@ public class NicknameValidator implements Validator<String> {
     }
 
     /**
-     * <p>
      * validateEmailAddress.
-     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @should match correct name

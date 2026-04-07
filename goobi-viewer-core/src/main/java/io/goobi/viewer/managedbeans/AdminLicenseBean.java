@@ -101,18 +101,14 @@ public class AdminLicenseBean implements Serializable {
     private Locale selectedLanguage;
 
     /**
-     * <p>
-     * Constructor for AdminBean.
-     * </p>
+     * Creates a new AdminBean instance.
      */
     public AdminLicenseBean() {
         // the emptiness inside
     }
 
     /**
-     * <p>
      * init.
-     * </p>
      */
     @PostConstruct
     public void init() {
@@ -233,9 +229,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAllCoreLicenseTypes.
-     * </p>
      *
      * @return all license types in the database where core=true
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -245,9 +239,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAllRecordLicenseTypes.
-     * </p>
      *
      * @return all license types in the database where core=false
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -280,9 +272,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * saveLicenseTypeAction.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -332,9 +322,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteLicenseTypeAction.
-     * </p>
      *
      * @param licenseType a {@link io.goobi.viewer.model.security.LicenseType} object.
      * @return Navigation outcome
@@ -356,10 +344,8 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * newCurrentLicenseTypeAction.
-     * </p>
-     * 
+     *
      * @param name
      */
     public void newCurrentLicenseTypeAction(String name) {
@@ -368,9 +354,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetCurrentRoleLicenseAction.
-     * </p>
      */
     public void resetCurrentRoleLicenseAction() {
         currentLicenseType = new LicenseType();
@@ -436,9 +420,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Creates <code>currentLicense</code> to a new instance.
-     * </p>
      */
     public void newCurrentLicenseAction() {
         logger.trace("newCurrentLicenseAction");
@@ -523,9 +505,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteLicenseAction.
-     * </p>
      *
      * @param license a {@link io.goobi.viewer.model.security.License} object.
      * @return a {@link java.lang.String} object.
@@ -547,9 +527,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelTickets</code>.
-     * </p>
      *
      * @return the lazyModelTickets
      */
@@ -558,9 +536,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPageTickets.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -749,9 +725,7 @@ public class AdminLicenseBean implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>
      * Getter for the field <code>currentRole</code>.
-     * </p>
      *
      * @return the currentRole
      */
@@ -760,9 +734,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentRole</code>.
-     * </p>
      *
      * @param currentRole the currentRole to set
      */
@@ -771,9 +743,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentLicenseType</code>.
-     * </p>
      *
      * @return the currentLicenseType
      */
@@ -782,9 +752,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentLicenseType</code>.
-     * </p>
      *
      * @param currentLicenseType the currentLicenseType to set
      */
@@ -823,9 +791,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentLicense</code>.
-     * </p>
      *
      * @return the currentLicense
      */
@@ -834,9 +800,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentLicense</code>.
-     * </p>
      *
      * @param currentLicense the currentLicense to set
      */
@@ -892,7 +856,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * Queries Solr for a list of all values of the set ACCESSCONDITION
+     * Queries Solr for a list of all values of the set ACCESSCONDITION.
      *
      * @return Combined List of access condition values from the index and CMS pages
      * @throws DAOException

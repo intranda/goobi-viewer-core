@@ -86,7 +86,7 @@ public class ActivityCollectionBuilder {
 
     /**
      * Creates a An {@link de.intranda.api.iiif.discovery.OrderedCollection} of {@link Activity Acvitities}, linking to the first and last contained
-     * {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} as well as counting the total number of Activities
+     * {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} as well as counting the total number of Activities.
      *
      * @return An {@link de.intranda.api.iiif.discovery.OrderedCollection}
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -155,7 +155,7 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Set an additional filter query which must be met by all processes for which activities are counted
+     * Sets an additional filter query which must be met by all processes for which activities are counted.
      * 
      * @param query The solr query which counted processes must meet
      * @return myself
@@ -167,7 +167,7 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Get the earliest date of Activities which may be contained in the collection
+     * Gets the earliest date of Activities which may be contained in the collection.
      *
      * @return the earliest date of Activities which may be contained in the collection. May return null if no startDate is specified
      */
@@ -187,7 +187,7 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Get the total number of {@link Activity Activities} in the collection
+     * Gets the total number of {@link Activity Activities} in the collection.
      *
      * @return the total number of {@link Activity Activities} in the collection
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -201,7 +201,7 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Get the URI for the collection request
+     * Gets the URI for the collection request.
      *
      * @return the URI for the collection request
      */
@@ -211,7 +211,7 @@ public class ActivityCollectionBuilder {
     }
 
     /**
-     * Get the URI to request a specific collection page
+     * Gets the URI to request a specific collection page.
      *
      * @param no the page number
      * @return the URI to request a specific collection page

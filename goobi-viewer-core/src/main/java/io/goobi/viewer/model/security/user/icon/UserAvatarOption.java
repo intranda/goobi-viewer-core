@@ -25,7 +25,6 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * @author florian
- *
  */
 public enum UserAvatarOption {
 

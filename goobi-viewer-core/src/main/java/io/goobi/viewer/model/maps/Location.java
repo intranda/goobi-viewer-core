@@ -41,7 +41,6 @@ import io.goobi.viewer.modules.interfaces.IURLBuilder;
  * A location on a map. Contains a long/lat points, a label and a link
  *
  * @author florian
- *
  */
 public class Location implements Serializable {
 

@@ -59,7 +59,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserActivity;
 
 /**
- * <p>UserDataBean class.</p>
+ * <p>UserDataBean class.
  */
 @Named
 @ViewScoped
@@ -82,7 +82,7 @@ public class UserDataBean implements Serializable {
     private Long commentCount = null;
 
     /**
-     * Required setter for ManagedProperty injection
+     * Required setter for ManagedProperty injection.
      *
      * @param userBean the userBean to set
      */
@@ -91,7 +91,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * Initialize all campaigns as lazily loaded list
+     * Initializes all campaigns as lazily loaded list.
      *
      * @throws io.goobi.viewer.exceptions.DAOException
      */
@@ -166,7 +166,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>getAnnotations.</p>
+     * <p>getAnnotations.
      *
      * @return List of annotations for the logged in user
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -204,9 +204,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelAnnotations</code>.
-     * </p>
      *
      * @return the lazyModelAnnotations
      */
@@ -215,7 +213,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lazyModelComments</code>.</p>
+     * <p>Getter for the field <code>lazyModelComments</code>.
      *
      * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object
      */
@@ -224,7 +222,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>getNumBookmarkLists.</p>
+     * <p>getNumBookmarkLists.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @return a long
@@ -235,7 +233,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>getNumSearches.</p>
+     * <p>getNumSearches.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @return a long
@@ -246,7 +244,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>getNumComments.</p>
+     * <p>getNumComments.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @return Number of comments in the DB for the given user
@@ -259,7 +257,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>getNumAnnotations.</p>
+     * <p>getNumAnnotations.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @return a long
@@ -272,7 +270,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>getNumRecordsWithComments.</p>
+     * <p>getNumRecordsWithComments.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @return a {@link java.lang.Long} object
@@ -283,7 +281,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>getAnnotationCount.</p>
+     * <p>getAnnotationCount.
      *
      * @return a long
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -296,7 +294,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>commentCount</code>.</p>
+     * <p>Getter for the field <code>commentCount</code>.
      *
      * @return a long
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -315,7 +313,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>getLatestComments.</p>
+     * <p>getLatestComments.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @param numEntries a int
@@ -336,7 +334,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>getBookmarkListsForUser.</p>
+     * <p>getBookmarkListsForUser.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @param numEntries a int
@@ -354,7 +352,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * <p>getLatestActivity.</p>
+     * <p>getLatestActivity.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @param numEntries a int

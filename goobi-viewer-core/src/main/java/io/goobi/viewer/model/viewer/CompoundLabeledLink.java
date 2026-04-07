@@ -37,9 +37,7 @@ import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
 import io.goobi.viewer.model.viewer.collections.SimpleBrowseElementInfo;
 
 /**
- * <p>
  * CompoundLabeledLink class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -53,9 +51,7 @@ public class CompoundLabeledLink extends LabeledLink {
     protected final List<String> hierarchy;
 
     /**
-     * <p>
-     * Constructor for CompoundLabeledLink.
-     * </p>
+     * Creates a new CompoundLabeledLink instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.
@@ -69,9 +65,7 @@ public class CompoundLabeledLink extends LabeledLink {
     }
 
     /**
-     * <p>
-     * Constructor for CompoundLabeledLink.
-     * </p>
+     * Creates a new CompoundLabeledLink instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.
@@ -86,9 +80,7 @@ public class CompoundLabeledLink extends LabeledLink {
     }
 
     /**
-     * <p>
      * getSubLinks.
-     * </p>
      *
      * @return List of labeled links, one for each hierarchy level
      */

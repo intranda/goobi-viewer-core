@@ -44,9 +44,7 @@ import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.model.job.JobStatus;
 
 /**
- * <p>
  * TranskribusUtils class.
- * </p>
  */
 public final class TranskribusUtils {
 
@@ -71,9 +69,7 @@ public final class TranskribusUtils {
     }
 
     /**
-     * <p>
      * ingestRecord.
-     * </p>
      *
      * @param restApiUrl a {@link java.lang.String} object.
      * @param userSession a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
@@ -153,9 +149,7 @@ public final class TranskribusUtils {
     }
 
     /**
-     * <p>
      * login.
-     * </p>
      *
      * @param baseUrl a {@link java.lang.String} object.
      * @param userName a {@link java.lang.String} object.
@@ -183,9 +177,7 @@ public final class TranskribusUtils {
     }
 
     /**
-     * <p>
      * auth.
-     * </p>
      *
      * @param baseUrl a {@link java.lang.String} object.
      * @param userName a {@link java.lang.String} object.
@@ -268,9 +260,7 @@ public final class TranskribusUtils {
     }
 
     /**
-     * <p>
      * createCollection.
-     * </p>
      *
      * @param baseUrl a {@link java.lang.String} object.
      * @param sessionId a {@link java.lang.String} object.
@@ -299,9 +289,7 @@ public final class TranskribusUtils {
     }
 
     /**
-     * <p>
      * grantCollectionPrivsToViewer.
-     * </p>
      *
      * @param baseUrl a {@link java.lang.String} object.
      * @param sessionId a {@link java.lang.String} object.
@@ -340,9 +328,7 @@ public final class TranskribusUtils {
     }
 
     /**
-     * <p>
      * ingestRecordToCollections.
-     * </p>
      *
      * @param baseUrl a {@link java.lang.String} object.
      * @param session a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
@@ -393,9 +379,7 @@ public final class TranskribusUtils {
     }
 
     /**
-     * <p>
      * checkJobStatus.
-     * </p>
      *
      * @param baseUrl a {@link java.lang.String} object.
      * @param sessionId a {@link java.lang.String} object.

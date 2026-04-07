@@ -41,7 +41,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author florian
- *
  */
 public class RangeBuilder extends AbstractBuilder {
 

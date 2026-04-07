@@ -94,9 +94,7 @@ public class MetadataBean {
     }
 
     /**
-     * <p>
      * loadMetadata.
-     * </p>
      *
      * @param index
      * @param locale
@@ -155,9 +153,7 @@ public class MetadataBean {
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadataElementList</code>.
-     * </p>
      *
      * @param index
      * @return the metadataElementList
@@ -211,9 +207,7 @@ public class MetadataBean {
     }
 
     /**
-     * <p>
      * getTopMetadataElement.
-     * </p>
      *
      * @param index Metadata view index
      * @return a {@link io.goobi.viewer.model.metadata.MetadataElement} object.
@@ -268,7 +262,6 @@ public class MetadataBean {
 
     /**
      * 
-     * 
      * @param metadataViewIndex
      * @return List<MetadataElement>
      * @should return empty list if bottom element missing
@@ -313,9 +306,7 @@ public class MetadataBean {
     }
 
     /**
-     * <p>
      * Getter for the field <code>events</code>.
-     * </p>
      *
      * @return the events
      */
@@ -324,9 +315,7 @@ public class MetadataBean {
     }
 
     /**
-     * <p>
      * Setter for the field <code>events</code>.
-     * </p>
      *
      * @param events the events to set
      */
@@ -335,9 +324,7 @@ public class MetadataBean {
     }
 
     /**
-     * <p>
      * displayChildStructs.
-     * </p>
      *
      * @return a boolean.
      */
@@ -346,9 +333,7 @@ public class MetadataBean {
     }
 
     /**
-     * <p>
      * setSelectedRecordLanguage.
-     * </p>
      *
      * @param selectedRecordLanguage a {@link java.lang.String} object.
      */

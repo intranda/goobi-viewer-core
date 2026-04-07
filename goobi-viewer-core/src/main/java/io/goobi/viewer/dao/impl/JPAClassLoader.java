@@ -45,9 +45,7 @@ import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 
 /**
- * <p>
  * JPAClassLoader class.
- * </p>
  */
 public class JPAClassLoader extends ClassLoader {
 
@@ -83,9 +81,7 @@ public class JPAClassLoader extends ClassLoader {
     //    }
 
     /**
-     * <p>
-     * Constructor for JPAClassLoader.
-     * </p>
+     * Creates a new JPAClassLoader instance.
      *
      * @param parent a {@link java.lang.ClassLoader} object.
      */

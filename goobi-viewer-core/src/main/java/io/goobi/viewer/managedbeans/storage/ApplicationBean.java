@@ -46,10 +46,9 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
- * Used for application wide storage of objects accessible to other managed objects
+ * Used for application wide storage of objects accessible to other managed objects.
  *
  * @author florian
- *
  */
 @Named("applicationBean")
 @Eager
@@ -98,7 +97,7 @@ public class ApplicationBean implements DataStorage, Serializable {
 
     /**
      * If the given key exists and the entry is no older than the given timeToLiveMinutes, return the object stored under the key, otherwise store the
-     * given object under the given key and return it
+     * given object under the given key and return it.
      * 
      * @param <T>
      * @param key the identifier under which to store the object
@@ -121,7 +120,7 @@ public class ApplicationBean implements DataStorage, Serializable {
 
     /**
      * If the given key exists and the entry is no older than the given timeToLiveMinutes, return the object stored under the key, otherwise store the
-     * given object under the given key and return it
+     * given object under the given key and return it.
      * 
      * @param <T> Type of the object to put
      * @param key the identifier under which to store the object

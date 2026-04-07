@@ -54,9 +54,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * <p>
  * MetadataTools class.
- * </p>
  */
 public final class MetadataTools {
 
@@ -78,9 +76,7 @@ public final class MetadataTools {
     }
 
     /**
-     * <p>
      * generateDublinCoreMetaTags.
-     * </p>
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return String containing meta tags
@@ -218,9 +214,7 @@ public final class MetadataTools {
     }
 
     /**
-     * <p>
      * generateHighwirePressMetaTags.
-     * </p>
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param resources a {@link java.util.List} object.
@@ -322,9 +316,7 @@ public final class MetadataTools {
     }
 
     /**
-     * <p>
      * generateRIS.
-     * </p>
      *
      * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.lang.String} object.
@@ -530,9 +522,7 @@ public final class MetadataTools {
     }
 
     /**
-     * <p>
      * applyReplaceRules.
-     * </p>
      *
      * @param value Metadata value to modify
      * @param replaceRules List of <code>MetadataReplaceRule</code> objects
@@ -586,9 +576,7 @@ public final class MetadataTools {
     }
 
     /**
-     * <p>
      * findMetadataGroupType.
-     * </p>
      *
      * @param type a {@link java.lang.String} object.
      * @return MetadataGroupType value corresponding to the given gndspec type

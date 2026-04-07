@@ -26,10 +26,9 @@ import java.io.IOException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
- * Removes annotations from a persistence context
+ * Removes annotations from a persistence context.
  *
  * @author florian
- *
  */
 public interface AnnotationDeleter {
 

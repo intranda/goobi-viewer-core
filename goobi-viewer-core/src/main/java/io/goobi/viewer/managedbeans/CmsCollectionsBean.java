@@ -93,9 +93,7 @@ public class CmsCollectionsBean implements Serializable {
     private CMSCollectionTreeTab currentTab = new CMSCollectionTreeTab(solrField);
 
     /**
-     * <p>
-     * Constructor for CmsCollectionsBean.
-     * </p>
+     * Creates a new CmsCollectionsBean instance.
      */
     public CmsCollectionsBean() {
         try {
@@ -295,9 +293,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentCollection</code>.
-     * </p>
      *
      * @return the currentCollection
      */
@@ -306,9 +302,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentCollection</code>.
-     * </p>
      *
      * @param currentCollection the currentCollection to set
      */
@@ -317,9 +311,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>solrField</code>.
-     * </p>
      *
      * @return the solrField
      */
@@ -328,9 +320,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>solrField</code>.
-     * </p>
      *
      * @param solrField the solrField to set
      */
@@ -356,9 +346,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>solrFieldValue</code>.
-     * </p>
      *
      * @return the solrFieldValue
      */
@@ -367,9 +355,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>solrFieldValue</code>.
-     * </p>
      *
      * @param solrFieldValue the solrFieldValue to set
      */
@@ -412,9 +398,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAllCollectionFields.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -423,9 +407,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>collections</code>.
-     * </p>
      *
      * @return the configuredColelctions
      */
@@ -434,9 +416,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * updateCollections.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -475,9 +455,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteCollection.
-     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -489,9 +467,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * editCollection.
-     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @return a {@link java.lang.String} object.
@@ -504,9 +480,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentLabel.
-     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
@@ -516,9 +490,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentDescription.
-     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
@@ -528,9 +500,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * saveCurrentCollection.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -565,9 +535,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetCurrentCollection.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -595,9 +563,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * <p>
      * validatePI.
-     * </p>
      *
      * @param context a {@link jakarta.faces.context.FacesContext} object.
      * @param comp a {@link jakarta.faces.component.UIComponent} object.
@@ -626,8 +592,8 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Checks if the given pi matches a known PI in the solr index. If the pi is empty, true is returned to allow not setting any pi
      *
-     * @return false if no current collection is set, the pi does not match any known work
      * @param pi a {@link java.lang.String} object.
+     * @return false if no current collection is set, the pi does not match any known work
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */

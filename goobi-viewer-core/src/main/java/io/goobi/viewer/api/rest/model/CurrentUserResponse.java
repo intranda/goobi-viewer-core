@@ -26,7 +26,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Response object for GET /api/v1/users/current.
- * Contains the client IP address and, if the user is logged in, user information.
+ *
+ * <p>Contains the client IP address and, if the user is logged in, user information.
  * The {@code user} field is omitted from JSON output when null (i.e. not logged in).
  */
 @JsonInclude(Include.NON_NULL)

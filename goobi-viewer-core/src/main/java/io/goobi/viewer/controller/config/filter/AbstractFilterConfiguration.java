@@ -110,7 +110,7 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     }
 
     /**
-     * check if matching this filter results in a pass or block
+     * Check if matching this filter results in a pass or block.
      * 
      * @return true if {@link #action} is {@link FilterAction#SHOW}.
      */

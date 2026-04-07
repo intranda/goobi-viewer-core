@@ -37,12 +37,9 @@ import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.controller.NetTools;
 
 /**
- * <p>
  * Adds the @context property to all IIIF Presentation responses in the topmost json element.
- * </p>
  *
  * @author Florian Alpers
- *
  */
 @Provider
 @IIIFPresentationBinding
@@ -86,9 +83,7 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
     }
 
     /**
-     * <p>
      * setResponseCharset.
-     * </p>
      *
      * @param response a {@link jakarta.ws.rs.container.ContainerResponseContext} object.
      * @param charset a {@link java.lang.String} object.

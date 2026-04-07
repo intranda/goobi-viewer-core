@@ -105,7 +105,6 @@ import jakarta.jms.TextMessage;
  * either be called directly to handle the message instantly, or from a {@link MessageQueue}
  * 
  * @author florian
- *
  */
 @Singleton
 @Startup
@@ -172,7 +171,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Add the message to the internal message queue to be handled later.
+     * Adds the message to the internal message queue to be handled later.
      * 
      * @param message
      * @return Message ID
@@ -210,7 +209,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Send a notification to the "messageQueueState" WebSocket to update message lists in the admin backend.
+     * Sends a notification to the "messageQueueState" WebSocket to update message lists in the admin backend.
      */
     public static void notifyMessageQueueStateUpdate() {
         MessageQueueBean mqBean = (MessageQueueBean) BeanUtils.getBeanByName("messageQueueBean", MessageQueueBean.class);
@@ -438,7 +437,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Check if the queue has been successfully initialized.
+     * Checks if the queue has been successfully initialized.
      * 
      * @return true if the queue is running
      */
@@ -635,7 +634,8 @@ public class MessageQueueManager {
 
     /**
      * Builds a JMS message selector expression for a given message ID.
-     * Single quotes in the ID are escaped by doubling them (JMS selector syntax,
+     *
+     * <p>Single quotes in the ID are escaped by doubling them (JMS selector syntax,
      * identical to SQL string literal escaping) to prevent selector injection.
      *
      * @param messageId the raw JMS message ID, possibly containing single quotes
@@ -649,7 +649,8 @@ public class MessageQueueManager {
 
     /**
      * Builds a JMS message selector expression for a given message type.
-     * Single quotes in the type are escaped by doubling them (JMS selector syntax,
+     *
+     * <p>Single quotes in the type are escaped by doubling them (JMS selector syntax,
      * identical to SQL string literal escaping) to prevent selector injection.
      *
      * @param messageType the JMS message type string, possibly containing single quotes

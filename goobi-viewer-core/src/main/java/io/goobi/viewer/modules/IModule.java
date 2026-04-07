@@ -32,34 +32,26 @@ import io.goobi.viewer.modules.interfaces.IURLBuilder;
 import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 
 /**
- * <p>
  * IModule interface.
- * </p>
  */
 public interface IModule extends IndexAugmenter {
 
     /**
-     * <p>
      * getId.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getId();
 
     /**
-     * <p>
      * getName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getName();
 
     /**
-     * <p>
      * getVersion.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -71,9 +63,7 @@ public interface IModule extends IndexAugmenter {
     public String getVersionJson();
 
     /**
-     * <p>
      * isLoaded.
-     * </p>
      *
      * @return a boolean.
      */
@@ -161,9 +151,7 @@ public interface IModule extends IndexAugmenter {
     public int moveUserContributions(User fromUser, User toUser);
 
     /**
-     * <p>
      * getURLBuilder.
-     * </p>
      *
      * @return the {@link io.goobi.viewer.modules.interfaces.IURLBuilder} for this module, if any. If this module should not alter url building, an
      *         empty optional should be returned

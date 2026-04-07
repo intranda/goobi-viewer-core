@@ -85,7 +85,6 @@ import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * Utility methods for HTTP operations, mail, etc.
- *
  */
 public final class NetTools {
 
@@ -154,9 +153,7 @@ public final class NetTools {
     }
 
     /**
-     * <p>
      * callUrlGET.
-     * </p>
      *
      * @param url a {@link java.lang.String} object.
      * @return A String array with two elements. The first contains the HTTP status code, the second either the requested data (if status code is 200)
@@ -205,9 +202,7 @@ public final class NetTools {
     }
 
     /**
-     * <p>
      * getWebContentGET.
-     * </p>
      *
      * @param url URL to call
      * @param timeout Custom timeout
@@ -238,9 +233,7 @@ public final class NetTools {
     }
 
     /**
-     * <p>
      * getWebContentPOST.
-     * </p>
      *
      * @param url a {@link java.lang.String} object.
      * @param headers
@@ -259,9 +252,7 @@ public final class NetTools {
     }
 
     /**
-     * <p>
      * getWebContentDELETE.
-     * </p>
      *
      * @param url a {@link java.lang.String} object.
      * @param headers
@@ -279,9 +270,7 @@ public final class NetTools {
     }
 
     /**
-     * <p>
      * getWebContent.
-     * </p>
      *
      * @param method POST | PUT | DELETE
      * @param url a {@link java.lang.String} object.
@@ -608,9 +597,7 @@ public final class NetTools {
     }
 
     /**
-     * <p>
      * parseMultipleIpAddresses. If the given string contains more than one address, return the first one, otherwise the entire string
-     * </p>
      *
      * @param address IP address
      * @return a {@link java.lang.String} object.
@@ -732,7 +719,7 @@ public final class NetTools {
     }
 
     /**
-     * return true if the given string is a whole number between 200 and 399 (inclusive)
+     * Return true if the given string is a whole number between 200 and 399 (inclusive).
      *
      * @param string HTTP status as {@link String}
      * @return true if HTTP code is in the 200-399 range; false otherwise
@@ -776,7 +763,7 @@ public final class NetTools {
     }
 
     /**
-     * Append one or more query parameters to an existing URI
+     * Appends one or more query parameters to an existing URI.
      * 
      * @param uriString the URI as a string
      * @param queryParams A list of parameters. Each element of the list is assumed to be a list of size 2, whith the first element being the
@@ -790,7 +777,7 @@ public final class NetTools {
     }
 
     /**
-     * Append one or more query parameters to an existing URI
+     * Appends one or more query parameters to an existing URI.
      * 
      * @param uri the URI
      * @param queryParams A list of parameters. Each element of the list is assumed to be a list of size 2, whith the first element being the

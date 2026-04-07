@@ -36,9 +36,7 @@ import io.goobi.viewer.api.rest.model.ErrorMessage;
 import io.goobi.viewer.exceptions.RestApiException;
 
 /**
- * <p>
  * RestApiExceptionMapper class.
- * </p>
  *
  * @author Florian Alpers
  */

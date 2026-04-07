@@ -44,7 +44,7 @@ import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.StringTools;
 
 /**
- * Detect word coordinates in alto document
+ * Detects word coordinates in alto document.
  */
 public class CoordinateFinder {
 

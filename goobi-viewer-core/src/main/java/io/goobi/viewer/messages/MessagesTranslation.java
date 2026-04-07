@@ -30,18 +30,14 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
- * <p>
  * MessagesTranslation class.
- * </p>
  *
  * @author florian
  */
 public class MessagesTranslation extends Translation {
 
     /**
-     * <p>
-     * Constructor for MessagesTranslation.
-     * </p>
+     * Creates a new MessagesTranslation instance.
      *
      * @param key a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -53,9 +49,7 @@ public class MessagesTranslation extends Translation {
     }
 
     /**
-     * <p>
      * getTranslations.
-     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @return a {@link java.util.Collection} object.

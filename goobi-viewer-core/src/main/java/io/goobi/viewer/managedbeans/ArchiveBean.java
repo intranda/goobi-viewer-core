@@ -190,9 +190,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * <p>
      * expandEntry.
-     * </p>
      *
      * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
@@ -212,9 +210,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * <p>
      * collapseEntry.
-     * </p>
      *
      * @param entry a {@link io.goobi.viewer.model.toc.TOCElement} object.
      */
@@ -524,9 +520,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * <p>
      * getMetsResolverUrl.
-     * </p>
      *
      * @return METS resolver link
      */
@@ -567,9 +561,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteArchiveAction.
-     * </p>
      *
      * @return outcome
      * @throws java.io.IOException if any.

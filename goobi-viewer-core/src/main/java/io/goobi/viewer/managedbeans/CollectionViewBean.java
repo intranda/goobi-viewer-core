@@ -81,7 +81,7 @@ public class CollectionViewBean implements Serializable {
     private Map<String, Map<String, CollectionResult>> collectionStatistics = new HashMap<>();
 
     /**
-     * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been
+     * Gets the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been
      * initialized yet, do so and add it to the Bean's CollectionView map
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} instance providing the base data for this
@@ -97,9 +97,7 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCollection.
-     * </p>
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @param topVisibleElement a {@link java.lang.String} object
@@ -135,9 +133,7 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCollectionId.
-     * </p>
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @return a {@link java.lang.String} object
@@ -154,9 +150,7 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCollectionIfStored.
-     * </p>
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @return a {@link java.util.Optional} object
@@ -168,9 +162,7 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>
      * removeCollection.
-     * </p>
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @return a boolean
@@ -307,8 +299,9 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * Count the hierarchy level difference between the given collections. Positive return values mean the the second collection has a higher level.
-     * Does not consider whether one collection is a child of the other
+     * Counts the hierarchy level difference between the given collections. Positive return values mean the the second collection has a higher level.
+     *
+     * <p>Does not consider whether one collection is a child of the other
      * 
      * @param collection1
      * @param collection2
@@ -323,9 +316,7 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>
      * getColletionMap.
-     * </p>
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @return Map&lt;String, CollectionResult&gt;
@@ -344,9 +335,7 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>
      * removeCollectionsForPage.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
      */
@@ -361,9 +350,7 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>
      * getLoadedCollectionsForPage.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
      * @return a {@link java.util.List} object
@@ -377,7 +364,7 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * get a list of all {@link io.goobi.viewer.model.viewer.collections.CollectionView}s with the given solr field which are already loaded via
+     * Get a list of all {@link io.goobi.viewer.model.viewer.collections.CollectionView}s with the given solr field which are already loaded via
      * {@link #getCollection(CMSCollectionContent)}.
      *
      * @param field The solr field the collection is based on
@@ -388,9 +375,7 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>
      * invalidate.
-     * </p>
      */
     public void invalidate() {
         this.collections = new HashMap<>();

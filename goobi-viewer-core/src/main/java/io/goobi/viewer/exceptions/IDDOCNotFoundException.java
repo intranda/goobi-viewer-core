@@ -24,18 +24,14 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * <p>
  * RecordNotFoundException class.
- * </p>
  */
 public class IDDOCNotFoundException extends Exception implements Serializable {
 
     private static final long serialVersionUID = -8531031607653980345L;
 
     /**
-     * <p>
-     * Constructor for RecordNotFoundException.
-     * </p>
+     * Creates a new RecordNotFoundException instance.
      *
      * @param string {@link java.lang.String}
      */

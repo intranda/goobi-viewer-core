@@ -53,7 +53,6 @@ import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.viewer.StringPair;
 
 /**
- *
  */
 public class RISExport {
 

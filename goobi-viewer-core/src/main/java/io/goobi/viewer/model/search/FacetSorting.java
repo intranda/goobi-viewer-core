@@ -57,7 +57,6 @@ public final class FacetSorting {
      * alphabetical_raw for a alphabetical ordering by the values alone, without considering message keys. Passing any other value for sortOrder keeps
      * the original ordering of the values as they are added to the map.
      * 
-     * 
      * @param map Map containing values to sort
      * @param sortOrder sorting order
      * @return a SortingMap, which automatically orders entries as they are added to the map
@@ -80,7 +79,6 @@ public final class FacetSorting {
      * order is ascending alphabetical and alphanumerical orderings may use message keys to determine order and thus take longer to evaluate; use
      * alphabetical_raw for a alphabetical ordering by the values alone, without considering message keys. Passing any other value for sortOrder keeps
      * the original ordering of the values as they are added to the map.
-     * 
      * 
      * @param field The solr-field which values are to be sorted. Affects which configuration options are used for ordering
      * @param sortOrder sorting order
@@ -122,7 +120,7 @@ public final class FacetSorting {
     }
 
     /**
-     * A map container indicating the the contained map is created using one of the getSortedMap methods
+     * A map container indicating the the contained map is created using one of the getSortedMap methods.
      * 
      * @param <K> key
      * @param <V> value
@@ -136,7 +134,7 @@ public final class FacetSorting {
         }
 
         /**
-         * get the underlying map
+         * Get the underlying map.
          * 
          * @return a map
          */
@@ -145,7 +143,7 @@ public final class FacetSorting {
         }
 
         /**
-         * Add an entry to the underlying map
+         * Adds an entry to the underlying map.
          * 
          * @param a key
          * @param l value

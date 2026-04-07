@@ -30,10 +30,9 @@ import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * A matcher read from a configuration node which matches strings based on certain criteria
+ * A matcher read from a configuration node which matches strings based on certain criteria.
  * 
  * @author florian
- *
  */
 public class StringMatchConfiguration implements Predicate<String> {
 

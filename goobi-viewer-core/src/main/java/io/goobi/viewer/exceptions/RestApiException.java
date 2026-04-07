@@ -24,9 +24,7 @@ package io.goobi.viewer.exceptions;
 import jakarta.ws.rs.core.Response.Status;
 
 /**
- * <p>
  * RestApiException class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -35,9 +33,7 @@ public class RestApiException extends Exception {
     private final int statusCode;
 
     /**
-     * <p>
-     * Constructor for RestApiException.
-     * </p>
+     * Creates a new RestApiException instance.
      *
      * @param statusCode a int.
      */
@@ -47,9 +43,7 @@ public class RestApiException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for RestApiException.
-     * </p>
+     * Creates a new RestApiException instance.
      *
      * @param message a {@link java.lang.String} object.
      * @param cause a {@link java.lang.Throwable} object.
@@ -65,9 +59,7 @@ public class RestApiException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for RestApiException.
-     * </p>
+     * Creates a new RestApiException instance.
      *
      * @param message a {@link java.lang.String} object.
      * @param statusCode a int.
@@ -82,9 +74,7 @@ public class RestApiException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for RestApiException.
-     * </p>
+     * Creates a new RestApiException instance.
      *
      * @param cause a {@link java.lang.Throwable} object.
      * @param statusCode a int.
@@ -99,9 +89,7 @@ public class RestApiException extends Exception {
     }
 
     /**
-     * <p>
      * Getter for the field <code>statusCode</code>.
-     * </p>
      *
      * @return the statusCode
      */

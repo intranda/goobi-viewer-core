@@ -35,10 +35,9 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 
 /**
- * A subtype of {@link CustomSidebarWidget} to display a list of links to CMS pages
+ * A subtype of {@link CustomSidebarWidget} to display a list of links to CMS pages.
  *
  * @author florian
- *
  */
 @Entity
 @DiscriminatorValue("PageListSidebarWidget")
@@ -51,14 +50,14 @@ public class PageListSidebarWidget extends CustomSidebarWidget {
     private List<Long> pageIds = new ArrayList<>();
 
     /**
-     * Empty default constructor
+     * Empty default constructor.
      */
     public PageListSidebarWidget() {
 
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      * 
      * @param o
      */

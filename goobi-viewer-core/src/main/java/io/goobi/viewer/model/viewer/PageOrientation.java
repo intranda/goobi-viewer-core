@@ -22,18 +22,14 @@
 package io.goobi.viewer.model.viewer;
 
 /**
- * <p>
  * PageOrientation class.
- * </p>
  */
 public enum PageOrientation {
     LEFT,
     RIGHT;
 
     /**
-     * <p>
      * opposite.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.viewer.PageOrientation} object.
      */

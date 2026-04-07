@@ -85,7 +85,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * Converts resources found in a search to IIIF Search objects
+ * Converts resources found in a search to IIIF Search objects.
  *
  * @author florian
  */
@@ -105,7 +105,7 @@ public class SearchResultConverter {
     private AbstractApiUrlManager urls;
 
     /**
-     * Create a new converter; parameters are used to construct urls or result resources
+     * Creates a new converter; parameters are used to construct urls or result resources.
      *
      * @param urls
      * @param pi The PI of the manifest to search
@@ -122,9 +122,7 @@ public class SearchResultConverter {
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      */
@@ -133,9 +131,7 @@ public class SearchResultConverter {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -144,9 +140,7 @@ public class SearchResultConverter {
     }
 
     /**
-     * <p>
      * Setter for the field <code>pageNo</code>.
-     * </p>
      *
      * @param pageNo a {@link java.lang.Integer} object.
      */
@@ -155,9 +149,7 @@ public class SearchResultConverter {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageNo</code>.
-     * </p>
      *
      * @return a {@link java.lang.Integer} object.
      */
@@ -166,9 +158,7 @@ public class SearchResultConverter {
     }
 
     /**
-     * <p>
      * Getter for the field <code>presentationBuilder</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder} object.
      */
@@ -216,11 +206,11 @@ public class SearchResultConverter {
     }
 
     /**
-     * Create a IIIF Search hit from a UGC solr document (usually a crowdsourcing created comment/metadata)
+     * Creates a IIIF Search hit from a UGC solr document (usually a crowdsourcing created comment/metadata).
      *
      * @param queryRegex a {@link java.lang.String} object.
-     * @return A search hit matching the queryRegex within the given UGC SolrDocument
      * @param ugc a {@link org.apache.solr.common.SolrDocument} object.
+     * @return A search hit matching the queryRegex within the given UGC SolrDocument
      */
     public SearchHit convertUGCToHit(String queryRegex, SolrDocument ugc) {
         if (ugc == null) {
@@ -260,7 +250,7 @@ public class SearchResultConverter {
     }
 
     /**
-     * Create a IIIF Search hit from the field fieldName within the SolrDocumnet doc
+     * Creates a IIIF Search hit from the field fieldName within the SolrDocumnet doc.
      *
      * @param queryRegex a {@link java.lang.String} object.
      * @param fieldName a {@link java.lang.String} object.
@@ -297,7 +287,7 @@ public class SearchResultConverter {
     }
 
     /**
-     * Create annotations for all matches of the given query within the given alto file
+     * Creates annotations for all matches of the given query within the given alto file.
      *
      * @param path
      * @param query a regex; each match of the query within the alto document creates a {@link de.intranda.api.iiif.search.SearchHit} with one or more
@@ -333,7 +323,7 @@ public class SearchResultConverter {
 
     /**
      * Create annotations for all matches of the given query within the given text file Returns only a partial result if the firstIndex is larger than
-     * 0 and numHits is smaller than the total number of hits
+     * 0 and numHits is smaller than the total number of hits.
      *
      * @param text the text to search
      * @param pi the PI of the work containing the annotations
@@ -399,7 +389,7 @@ public class SearchResultConverter {
     }
 
     /**
-     * Convert a list of also word elements to a search hit, containing an annotation for each word in the list
+     * Converts a list of also word elements to a search hit, containing an annotation for each word in the list.
      *
      * @param altoElements A list of ALTO word elements
      * @return A hit of the combined words

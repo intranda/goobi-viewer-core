@@ -34,15 +34,15 @@ import com.ibm.icu.impl.UResource.Array;
 public enum RequestType {
 
     /**
-     * Call of a viewer html page belonging to a record
+     * Call of a viewer html page belonging to a record.
      */
     RECORD_VIEW(0, 1, "statistics__views"),
     /**
-     * Download of a file (pdf, epub) belonging to a record
+     * Download of a file (pdf, epub) belonging to a record.
      */
     FILE_DOWNLOAD(2, 3, "statistics__downloads"),
     /**
-     * REST-call to an image or other media resource of a record
+     * REST-call to an image or other media resource of a record.
      */
     MEDIA_RESOURCE(4, 5, "statistics__media_requests");
 
@@ -57,7 +57,7 @@ public enum RequestType {
     }
 
     /**
-     * Get a message key serving as label to this type
+     * Gets a message key serving as label to this type.
      * 
      * @return a message key
      */
@@ -66,7 +66,7 @@ public enum RequestType {
     }
 
     /**
-     * Index of the total request count within the array of values of the SOLR-field recording requests for a record
+     * Index of the total request count within the array of values of the SOLR-field recording requests for a record.
      * 
      * @return the totalCountIndex
      */
@@ -75,7 +75,7 @@ public enum RequestType {
     }
 
     /**
-     * Index of the count of requests by a unique http session within the array of values of the SOLR-field recording requests for a record
+     * Index of the count of requests by a unique http session within the array of values of the SOLR-field recording requests for a record.
      * 
      * @return the uniqueCountIndex
      */
@@ -104,7 +104,7 @@ public enum RequestType {
     }
 
     /**
-     * Get the RequestType for the given index of the count array for total count in the SOLR field for the counts of a record identifier
+     * Gets the RequestType for the given index of the count array for total count in the SOLR field for the counts of a record identifier.
      * 
      * @param index
      * @return the type
@@ -115,7 +115,7 @@ public enum RequestType {
     }
 
     /**
-     * Get the RequestType for the given index of the count array for unique count in the SOLR field for the counts of a record identifier
+     * Gets the RequestType for the given index of the count array for unique count in the SOLR field for the counts of a record identifier.
      * 
      * @param index
      * @return the type
@@ -126,7 +126,7 @@ public enum RequestType {
     }
 
     /**
-     * Get the values for which request are recorded
+     * Gets the values for which request are recorded.
      * 
      * @return An array
      */

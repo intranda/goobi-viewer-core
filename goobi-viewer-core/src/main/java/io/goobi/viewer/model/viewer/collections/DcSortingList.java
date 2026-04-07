@@ -36,9 +36,7 @@ public class DcSortingList {
     private final List<String> collections;
 
     /**
-     * <p>
-     * Constructor for DcSortingList.
-     * </p>
+     * Creates a new DcSortingList instance.
      *
      * @param sortAfter the collection after which to insert the collectionlist
      * @param collectionList the sorted list of collections to insert
@@ -50,9 +48,7 @@ public class DcSortingList {
     }
 
     /**
-     * <p>
-     * Constructor for DcSortingList.
-     * </p>
+     * Creates a new DcSortingList instance.
      *
      * @param sortAfter the collection after which to insert the collectionlist
      */
@@ -63,9 +59,7 @@ public class DcSortingList {
     }
 
     /**
-     * <p>
-     * Constructor for DcSortingList.
-     * </p>
+     * Creates a new DcSortingList instance.
      *
      * @param collectionList the sorted list of collections to insert
      */
@@ -76,9 +70,7 @@ public class DcSortingList {
     }
 
     /**
-     * <p>
-     * Constructor for DcSortingList.
-     * </p>
+     * Creates a new DcSortingList instance.
      */
     public DcSortingList() {
         super();
@@ -87,9 +79,7 @@ public class DcSortingList {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortAfter</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -98,9 +88,7 @@ public class DcSortingList {
     }
 
     /**
-     * <p>
      * Getter for the field <code>collections</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -109,9 +97,7 @@ public class DcSortingList {
     }
 
     /**
-     * <p>
      * addCollection.
-     * </p>
      *
      * @param collection a {@link java.lang.String} object.
      */

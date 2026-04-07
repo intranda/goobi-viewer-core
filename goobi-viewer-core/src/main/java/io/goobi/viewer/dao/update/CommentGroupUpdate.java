@@ -43,9 +43,7 @@ public class CommentGroupUpdate implements IModelUpdate {
     }
 
     /**
-     * <p>
      * persistData.
-     * </p>
      *
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

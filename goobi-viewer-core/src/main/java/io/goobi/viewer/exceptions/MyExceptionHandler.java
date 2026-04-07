@@ -60,18 +60,14 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  * http://www.facebook.com/note.php?note_id=125229397708&comments&ref=mf
  */
 /**
- * <p>
  * MyExceptionHandler class.
- * </p>
  */
 public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
     private static final Logger logger = LogManager.getLogger(MyExceptionHandler.class);
 
     /**
-     * <p>
-     * Constructor for MyExceptionHandler.
-     * </p>
+     * Creates a new MyExceptionHandler instance.
      *
      * @param wrapped a {@link jakarta.faces.context.ExceptionHandler} object.
      */

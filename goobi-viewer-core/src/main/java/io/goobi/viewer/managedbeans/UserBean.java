@@ -139,9 +139,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * updateSessionTimeoutCounter.
-     * </p>
      */
     public void updateSessionTimeoutCounter() {
         logger.trace("updateSessionTimeoutCounter");
@@ -149,9 +147,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * getSessionTimeout.
-     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -259,9 +255,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * activateUserAccountAction.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -307,9 +301,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * login.
-     * </p>
      *
      * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      * @return a {@link java.lang.String} object.
@@ -732,9 +724,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * transkribusLoginAction.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -760,9 +750,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>user</code>.
-     * </p>
      *
      * @return the user
      */
@@ -771,9 +759,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>user</code>.
-     * </p>
      *
      * @param user the user to set
      */
@@ -782,9 +768,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>nickName</code>.
-     * </p>
      *
      * @return the nickName
      */
@@ -793,9 +777,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>nickName</code>.
-     * </p>
      *
      * @param nickName the nickName to set
      */
@@ -804,9 +786,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>email</code>.
-     * </p>
      *
      * @return the email
      */
@@ -815,9 +795,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>email</code>.
-     * </p>
      *
      * @param email the email to set
      */
@@ -826,9 +804,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>password</code>.
-     * </p>
      *
      * @return the password
      */
@@ -837,9 +813,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>password</code>.
-     * </p>
      *
      * @param password the password to set
      */
@@ -848,9 +822,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * isLoggedIn.
-     * </p>
      *
      * @return a boolean.
      */
@@ -859,9 +831,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * isAdmin.
-     * </p>
      *
      * @return a boolean.
      */
@@ -870,9 +840,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * isUserRegistrationEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -881,9 +849,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * isShowOpenId.
-     * </p>
      *
      * @return a boolean.
      */
@@ -896,9 +862,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>authenticationProviders</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -907,9 +871,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * getLocalAuthenticationProvider.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      */
@@ -918,9 +880,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * getXserviceAuthenticationProvider.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      */
@@ -929,9 +889,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * showAuthenticationProviderSelection.
-     * </p>
      *
      * @return a boolean
      */
@@ -942,9 +900,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>authenticationProvider</code>.
-     * </p>
      *
      * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      */
@@ -954,9 +910,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>authenticationProvider</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      */
@@ -965,9 +919,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * setAuthenticationProviderName.
-     * </p>
      *
      * @param name a {@link java.lang.String} object.
      */
@@ -979,9 +931,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAuthenticationProviderName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -994,9 +944,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>passwordOne</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1005,9 +953,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>passwordOne</code>.
-     * </p>
      *
      * @param passwordOne a {@link java.lang.String} object.
      */
@@ -1016,9 +962,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>passwordTwo</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1027,9 +971,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>passwordTwo</code>.
-     * </p>
      *
      * @param passwordTwo a {@link java.lang.String} object.
      */
@@ -1038,9 +980,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetPasswordFields.
-     * </p>
      */
     public void resetPasswordFields() {
         passwordOne = "";
@@ -1048,9 +988,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lastName</code>.
-     * </p>
      *
      * @return the lastName
      */
@@ -1059,9 +997,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>lastName</code>.
-     * </p>
      *
      * @param lastName the lastName to set
      */
@@ -1070,9 +1006,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>redirectUrl</code>.
-     * </p>
      *
      * @return the redirectUrl
      */
@@ -1081,9 +1015,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>redirectUrl</code>.
-     * </p>
      *
      * @param redirectUrl the redirectUrl to set
      */
@@ -1115,9 +1047,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>activationKey</code>.
-     * </p>
      *
      * @return the activationKey
      */
@@ -1126,9 +1056,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>activationKey</code>.
-     * </p>
      *
      * @param activationKey the activationKey to set
      */
@@ -1137,9 +1065,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>transkribusUserName</code>.
-     * </p>
      *
      * @return the transkribusUserName
      */
@@ -1148,9 +1074,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>transkribusUserName</code>.
-     * </p>
      *
      * @param transkribusUserName the transkribusUserName to set
      */
@@ -1159,9 +1083,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>transkribusPassword</code>.
-     * </p>
      *
      * @return the transkribusPassword
      */
@@ -1170,9 +1092,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>transkribusPassword</code>.
-     * </p>
      *
      * @param transkribusPassword the transkribusPassword to set
      */
@@ -1203,9 +1123,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>hasAdminBackendAccess</code>.
-     * </p>
      *
      * @param hasAdminBackendAccess the hasAdminBackendAccess to set
      */
@@ -1214,9 +1132,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * userEquals.
-     * </p>
      *
      * @param id a long.
      * @return a boolean.
@@ -1226,9 +1142,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * hasProvidersOfType.
-     * </p>
      *
      * @param type a {@link java.lang.String} object.
      * @return a boolean.
@@ -1241,9 +1155,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * getProvidersOfType.
-     * </p>
      *
      * @param type a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -1256,9 +1168,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * getNumberOfProviderTypes.
-     * </p>
      *
      * @return a int.
      */
@@ -1267,9 +1177,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * isAllowPasswordChange.
-     * </p>
      *
      * @return a boolean.
      */
@@ -1278,9 +1186,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * isAllowNickNameChange.
-     * </p>
      *
      * @return a boolean.
      */
@@ -1290,9 +1196,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * isAllowEmailChange.
-     * </p>
      *
      * @return a boolean.
      */
@@ -1302,9 +1206,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * isRequireLoginCaptcha.
-     * </p>
      *
      * @return a boolean
      */
@@ -1314,7 +1216,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * Check if the current user is required to agree to the terms of use
+     * Checks if the current user is required to agree to the terms of use.
      *
      * @return true if a user is logged in and {@link io.goobi.viewer.model.security.user.User#isAgreedToTermsOfUse()} returns false for this user
      */
@@ -1323,9 +1225,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * agreeToTermsOfUse.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1337,9 +1237,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * rejectTermsOfUse.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1351,9 +1249,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * logoutWithMessage.
-     * </p>
      *
      * @param messageKey a {@link java.lang.String} object
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
@@ -1366,9 +1262,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>
      * createBackupOfCurrentUser.
-     * </p>
      */
     public void createBackupOfCurrentUser() {
         if (getUser() != null) {

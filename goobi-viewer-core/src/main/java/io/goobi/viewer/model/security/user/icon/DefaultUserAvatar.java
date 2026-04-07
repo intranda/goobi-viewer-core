@@ -30,7 +30,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * @author florian
- *
  */
 public class DefaultUserAvatar implements UserAvatar {
 

@@ -32,9 +32,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * <p>
  * SimpleBrowseElementInfo class.
- * </p>
  */
 public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable {
 
@@ -48,9 +46,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     private String collectionName;
 
     /**
-     * <p>
-     * Constructor for SimpleBrowseElementInfo.
-     * </p>
+     * Creates a new SimpleBrowseElementInfo instance.
      *
      * @param collectionName a {@link java.lang.String} object.
      */
@@ -59,9 +55,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     }
 
     /**
-     * <p>
-     * Constructor for SimpleBrowseElementInfo.
-     * </p>
+     * Creates a new SimpleBrowseElementInfo instance.
      *
      * @param collectionName a {@link java.lang.String} object.
      * @param linkURI a {@link java.net.URI} object.
@@ -88,9 +82,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
      * @param description a {@link java.lang.String} object.
      */
@@ -111,9 +103,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     }
 
     /**
-     * <p>
      * Setter for the field <code>linkURI</code>.
-     * </p>
      *
      * @param linkURI a {@link java.net.URI} object.
      */
@@ -128,9 +118,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo, Serializable 
     }
 
     /**
-     * <p>
      * Setter for the field <code>iconURI</code>.
-     * </p>
      *
      * @param iconURI a {@link java.net.URI} object.
      */

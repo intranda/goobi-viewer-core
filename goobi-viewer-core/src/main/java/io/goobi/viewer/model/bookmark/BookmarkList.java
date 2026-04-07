@@ -69,9 +69,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * <p>
  * BookmarkList class.
- * </p>
  */
 @Entity
 @Table(name = "bookshelves")
@@ -86,7 +84,6 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
     /**
-     *
      */
     public static final String MIRADOR_LIB_PATH = "/resources/javascript/libs/mirador/";
 
@@ -206,7 +203,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * add bookshelf to list and save
+     * Add bookshelf to list and save.
      *
      * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
      * @return boolean if list changed
@@ -224,7 +221,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * remove bookshelf from list and save
+     * Remove bookshelf from list and save.
      *
      * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
      * @return boolean if list changed
@@ -237,7 +234,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * add user group to list and save
+     * Add user group to list and save.
      *
      * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @return boolean if list changed
@@ -247,7 +244,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * remove user group from list and save
+     * Remove user group from list and save.
      *
      * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @return boolean if list changed
@@ -309,9 +306,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * isMayView.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a boolean.
@@ -341,9 +336,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * isMayEdit.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a boolean.
@@ -369,9 +362,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -380,9 +371,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -391,9 +380,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
      * @return the name
      */
@@ -402,9 +389,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
      * @param name the name to set
      */
@@ -417,9 +402,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
      * @return the description
      */
@@ -428,9 +411,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
      * @param description the description to set
      */
@@ -439,9 +420,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * hasDescription.
-     * </p>
      *
      * @return a boolean.
      */
@@ -450,9 +429,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
      * @return the owner
      */
@@ -461,9 +438,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
      * @param owner the owner to set
      */
@@ -472,9 +447,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * isIsPublic.
-     * </p>
      *
      * @return the isPublic
      */
@@ -483,9 +456,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * getPublicString.
-     * </p>
      *
      * @return the isPublic Value as a String <br>
      *         surrounded with ()
@@ -502,9 +473,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>isPublic</code>.
-     * </p>
      *
      * @param isPublic the isPublic to set
      */
@@ -513,9 +482,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>shareKey</code>.
-     * </p>
      *
      * @return the shareKey
      */
@@ -524,9 +491,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>shareKey</code>.
-     * </p>
      *
      * @param shareKey the shareKey to set
      */
@@ -567,9 +532,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * getNumItems.
-     * </p>
      *
      * @return Number of items
      */
@@ -580,9 +543,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>items</code>.
-     * </p>
      *
      * @return the items
      */
@@ -591,9 +552,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>items</code>.
-     * </p>
      *
      * @param items the items to set
      */
@@ -602,9 +561,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>groupShares</code>.
-     * </p>
      *
      * @return the groupShares
      */
@@ -616,9 +573,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>groupShares</code>.
-     * </p>
      *
      * @param groupShares the groupShares to set
      */
@@ -627,9 +582,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * getOwnerName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -643,9 +596,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * getMiradorJsonObject.
-     * </p>
      *
      * @param applicationRoot a {@link java.lang.String} object.
      * @param restApiUrl
@@ -722,9 +673,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * getFilterQuery.
-     * </p>
      *
      * @should construct query correctly
      * @return a {@link java.lang.String} object.
@@ -746,9 +695,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * <p>
      * getIIIFCollectionURI.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */

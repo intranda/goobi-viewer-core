@@ -59,7 +59,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Utility class for retrieving data folders, data files and source files.
- *
  */
 public final class DataFileTools {
 
@@ -107,7 +106,7 @@ public final class DataFileTools {
     }
 
     /**
-     * Constructs the media folder path for the given pi, either directly in viewer-home or within a data repository
+     * Constructs the media folder path for the given pi, either directly in viewer-home or within a data repository.
      *
      * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
      * @return A Path to the media folder for the given PI
@@ -119,7 +118,7 @@ public final class DataFileTools {
     }
 
     /**
-     * Constructs the pdf folder path for the given pi, either directly in viewer-home or within a data repository
+     * Constructs the pdf folder path for the given pi, either directly in viewer-home or within a data repository.
      *
      * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
      * @return A Path to the pdf folder for the given PI
@@ -131,7 +130,7 @@ public final class DataFileTools {
     }
 
     /**
-     * Constructs the alto folder path for the given pi, either directly in viewer-home or within a data repository
+     * Constructs the alto folder path for the given pi, either directly in viewer-home or within a data repository.
      *
      * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
      * @return A Path to the alto folder for the given PI
@@ -146,9 +145,9 @@ public final class DataFileTools {
      * Returns a map of Paths for each data folder name passed as an argument.
      *
      * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
+     * @param dataFolderNames a {@link java.lang.String} object.
      * @return HashMap&lt;dataFolderName,Path&gt;
      * @should return all requested data folders
-     * @param dataFolderNames a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -242,9 +241,7 @@ public final class DataFileTools {
     }
 
     /**
-     * <p>
      * getDataFilePath.
-     * </p>
      *
      * @param pi Record identifier
      * @param relativeFilePath File path relative to data repositories root
@@ -342,9 +339,7 @@ public final class DataFileTools {
     }
 
     /**
-     * <p>
      * getTextFilePath.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
@@ -381,9 +376,7 @@ public final class DataFileTools {
     }
 
     /**
-     * <p>
      * getTextFilePath.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param relativeFilePath ALTO/text file path relative to the data folder
@@ -495,9 +488,7 @@ public final class DataFileTools {
     }
 
     /**
-     * <p>
      * loadTei.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param language a {@link java.lang.String} object.
@@ -562,7 +553,7 @@ public final class DataFileTools {
     }
 
     /**
-     * creates a Dataset object, containing all relevant file paths
+     * Creates a Dataset object, containing all relevant file paths.
      * 
      * @param pi a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.Dataset} object.

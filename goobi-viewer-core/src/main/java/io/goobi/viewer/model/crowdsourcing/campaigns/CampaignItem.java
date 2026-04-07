@@ -67,9 +67,7 @@ public class CampaignItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>source</code>.
-     * </p>
      *
      * @param source the source to set
      */
@@ -78,7 +76,7 @@ public class CampaignItem {
     }
 
     /**
-     * The {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} to create the annotations
+     * The {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} to create the annotations.
      *
      * @return the campaign
      */
@@ -87,9 +85,7 @@ public class CampaignItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>campaign</code>.
-     * </p>
      *
      * @param campaign the campaign to set
      */
@@ -98,9 +94,7 @@ public class CampaignItem {
     }
 
     /**
-     * <p>
      * getQuestions.
-     * </p>
      *
      * @return a new list containing all queries
      */
@@ -119,9 +113,7 @@ public class CampaignItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>recordStatus</code>.
-     * </p>
      *
      * @param recordStatus the recordStatus to set
      */
@@ -130,9 +122,7 @@ public class CampaignItem {
     }
 
     /**
-     * <p>
      * isFinished.
-     * </p>
      *
      * @return true exactly if {@link #getRecordStatus()} is
      *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#FINISHED}
@@ -142,9 +132,7 @@ public class CampaignItem {
     }
 
     /**
-     * <p>
      * isInReview.
-     * </p>
      *
      * @return true exactly if {@link #getRecordStatus()} is
      *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#REVIEW}
@@ -164,9 +152,7 @@ public class CampaignItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>creatorURI</code>.
-     * </p>
      *
      * @param creatorURI the creatorURI to set
      */

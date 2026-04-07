@@ -59,9 +59,7 @@ import jakarta.persistence.Transient;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * <p>
  * CMSNavigationItem class.
- * </p>
  */
 @Entity
 @Table(name = "cms_navigation_items")
@@ -140,7 +138,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * Created a copy of the passed item ignoring all data concerning the item hierarchy (order, child and parent items)
+     * Created a copy of the passed item ignoring all data concerning the item hierarchy (order, child and parent items).
      *
      * @param original a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
@@ -156,9 +154,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
-     * Constructor for CMSNavigationItem.
-     * </p>
+     * Creates a new CMSNavigationItem instance.
      *
      * @param targetUrl a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
@@ -169,9 +165,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
-     * Constructor for CMSNavigationItem.
-     * </p>
+     * Creates a new CMSNavigationItem instance.
      *
      * @param cmsPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
@@ -221,9 +215,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return a {@link java.lang.Long} object.
      */
@@ -232,9 +224,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id a {@link java.lang.Long} object.
      */
@@ -243,9 +233,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>itemLabel</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -257,9 +245,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Setter for the field <code>itemLabel</code>.
-     * </p>
      *
      * @param itemLabel a {@link java.lang.String} object.
      */
@@ -268,9 +254,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>order</code>.
-     * </p>
      *
      * @return the order
      */
@@ -279,9 +263,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Setter for the field <code>order</code>.
-     * </p>
      *
      * @param order the order to set
      */
@@ -290,9 +272,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>parentItem</code>.
-     * </p>
      *
      * @return the parentItem
      */
@@ -301,9 +281,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Setter for the field <code>parentItem</code>.
-     * </p>
      *
      * @param parentItem the parentItem to set
      */
@@ -315,9 +293,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>childItems</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -326,9 +302,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Setter for the field <code>childItems</code>.
-     * </p>
      *
      * @param childItems a {@link java.util.List} object.
      */
@@ -356,9 +330,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * addChildItem.
-     * </p>
      *
      * @param child a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
@@ -369,9 +341,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * removeChildItem.
-     * </p>
      *
      * @param child a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
@@ -382,9 +352,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>cmsPage</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
@@ -393,9 +361,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Setter for the field <code>cmsPage</code>.
-     * </p>
      *
      * @param cmsPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
@@ -404,9 +370,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * getNavigationUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -443,9 +407,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageUrl</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -457,9 +419,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Setter for the field <code>pageUrl</code>.
-     * </p>
      *
      * @param pageUrl a {@link java.lang.String} object.
      */
@@ -472,9 +432,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * hasUnpublishedCmsPage.
-     * </p>
      *
      * @return true if this item has an associated cmsPage and this page's status is unpublished
      */
@@ -483,9 +441,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * isValid.
-     * </p>
      *
      * @return a boolean.
      */
@@ -494,9 +450,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * isShouldDisplay.
-     * </p>
      *
      * @return a boolean.
      */
@@ -523,9 +477,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * hasDeletedCmsPage.
-     * </p>
      *
      * @return true if this item has no associated cmsPage, but the url is that of a cms page or is empty
      */
@@ -534,9 +486,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * hasCmsPage.
-     * </p>
      *
      * @return a boolean.
      */
@@ -581,9 +531,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortingListId</code>.
-     * </p>
      *
      * @return the sortingListId
      */
@@ -592,9 +540,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Setter for the field <code>sortingListId</code>.
-     * </p>
      *
      * @param sortingListId the sortingListId to set
      */
@@ -603,9 +549,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * isAbsoluteLink.
-     * </p>
      *
      * @return a boolean.
      */
@@ -614,9 +558,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Setter for the field <code>absoluteLink</code>.
-     * </p>
      *
      * @param absoluteLink a boolean.
      */
@@ -625,9 +567,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * isVisible.
-     * </p>
      *
      * @return a boolean.
      */
@@ -649,9 +589,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Setter for the field <code>displayRule</code>.
-     * </p>
      *
      * @param rule a {@link io.goobi.viewer.model.cms.CMSNavigationItem.DisplayRule} object.
      */
@@ -660,9 +598,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>displayRule</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem.DisplayRule} object.
      */
@@ -674,9 +610,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * setDisplayForUsersOnly.
-     * </p>
      *
      * @param display a boolean.
      */
@@ -685,9 +619,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * isDisplayForUsersOnly.
-     * </p>
      *
      * @return a boolean.
      */
@@ -696,9 +628,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * setDisplayForAdminsOnly.
-     * </p>
      *
      * @param display a boolean.
      */
@@ -707,9 +637,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * isDisplayForAdminsOnly.
-     * </p>
      *
      * @return a boolean.
      */
@@ -718,7 +646,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * Sets the {@link #associatedTheme} to the given theme, or to null if the given theme is empty or blank
+     * Sets the {@link #associatedTheme} to the given theme, or to null if the given theme is empty or blank.
      *
      * @param associatedTheme the associatedTheme to set
      */
@@ -727,9 +655,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>associatedTheme</code>.
-     * </p>
      *
      * @return the associatedTheme; null if no associated theme exists
      */
@@ -738,9 +664,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * Setter for the field <code>openInNewWindow</code>.
-     * </p>
      *
      * @param openInNewWindow if the link should open in a new tab/window
      */
@@ -749,9 +673,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * isOpenInNewWindow.
-     * </p>
      *
      * @return if the link should open in a new tab/window
      */
@@ -771,9 +693,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     /**
-     * <p>
      * getMeWithDescendants.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */

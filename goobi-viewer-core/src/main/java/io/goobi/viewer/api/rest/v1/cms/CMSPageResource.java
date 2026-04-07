@@ -41,10 +41,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * Return basic information about cms pages. Used for sliders
+ * Returns basic information about cms pages. Used for sliders
  *
  * @author florian
- *
  */
 
 @Hidden

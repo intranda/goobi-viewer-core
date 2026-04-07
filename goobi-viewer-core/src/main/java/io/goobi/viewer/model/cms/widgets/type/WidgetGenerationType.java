@@ -25,11 +25,10 @@ package io.goobi.viewer.model.cms.widgets.type;
  * Indicates how data for a sidebar widget is created and stored.
  * 
  * @author florian
- *
  */
 public enum WidgetGenerationType {
     /**
-     * Static widgets with no underlying data, just a xhtml component
+     * Static widgets with no underlying data, just a xhtml component.
      */
     DEFAULT(""),
     /**
@@ -37,7 +36,7 @@ public enum WidgetGenerationType {
      */
     AUTOMATIC("cms_widgets__type_automatic"),
     /**
-     * Widgets created manually with individual settings
+     * Widgets created manually with individual settings.
      */
     CUSTOM("cms_widgets__type_custom");
 

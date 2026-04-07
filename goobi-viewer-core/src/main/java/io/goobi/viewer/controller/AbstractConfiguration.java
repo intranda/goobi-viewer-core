@@ -90,9 +90,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalInt.
-     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @param inDefault a int.
@@ -111,9 +109,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalFloat.
-     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @return a float.
@@ -123,9 +119,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalFloat.
-     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @param inDefault a float.
@@ -144,9 +138,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalString.
-     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @param inDefault a {@link java.lang.String} object.
@@ -162,9 +154,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalString.
-     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -174,9 +164,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalNodeList.
-     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -195,9 +183,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalList.
-     * </p>
      *
      * @param config Preferred configuration
      * @param altConfig Alternative configuration
@@ -223,9 +209,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalList.
-     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @param defaultList a {@link java.util.List} object.
@@ -236,9 +220,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalList.
-     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @return configured list; empty list if none found
@@ -248,9 +230,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalBoolean.
-     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @param inDefault a boolean.
@@ -287,9 +267,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalConfigurationsAt.
-     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -315,9 +293,7 @@ public abstract class AbstractConfiguration {
     }
 
     /**
-     * <p>
      * getLocalConfigurationAt.
-     * </p>
      *
      * @param inPath a {@link java.lang.String} object.
      * @return a {@link org.apache.commons.configuration2.HierarchicalConfiguration} object.

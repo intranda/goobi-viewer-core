@@ -54,9 +54,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * <p>
  * LayerBuilder class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -65,9 +63,7 @@ public class LayerBuilder extends AbstractBuilder {
     private static final Logger logger = LogManager.getLogger(LayerBuilder.class);
 
     /**
-     * <p>
-     * Constructor for LayerBuilder.
-     * </p>
+     * Creates a new LayerBuilder instance.
      *
      * @param apiUrlManager
      */
@@ -76,9 +72,7 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * createAnnotationLayer.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
@@ -111,9 +105,7 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * createAnnotation.
-     * </p>
      *
      * @param annotationId a {@link java.net.URI} object.
      * @param linkURI a {@link java.net.URI} object.
@@ -145,9 +137,7 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * createAnnotationList.
-     * </p>
      *
      * @param annotations a {@link java.util.List} object.
      * @param id a {@link java.net.URI} object.
@@ -164,9 +154,7 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * generateLayer.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param annoLists a {@link java.util.Map} object.
@@ -183,9 +171,7 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * mergeAnnotationLists.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param annoLists a {@link java.util.Map} object.
@@ -209,9 +195,7 @@ public class LayerBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * getLanguage.
-     * </p>
      *
      * @param filename a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.

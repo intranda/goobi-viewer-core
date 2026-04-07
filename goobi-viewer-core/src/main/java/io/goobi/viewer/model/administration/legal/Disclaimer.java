@@ -41,7 +41,6 @@ import io.goobi.viewer.model.translations.TranslatedText;
  * Class to persist settings for the disclaimer modal. Only one instance of this class should be persisted in the database
  *
  * @author florian
- *
  */
 @Entity
 @Table(name = "disclaimer")
@@ -88,14 +87,14 @@ public class Disclaimer {
     private DisplayScope displayScope = new DisplayScope(PageScope.RECORD, "");
 
     /**
-     * Empty default constructor
+     * Empty default constructor.
      */
     public Disclaimer() {
 
     }
 
     /**
-     * cloning constructor
+     * Cloning constructor.
      * 
      * @param orig
      */
@@ -109,7 +108,7 @@ public class Disclaimer {
     }
 
     /**
-     * database id
+     * Database id.
      * 
      * @return the id
      */
@@ -118,7 +117,7 @@ public class Disclaimer {
     }
 
     /**
-     * set the database id
+     * Set the database id.
      * 
      * @param id the id to set
      */
@@ -127,7 +126,7 @@ public class Disclaimer {
     }
 
     /**
-     * the text to show in the disclaimer
+     * The text to show in the disclaimer.
      * 
      * @return the text
      */
@@ -136,7 +135,7 @@ public class Disclaimer {
     }
 
     /**
-     * set the disclaimer text
+     * Set the disclaimer text.
      * 
      * @param text the text to set
      */
@@ -145,7 +144,7 @@ public class Disclaimer {
     }
 
     /**
-     * get if the disclaimer is active
+     * Get if the disclaimer is active.
      * 
      * @return true if the disclaimer is to be shown at all
      */
@@ -154,7 +153,7 @@ public class Disclaimer {
     }
 
     /**
-     * set the disclaimer to active/inactive state
+     * Set the disclaimer to active/inactive state.
      * 
      * @param active the active to set
      */
@@ -163,7 +162,7 @@ public class Disclaimer {
     }
 
     /**
-     * get the date after which acceptance of the disclaimer must have happened to be valid
+     * Get the date after which acceptance of the disclaimer must have happened to be valid.
      * 
      * @return a date
      */
@@ -172,7 +171,7 @@ public class Disclaimer {
     }
 
     /**
-     * set the date after which acceptance of the disclaimer must have happened to be valid
+     * Set the date after which acceptance of the disclaimer must have happened to be valid.
      * 
      * @param requiresConsentAfter the requiresConsentAfter to set
      */
@@ -189,7 +188,7 @@ public class Disclaimer {
     }
 
     /**
-     * get the {@link #acceptanceScope} of the disclaimer
+     * Get the {@link #acceptanceScope} of the disclaimer.
      * 
      * @return the {@link ConsentScope}
      */
@@ -198,7 +197,7 @@ public class Disclaimer {
     }
 
     /**
-     * set the {@link #acceptanceScope} of the disclaimer
+     * Set the {@link #acceptanceScope} of the disclaimer.
      * 
      * @param acceptanceScope a {@link ConsentScope}
      */

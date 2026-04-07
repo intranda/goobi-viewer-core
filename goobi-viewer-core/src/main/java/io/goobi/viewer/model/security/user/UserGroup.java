@@ -48,9 +48,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
  * UserGroup class.
- * </p>
  */
 @Entity
 @Table(name = "user_groups")
@@ -149,9 +147,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * changeMemberRole.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param role a {@link io.goobi.viewer.model.security.Role} object.
@@ -168,7 +164,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * remove User from Group
+     * Remove User from Group.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a boolean.
@@ -185,9 +181,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * hasUserPrivilege.
-     * </p>
      *
      * @param privilegeName a {@link java.lang.String} object.
      * @return a boolean.
@@ -206,9 +200,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -217,9 +209,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -234,9 +224,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
      * @param name the name to set
      */
@@ -245,9 +233,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
      * @return the description
      */
@@ -256,9 +242,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
      * @param description the description to set
      */
@@ -272,9 +256,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
      * @return the owner
      */
@@ -283,9 +265,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
      * @param owner the owner to set
      */
@@ -294,9 +274,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * isActive.
-     * </p>
      *
      * @return the active
      */
@@ -305,9 +283,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>active</code>.
-     * </p>
      *
      * @param active the active to set
      */
@@ -318,6 +294,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
 //    /**
 //     * <p>
 //     * Getter for the field <code>licenses</code>.
+//     *
 //     * </p>
 //     *
 //     * @param core a boolean.
@@ -361,9 +338,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * getMemberships.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -384,9 +359,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * getMembers.
-     * </p>
      *
      * @return a {@link java.util.Set} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

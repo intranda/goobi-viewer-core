@@ -43,9 +43,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 /**
- * <p>
  * ConvertAbbyyToAlto class.
- * </p>
  */
 public class ConvertAbbyyToAlto {
 
@@ -73,9 +71,7 @@ public class ConvertAbbyyToAlto {
     private int pageBlockCount = 0;
 
     /**
-     * <p>
      * convert.
-     * </p>
      *
      * @param input a {@link java.io.File} object.
      * @return a {@link org.jdom2.Element} object.
@@ -98,9 +94,7 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>
      * convert.
-     * </p>
      *
      * @param abbyyDoc a {@link org.jdom2.Document} object.
      * @return a {@link org.jdom2.Element} object.
@@ -113,7 +107,7 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * Add ALTO Layout Element
+     * Adds ALTO Layout Element
      * 
      * @param alto
      * @return {@link Element}
@@ -567,9 +561,7 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>
      * main.
-     * </p>
      *
      * @param args an array of {@link java.lang.String} objects.
      * @throws java.io.IOException if any.
@@ -617,9 +609,7 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>
      * Getter for the field <code>inputfilename</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -628,9 +618,7 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>
      * Setter for the field <code>inputfilename</code>.
-     * </p>
      *
      * @param inputfilename a {@link java.lang.String} object.
      */
@@ -639,9 +627,7 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>
      * Getter for the field <code>creationtime</code>.
-     * </p>
      *
      * @return a {@link java.time.LocalDateTime} object.
      */
@@ -650,9 +636,7 @@ public class ConvertAbbyyToAlto {
     }
 
     /**
-     * <p>
      * Setter for the field <code>creationtime</code>.
-     * </p>
      *
      * @param creationtime a {@link java.time.LocalDateTime} object.
      */

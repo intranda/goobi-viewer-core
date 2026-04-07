@@ -31,7 +31,6 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * @author florian
- *
  */
 public class UserUpdate implements IModelUpdate {
 

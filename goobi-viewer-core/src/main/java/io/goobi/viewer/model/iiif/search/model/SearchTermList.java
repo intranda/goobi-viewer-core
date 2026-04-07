@@ -37,9 +37,7 @@ public class SearchTermList extends ArrayList<SearchTerm> {
     private static final long serialVersionUID = -8451140510669249168L;
 
     /**
-     * <p>
-     * Constructor for SearchTermList.
-     * </p>
+     * Creates a new SearchTermList instance.
      */
     public SearchTermList() {
         super();
@@ -48,7 +46,8 @@ public class SearchTermList extends ArrayList<SearchTerm> {
     /**
      * {@inheritDoc}
      *
-     * Adds the given term to the list if no term with the same {@link SearchTerm#getMatch()} exists. Otherwise add the {@link SearchTerm#getCount()}
+     * <p>Adds the given term to the list if no term with the same {@link SearchTerm#getMatch()} exists. Otherwise add the {@link
+     * SearchTerm#getCount()}
      * of the given term to the existing term
      */
     @Override

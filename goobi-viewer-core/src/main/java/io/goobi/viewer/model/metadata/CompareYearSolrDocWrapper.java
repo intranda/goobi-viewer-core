@@ -26,9 +26,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
- * <p>
  * CompareYearSolrDocWrapper class.
- * </p>
  */
 public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocWrapper> {
 
@@ -38,9 +36,7 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
     private long year = 0;
 
     /**
-     * <p>
-     * Constructor for CompareYearSolrDocWrapper.
-     * </p>
+     * Creates a new CompareYearSolrDocWrapper instance.
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      */
@@ -106,9 +102,7 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
     }
 
     /**
-     * <p>
      * Getter for the field <code>solrDocument</code>.
-     * </p>
      *
      * @return a {@link org.apache.solr.common.SolrDocument} object.
      */
@@ -117,9 +111,7 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
     }
 
     /**
-     * <p>
      * Setter for the field <code>solrDocument</code>.
-     * </p>
      *
      * @param solrDocument a {@link org.apache.solr.common.SolrDocument} object.
      */
@@ -128,9 +120,7 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
     }
 
     /**
-     * <p>
      * Getter for the field <code>year</code>.
-     * </p>
      *
      * @return a long.
      */
@@ -139,9 +129,7 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
     }
 
     /**
-     * <p>
      * Setter for the field <code>year</code>.
-     * </p>
      *
      * @param year a long.
      */

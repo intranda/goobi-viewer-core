@@ -22,27 +22,21 @@
 package io.goobi.viewer.exceptions;
 
 /**
- * <p>
  * NotImplementedException class.
- * </p>
  *
  * @author florian
  */
 public class NotImplementedException extends Exception {
 
     /**
-     * <p>
-     * Constructor for NotImplementedException.
-     * </p>
+     * Creates a new NotImplementedException instance.
      */
     public NotImplementedException() {
         super();
     }
 
     /**
-     * <p>
-     * Constructor for NotImplementedException.
-     * </p>
+     * Creates a new NotImplementedException instance.
      *
      * @param arg0 a {@link java.lang.String} object.
      * @param arg1 a {@link java.lang.Throwable} object.
@@ -54,9 +48,7 @@ public class NotImplementedException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for NotImplementedException.
-     * </p>
+     * Creates a new NotImplementedException instance.
      *
      * @param arg0 a {@link java.lang.String} object.
      * @param arg1 a {@link java.lang.Throwable} object.
@@ -66,9 +58,7 @@ public class NotImplementedException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for NotImplementedException.
-     * </p>
+     * Creates a new NotImplementedException instance.
      *
      * @param arg0 a {@link java.lang.String} object.
      */
@@ -77,9 +67,7 @@ public class NotImplementedException extends Exception {
     }
 
     /**
-     * <p>
-     * Constructor for NotImplementedException.
-     * </p>
+     * Creates a new NotImplementedException instance.
      *
      * @param arg0 a {@link java.lang.Throwable} object.
      */

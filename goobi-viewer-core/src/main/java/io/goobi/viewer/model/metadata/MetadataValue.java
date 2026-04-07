@@ -133,9 +133,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * getComboValueShort.
-     * </p>
      *
      * @param index a int.
      * @should construct param correctly
@@ -213,12 +211,10 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * getParamLabelWithColon.
-     * </p>
      *
-     * @return the paramLabels
      * @param index a int.
+     * @return the paramLabels
      */
     public String getParamLabelWithColon(int index) {
         // logger.trace("getParamLabelWithColon: {}", index); //NOSONAR Debug
@@ -230,9 +226,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>paramLabels</code>.
-     * </p>
      *
      * @return the paramLabels
      */
@@ -241,9 +235,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>paramValues</code>.
-     * </p>
      *
      * @return the paramValues
      */
@@ -252,9 +244,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>paramMasterValueFragments</code>.
-     * </p>
      *
      * @return the paramMasterValueFragments
      */
@@ -263,9 +253,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>paramPrefixes</code>.
-     * </p>
      *
      * @return the paramPrefixes
      */
@@ -274,9 +262,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>paramSuffixes</code>.
-     * </p>
      *
      * @return the paramSuffixes
      */
@@ -285,9 +271,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>paramUrls</code>.
-     * </p>
      *
      * @return the paramUrls
      */
@@ -296,9 +280,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>normDataUrls</code>.
-     * </p>
      *
      * @return the normDataUrls
      */
@@ -307,9 +289,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * getNormDataUrlKeys.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -322,9 +302,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * getNormDataUrl.
-     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @return Not URL-encoded norm data URL
@@ -334,9 +312,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * getNormDataUrl.
-     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @param urlEncode a boolean.
@@ -385,9 +361,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * hasParamValue.
-     * </p>
      *
      * @param paramLabel a {@link java.lang.String} object.
      * @return a boolean.
@@ -398,9 +372,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * getParamValue.
-     * </p>
      *
      * @param paramLabel a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -529,9 +501,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>masterValue</code>.
-     * </p>
      *
      * @return the masterValue
      */
@@ -544,9 +514,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>masterValue</code>.
-     * </p>
      *
      * @param masterValue the masterValue to set
      */
@@ -555,9 +523,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * getGroupTypeForUrl.
-     * </p>
      *
      * @return the groupType
      */
@@ -569,9 +535,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>groupType</code>.
-     * </p>
      *
      * @param groupType the groupType to set
      * @return this

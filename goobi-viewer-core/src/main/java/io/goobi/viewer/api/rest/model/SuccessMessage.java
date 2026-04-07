@@ -22,9 +22,7 @@
 package io.goobi.viewer.api.rest.model;
 
 /**
- * <p>
  * SuccessMessage class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -34,9 +32,7 @@ public class SuccessMessage implements IResponseMessage {
     private final String message;
 
     /**
-     * <p>
-     * Constructor for SuccessMessage.
-     * </p>
+     * Creates a new SuccessMessage instance.
      *
      * @param success a boolean.
      * @param message a {@link java.lang.String} object.
@@ -48,9 +44,7 @@ public class SuccessMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
-     * Constructor for SuccessMessage.
-     * </p>
+     * Creates a new SuccessMessage instance.
      *
      * @param success a boolean.
      */
@@ -61,9 +55,7 @@ public class SuccessMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
      * isSuccess.
-     * </p>
      *
      * @return the success
      */
@@ -72,9 +64,7 @@ public class SuccessMessage implements IResponseMessage {
     }
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
      * @return the message
      */

@@ -57,9 +57,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
- * <p>
  * CMSSidebarWidgetsBean class.
- * </p>
  */
 @Named("cmsSidebarWidgetsBean")
 @RequestScoped
@@ -87,9 +85,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     private CmsBean cmsBean;
 
     /**
-     * <p>
      * getAllWidgets.
-     * </p>
      *
      * @return a {@link java.util.List} object
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -99,9 +95,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAllWidgets.
-     * </p>
      *
      * @param queryAdditionalInformation a boolean
      * @return a {@link java.util.List} object
@@ -173,9 +167,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteWidget.
-     * </p>
      *
      * @param id a {@link java.lang.Long} object
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -185,9 +177,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarGroup</code>.
-     * </p>
      *
      * @param elements a {@link java.util.List} object
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
@@ -205,9 +195,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarGroup</code>.
-     * </p>
      *
      * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
      */
@@ -219,9 +207,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>sidebarGroup</code>.
-     * </p>
      *
      * @param sidebarGroup a {@link jakarta.faces.component.html.HtmlPanelGroup} object
      */

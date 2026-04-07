@@ -46,12 +46,12 @@ import jakarta.servlet.http.HttpServletRequest;
  * during object construcion. A Task has an {@link Accessibility} property defining which calls are allowed to access the task, and a {@link TaskType}
  * defining the actual process to use. Parameters of the execution as well as the type itself are determined by a {@link TaskParameter} object given
  * at task creation. Also each task has a status property signaling he current state of the task. A task starts out as {@link TaskStatus#CREATED}.
- * Once processing starts (which may be delayed by the limited thread pool if other tasks are running) the status changes to
+ *
+ * <p>Once processing starts (which may be delayed by the limited thread pool if other tasks are running) the status changes to
  * {@link TaskStatus#STARTED}. After processing ends the task is set to either {@link TaskStatus#COMPLETE} or {@link TaskStatus#ERROR} depedning on
  * whether an error occured which may be recorded in the {@link #exception} property.
  *
  * @author florian
- *
  */
 @JsonInclude(Include.NON_EMPTY)
 public class Task {

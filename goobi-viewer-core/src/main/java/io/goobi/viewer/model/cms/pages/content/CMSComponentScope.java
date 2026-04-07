@@ -24,15 +24,15 @@ package io.goobi.viewer.model.cms.pages.content;
 public enum CMSComponentScope {
 
     /**
-     * Component is visible in a preview of its owning page embedded within another page
+     * Component is visible in a preview of its owning page embedded within another page.
      */
     PREVIEW,
     /**
-     * Component is displayed in the header of the page
+     * Component is displayed in the header of the page.
      */
     PAGEHEADER,
     /**
-     * Component is visible when its owning page is displayed directly
+     * Component is visible when its owning page is displayed directly.
      */
     PAGEVIEW;
 }

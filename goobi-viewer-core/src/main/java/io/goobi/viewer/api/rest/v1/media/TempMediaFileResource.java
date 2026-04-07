@@ -79,7 +79,6 @@ import io.goobi.viewer.messages.Messages;
  * Upload of resouces for DC record creation. Files uploaded here are directly written to a subfolder of the viewer hotfolder
  *
  * @author florian
- *
  */
 @Hidden
 @jakarta.ws.rs.Path(TEMP_MEDIA_FILES)
@@ -173,7 +172,7 @@ public class TempMediaFileResource {
     }
 
     /**
-     * Get a filename list of all uploaded files in the media directory of the given folder.
+     * Gets a filename list of all uploaded files in the media directory of the given folder.
      *
      * @param folder
      * @return a filename list of all uploaded files in the media folder
@@ -222,7 +221,7 @@ public class TempMediaFileResource {
     }
 
     /**
-     * Delete all files uploaded for the given folder.
+     * Deletes all files uploaded for the given folder.
      *
      * @param folder
      * @return a 200 response if deletion was successful, otherwise 500
@@ -277,7 +276,7 @@ public class TempMediaFileResource {
     }
 
     /**
-     * Get the appropriate media subfolder for foldername in the viewer hotfolder.
+     * Gets the appropriate media subfolder for foldername in the viewer hotfolder.
      *
      * @param foldername
      * @return the folder for upload

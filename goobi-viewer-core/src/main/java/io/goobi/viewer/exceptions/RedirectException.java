@@ -24,18 +24,14 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * <p>
  * RedirectException class.
- * </p>
  */
 public class RedirectException extends Exception implements Serializable {
 
     private static final long serialVersionUID = -6018484680211432831L;
 
     /**
-     * <p>
-     * Constructor for RecordNotFoundException.
-     * </p>
+     * Creates a new RecordNotFoundException instance.
      *
      * @param string {@link java.lang.String}
      */

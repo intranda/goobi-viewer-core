@@ -24,21 +24,16 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * <p>
  * PresentationException class.
- * </p>
  */
 public class PresentationException extends Exception implements Serializable {
 
     /**
-     *
      */
     private static final long serialVersionUID = -6158638123863313562L;
 
     /**
-     * <p>
-     * Constructor for PresentationException.
-     * </p>
+     * Creates a new PresentationException instance.
      *
      * @param string {@link java.lang.String}
      */
@@ -47,9 +42,7 @@ public class PresentationException extends Exception implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for PresentationException.
-     * </p>
+     * Creates a new PresentationException instance.
      *
      * @param string a {@link java.lang.String} object.
      * @param e a {@link java.lang.Throwable} object.
@@ -59,9 +52,7 @@ public class PresentationException extends Exception implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for PresentationException.
-     * </p>
+     * Creates a new PresentationException instance.
      *
      * @param string a {@link java.lang.String} object.
      * @param e a {@link java.lang.Throwable} object.

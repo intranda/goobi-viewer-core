@@ -36,15 +36,14 @@ import io.goobi.viewer.controller.DataManager;
 public class DownloadOption {
 
     /**
-     * 
      */
     public static final String TIMES_SYMBOL = "\u00D7";
     /**
-     * Dimension symbolizing the maximal image size
+     * Dimension symbolizing the maximal image size.
      */
     public static final Dimension MAX = new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
     /**
-     * Dimension symbolizing that no image size has been set
+     * Dimension symbolizing that no image size has been set.
      */
     public static final Dimension NONE = new Dimension(0, 0);
 
@@ -53,7 +52,6 @@ public class DownloadOption {
     private Dimension boxSize = NONE;
 
     /**
-     * 
      */
     public DownloadOption() {
     }

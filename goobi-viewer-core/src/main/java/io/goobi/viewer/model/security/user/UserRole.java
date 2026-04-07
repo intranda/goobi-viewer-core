@@ -68,9 +68,7 @@ public class UserRole implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for UserRole.
-     * </p>
+     * Creates a new UserRole instance.
      *
      * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
@@ -133,9 +131,7 @@ public class UserRole implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -144,9 +140,7 @@ public class UserRole implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -155,9 +149,7 @@ public class UserRole implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>userGroup</code>.
-     * </p>
      *
      * @return the userGroup
      */
@@ -166,9 +158,7 @@ public class UserRole implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>userGroup</code>.
-     * </p>
      *
      * @param userGroup the userGroup to set
      */
@@ -177,9 +167,7 @@ public class UserRole implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>user</code>.
-     * </p>
      *
      * @return the user
      */
@@ -188,9 +176,7 @@ public class UserRole implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>user</code>.
-     * </p>
      *
      * @param user the user to set
      */
@@ -199,9 +185,7 @@ public class UserRole implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>role</code>.
-     * </p>
      *
      * @return the role
      */
@@ -210,9 +194,7 @@ public class UserRole implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>role</code>.
-     * </p>
      *
      * @param role the role to set
      */

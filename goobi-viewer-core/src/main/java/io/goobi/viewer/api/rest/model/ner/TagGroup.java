@@ -24,43 +24,33 @@ package io.goobi.viewer.api.rest.model.ner;
 import java.util.List;
 
 /**
- * <p>
  * TagGroup interface.
- * </p>
  */
 public interface TagGroup extends Comparable<TagGroup> {
 
     /**
-     * <p>
      * getPageOrder.
-     * </p>
      *
      * @return the page order of the first (or only) page in this group
      */
     public Integer getPageOrder();
 
     /**
-     * <p>
      * getPages.
-     * </p>
      *
      * @return the number of pages in this group
      */
     public int getPages();
 
     /**
-     * <p>
      * addTags.
-     * </p>
      *
      * @param tags a {@link java.util.List} object.
      */
     public void addTags(List<TagCount> tags);
 
     /**
-     * <p>
      * getTags.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */

@@ -52,7 +52,6 @@ import io.goobi.viewer.solr.SolrTools;
  * Copied from ContentServer to catch ContentServer exceptions.
  *
  * @author Florian Alpers
- *
  */
 @Provider
 public class ContentExceptionMapper implements ExceptionMapper<ContentLibException> {

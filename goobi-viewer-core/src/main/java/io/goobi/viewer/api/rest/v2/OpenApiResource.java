@@ -57,7 +57,6 @@ import io.swagger.v3.oas.models.servers.Server;
 
 /**
  * @author florian
- *
  */
 @Path("/openapi.json")
 public class OpenApiResource {

@@ -43,9 +43,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.mail.MessagingException;
 
 /**
- * <p>
  * SearchHitsNotificationResource class.
- * </p>
  */
 public class SearchHitsNotifier {
 
@@ -115,7 +113,6 @@ public class SearchHitsNotifier {
      * Executes the given search. If after {@link Search#execute(SearchFacets, Map, int, java.util.Locale, boolean, SearchAggregationType) execution}
      * the {@link Search#getHitsCount()} is larger than {@link Search#getLastHitsCount()} the newest (hitsCount - lastHitsCount) hits are returned and
      * the lastHitsCount of the search is updated
-     *
      *
      * @param search
      * @return A list of new hits (based on {@link Search#getLastHitsCount()}

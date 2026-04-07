@@ -240,10 +240,10 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Creates child hit elements for each hit matching a CMS page text, if CMS page texts were also searched.
      *
+     * @return the number of child hits added
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should do nothing if searchTerms do not contain key
      * @should do nothing if no cms pages for record found
-     * @return the number of child hits added
      */
     public int addCMSPageChildren() throws DAOException {
         if (searchTerms == null || !searchTerms.containsKey(SolrConstants.CMS_TEXT_ALL)) {
@@ -326,13 +326,13 @@ public class SearchHit implements Comparable<SearchHit> {
      *
      * @param doc Solr page doc
      * @param language a {@link java.lang.String} object.
+     * @return the number of child hits added
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should throw IllegalArgumentException if doc null
      * @should do nothing if searchTerms does not contain fulltext
      * @should do nothing if tei file name not found
-     * @return the number of child hits added
      */
     public int addFulltextChild(SolrDocument doc, final String language)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -404,9 +404,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * populateChildren.
-     * </p>
      *
      * @param number a int.
      * @param skip a int.
@@ -656,9 +654,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
      * @return the type
      */
@@ -667,9 +663,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>translatedType</code>.
-     * </p>
      *
      * @return the translatedType
      */
@@ -710,9 +704,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>browseElement</code>.
-     * </p>
      *
      * @return the browseElement
      */
@@ -735,9 +727,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>childDocs</code>.
-     * </p>
      *
      * @return the childDocs
      */
@@ -746,9 +736,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>hitsPopulated</code>.
-     * </p>
      *
      * @return the hitsPopulated
      */
@@ -757,9 +745,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>childDocs</code>.
-     * </p>
      *
      * @param childDocs the childDocs to set
      */
@@ -786,9 +772,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>ugcDocIddocs</code>.
-     * </p>
      *
      * @return the ugcDocIddocs
      */
@@ -797,9 +781,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>children</code>.
-     * </p>
      *
      * @return the children
      */
@@ -808,9 +790,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>hitTypeCounts</code>.
-     * </p>
      *
      * @return the hitTypeCounts
      */
@@ -819,9 +799,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * isHasHitCount.
-     * </p>
      *
      * @return a boolean.
      */
@@ -844,9 +822,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getCmsPageHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -859,9 +835,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getDocstructHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -878,9 +852,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getPageHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -893,9 +865,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getMetadataHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -908,9 +878,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getEventHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -923,9 +891,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getUgcHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -938,9 +904,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * getArchiveHitCount.
-     * </p>
      *
      * @return a int.
      */
@@ -953,9 +917,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>foundMetadata</code>.
-     * </p>
      *
      * @return the foundMetadata
      */
@@ -968,9 +930,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>url</code>.
-     * </p>
      *
      * @return the url
      */
@@ -1007,9 +967,7 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>exportMetadata</code>.
-     * </p>
      *
      * @return the exportMetadata
      */

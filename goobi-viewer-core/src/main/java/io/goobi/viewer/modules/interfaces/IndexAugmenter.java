@@ -27,7 +27,6 @@ import io.goobi.viewer.exceptions.IndexAugmenterException;
 
 /**
  * @author florian
- *
  */
 public interface IndexAugmenter {
 

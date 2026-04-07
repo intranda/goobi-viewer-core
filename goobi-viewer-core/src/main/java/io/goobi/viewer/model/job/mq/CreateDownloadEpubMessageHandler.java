@@ -128,7 +128,7 @@ public class CreateDownloadEpubMessageHandler implements MessageHandler<MessageS
     }
 
     /**
-     * remove all creating.lock files so epub generation can be picked up after restart
+     * remove all creating.lock files so epub generation can be picked up after restart.
      */
     @Override
     public void onStartup() {

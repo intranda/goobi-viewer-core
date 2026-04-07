@@ -25,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author florian
- *
  */
 public class ThemeLink {
 

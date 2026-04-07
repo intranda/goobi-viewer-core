@@ -67,18 +67,14 @@ public class TOC implements Serializable {
     private int currentPage = 1;
 
     /**
-     * <p>
-     * Constructor for TOC.
-     * </p>
+     * Creates a new TOC instance.
      */
     public TOC() {
         logger.trace("new TOC()");
     }
 
     /**
-     * <p>
      * generate.
-     * </p>
      *
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param addAllSiblings a boolean.
@@ -98,9 +94,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * getGroupNames.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -113,9 +107,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * getViewForGroup.
-     * </p>
      *
      * @param group a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -129,9 +121,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * getTreeViewForGroup.
-     * </p>
      *
      * @param group a {@link java.lang.String} object.
      * @should call buildTree and set maxTocDepth correctly
@@ -153,9 +143,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * getFlatView.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -165,9 +153,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * getTreeView.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -238,7 +224,6 @@ public class TOC implements Serializable {
     }
 
     /**
-     *
      *
      * @param list
      * @param currentElementIdDoc
@@ -413,9 +398,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * expandAll.
-     * </p>
      */
     public void expandAll() {
         logger.trace("expandAll");
@@ -430,9 +413,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * collapseAll.
-     * </p>
      */
     public void collapseAll() {
         logger.trace("collapseAll");
@@ -448,9 +429,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * setChildVisible.
-     * </p>
      *
      * @param id a int.
      */
@@ -459,9 +438,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * setChildInvisible.
-     * </p>
      *
      * @param id a int.
      */
@@ -484,9 +461,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * getTocElements.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -521,9 +496,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>tocVisible</code>.
-     * </p>
      *
      * @return the tocVisible
      */
@@ -532,9 +505,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>tocVisible</code>.
-     * </p>
      *
      * @param tocVisible the tocVisible to set
      */
@@ -543,9 +514,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>tocInvisible</code>.
-     * </p>
      *
      * @return the tocInvisible
      */
@@ -554,9 +523,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>tocInvisible</code>.
-     * </p>
      *
      * @param tocInvisible the tocInvisible to set
      */
@@ -565,9 +532,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>maxTocDepth</code>.
-     * </p>
      *
      * @return the maxTocDepth
      */
@@ -582,9 +547,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>maxTocDepth</code>.
-     * </p>
      *
      * @param maxTocDepth the maxTocDepth to set
      */
@@ -593,9 +556,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>totalTocSize</code>.
-     * </p>
      *
      * @return the totalTocSize
      */
@@ -604,9 +565,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>totalTocSize</code>.
-     * </p>
      *
      * @param totalTocSize the totalTocSize to set
      */
@@ -615,9 +574,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentPage</code>.
-     * </p>
      *
      * @return the currentPage
      */
@@ -626,9 +583,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentPage</code>.
-     * </p>
      *
      * @param currentPage the currentPage to set
      * @should set value to 1 if given value too low
@@ -669,9 +624,7 @@ public class TOC implements Serializable {
     }
 
     /**
-     * <p>
      * hasChildren.
-     * </p>
      *
      * @return a boolean.
      */

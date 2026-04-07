@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -21,11 +21,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * Request body DTO for PUT /clients/{id}.
  *
- * Used only for OpenAPI schema generation. The actual deserialization still targets
+ * <p>Used only for OpenAPI schema generation. The actual deserialization still targets
  * {@link io.goobi.viewer.model.security.clients.ClientApplication} because Jackson
  * ignores unknown fields and all writable fields are also present there.
  *
- * Keeping this class separate (without readOnly properties) avoids a schemathesis 4.x
+ * <p>Keeping this class separate (without readOnly properties) avoids a schemathesis 4.x
  * incompatibility: the examples phase fails when a schema mixes readOnly properties
  * with writable properties that carry example values.
  */

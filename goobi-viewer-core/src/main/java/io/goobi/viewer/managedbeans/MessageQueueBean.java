@@ -75,9 +75,7 @@ import jakarta.jms.QueueSession;
 import jakarta.jms.Session;
 
 /**
- * <p>
  * MessageQueueBean class.
- * </p>
  */
 @Named
 @ApplicationScoped
@@ -105,9 +103,7 @@ public class MessageQueueBean implements Serializable {
     private TableDataProvider<ViewerMessage> lazyModelViewerHistory;
 
     /**
-     * <p>
-     * Constructor for MessageQueueBean.
-     * </p>
+     * Creates a new MessageQueueBean instance.
      */
     public MessageQueueBean() {
         this.initMessageBrokerStart();
@@ -115,9 +111,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for MessageQueueBean.
-     * </p>
+     * Creates a new MessageQueueBean instance.
      *
      * @param broker a {@link io.goobi.viewer.controller.mq.MessageQueueManager} object
      */
@@ -127,9 +121,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * init.
-     * </p>
      */
     @PostConstruct
     public void init() {
@@ -150,9 +142,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * close.
-     * </p>
      *
      * @throws jakarta.jms.JMSException if any.
      */
@@ -179,9 +169,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * getQueueContent.
-     * </p>
      *
      * @return a {@link java.util.Map} object
      */
@@ -200,9 +188,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * pauseQueue.
-     * </p>
      */
     public void pauseQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
@@ -215,9 +201,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * resumeQueue.
-     * </p>
      */
     public void resumeQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
@@ -231,9 +215,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * clearQueue.
-     * </p>
      */
     public void clearQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
@@ -245,9 +227,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * initMessageBrokerStart.
-     * </p>
      */
     public void initMessageBrokerStart() {
         this.messageBrokerStart = DataManager.getInstance().getConfiguration().isStartInternalMessageBroker();
@@ -269,9 +249,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * getQueryMessages.
-     * </p>
      *
      * @param messageType a {@link java.lang.String} object
      * @return List<ViewerMessage>
@@ -300,7 +278,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * Delete a single message from the queue
+     * Deletes a single message from the queue.
      *
      * @param ticket a {@link io.goobi.viewer.controller.mq.ViewerMessage} object
      */
@@ -314,9 +292,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>messageType</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -325,9 +301,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>messageType</code>.
-     * </p>
      *
      * @param messageType a {@link java.lang.String} object
      */
@@ -336,9 +310,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * isMessageBrokerStart.
-     * </p>
      *
      * @return a boolean
      */
@@ -347,9 +319,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * isPaused.
-     * </p>
      *
      * @return a boolean
      */
@@ -400,9 +370,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelViewerHistory</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object
      */
@@ -411,9 +379,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * updateMessageQueueState.
-     * </p>
      */
     public void updateMessageQueueState() {
         this.socketBean.send("{'action':'update', 'subject':'messageQueueState'}");
@@ -435,9 +401,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * getListeners.
-     * </p>
      *
      * @return a {@link java.util.List} object
      */
@@ -446,9 +410,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>
      * restartAllListeners.
-     * </p>
      */
     public void restartAllListeners() {
         getListeners().forEach(l -> {

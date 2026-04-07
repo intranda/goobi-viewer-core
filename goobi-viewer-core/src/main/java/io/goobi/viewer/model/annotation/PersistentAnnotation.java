@@ -64,7 +64,6 @@ import jakarta.persistence.Transient;
 
 /**
  * @author florian
- *
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -134,7 +133,7 @@ public abstract class PersistentAnnotation {
     private User creator = null;
 
     /**
-     * empty constructor
+     * Empty constructor
      */
     protected PersistentAnnotation() {
         this.dateCreated = LocalDateTime.now();
@@ -161,7 +160,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * creates a new PersistentAnnotation from a WebAnnotation
+     * Creates a new PersistentAnnotation from a WebAnnotation
      *
      * @param source a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
      * @param id
@@ -213,9 +212,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -224,9 +221,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -235,9 +230,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateCreated</code>.
-     * </p>
      *
      * @return the dateCreated
      */
@@ -246,9 +239,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateCreated</code>.
-     * </p>
      *
      * @param dateCreated the dateCreated to set
      */
@@ -257,9 +248,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateModified</code>.
-     * </p>
      *
      * @return the dateModified
      */
@@ -268,9 +257,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateModified</code>.
-     * </p>
      *
      * @param dateModified the dateModified to set
      */
@@ -279,9 +266,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * getCreator.
-     * </p>
      *
      * @return the creator
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -302,9 +287,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * setCreator.
-     * </p>
      *
      * @param creator the creator to set
      */
@@ -316,9 +299,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * getReviewer.
-     * </p>
      *
      * @return the reviewer
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -331,9 +312,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * setReviewer.
-     * </p>
      *
      * @param reviewer the reviewer to set
      */
@@ -344,9 +323,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * getGenerator.
-     * </p>
      *
      * @return the generator
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -359,9 +336,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * setGenerator.
-     * </p>
      *
      * @param generator the generator to set
      */
@@ -370,9 +345,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>creatorId</code>.
-     * </p>
      *
      * @return the creatorId
      */
@@ -381,9 +354,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>creatorId</code>.
-     * </p>
      *
      * @param creatorId the creatorId to set
      */
@@ -392,9 +363,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>reviewerId</code>.
-     * </p>
      *
      * @return the reviewerId
      */
@@ -403,9 +372,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>reviewerId</code>.
-     * </p>
      *
      * @param reviewerId the reviewerId to set
      */
@@ -414,9 +381,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>generatorId</code>.
-     * </p>
      *
      * @return the generatorId
      */
@@ -425,9 +390,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>generatorId</code>.
-     * </p>
      *
      * @param generatorId the generatorId to set
      */
@@ -436,9 +399,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>body</code>.
-     * </p>
      *
      * @return the body
      */
@@ -447,9 +408,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>body</code>.
-     * </p>
      *
      * @param body the body to set
      */
@@ -458,9 +417,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>motivation</code>.
-     * </p>
      *
      * @return the motivation
      */
@@ -469,9 +426,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>motivation</code>.
-     * </p>
      *
      * @param motivation the motivation to set
      */
@@ -480,9 +435,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>target</code>.
-     * </p>
      *
      * @return the target
      */
@@ -491,9 +444,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>targetPI</code>.
-     * </p>
      *
      * @return the targetPI
      */
@@ -502,9 +453,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>targetPageOrder</code>.
-     * </p>
      *
      * @return the targetPageOrder
      */
@@ -513,9 +462,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>targetPI</code>.
-     * </p>
      *
      * @param targetPI the targetPI to set
      */
@@ -524,9 +471,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>targetPageOrder</code>.
-     * </p>
      *
      * @param targetPageOrder the targetPageOrder to set
      */
@@ -535,9 +480,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>target</code>.
-     * </p>
      *
      * @param target the target to set
      */
@@ -600,9 +543,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * getContentString.
-     * </p>
      *
      * @return Just the string value of the body document
      * @throws com.fasterxml.jackson.core.JsonParseException if any.
@@ -631,9 +572,7 @@ public abstract class PersistentAnnotation {
     }
 
     /**
-     * <p>
      * getTargetLink.
-     * </p>
      *
      * @return URL string to the record view
      */

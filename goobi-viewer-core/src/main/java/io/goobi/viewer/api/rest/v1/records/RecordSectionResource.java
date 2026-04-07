@@ -68,7 +68,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(RECORDS_SECTIONS)
 @ViewerRestServiceBinding
@@ -126,9 +125,7 @@ public class RecordSectionResource {
     }
 
     /**
-     * <p>
      * getRISAsText.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

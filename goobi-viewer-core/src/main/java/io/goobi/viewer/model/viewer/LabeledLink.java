@@ -30,9 +30,7 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>
  * LabeledLink class.
- * </p>
  */
 public class LabeledLink implements Serializable {
 
@@ -52,9 +50,7 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for LabeledLink.
-     * </p>
+     * Creates a new LabeledLink instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.
@@ -67,9 +63,7 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for LabeledLink.
-     * </p>
+     * Creates a new LabeledLink instance.
      *
      * @param name a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      * @param url a {@link java.lang.String} object.
@@ -125,9 +119,7 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
      * @return the name
      */
@@ -136,9 +128,7 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
      * @param name the name to set
      */
@@ -147,9 +137,7 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
      * @param name a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */
@@ -158,9 +146,7 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>url</code>.
-     * </p>
      *
      * @return the url
      */
@@ -169,9 +155,7 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>url</code>.
-     * </p>
      *
      * @param url the url to set
      */
@@ -180,9 +164,7 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>weight</code>.
-     * </p>
      *
      * @return the weight
      */
@@ -191,9 +173,7 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>weight</code>.
-     * </p>
      *
      * @param weight the weight to set
      */
@@ -202,9 +182,7 @@ public class LabeledLink implements Serializable {
     }
 
     /**
-     * <p>
      * isLink.
-     * </p>
      *
      * @return a boolean.
      */

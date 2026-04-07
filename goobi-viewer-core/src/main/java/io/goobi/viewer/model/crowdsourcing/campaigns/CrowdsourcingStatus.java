@@ -23,15 +23,14 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 /**
  * @author florian
- *
  */
 public enum CrowdsourcingStatus {
     /**
-     * Annotations may be made to this resource
+     * Annotations may be made to this resource.
      */
     ANNOTATE,
     /**
-     * Annotations are ready to be reviewed
+     * Annotations are ready to be reviewed.
      */
     REVIEW,
     /**

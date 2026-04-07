@@ -77,7 +77,6 @@ import jakarta.ws.rs.core.StreamingOutput;
  * @author florian
  *
  *         Used to call ContentServer with external image resource URLs
- *
  */
 @Path(EXTERNAL_IMAGES)
 @ContentServerBinding
@@ -89,7 +88,8 @@ public class ExternalImageResource extends ImageResource {
 
     /**
      * Validates the decoded image URL before passing it to the parent constructor.
-     * Must be static so it can be called within the super() argument expression.
+     *
+     * <p>Must be static so it can be called within the super() argument expression.
      * Throws BadRequestException (HTTP 400) for non-ASCII or bare-percent filenames.
      */
     // Package-private for testing

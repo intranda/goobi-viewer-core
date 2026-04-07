@@ -63,7 +63,7 @@ public class UsageStatisticsRecorder {
     private final Object dailyStatisticsLock = new Object();
 
     /**
-     * Default constructor
+     * Default constructor.
      * 
      * @param dao the {@link #dao} to set
      * @param config the {@link #config} to set
@@ -76,7 +76,7 @@ public class UsageStatisticsRecorder {
     }
 
     /**
-     * Check if usage statistics are enabled by configuration
+     * Checks if usage statistics are enabled by configuration.
      * 
      * @return true if {@link Configuration#isStatisticsEnabled()} returns true
      */
@@ -85,7 +85,7 @@ public class UsageStatisticsRecorder {
     }
 
     /**
-     * Add a http request to the usage statistics
+     * Adds a http request to the usage statistics.
      * 
      * @param type the {@link RequestType} for which to count the request
      * @param recordIdentifier the record identifier requested by the request

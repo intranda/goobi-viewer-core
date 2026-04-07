@@ -51,7 +51,6 @@ import io.goobi.viewer.model.translations.language.Language;
  * Bean for uploading Dublin Core records.
  *
  * @author florian
- *
  */
 @Named
 @ViewScoped
@@ -222,8 +221,8 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Add any uploaded images to the record, move the images folder frm temp_media to hotfolder and write the record as Dublin Core xml to the viewer
-     * hotfolder
+     * Add any uploaded images to the record, move the images folder from temp_media to hotfolder,
+     * and write the record as Dublin Core xml to the viewer hotfolder.
      *
      * @return the url of the create record page to allow creating a new record
      */
@@ -311,7 +310,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Mark the record as not ready for indexing and delete all associated images
+     * Marks the record as not ready for indexing and delete all associated images.
      *
      * @return the url of the create record page
      */

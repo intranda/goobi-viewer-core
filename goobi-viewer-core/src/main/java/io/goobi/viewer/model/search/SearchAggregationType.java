@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -17,7 +17,6 @@ package io.goobi.viewer.model.search;
 
 /**
  * @author florian
- *
  */
 public enum SearchAggregationType {
 

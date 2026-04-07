@@ -50,13 +50,11 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * <p>
  * Request filter for image requests. Does two things:
  * <ol>
  * <li>Forwards requests to a page number to the actual file</li>
  * <li>Sets parameters for image delivery in request</li>
  * </ol>
- * </p>
  */
 @Provider
 @ContentServerImageBinding
@@ -122,9 +120,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * <p>
      * forwardToCanonicalUrl.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param imageName a {@link java.lang.String} object.

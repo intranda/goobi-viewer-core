@@ -56,7 +56,6 @@ import io.goobi.viewer.model.cms.collections.CMSCollection;
 
 /**
  * @author florian
- *
  */
 @Named
 @ViewScoped
@@ -75,7 +74,6 @@ public class CmsSliderEditBean implements Serializable {
     private String collectionField;
 
     /**
-     *
      */
     public CmsSliderEditBean() {
         try {
@@ -113,7 +111,7 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     /**
-     * Set the selected slider via id string
+     * Sets the selected slider via id string.
      * 
      * @param idString
      * @throws DAOException
@@ -124,7 +122,7 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     /**
-     * Set the selected slider via id
+     * Sets the selected slider via id.
      * 
      * @param id
      * @throws DAOException
@@ -211,7 +209,7 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     /**
-     * Writes all selected categories of {@link #selectableCategories} to the {@link #selectedSlider} if both exist
+     * Writes all selected categories of {@link #selectableCategories} to the {@link #selectedSlider} if both exist.
      */
     public void writeCategories() {
         if (this.selectableCategories != null && this.selectedSlider != null) {

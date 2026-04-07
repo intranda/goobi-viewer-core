@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author florian
- *
  */
 public class GeoMapMarker {
 

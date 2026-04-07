@@ -25,9 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * <p>
  * IPrivilegeHolder interface.
- * </p>
  */
 public interface IPrivilegeHolder {
 
@@ -120,9 +118,7 @@ public interface IPrivilegeHolder {
     public boolean removePrivilege(String privilege);
 
     /**
-     * <p>
      * hasPrivilege.
-     * </p>
      *
      * @param privilege a {@link java.lang.String} object.
      * @return a boolean.
@@ -130,216 +126,168 @@ public interface IPrivilegeHolder {
     public boolean hasPrivilege(String privilege);
 
     /**
-     * <p>
      * isPrivCmsPages.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean isPrivCmsPages();
 
     /**
-     * <p>
      * setPrivCmsPages.
-     * </p>
      *
      * @param priv a boolean.
      */
     public void setPrivCmsPages(boolean priv);
 
     /**
-     * <p>
      * isPrivCmsMenu.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean isPrivCmsMenu();
 
     /**
-     * <p>
      * setPrivCmsMenu.
-     * </p>
      *
      * @param priv a boolean.
      */
     public void setPrivCmsMenu(boolean priv);
 
     /**
-     * <p>
      * isPrivCmsAllSubthemes.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean isPrivCmsAllSubthemes();
 
     /**
-     * <p>
      * setPrivCmsAllSubthemes.
-     * </p>
      *
      * @param priv a boolean.
      */
     public void setPrivCmsAllSubthemes(boolean priv);
 
     /**
-     * <p>
      * isPrivCmsAllCategories.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean isPrivCmsAllCategories();
 
     /**
-     * <p>
      * setPrivCmsAllCategories.
-     * </p>
      *
      * @param priv a boolean.
      */
     public void setPrivCmsAllCategories(boolean priv);
 
     /**
-     * <p>
      * isPrivCmsAllTemplates.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean isPrivCmsAllTemplates();
 
     /**
-     * <p>
      * setPrivCmsAllTemplates.
-     * </p>
      *
      * @param priv a boolean.
      */
     public void setPrivCmsAllTemplates(boolean priv);
 
     /**
-     * <p>
      * isPrivCmsStaticPages.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean isPrivCmsStaticPages();
 
     /**
-     * <p>
      * setPrivCmsStaticPages.
-     * </p>
      *
      * @param priv a boolean.
      */
     public void setPrivCmsStaticPages(boolean priv);
 
     /**
-     * <p>
      * isPrivCmsCollections.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean isPrivCmsCollections();
 
     /**
-     * <p>
      * setPrivCmsCollections.
-     * </p>
      *
      * @param priv a boolean.
      */
     public void setPrivCmsCollections(boolean priv);
 
     /**
-     * <p>
      * isPrivCmsCategories.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean isPrivCmsCategories();
 
     /**
-     * <p>
      * setPrivCmsCategories.
-     * </p>
      *
      * @param priv a boolean.
      */
     public void setPrivCmsCategories(boolean priv);
 
     /**
-     * <p>
      * isPrivCrowdsourcingAllCampaigns.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean isPrivCrowdsourcingAllCampaigns();
 
     /**
-     * <p>
      * setPrivCrowdsourcingAllCampaigns.
-     * </p>
      *
      * @param priv a boolean.
      */
     public void setPrivCrowdsourcingAllCampaigns(boolean priv);
 
     /**
-     * <p>
      * isPrivCrowdsourcingAnnotateCampaign.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean isPrivCrowdsourcingAnnotateCampaign();
 
     /**
-     * <p>
      * setPrivCrowdsourcingAnnotateCampaign.
-     * </p>
      *
      * @param priv a boolean.
      */
     public void setPrivCrowdsourcingAnnotateCampaign(boolean priv);
 
     /**
-     * <p>
      * isPrivCrowdsourcingReviewCampaign.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean isPrivCrowdsourcingReviewCampaign();
 
     /**
-     * <p>
      * setPrivCrowdsourcingReviewCampaign.
-     * </p>
      *
      * @param priv a boolean.
      */
     public void setPrivCrowdsourcingReviewCampaign(boolean priv);
 
     /**
-     * <p>
      * isPrivViewUgc.
-     * </p>
      *
      * @return a boolean.
      */
     public boolean isPrivViewUgc();
 
     /**
-     * <p>
      * setPrivViewUgc.
-     * </p>
      *
      * @param priv a boolean.
      */

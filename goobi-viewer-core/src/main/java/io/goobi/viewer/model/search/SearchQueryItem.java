@@ -130,9 +130,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * getAvailableOperators.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -141,9 +139,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * getSelectItems.
-     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -211,9 +207,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * reset.
-     * </p>
      */
     public void reset() {
         displaySelectItems = false;
@@ -271,9 +265,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * removeLine.
-     * </p>
      *
      * @param line a {@link io.goobi.viewer.model.search.SearchQueryItemLine} object.
      * @should remove line correctly
@@ -289,9 +281,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * isHierarchical.
-     * </p>
      *
      * @return true or false
      */
@@ -300,9 +290,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * isRange.
-     * </p>
      *
      * @return true or false
      */
@@ -318,9 +306,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * isUntokenizeForPhraseSearch.
-     * </p>
      *
      * @return true or false
      */
@@ -394,9 +380,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>field</code>.
-     * </p>
      *
      * @return the field
      */
@@ -405,9 +389,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>field</code>.
-     * </p>
      *
      * @param field the field to set
      */
@@ -510,9 +492,7 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplaySelectItems.
-     * </p>
      *
      * @return a boolean.
      */
@@ -539,10 +519,8 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * <p>
      * toggleDisplaySelectItems.
-     * </p>
-     * 
+     *
      * @should set displaySelectItems false if searching in all fields
      * @should set displaySelectItems false if searching in fulltext
      * @should set displaySelectItems true if value count below threshold

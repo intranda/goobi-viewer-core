@@ -69,10 +69,8 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * <p>
  * Request filter for PDF download requests. Checks whether the request has privileges to access the pdf and whether the download quote for the pdf is
  * reached
- * </p>
  */
 @Provider
 @ContentServerPdfBinding
@@ -134,7 +132,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * Set watermarkText and watermarkId properties to request object.
+     * Sets watermarkText and watermarkId properties to request object.
      *
      * @param pi
      * @param divId
@@ -323,7 +321,6 @@ public class PdfRequestFilter implements ContainerRequestFilter {
      * @should return 0 if number of pages 0
      * @should return number of pages if percentage 100
      * @should calculate number correctly
-     *
      */
     static int getNumAllowedPages(int percentage, int numTotalRecordPages) {
         if (percentage < 0) {

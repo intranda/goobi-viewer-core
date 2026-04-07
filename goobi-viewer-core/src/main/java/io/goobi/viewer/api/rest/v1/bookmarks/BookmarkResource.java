@@ -90,7 +90,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
- *
  */
 @Path(USERS_BOOKMARKS)
 @ViewerRestServiceBinding
@@ -469,7 +468,8 @@ public class BookmarkResource {
 
     /**
      * Validates that the given bookmark list ID is at least 1.
-     * The schema documents minimum=1, but JAX-RS does not enforce schema constraints server-side.
+     *
+     * <p>The schema documents minimum=1, but JAX-RS does not enforce schema constraints server-side.
      * Without this check, listId=0 silently returns the session list instead of a 400.
      *
      * @param id the listId path parameter value
@@ -483,7 +483,8 @@ public class BookmarkResource {
 
     /**
      * Parses the "max" query parameter string to an Integer.
-     * Returns null if the string is null, blank, the literal "null", or not a valid integer.
+     *
+     * <p>Returns null if the string is null, blank, the literal "null", or not a valid integer.
      * This is needed because some clients send ?max=null (the string "null") which JAX-RS
      * cannot auto-convert to Integer and would throw a NumberFormatException (HTTP 500).
      *

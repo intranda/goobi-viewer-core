@@ -48,9 +48,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
  * Comment class.
- * </p>
  */
 //@Entity
 //@Index(name = "index_comments_pi_page", columnNames = { "pi", "page" })
@@ -96,18 +94,14 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     //    private List<Comment> children;
 
     /**
-     * <p>
-     * Constructor for Comment.
-     * </p>
+     * Creates a new Comment instance.
      */
     public CommentLegacy() {
         // the emptiness inside
     }
 
     /**
-     * <p>
-     * Constructor for Comment.
-     * </p>
+     * Creates a new Comment instance.
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
@@ -184,20 +178,18 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     /**
      * Checks whether the user with the given ID is allowed to edit this comment (i.e. the annotation belongs to this (proper) user.
      *
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if allowed; false otherwise
      * @should return true if use id equals owner id
      * @should return false if owner id is null
      * @should return false if user is null
-     * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      */
     public boolean mayEdit(User user) {
         return owner.getId() != null && user != null && owner.getId().equals(user.getId());
     }
 
     /**
-     * <p>
      * getDisplayDate.
-     * </p>
      *
      * @param date a {@link java.time.LocalDateTime} object.
      * @return a {@link java.lang.String} object.
@@ -224,9 +216,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     // Property accessors
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -235,9 +225,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -246,9 +234,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
      * @return the pi
      */
@@ -257,9 +243,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
      * @param pi the pi to set
      */
@@ -268,9 +252,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>page</code>.
-     * </p>
      *
      * @return the page
      */
@@ -279,9 +261,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>page</code>.
-     * </p>
      *
      * @param page the page to set
      */
@@ -290,9 +270,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
      * @return the owner
      */
@@ -301,9 +279,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
      * @param owner the owner to set
      */
@@ -312,9 +288,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>text</code>.
-     * </p>
      *
      * @param text the text to set
      */
@@ -324,9 +298,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>text</code>.
-     * </p>
      *
      * @return the text
      */
@@ -335,9 +307,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * getDisplayText.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -346,9 +316,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>oldText</code>.
-     * </p>
      *
      * @return the oldText
      */
@@ -357,9 +325,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateCreated</code>.
-     * </p>
      *
      * @return the dateCreated
      */
@@ -368,9 +334,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateCreated</code>.
-     * </p>
      *
      * @param dateCreated the dateCreated to set
      */
@@ -379,9 +343,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateUpdated</code>.
-     * </p>
      *
      * @return the dateUpdated
      */
@@ -390,9 +352,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateUpdated</code>.
-     * </p>
      *
      * @param dateUpdated the dateUpdated to set
      */

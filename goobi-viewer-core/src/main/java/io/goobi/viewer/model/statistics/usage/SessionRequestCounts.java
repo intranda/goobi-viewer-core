@@ -42,14 +42,14 @@ public class SessionRequestCounts {
     private final Map<RequestType, Long> counts = new EnumMap<>(RequestType.class);
 
     /**
-     * Empty default constructor
+     * Empty default constructor.
      */
     public SessionRequestCounts() {
 
     }
 
     /**
-     * Constructor to deserialize data from a string
+     * Constructor to deserialize data from a string.
      * 
      * @param data
      */
@@ -77,7 +77,7 @@ public class SessionRequestCounts {
     }
 
     /**
-     * Increment the total count of requests for a given {@link RequestType} by one
+     * Increment the total count of requests for a given {@link RequestType} by one.
      * 
      * @param type
      */
@@ -97,7 +97,7 @@ public class SessionRequestCounts {
     }
 
     /**
-     * Turn into a json representation
+     * Turn into a json representation.
      * 
      * @return a json String
      */
@@ -119,6 +119,7 @@ public class SessionRequestCounts {
 
     /**
      * Two SessionRequestCounts are equal if the have the same request counts for all {@link RequestType}s.
+     *
      * @param o
      * @return true if objects equal; false otherwise
      */

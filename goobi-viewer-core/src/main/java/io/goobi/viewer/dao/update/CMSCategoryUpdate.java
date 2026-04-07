@@ -87,9 +87,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
     }
 
     /**
-     * <p>
      * persistData.
-     * </p>
      *
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -131,9 +129,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
     }
 
     /**
-     * <p>
      * loadData.
-     * </p>
      *
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -152,9 +148,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
     }
 
     /**
-     * <p>
      * convertData.
-     * </p>
      *
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -345,9 +339,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
     }
 
     /**
-     * <p>
      * createCategories.
-     * </p>
      *
      * @param entityMap a {@link java.util.Map} object.
      * @return a {@link java.util.List} object.

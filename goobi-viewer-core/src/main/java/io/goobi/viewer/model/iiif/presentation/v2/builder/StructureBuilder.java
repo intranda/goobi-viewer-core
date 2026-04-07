@@ -54,9 +54,7 @@ import io.goobi.viewer.model.viewer.StructElementStub;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>
  * StructureBuilder class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -69,9 +67,7 @@ public class StructureBuilder extends AbstractBuilder {
     public static final String BASE_RANGE_LABEL = "CONTENT";
 
     /**
-     * <p>
-     * Constructor for StructureBuilder.
-     * </p>
+     * Creates a new StructureBuilder instance.
      *
      * @param apiUrlManager
      */
@@ -220,9 +216,7 @@ public class StructureBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * populatePages.
-     * </p>
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pi a {@link java.lang.String} object.
@@ -248,9 +242,7 @@ public class StructureBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * getDescendents.
-     * </p>
      *
      * @param range a {@link de.intranda.api.iiif.presentation.v2.Range2} object.
      * @return a {@link java.util.List} object.

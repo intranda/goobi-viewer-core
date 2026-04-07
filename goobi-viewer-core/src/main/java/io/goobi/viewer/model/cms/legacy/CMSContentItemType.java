@@ -42,7 +42,7 @@ public enum CMSContentItemType {
     SLIDER;
 
     /**
-     * This method evaluates the text from cms-template xml files to select the correct item type
+     * Evaluates the text from cms-template xml files to select the correct item type.
      *
      * @param name
      * @return CMSContentItemType

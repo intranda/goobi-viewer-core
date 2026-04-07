@@ -24,9 +24,7 @@ package io.goobi.viewer.model.transkribus;
 import java.io.Serializable;
 
 /**
- * <p>
  * TranskribusSession class.
- * </p>
  */
 public class TranskribusSession implements Serializable {
 
@@ -40,9 +38,7 @@ public class TranskribusSession implements Serializable {
     private final String sessionId;
 
     /**
-     * <p>
-     * Constructor for TranskribusSession.
-     * </p>
+     * Creates a new TranskribusSession instance.
      *
      * @param userId a {@link java.lang.String} object.
      * @param userName a {@link java.lang.String} object.
@@ -55,9 +51,7 @@ public class TranskribusSession implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>userId</code>.
-     * </p>
      *
      * @return the userId
      */
@@ -66,9 +60,7 @@ public class TranskribusSession implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>userName</code>.
-     * </p>
      *
      * @return the userName
      */
@@ -77,9 +69,7 @@ public class TranskribusSession implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sessionId</code>.
-     * </p>
      *
      * @return the sessionId
      */

@@ -87,7 +87,6 @@ import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
- *
  */
 public class TextResourceBuilder {
 
@@ -441,9 +440,7 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getFulltext.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
@@ -553,9 +550,7 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getFiles.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param foldername a {@link java.lang.String} object.
@@ -576,9 +571,7 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getFiles.
-     * </p>
      *
      * @param folder a {@link java.nio.file.Path} object.
      * @param altFolder a {@link java.nio.file.Path} object.
@@ -643,9 +636,7 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * createTEIHeader.
-     * </p>
      *
      * @param solrDoc a {@link org.apache.solr.common.SolrDocument} object.
      * @return a {@link de.intranda.digiverso.ocr.tei.header.TEIHeaderBuilder} object.
@@ -714,9 +705,7 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getTEIFiles.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -745,9 +734,7 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getTEIFiles.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param langCode
@@ -783,9 +770,7 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getCMDIFile.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param langCode a {@link java.lang.String} object.
@@ -815,9 +800,7 @@ public class TextResourceBuilder {
     }
 
     /**
-     * <p>
      * getCMDIFiles.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.

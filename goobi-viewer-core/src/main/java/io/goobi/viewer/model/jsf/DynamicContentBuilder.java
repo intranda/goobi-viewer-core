@@ -53,7 +53,6 @@ import jakarta.faces.view.facelets.FaceletException;
 
 /**
  * @author florian
- *
  */
 public class DynamicContentBuilder {
 

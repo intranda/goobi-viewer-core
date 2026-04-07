@@ -30,7 +30,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 /**
- * An Annotation class to store annotation in a database
+ * An Annotation class to store annotation in a database.
  *
  * @author florian
  */
@@ -41,7 +41,6 @@ public class CrowdsourcingAnnotation extends PersistentAnnotation {
     public static final Set<String> VALID_COLUMNS_FOR_ORDER_BY = new HashSet<>(Arrays.asList("id", "dateCreated", "dateModified"));
 
     /**
-     *
      */
     public CrowdsourcingAnnotation() {
         super();

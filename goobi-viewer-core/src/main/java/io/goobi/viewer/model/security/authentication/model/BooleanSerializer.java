@@ -29,9 +29,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
- * <p>
  * BooleanSerializer class.
- * </p>
  *
  * @author Florian Alpers
  */

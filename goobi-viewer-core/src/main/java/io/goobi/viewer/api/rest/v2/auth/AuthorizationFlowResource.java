@@ -487,7 +487,7 @@ public class AuthorizationFlowResource {
     }
 
     /**
-     * Probe pre-flight endpoint for general record related resources
+     * Probe pre-flight endpoint for general record related resources.
      * 
      * @param pi Record identifier
      * @param privilege
@@ -507,7 +507,7 @@ public class AuthorizationFlowResource {
     }
 
     /**
-     * Probe service endpoint for general record related resources
+     * Probe service endpoint for general record related resources.
      * 
      * @param pi Record identifier
      * @param privilege The privilege to check
@@ -552,7 +552,7 @@ public class AuthorizationFlowResource {
     }
 
     /**
-     * Probe pre-flight endpoint for general record related resources
+     * Probe pre-flight endpoint for general record related resources.
      * 
      * @param pi Record identifier
      * @param logId structure log id
@@ -574,7 +574,7 @@ public class AuthorizationFlowResource {
     }
 
     /**
-     * Probe service endpoint for general record related resources
+     * Probe service endpoint for general record related resources.
      * 
      * @param pi Record identifier
      * @param logId LOGID

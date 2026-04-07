@@ -413,9 +413,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * <p>
      * isInGroup.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param group a {@link io.goobi.viewer.model.security.user.UserGroup} object.
@@ -431,9 +429,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * <p>
      * getAsCollection.
-     * </p>
      *
      * @param id a {@link java.lang.Long} object.
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.

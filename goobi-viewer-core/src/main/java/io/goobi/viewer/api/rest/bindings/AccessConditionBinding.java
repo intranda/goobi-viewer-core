@@ -32,7 +32,6 @@ import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
  * Binding for all resources which should be authorized by {@link AccessConditionRequestFilter}.
  *
  * @author florian
- *
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)

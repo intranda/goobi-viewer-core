@@ -25,24 +25,22 @@ import java.io.Serializable;
 import java.util.Locale;
 
 /**
- * <p>
  * Language class.
- * </p>
  */
 public class Language implements Comparable<Language>, Serializable {
 
     private static final long serialVersionUID = 688690972248321229L;
 
     /**
-     * language code according to iso 639-2/B (based on English names)
+     * Language code according to iso 639-2/B (based on English names)
      */
     private String isoCode6392B;
     /**
-     * language code according to iso 639-2/T (based on native names)
+     * Language code according to iso 639-2/T (based on native names)
      */
     private String isoCode6392T;
     /**
-     * language code according to iso 639_1
+     * Language code according to iso 639_1
      */
     private String isoCode6391;
     private String englishName;
@@ -50,9 +48,7 @@ public class Language implements Comparable<Language>, Serializable {
     private String germanName;
 
     /**
-     * <p>
      * getIsoCode639_1.
-     * </p>
      *
      * @return the language code according to iso 639-1
      */
@@ -61,9 +57,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * getIsoCode639_2B.
-     * </p>
      *
      * @return the language code according to iso 639-2/B
      */
@@ -72,9 +66,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * getIsoCode639_2T.
-     * </p>
      *
      * @return the language code according to iso 639-2/T
      */
@@ -83,9 +75,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>isoCode6391</code>.
-     * </p>
      *
      * @param isoCode6391 the isoCode_639_1 to set
      */
@@ -94,9 +84,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * setIsoCode_639_2B.
-     * </p>
      *
      * @param isoCode6392B the isoCode_639_2_B to set
      */
@@ -105,9 +93,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * setIsoCode_639_2T.
-     * </p>
      *
      * @param isoCode6392T the isoCode_639_2_T to set
      */
@@ -116,9 +102,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * getIsoCode.
-     * </p>
      *
      * @return the language code according to iso 639-2/B
      */
@@ -127,9 +111,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * setIsoCode.
-     * </p>
      *
      * @param isoCode a {@link java.lang.String} object.
      */
@@ -138,9 +120,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * getIsoCodeOld.
-     * </p>
      *
      * @return the language code according to iso 639-1
      */
@@ -149,9 +129,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * setIsoCodeOld.
-     * </p>
      *
      * @param isoCodeOld a {@link java.lang.String} object.
      */
@@ -160,9 +138,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>englishName</code>.
-     * </p>
      *
      * @return the englishName
      */
@@ -171,9 +147,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>englishName</code>.
-     * </p>
      *
      * @param englishName the englishName to set
      */
@@ -182,9 +156,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>frenchName</code>.
-     * </p>
      *
      * @return the frenchName
      */
@@ -193,9 +165,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>frenchName</code>.
-     * </p>
      *
      * @param frenchName the frenchName to set
      */
@@ -204,9 +174,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>germanName</code>.
-     * </p>
      *
      * @return the germanName
      */
@@ -215,9 +183,7 @@ public class Language implements Comparable<Language>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>germanName</code>.
-     * </p>
      *
      * @param germanName the germanName to set
      */

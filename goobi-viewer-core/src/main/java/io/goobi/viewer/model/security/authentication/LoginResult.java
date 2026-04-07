@@ -31,9 +31,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>
  * LoginResult class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -49,9 +47,7 @@ public class LoginResult {
     private volatile boolean redirected = false;
 
     /**
-     * <p>
-     * Constructor for LoginResult.
-     * </p>
+     * Creates a new LoginResult instance.
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
@@ -63,9 +59,7 @@ public class LoginResult {
     }
 
     /**
-     * <p>
-     * Constructor for LoginResult.
-     * </p>
+     * Creates a new LoginResult instance.
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
@@ -84,9 +78,7 @@ public class LoginResult {
     }
 
     /**
-     * <p>
-     * Constructor for LoginResult.
-     * </p>
+     * Creates a new LoginResult instance.
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
@@ -97,9 +89,7 @@ public class LoginResult {
     }
 
     /**
-     * <p>
-     * Constructor for LoginResult.
-     * </p>
+     * Creates a new LoginResult instance.
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
@@ -117,9 +107,7 @@ public class LoginResult {
     }
 
     /**
-     * <p>
      * Getter for the field <code>request</code>.
-     * </p>
      *
      * @return the request
      */
@@ -128,9 +116,7 @@ public class LoginResult {
     }
 
     /**
-     * <p>
      * Getter for the field <code>response</code>.
-     * </p>
      *
      * @return the response
      */
@@ -139,9 +125,7 @@ public class LoginResult {
     }
 
     /**
-     * <p>
      * Getter for the field <code>user</code>.
-     * </p>
      *
      * @return the user Optional containing the user if login was successful. Otherwise an empty optional
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
@@ -154,9 +138,7 @@ public class LoginResult {
     }
 
     /**
-     * <p>
      * isRedirected.
-     * </p>
      *
      * @param timeout a long.
      * @return a {@link java.util.concurrent.Future} object.
@@ -177,9 +159,7 @@ public class LoginResult {
     }
 
     /**
-     * <p>
      * setRedirected.
-     * </p>
      */
     public void setRedirected() {
         synchronized (redirectLock) {
@@ -189,9 +169,7 @@ public class LoginResult {
     }
 
     /**
-     * <p>
      * isRefused.
-     * </p>
      *
      * @return the refused
      */

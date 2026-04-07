@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -64,7 +64,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(CLIENTS)
 @CORSBinding
@@ -194,7 +193,7 @@ public class ClientApplicationsResource {
     }
 
     /**
-     * List all registered {@link ClientApplication}s.
+     * Lists all registered {@link ClientApplication}s.
      * 
      * @return All clients from the DB
      * @throws DAOException If an error occurs accessing the database
@@ -213,7 +212,7 @@ public class ClientApplicationsResource {
     }
 
     /**
-     * List all registered {@link ClientApplication}s.
+     * Lists all registered {@link ClientApplication}s.
      * 
      * @param clientIdentifier
      * @return Client with given clientIdentifier

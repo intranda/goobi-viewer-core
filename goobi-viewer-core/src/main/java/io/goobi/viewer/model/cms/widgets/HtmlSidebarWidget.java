@@ -37,10 +37,9 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 /**
- * A subtype of {@link CustomSidebarWidget} to display a html text in different languages
+ * A subtype of {@link CustomSidebarWidget} to display a html text in different languages.
  * 
  * @author florian
- *
  */
 @Entity
 @DiscriminatorValue("HtmlSidebarWidget")
@@ -53,14 +52,14 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
     private TranslatedText htmlText = new TranslatedText(IPolyglott.getLocalesStatic());
 
     /**
-     * Empty default constructor
+     * Empty default constructor.
      */
     public HtmlSidebarWidget() {
 
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      * 
      * @param o
      */

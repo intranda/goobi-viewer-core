@@ -63,9 +63,7 @@ public class LitteraProvider extends HttpAuthenticationProvider {
     private static final String QUERY_PARAMETER_PW = "pw";
 
     /**
-     * <p>
-     * Constructor for LitteraProvider.
-     * </p>
+     * Creates a new LitteraProvider instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
@@ -105,9 +103,7 @@ public class LitteraProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>
      * get.
-     * </p>
      *
      * @param url a {@link java.net.URI} object.
      * @param username a {@link java.lang.String} object.

@@ -82,9 +82,7 @@ import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * <p>
  * SolrSearchIndex class.
- * </p>
  */
 public class SolrSearchIndex implements java.io.Closeable {
 
@@ -115,9 +113,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     private List<String> sortFieldNames = null;
 
     /**
-     * <p>
-     * Constructor for SolrSearchIndex.
-     * </p>
+     * Creates a new SolrSearchIndex instance.
      *
      * @param client a {@link org.apache.solr.client.solrj.SolrClient} object.
      */
@@ -194,9 +190,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * getNewHttp2SolrClient.
-     * </p>
      *
      * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
      */
@@ -230,9 +224,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * testQuery.
-     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @return a {@link org.apache.solr.client.solrj.response.QueryResponse} object.
@@ -363,9 +355,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * search.
-     * </p>
      *
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
@@ -386,9 +376,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * search.
-     * </p>
      *
      * @param query {@link java.lang.String}
      * @param first {@link java.lang.Integer}
@@ -407,9 +395,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * search.
-     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @param rows a int.
@@ -427,7 +413,6 @@ public class SolrSearchIndex implements java.io.Closeable {
 
     /**
      * 
-     *
      * @param query a {@link java.lang.String} object.
      * @param fieldList a {@link java.util.List} object.
      * @return {@link SolrDocumentList}
@@ -509,9 +494,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * getDocumentByIddoc.
-     * </p>
      *
      * @param iddoc a {@link java.lang.String} object.
      * @should return correct doc
@@ -533,9 +516,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * getDocumentByPI.
-     * </p>
      *
      * @should return correct doc
      * @param pi a {@link java.lang.String} object.
@@ -685,9 +666,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * getIdentifierFromIddoc.
-     * </p>
      *
      * @should retrieve correct identifier
      * @param iddoc a long.
@@ -1017,9 +996,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * getAllFieldNames.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws DAOException
@@ -1076,9 +1053,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * getAllSortFieldNames.
-     * </p>
      *
      * @return a list of all SOLR fields starting with "SORT_".
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
@@ -1145,9 +1120,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * getDisplayUserGeneratedContentsForPage.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return contents for the given page
@@ -1347,7 +1320,6 @@ public class SolrSearchIndex implements java.io.Closeable {
 
     /**
      *
-     *
      * @param solrField
      * @param wktRegion
      * @param query
@@ -1431,9 +1403,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * getPage.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param order a int.
@@ -1453,9 +1423,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
-     * <p>
      * getPage.
-     * </p>
      *
      * @param struct
      * @param order a int.

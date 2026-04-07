@@ -65,7 +65,6 @@ import jakarta.servlet.http.HttpSession;
  * </ul>
  * The methods check against properties of the record and of the current page respectively. Both that a pseudo-json string as an agument that is
  * explained in more detail in the documentation of both methods.
- * 
  */
 @Named
 @SessionScoped
@@ -88,7 +87,7 @@ public class DisplayConditions implements Serializable {
      * Called with a string in form of a modified json object. The object may not contain any quotation marks and values may be preceded by a '!'
      * indicating a negation of the check for this value. A typical form is
      * 
-     * <pre>{@code
+     * <p><pre>{@code
      * { 
      *     contentType:[IMAGE, AUDIO, VIDEO, MODEL], 
      *     accessCondition: VIEW_IMAGES, 
@@ -97,10 +96,10 @@ public class DisplayConditions implements Serializable {
      * }
      * }</pre>
      * 
-     * The object may contain the following properties. Each given property is checked against the current view, request and record:
+     * <p>The object may contain the following properties. Each given property is checked against the current view, request and record:
      * <ul>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>contentType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: IMAGE, AUDIO, VIDEO, MODEL, ALTO, TEI, PDF, EPUB</dd>
@@ -109,7 +108,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>mimeType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: image, video, audio, application, text, model (3D-Objekt), other</dd>
@@ -118,7 +117,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>accessCondition</dt>
      * <dd><i>Possible values:</i> An array of any of the string values of the 'PRIV_' constants defined in {@link IPrivilegeHolder}, which is the
@@ -128,7 +127,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>pageType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: viewToc, viewThumbs, viewMetadata, viewFulltext, viewFullscreen,
@@ -138,7 +137,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>sourceFormat</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: METS, LIDO, DUBLINCORE, METS_MARC, DENKXWEB</dd>
@@ -147,7 +146,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>docType</dt>
      * <dd><i>Possible values:</i> An array of one or more doc struct types from the SOLR field 'DOCSTRCT' and some additional values document
@@ -158,7 +157,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>numPages</dt>
      * <dd><i>Possible values:</i> The number of pages within the current record. An integer equals '0' or larger</dd>
@@ -166,7 +165,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>tocSize</dt>
      * <dd><i>Possible values:</i> The number of elements within the record's table of content. An integer equals '1' or larger</dd>
@@ -176,7 +175,8 @@ public class DisplayConditions implements Serializable {
      * </li>
      * </ul>
      * 
-     * A '!' character preceding a string value means that the condition should not match the value for the check to return true; preceding an array,
+     * <p>A '!' character preceding a string value means that the condition should not match the value for the check to return true; preceding an
+     * array,
      * it means that none of the values within the list should match the record. Preceding a number, the '!' means that the actual value must be less
      * than the given number for the condition to return true. Values for contentType and accessCondition are cached per http session and record
      * 
@@ -202,7 +202,7 @@ public class DisplayConditions implements Serializable {
      * Called with a string in form of a modified json object. The object may not contain any quotation marks and values may be preceded by a '!'
      * indicating a negation of the check for this value. A typical form is
      * 
-     * <pre>{@code
+     * <p><pre>{@code
      * { 
      *     contentType:[IMAGE, AUDIO, VIDEO, MODEL], 
      *     accessCondition: VIEW_IMAGES, 
@@ -210,10 +210,10 @@ public class DisplayConditions implements Serializable {
      * }
      * }</pre>
      * 
-     * The object may contain the following properties. Each given property is checked against the current view, request and record:
+     * <p>The object may contain the following properties. Each given property is checked against the current view, request and record:
      * <ul>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>contentType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: IMAGE, AUDIO, VIDEO, MODEL, ALTO, TEI, PDF, EPUB</dd>
@@ -221,7 +221,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>mimeType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: image, video, audio, application, text, model (3D-Objekt), other</dd>
@@ -229,7 +229,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>accessCondition</dt>
      * <dd><i>Possible values:</i> An array of any of the string values of the 'PRIV_' constants defined in {@link IPrivilegeHolder}, which is the
@@ -240,7 +240,7 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * <li>
+     * <p><li>
      * <dl>
      * <dt>pageType</dt>
      * <dd><i>Possible values:</i> An array of one or more of the following: viewToc, viewThumbs, viewMetadata, viewFulltext, viewFullscreen,
@@ -250,7 +250,8 @@ public class DisplayConditions implements Serializable {
      * </dl>
      * </li>
      * 
-     * A '!' character preceding a string value means that the condition should not match the value for the check to return true; preceding an array,
+     * <p>A '!' character preceding a string value means that the condition should not match the value for the check to return true; preceding an
+     * array,
      * it means that none of the values within the list should match the page. Values for contentType and accessCondition are cached per http session
      * and page
      * 
@@ -279,7 +280,7 @@ public class DisplayConditions implements Serializable {
     }
 
     /**
-     * Get the {@link PageType} of the current page
+     * Gets the {@link PageType} of the current page.
      * 
      * @return A {@link PageType}
      */

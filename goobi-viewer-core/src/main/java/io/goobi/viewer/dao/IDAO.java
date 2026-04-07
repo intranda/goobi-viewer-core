@@ -86,16 +86,12 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
 
 /**
- * <p>
  * IDAO interface.
- * </p>
  */
 public interface IDAO {
 
     /**
-     * <p>
      * tableExists.
-     * </p>
      *
      * @param tableName a {@link java.lang.String} object.
      * @return a boolean.
@@ -105,9 +101,7 @@ public interface IDAO {
     boolean tableExists(String tableName) throws DAOException, SQLException;
 
     /**
-     * <p>
      * columnsExists.
-     * </p>
      *
      * @param tableName a {@link java.lang.String} object.
      * @param columnName a {@link java.lang.String} object.
@@ -119,9 +113,7 @@ public interface IDAO {
     // User
 
     /**
-     * <p>
      * getAllUsers.
-     * </p>
      *
      * @param refresh a boolean.
      * @return a {@link java.util.List} object.
@@ -130,9 +122,7 @@ public interface IDAO {
     public List<User> getAllUsers(boolean refresh) throws DAOException;
 
     /**
-     * <p>
      * getUserCount.
-     * </p>
      *
      * @param filters a {@link java.util.Map} object.
      * @return a long.
@@ -141,9 +131,7 @@ public interface IDAO {
     public long getUserCount(Map<String, String> filters) throws DAOException;
 
     /**
-     * <p>
      * getUsers.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -172,9 +160,7 @@ public interface IDAO {
     public List<User> getAdminUsers() throws DAOException;
 
     /**
-     * <p>
      * getUser.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.security.user.User} object.
@@ -183,9 +169,7 @@ public interface IDAO {
     public User getUser(long id) throws DAOException;
 
     /**
-     * <p>
      * getUserByEmail.
-     * </p>
      *
      * @param email a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.security.user.User} object.
@@ -194,9 +178,7 @@ public interface IDAO {
     public User getUserByEmail(String email) throws DAOException;
 
     /**
-     * <p>
      * getUserByOpenId.
-     * </p>
      *
      * @param identifier a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.security.user.User} object.
@@ -205,9 +187,7 @@ public interface IDAO {
     public User getUserByOpenId(String identifier) throws DAOException;
 
     /**
-     * <p>
      * getUserByNickname.
-     * </p>
      *
      * @param nickname a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.security.user.User} object.
@@ -216,9 +196,7 @@ public interface IDAO {
     public User getUserByNickname(String nickname) throws DAOException;
 
     /**
-     * <p>
      * addUser.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a boolean.
@@ -227,9 +205,7 @@ public interface IDAO {
     public boolean addUser(User user) throws DAOException;
 
     /**
-     * <p>
      * updateUser.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a boolean.
@@ -238,9 +214,7 @@ public interface IDAO {
     public boolean updateUser(User user) throws DAOException;
 
     /**
-     * <p>
      * deleteUser.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a boolean.
@@ -251,9 +225,7 @@ public interface IDAO {
     // UserGroup
 
     /**
-     * <p>
      * getAllUserGroups.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -261,9 +233,7 @@ public interface IDAO {
     public List<UserGroup> getAllUserGroups() throws DAOException;
 
     /**
-     * <p>
      * getUserGroupCount.
-     * </p>
      *
      * @param filters a {@link java.util.Map} object.
      * @return a long.
@@ -272,9 +242,7 @@ public interface IDAO {
     public long getUserGroupCount(Map<String, String> filters) throws DAOException;
 
     /**
-     * <p>
      * getUserGroups.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -288,9 +256,7 @@ public interface IDAO {
             throws DAOException;
 
     /**
-     * <p>
      * getUserGroups.
-     * </p>
      *
      * @param owner a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a {@link java.util.List} object.
@@ -299,9 +265,7 @@ public interface IDAO {
     public List<UserGroup> getUserGroups(User owner) throws DAOException;
 
     /**
-     * <p>
      * getUserGroup.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.security.user.UserGroup} object.
@@ -310,9 +274,7 @@ public interface IDAO {
     public UserGroup getUserGroup(long id) throws DAOException;
 
     /**
-     * <p>
      * getUserGroup.
-     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.security.user.UserGroup} object.
@@ -321,9 +283,7 @@ public interface IDAO {
     public UserGroup getUserGroup(String name) throws DAOException;
 
     /**
-     * <p>
      * addUserGroup.
-     * </p>
      *
      * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @return a boolean.
@@ -332,9 +292,7 @@ public interface IDAO {
     public boolean addUserGroup(UserGroup userGroup) throws DAOException;
 
     /**
-     * <p>
      * updateUserGroup.
-     * </p>
      *
      * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @return a boolean.
@@ -343,9 +301,7 @@ public interface IDAO {
     public boolean updateUserGroup(UserGroup userGroup) throws DAOException;
 
     /**
-     * <p>
      * deleteUserGroup.
-     * </p>
      *
      * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @return a boolean.
@@ -356,9 +312,7 @@ public interface IDAO {
     // Bookmarks
 
     /**
-     * <p>
      * getAllBookmarkLists.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -366,9 +320,7 @@ public interface IDAO {
     public List<BookmarkList> getAllBookmarkLists() throws DAOException;
 
     /**
-     * <p>
      * getPublicBookmarkLists.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -376,9 +328,7 @@ public interface IDAO {
     public List<BookmarkList> getPublicBookmarkLists() throws DAOException;
 
     /**
-     * <p>
      * getBookmarkLists.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a {@link java.util.List} object.
@@ -387,7 +337,7 @@ public interface IDAO {
     public List<BookmarkList> getBookmarkLists(User user) throws DAOException;
 
     /**
-     * Get number of bookmark lists owned by the given user
+     * Gets number of bookmark lists owned by the given user.
      *
      * @param user
      * @return number of owned bookmark lists
@@ -396,9 +346,7 @@ public interface IDAO {
     long getBookmarkListCount(User user) throws DAOException;
 
     /**
-     * <p>
      * getBookmarkList.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
@@ -407,9 +355,7 @@ public interface IDAO {
     public BookmarkList getBookmarkList(long id) throws DAOException;
 
     /**
-     * <p>
      * getBookmarkList.
-     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
@@ -419,9 +365,7 @@ public interface IDAO {
     public BookmarkList getBookmarkList(String name, User user) throws DAOException;
 
     /**
-     * <p>
      * getBookmarkListByShareKey.
-     * </p>
      *
      * @param shareKey a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
@@ -430,9 +374,7 @@ public interface IDAO {
     public BookmarkList getBookmarkListByShareKey(String shareKey) throws DAOException;
 
     /**
-     * <p>
      * addBookmarkList.
-     * </p>
      *
      * @param bookmarkList a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      * @return a boolean.
@@ -441,9 +383,7 @@ public interface IDAO {
     public boolean addBookmarkList(BookmarkList bookmarkList) throws DAOException;
 
     /**
-     * <p>
      * updateBookmarkList.
-     * </p>
      *
      * @param bookmarkList a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      * @return a boolean.
@@ -452,9 +392,7 @@ public interface IDAO {
     public boolean updateBookmarkList(BookmarkList bookmarkList) throws DAOException;
 
     /**
-     * <p>
      * deleteBookmarkList.
-     * </p>
      *
      * @param bookmarkList a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      * @return a boolean.
@@ -465,9 +403,7 @@ public interface IDAO {
     // Role
 
     /**
-     * <p>
      * getAllRoles.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -475,9 +411,7 @@ public interface IDAO {
     public List<Role> getAllRoles() throws DAOException;
 
     /**
-     * <p>
      * getRoleCount.
-     * </p>
      *
      * @param filters a {@link java.util.Map} object.
      * @return a long.
@@ -486,9 +420,7 @@ public interface IDAO {
     public long getRoleCount(Map<String, String> filters) throws DAOException;
 
     /**
-     * <p>
      * getRoles.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -501,9 +433,7 @@ public interface IDAO {
     public List<Role> getRoles(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
 
     /**
-     * <p>
      * getRole.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.security.Role} object.
@@ -512,9 +442,7 @@ public interface IDAO {
     public Role getRole(long id) throws DAOException;
 
     /**
-     * <p>
      * getRole.
-     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.security.Role} object.
@@ -523,9 +451,7 @@ public interface IDAO {
     public Role getRole(String name) throws DAOException;
 
     /**
-     * <p>
      * addRole.
-     * </p>
      *
      * @param role a {@link io.goobi.viewer.model.security.Role} object.
      * @return a boolean.
@@ -534,9 +460,7 @@ public interface IDAO {
     public boolean addRole(Role role) throws DAOException;
 
     /**
-     * <p>
      * updateRole.
-     * </p>
      *
      * @param role a {@link io.goobi.viewer.model.security.Role} object.
      * @return a boolean.
@@ -545,9 +469,7 @@ public interface IDAO {
     public boolean updateRole(Role role) throws DAOException;
 
     /**
-     * <p>
      * deleteRole.
-     * </p>
      *
      * @param role a {@link io.goobi.viewer.model.security.Role} object.
      * @return a boolean.
@@ -558,9 +480,7 @@ public interface IDAO {
     // UserRole
 
     /**
-     * <p>
      * getAllUserRoles.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -568,9 +488,7 @@ public interface IDAO {
     public List<UserRole> getAllUserRoles() throws DAOException;
 
     /**
-     * <p>
      * getUserRoleCount.
-     * </p>
      *
      * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
@@ -581,9 +499,7 @@ public interface IDAO {
     public long getUserRoleCount(UserGroup userGroup, User user, Role role) throws DAOException;
 
     /**
-     * <p>
      * getUserRoles.
-     * </p>
      *
      * @param userGroup a {@link io.goobi.viewer.model.security.user.UserGroup} object.
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
@@ -594,9 +510,7 @@ public interface IDAO {
     public List<UserRole> getUserRoles(UserGroup userGroup, User user, Role role) throws DAOException;
 
     /**
-     * <p>
      * addUserRole.
-     * </p>
      *
      * @param userRole a {@link io.goobi.viewer.model.security.user.UserRole} object.
      * @return a boolean.
@@ -605,9 +519,7 @@ public interface IDAO {
     public boolean addUserRole(UserRole userRole) throws DAOException;
 
     /**
-     * <p>
      * updateUserRole.
-     * </p>
      *
      * @param userRole a {@link io.goobi.viewer.model.security.user.UserRole} object.
      * @return a boolean.
@@ -616,9 +528,7 @@ public interface IDAO {
     public boolean updateUserRole(UserRole userRole) throws DAOException;
 
     /**
-     * <p>
      * deleteUserRole.
-     * </p>
      *
      * @param userRole a {@link io.goobi.viewer.model.security.user.UserRole} object.
      * @return a boolean.
@@ -629,9 +539,7 @@ public interface IDAO {
     // LicenseType
 
     /**
-     * <p>
      * getAllLicenseTypes.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -639,9 +547,7 @@ public interface IDAO {
     public List<LicenseType> getAllLicenseTypes() throws DAOException;
 
     /**
-     * <p>
      * getLicenseTypeCount.
-     * </p>
      *
      * @param filters a {@link java.util.Map} object.
      * @return a long.
@@ -650,9 +556,7 @@ public interface IDAO {
     public long getLicenseTypeCount(Map<String, String> filters) throws DAOException;
 
     /**
-     * <p>
      * getCoreLicenseTypeCount.
-     * </p>
      *
      * @param filters a {@link java.util.Map} object.
      * @return a long.
@@ -661,9 +565,7 @@ public interface IDAO {
     public long getCoreLicenseTypeCount(Map<String, String> filters) throws DAOException;
 
     /**
-     * <p>
      * getRecordLicenseTypes.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -671,9 +573,7 @@ public interface IDAO {
     public List<LicenseType> getRecordLicenseTypes() throws DAOException;
 
     /**
-     * <p>
      * getLicenseTypes.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -687,9 +587,7 @@ public interface IDAO {
             throws DAOException;
 
     /**
-     * <p>
      * getCoreLicenseTypes.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -703,9 +601,7 @@ public interface IDAO {
             throws DAOException;
 
     /**
-     * <p>
      * getLicenseType.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.security.LicenseType} object.
@@ -714,9 +610,7 @@ public interface IDAO {
     public LicenseType getLicenseType(long id) throws DAOException;
 
     /**
-     * <p>
      * getLicenseType.
-     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.security.LicenseType} object.
@@ -742,9 +636,7 @@ public interface IDAO {
     public List<LicenseType> getOverridingLicenseType(LicenseType licenseType) throws DAOException;
 
     /**
-     * <p>
      * addLicenseType.
-     * </p>
      *
      * @param licenseType a {@link io.goobi.viewer.model.security.LicenseType} object.
      * @return a boolean.
@@ -753,9 +645,7 @@ public interface IDAO {
     public boolean addLicenseType(LicenseType licenseType) throws DAOException;
 
     /**
-     * <p>
      * updateLicenseType.
-     * </p>
      *
      * @param licenseType a {@link io.goobi.viewer.model.security.LicenseType} object.
      * @return a boolean.
@@ -764,9 +654,7 @@ public interface IDAO {
     public boolean updateLicenseType(LicenseType licenseType) throws DAOException;
 
     /**
-     * <p>
      * deleteLicenseType.
-     * </p>
      *
      * @param licenseType a {@link io.goobi.viewer.model.security.LicenseType} object.
      * @return a boolean.
@@ -777,9 +665,7 @@ public interface IDAO {
     // License
 
     /**
-     * <p>
      * getAllLicenses.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -787,9 +673,7 @@ public interface IDAO {
     public List<License> getAllLicenses() throws DAOException;
 
     /**
-     * <p>
      * getLicense.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.security.License} object.
@@ -823,9 +707,7 @@ public interface IDAO {
     public long getLicenseCount(LicenseType licenseType) throws DAOException;
 
     /**
-     * <p>
      * addLicenseType.
-     * </p>
      *
      * @param license a {@link io.goobi.viewer.model.security.License} object.
      * @return a boolean.
@@ -834,9 +716,7 @@ public interface IDAO {
     public boolean addLicense(License license) throws DAOException;
 
     /**
-     * <p>
      * updateLicenseType.
-     * </p>
      *
      * @param license a {@link io.goobi.viewer.model.security.License} object.
      * @return a boolean.
@@ -845,9 +725,7 @@ public interface IDAO {
     public boolean updateLicense(License license) throws DAOException;
 
     /**
-     * <p>
      * deleteLicenseType.
-     * </p>
      *
      * @param license a {@link io.goobi.viewer.model.security.License} object.
      * @return a boolean.
@@ -874,9 +752,7 @@ public interface IDAO {
     public AccessTicket getTicketByPasswordHash(String passwordHash) throws DAOException;
 
     /**
-     * <p>
      * getActiveTicketCount.
-     * </p>
      *
      * @param filters Selected filters
      * @return Number of found rows
@@ -885,9 +761,7 @@ public interface IDAO {
     public long getActiveTicketCount(Map<String, String> filters) throws DAOException;
 
     /**
-     * <p>
      * getActiveRecordAccessTickets.
-     * </p>
      *
      * @param first First row index
      * @param pageSize Number of rows
@@ -908,9 +782,7 @@ public interface IDAO {
     public List<AccessTicket> getTicketRequests() throws DAOException;
 
     /**
-     * <p>
      * addTicket.
-     * </p>
      *
      * @param ticket a {@link AccessTicket} object.
      * @return a boolean.
@@ -919,9 +791,7 @@ public interface IDAO {
     public boolean addTicket(AccessTicket ticket) throws DAOException;
 
     /**
-     * <p>
      * updateTicket.
-     * </p>
      *
      * @param ticket a {@link AccessTicket} object.
      * @return a boolean.
@@ -930,9 +800,7 @@ public interface IDAO {
     public boolean updateTicket(AccessTicket ticket) throws DAOException;
 
     /**
-     * <p>
      * deleteTicket.
-     * </p>
      *
      * @param ticket a {@link AccessTicket} object.
      * @return a boolean.
@@ -943,9 +811,7 @@ public interface IDAO {
     // IpRange
 
     /**
-     * <p>
      * getAllIpRanges.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -953,9 +819,7 @@ public interface IDAO {
     public List<IpRange> getAllIpRanges() throws DAOException;
 
     /**
-     * <p>
      * getIpRangeCount.
-     * </p>
      *
      * @param filters a {@link java.util.Map} object.
      * @return a long.
@@ -964,9 +828,7 @@ public interface IDAO {
     public long getIpRangeCount(Map<String, String> filters) throws DAOException;
 
     /**
-     * <p>
      * getIpRanges.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -979,9 +841,7 @@ public interface IDAO {
     public List<IpRange> getIpRanges(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
 
     /**
-     * <p>
      * getIpRange.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.security.user.IpRange} object.
@@ -990,9 +850,7 @@ public interface IDAO {
     public IpRange getIpRange(long id) throws DAOException;
 
     /**
-     * <p>
      * getIpRange.
-     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.security.user.IpRange} object.
@@ -1001,9 +859,7 @@ public interface IDAO {
     public IpRange getIpRange(String name) throws DAOException;
 
     /**
-     * <p>
      * addIpRange.
-     * </p>
      *
      * @param ipRange a {@link io.goobi.viewer.model.security.user.IpRange} object.
      * @return a boolean.
@@ -1012,9 +868,7 @@ public interface IDAO {
     public boolean addIpRange(IpRange ipRange) throws DAOException;
 
     /**
-     * <p>
      * updateIpRange.
-     * </p>
      *
      * @param ipRange a {@link io.goobi.viewer.model.security.user.IpRange} object.
      * @return a boolean.
@@ -1023,9 +877,7 @@ public interface IDAO {
     public boolean updateIpRange(IpRange ipRange) throws DAOException;
 
     /**
-     * <p>
      * deleteIpRange.
-     * </p>
      *
      * @param ipRange a {@link io.goobi.viewer.model.security.user.IpRange} object.
      * @return a boolean.
@@ -1050,9 +902,7 @@ public interface IDAO {
     public CommentGroup getCommentGroupUnfiltered() throws DAOException;
 
     /**
-     * <p>
      * getCommentGroup.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
@@ -1061,9 +911,7 @@ public interface IDAO {
     public CommentGroup getCommentGroup(long id) throws DAOException;
 
     /**
-     * <p>
      * addCommentGroup.
-     * </p>
      *
      * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
      * @return a boolean.
@@ -1072,9 +920,7 @@ public interface IDAO {
     public boolean addCommentGroup(CommentGroup commentGroup) throws DAOException;
 
     /**
-     * <p>
      * updateCommentGroup.
-     * </p>
      *
      * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
      * @return a boolean.
@@ -1083,9 +929,7 @@ public interface IDAO {
     public boolean updateCommentGroup(CommentGroup commentGroup) throws DAOException;
 
     /**
-     * <p>
      * deleteCommentGroup.
-     * </p>
      *
      * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
      * @return a boolean.
@@ -1096,9 +940,7 @@ public interface IDAO {
     // Comment
 
     /**
-     * <p>
      * getAllComments.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1106,9 +948,7 @@ public interface IDAO {
     public List<Comment> getAllComments() throws DAOException;
 
     /**
-     * <p>
      * getCommentCount.
-     * </p>
      *
      * @param filters a {@link java.util.Map} object.
      * @param owner
@@ -1119,9 +959,7 @@ public interface IDAO {
     public long getCommentCount(Map<String, String> filters, User owner, Set<String> targetPIs) throws DAOException;
 
     /**
-     * <p>
      * getComments.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -1136,7 +974,7 @@ public interface IDAO {
             Set<String> targetPIs) throws DAOException;
 
     /**
-     * Get Comments created by a specific user
+     * Gets Comments created by a specific user.
      *
      * @param user the creator/owner of the comment
      * @param maxResults maximum number of results to return
@@ -1148,9 +986,7 @@ public interface IDAO {
     List<Comment> getCommentsOfUser(User user, int maxResults, String sortField, boolean descending) throws DAOException;
 
     /**
-     * <p>
      * getCommentsForPage.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
@@ -1160,9 +996,7 @@ public interface IDAO {
     public List<Comment> getCommentsForPage(String pi, int page) throws DAOException;
 
     /**
-     * <p>
      * getCommentsForWork.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -1171,9 +1005,7 @@ public interface IDAO {
     public List<Comment> getCommentsForWork(String pi) throws DAOException;
 
     /**
-     * <p>
      * countCommentsForWork.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a long
@@ -1182,9 +1014,7 @@ public interface IDAO {
     long countCommentsForWork(String pi) throws DAOException;
 
     /**
-     * <p>
      * getComment.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
@@ -1193,9 +1023,7 @@ public interface IDAO {
     public Comment getComment(long id) throws DAOException;
 
     /**
-     * <p>
      * addComment.
-     * </p>
      *
      * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @return a boolean.
@@ -1204,9 +1032,7 @@ public interface IDAO {
     public boolean addComment(Comment comment) throws DAOException;
 
     /**
-     * <p>
      * updateComment.
-     * </p>
      *
      * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @return a boolean.
@@ -1215,9 +1041,7 @@ public interface IDAO {
     public boolean updateComment(Comment comment) throws DAOException;
 
     /**
-     * <p>
      * deleteComment.
-     * </p>
      *
      * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @return a boolean.
@@ -1247,9 +1071,7 @@ public interface IDAO {
     // Search
 
     /**
-     * <p>
      * getAllSearches.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1257,9 +1079,7 @@ public interface IDAO {
     public List<Search> getAllSearches() throws DAOException;
 
     /**
-     * <p>
      * getSearchCount.
-     * </p>
      *
      * @param owner a {@link io.goobi.viewer.model.security.user.User} object.
      * @param filters a {@link java.util.Map} object.
@@ -1269,9 +1089,7 @@ public interface IDAO {
     public long getSearchCount(User owner, Map<String, String> filters) throws DAOException;
 
     /**
-     * <p>
      * getSearches.
-     * </p>
      *
      * @param owner a {@link io.goobi.viewer.model.security.user.User} object.
      * @param first a int.
@@ -1286,9 +1104,7 @@ public interface IDAO {
             throws DAOException;
 
     /**
-     * <p>
      * getSearches.
-     * </p>
      *
      * @param owner a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a {@link java.util.List} object.
@@ -1297,9 +1113,7 @@ public interface IDAO {
     public List<Search> getSearches(User owner) throws DAOException;
 
     /**
-     * <p>
      * getSearch.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.search.Search} object.
@@ -1308,9 +1122,7 @@ public interface IDAO {
     public Search getSearch(long id) throws DAOException;
 
     /**
-     * <p>
      * addSearch.
-     * </p>
      *
      * @param search a {@link io.goobi.viewer.model.search.Search} object.
      * @return a boolean.
@@ -1319,9 +1131,7 @@ public interface IDAO {
     public boolean addSearch(Search search) throws DAOException;
 
     /**
-     * <p>
      * updateSearch.
-     * </p>
      *
      * @param search a {@link io.goobi.viewer.model.search.Search} object.
      * @return a boolean.
@@ -1330,9 +1140,7 @@ public interface IDAO {
     public boolean updateSearch(Search search) throws DAOException;
 
     /**
-     * <p>
      * deleteSearch.
-     * </p>
      *
      * @param search a {@link io.goobi.viewer.model.search.Search} object.
      * @return a boolean.
@@ -1359,9 +1167,7 @@ public interface IDAO {
     public List<UploadJob> getUploadJobsForCreatorId(Long creatorId) throws DAOException;
 
     /**
-     * <p>
      * addDownloadJob.
-     * </p>
      *
      * @param uploadJob a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
      * @return a boolean.
@@ -1370,9 +1176,7 @@ public interface IDAO {
     public boolean addUploadJob(UploadJob uploadJob) throws DAOException;
 
     /**
-     * <p>
      * updateDownloadJob.
-     * </p>
      *
      * @param uploadJob a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
      * @return a boolean.
@@ -1381,9 +1185,7 @@ public interface IDAO {
     public boolean updateUploadJob(UploadJob uploadJob) throws DAOException;
 
     /**
-     * <p>
      * deleteDownloadJob.
-     * </p>
      *
      * @param uploadJob a {@link io.goobi.viewer.model.job.download.DownloadJob} object.
      * @return a boolean.
@@ -1394,9 +1196,7 @@ public interface IDAO {
     // CMS
 
     /**
-     * <p>
      * getAllCMSPages.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1404,9 +1204,7 @@ public interface IDAO {
     public List<CMSPage> getAllCMSPages() throws DAOException;
 
     /**
-     * <p>
      * getCmsPageForStaticPage.
-     * </p>
      *
      * @param pageName a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
@@ -1415,9 +1213,7 @@ public interface IDAO {
     public CMSPage getCmsPageForStaticPage(String pageName) throws DAOException;
 
     /**
-     * <p>
      * getCMSPageCount.
-     * </p>
      *
      * @param filters a {@link java.util.Map} object.
      * @param allowedTemplates a {@link java.util.List} object.
@@ -1446,9 +1242,7 @@ public interface IDAO {
     public List<CMSPage> getCMSPagesByPropertyValue(String propertyName, String propertyValue) throws DAOException;
 
     /**
-     * <p>
      * getCMSPages.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -1465,9 +1259,7 @@ public interface IDAO {
             List<Long> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException;
 
     /**
-     * <p>
      * getCMSPagesByCategory.
-     * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      * @return a {@link java.util.List} object.
@@ -1476,9 +1268,7 @@ public interface IDAO {
     public List<CMSPage> getCMSPagesByCategory(CMSCategory category) throws DAOException;
 
     /**
-     * <p>
      * getCMSPagesForRecord.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
@@ -1488,9 +1278,7 @@ public interface IDAO {
     public List<CMSPage> getCMSPagesForRecord(String pi, CMSCategory category) throws DAOException;
 
     /**
-     * <p>
      * getCMSPagesWithRelatedPi.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -1503,9 +1291,7 @@ public interface IDAO {
             throws DAOException;
 
     /**
-     * <p>
      * isCMSPagesForRecordHaveUpdates.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
@@ -1517,9 +1303,7 @@ public interface IDAO {
     public boolean isCMSPagesForRecordHaveUpdates(String pi, CMSCategory category, LocalDateTime fromDate, LocalDateTime toDate) throws DAOException;
 
     /**
-     * <p>
      * getCMSPageWithRelatedPiCount.
-     * </p>
      *
      * @param fromDate a {@link java.time.LocalDateTime} object.
      * @param toDate a {@link java.time.LocalDateTime} object.
@@ -1544,9 +1328,7 @@ public interface IDAO {
     public List<String> getCMSPageAccessConditions() throws DAOException;
 
     /**
-     * <p>
      * getCMSPage.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
@@ -1555,9 +1337,7 @@ public interface IDAO {
     public CMSPage getCMSPage(long id) throws DAOException;
 
     /**
-     * <p>
      * addCMSPage.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a boolean.
@@ -1566,9 +1346,7 @@ public interface IDAO {
     public boolean addCMSPage(CMSPage page) throws DAOException;
 
     /**
-     * <p>
      * updateCMSPage.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a boolean.
@@ -1577,9 +1355,7 @@ public interface IDAO {
     public boolean updateCMSPage(CMSPage page) throws DAOException;
 
     /**
-     * <p>
      * deleteCMSPage.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a boolean.
@@ -1598,9 +1374,7 @@ public interface IDAO {
     public boolean removeCMSPageTemplate(CMSPageTemplate template) throws DAOException;
 
     /**
-     * <p>
      * getAllCMSMediaItems.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1608,9 +1382,7 @@ public interface IDAO {
     public List<CMSMediaItem> getAllCMSMediaItems() throws DAOException;
 
     /**
-     * <p>
      * getAllCMSCollectionItems.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1618,9 +1390,7 @@ public interface IDAO {
     public List<CMSMediaItem> getAllCMSCollectionItems() throws DAOException;
 
     /**
-     * <p>
      * getCMSMediaItem.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
@@ -1629,9 +1399,7 @@ public interface IDAO {
     public CMSMediaItem getCMSMediaItem(long id) throws DAOException;
 
     /**
-     * <p>
      * getCMSMediaItemByFilename.
-     * </p>
      *
      * @param string a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
@@ -1640,9 +1408,7 @@ public interface IDAO {
     CMSMediaItem getCMSMediaItemByFilename(String string) throws DAOException;
 
     /**
-     * <p>
      * addCMSMediaItem.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a boolean.
@@ -1651,9 +1417,7 @@ public interface IDAO {
     public boolean addCMSMediaItem(CMSMediaItem item) throws DAOException;
 
     /**
-     * <p>
      * updateCMSMediaItem.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a boolean.
@@ -1662,9 +1426,7 @@ public interface IDAO {
     public boolean updateCMSMediaItem(CMSMediaItem item) throws DAOException;
 
     /**
-     * <p>
      * deleteCMSMediaItem.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a boolean.
@@ -1673,7 +1435,7 @@ public interface IDAO {
     public boolean deleteCMSMediaItem(CMSMediaItem item) throws DAOException;
 
     /**
-     * Get a list of all {@link CMSMediaItem}s which contain the given category
+     * Gets a list of all {@link CMSMediaItem}s which contain the given category.
      *
      * @param category
      * @return all containing cmsPages
@@ -1682,9 +1444,7 @@ public interface IDAO {
     List<CMSMediaItem> getCMSMediaItemsByCategory(CMSCategory category) throws DAOException;
 
     /**
-     * <p>
      * getAllTopCMSNavigationItems.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1692,9 +1452,7 @@ public interface IDAO {
     public List<CMSNavigationItem> getAllTopCMSNavigationItems() throws DAOException;
 
     /**
-     * <p>
      * getCMSNavigationItem.
-     * </p>
      *
      * @param id a long.
      * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
@@ -1703,9 +1461,7 @@ public interface IDAO {
     public CMSNavigationItem getCMSNavigationItem(long id) throws DAOException;
 
     /**
-     * <p>
      * addCMSNavigationItem.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      * @return a boolean.
@@ -1714,9 +1470,7 @@ public interface IDAO {
     public boolean addCMSNavigationItem(CMSNavigationItem item) throws DAOException;
 
     /**
-     * <p>
      * updateCMSNavigationItem.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      * @return a boolean.
@@ -1725,9 +1479,7 @@ public interface IDAO {
     public boolean updateCMSNavigationItem(CMSNavigationItem item) throws DAOException;
 
     /**
-     * <p>
      * deleteCMSNavigationItem.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      * @return a boolean.
@@ -1736,9 +1488,7 @@ public interface IDAO {
     public boolean deleteCMSNavigationItem(CMSNavigationItem item) throws DAOException;
 
     /**
-     * <p>
      * getRelatedNavItem.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a {@link java.util.List} object.
@@ -1747,9 +1497,7 @@ public interface IDAO {
     public List<CMSNavigationItem> getRelatedNavItem(CMSPage page) throws DAOException;
 
     /**
-     * <p>
      * getAllStaticPages.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1757,9 +1505,7 @@ public interface IDAO {
     public List<CMSStaticPage> getAllStaticPages() throws DAOException;
 
     /**
-     * <p>
      * addStaticPage.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
      * @return true if page added successfully; false otherwise
@@ -1768,9 +1514,7 @@ public interface IDAO {
     public boolean addStaticPage(CMSStaticPage page) throws DAOException;
 
     /**
-     * <p>
      * updateStaticPage.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
      * @return true if page updated successfully; false otherwise
@@ -1779,9 +1523,7 @@ public interface IDAO {
     public boolean updateStaticPage(CMSStaticPage page) throws DAOException;
 
     /**
-     * <p>
      * deleteStaticPage.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
      * @return true if page deleted successfully; false otherwise
@@ -1790,9 +1532,7 @@ public interface IDAO {
     public boolean deleteStaticPage(CMSStaticPage page) throws DAOException;
 
     /**
-     * <p>
      * getStaticPageForCMSPage.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a {@link java.util.List} object.
@@ -1801,9 +1541,7 @@ public interface IDAO {
     public List<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException;
 
     /**
-     * <p>
      * getStaticPageForTypeType.
-     * </p>
      *
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @return a {@link java.util.Optional} object.
@@ -1814,9 +1552,7 @@ public interface IDAO {
     // CMS archive configurations
 
     /**
-     * <p>
      * getCMSArchiveConfigs.
-     * </p>
      *
      * @param first
      * @param pageSize
@@ -1830,9 +1566,7 @@ public interface IDAO {
             throws DAOException;
 
     /**
-     * <p>
      * getCMSArchiveConfigCount.
-     * </p>
      *
      * @param filters Selected filters
      * @return Number of found rows
@@ -1849,9 +1583,7 @@ public interface IDAO {
     public Optional<CMSArchiveConfig> getCmsArchiveConfigForArchive(String pi) throws DAOException;
 
     /**
-     * <p>
      * saveCMSArchiveConfig.
-     * </p>
      *
      * @param config a {@link io.goobi.viewer.model.cms.CMSArchiveConfig} object.
      * @return a boolean.
@@ -1860,9 +1592,7 @@ public interface IDAO {
     public boolean saveCMSArchiveConfig(CMSArchiveConfig config) throws DAOException;
 
     /**
-     * <p>
      * deleteCMSArchiveConfig.
-     * </p>
      *
      * @param config a {@link io.goobi.viewer.model.cms.CMSArchiveConfig} object.
      * @return a boolean.
@@ -1871,9 +1601,7 @@ public interface IDAO {
     public boolean deleteCMSArchiveConfig(CMSArchiveConfig config) throws DAOException;
 
     /**
-     * <p>
      * getAllCategories.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1897,9 +1625,7 @@ public interface IDAO {
     public long getCountMediaItemsUsingCategory(CMSCategory category) throws DAOException;
 
     /**
-     * <p>
      * addCategory.
-     * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      * @return true if category added successfully; false otherwise
@@ -1908,9 +1634,7 @@ public interface IDAO {
     public boolean addCategory(CMSCategory category) throws DAOException;
 
     /**
-     * <p>
      * updateCategory.
-     * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      * @return true if category updated successfully; false otherwise
@@ -1919,9 +1643,7 @@ public interface IDAO {
     public boolean updateCategory(CMSCategory category) throws DAOException;
 
     /**
-     * <p>
      * deleteCategory.
-     * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      * @return true if category deleted successfully; false otherwise
@@ -1930,9 +1652,7 @@ public interface IDAO {
     public boolean deleteCategory(CMSCategory category) throws DAOException;
 
     /**
-     * <p>
      * getCategoryByName.
-     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.CMSCategory} object.
@@ -1941,9 +1661,7 @@ public interface IDAO {
     public CMSCategory getCategoryByName(String name) throws DAOException;
 
     /**
-     * <p>
      * getCategory.
-     * </p>
      *
      * @param id a {@link java.lang.Long} object.
      * @return a {@link io.goobi.viewer.model.cms.CMSCategory} object.
@@ -1954,9 +1672,7 @@ public interface IDAO {
     // Transkribus
 
     /**
-     * <p>
      * getAllTranskribusJobs.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1964,9 +1680,7 @@ public interface IDAO {
     public List<TranskribusJob> getAllTranskribusJobs() throws DAOException;
 
     /**
-     * <p>
      * getTranskribusJobs.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param transkribusUserId a {@link java.lang.String} object.
@@ -1977,9 +1691,7 @@ public interface IDAO {
     public List<TranskribusJob> getTranskribusJobs(String pi, String transkribusUserId, JobStatus status) throws DAOException;
 
     /**
-     * <p>
      * addTranskribusJob.
-     * </p>
      *
      * @param job a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
      * @return true if job added successfully; false otherwise
@@ -1988,9 +1700,7 @@ public interface IDAO {
     public boolean addTranskribusJob(TranskribusJob job) throws DAOException;
 
     /**
-     * <p>
      * updateTranskribusJob.
-     * </p>
      *
      * @param job a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
      * @return true if job updated successfully; false otherwise
@@ -1999,9 +1709,7 @@ public interface IDAO {
     public boolean updateTranskribusJob(TranskribusJob job) throws DAOException;
 
     /**
-     * <p>
      * deleteTranskribusJob.
-     * </p>
      *
      * @param job a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
      * @return true if job deleted successfully; false otherwise
@@ -2012,9 +1720,7 @@ public interface IDAO {
     // Crowdsourcing campaigns
 
     /**
-     * <p>
      * getAllCampaigns.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -2022,9 +1728,7 @@ public interface IDAO {
     public List<Campaign> getAllCampaigns() throws DAOException;
 
     /**
-     * <p>
      * getCampaignCount.
-     * </p>
      *
      * @param filters a {@link java.util.Map} object.
      * @return a long.
@@ -2033,9 +1737,7 @@ public interface IDAO {
     public long getCampaignCount(Map<String, String> filters) throws DAOException;
 
     /**
-     * <p>
      * getCampaign.
-     * </p>
      *
      * @param id a {@link java.lang.Long} object.
      * @return a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
@@ -2044,9 +1746,7 @@ public interface IDAO {
     public Campaign getCampaign(Long id) throws DAOException;
 
     /**
-     * <p>
      * getQuestion.
-     * </p>
      *
      * @param id a {@link java.lang.Long} object.
      * @return a {@link io.goobi.viewer.model.crowdsourcing.questions.Question} object.
@@ -2055,9 +1755,7 @@ public interface IDAO {
     public Question getQuestion(Long id) throws DAOException;
 
     /**
-     * <p>
      * getCampaigns.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -2071,9 +1769,7 @@ public interface IDAO {
             throws DAOException;
 
     /**
-     * <p>
      * getCampaignStatisticsForRecord.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} object.
@@ -2083,9 +1779,7 @@ public interface IDAO {
     public List<CampaignRecordStatistic> getCampaignStatisticsForRecord(String pi, CrowdsourcingStatus status) throws DAOException;
 
     /**
-     * <p>
      * getCampaignPageStatisticsForRecord.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} object.
@@ -2095,9 +1789,7 @@ public interface IDAO {
     List<CampaignRecordPageStatistic> getCampaignPageStatisticsForRecord(String pi, CrowdsourcingStatus status) throws DAOException;
 
     /**
-     * <p>
      * addCampaign.
-     * </p>
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @return true if campaign added successfully; false otherwise
@@ -2106,9 +1798,7 @@ public interface IDAO {
     public boolean addCampaign(Campaign campaign) throws DAOException;
 
     /**
-     * <p>
      * updateCampaign.
-     * </p>
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @return true if campaign updated successfully; false otherwise
@@ -2117,9 +1807,7 @@ public interface IDAO {
     public boolean updateCampaign(Campaign campaign) throws DAOException;
 
     /**
-     * <p>
      * deleteCampaign.
-     * </p>
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @return true if campaign deleted successfully; false otherwise
@@ -2155,16 +1843,12 @@ public interface IDAO {
     public boolean checkAvailability();
 
     /**
-     * <p>
      * shutdown.
-     * </p>
      */
     public void shutdown();
 
     /**
-     * <p>
      * getPagesWithComments.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -2173,9 +1857,7 @@ public interface IDAO {
     public List<Integer> getPagesWithComments(String pi) throws DAOException;
 
     /**
-     * <p>
      * getCMSCollections.
-     * </p>
      *
      * @param solrField a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -2184,9 +1866,7 @@ public interface IDAO {
     public List<CMSCollection> getCMSCollections(String solrField) throws DAOException;
 
     /**
-     * <p>
      * addCMSCollection.
-     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @return a boolean.
@@ -2195,9 +1875,7 @@ public interface IDAO {
     public boolean addCMSCollection(CMSCollection collection) throws DAOException;
 
     /**
-     * <p>
      * updateCMSCollection.
-     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @return a boolean.
@@ -2206,9 +1884,7 @@ public interface IDAO {
     public boolean updateCMSCollection(CMSCollection collection) throws DAOException;
 
     /**
-     * <p>
      * deleteCMSCollection.
-     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @return a boolean.
@@ -2217,9 +1893,7 @@ public interface IDAO {
     public boolean deleteCMSCollection(CMSCollection collection) throws DAOException;
 
     /**
-     * <p>
      * getCMSCollection.
-     * </p>
      *
      * @param solrField a {@link java.lang.String} object.
      * @param solrFieldValue a {@link java.lang.String} object.
@@ -2229,7 +1903,7 @@ public interface IDAO {
     public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException;
 
     /**
-     * Annotations *
+     * Annotations *.
      *
      * @param id a {@link java.lang.Long} object.
      * @return a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object.
@@ -2238,9 +1912,7 @@ public interface IDAO {
     public CrowdsourcingAnnotation getAnnotation(Long id) throws DAOException;
 
     /**
-     * <p>
      * getAnnotationsForCampaign.
-     * </p>
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @return a {@link java.util.List} object.
@@ -2249,9 +1921,7 @@ public interface IDAO {
     public List<CrowdsourcingAnnotation> getAnnotationsForCampaign(Campaign campaign) throws DAOException;
 
     /**
-     * <p>
      * getAnnotationsForWork.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -2267,9 +1937,7 @@ public interface IDAO {
     long getAnnotationCountForWork(String pi) throws DAOException;
 
     /**
-     * <p>
      * getAnnotationsForCampaignAndWork.
-     * </p>
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @param pi a {@link java.lang.String} object.
@@ -2279,9 +1947,7 @@ public interface IDAO {
     public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndWork(Campaign campaign, String pi) throws DAOException;
 
     /**
-     * <p>
      * getAnnotationsForTarget.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a {@link java.lang.Integer} object.
@@ -2305,9 +1971,7 @@ public interface IDAO {
             throws DAOException;
 
     /**
-     * <p>
      * getAnnotations.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -2321,9 +1985,7 @@ public interface IDAO {
             throws DAOException;
 
     /**
-     * <p>
      * getAnnotationCount.
-     * </p>
      *
      * @param filters a {@link java.util.Map} object.
      * @return a long.
@@ -2332,9 +1994,7 @@ public interface IDAO {
     public long getAnnotationCount(Map<String, String> filters) throws DAOException;
 
     /**
-     * <p>
      * getAnnotationCountForTarget.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a {@link java.lang.Integer} object.
@@ -2344,9 +2004,7 @@ public interface IDAO {
     long getAnnotationCountForTarget(String pi, Integer page) throws DAOException;
 
     /**
-     * <p>
      * getAnnotationsForCampaignAndTarget.
-     * </p>
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @param pi a {@link java.lang.String} object.
@@ -2357,9 +2015,7 @@ public interface IDAO {
     public List<CrowdsourcingAnnotation> getAnnotationsForCampaignAndTarget(Campaign campaign, String pi, Integer page) throws DAOException;
 
     /**
-     * <p>
      * addAnnotation.
-     * </p>
      *
      * @param annotation a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object.
      * @return a boolean.
@@ -2368,9 +2024,7 @@ public interface IDAO {
     public boolean addAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
 
     /**
-     * <p>
      * updateAnnotation.
-     * </p>
      *
      * @param annotation a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object.
      * @return a boolean.
@@ -2379,9 +2033,7 @@ public interface IDAO {
     public boolean updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
 
     /**
-     * <p>
      * deleteAnnotation.
-     * </p>
      *
      * @param annotation a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object.
      * @return a boolean.
@@ -2390,7 +2042,7 @@ public interface IDAO {
     public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
 
     /**
-     * Get the {@link GeoMap} of the given mapId
+     * Gets the {@link GeoMap} of the given mapId.
      *
      * @param mapId
      * @return The GeoMap of the given id or else null
@@ -2398,7 +2050,7 @@ public interface IDAO {
     public GeoMap getGeoMap(Long mapId) throws DAOException;
 
     /**
-     * Get all {@link GeoMap}s in database
+     * Gets all {@link GeoMap}s in database.
      *
      * @return A list of all stored GeoMaps
      * @throws DAOException
@@ -2406,7 +2058,7 @@ public interface IDAO {
     public List<GeoMap> getAllGeoMaps() throws DAOException;
 
     /**
-     * Add the given map to the database if no map of the same id already exists
+     * Adds the given map to the database if no map of the same id already exists.
      *
      * @param map
      * @return true if successful
@@ -2415,7 +2067,7 @@ public interface IDAO {
     public boolean addGeoMap(GeoMap map) throws DAOException;
 
     /**
-     * Update the given {@link GeoMap} in the database
+     * Updates the given {@link GeoMap} in the database.
      *
      * @param map
      * @return true if successful
@@ -2424,7 +2076,7 @@ public interface IDAO {
     public boolean updateGeoMap(GeoMap map) throws DAOException;
 
     /**
-     * Delete the given {@link GeoMap} from the database
+     * Deletes the given {@link GeoMap} from the database.
      *
      * @param map
      * @return true if successful
@@ -2433,7 +2085,7 @@ public interface IDAO {
     public boolean deleteGeoMap(GeoMap map) throws DAOException;
 
     /**
-     * Return a list of CMS-pages embedding the given map
+     * Returns a list of CMS-pages embedding the given map.
      *
      * @param map
      * @return List of {@link CMSPage}s that use given map
@@ -2442,7 +2094,7 @@ public interface IDAO {
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException;
 
     /**
-     * Return a list of CMS-pages embedding the given map in a sidebar widget
+     * Returns a list of CMS-pages embedding the given map in a sidebar widget.
      *
      * @param map
      * @return List of {@link CMSPage}s that use given map in sidebar
@@ -2458,7 +2110,7 @@ public interface IDAO {
     List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException;
 
     /**
-     * Get a paginated list of {@link CMSRecordNote}s
+     * Gets a paginated list of {@link CMSRecordNote}s.
      *
      * @param first
      * @param pageSize
@@ -2472,7 +2124,7 @@ public interface IDAO {
             throws DAOException;
 
     /**
-     * Get all {@link CMSRecordNote}s for the given pi
+     * Gets all {@link CMSRecordNote}s for the given pi.
      *
      * @param pi The pi of the record.
      * @param displayedNotesOnly set to true to only return notes with {@link io.goobi.viewer.model.cms.recordnotes.CMSRecordNote#isDisplayNote()} set
@@ -2492,7 +2144,7 @@ public interface IDAO {
     public List<CMSMultiRecordNote> getAllMultiRecordNotes(boolean displayedNotesOnly) throws DAOException;
 
     /**
-     * Get all persisted {@link CMSRecordNote}s
+     * Gets all persisted {@link CMSRecordNote}s.
      *
      * @return List of all existing {@link CMSSingleRecordNote}s
      * @throws DAOException
@@ -2500,7 +2152,7 @@ public interface IDAO {
     public List<CMSRecordNote> getAllRecordNotes() throws DAOException;
 
     /**
-     * Get a {@link CMSRecordNote} by its id property
+     * Gets a {@link CMSRecordNote} by its id property.
      *
      * @param id
      * @return {@link CMSSingleRecordNote} with the given id
@@ -2669,9 +2321,7 @@ public interface IDAO {
     public ViewerMessage getViewerMessageByMessageID(String id) throws DAOException;
 
     /**
-     * <p>
      * getViewerMessages.
-     * </p>
      *
      * @param first a int.
      * @param pageSize a int.
@@ -2685,9 +2335,7 @@ public interface IDAO {
             throws DAOException;
 
     /**
-     * <p>
      * getViewerMessageCount.
-     * </p>
      *
      * @param filters a {@link java.util.Map} object.
      * @return a long.
@@ -2741,9 +2389,7 @@ public interface IDAO {
     public MaintenanceMode getMaintenanceMode() throws DAOException;
 
     /**
-     * <p>
      * updateMaintenanceMode.
-     * </p>
      *
      * @param maintenanceMode a {@link io.goobi.viewer.model.security.user.IpRange} object.
      * @return a boolean.
@@ -2777,7 +2423,7 @@ public interface IDAO {
 
     /**
      * Call {@link EntityManager#getTransaction() getTransaction()} on the given EntityManager and then {@link EntityTransaction#begin() begin()} on
-     * the transaction
+     * the transaction.
      * 
      * @param em EntityManager
      * @return the transaction gotten from the entity manager
@@ -2785,7 +2431,7 @@ public interface IDAO {
     EntityTransaction startTransaction(EntityManager em);
 
     /**
-     * Call {@link EntityTransaction#commit()} on the given transaction
+     * Call {@link EntityTransaction#commit()} on the given transaction.
      *
      * @param et EntityTransaction
      * @throws PersistenceException
@@ -2793,7 +2439,7 @@ public interface IDAO {
     void commitTransaction(EntityTransaction et) throws PersistenceException;
 
     /**
-     * Call {@link EntityTransaction#commit()} on the current transaction of the given EntityManager
+     * Call {@link EntityTransaction#commit()} on the current transaction of the given EntityManager.
      *
      * @param em EntityManager
      * @throws PersistenceException
@@ -2810,7 +2456,7 @@ public interface IDAO {
 
     /**
      * Handling of exceptions occurred during {@link #commitTransaction(EntityManager)} Usually calls {@link EntityTransaction#rollback()} on the
-     * current transaction of the given EntityManager
+     * current transaction of the given EntityManager.
      *
      * @param em EntityManager
      * @throws PersistenceException

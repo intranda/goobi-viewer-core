@@ -39,14 +39,11 @@ import io.goobi.viewer.model.search.SearchHelper;
  * Manages contentAssist requests by returning lists of suggested values from partial input.
  *
  * @author florian
- *
  */
 public class ContentAssistResourceBuilder {
 
     /**
-     * <p>
      * getCollections.
-     * </p>
      *
      * @param solrField a {@link java.lang.String} object.
      * @param inputString a {@link java.lang.String} object.

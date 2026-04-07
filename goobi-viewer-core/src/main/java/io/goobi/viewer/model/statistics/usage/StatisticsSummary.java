@@ -49,7 +49,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  * Summary of request counts for a certain date range. Used for delivering record counts to users
  * 
  * @author florian
- *
  */
 @JsonInclude(Include.NON_NULL)
 public class StatisticsSummary {
@@ -66,7 +65,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Default constructor
+     * Default constructor.
      * 
      * @param types Request counts sorted by {@link RequestType}
      */
@@ -75,7 +74,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Constructor to create an instance from a {@link DailySessionUsageStatistics} object
+     * Constructor to create an instance from a {@link DailySessionUsageStatistics} object.
      * 
      * @param dailyStats The {@link DailySessionUsageStatistics} from which to retrieve the request counts
      */
@@ -84,7 +83,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Constructor to create an instance from a {@link DailySessionUsageStatistics} object filtered by a list of record identifiers
+     * Constructor to create an instance from a {@link DailySessionUsageStatistics} object filtered by a list of record identifiers.
      * 
      * @param dailyStats The {@link DailySessionUsageStatistics} from which to retrieve the request counts
      * @param includedIdentifiers A list of record identifiers for which to count the requests. If empty, all requests will be counted
@@ -100,7 +99,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Create an empty summary
+     * Creates an empty summary.
      * 
      * @return an empty {@link StatisticsSummary}
      */
@@ -122,7 +121,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Create a new summary with the sum of request counts from this and another summary
+     * Creates a new summary with the sum of request counts from this and another summary.
      * 
      * @param other the other {@link SummaryStatistics} to add to this one
      * @return the sum of {@link SummaryStatistics}
@@ -173,7 +172,7 @@ public class StatisticsSummary {
     }
 
     /**
-     * Get the last date for which requests have been recorded
+     * Gets the last date for which requests have been recorded.
      * 
      * @param types the {@link RequestType} to check
      * @return {@link LocalDate}

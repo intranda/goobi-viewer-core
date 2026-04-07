@@ -33,9 +33,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * <p>
  * HierarchicalBrowseDcElement class.
- * </p>
  */
 public class HierarchicalBrowseDcElement extends BrowseDcElement {
 
@@ -48,9 +46,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     private boolean opensInNewWindow;
 
     /**
-     * <p>
-     * Constructor for HierarchicalBrowseDcElement.
-     * </p>
+     * Creates a new HierarchicalBrowseDcElement instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param number a long.
@@ -66,9 +62,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
-     * Constructor for HierarchicalBrowseDcElement.
-     * </p>
+     * Creates a new HierarchicalBrowseDcElement instance.
      *
      * @param blueprint a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
@@ -78,9 +72,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
      * Getter for the field <code>children</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -99,9 +91,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
      * Setter for the field <code>children</code>.
-     * </p>
      *
      * @param children a {@link java.util.List} object.
      */
@@ -110,9 +100,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
      * Getter for the field <code>parent</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
@@ -121,9 +109,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
      * Setter for the field <code>parent</code>.
-     * </p>
      *
      * @param parent a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
@@ -132,9 +118,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
      * addChild.
-     * </p>
      *
      * @param dc a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
@@ -154,9 +138,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
      * isOpensInNewWindow.
-     * </p>
      *
      * @return a boolean.
      */
@@ -165,9 +147,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
      * Setter for the field <code>opensInNewWindow</code>.
-     * </p>
      *
      * @param opensInNewWindow a boolean.
      */
@@ -176,9 +156,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
      * isRedirectsToWork.
-     * </p>
      *
      * @return a boolean.
      */
@@ -187,9 +165,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
      * isOpensInSearch.
-     * </p>
      *
      * @return a boolean.
      */
@@ -198,9 +174,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
      * getAllVisibleDescendents.
-     * </p>
      *
      * @param checkAllDescendents a boolean.
      * @return a {@link java.util.Collection} object.
@@ -235,9 +209,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
      * getChildrenAndVisibleDescendants.
-     * </p>
      *
      * @return a {@link java.util.Collection} object.
      */
@@ -275,9 +247,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     }
 
     /**
-     * <p>
      * getAllDescendents.
-     * </p>
      *
      * @param includeMyself a boolean.
      * @return a {@link java.util.List} object.

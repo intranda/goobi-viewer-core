@@ -78,9 +78,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     private List<String> facetValues = new ArrayList<>();
 
     /**
-     * <p>
-     * Constructor for BrowseDcElement.
-     * </p>
+     * Creates a new BrowseDcElement instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param number a long.
@@ -111,9 +109,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
-     * Constructor for BrowseDcElement.
-     * </p>
+     * Creates a new BrowseDcElement instance.
      *
      * @param blueprint a {@link io.goobi.viewer.model.viewer.collections.BrowseDcElement} object.
      */
@@ -170,9 +166,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>. If the <code>CMSCollection</code> translation is desired, use <code>getLabel()</code> instead.
-     * </p>
      *
      * @return the name
      */
@@ -185,9 +179,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getLabel.
-     * </p>
      *
      * @return <code>CMSCollection</code> translation, if ava ilable; name otherwise
      */
@@ -224,7 +216,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * Returns the message key for the collection representative image url
+     * Returns the message key for the collection representative image url.
      *
      * @return a {@link java.lang.String} object.
      */
@@ -236,9 +228,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getLuceneName.
-     * </p>
      *
      * @return the name
      */
@@ -247,9 +237,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * addToNumber.
-     * </p>
      *
      * @param inNumber a long.
      */
@@ -258,9 +246,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>hasSubelements</code>.
-     * </p>
      *
      * @param hasSubelements a boolean.
      */
@@ -269,9 +255,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * isHasSubelements.
-     * </p>
      *
      * @return a boolean.
      */
@@ -280,9 +264,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * isDisplayNumberOfVolumes.
-     * </p>
      *
      * @return a boolean.
      */
@@ -291,9 +273,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getNumberOfVolumes.
-     * </p>
      *
      * @return number of elements
      */
@@ -316,9 +296,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getLevel.
-     * </p>
      *
      * @return a int.
      */
@@ -327,9 +305,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getParentName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -342,9 +318,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortField</code>.
-     * </p>
      *
      * @return the sortField
      */
@@ -353,9 +327,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>sortField</code>.
-     * </p>
      *
      * @param sortField the sortField to set
      */
@@ -364,9 +336,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * isShowSubElements.
-     * </p>
      *
      * @return a boolean.
      */
@@ -375,9 +345,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>showSubElements</code>.
-     * </p>
      *
      * @param showSubElements a boolean.
      */
@@ -386,9 +354,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * isShowDescription.
-     * </p>
      *
      * @return the showDescription
      */
@@ -397,9 +363,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>showDescription</code>.
-     * </p>
      *
      * @param showDescription the showDescription to set
      */
@@ -473,9 +437,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>info</code>.
-     * </p>
      *
      * @param info the info to set
      */
@@ -484,9 +446,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>info</code>.
-     * </p>
      *
      * @return the info
      */
@@ -508,9 +468,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * hasCMSDescription.
-     * </p>
      *
      * @return a boolean.
      */
@@ -519,9 +477,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * hasIcon.
-     * </p>
      *
      * @return a boolean.
      */
@@ -530,9 +486,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getIcon.
-     * </p>
      *
      * @return a {@link java.net.URI} object.
      */

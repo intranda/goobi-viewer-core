@@ -57,7 +57,6 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * Utility class for retrieving data folders, data files and source files. Must be instantiated with {@link Configuration}, {@link SolrSearchIndex}
  * and {@link RestApiManager} as data sources No-Args constructor creates required data sources from {@link DataManager#getInstance()}
- *
  */
 public class ProcessDataResolver {
 
@@ -113,7 +112,7 @@ public class ProcessDataResolver {
     }
 
     /**
-     * Constructs the media folder path for the given pi, either directly in viewer-home or within a data repository
+     * Constructs the media folder path for the given pi, either directly in viewer-home or within a data repository.
      *
      * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
      * @return A Path to the media folder for the given PI
@@ -128,8 +127,8 @@ public class ProcessDataResolver {
      * Returns a map of Paths for each data folder name passed as an argument.
      *
      * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
-     * @return HashMap&lt;dataFolderName,Path&gt;
      * @param dataFolderNames a {@link java.lang.String} object.
+     * @return HashMap&lt;dataFolderName,Path&gt;
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return all requested data folders
@@ -239,9 +238,7 @@ public class ProcessDataResolver {
     }
 
     /**
-     * <p>
      * getDataFilePath.
-     * </p>
      *
      * @param pi Record identifier
      * @param relativeFilePath File path relative to data repositories root
@@ -334,9 +331,7 @@ public class ProcessDataResolver {
     }
 
     /**
-     * <p>
      * getTextFilePath.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
@@ -373,9 +368,7 @@ public class ProcessDataResolver {
     }
 
     /**
-     * <p>
      * getTextFilePath.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param relativeFilePath ALTO/text file path relative to the data folder
@@ -474,9 +467,7 @@ public class ProcessDataResolver {
     }
 
     /**
-     * <p>
      * loadTei.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param language a {@link java.lang.String} object.
@@ -500,7 +491,7 @@ public class ProcessDataResolver {
     }
 
     /**
-     * creates a Dataset object, containing all relevant file paths
+     * Creates a Dataset object, containing all relevant file paths.
      * 
      * @param pi a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.Dataset} object.

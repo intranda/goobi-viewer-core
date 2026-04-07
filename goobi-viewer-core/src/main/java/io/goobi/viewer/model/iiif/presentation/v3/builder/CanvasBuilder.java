@@ -75,7 +75,6 @@ import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * @author florian
- *
  */
 public class CanvasBuilder extends AbstractBuilder {
 
@@ -186,7 +185,7 @@ public class CanvasBuilder extends AbstractBuilder {
     }
 
     /**
-     * Get a reference to an annotation page containing all fulltext annotations for the given page
+     * Gets a reference to an annotation page containing all fulltext annotations for the given page
      *
      * @param page
      * @return The annotation page, or null if no fulltext is available for the given page
@@ -210,7 +209,7 @@ public class CanvasBuilder extends AbstractBuilder {
     }
 
     /**
-     * Return an annotation page with any fulltext annotations for the given page. The annotation page contains the @context property
+     * Returns an annotation page with any fulltext annotations for the given page. The annotation page contains the @context property
      *
      * @param canvas
      * @param page

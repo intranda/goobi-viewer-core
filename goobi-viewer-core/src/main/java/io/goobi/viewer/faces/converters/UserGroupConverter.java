@@ -31,9 +31,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
- * <p>
  * UserConverter class.
- * </p>
  */
 @FacesConverter("userGroupConverter")
 public class UserGroupConverter implements Converter<UserGroup> {

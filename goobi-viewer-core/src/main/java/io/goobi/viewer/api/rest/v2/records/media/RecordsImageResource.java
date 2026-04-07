@@ -61,7 +61,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
- *
  */
 @Path(RECORDS_RECORD)
 public class RecordsImageResource {

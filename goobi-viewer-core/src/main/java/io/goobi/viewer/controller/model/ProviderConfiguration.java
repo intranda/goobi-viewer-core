@@ -34,10 +34,9 @@ import io.goobi.viewer.model.variables.NoopVariableReplacer;
 import io.goobi.viewer.model.variables.VariableReplacer;
 
 /**
- * This class bundles provider configurations for IIIF manifests int a s single object
+ * Bundles provider configurations for IIIF manifests into a single object.
  *
  * @author florian
- *
  */
 public class ProviderConfiguration {
 

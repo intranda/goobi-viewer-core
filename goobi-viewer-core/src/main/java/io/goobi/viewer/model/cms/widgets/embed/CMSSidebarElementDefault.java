@@ -32,7 +32,6 @@ import jakarta.persistence.Entity;
  * {@link WidgetContentType content type}
  * 
  * @author florian
- *
  */
 @Entity
 @DiscriminatorValue("DEFAULT")
@@ -41,7 +40,7 @@ public class CMSSidebarElementDefault extends CMSSidebarElement {
     private static final long serialVersionUID = 3406687346141124347L;
 
     /**
-     * Empty constructor for the DAO
+     * Empty constructor for the DAO.
      */
     public CMSSidebarElementDefault() {
     }
@@ -61,7 +60,7 @@ public class CMSSidebarElementDefault extends CMSSidebarElement {
     }
 
     /**
-     * Cloning constructor with a CMSPage to set as owner
+     * Cloning constructor with a CMSPage to set as owner.
      * 
      * @param orig
      * @param owner

@@ -46,9 +46,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 
 /**
- * <p>
  * SessionCounterFilter class.
- * </p>
  */
 @WebFilter
 public class SessionCounterFilter implements Filter {

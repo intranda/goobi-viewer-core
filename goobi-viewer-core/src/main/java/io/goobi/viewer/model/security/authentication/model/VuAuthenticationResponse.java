@@ -30,9 +30,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
- * <p>
  * VuAuthenticationResponse class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -45,9 +43,7 @@ public class VuAuthenticationResponse {
     private Request request;
 
     /**
-     * <p>
      * Getter for the field <code>user</code>.
-     * </p>
      *
      * @return the user
      */
@@ -56,9 +52,7 @@ public class VuAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>user</code>.
-     * </p>
      *
      * @param user the user to set
      */
@@ -67,9 +61,7 @@ public class VuAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>expired</code>.
-     * </p>
      *
      * @return the expired
      */
@@ -78,9 +70,7 @@ public class VuAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>expired</code>.
-     * </p>
      *
      * @param expired the expired to set
      */
@@ -89,9 +79,7 @@ public class VuAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>blocks</code>.
-     * </p>
      *
      * @return the blocks
      */
@@ -100,9 +88,7 @@ public class VuAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>blocks</code>.
-     * </p>
      *
      * @param blocks the blocks to set
      */
@@ -111,9 +97,7 @@ public class VuAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>request</code>.
-     * </p>
      *
      * @return the request
      */
@@ -122,9 +106,7 @@ public class VuAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>request</code>.
-     * </p>
      *
      * @param request the request to set
      */

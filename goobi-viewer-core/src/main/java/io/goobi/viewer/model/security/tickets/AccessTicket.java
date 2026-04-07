@@ -42,7 +42,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
+ * Describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
  * known as core license types.
  */
 @Entity
@@ -199,9 +199,7 @@ public class AccessTicket {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -210,9 +208,7 @@ public class AccessTicket {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */

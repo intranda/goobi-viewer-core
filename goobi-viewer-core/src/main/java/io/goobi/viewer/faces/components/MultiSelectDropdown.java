@@ -35,7 +35,6 @@ import jakarta.faces.context.FacesContext;
 
 /**
  * @author florian
- *
  */
 @FacesComponent("io.goobi.viewer.faces.components.MultiSelectDropdown")
 @SuppressWarnings("unchecked")

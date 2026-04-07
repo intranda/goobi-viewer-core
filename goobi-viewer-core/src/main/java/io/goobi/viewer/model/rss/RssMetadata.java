@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * Represents metadata for an RSS feed object
+ * Represents metadata for an RSS feed object.
  *
  * @author Florian Alpers
  */
@@ -45,9 +45,7 @@ public class RssMetadata {
     }
 
     /**
-     * <p>
-     * Constructor for RssMetadata.
-     * </p>
+     * Creates a new RssMetadata instance.
      *
      * @param label a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -61,9 +59,7 @@ public class RssMetadata {
     }
 
     /**
-     * <p>
-     * Constructor for RssMetadata.
-     * </p>
+     * Creates a new RssMetadata instance.
      *
      * @param label a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -76,9 +72,7 @@ public class RssMetadata {
     }
 
     /**
-     * <p>
      * Getter for the field <code>link</code>.
-     * </p>
      *
      * @return the link
      */
@@ -87,9 +81,7 @@ public class RssMetadata {
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
      * @return the label
      */
@@ -98,9 +90,7 @@ public class RssMetadata {
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
      * @return the value
      */

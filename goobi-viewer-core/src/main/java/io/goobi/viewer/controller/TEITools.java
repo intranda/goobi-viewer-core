@@ -31,9 +31,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
- * <p>
  * TEITools class.
- * </p>
  */
 public final class TEITools {
 

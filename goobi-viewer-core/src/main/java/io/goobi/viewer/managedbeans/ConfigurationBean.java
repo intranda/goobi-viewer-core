@@ -79,9 +79,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getModules.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -90,9 +88,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -101,9 +97,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isBookmarksEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -116,9 +110,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * useTiles.
-     * </p>
      *
      * @param pageType a {@link java.lang.String} object.
      * @param mimeType a {@link java.lang.String} object.
@@ -132,7 +124,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * whether to show a navigator element in the openseadragon viewe
+     * Returns whether a navigator element should be shown in the OpenSeadragon viewer.
      * 
      * @param pageType get settings for this pageType
      * @param mimeType get settings for this image type
@@ -146,9 +138,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getFooterHeight.
-     * </p>
      *
      * @param pageType a {@link java.lang.String} object.
      * @param mimeType a {@link java.lang.String} object.
@@ -162,9 +152,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getImageSizes.
-     * </p>
      *
      * @param pageType a {@link java.lang.String} object.
      * @param mimeType a {@link java.lang.String} object.
@@ -178,9 +166,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTileSizes.
-     * </p>
      *
      * @param pageType a {@link java.lang.String} object.
      * @param mimeType a {@link java.lang.String} object.
@@ -194,9 +180,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * useTiles.
-     * </p>
      *
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -206,9 +190,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * useTilesFullscreen.
-     * </p>
      *
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -218,9 +200,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * useTilesCrowd.
-     * </p>
      *
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -230,9 +210,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getFooterHeight.
-     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -242,9 +220,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getFooterHeightFullscreen.
-     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -254,9 +230,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getFooterHeightCrowd.
-     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -266,9 +240,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isRememberImageZoom.
-     * </p>
      *
      * @return a boolean.
      */
@@ -277,9 +249,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isRememberImageRotation.
-     * </p>
      *
      * @return a boolean.
      */
@@ -288,9 +258,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayStatistics.
-     * </p>
      *
      * @return a boolean.
      */
@@ -299,9 +267,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplaySearchRssLinks.
-     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -311,9 +277,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isAdvancedSearchEnabled.
-     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -323,9 +287,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isTimelineSearchEnabled.
-     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -335,9 +297,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isCalendarSearchEnabled.
-     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -347,9 +307,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayBreadcrumbs.
-     * </p>
      *
      * @return a boolean.
      */
@@ -358,9 +316,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayMetadataPageLinkBlock.
-     * </p>
      *
      * @return a boolean.
      */
@@ -369,9 +325,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isPagePdfEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -380,9 +334,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getRssTitle.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -391,9 +343,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayTagCloudStartpage.
-     * </p>
      *
      * @return a boolean.
      */
@@ -402,9 +352,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplaySearchResultNavigation.
-     * </p>
      *
      * @return a boolean.
      */
@@ -413,9 +361,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayStructType.
-     * </p>
      *
      * @return a boolean.
      */
@@ -424,9 +370,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayCollectionBrowsing.
-     * </p>
      *
      * @return a boolean.
      */
@@ -435,9 +379,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayUserNavigation.
-     * </p>
      *
      * @return a boolean.
      */
@@ -446,9 +388,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayTagCloudNavigation.
-     * </p>
      *
      * @return a boolean.
      */
@@ -457,9 +397,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayTitlePURL.
-     * </p>
      *
      * @return a boolean.
      */
@@ -468,9 +406,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSidebarTocWidgetVisibleInFullscreen.
-     * </p>
      *
      * @return a boolean.
      */
@@ -479,9 +415,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSidebarOpacLinkVisible.
-     * </p>
      *
      * @return a boolean.
      */
@@ -490,9 +424,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSidebarTocPageNumbersVisible.
-     * </p>
      *
      * @return a boolean.
      */
@@ -501,9 +433,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSidebarPageLinkVisible.
-     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -513,9 +443,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSidebarCalendarLinkVisible.
-     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -527,9 +455,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSidebarMetadataLinkVisible.
-     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -539,9 +465,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSidebarThumbsLinkVisible.
-     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -551,9 +475,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSidebarFulltextLinkVisible.
-     * </p>
      *
      * @should return correct value
      * @return a boolean.
@@ -563,9 +485,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isTocTreeView.
-     * </p>
      *
      * @param docStructType a {@link java.lang.String} object.
      * @return a boolean.
@@ -575,9 +495,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSidebarTocTreeView.
-     * </p>
      *
      * @return a boolean.
      */
@@ -586,9 +504,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getSidebarTocLengthBeforeCut.
-     * </p>
      *
      * @return a int.
      */
@@ -606,9 +522,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayTitleBreadcrumbs.
-     * </p>
      *
      * @return a boolean.
      */
@@ -617,9 +531,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTitleBreadcrumbsMaxTitleLength.
-     * </p>
      *
      * @return a int.
      */
@@ -628,9 +540,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayTimeMatrix.
-     * </p>
      *
      * @return a boolean.
      */
@@ -639,9 +549,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayCrowdsourcingModuleLinks.
-     * </p>
      *
      * @return a boolean.
      */
@@ -650,10 +558,8 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTimeMatrixStartYear.
-     * </p>
-     * 
+     *
      * @param subTheme
      * @return a int.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -677,10 +583,8 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTimeMatrixEndYear.
-     * </p>
-     * 
+     *
      * @param subTheme
      * @return a int.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -704,9 +608,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTimeMatrixHits.
-     * </p>
      *
      * @return Total hit number for the time matrix
      */
@@ -724,9 +626,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isPiwikTracking.
-     * </p>
      *
      * @return a boolean.
      */
@@ -735,9 +635,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPiwikBaseURL.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -746,9 +644,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPiwikSiteID.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -757,9 +653,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAnchorThumbnailMode.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -768,9 +662,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getSortFields.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -784,9 +676,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTocIndentation.
-     * </p>
      *
      * @return a int.
      */
@@ -795,9 +685,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isPageBrowseEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -810,9 +698,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isPageBrowseStep1Visible.
-     * </p>
      *
      * @return a boolean.
      */
@@ -822,9 +708,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isPageBrowseStep2Visible.
-     * </p>
      *
      * @return a boolean.
      */
@@ -834,9 +718,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isPageBrowseStep3Visible.
-     * </p>
      *
      * @return a boolean.
      */
@@ -846,9 +728,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPageBrowseStep1.
-     * </p>
      *
      * @return a int.
      */
@@ -861,9 +741,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPageBrowseStep2.
-     * </p>
      *
      * @return a int.
      */
@@ -876,9 +754,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPageBrowseStep3.
-     * </p>
      *
      * @return a int.
      */
@@ -899,9 +775,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getReCaptchaSiteKey.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -910,9 +784,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isUseReCaptcha.
-     * </p>
      *
      * @return a boolean.
      */
@@ -921,9 +793,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isTocEpubEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -932,9 +802,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isGeneratePdfInTaskManager.
-     * </p>
      *
      * @return a boolean.
      */
@@ -943,9 +811,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDocHierarchyPdfEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -954,9 +820,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isShowSearchInItemOnlyIfFullTextAvailable.
-     * </p>
      *
      * @return a boolean.
      */
@@ -965,9 +829,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isContentUploadEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -976,9 +838,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isTranskribusEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -987,9 +847,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSearchExcelExportEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -998,9 +856,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSearchRisExportEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -1009,9 +865,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSitelinksEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -1020,9 +874,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getRestApiUrl.
-     * </p>
      *
      * @return REST API URL
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -1040,9 +892,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getIiifApiUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -1059,9 +909,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @param locale a {@link java.lang.String} object.
@@ -1122,9 +970,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplaySidebarBrowsingTerms.
-     * </p>
      *
      * @return a boolean.
      * @should return correct value
@@ -1134,10 +980,9 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplaySidebarRssFeed.
-     * </p>
-     * s
+     *
+     * <p>s
      * 
      * @return a boolean.
      * @should return correct value
@@ -1147,9 +992,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplaySidebarWidgetUsageCitationLinks.
-     * </p>
      *
      * @return a boolean.
      */
@@ -1158,9 +1001,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplaySidebarWidgetUsageCitationRecommendation.
-     * </p>
      *
      * @return a boolean.
      */
@@ -1189,9 +1030,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSubthemeDiscriminatorFieldSet.
-     * </p>
      *
      * @return a boolean.
      */
@@ -1208,9 +1047,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTwitterName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1563,9 +1400,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSidebarTocViewLinkVisible.
-     * </p>
      *
      * @should return correct value
      * @return a boolean.

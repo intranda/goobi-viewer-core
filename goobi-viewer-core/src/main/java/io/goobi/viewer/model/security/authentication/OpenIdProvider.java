@@ -61,9 +61,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>
  * OpenIdProvider class.
- * </p>
  */
 public class OpenIdProvider extends HttpAuthenticationProvider {
 
@@ -109,14 +107,12 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     private volatile LoginResult loginResult = null; //NOSONAR   LoginResult is immutable, so thread-savety is guaranteed
 
     /**
-     * Lock to be opened once login is completed
+     * Locks to be opened once login is completed.
      */
     private Object responseLock = new Object();
 
     /**
-     * <p>
-     * Constructor for OpenIdProvider.
-     * </p>
+     * Creates a new OpenIdProvider instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
@@ -384,9 +380,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>
      * Getter for the field <code>clientId</code>.
-     * </p>
      *
      * @return the clientId
      */
@@ -395,9 +389,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>
      * Getter for the field <code>clientSecret</code>.
-     * </p>
      *
      * @return the clientSecret
      */
@@ -573,9 +565,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>
      * Getter for the field <code>oAuthState</code>.
-     * </p>
      *
      * @return the oAuthState
      */
@@ -584,9 +574,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>
      * Setter for the field <code>oAuthState</code>.
-     * </p>
      *
      * @param oAuthState the oAuthState to set
      */
@@ -595,9 +583,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>
      * Getter for the field <code>oAuthAccessToken</code>.
-     * </p>
      *
      * @return the oAuthAccessToken
      */
@@ -606,9 +592,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * <p>
      * Setter for the field <code>oAuthAccessToken</code>.
-     * </p>
      *
      * @param oAuthAccessToken the oAuthAccessToken to set
      */

@@ -36,9 +36,7 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 
 /**
- * <p>
  * MetadataParameter class.
- * </p>
  */
 public class MetadataParameter implements Serializable {
 
@@ -204,9 +202,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>source</code>.
-     * </p>
      *
      * @return the source
      */
@@ -240,9 +236,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
      * @return the type
      */
@@ -251,9 +245,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>type</code>.
-     * </p>
      *
      * @param type the type to set
      * @return this
@@ -264,9 +256,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>key</code>.
-     * </p>
      *
      * @return the key
      */
@@ -300,9 +290,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>masterValueFragment</code>.
-     * </p>
      *
      * @return the masterValueFragment
      */
@@ -320,9 +308,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>defaultValue</code>.
-     * </p>
      *
      * @return the defaultValue
      */
@@ -340,9 +326,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>prefix</code>.
-     * </p>
      *
      * @return the prefix
      */
@@ -360,9 +344,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>suffix</code>.
-     * </p>
      *
      * @return the suffix
      */
@@ -437,9 +419,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * isAddUrl.
-     * </p>
      *
      * @return the addUrl
      */
@@ -457,9 +437,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * isTopstructValueFallback.
-     * </p>
      *
      * @return the dontUseTopstructValue
      */
@@ -493,9 +471,7 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>replaceRules</code>.
-     * </p>
      *
      * @return the replaceRules
      */

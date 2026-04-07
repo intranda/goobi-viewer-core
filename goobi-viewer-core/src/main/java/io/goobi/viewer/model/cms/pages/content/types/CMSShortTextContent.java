@@ -51,10 +51,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 /**
- * CMS content for small texts, holding up to 4,294,967,295 characters (all translations combined)
+ * CMS content for small texts, holding up to 4,294,967,295 characters (all translations combined).
  * 
  * @author florian
- *
  */
 @Entity
 @Table(name = "cms_content_text_short")

@@ -36,7 +36,6 @@ import jakarta.ws.rs.ext.Provider;
  * Only allow requests from a session with a logged in Goobi viewer user.
  *
  * @author florian
- *
  */
 @Provider
 @UserLoggedInBinding

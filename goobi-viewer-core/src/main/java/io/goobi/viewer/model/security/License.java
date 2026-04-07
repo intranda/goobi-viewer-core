@@ -69,9 +69,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
  * License class.
- * </p>
  */
 @Entity
 @Table(name = "licenses")
@@ -611,9 +609,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -622,9 +618,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -633,9 +627,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>licenseType</code>.
-     * </p>
      *
      * @return the licenseType
      */
@@ -644,9 +636,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>licenseType</code>.
-     * </p>
      *
      * @param licenseType the licenseType to set
      */
@@ -669,9 +659,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>user</code>.
-     * </p>
      *
      * @return the user
      */
@@ -681,9 +669,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>user</code>.
-     * </p>
      *
      * @param user the user to set
      * @should set userGroup and ipRange to null if user not null
@@ -699,9 +685,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>userGroup</code>.
-     * </p>
      *
      * @return the userGroup
      */
@@ -711,9 +695,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>userGroup</code>.
-     * </p>
      *
      * @param userGroup the userGroup to set
      * @should set user and ipRange to null if userGroup not null
@@ -729,9 +711,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>ipRange</code>.
-     * </p>
      *
      * @return the ipRange
      */
@@ -741,9 +721,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>ipRange</code>.
-     * </p>
      *
      * @param ipRange the ipRange to set
      * @should set user and userGroup to null if ipRange not null
@@ -759,9 +737,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>start</code>.
-     * </p>
      *
      * @return the start
      */
@@ -770,9 +746,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>start</code>.
-     * </p>
      *
      * @param start the start to set
      */
@@ -781,9 +755,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>end</code>.
-     * </p>
      *
      * @return the end
      */
@@ -792,9 +764,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>end</code>.
-     * </p>
      *
      * @param end the end to set
      */
@@ -803,9 +773,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>privileges</code>.
-     * </p>
      *
      * @return the privileges
      */
@@ -814,9 +782,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>privileges</code>.
-     * </p>
      *
      * @param privileges the privileges to set
      */
@@ -825,9 +791,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>conditions</code>.
-     * </p>
      *
      * @return the conditions
      */
@@ -836,9 +800,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>conditions</code>.
-     * </p>
      *
      * @param conditions the conditions to set
      */
@@ -847,9 +809,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
      * @return the description
      */
@@ -858,9 +818,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
      * @param description the description to set
      */
@@ -891,9 +849,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>subthemeDiscriminatorValues</code>.
-     * </p>
      *
      * @return the subthemeDiscriminatorValues
      */
@@ -902,9 +858,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>subthemeDiscriminatorValues</code>.
-     * </p>
      *
      * @param subthemeDiscriminatorValues the subthemeDiscriminatorValues to set
      */
@@ -913,9 +867,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>allowedCategories</code>.
-     * </p>
      *
      * @return the allowedCategories
      */
@@ -924,9 +876,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>allowedCategories</code>.
-     * </p>
      *
      * @param allowedCategories the allowedCategories to set
      */
@@ -935,9 +885,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>allowedCmsTemplates</code>.
-     * </p>
      *
      * @return the allowedCmsTemplates
      */
@@ -946,9 +894,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>allowedCmsTemplates</code>.
-     * </p>
      *
      * @param allowedCmsTemplates the allowedCmsTemplates to set
      */
@@ -957,9 +903,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>allowedCrowdsourcingCampaigns</code>.
-     * </p>
      *
      * @return the allowedCrowdsourcingCampaigns
      */
@@ -968,9 +912,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>allowedCrowdsourcingCampaigns</code>.
-     * </p>
      *
      * @param allowedCrowdsourcingCampaigns the allowedCrowdsourcingCampaigns to set
      */
@@ -1042,7 +984,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     /**
-     * a
+     * A.
      * 
      * @return The other non-null member of user/userGroup/ipRange/client
      * @should return correct object

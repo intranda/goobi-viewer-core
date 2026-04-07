@@ -58,7 +58,6 @@ import io.goobi.viewer.solr.SolrConstants;
  * Class to create comments from a text input for a given PI and page order and to save them using a given {@link AnnotationSaver}
  *
  * @author florian
- *
  */
 public class CommentManager implements AnnotationLister<Comment> {
 
@@ -367,7 +366,6 @@ public class CommentManager implements AnnotationLister<Comment> {
     }
 
     /**
-     *
      *
      * @param commentGroup
      * @return true if commentGroup query has matching identifiers in the index; false otherwise

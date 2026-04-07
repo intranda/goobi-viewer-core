@@ -92,7 +92,6 @@ public final class SolrTools {
     private static Random random = new SecureRandom();
 
     /**
-     *
      */
     private SolrTools() {
         //
@@ -199,9 +198,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getAsInt.
-     * </p>
      *
      * @param fieldValue a {@link java.lang.Object} object.
      * @return a {@link java.lang.Integer} object.
@@ -223,9 +220,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getAsLong.
-     * </p>
      *
      * @param fieldValue a {@link java.lang.Object} object.
      * @return a {@link java.lang.Long} object.
@@ -247,9 +242,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getSingleFieldValue.
-     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -272,9 +265,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getSingleFieldStringValue.
-     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -288,9 +279,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getSingleFieldIntegerValue.
-     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -302,9 +291,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getSingleFieldLongValue.
-     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -316,9 +303,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getSingleFieldBooleanValue.
-     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field a {@link java.lang.String} object.
@@ -425,9 +410,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getMultiLanguageMetadata.
-     * </p>
      *
      * @param mdValues a {@link java.util.Map} object.
      * @return a {@link java.util.List} object.
@@ -449,9 +432,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getMetadataValuesForLanguage.
-     * </p>
      *
      * @param doc The document containing the metadata
      * @param key the metadata key without the '_LANG_...' suffix
@@ -490,9 +471,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getMetadataValuesForLanguage.
-     * </p>
      *
      * @param doc The document containing the metadata
      * @param key the metadata key without the '_LANG_...' suffix
@@ -631,9 +610,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * isQuerySyntaxError.
-     * </p>
      *
      * @param e a {@link java.lang.Exception} object.
      * @return a boolean.
@@ -675,9 +652,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getTranslations.
-     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -695,9 +670,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getTranslations.
-     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -716,9 +689,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getTranslations.
-     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -730,9 +701,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getTranslations.
-     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -755,9 +724,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * isHasImages.
-     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields
      *            {@link io.goobi.viewer.solr.SolrConstants#FILENAME} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
@@ -805,9 +772,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getAvailableValuesForField.
-     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @param filterQuery a {@link java.lang.String} object.
@@ -822,9 +787,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * getAvailableValuesForField.
-     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @param filterQuery a {@link java.lang.String} object.
@@ -896,9 +859,7 @@ public final class SolrTools {
     }
 
     /**
-     * <p>
      * checkSolrSchemaName.
-     * </p>
      *
      * @return an array of {@link java.lang.String} objects.
      */
@@ -976,7 +937,7 @@ public final class SolrTools {
     }
 
     /**
-     * reverts the operation of {@link #escapeSpecialCharacters(String)}.
+     * Reverts the operation of {@link #escapeSpecialCharacters(String)}.
      *
      * @param string the string to unescape
      * @return the unescaped string

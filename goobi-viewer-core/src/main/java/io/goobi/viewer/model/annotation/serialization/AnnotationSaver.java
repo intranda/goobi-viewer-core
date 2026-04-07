@@ -26,10 +26,9 @@ import java.io.IOException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
- * Save WebAnnotations to a persistence contex
+ * Saves WebAnnotations to a persistence context.
  *
  * @author florian
- *
  */
 public interface AnnotationSaver {
 

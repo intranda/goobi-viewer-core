@@ -27,9 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
  * CalendarItemCentury class.
- * </p>
  */
 public class CalendarItemCentury extends AbstractCalendarItem implements Serializable {
 
@@ -38,9 +36,7 @@ public class CalendarItemCentury extends AbstractCalendarItem implements Seriali
     private final Map<Integer, CalendarItemYear> years = new HashMap<>();
 
     /**
-     * <p>
-     * Constructor for CalendarItemYear.
-     * </p>
+     * Creates a new CalendarItemYear instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param value a int.
@@ -55,9 +51,7 @@ public class CalendarItemCentury extends AbstractCalendarItem implements Seriali
     }
 
     /**
-     * <p>
      * Getter for the field <code>years</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -70,7 +64,7 @@ public class CalendarItemCentury extends AbstractCalendarItem implements Seriali
     }
 
     /**
-     * Add the given hits count to the given year within the century, creating a new item in {@link #getYears()} if necessary. The hits count is both
+     * Adds the given hits count to the given year within the century, creating a new item in {@link #getYears()} if necessary. The hits count is both
      * added to the year item and the century itself, so there is no need to additionally call {@link #addHits(Integer)} on the century
      * 
      * @param year the year of the hits

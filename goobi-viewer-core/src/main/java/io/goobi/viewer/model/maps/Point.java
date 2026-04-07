@@ -25,7 +25,6 @@ import org.json.JSONObject;
 
 /**
  * @author florian
- *
  */
 public class Point implements IArea {
 
@@ -33,7 +32,7 @@ public class Point implements IArea {
     private final double lat;
 
     /**
-     * First longitide in eastern direction, then latitude in northern direction
+     * First longitide in eastern direction, then latitude in northern direction.
      * 
      * @param lng
      * @param lat

@@ -32,7 +32,6 @@ import io.goobi.viewer.model.translations.Translation;
 
 /**
  * @author florian
- *
  */
 @Entity
 @Table(name = "cms_geomap_translation")
@@ -46,14 +45,14 @@ public class MapTranslation extends Translation implements Serializable {
     private GeoMap owner;
 
     /**
-     * Empty Constructor
+     * Empty Constructor.
      */
     public MapTranslation() {
         super();
     }
 
     /**
-     * Constructor without value
+     * Constructor without value.
      *
      * @param language
      * @param tag

@@ -24,9 +24,7 @@ package io.goobi.viewer.servlets.oembed;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 
 /**
- * <p>
  * PhotoOEmbedResponse class.
- * </p>
  */
 public class PhotoOEmbedResponse extends OEmbedResponse {
 
@@ -62,9 +60,7 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>url</code>.
-     * </p>
      *
      * @return the url
      */
@@ -73,9 +69,7 @@ public class PhotoOEmbedResponse extends OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>url</code>.
-     * </p>
      *
      * @param url the url to set
      */

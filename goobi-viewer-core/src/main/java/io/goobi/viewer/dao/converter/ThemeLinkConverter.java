@@ -35,7 +35,6 @@ import jakarta.persistence.Converter;
 
 /**
  * @author florian
- *
  */
 @Converter
 public class ThemeLinkConverter implements AttributeConverter<List<ThemeLink>, String> {

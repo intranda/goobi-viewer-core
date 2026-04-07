@@ -65,7 +65,6 @@ import jakarta.ws.rs.core.MediaType;
  * Resolver for normdata authority resources identified by their escaped url.
  *
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(AUTHORITY)
 @ViewerRestServiceBinding

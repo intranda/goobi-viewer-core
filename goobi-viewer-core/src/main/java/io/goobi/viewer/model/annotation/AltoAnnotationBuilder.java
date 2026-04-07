@@ -47,7 +47,8 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 
 /**
  * Creates an {@link de.intranda.api.iiif.presentation.v2.AnnotationList} of {@link TextualResource}s from the content of an ALTO document.
- * Depending on selected granularity, it is either one annotation per page, per TextBlock, per line or per word
+ *
+ * <p>Depending on selected granularity, it is either one annotation per page, per TextBlock, per line or per word
  *
  * @author Florian
  */
@@ -67,9 +68,7 @@ public class AltoAnnotationBuilder {
     }
 
     /**
-     * <p>
      * createAnnotations.
-     * </p>
      *
      * @param alto a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Page} object.
      * @param pi
@@ -106,9 +105,7 @@ public class AltoAnnotationBuilder {
     }
 
     /**
-     * <p>
      * createAnnotations.
-     * </p>
      *
      * @param elements a {@link java.util.List} object.
      * @param pi
@@ -123,9 +120,7 @@ public class AltoAnnotationBuilder {
     }
 
     /**
-     * <p>
      * createAnnotation.
-     * </p>
      *
      * @param element a {@link de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData} object.
      * @param pi

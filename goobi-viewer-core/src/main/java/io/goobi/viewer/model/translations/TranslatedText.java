@@ -46,7 +46,6 @@ import io.goobi.viewer.controller.JsonTools;
  * default language only exists if the text is initiated giving only a single text without locale or if it is explicitly added
  * 
  * @author florian
- *
  */
 @JsonSerialize(using = TranslatedTextSerializer.class)
 public class TranslatedText extends MultiLanguageMetadataValue implements IPolyglott, Serializable {
@@ -66,7 +65,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * Create a text with the given locales
+     * Creates a text with the given locales.
      * 
      * @param locales
      */
@@ -75,7 +74,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * Create a text with the given locales, setting the selected locale to the given initialLocale
+     * Creates a text with the given locales, setting the selected locale to the given initialLocale.
      * 
      * @param locales
      * @param initalLocale
@@ -106,7 +105,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * Create a copy of the given Translated text "orig"
+     * Creates a copy of the given Translated text "orig".
      * 
      * @param orig
      */
@@ -115,7 +114,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * Create a text with the default language set to the given value
+     * Creates a text with the default language set to the given value.
      * 
      * @param text
      */
@@ -178,7 +177,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
     /**
      * Get the text for {@link IPolyglott#getCurrentLocale()}, or, failing that, for {@link IPolyglott#getDefaultLocale()}, the internal default
-     * language or finally an empty string
+     * language or finally an empty string.
      * 
      * @return {@link String}
      */
@@ -187,7 +186,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * Get the text for the given language, or, failing that, for the given defaultLocale, the internal default language or finally an empty string
+     * Gets the text for the given language, or, failing that, for the given defaultLocale, the internal default language or finally an empty string.
      * 
      * @param locale The locale to return the text for
      * @param defaultLocale The fallback locale to use if no text exists for the given locale
@@ -201,7 +200,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * Set the text for the given locale
+     * Sets the text for the given locale.
      * 
      * @param text
      * @param locale
@@ -297,7 +296,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     }
 
     /**
-     * two TranslatedTexts are considered equal if the have the same locales and the same texts for each locale
+     * Two TranslatedTexts are considered equal if the have the same locales and the same texts for each locale.
      */
     @Override
     public boolean equals(Object obj) {

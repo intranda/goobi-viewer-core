@@ -29,7 +29,6 @@ import io.goobi.viewer.controller.StringTools;
 
 /**
  * @author florian
- *
  */
 public class ApiUrls extends AbstractApiUrlManager {
 

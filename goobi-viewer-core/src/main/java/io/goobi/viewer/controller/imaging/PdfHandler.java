@@ -39,9 +39,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>
  * PdfHandler class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -52,9 +50,7 @@ public class PdfHandler {
     private final AbstractApiUrlManager urls;
 
     /**
-     * <p>
-     * Constructor for PdfHandler.
-     * </p>
+     * Creates a new PdfHandler instance.
      *
      * @param watermarkHandler a {@link io.goobi.viewer.controller.imaging.WatermarkHandler} object.
      * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
@@ -66,9 +62,7 @@ public class PdfHandler {
     }
 
     /**
-     * <p>
-     * Constructor for PdfHandler.
-     * </p>
+     * Creates a new PdfHandler instance.
      *
      * @param watermarkHandler a {@link io.goobi.viewer.controller.imaging.WatermarkHandler} object.
      * @param urls
@@ -93,7 +87,7 @@ public class PdfHandler {
 
     /**
      * Return the pdf-download url for the given {@link io.goobi.viewer.model.viewer.StructElement} and a number of
-     * {@link io.goobi.viewer.model.viewer.PhysicalElement}s
+     * {@link io.goobi.viewer.model.viewer.PhysicalElement}s.
      *
      * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pages an array of {@link io.goobi.viewer.model.viewer.PhysicalElement} objects.
@@ -142,7 +136,7 @@ public class PdfHandler {
     }
 
     /**
-     * Returns an existing pdf file from the media folder
+     * Returns an existing pdf file from the media folder.
      *
      * @param pi a {@link java.lang.String} object.
      * @param filename a {@link java.lang.String} object.
@@ -173,7 +167,7 @@ public class PdfHandler {
     }
 
     /**
-     * Gets the url to the pdf for the given pi and divId
+     * Gets the url to the pdf for the given pi and divId.
      *
      * @param pi PI of the process from which to build pdf. Must be provided
      * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId

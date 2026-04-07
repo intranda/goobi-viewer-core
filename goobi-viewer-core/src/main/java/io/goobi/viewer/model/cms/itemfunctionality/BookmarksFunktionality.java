@@ -30,7 +30,6 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 
 /**
  * @author florian
- *
  */
 public class BookmarksFunktionality implements Functionality {
 

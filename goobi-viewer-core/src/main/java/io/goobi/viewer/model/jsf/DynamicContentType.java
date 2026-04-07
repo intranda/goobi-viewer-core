@@ -23,7 +23,6 @@ package io.goobi.viewer.model.jsf;
 
 /**
  * @author florian
- *
  */
 public enum DynamicContentType {
 

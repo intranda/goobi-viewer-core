@@ -1,5 +1,5 @@
 /*
-  * This file is part of the Goobi viewer - a content presentation and management
+ * This file is part of the Goobi viewer - a content presentation and management
  * application for digitized objects.
  *
  * Visit these websites for more information.
@@ -77,7 +77,7 @@ public class SolrEADParser extends ArchiveParser {
     private Map<String, ArchiveEntry> loadedNodeMap = new HashMap<>();
 
     /**
-     * Get the database names.
+     * Gets the database names.
      *
      * @return List<ArchiveResource>
      * @throws IndexUnreachableException
@@ -382,7 +382,7 @@ public class SolrEADParser extends ArchiveParser {
     }
 
     /**
-     * a
+     * A
      * 
      * @param template Metadata template name
      * @return List of Solr field names

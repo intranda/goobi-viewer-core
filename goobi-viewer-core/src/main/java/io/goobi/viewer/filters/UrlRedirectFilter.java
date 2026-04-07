@@ -45,24 +45,17 @@ import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 
 /**
- * Filter for redirecting prettified calls to cmsPages.
- * <p>
- * Forwarding is handled by {@link jakarta.servlet.RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user
+ * Filters for redirecting prettified calls to cmsPages.
+ *
+ * <p>Forwarding is handled by {@link jakarta.servlet.RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user
  * doesn't change, but the internal handling of the request is according to the forwarded url
- * </p>
- * <p>
  * 'prettified' in this context refers to calling CMSPages by either their 'alternative url' or the url of the static page they replace.
- * </p>
- * <p>
  * This filter needs to be placed in the filter chain before the {@link org.ocpsoft.rewrite.servlet.RewriteFilter} because the RewriteFilter (former
  * PrettyFilter) needs to handle the actual CMSPage mapping (the PrettyFilter won't handle the request if it has been called already for this request,
  * despite the forward)
- * </p>
- * <p>
  * This filter also stores the called url to the session map using
  * {@link io.goobi.viewer.model.urlresolution.ViewHistory#setCurrentView(ViewerPath, HttpSession)}. This is essential to leaving a view to return to a
  * previous view (for example when leaving the reading mode)
- * </p>
  */
 public class UrlRedirectFilter implements Filter {
 
@@ -71,7 +64,8 @@ public class UrlRedirectFilter implements Filter {
     /**
      * {@inheritDoc}
      *
-     * Redirects prettified calls to cmsPages (either using alternative url or static url of a cmsPage) to the actual page url (The cmsPage pretty-url
+     * <p>Redirects prettified calls to cmsPages (either using alternative url or static url of a cmsPage) to the actual page url (The cmsPage
+     * pretty-url
      * that is) Also stores the actually requested path in the current http session using {@link ViewHistory#setCurrentView(ViewerPath, HttpSession)}
      */
     @Override

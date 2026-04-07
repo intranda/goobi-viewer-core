@@ -205,9 +205,9 @@ public class ImageDeliveryBean implements Serializable {
      * Returns a thumbnail url of the current top level document (according to the {@link io.goobi.viewer.model.viewer.ViewManager} with the given
      * width/height. Returns an empty string if no current document exists
      *
-     * @return The representative thumbnail for the current top docStruct element
      * @param width a int.
      * @param height a int.
+     * @return The representative thumbnail for the current top docStruct element
      */
     public String getRepresentativeThumbnail(int width, int height) {
         return getTopDocumentIfExists().map(doc -> getThumbs().getThumbnailUrl(doc, width, height)).orElse("");
@@ -227,8 +227,8 @@ public class ImageDeliveryBean implements Serializable {
      * Returns a thumbnail url of the current top level document (according to the {@link io.goobi.viewer.model.viewer.ViewManager} for a square
      * thumbnail image of the given size. Returns an empty string if no current document exists
      *
-     * @return The representative thumbnail for the current top docStruct element
      * @param size a int.
+     * @return The representative thumbnail for the current top docStruct element
      */
     public String getRepresentativeSquareThumbnail(int size) {
         return getTopDocumentIfExists().map(doc -> {
@@ -250,11 +250,12 @@ public class ImageDeliveryBean implements Serializable {
 
     /**
      * Returns a thumbnail url of the current page (according to the {@link io.goobi.viewer.model.viewer.ViewManager} of the given width/height.
-     * Returns an empty string if no current page exists
      *
-     * @return The thumbnail of the current page
+     * <p>Returns an empty string if no current page exists
+     *
      * @param width a int.
      * @param height a int.
+     * @return The thumbnail of the current page
      */
     public String getCurrentPageThumbnail(int width, int height) {
         return getCurrentPageIfExists().map(page -> getThumbs().getThumbnailUrl(page, width, height)).orElse("");
@@ -274,8 +275,8 @@ public class ImageDeliveryBean implements Serializable {
      * Returns a thumbnail url of the current page (according to the {@link io.goobi.viewer.model.viewer.ViewManager} for a square thumbnail image of
      * the given size. Returns an empty string if no current page exists
      *
-     * @return The thumbnail of the current page
      * @param size a int.
+     * @return The thumbnail of the current page
      */
     public String getCurrentPageSquareThumbnail(int size) {
         return getCurrentPageIfExists().map(page -> getThumbs().getSquareThumbnailUrl(page, size)).orElse("");
@@ -296,8 +297,8 @@ public class ImageDeliveryBean implements Serializable {
      * image size and tiling suggestions for IIIF image information. If the given pageType does not match any known pageType, an empty String is
      * returned
      *
-     * @return The url to the image of the current page for the current pageType: Either a IIIF manifest if available, or a full image url
      * @param pageType a {@link java.lang.String} object.
+     * @return The url to the image of the current page for the current pageType: Either a IIIF manifest if available, or a full image url
      */
     public String getCurrentImage(String pageType) {
         PageType type = PageType.getByName(pageType);
@@ -410,9 +411,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * <p>
      * getObjects3D.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.controller.imaging.Object3DHandler} object.
      */
@@ -581,21 +580,17 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * <p>
      * getIfExists.
-     * </p>
      *
-     * @return an optional containing the given String if it is non-empty, otherwise an empty optional
      * @param url a {@link java.lang.String} object.
+     * @return an optional containing the given String if it is non-empty, otherwise an empty optional
      */
     public Optional<String> getIfExists(String url) {
         return Optional.of(url).map(string -> StringUtils.isNotBlank(string) ? string : null);
     }
 
     /**
-     * <p>
      * Setter for the field <code>thumbs</code>.
-     * </p>
      *
      * @param thumbs the thumbs to set
      */
@@ -604,9 +599,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>images</code>.
-     * </p>
      *
      * @param images the images to set
      */
@@ -615,9 +608,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>pdf</code>.
-     * </p>
      *
      * @param pdf the pdf to set
      */

@@ -64,7 +64,7 @@ public class SearchResultGroup implements Serializable {
     }
 
     /**
-     * Create a copy of the given SearchResultGroup, without any search results
+     * Creates a copy of the given SearchResultGroup, without any search results.
      * 
      * @param blueprint
      */

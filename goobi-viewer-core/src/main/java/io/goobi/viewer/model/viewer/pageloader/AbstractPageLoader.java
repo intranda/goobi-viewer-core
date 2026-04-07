@@ -53,9 +53,7 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.faces.model.SelectItem;
 
 /**
- * <p>
  * Abstract AbstractPageLoader class.
- * </p>
  */
 public abstract class AbstractPageLoader implements IPageLoader {
 
@@ -185,9 +183,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
     }
 
     /**
-     * <p>
      * loadPage.
-     * </p>
      *
      * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param page a int.
@@ -229,9 +225,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
     }
 
     /**
-     * <p>
      * loadPageFromDoc.
-     * </p>
      *
      * @param doc Solr document from which to construct the page
      * @param pi Record identifier

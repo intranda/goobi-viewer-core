@@ -47,7 +47,6 @@ import jakarta.faces.context.FacesContext;
  * from all entries and writes them into the table again as Text
  *
  * @author florian
- *
  */
 public class CMSMediaUpdate implements IModelUpdate {
 

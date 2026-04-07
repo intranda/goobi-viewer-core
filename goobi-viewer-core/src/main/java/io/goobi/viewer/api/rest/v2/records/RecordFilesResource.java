@@ -81,7 +81,6 @@ import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(RECORDS_FILES)
 @ViewerRestServiceBinding

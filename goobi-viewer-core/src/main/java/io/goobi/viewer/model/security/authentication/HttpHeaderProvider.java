@@ -57,7 +57,7 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
     private volatile LoginResult loginResult = null; //NOSONAR   LoginResult is immutable, so thread-savety is guaranteed
 
     /**
-     * Lock to be opened once login is completed
+     * Locks to be opened once login is completed.
      */
     private Object responseLock = new Object();
 

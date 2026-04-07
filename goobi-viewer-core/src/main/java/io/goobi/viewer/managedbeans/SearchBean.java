@@ -123,7 +123,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * SearchBean
+ * SearchBean.
  */
 @Named
 @SessionScoped
@@ -237,9 +237,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * init.
-     * </p>
      */
     @PostConstruct
     public void init() {
@@ -265,9 +263,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * clearSearchItemLists.
-     * </p>
      *
      * @should clear map correctly
      */
@@ -322,7 +318,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * {@inheritDoc}
      *
-     * Action method for search buttons (simple search).
+     * <p>Action method for search buttons (simple search).
      * 
      * @should not reset facets
      */
@@ -366,9 +362,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * simpleSearch.
-     * </p>
      *
      * @param search a {@link io.goobi.viewer.model.search.SearchInterface} object
      * @return Navigation outcome
@@ -388,7 +382,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Same as <code>{@link #searchSimple()}</code> but sets the current facets to the given string
+     * Same as <code>{@link #searchSimple()}</code> but sets the current facets to the given string.
      *
      * @param facetString a {@link java.lang.String} object.
      * @return Navigation outcome
@@ -407,9 +401,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * searchAdvanced.
-     * </p>
      *
      * @param resetParameters a boolean.
      * @return Navigation outcome
@@ -429,7 +421,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Search using currently set search string
+     * Searches using currently set search string.
      *
      * @return Navigation outcome
      * @should reset search results
@@ -484,7 +476,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Same as {@link #resetSearchAction()} without the redirect
+     * Same as {@link #resetSearchAction()} without the redirect.
      */
     public void reset() {
         generateSimpleSearchString("");
@@ -499,7 +491,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * {@inheritDoc}
      *
-     * Alias for {@link #resetSearchAction()}
+     * <p>Alias for {@link #resetSearchAction()}
      */
     @Override
     public String resetSearch() {
@@ -534,9 +526,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * resetSearchParameters.
-     * </p>
      *
      * @param resetAllSearchTypes a boolean
      */
@@ -877,9 +867,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * executeSearch.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -891,9 +879,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * executeSearch.
-     * </p>
      *
      * @param filterQuery a {@link java.lang.String} object
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1019,9 +1005,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getFinalSolrQuery.
-     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -1034,9 +1018,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getFilterQueries.
-     * </p>
      *
      * @return a {@link java.util.List} object
      */
@@ -1056,9 +1038,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getCombinedFilterQuery.
-     * </p>
      *
      * @return Generated query
      */
@@ -1143,9 +1123,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * resetActiveSearchType.
-     * </p>
      */
     public void resetActiveSearchType() {
         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
@@ -1231,7 +1209,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * {@inheritDoc}
      *
-     * Wrapper for setSearchStringKeepCurrentPage() that also resets <code>currentPage</code>.
+     * <p>Wrapper for setSearchStringKeepCurrentPage() that also resets <code>currentPage</code>.
      */
     @Override
     public void setSearchString(String searchString) {
@@ -1397,9 +1375,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>searchSortingOption</code>.
-     * </p>
      *
      * @return the searchSortingOption
      */
@@ -1408,9 +1384,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>searchSortingOption</code>.
-     * </p>
      *
      * @param searchSortingOption the searchSortingOption to set
      */
@@ -1441,9 +1415,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * isDisplayResultGroupNames.
-     * </p>
      *
      * @return true if activeResultGroup null; false otherwise
      */
@@ -1452,9 +1424,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getActiveContext.
-     * </p>
      *
      * @return activeResultGroup name; "-" if none set
      */
@@ -1469,9 +1439,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>activeResultGroup</code>.
-     * </p>
      *
      * @param activeResultGroup a {@link io.goobi.viewer.model.search.SearchResultGroup} object
      */
@@ -1495,9 +1463,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getActiveResultGroupName. For URL building, use getActiveContext() instead.
-     * </p>
      *
      * @return activeResultGroup name; "-" if none set
      */
@@ -1579,7 +1545,6 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should not replace query items already in use
      * @should not add identical hierarchical query items
      * @should change nothing if facet already exists in query items
-     * 
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
@@ -1656,9 +1621,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * removeRangeFacetAction.
-     * </p>
      *
      * @param field a {@link java.lang.String} object
      * @return Navigation outcome
@@ -1672,9 +1635,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * removeFacetAction.
-     * </p>
      *
      * @param facetQuery a {@link java.lang.String} object.
      * @return Navigation outcome
@@ -1723,9 +1684,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentPage</code>.
-     * </p>
      *
      * @param currentPage the currentPage to set
      */
@@ -1748,9 +1707,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * setHitsCount.
-     * </p>
      *
      * @param hitsCount the hitsCount to set
      */
@@ -1761,9 +1718,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>searchTerms</code>.
-     * </p>
      *
      * @return the searchTerms
      */
@@ -1772,9 +1727,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentHitIndex</code>.
-     * </p>
      *
      * @return the currentHitIndex
      */
@@ -1792,9 +1745,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getCurrentHitIndexDisplay.
-     * </p>
      *
      * @return a int.
      */
@@ -1803,9 +1754,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * increaseCurrentHitIndex.
-     * </p>
      *
      * @should increase index correctly
      * @should decrease index correctly
@@ -1836,9 +1785,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>hitIndexOperand</code>.
-     * </p>
      *
      * @return the hitIndexOperand
      */
@@ -1847,9 +1794,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>hitIndexOperand</code>.
-     * </p>
      *
      * @param hitIndexOperand the hitIndexOperand to set
      */
@@ -1984,7 +1929,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * {@inheritDoc}
      *
-     * Sets <code>currentSearchFilter</code> via the given label value.
+     * <p>Sets <code>currentSearchFilter</code> via the given label value.
      */
     @Override
     public void setCurrentSearchFilterString(String searchFilterLabel) {
@@ -1999,9 +1944,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * resetSearchFilter.
-     * </p>
      */
     public void resetSearchFilter() {
         currentSearchFilter = null;
@@ -2014,18 +1957,14 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * resetCurrentHitIndex.
-     * </p>
      */
     public void resetCurrentHitIndex() {
         currentHitIndex = -1;
     }
 
     /**
-     * <p>
      * isSortingEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -2034,9 +1973,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>advancedSearchQueryGroup</code>.
-     * </p>
      *
      * @return the advancedQueryGroups
      */
@@ -2157,7 +2094,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Returns drop-down items for all collection names. Convenience method that retrieves the current language from <code>NavigationHelper</code>.
-     * This method shouldn't throw exceptions, otherwise it can cause an IllegalStateException.
+     *
+     * <p>This method shouldn't throw exceptions, otherwise it can cause an IllegalStateException.
      *
      * @return a {@link java.util.List} object.
      */
@@ -2194,9 +2132,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getAdvancedSearchAllowedFields.
-     * </p>
      *
      * @return List of allowed advanced search fields
      */
@@ -2239,9 +2175,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentSearch</code>.
-     * </p>
      *
      * @return the currentSearch
      */
@@ -2250,9 +2184,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentSearch</code>.
-     * </p>
      *
      * @param currentSearch the currentSearch to set
      */
@@ -2262,9 +2194,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * isFuzzySearchEnabled.
-     * </p>
      *
      * @return the fuzzySearchEnabled
      */
@@ -2273,9 +2203,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>fuzzySearchEnabled</code>.
-     * </p>
      *
      * @param fuzzySearchEnabled the fuzzySearchEnabled to set
      */
@@ -2284,9 +2212,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * saveSearchAction.
-     * </p>
      *
      * @should add all values correctly
      * @return a {@link java.lang.String} object.
@@ -2316,9 +2242,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getRssUrl.
-     * </p>
      *
      * @return URL to the RSS feed for the current search
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -2361,9 +2285,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * isSearchSavingEnabled.
-     * </p>
      *
      * @return a boolean.
      */
@@ -2372,9 +2294,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * executeSavedSearchAction.
-     * </p>
      *
      * @param search a {@link io.goobi.viewer.model.search.Search} object.
      * @return a {@link java.lang.String} object.
@@ -2398,9 +2318,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * exportSearchAsRisAction.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -2494,9 +2412,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * exportSearchAsExcelAction.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -2632,9 +2548,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>hitsPerPage</code>.
-     * </p>
      *
      * @return the hitsPerPage
      */
@@ -2643,9 +2557,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>hitsPerPage</code>.
-     * </p>
      *
      * @param hitsPerPage the hitsPerPage to set
      */
@@ -2667,9 +2579,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * isHitsPerPageSetterCalled.
-     * </p>
      *
      * @return the hitsPerPageSetterCalled
      */
@@ -2678,9 +2588,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>hitsPerPageSetterCalled</code>.
-     * </p>
      *
      * @param hitsPerPageSetterCalled the hitsPerPageSetterCalled to set
      */
@@ -2690,9 +2598,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>advancedSearchQueryInfo</code>.
-     * </p>
      *
      * @return the advancedSearchQueryInfo
      * @should html escape string
@@ -2708,9 +2614,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * isDownloadReady.
-     * </p>
      *
      * @return a {@link java.util.concurrent.Future} object.
      */
@@ -2725,9 +2629,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getTotalNumberOfVolumes.
-     * </p>
      *
      * @return a long.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -2772,9 +2674,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getStructElement.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -2800,9 +2700,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getCurrentSearchUrlPart.
-     * </p>
      *
      * @return Parameter string for pretty:search5 URLs.
      */
@@ -2820,9 +2718,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * updateFacetItem.
-     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @param hierarchical a boolean.
@@ -2949,9 +2845,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * setFirstQueryItemValue.
-     * </p>
      *
      * @param value a {@link java.lang.String} object.
      */
@@ -2960,18 +2854,14 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getFirstQueryItemValue.
-     * </p>
      */
     public void getFirstQueryItemValue() {
         this.advancedSearchQueryGroup.getQueryItems().get(0).getValue();
     }
 
     /**
-     * <p>
      * setBookmarkListName.
-     * </p>
      *
      * @param name a {@link java.lang.String} object.
      */
@@ -2983,9 +2873,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getBookmarkListName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -3000,9 +2888,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * setBookmarkListName.
-     * </p>
      *
      * @param key The sharing key to set
      */
@@ -3014,9 +2900,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getBookmarkListName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -3032,9 +2916,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>proximitySearchDistance</code>.
-     * </p>
      *
      * @return a int
      */
@@ -3043,9 +2925,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * searchInRecord.
-     * </p>
      *
      * @param piField a {@link java.lang.String} object
      * @param piValue a {@link java.lang.String} object
@@ -3056,9 +2936,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * searchInRecord.
-     * </p>
      *
      * @param piField a {@link java.lang.String} object
      * @param piValue a {@link java.lang.String} object
@@ -3123,9 +3001,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * isSolrIndexReachable.
-     * </p>
      *
      * @return true if Solr ping successful; false otherwise
      */
@@ -3134,9 +3010,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * hasGeoLocationHits.
-     * </p>
      *
      * @return a boolean
      */
@@ -3145,9 +3019,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getHitsLocations.
-     * </p>
      *
      * @return a {@link java.util.List} object
      */
@@ -3164,7 +3036,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Display the geo facet map if there are any hits available with geo coordinates
+     * Display the geo facet map if there are any hits available with geo coordinates.
      *
      * @return true if search hits with coordinates available; false otherwise
      */
@@ -3173,9 +3045,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getHitsMap.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.maps.GeoMap} object
      */
@@ -3204,9 +3074,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * facetifyField.
-     * </p>
      *
      * @param fieldName a {@link java.lang.String} object
      * @return Facet variant of the given fieldName
@@ -3216,9 +3084,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getFieldFacetValues.
-     * </p>
      *
      * @param field a {@link java.lang.String} object
      * @param num a int
@@ -3230,9 +3096,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getFieldFacetValues.
-     * </p>
      *
      * @param field a {@link java.lang.String} object
      * @param num a int
@@ -3267,9 +3131,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getSearchSortingOptions.
-     * </p>
      *
      * @param language a {@link java.lang.String} object
      * @return List of sorting options for the given language
@@ -3293,9 +3155,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getQueryResultCount.
-     * </p>
      *
      * @param query a {@link java.lang.String} object
      * @return Number of hits for the given query
@@ -3308,9 +3168,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getFinalSolrQueryEscaped.
-     * </p>
      *
      * @return URL-encoded final query
      */
@@ -3319,9 +3177,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * <p>
      * getCombinedFilterQueryEscaped.
-     * </p>
      *
      * @return URL-encoded combined filter query
      */
@@ -3338,8 +3194,8 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * The url of the viewer page loaded when the last search operation was performed, stored ing {@link #lastUsedSearchPage} or the url of the
-     * default search or searchAdvanved page depending on the state of this bean
+     * The url of the viewer page loaded when the last search operation was performed, stored in {@link #lastUsedSearchPage} or the url of the
+     * default search or searchAdvanced page depending on the state of this bean.
      *
      * @return a URL string
      */

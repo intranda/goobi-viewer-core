@@ -47,7 +47,6 @@ import jakarta.persistence.GenerationType;
  * component
  *
  * @author florian
- *
  */
 public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDisplayElement> {
 
@@ -78,7 +77,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
 
     /**
      *
-     * Default constructor for widgets with underlying data identified by the given id
+     * Default constructor for widgets with underlying data identified by the given id.
      *
      * @param title
      * @param description
@@ -114,7 +113,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * The displayed title of the element
+     * The displayed title of the element.
      * 
      * @return the title
      */
@@ -123,7 +122,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * A description of the element
+     * A description of the element.
      * 
      * @return the description
      */
@@ -149,7 +148,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * Describes they way in which way data for this widget is created and stored
+     * Describes they way in which way data for this widget is created and stored.
      * 
      * @return the {@link GenerationType generation type}
      */
@@ -158,7 +157,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * Describes the specific xhtml component used for this widget
+     * Describes the specific xhtml component used for this widget.
      * 
      * @return the contentType
      */
@@ -167,7 +166,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * Identifier of the underlying data, if any
+     * Identifier of the underlying data, if any.
      * 
      * @return the id
      */
@@ -176,7 +175,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * Both title and description are filled
+     * Both title and description are filled.
      */
     @Override
     public boolean isComplete(Locale locale) {
@@ -184,7 +183,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * At least one of title and description is filled
+     * At least one of title and description is filled.
      */
     @Override
     public boolean isValid(Locale locale) {
@@ -202,7 +201,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * Not used, since this element isn't editable
+     * Not used, since this element isn't editable.
      */
     @Override
     public void setSelectedLocale(Locale locale) {
@@ -234,7 +233,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     }
 
     /**
-     * Two elements are equal if their titles are equal
+     * Two elements are equal if their titles are equal.
      */
     @Override
     public int compareTo(WidgetDisplayElement other) {

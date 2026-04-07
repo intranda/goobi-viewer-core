@@ -74,7 +74,8 @@ public class ContentBean implements Serializable {
     private volatile String pi;
     /**
      * User generated contents to display on this page.
-     * Uses AtomicReference for thread-safe access to the list reference,
+     *
+     * <p>Uses AtomicReference for thread-safe access to the list reference,
      * since volatile alone is insufficient for compound check-then-act operations.
      */
     private final AtomicReference<List<DisplayUserGeneratedContent>> userGeneratedContentsForDisplay = new AtomicReference<>();
@@ -87,9 +88,7 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * <p>
      * init.
-     * </p>
      */
     @PostConstruct
     public void init() {
@@ -105,9 +104,7 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>userGeneratedContentsForDisplay</code>.
-     * </p>
      *
      * @param pi Record identifier
      * @return User-generated contents for the given record identifier
@@ -146,9 +143,7 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * <p>
      * loadUserGeneratedContentsForDisplay.
-     * </p>
      *
      * @param pi Record identifier
      * @param request
@@ -221,9 +216,7 @@ public class ContentBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentUGCCoords.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return a {@link java.util.List} object.

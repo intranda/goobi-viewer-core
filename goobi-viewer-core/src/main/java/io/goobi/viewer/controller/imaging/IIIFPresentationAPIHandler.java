@@ -30,7 +30,7 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * Creates urls to IIIF Presentation api calls to get manifests, canvases, annotationLists or layers
+ * Creates urls to IIIF Presentation api calls to get manifests, canvases, annotationLists or layers.
  *
  * @author Florian Alpers
  */
@@ -39,9 +39,7 @@ public class IIIFPresentationAPIHandler {
     private final AbstractBuilder builder;
 
     /**
-     * <p>
-     * Constructor for IIIFPresentationAPIHandler.
-     * </p>
+     * Creates a new IIIFPresentationAPIHandler instance.
      *
      * @param urls
      * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
@@ -54,7 +52,7 @@ public class IIIFPresentationAPIHandler {
     }
 
     /**
-     * Returns the url to the manifest for the given pi
+     * Returns the url to the manifest for the given pi.
      *
      * @param pi a {@link java.lang.String} object.
      * @param pageNo
@@ -66,7 +64,7 @@ public class IIIFPresentationAPIHandler {
     }
     
     /**
-     * Returns the url to the manifest for the given pi
+     * Returns the url to the manifest for the given pi.
      *
      * @param pi a {@link java.lang.String} object.
      * @return The IIIF manifest
@@ -77,7 +75,7 @@ public class IIIFPresentationAPIHandler {
     }
 
     /**
-     * Returns the url to a IIIF collection resource containing all top level collections for the field DC
+     * Returns the url to a IIIF collection resource containing all top level collections for the field DC.
      *
      * @return The IIIF collection url
      * @throws java.net.URISyntaxException if any.
@@ -87,10 +85,10 @@ public class IIIFPresentationAPIHandler {
     }
 
     /**
-     * Returns the url to a IIIF collection resource containing all top level collections for the given field
+     * Returns the url to a IIIF collection resource containing all top level collections for the given field.
      *
-     * @return The IIIF collection url
      * @param field a {@link java.lang.String} object.
+     * @return The IIIF collection url
      * @throws java.net.URISyntaxException if any.
      */
     public String getCollectionUrl(String field) throws URISyntaxException {
@@ -98,11 +96,11 @@ public class IIIFPresentationAPIHandler {
     }
 
     /**
-     * Returns the url to a IIIF collection resource for the given collection name for the given field
+     * Returns the url to a IIIF collection resource for the given collection name for the given field.
      *
-     * @return The IIIF collection url
      * @param field a {@link java.lang.String} object.
      * @param collection a {@link java.lang.String} object.
+     * @return The IIIF collection url
      * @throws java.net.URISyntaxException if any.
      */
     public String getCollectionUrl(String field, String collection) throws URISyntaxException {
@@ -111,7 +109,7 @@ public class IIIFPresentationAPIHandler {
 
     /**
      *
-     * Returns a IIIF layer with all annotations of the given {@link AnnotationType type} within the work of the given pi
+     * Returns a IIIF layer with all annotations of the given {@link AnnotationType type} within the work of the given pi.
      *
      * @param pi a {@link java.lang.String} object.
      * @param annotationType a {@link java.lang.String} object.
@@ -127,7 +125,7 @@ public class IIIFPresentationAPIHandler {
     }
 
     /**
-     * Returns a IIIF annotation list containing all annotations of the given type for the given page
+     * Returns a IIIF annotation list containing all annotations of the given type for the given page.
      *
      * @param pi a {@link java.lang.String} object.
      * @param pageOrder a int.
@@ -144,7 +142,7 @@ public class IIIFPresentationAPIHandler {
     }
 
     /**
-     * Returns the IIIF canvas for the given page
+     * Returns the IIIF canvas for the given page.
      *
      * @param pi a {@link java.lang.String} object.
      * @param pageOrder a int.

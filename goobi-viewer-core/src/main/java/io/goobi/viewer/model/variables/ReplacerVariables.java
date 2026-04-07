@@ -43,7 +43,7 @@ public final class ReplacerVariables {
     public static final String VIEWER_URL = "viewer-url";
 
     /**
-     * should not be instantiated
+     * Should not be instantiated
      */
     private ReplacerVariables() {
     };

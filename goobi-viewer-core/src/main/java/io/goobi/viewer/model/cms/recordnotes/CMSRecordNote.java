@@ -43,10 +43,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget
+ * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget.
  *
  * @author florian
- *
  */
 @Entity
 @Table(name = "cms_record_notes")

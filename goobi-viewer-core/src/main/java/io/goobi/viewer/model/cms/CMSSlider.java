@@ -39,10 +39,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * Class to persist sliders ("slideshows") created in CMS backend
+ * Class to persist sliders ("slideshows") created in CMS backend.
  * 
  * @author florian
- *
  */
 @Entity
 @Table(name = "cms_sliders")
@@ -80,7 +79,8 @@ public class CMSSlider implements Serializable {
     private String style = "base";
 
     /**
-     * Copy constructor
+     * Copies constructor.
+     *
      * @param o
      */
     public CMSSlider(CMSSlider o) {
@@ -97,7 +97,7 @@ public class CMSSlider implements Serializable {
     }
 
     /**
-     * persistence constructor
+     * Persistence constructor.
      */
     public CMSSlider() {
 

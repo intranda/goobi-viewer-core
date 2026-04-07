@@ -37,18 +37,14 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 
 /**
- * <p>
  * AltoSearchParser class.
- * </p>
  *
  * @author florian
  */
 public class AltoSearchParser extends AbstractSearchParser {
 
     /**
-     * <p>
      * findWordMatches.
-     * </p>
      *
      * @param words a {@link java.util.List} object.
      * @param regex a {@link java.lang.String} object.
@@ -77,9 +73,7 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * findLineMatches.
-     * </p>
      *
      * @param lines a {@link java.util.List} object.
      * @param regex a {@link java.lang.String} object.
@@ -101,9 +95,7 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getText.
-     * </p>
      *
      * @param lines a {@link java.util.List} object.
      * @return a {@link java.lang.String} object.
@@ -113,9 +105,7 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getLines.
-     * </p>
      *
      * @param doc a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument} object.
      * @return a {@link java.util.List} object.
@@ -125,9 +115,7 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getWords.
-     * </p>
      *
      * @param doc a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument} object.
      * @return a {@link java.util.List} object.
@@ -140,9 +128,7 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getContainingLines.
-     * </p>
      *
      * @param indexStart a int.
      * @param indexEnd a int.
@@ -163,9 +149,7 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getLineStartIndex.
-     * </p>
      *
      * @param allLines a {@link java.util.List} object.
      * @param line a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Line} object.
@@ -184,9 +168,7 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getLineEndIndex.
-     * </p>
      *
      * @param allLines a {@link java.util.List} object.
      * @param line a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.Line} object.
@@ -205,9 +187,7 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getPrecedingText.
-     * </p>
      *
      * @param w a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
      * @param maxLength a int.
@@ -230,9 +210,7 @@ public class AltoSearchParser extends AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getSucceedingText.
-     * </p>
      *
      * @param w a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
      * @param maxLength a int.

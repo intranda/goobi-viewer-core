@@ -57,7 +57,6 @@ import jakarta.inject.Named;
 
 /**
  * @author florian
- *
  */
 @Named
 @ViewScoped
@@ -161,7 +160,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * Save the selected note to the database
+     * Saves the selected note to the database.
      * 
      * @should do nothing if node null
      * @should save new note correctly

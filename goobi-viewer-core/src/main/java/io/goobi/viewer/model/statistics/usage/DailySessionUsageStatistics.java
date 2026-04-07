@@ -47,7 +47,6 @@ import io.goobi.viewer.controller.DataManager;
  * Persistence class holding the usage statistics for a single day in the form of a list of {@link SessionUsageStatistics}
  * 
  * @author florian
- *
  */
 @Entity
 @Table(name = "usage_statistics")

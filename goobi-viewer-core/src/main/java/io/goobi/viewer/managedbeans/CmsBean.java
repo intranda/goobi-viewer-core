@@ -107,7 +107,6 @@ import jakarta.servlet.http.HttpServletRequest;
 public class CmsBean implements Serializable {
 
     /**
-     *
      */
     public static final String CMSPAGES_FILTER = "title_menuTitle_categories-name";
 
@@ -156,9 +155,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * init.
-     * </p>
      */
     @PostConstruct
     public void init() {
@@ -270,7 +267,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Required setter for ManagedProperty injection
+     * Required setter for ManagedProperty injection.
      *
      * @param navigationHelper navigationHelper searchBean to set
      */
@@ -279,7 +276,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Required setter for ManagedProperty injection
+     * Required setter for ManagedProperty injection.
      *
      * @param searchBean the searchBean to set
      */
@@ -288,9 +285,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAllLocales.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -310,9 +305,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getDefaultLocale.
-     * </p>
      *
      * @return a {@link java.util.Locale} object.
      */
@@ -321,9 +314,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentLocale.
-     * </p>
      *
      * @return a {@link java.util.Locale} object.
      */
@@ -336,9 +327,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * loadTemplates.
-     * </p>
      */
     public void loadTemplates() {
         logger.trace("loadTemplates");
@@ -346,9 +335,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTemplates.
-     * </p>
      *
      * @return all existing templates
      * @throws DAOException
@@ -422,9 +409,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getDisplayedPages.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -433,9 +418,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelPages</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object.
      */
@@ -455,9 +438,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPageUrl.
-     * </p>
      *
      * @param pageId a {@link java.lang.Long} object.
      * @param pretty a boolean.
@@ -474,9 +455,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getUrl.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a {@link java.lang.String} object.
@@ -486,9 +465,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getUrl.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @param pretty a boolean.
@@ -529,9 +506,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAllCMSPages.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -541,9 +516,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCMSPage.
-     * </p>
      *
      * @param pageId a {@link java.lang.Long} object.
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
@@ -555,9 +528,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * isRelatedWorkLoaded.
-     * </p>
      *
      * @return true if an {@link io.goobi.viewer.managedbeans.ActiveDocumentBean} is registered and the the
      *         {@link io.goobi.viewer.model.cms.pages.CMSPage#getRelatedPI()} of {@link #getCurrentPage()} is loaded
@@ -573,9 +544,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * isLinkedFromNavBar.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a boolean.
@@ -601,9 +570,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPage.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
@@ -613,9 +580,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPage.
-     * </p>
      *
      * @param pageId a {@link java.lang.Long} object.
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
@@ -630,9 +595,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentPage</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
@@ -644,9 +607,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentPage</code>.
-     * </p>
      *
      * @param currentPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
@@ -673,9 +634,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentPageId.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -701,9 +660,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * checkRelatedWork.
-     * </p>
      *
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
@@ -717,9 +674,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAllCategories.
-     * </p>
      *
      * @return the return value of {@link io.goobi.viewer.dao.IDAO#getAllCategories()}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -729,9 +684,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectedMediaItem</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
@@ -740,9 +693,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>selectedMediaItem</code>.
-     * </p>
      *
      * @param selectedMediaItem a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
@@ -752,9 +703,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectedMediaLocale</code>.
-     * </p>
      *
      * @return a {@link java.util.Locale} object.
      */
@@ -766,9 +715,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>selectedMediaLocale</code>.
-     * </p>
      *
      * @param selectedMediaLocale a {@link java.util.Locale} object.
      */
@@ -866,9 +813,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getQueryResults.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -935,9 +880,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * hasSearchResults.
-     * </p>
      *
      * @return a boolean.
      */
@@ -961,9 +904,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getFieldNames.
-     * </p>
      *
      * @param solrDoc a {@link org.apache.solr.common.SolrDocument} object.
      * @return a {@link java.util.List} object.
@@ -976,9 +917,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getLuceneFields.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -987,9 +926,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getLuceneFields.
-     * </p>
      *
      * @param includeUntokenized a boolean.
      * @return a {@link java.util.List} object.
@@ -999,9 +936,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getLuceneFields.
-     * </p>
      *
      * @param includeUntokenized a boolean.
      * @param excludeTokenizedMetadataFields a boolean.
@@ -1033,9 +968,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>staticPages</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1048,9 +981,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getStaticPage.
-     * </p>
      *
      * @param pageName a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
@@ -1110,12 +1041,10 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAvailableParentPages.
-     * </p>
      *
-     * @return A list of all cmsPages except the given one
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @return A list of all cmsPages except the given one
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getAvailableParentPages(CMSPage page) throws DAOException {
@@ -1127,12 +1056,10 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getAvailableCmsPages.
-     * </p>
      *
-     * @return A list of all cmsPages not yet registered to a static page
      * @param page a {@link io.goobi.viewer.model.cms.CMSStaticPage} object.
+     * @return A list of all cmsPages not yet registered to a static page
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getAvailableCmsPages(CMSStaticPage page) throws DAOException {
@@ -1150,9 +1077,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCMSPagesWithSearch.
-     * </p>
      *
      * @return a list of all valid cms pages which contain a "search" item
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1170,7 +1095,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Save static page status for all cms pages
+     * Saves static page status for all cms pages.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1204,9 +1129,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getValidCMSPages.
-     * </p>
      *
      * @return all cmsPages which are valid and have a menu title
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1219,9 +1142,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getFacesContext.
-     * </p>
      *
      * @return a {@link jakarta.faces.context.FacesContext} object.
      */
@@ -1230,9 +1151,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getSubthemeDiscriminatorValues.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1269,9 +1188,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * isSubthemeRequired.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if user is limited to a subset of all available subtheme discriminator values; false otherwise
@@ -1318,9 +1235,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * isHasRelatedPages.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a boolean.
@@ -1335,9 +1250,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getRelatedPages.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -1351,9 +1264,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getRelatedPages.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
@@ -1372,9 +1283,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getRepresentativeImageForQuery.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a {@link java.lang.String} object.
@@ -1389,9 +1298,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getRepresentativeImageForQuery.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.pages.content.CMSContentItem} object.
      * @return a {@link java.lang.String} object.
@@ -1407,9 +1314,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getRepresentativeImageForQuery.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @param width a int.
@@ -1434,9 +1339,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getRepresentativeImageForQuery.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.cms.pages.content.CMSContentItem} object.
      * @param width a int.
@@ -1460,9 +1363,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPossibleSortFields.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
@@ -1483,9 +1384,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPossibleGroupFields.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
@@ -1539,9 +1438,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCssClass.
-     * </p>
      *
      * @return The {@link io.goobi.viewer.model.cms.pages.CMSPage#getWrapperElementClass()} of the current CMSPage. If no current page is set or
      *         {@link io.goobi.viewer.managedbeans.NavigationHelper#isCmsPage()} returns false, an empty String is returned
@@ -1555,9 +1452,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getLastEditedTimestamp.
-     * </p>
      *
      * @param pageId a long.
      * @return a {@link java.lang.Long} object.
@@ -1573,9 +1468,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentWorkPi</code>.
-     * </p>
      *
      * @return the currentWorkPi
      */
@@ -1584,9 +1477,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentWorkPi</code>.
-     * </p>
      *
      * @param currentWorkPi the currentWorkPi to set
      */
@@ -1595,9 +1486,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * resetCurrentWorkPi.
-     * </p>
      */
     public void resetCurrentWorkPi() {
         this.currentWorkPi = "";
@@ -1605,7 +1494,7 @@ public class CmsBean implements Serializable {
 
     /**
      * Set a {@link io.goobi.viewer.model.cms.media.CMSMediaHolder} in the {@link io.goobi.viewer.managedbeans.CmsMediaBean} which may receive a
-     * {@link io.goobi.viewer.model.cms.media.CMSMediaItem} selected in the selectMedia dialog
+     * {@link io.goobi.viewer.model.cms.media.CMSMediaItem} selected in the selectMedia dialog.
      *
      * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaHolder} object.
      */
@@ -1688,9 +1577,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * hasSelectedMediaHolder.
-     * </p>
      *
      * @return true if a mediaHolder is present
      */
@@ -1699,9 +1586,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * mayEdit.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a boolean.
@@ -1765,7 +1650,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * getter for jsf
+     * Getter for jsf.
      *
      * @return CMSPAGES_FILTER
      */
@@ -1774,9 +1659,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getNavigationMenuItems.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */

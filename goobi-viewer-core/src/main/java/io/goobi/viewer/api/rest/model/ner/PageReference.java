@@ -31,9 +31,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * <p>
  * PageReference class.
- * </p>
  */
 @JsonInclude(Include.NON_ABSENT)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -43,9 +41,7 @@ public class PageReference implements TagGroup {
     private List<TagCount> tags;
 
     /**
-     * <p>
-     * Constructor for PageReference.
-     * </p>
+     * Creates a new PageReference instance.
      */
     public PageReference() {
         super();
@@ -54,9 +50,7 @@ public class PageReference implements TagGroup {
     }
 
     /**
-     * <p>
-     * Constructor for PageReference.
-     * </p>
+     * Creates a new PageReference instance.
      *
      * @param pageOrder a int.
      */
@@ -80,9 +74,7 @@ public class PageReference implements TagGroup {
     }
 
     /**
-     * <p>
      * Setter for the field <code>tags</code>.
-     * </p>
      *
      * @param nerTags a {@link java.util.List} object.
      */

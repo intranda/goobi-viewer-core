@@ -86,9 +86,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * <p>
  * ObjectResource class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -129,9 +127,7 @@ public class ObjectResource {
     }
 
     /**
-     * <p>
      * getInfo.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
@@ -247,9 +243,7 @@ public class ObjectResource {
     }
 
     /**
-     * <p>
      * getObject.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
@@ -298,9 +292,7 @@ public class ObjectResource {
     }
 
     /**
-     * <p>
      * getObjectResource.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
@@ -335,9 +327,7 @@ public class ObjectResource {
     }
 
     /**
-     * <p>
      * getObjectResource2.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
@@ -365,9 +355,7 @@ public class ObjectResource {
     }
 
     /**
-     * <p>
      * getObjectResource.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
@@ -404,9 +392,7 @@ public class ObjectResource {
     }
 
     /**
-     * <p>
      * getObjectResource2.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.

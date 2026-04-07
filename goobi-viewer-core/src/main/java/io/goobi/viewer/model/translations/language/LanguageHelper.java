@@ -41,9 +41,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * <p>
  * LanguageHelper class.
- * </p>
  */
 public class LanguageHelper {
 
@@ -54,9 +52,7 @@ public class LanguageHelper {
     private ScheduledExecutorService executorService;
 
     /**
-     * <p>
-     * Constructor for LanguageHelper.
-     * </p>
+     * Creates a new LanguageHelper instance.
      *
      * @param configFilePath a {@link java.lang.String} object.
      */
@@ -136,7 +132,7 @@ public class LanguageHelper {
     }
 
     /**
-     * Gets the language data for the given iso-code 639-1 or 639-2B
+     * Gets the language data for the given iso-code 639-1 or 639-2B.
      *
      * @param inIsoCode a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.translations.language.Language} object.

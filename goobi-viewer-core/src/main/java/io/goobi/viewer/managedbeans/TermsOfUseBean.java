@@ -37,7 +37,7 @@ import io.goobi.viewer.model.administration.legal.TermsOfUse;
 
 /**
  *
- * Keeps the global termsOfUse object for the current session
+ * Keeps the global termsOfUse object for the current session.
  *
  * @author florian
  */
@@ -61,9 +61,7 @@ public class TermsOfUseBean implements Serializable {
     }
 
     /**
-     * <p>
      * isTermsOfUseActive.
-     * </p>
      *
      * @return a boolean
      */
@@ -72,9 +70,7 @@ public class TermsOfUseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getTitle.
-     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -86,9 +82,7 @@ public class TermsOfUseBean implements Serializable {
     }
 
     /**
-     * <p>
      * getDescription.
-     * </p>
      *
      * @return a {@link java.lang.String} object
      */

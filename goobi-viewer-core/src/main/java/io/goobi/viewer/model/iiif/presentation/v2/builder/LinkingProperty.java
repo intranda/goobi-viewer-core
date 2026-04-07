@@ -30,7 +30,6 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
  * @author florian
- *
  */
 public class LinkingProperty {
 

@@ -70,9 +70,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * <p>
  * Filter for IIIF Image info.json requests. Sets the tile sizes, image sizes and maximum sizes configured in config_viewer.xml
- * </p>
  */
 @Provider
 @ContentServerImageInfoBinding
@@ -200,9 +198,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * <p>
      * getStructElement.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.
@@ -238,7 +234,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * Write.
+     * Writes.
      *
      * @param info
      * @param mayZoom
@@ -268,7 +264,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * Set the IIIF image info property "sizes". Create one size object per entry of imageSizes. Values of imageSizes are interpreted as width
+     * Sets the IIIF image info property "sizes". Create one size object per entry of imageSizes. Values of imageSizes are interpreted as width
      *
      * @param imageInfo
      * @param imageSizes

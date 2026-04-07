@@ -54,9 +54,7 @@ public class PageList implements Iterable<String> {
     private List<String> pages = new ArrayList<>();
 
     /**
-     * <p>
-     * Constructor for PageList.
-     * </p>
+     * Creates a new PageList instance.
      */
     public PageList() {
         super();
@@ -67,9 +65,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
-     * Constructor for PageList.
-     * </p>
+     * Creates a new PageList instance.
      *
      * @param stringRep a {@link java.lang.String} object.
      */
@@ -123,9 +119,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pages</code>.
-     * </p>
      *
      * @return the pages
      */
@@ -134,9 +128,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * Setter for the field <code>pages</code>.
-     * </p>
      *
      * @param pages the pages to set
      */
@@ -145,7 +137,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * get the if/pageName of the first page, or an empty string if no pages exist
+     * Get the if/pageName of the first page, or an empty string if no pages exist.
      *
      * @return the if/pageName of the first page, or an empty string if no pages exist
      */
@@ -154,9 +146,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * getPage.
-     * </p>
      *
      * @param index a int.
      * @return a {@link java.lang.String} object.
@@ -182,9 +172,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * getSearch.
-     * </p>
      *
      * @param pageIndex a int.
      * @return a {@link io.goobi.viewer.model.search.SearchInterface} object.
@@ -207,9 +195,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * getUrl.
-     * </p>
      *
      * @param pageIndex the index of the desired page in the page list
      * @return the url of the page at pageIndex, relative to the host url
@@ -239,7 +225,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * Sets the pages list to a list containing only the given string
+     * Sets the pages list to a list containing only the given string.
      *
      * @param page a {@link java.lang.String} object.
      */
@@ -259,9 +245,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * getPage.
-     * </p>
      *
      * @param idString a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
@@ -279,9 +263,7 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     * <p>
      * isEmpty.
-     * </p>
      *
      * @return a boolean.
      */

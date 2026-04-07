@@ -28,13 +28,10 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
- * extends cms_record_notes table by row 'note_type' which discriminates between the implementing classes. Existing notes are set to note_type =
+ * Extends cms_record_notes table by row 'note_type' which discriminates between the implementing classes. Existing notes are set to note_type =
  * 'SINGLE' Also adds default values to columns which only exist for one implementing class and sets columntype if neccessary
  *
- *
  * @author florian
- *
- *
  */
 public class CMSRecordNoteUpdate implements IModelUpdate {
 

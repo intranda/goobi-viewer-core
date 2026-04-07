@@ -366,9 +366,7 @@ public class BreadcrumbBean implements Serializable {
     }
 
     /**
-     * <p>
      * addCollectionHierarchyToBreadcrumb.
-     * </p>
      *
      * @param collection Full collection string containing all levels
      * @param field Solr field
@@ -496,9 +494,7 @@ public class BreadcrumbBean implements Serializable {
     }
 
     /**
-     * <p>
      * getBrowseUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -515,9 +511,7 @@ public class BreadcrumbBean implements Serializable {
     }
 
     /**
-     * <p>
      * getApplicationUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */

@@ -45,10 +45,9 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.ws.rs.WebApplicationException;
 
 /**
- * Class collecting usage statistics data for a number of days to provide an overall summary for output
+ * Class collecting usage statistics data for a number of days to provide an overall summary for output.
  * 
  * @author florian
- *
  */
 public class StatisticsSummaryBuilder {
 
@@ -67,7 +66,7 @@ public class StatisticsSummaryBuilder {
     }
 
     /**
-     * Default constructor
+     * Default constructor.
      * 
      * @param searchIndex the {@link SolrSearchIndex} to set
      */

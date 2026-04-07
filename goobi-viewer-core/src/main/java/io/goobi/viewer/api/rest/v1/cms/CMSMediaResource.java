@@ -114,9 +114,7 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * <p>
  * CMSMediaResource class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -143,9 +141,7 @@ public class CMSMediaResource {
     }
 
     /**
-     * <p>
      * getMediaByTag.
-     * </p>
      *
      * @param tags a {@link java.lang.String} object.
      * @param maxItems
@@ -194,9 +190,7 @@ public class CMSMediaResource {
     }
 
     /**
-     * <p>
      * getMediaByTag.
-     * </p>
      *
      * @param tags a {@link java.lang.String} object.
      * @param maxItems
@@ -249,9 +243,7 @@ public class CMSMediaResource {
     }
 
     /**
-     * <p>
      * getPDFMediaItemContent.
-     * </p>
      *
      * @param filename
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
@@ -380,9 +372,7 @@ public class CMSMediaResource {
     }
 
     /**
-     * <p>
      * getMediaItemContent.
-     * </p>
      *
      * @param filename
      * @return File contents as HTML
@@ -422,9 +412,7 @@ public class CMSMediaResource {
     }
 
     /**
-     * <p>
      * Return the media item for the given filename. If no matching media item exists, return a not-found status code
-     * </p>
      *
      * @param filename a {@link java.lang.String} object.
      * @return a {@link jakarta.ws.rs.core.Response} object.
@@ -453,7 +441,6 @@ public class CMSMediaResource {
      *
      * @return List<String> of media file names
      * @throws PresentationException
-     *
      */
     @Hidden
     @GET
@@ -502,7 +489,8 @@ public class CMSMediaResource {
      * Fallback GET handler for filenames that do NOT match the image extension pattern handled by
      * {@link CMSMediaImageResource}. CMSMediaImageResource only matches filenames with image
      * extensions (jpg, png, tif, gif, jp2); any other filename reaches this handler.
-     * Returns 400 so that schemathesis receives the correct error code instead of 405 Method Not
+     *
+     * <p>Returns 400 so that schemathesis receives the correct error code instead of 405 Method Not
      * Allowed (which JAX-RS would return if no GET handler existed for this path).
      *
      * @param filename the requested filename
@@ -521,12 +509,12 @@ public class CMSMediaResource {
     /**
      * May receive a file from a multipart form and saves the file in the cms media folder.
      *
-     * @return an ACCEPTED response if the upload was successful, a FORBIDDEN response if no user is registered in the html session or the user does
-     *         not have rights to upload media, or a CONFLICT response if a file of the same name already exists in the cms media foler
      * @param enabled a boolean.
      * @param filename a {@link java.lang.String} object.
      * @param uploadedInputStream a {@link java.io.InputStream} object.
      * @param fileDetail a {@link org.glassfish.jersey.media.multipart.FormDataContentDisposition} object.
+     * @return an ACCEPTED response if the upload was successful, a FORBIDDEN response if no user is registered in the html session or the user does
+     *         not have rights to upload media, or a CONFLICT response if a file of the same name already exists in the cms media foler
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @Hidden
@@ -643,9 +631,7 @@ public class CMSMediaResource {
     }
 
     /**
-     * <p>
      * createMediaItem.
-     * </p>
      *
      * @param filePath a {@link java.nio.file.Path} object.
      * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.

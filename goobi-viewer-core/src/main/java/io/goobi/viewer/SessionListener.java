@@ -33,9 +33,7 @@ import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
 
 /**
- * <p>
  * SessionListener class.
- * </p>
  */
 @WebListener
 public class SessionListener implements HttpSessionListener {

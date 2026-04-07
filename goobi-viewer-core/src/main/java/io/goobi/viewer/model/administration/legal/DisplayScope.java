@@ -37,25 +37,23 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  * further restricted by a SOLR query condition
  *
  * @author florian
- *
  */
 public class DisplayScope implements Serializable {
 
     private static final long serialVersionUID = 8408939885661597164L;
 
     /**
-     * The type of viewer-pages that are in scope
+     * The type of viewer-pages that are in scope.
      *
      * @author florian
-     *
      */
     public enum PageScope {
         /**
-         * all viewer pages, except those in the admin backend
+         * All viewer pages, except those in the admin backend.
          */
         ALL,
         /**
-         * only pages belonging to a record/document
+         * Only pages belonging to a record/document.
          */
         RECORD
     }
@@ -64,7 +62,7 @@ public class DisplayScope implements Serializable {
     private String filterQuery;
 
     /**
-     * Creates a scope that appplies to all viewer pages
+     * Creates a scope that appplies to all viewer pages.
      */
     public DisplayScope() {
         this.pageScope = PageScope.ALL;
@@ -153,7 +151,7 @@ public class DisplayScope implements Serializable {
     }
 
     /**
-     * Get the query to use in a SOLR search to deterimine whether a record should show the disclaimer
+     * Gets the query to use in a SOLR search to determine whether a record should show the disclaimer.
      *
      * @return a solr search query for the disclaimer
      */

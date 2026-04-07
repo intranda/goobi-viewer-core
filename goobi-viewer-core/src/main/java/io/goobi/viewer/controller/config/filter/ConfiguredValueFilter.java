@@ -32,13 +32,12 @@ import io.goobi.viewer.model.variables.VariableReplacer;
 
 /**
  * A configurable filter allowing passage to document entities (record, docStruct, page) which satisfy certain conditions The filter itself may
- * contain condition filters which determine if the filter should be applied to an entity
+ * contain condition filters which determine if the filter should be applied to an entity.
  */
 public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
 
     /**
      * The value to test. Shoud make use of {@link VariableReplacer} expressions. This may be left empty, in which case the filter
-     * 
      */
     private final String value;
     /**
@@ -60,7 +59,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * get a filter which passes all matches
+     * Get a filter which passes all matches.
      * 
      * @param value the value to test
      * @param matchRegex a regex which must match the value parameter for the filter to match
@@ -71,7 +70,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * get a filter which blocks all matches
+     * Get a filter which blocks all matches.
      * 
      * @param value the value to test
      * @param matchRegex a regex which must match the value parameter for the filter to match
@@ -82,7 +81,7 @@ public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Create a new filter from a configuration block
+     * Creates a new filter from a configuration block.
      * 
      * @param config an xml configuration
      * @return a new {@link ConfiguredValueFilter}

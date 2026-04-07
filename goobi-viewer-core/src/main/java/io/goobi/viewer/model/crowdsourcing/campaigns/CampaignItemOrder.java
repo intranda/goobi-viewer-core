@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -21,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author florian
- *
  */
 public enum CampaignItemOrder {
 

@@ -53,11 +53,9 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * <p>
  * Checks requests for access conditions. Requests must have set the request attribute {@link FilterTools#ATTRIBUTE_PI} and
  * {@link #REQUIRED_PRIVILEGE} to appropriate values for the filter to work properly. Additionally {@link FilterTools#ATTRIBUTE_LOGID} and
  * {@link FilterTools#ATTRIBUTE_FILENAME} may be set in the request to check access to specific files or child documents
- * </p>
  */
 @Provider
 @AccessConditionBinding
@@ -158,7 +156,7 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * Read attribute {@link #REQUIRED_PRIVILEGE} from request and return it as String array. If the attribute doesn't exist, return an empty array
+     * Reads attribute {@link #REQUIRED_PRIVILEGE} from request and return it as String array. If the attribute doesn't exist, return an empty array
      *
      * @param request
      * @return Required privileges as {@link String}[]

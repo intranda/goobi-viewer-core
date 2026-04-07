@@ -36,9 +36,7 @@ import io.goobi.viewer.model.security.ILicenseType;
 import io.goobi.viewer.model.security.LicenseType;
 
 /**
- * <p>
  * Converter for either LicenseType or Campaign objects.
- * </p>
  */
 @FacesConverter("iLicenseTypeConverter")
 public class ILicenseTypeConverter implements Converter<ILicenseType> {

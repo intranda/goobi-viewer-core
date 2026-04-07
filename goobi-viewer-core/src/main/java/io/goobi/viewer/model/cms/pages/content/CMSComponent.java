@@ -109,7 +109,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     /**
      * 
-     * Constructor to create Component from template file
+     * Constructor to create Component from template file.
      * 
      * @param jsfComponent
      * @param label
@@ -504,7 +504,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * Check whether a contentItem with the given itemId exists and is not empty
+     * Checks whether a contentItem with the given itemId exists and is not empty.
      * 
      * @param itemId
      * @return true if the contentItem with the given itemId exists and its {@link CMSContent#isEmpty()} method returns false
@@ -518,7 +518,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * Set wether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself
+     * Sets wether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself.
      * 
      * @param preview
      */
@@ -527,7 +527,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * whether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself
+     * Returns whether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself.
      * 
      * @return true if scope is CMSComponentScope.PREVIEW; false otherwise
      */
@@ -584,11 +584,11 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     /**
-     * Additional properties that can be passed to the component to set certain behaviour
+     * Additional properties that can be passed to the component to set certain behaviour.
      */
     public static enum Property {
         /**
-         * Applicable to any search related content: Enforce faceting on page load
+         * Applicable to any search related content: Enforce faceting on page load.
          */
         FORCE_FACETING;
 

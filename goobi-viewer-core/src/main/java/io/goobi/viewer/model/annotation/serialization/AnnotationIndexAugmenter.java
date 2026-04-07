@@ -54,7 +54,6 @@ import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 
 /**
  * @author florian
- *
  */
 public class AnnotationIndexAugmenter implements IndexAugmenter {
 
@@ -184,7 +183,7 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
     }
 
     /**
-     * Two instances are equal if they contain the same annotations (disregarding order)
+     * Two instances are equal if they contain the same annotations (disregarding order).
      */
     @Override
     public boolean equals(Object obj) {

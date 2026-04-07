@@ -58,9 +58,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.servlet.ServletContext;
 
 /**
- * <p>
  * DataManager class.
- * </p>
  */
 public final class DataManager {
 
@@ -117,9 +115,7 @@ public final class DataManager {
     private BearerTokenManager bearerTokenManager = null;
 
     /**
-     * <p>
      * Getter for the field <code>instance</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.controller.DataManager} object.
      */
@@ -144,9 +140,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>modules</code>.
-     * </p>
      *
      * @return the modules
      */
@@ -155,9 +149,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * getUrlBuilder.
-     * </p>
      *
      * @return the urlBuilder
      */
@@ -171,9 +163,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * getModule.
-     * </p>
      *
      * @param id a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.modules.IModule} object.
@@ -194,9 +184,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * isModuleLoaded.
-     * </p>
      *
      * @param id a {@link java.lang.String} object.
      * @return a boolean.
@@ -216,9 +204,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * registerModule.
-     * </p>
      *
      * @param module a {@link io.goobi.viewer.modules.IModule} object.
      * @should not add module if it's already registered
@@ -245,9 +231,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * getSessionCount.
-     * </p>
      *
      * @return a int.
      */
@@ -256,9 +240,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sessionMap</code>.
-     * </p>
      *
      * @return the sessionMap
      */
@@ -267,9 +249,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>configuration</code>.
-     * </p>
      *
      * @return the configuration
      */
@@ -284,9 +264,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>languageHelper</code>.
-     * </p>
      *
      * @return the languageHelper
      */
@@ -301,9 +279,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>searchIndex</code>.
-     * </p>
      *
      * @return the searchIndex
      */
@@ -320,7 +296,8 @@ public final class DataManager {
 
     /**
      * Closes the Solr search index client directly, without triggering {@link SolrSearchIndex#checkReloadNeeded()}.
-     * Use this during application shutdown instead of {@code getSearchIndex().close()} to prevent
+     *
+     * <p>Use this during application shutdown instead of {@code getSearchIndex().close()} to prevent
      * a closed client from being silently replaced by a new one.
      *
      * @throws IOException if closing the client fails
@@ -332,9 +309,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>dao</code>.
-     * </p>
      *
      * @return the dao
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -381,9 +356,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>bookmarkManager</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager} object.
      */
@@ -397,9 +370,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * injectBookmarkManager.
-     * </p>
      *
      * @param bookmarkManager a {@link io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager} object.
      */
@@ -408,9 +379,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * injectAuthResponseListener.
-     * </p>
      *
      * @param listener a {@link io.goobi.viewer.model.security.authentication.AuthResponseListener} object.
      */
@@ -421,9 +390,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>authResponseListener</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.security.authentication.AuthResponseListener} object.
      */
@@ -438,9 +405,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Getter for the field <code>recordCampaignMap</code>.
-     * </p>
      *
      * @return the recordCampaignMap
      */
@@ -449,9 +414,7 @@ public final class DataManager {
     }
 
     /**
-     * <p>
      * Setter for the field <code>recordCampaignMap</code>.
-     * </p>
      *
      * @param recordCampaignMap the recordCampaignMap to set
      */
@@ -533,7 +496,6 @@ public final class DataManager {
     }
 
     /**
-     *
      */
     public void resetTiming() {
         this.timing = new TimeAnalysis();

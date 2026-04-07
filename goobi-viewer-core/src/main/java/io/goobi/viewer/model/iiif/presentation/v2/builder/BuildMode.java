@@ -22,9 +22,7 @@
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
 /**
- * <p>
  * BuildMode class.
- * </p>
  *
  * @author Florian Alpers
  */

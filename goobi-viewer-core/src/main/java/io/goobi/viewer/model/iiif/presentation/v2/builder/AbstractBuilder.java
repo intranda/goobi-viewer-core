@@ -96,9 +96,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * <p>
  * Abstract AbstractBuilder class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -125,9 +123,7 @@ public abstract class AbstractBuilder {
     private final List<Locale> translationLocales;
 
     /**
-     * <p>
-     * Constructor for AbstractBuilder.
-     * </p>
+     * Creates a new AbstractBuilder instance.
      *
      * @param apiUrlManager
      */
@@ -136,9 +132,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
-     * Constructor for AbstractBuilder.
-     * </p>
+     * Creates a new AbstractBuilder instance.
      *
      * @param apiUrlManager
      * @param config
@@ -210,9 +204,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getLocale.
-     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link java.util.Locale} object.
@@ -226,12 +218,10 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getMetsResolverUrl.
-     * </p>
      *
-     * @return METS resolver link for the DFG Viewer
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return METS resolver link for the DFG Viewer
      */
     public String getMetsResolverUrl(StructElement ele) {
         try {
@@ -244,12 +234,10 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getLidoResolverUrl.
-     * </p>
      *
-     * @return LIDO resolver link for the DFG Viewer
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return LIDO resolver link for the DFG Viewer
      */
     public String getLidoResolverUrl(StructElement ele) {
         try {
@@ -262,13 +250,11 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getViewUrl.
-     * </p>
      *
-     * @return viewer url for the given page in the given {@link io.goobi.viewer.model.viewer.PageType}
      * @param ele a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
+     * @return viewer url for the given page in the given {@link io.goobi.viewer.model.viewer.PageType}
      */
     public String getViewUrl(PhysicalElement ele, PageType pageType) {
         try {
@@ -305,9 +291,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * addMetadata.
-     * </p>
      *
      * @param manifest a {@link de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2} object.
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -335,7 +319,8 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * Add the annotations from the crowdsourcingAnnotations map to the respective canvases in the canvases list as well as to the given annotationMap
+     * Adds the annotations from the crowdsourcingAnnotations map to the respective canvases in the
+     * canvases list as well as to the given annotationMap.
      *
      * @param canvases The list of canvases which should receive the annotations as otherContent
      * @param crowdsourcingAnnotations A map of annotations by page number
@@ -506,9 +491,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getEventFields.
-     * </p>
      *
      * @return a {@link java.util.Map} object.
      */
@@ -533,9 +516,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getDocument.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -556,9 +537,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getSolrFieldList.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -595,9 +574,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getDescription.
-     * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.util.Optional} object.
@@ -617,9 +594,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getDescription.
-     * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.util.Optional} object.
@@ -639,9 +614,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getCollectionURI.
-     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param baseCollectionName a {@link java.lang.String} object.
@@ -660,9 +633,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getManifestURI.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.
@@ -708,9 +679,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getManifestURI for page
-     * </p>
      *
      * @param pi Persistent identifier of a record
      * @param pageNo 1-based page order within the record
@@ -722,9 +691,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getManifestURI.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param mode a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode} object.
@@ -736,9 +703,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getRangeURI.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
@@ -750,9 +715,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getSequenceURI.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
@@ -764,9 +727,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getCanvasURI.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param pageNo a int.
@@ -811,9 +772,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getAnnotationListURI.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param pageNo a int.
@@ -845,9 +804,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getAnnotationListURI.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
@@ -860,9 +817,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getCommentAnnotationURI.
-     * </p>
      *
      * @param id a long.
      * @return a {@link java.net.URI} object.
@@ -874,9 +829,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getLayerURI.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
@@ -888,9 +841,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getImageAnnotationURI.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param order a int.
@@ -902,9 +853,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getAnnotationURI.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param order a int.
@@ -919,9 +868,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getAnnotationURI.
-     * </p>
      *
      * @param id a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.
@@ -952,9 +899,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getSearchURI.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -971,9 +916,7 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
      * getAutoSuggestURI.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.

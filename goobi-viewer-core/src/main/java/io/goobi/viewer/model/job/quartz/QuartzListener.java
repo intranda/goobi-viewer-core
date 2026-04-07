@@ -90,7 +90,7 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * Restarts timed Jobs
+     * Restarts timed Jobs.
      * 
      * @throws SchedulerException
      */
@@ -210,7 +210,7 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * initializes given IViewerJob to run every minute
+     * initializes given IViewerJob to run every minute.
      *
      * @param goobiJob
      * @param sched
@@ -231,7 +231,7 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * initializes given IViewerJob to run every hour
+     * initializes given IViewerJob to run every hour.
      *
      * @param goobiJob
      * @param sched
@@ -256,7 +256,7 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * initializes given IViewerJob to run every day at midnight
+     * initializes given IViewerJob to run every day at midnight.
      * 
      * @param goobiJob
      * @param sched
@@ -274,7 +274,7 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * execute a given IViewerJob a single time
+     * execute a given IViewerJob a single time.
      * 
      * @param goobiJob
      * @param sched
@@ -289,7 +289,7 @@ public class QuartzListener implements ServletContextListener {
     }
 
     /**
-     * initializes given IViewerJob to run at specified times
+     * initializes given IViewerJob to run at specified times.
      * 
      * @param goobiJob
      * @param sched

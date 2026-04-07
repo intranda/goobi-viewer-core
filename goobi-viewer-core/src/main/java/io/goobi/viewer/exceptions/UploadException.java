@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -16,18 +16,14 @@
 package io.goobi.viewer.exceptions;
 
 /**
- * <p>
  * DownloadException class.
- * </p>
  */
 public class UploadException extends PresentationException {
 
     private static final long serialVersionUID = -3366820357175081598L;
 
     /**
-     * <p>
-     * Constructor for UploadException.
-     * </p>
+     * Creates a new UploadException instance.
      *
      * @param string a {@link java.lang.String} object.
      * @param e a {@link java.lang.Throwable} object.
@@ -37,9 +33,7 @@ public class UploadException extends PresentationException {
     }
 
     /**
-     * <p>
-     * Constructor for UploadException.
-     * </p>
+     * Creates a new UploadException instance.
      *
      * @param string a {@link java.lang.String} object.
      */

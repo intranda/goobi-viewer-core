@@ -39,7 +39,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * {@link TaskManager#createTask(TaskType)}
  *
  * @author florian
- *
  */
 @JsonTypeInfo(
         use = Id.NAME,

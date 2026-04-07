@@ -22,9 +22,7 @@
 package io.goobi.viewer.model.cms.itemfunctionality;
 
 /**
- * <p>
  * TrivialFunctionality class.
- * </p>
  *
  * @author Florian Alpers
  */

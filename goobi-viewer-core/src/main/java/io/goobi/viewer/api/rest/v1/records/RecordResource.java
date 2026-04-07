@@ -130,7 +130,6 @@ import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(RECORDS_RECORD)
 @ViewerRestServiceBinding
@@ -180,9 +179,7 @@ public class RecordResource {
     }
 
     /**
-     * <p>
      * getRISAsText.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -592,9 +589,7 @@ public class RecordResource {
     }
 
     /**
-     * <p>
      * autoCompleteInManifest.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -652,9 +647,7 @@ public class RecordResource {
     }
 
     /**
-     * <p>
      * deleteRecord.
-     * </p>
      *
      * @param createTraceDocument
      * @return Short summary of files deleted
@@ -814,7 +807,8 @@ public class RecordResource {
 
     /**
      * Validates the PI path parameter using {@link PIValidator#validatePi(String)}.
-     * Delegates to the central PI validator to keep validation logic in one place.
+     *
+     * <p>Delegates to the central PI validator to keep validation logic in one place.
      * Throws BadRequestException (HTTP 400, unchecked WebApplicationException) so that
      * Jersey maps it to a 400 response regardless of where it is thrown (constructor or method).
      *

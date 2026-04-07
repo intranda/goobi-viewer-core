@@ -42,7 +42,6 @@ import jakarta.persistence.Table;
 
 /**
  * @author florian
- *
  */
 @Entity
 @Table(name = "theme_configuration")
@@ -77,7 +76,7 @@ public class ThemeConfiguration {
     private List<ThemeLink> footerLinks = new ArrayList<>();
 
     /**
-     * Creates the internal lists for theme links
+     * Creates the internal lists for theme links.
      */
     public ThemeConfiguration() {
         this.socialMediaUrls = Arrays.stream(ThemeLink.SocialMediaService.values()).map(ThemeLink::new).collect(Collectors.toList());
@@ -88,7 +87,7 @@ public class ThemeConfiguration {
     }
 
     /**
-     * sets the name and calls default constructor
+     * Sets the name and calls default constructor.
      * 
      * @param themeName
      */

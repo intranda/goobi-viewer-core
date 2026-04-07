@@ -30,7 +30,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Group item for local messages.
- *
  */
 public class LocalMessagesTranslationGroupItem extends TranslationGroupItem {
 

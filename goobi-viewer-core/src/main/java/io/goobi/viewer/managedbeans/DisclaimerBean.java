@@ -53,10 +53,9 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Bean to check whether the disclaimer applies to a page/record as well as provide a configuration json object for the javascript This bean is
- * session scoped, so all stored settings are discarded outside a jsf session
+ * session scoped, so all stored settings are discarded outside a jsf session.
  * 
  * @author florian
- *
  */
 @Named
 @SessionScoped
@@ -94,14 +93,14 @@ public class DisclaimerBean implements Serializable {
      */
 
     /**
-     * Default constructor using the IDAO from the {@link DataManager} class
+     * Default constructor using the IDAO from the {@link DataManager} class.
      */
     public DisclaimerBean() {
         this(retrieveDAO(), DataManager.getInstance().getSearchIndex());
     }
 
     /**
-     * Constructor for testing purposes
+     * Creates a new testing purposes instance.
      *
      * @param dao the IDAO implementation to use
      * @param searchIndex
@@ -114,7 +113,7 @@ public class DisclaimerBean implements Serializable {
     }
 
     /**
-     * The configuration object for the disclaimer to be used by the viewerJS.disclaimerModal module
+     * The configuration object for the disclaimer to be used by the viewerJS.disclaimerModal module.
      * 
      * @return a json object
      */

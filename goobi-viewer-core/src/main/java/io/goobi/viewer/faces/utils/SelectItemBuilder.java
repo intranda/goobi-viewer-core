@@ -40,10 +40,9 @@ import jakarta.faces.model.SelectItem;
 import jakarta.faces.model.SelectItemGroup;
 
 /**
- * Tools to create SelectItem collections to use in jsf components
+ * Tools to create SelectItem collections to use in jsf components.
  * 
  * @author florian
- *
  */
 public final class SelectItemBuilder {
 
@@ -51,7 +50,7 @@ public final class SelectItemBuilder {
     }
 
     /**
-     * Sort the given list of items into buckets for each starting letter
+     * Sorts the given list of items into buckets for each starting letter.
      * 
      * @param <T>
      * @param items List of items that should be sorted
@@ -71,7 +70,7 @@ public final class SelectItemBuilder {
     }
 
     /**
-     * Sort the given list of items into buckets for each values returned by the sortValueSupplier
+     * Sorts the given list of items into buckets for each values returned by the sortValueSupplier.
      * 
      * @param <T>
      * @param items List of items that should be sorted
@@ -96,7 +95,7 @@ public final class SelectItemBuilder {
     }
 
     /**
-     * Create a List of {@link SelectItem selectItems} from the given map, grouped into OptGroups for each map key
+     * Creates a List of {@link SelectItem selectItems} from the given map, grouped into OptGroups for each map key.
      * 
      * @param <T>
      * @param map Map of items to include in selectItems

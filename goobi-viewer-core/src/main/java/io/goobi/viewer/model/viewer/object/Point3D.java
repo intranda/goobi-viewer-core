@@ -22,9 +22,7 @@
 package io.goobi.viewer.model.viewer.object;
 
 /**
- * <p>
  * Point3D class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -35,9 +33,7 @@ public class Point3D {
     private double z;
 
     /**
-     * <p>
-     * Constructor for Point3D.
-     * </p>
+     * Creates a new Point3D instance.
      *
      * @param x a double.
      * @param y a double.
@@ -51,9 +47,7 @@ public class Point3D {
     }
 
     /**
-     * <p>
      * Getter for the field <code>x</code>.
-     * </p>
      *
      * @return the x
      */
@@ -62,9 +56,7 @@ public class Point3D {
     }
 
     /**
-     * <p>
      * Setter for the field <code>x</code>.
-     * </p>
      *
      * @param x the x to set
      */
@@ -73,9 +65,7 @@ public class Point3D {
     }
 
     /**
-     * <p>
      * Getter for the field <code>y</code>.
-     * </p>
      *
      * @return the y
      */
@@ -84,9 +74,7 @@ public class Point3D {
     }
 
     /**
-     * <p>
      * Setter for the field <code>y</code>.
-     * </p>
      *
      * @param y the y to set
      */
@@ -95,9 +83,7 @@ public class Point3D {
     }
 
     /**
-     * <p>
      * Getter for the field <code>z</code>.
-     * </p>
      *
      * @return the z
      */
@@ -106,9 +92,7 @@ public class Point3D {
     }
 
     /**
-     * <p>
      * Setter for the field <code>z</code>.
-     * </p>
      *
      * @param z the z to set
      */

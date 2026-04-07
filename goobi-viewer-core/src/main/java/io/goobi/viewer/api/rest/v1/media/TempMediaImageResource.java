@@ -71,7 +71,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FILE_IMAGE)
 @CORSBinding
@@ -145,7 +144,7 @@ public class TempMediaImageResource extends ImageResource {
     }
 
     /**
-     * Delete the file with the given filename in the temp media folder for the given uuid.
+     * Deletes the file with the given filename in the temp media folder for the given uuid.
      *
      * @param folder
      * @param filename

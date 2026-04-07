@@ -30,9 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * <p>
  * GeoLocation class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -50,18 +48,14 @@ public class GeoLocation {
     private String link = null;
 
     /**
-     * <p>
-     * Constructor for GeoLocation.
-     * </p>
+     * Creates a new GeoLocation instance.
      */
     public GeoLocation() {
         //
     }
 
     /**
-     * <p>
-     * Constructor for GeoLocation.
-     * </p>
+     * Creates a new GeoLocation instance.
      *
      * @param latitude a {@link java.lang.Double} object.
      * @param longitude a {@link java.lang.Double} object.
@@ -73,9 +67,7 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
-     * Constructor for GeoLocation.
-     * </p>
+     * Creates a new GeoLocation instance.
      *
      * @param json a {@link org.json.JSONObject} object.
      * @throws org.json.JSONException if any.
@@ -114,9 +106,7 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>latitude</code>.
-     * </p>
      *
      * @return the langitude
      */
@@ -125,9 +115,7 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>latitude</code>.
-     * </p>
      *
      * @param latitude a {@link java.lang.Double} object.
      */
@@ -136,9 +124,7 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>longitude</code>.
-     * </p>
      *
      * @return the longitude
      */
@@ -147,9 +133,7 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>longitude</code>.
-     * </p>
      *
      * @param longitude the longitude to set
      */
@@ -158,9 +142,7 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * getAsJson.
-     * </p>
      *
      * @return a {@link org.json.JSONObject} object.
      */
@@ -179,9 +161,7 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * isEmpty.
-     * </p>
      *
      * @return true if either latitude or longitude is not set or set to NULL
      */
@@ -190,9 +170,7 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>info</code>.
-     * </p>
      *
      * @return the info
      */
@@ -201,9 +179,7 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>info</code>.
-     * </p>
      *
      * @param info the info to set
      */
@@ -212,9 +188,7 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>link</code>.
-     * </p>
      *
      * @return the link
      */
@@ -223,9 +197,7 @@ public class GeoLocation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>link</code>.
-     * </p>
      *
      * @param link the link to set
      */

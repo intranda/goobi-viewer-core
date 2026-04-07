@@ -32,9 +32,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * <p>
  * NERTag class.
- * </p>
  */
 @JsonInclude(Include.NON_NULL)
 public class NERTag {
@@ -75,9 +73,7 @@ public class NERTag {
     private ElementReference element;
 
     /**
-     * <p>
-     * Constructor for NERTag.
-     * </p>
+     * Creates a new NERTag instance.
      */
     public NERTag() {
         this.id = null;
@@ -87,9 +83,7 @@ public class NERTag {
     }
 
     /**
-     * <p>
-     * Constructor for NERTag.
-     * </p>
+     * Creates a new NERTag instance.
      *
      * @param id a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -104,9 +98,7 @@ public class NERTag {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -115,9 +107,7 @@ public class NERTag {
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -126,9 +116,7 @@ public class NERTag {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
      */
@@ -137,9 +125,7 @@ public class NERTag {
     }
 
     /**
-     * <p>
      * Getter for the field <code>element</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
      */
@@ -148,9 +134,7 @@ public class NERTag {
     }
 
     /**
-     * <p>
      * Setter for the field <code>element</code>.
-     * </p>
      *
      * @param element a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
      */

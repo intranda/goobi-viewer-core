@@ -59,7 +59,6 @@ import io.goobi.viewer.model.misc.SelectionManager;
 
 /**
  * @author florian
- *
  */
 @Named
 @ViewScoped
@@ -151,9 +150,7 @@ public class AnnotationBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelAnnotations</code>.
-     * </p>
      *
      * @return the lazyModelAnnotations
      */
@@ -237,7 +234,7 @@ public class AnnotationBean implements Serializable {
 
     /**
      * Setter for {@link SelectionManager#setSelectAll(boolean) exportSelection#setSelectAll(boolean)} is placed here to avoid jsf confusing it with
-     * setting a value of the map
+     * setting a value of the map.
      *
      * @param select
      */
@@ -247,7 +244,7 @@ public class AnnotationBean implements Serializable {
 
     /**
      * Getter for {@link SelectionManager#isSelectAll() exportSelection#isSelectAll()} is placed here to avoid jsf confusing it with getting a value
-     * of the map
+     * of the map.
      *
      * @return always false to deselect the select all button when loading the page
      */
@@ -261,7 +258,7 @@ public class AnnotationBean implements Serializable {
     }
 
     /**
-     * Create an excel sheet and write it to download stream
+     * Creates an excel sheet and write it to download stream.
      *
      * @throws IOException
      */

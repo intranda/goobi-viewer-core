@@ -166,7 +166,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * get {@link #openExpanded}
+     * Get {@link #openExpanded}
      * 
      * @return {@link #openExpanded}
      */
@@ -175,7 +175,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * Set {@link #openExpanded}
+     * Sets {@link #openExpanded}
      * 
      * @param openExpanded
      */
@@ -202,9 +202,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * <p>
      * getIgnoreCollectionsAsList.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -228,9 +226,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * <p>
      * setIgnoreCollectionsAsList.
-     * </p>
      *
      * @param toIgnore a {@link java.util.List} object.
      */
@@ -244,7 +240,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * remove cached CollectionView for this content from {@link CollectionViewBean}
+     * Remove cached CollectionView for this content from {@link CollectionViewBean}
      */
     private void resetCollection() {
         BeanUtils.getCollectionViewBean().removeCollection(this);

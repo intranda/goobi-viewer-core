@@ -67,7 +67,6 @@ import jakarta.servlet.http.HttpServletRequest;
  * are not executed sequentially or queued in any way, except through the limit of the internal thread pool (5 parallel tasks)
  *
  * @author florian
- *
  */
 public class TaskManager {
 
@@ -80,7 +79,7 @@ public class TaskManager {
     private final Duration timeToLive;
 
     /**
-     * Create new JobManager.
+     * Creates new JobManager.
      *
      * @param jobLiveTime The guaranteed live time of jobs in the jobManager
      */

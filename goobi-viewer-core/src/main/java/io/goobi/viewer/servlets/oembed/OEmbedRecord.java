@@ -29,9 +29,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * <p>
  * OEmbedRecord class.
- * </p>
  */
 public class OEmbedRecord {
 
@@ -40,7 +38,7 @@ public class OEmbedRecord {
     private URI uri = null;
 
     /**
-     * <p>Constructor for OEmbedRecord.</p>
+     * <p>Constructor for OEmbedRecord.
      *
      * @param uri a {@link java.lang.String} object
      * @throws java.net.URISyntaxException
@@ -50,16 +48,14 @@ public class OEmbedRecord {
     }
 
     /**
-     * <p>Constructor for OEmbedRecord.</p>
+     * <p>Constructor for OEmbedRecord.
      */
     public OEmbedRecord() {
 
     }
 
     /**
-     * <p>
      * Getter for the field <code>structElement</code>.
-     * </p>
      *
      * @return the structElement
      */
@@ -68,9 +64,7 @@ public class OEmbedRecord {
     }
 
     /**
-     * <p>
      * Setter for the field <code>structElement</code>.
-     * </p>
      *
      * @param structElement the structElement to set
      */
@@ -79,9 +73,7 @@ public class OEmbedRecord {
     }
 
     /**
-     * <p>
      * Getter for the field <code>physicalElement</code>.
-     * </p>
      *
      * @return the physicalElement
      */
@@ -90,9 +82,7 @@ public class OEmbedRecord {
     }
 
     /**
-     * <p>
      * Setter for the field <code>physicalElement</code>.
-     * </p>
      *
      * @param physicalElement the physicalElement to set
      */
@@ -101,7 +91,7 @@ public class OEmbedRecord {
     }
 
     /**
-     * <p>isRichResponse.</p>
+     * <p>isRichResponse.
      *
      * @return a boolean
      */
@@ -110,7 +100,7 @@ public class OEmbedRecord {
     }
 
     /**
-     * <p>Getter for the field <code>uri</code>.</p>
+     * <p>Getter for the field <code>uri</code>.
      *
      * @return the uri
      */
@@ -119,7 +109,7 @@ public class OEmbedRecord {
     }
 
     /**
-     * <p>Setter for the field <code>uri</code>.</p>
+     * <p>Setter for the field <code>uri</code>.
      *
      * @param uri the uri to set
      */

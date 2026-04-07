@@ -58,13 +58,12 @@ import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  *
- * This class migrates migrates data from the deprcated table cms_sidebar_elements to the new table cms_page_sidebar_elements, which backs
+ * Migrates migrates data from the deprcated table cms_sidebar_elements to the new table cms_page_sidebar_elements, which backs
  * {@link CMSSidebarElement}. For user configurable widgets it also creates an entry in 'custom_sidebar_widgets', which backs
  * {@link CustomSidebarWidget}. The table cms_sidebar_elements is eventually dropped. The updae is only performed if the table cms_sidebar_elements
  * still exists in the database
  *
  * @author florian
- *
  */
 public class SidebarWidgetUpdate implements IModelUpdate {
 

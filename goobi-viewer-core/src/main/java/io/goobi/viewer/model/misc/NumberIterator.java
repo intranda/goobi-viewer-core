@@ -25,9 +25,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * <p>
  * NumberIterator class.
- * </p>
  */
 public class NumberIterator implements Iterator<Integer> {
 

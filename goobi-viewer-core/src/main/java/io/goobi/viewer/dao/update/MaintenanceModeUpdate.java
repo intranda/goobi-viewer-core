@@ -29,7 +29,6 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * @author florian
- *
  */
 public class MaintenanceModeUpdate implements IModelUpdate {
 

@@ -45,9 +45,7 @@ public class Feedback implements Serializable {
     private String recipientAddress;
 
     /**
-     * <p>
      * getEmailSubject.
-     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -57,9 +55,7 @@ public class Feedback implements Serializable {
     }
 
     /**
-     * <p>
      * getEmailBody.
-     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -82,9 +78,7 @@ public class Feedback implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
      * @return the name
      */
@@ -93,9 +87,7 @@ public class Feedback implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
      * @param name the name to set
      */
@@ -104,9 +96,7 @@ public class Feedback implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>senderAddress</code>.
-     * </p>
      *
      * @return the senderAddress
      */
@@ -115,9 +105,7 @@ public class Feedback implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>senderAddress</code>.
-     * </p>
      *
      * @param senderAddress the senderAddress to set
      */
@@ -126,9 +114,7 @@ public class Feedback implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>url</code>.
-     * </p>
      *
      * @return the url
      */
@@ -137,9 +123,7 @@ public class Feedback implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>url</code>.
-     * </p>
      *
      * @param url the url to set
      */
@@ -148,9 +132,7 @@ public class Feedback implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
      * @return the type
      */
@@ -159,9 +141,7 @@ public class Feedback implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>type</code>.
-     * </p>
      *
      * @param type the type to set
      */
@@ -170,9 +150,7 @@ public class Feedback implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
      * @return the message
      */
@@ -181,9 +159,7 @@ public class Feedback implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>message</code>.
-     * </p>
      *
      * @param message the message to set
      */

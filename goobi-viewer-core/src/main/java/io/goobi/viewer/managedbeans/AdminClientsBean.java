@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -46,17 +46,15 @@ import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Backing bean for pages adminClientEdit.xhtml and adminClients.xhtml
+ * Backing bean for pages adminClientEdit.xhtml and adminClients.xhtml.
  * 
  * @author florian
- *
  */
 @Named
 @SessionScoped
 public class AdminClientsBean implements Serializable {
 
     /**
-     * 
      */
     public static final String DEFAULT_TABLE_FILTER = "name_ip_identifier";
     private static final long serialVersionUID = -614644783330750969L;
@@ -70,7 +68,7 @@ public class AdminClientsBean implements Serializable {
     private TableDataProvider<ClientApplication> configuredClientsModel;
 
     /**
-     * Constructor for testing
+     * Creates a new AdminClientsBean instance for testing.
      * 
      * @param dao
      * @param listEntriesPerPage
@@ -81,7 +79,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Publi no-args constructor
+     * Publi no-args constructor.
      */
     public AdminClientsBean() {
         try {
@@ -94,7 +92,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get the model used for paginated listing configured clients
+     * Gets the model used for paginated listing configured clients.
      * 
      * @return the configuredClientsModel
      */
@@ -117,7 +115,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get the id of the client currently being edited
+     * Gets the id of the client currently being edited.
      * 
      * @return client database id or null if no client is selected
      */
@@ -129,7 +127,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Set the currently edited client
+     * Sets the currently edited client.
      * 
      * @param selectedClient the selectedClient to set
      */
@@ -138,7 +136,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get the currently edited client
+     * Gets the currently edited client.
      * 
      * @return the selectedClient
      */
@@ -158,7 +156,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * 'Regect a registered client by calling {@link #delete(ClientApplication)} on it
+     * Reject a registered client by calling {@link #delete(ClientApplication)} on it.
      * 
      * @param client
      * @return pretty url of admin/clients overview page
@@ -169,7 +167,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Save the given client to database
+     * Saves the given client to database.
      * 
      * @param client
      */
@@ -188,7 +186,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Delete given client from database
+     * Deletes given client from database.
      * 
      * @param client
      * @return Navigation outcome
@@ -339,7 +337,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Get the internally created client representing all clients for access rights purposes
+     * Gets the internally created client representing all clients for access rights purposes.
      * 
      * @return the allClients
      * @throws DAOException
@@ -358,7 +356,7 @@ public class AdminClientsBean implements Serializable {
     }
 
     /**
-     * Check if a client application is logged in that is applicable for access privileges
+     * Checks if a client application is logged in that is applicable for access privileges.
      * 
      * @return true if the session contains a clientApplication with the accessStatus {@link AccessStatus#GRANTED} and if the request ip matches the
      *         client's subnet mask

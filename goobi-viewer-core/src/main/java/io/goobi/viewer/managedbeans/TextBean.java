@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -241,7 +241,6 @@ public class TextBean implements Serializable {
 
     /**
      * Removes all
-     * <p>
      * tags that contain no text.
      * 
      * @param text

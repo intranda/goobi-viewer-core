@@ -222,7 +222,7 @@ public class FeatureGenerator {
     }
 
     /**
-     * Generate a list of {@link GeoMapFeature geoMapFeatures} from a list of metadata values which may represent geographic coordinates. The
+     * Generates a list of {@link GeoMapFeature geoMapFeatures} from a list of metadata values which may represent geographic coordinates. The
      * coordinate strings may take one of three forms:
      * <ul>
      * <li>Point: 'x y'</li>

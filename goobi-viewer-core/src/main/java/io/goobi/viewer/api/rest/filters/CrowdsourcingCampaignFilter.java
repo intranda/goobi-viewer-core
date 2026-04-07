@@ -53,7 +53,6 @@ import io.goobi.viewer.model.security.user.User;
  * work, the {@link Campaign#getId() campaign id} must be set as the request attribute "CampaignId"
  *
  * @author florian
- *
  */
 @Provider
 @CrowdsourcingCampaignBinding

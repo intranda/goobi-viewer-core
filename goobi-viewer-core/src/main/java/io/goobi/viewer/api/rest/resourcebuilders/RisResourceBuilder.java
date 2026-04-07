@@ -57,7 +57,6 @@ import io.goobi.viewer.model.viewer.StructElement;
 
 /**
  * @author florian
- *
  */
 public class RisResourceBuilder {
 

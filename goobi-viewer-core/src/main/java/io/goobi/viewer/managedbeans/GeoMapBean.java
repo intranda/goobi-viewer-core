@@ -78,18 +78,14 @@ public class GeoMapBean implements Serializable, IPolyglott {
     private List<GeoMap> loadedMaps = null;
 
     /**
-     * <p>
-     * Constructor for GeoMapBean.
-     * </p>
+     * Creates a new GeoMapBean instance.
      */
     public GeoMapBean() {
         this.selectedLanguage = BeanUtils.getNavigationHelper().getLocale();
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentMap</code>.
-     * </p>
      *
      * @return the currentMap
      */
@@ -127,9 +123,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * getCurrentMapId.
-     * </p>
      *
      * @return ID of the currently loaded map
      */
@@ -142,7 +136,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * Save the current map. Either add it to database if it has no id yet, or otherwise update it in the database.
+     * Saves the current map. Either add it to database if it has no id yet, or otherwise update it in the database.
      *
      * @throws io.goobi.viewer.exceptions.DAOException
      */
@@ -179,9 +173,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * deleteMap.
-     * </p>
      *
      * @param map a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -192,9 +184,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * getEditMapUrl.
-     * </p>
      *
      * @param map a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @return Map edit URL
@@ -229,9 +219,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectedLanguage</code>.
-     * </p>
      *
      * @return the selectedLanguage
      */
@@ -240,9 +228,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * Setter for the field <code>selectedLanguage</code>.
-     * </p>
      *
      * @param selectedLanguage the selectedLanguage to set
      */
@@ -251,7 +237,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * Get a list of all {@link io.goobi.viewer.model.maps.GeoMap}s from the databse. Note that the databse is queries at each method call.
+     * Gets a list of all {@link io.goobi.viewer.model.maps.GeoMap}s from the databse. Note that the databse is queries at each method call.
      *
      * @return a list of all stored GeoMaps
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -264,9 +250,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * getPossibleMapTypes.
-     * </p>
      *
      * @return a {@link java.util.Collection} object
      */
@@ -275,9 +259,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * getPossibleMarkers.
-     * </p>
      *
      * @return a {@link java.util.Collection} object
      */
@@ -286,9 +268,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * hasCurrentFeature.
-     * </p>
      *
      * @return a boolean
      */
@@ -297,9 +277,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * isInUse.
-     * </p>
      *
      * @param map a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @return a boolean
@@ -310,9 +288,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * getEmbeddingCmsPages.
-     * </p>
      *
      * @param map a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @return a {@link java.util.List} object
@@ -323,9 +299,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * isHasMaps.
-     * </p>
      *
      * @return a boolean
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -347,9 +321,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * getHeatmapUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -362,9 +334,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * getFeatureUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -377,9 +347,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * addFeatureSet.
-     * </p>
      *
      * @param map a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @param type a {@link java.lang.String} object
@@ -405,9 +373,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * removeFeatureSet.
-     * </p>
      *
      * @param map a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @param set a {@link io.goobi.viewer.model.maps.FeatureSet} object
@@ -419,9 +385,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * setCurrentGeoMapType.
-     * </p>
      *
      * @param type a {@link io.goobi.viewer.model.maps.GeoMap.GeoMapType} object
      */
@@ -444,9 +408,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * Getter for the field <code>activeFeatureSet</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.maps.FeatureSet} object
      */
@@ -455,9 +417,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * Setter for the field <code>activeFeatureSet</code>.
-     * </p>
      *
      * @param activeFeatureSet a {@link io.goobi.viewer.model.maps.ManualFeatureSet} object
      */
@@ -466,9 +426,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * getActiveFeatureSetAsString.
-     * </p>
      *
      * @return a {@link java.lang.String} object
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -482,9 +440,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * setActiveFeatureSetAsString.
-     * </p>
      *
      * @param features a {@link java.lang.String} object
      */
@@ -495,9 +451,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * Setter for the field <code>activeFeatureSet</code>.
-     * </p>
      */
     public void setActiveFeatureSet() {
         Integer index = Faces.getRequestParameter("index", Integer.class);
@@ -512,9 +466,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * isActiveFeatureSet.
-     * </p>
      *
      * @param featureSet a {@link io.goobi.viewer.model.maps.FeatureSet} object
      * @return a boolean
@@ -524,9 +476,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>
      * getFromCache.
-     * </p>
      *
      * @param geomap a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @return a {@link io.goobi.viewer.model.maps.GeoMap} object
@@ -542,7 +492,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * {@inheritDoc}
      *
-     * Return true if the the current geomap is not null and its title in the given locale is not empty and the description is either not empty for
+     * <p>Return true if the the current geomap is not null and its title in the given locale is not empty and the description is either not empty for
      * the current locale of the description for the default locale is empty. Otherwise return false
      */
     @Override
@@ -559,7 +509,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * {@inheritDoc}
      *
-     * Return true if the the current geomap is not null and its tile in the given locale is not empty Otherwise return false
+     * <p>Return true if the the current geomap is not null and its tile in the given locale is not empty Otherwise return false
      */
     @Override
     public boolean isValid(Locale locale) {
@@ -573,7 +523,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     /**
      * {@inheritDoc}
      *
-     * return false if {@link #isValid(Locale)} returns true and vice versa
+     * <p>return false if {@link #isValid(Locale)} returns true and vice versa
      */
     @Override
     public boolean isEmpty(Locale locale) {

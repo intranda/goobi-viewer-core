@@ -39,7 +39,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * Sample query : "{!join from=MD_IDENTIFIER to=MD_PROCESSID} +LABEL:MD_RELATIONSHIP_EVENT +PI_TOPSTRUCT:848f183d-ea46-48d7-a8f1-b9fab4da5c02"
+ * Sample query : "{!join from=MD_IDENTIFIER to=MD_PROCESSID} +LABEL:MD_RELATIONSHIP_EVENT +PI_TOPSTRUCT:848f183d-ea46-48d7-a8f1-b9fab4da5c02".
  */
 @Named
 @ViewScoped

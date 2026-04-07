@@ -40,9 +40,7 @@ import io.goobi.viewer.controller.DAOSearchFunction;
 import io.goobi.viewer.exceptions.DAOException;
 
 /**
- * <p>
  * TableDataProvider class.
- * </p>
  *
  * @param <T>
  */
@@ -76,7 +74,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>initDataProvider.</p>
+     * <p>initDataProvider.
      *
      * @param itemsPerPage a int
      * @param defaultSortField a {@link java.lang.String} object
@@ -131,9 +129,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for TableDataProvider.
-     * </p>
+     * Creates a new TableDataProvider instance.
      *
      * @param source a {@link io.goobi.viewer.managedbeans.tabledata.TableDataSource} object.
      */
@@ -142,9 +138,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for TableDataProvider.
-     * </p>
+     * Creates a new TableDataProvider instance.
      *
      * @param entriesPerPage the number of entries per page
      * @param sortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object
@@ -157,9 +151,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * getPaginatorList.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
@@ -169,9 +161,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * loadList.
-     * </p>
      *
      * @return a {@link java.util.Optional} object.
      */
@@ -198,9 +188,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * getFiltersAsMap.
-     * </p>
      *
      * @return a {@link java.util.Map} object.
      */
@@ -226,9 +214,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * sortBy.
-     * </p>
      *
      * @param sortField a {@link java.lang.String} object.
      * @param sortOrder a {@link java.lang.String} object.
@@ -239,9 +225,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * sortBy.
-     * </p>
      *
      * @param sortField a {@link java.lang.String} object.
      * @param sortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object.
@@ -252,9 +236,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * cmdMoveFirst.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
@@ -269,9 +251,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * cmdMovePrevious.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
@@ -286,9 +266,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * cmdMoveNext.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
@@ -303,9 +281,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * cmdMoveLast.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
@@ -320,9 +296,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * setTxtMoveTo.
-     * </p>
      *
      * @param neueSeite a int.
      * @throws io.goobi.viewer.managedbeans.tabledata.TableDataSourceException if any.
@@ -336,9 +310,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * getTxtMoveTo.
-     * </p>
      *
      * @return a int.
      */
@@ -347,9 +319,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * getLastPageNumber.
-     * </p>
      *
      * @return a int.
      */
@@ -362,9 +332,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * isFirstPage.
-     * </p>
      *
      * @return a boolean.
      */
@@ -373,9 +341,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * isLastPage.
-     * </p>
      *
      * @return a boolean.
      */
@@ -384,9 +350,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * hasNextPage.
-     * </p>
      *
      * @return a boolean.
      */
@@ -395,9 +359,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * hasPreviousPage.
-     * </p>
      *
      * @return a boolean.
      */
@@ -406,9 +368,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * getPageNumberCurrent.
-     * </p>
      *
      * @return a {@link java.lang.Long} object.
      */
@@ -421,9 +381,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * getPageNumberLast.
-     * </p>
      *
      * @return a {@link java.lang.Long} object.
      */
@@ -432,9 +390,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * getSizeOfDataList.
-     * </p>
      *
      * @return a long.
      */
@@ -443,9 +399,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortField</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -454,9 +408,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>sortField</code>.
-     * </p>
      *
      * @param sortField a {@link java.lang.String} object.
      */
@@ -468,9 +420,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortOrder</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object.
      */
@@ -479,9 +429,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>sortOrder</code>.
-     * </p>
      *
      * @param sortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object.
      */
@@ -491,9 +439,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>entriesPerPage</code>.
-     * </p>
      *
      * @param entriesPerPage a int.
      */
@@ -503,9 +449,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>entriesPerPage</code>.
-     * </p>
      *
      * @return a int.
      */
@@ -514,9 +458,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>filters</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -525,9 +467,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * removeFilter.
-     * </p>
      *
      * @param filter a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object.
      */
@@ -537,9 +477,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * resetFilters.
-     * </p>
      */
     public void resetFilters() {
         this.filters = new ArrayList<>();
@@ -554,9 +492,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * resetAll.
-     * </p>
      */
     public void resetAll() {
         currentPage = 0;
@@ -569,9 +505,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>
      * update.
-     * </p>
      */
     public void update() {
         resetCurrentList();
@@ -579,7 +513,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>getFilter.</p>
+     * <p>getFilter.
      *
      * @param columns a {@link java.lang.String} object
      * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object
@@ -595,7 +529,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>addFilter.</p>
+     * <p>addFilter.
      *
      * @param filter a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object
      */
@@ -605,7 +539,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     /**
-     * <p>getFilterIfPresent.</p>
+     * <p>getFilterIfPresent.
      *
      * @param columns a {@link java.lang.String} object
      * @return a {@link java.util.Optional} object

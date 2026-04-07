@@ -22,18 +22,14 @@
 package io.goobi.viewer.managedbeans.tabledata;
 
 /**
- * <p>
  * TableDataSourceException class.
- * </p>
  *
  * @author Florian Alpers
  */
 public class TableDataSourceException extends RuntimeException {
 
     /**
-     * <p>
-     * Constructor for TableDataSourceException.
-     * </p>
+     * Creates a new TableDataSourceException instance.
      */
     public TableDataSourceException() {
         super();
@@ -41,9 +37,7 @@ public class TableDataSourceException extends RuntimeException {
     }
 
     /**
-     * <p>
-     * Constructor for TableDataSourceException.
-     * </p>
+     * Creates a new TableDataSourceException instance.
      *
      * @param arg0 a {@link java.lang.String} object.
      * @param arg1 a {@link java.lang.Throwable} object.
@@ -56,9 +50,7 @@ public class TableDataSourceException extends RuntimeException {
     }
 
     /**
-     * <p>
-     * Constructor for TableDataSourceException.
-     * </p>
+     * Creates a new TableDataSourceException instance.
      *
      * @param arg0 a {@link java.lang.String} object.
      * @param arg1 a {@link java.lang.Throwable} object.
@@ -69,9 +61,7 @@ public class TableDataSourceException extends RuntimeException {
     }
 
     /**
-     * <p>
-     * Constructor for TableDataSourceException.
-     * </p>
+     * Creates a new TableDataSourceException instance.
      *
      * @param arg0 a {@link java.lang.String} object.
      */
@@ -81,9 +71,7 @@ public class TableDataSourceException extends RuntimeException {
     }
 
     /**
-     * <p>
-     * Constructor for TableDataSourceException.
-     * </p>
+     * Creates a new TableDataSourceException instance.
      *
      * @param arg0 a {@link java.lang.Throwable} object.
      */

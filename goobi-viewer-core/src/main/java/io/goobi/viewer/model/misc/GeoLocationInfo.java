@@ -31,9 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * <p>
  * GeoLocationInfo class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -48,18 +46,14 @@ public class GeoLocationInfo {
     private List<GeoLocation> locationList = new ArrayList<>();
 
     /**
-     * <p>
-     * Constructor for GeoLocationInfo.
-     * </p>
+     * Creates a new GeoLocationInfo instance.
      */
     public GeoLocationInfo() {
 
     }
 
     /**
-     * <p>
-     * Constructor for GeoLocationInfo.
-     * </p>
+     * Creates a new GeoLocationInfo instance.
      *
      * @param json a {@link org.json.JSONObject} object.
      * @throws org.json.JSONException if any.
@@ -77,9 +71,7 @@ public class GeoLocationInfo {
     }
 
     /**
-     * <p>
      * getAsJson.
-     * </p>
      *
      * @return a {@link org.json.JSONObject} object.
      */
@@ -99,9 +91,7 @@ public class GeoLocationInfo {
     }
 
     /**
-     * <p>
      * Getter for the field <code>centerLocation</code>.
-     * </p>
      *
      * @return the centerLocation
      */
@@ -110,9 +100,7 @@ public class GeoLocationInfo {
     }
 
     /**
-     * <p>
      * Setter for the field <code>centerLocation</code>.
-     * </p>
      *
      * @param centerLocation the centerLocation to set
      */
@@ -121,9 +109,7 @@ public class GeoLocationInfo {
     }
 
     /**
-     * <p>
      * Getter for the field <code>locationList</code>.
-     * </p>
      *
      * @return the locationList
      */
@@ -132,9 +118,7 @@ public class GeoLocationInfo {
     }
 
     /**
-     * <p>
      * Setter for the field <code>locationList</code>.
-     * </p>
      *
      * @param locationList the locationList to set
      */

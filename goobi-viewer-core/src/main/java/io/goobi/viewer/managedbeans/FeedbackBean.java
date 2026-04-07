@@ -85,9 +85,7 @@ public class FeedbackBean implements Serializable {
     }
 
     /**
-     * <p>
      * createFeedback.
-     * </p>
      */
     public void createFeedback() {
 
@@ -111,9 +109,7 @@ public class FeedbackBean implements Serializable {
     }
 
     /**
-     * <p>
      * submitFeedbackAction.
-     * </p>
      *
      * @param setCurrentUrl
      * @return a {@link java.lang.String} object.
@@ -188,9 +184,7 @@ public class FeedbackBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>feedback</code>.
-     * </p>
      *
      * @return the feedback
      */
@@ -199,9 +193,7 @@ public class FeedbackBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>feedback</code>.
-     * </p>
      *
      * @param feedback the feedback to set
      */

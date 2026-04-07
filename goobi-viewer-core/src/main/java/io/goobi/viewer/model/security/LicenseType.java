@@ -65,7 +65,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
+ * Describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
  * known as core license types.
  */
 @Entity
@@ -208,9 +208,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -219,9 +217,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -230,9 +226,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
      * @return the name
      */
@@ -242,9 +236,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
      * @param name the name to set
      */
@@ -253,9 +245,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
      * @return the description
      */
@@ -264,9 +254,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
      * @param description the description to set
      */
@@ -275,9 +263,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * getMatch.
-     * </p>
      *
      * @param conditions a {@link java.lang.String} object.
      * @param pattern a {@link java.lang.String} object.
@@ -295,9 +281,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * isCmsType.
-     * </p>
      *
      * @return true if this license type has one of the static CMS type names; false otherwise
      */
@@ -310,9 +294,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * isCmsType.
-     * </p>
      *
      * @return true if this license type has one of the static CMS type names; false otherwise
      */
@@ -366,9 +348,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * isOpenAccess.
-     * </p>
      *
      * @return the openAccess
      */
@@ -377,9 +357,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Setter for the field <code>openAccess</code>.
-     * </p>
      *
      * @param openAccess the openAccess to set
      */
@@ -388,9 +366,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * isCore.
-     * </p>
      *
      * @return the core
      */
@@ -399,9 +375,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Setter for the field <code>core</code>.
-     * </p>
      *
      * @param core the core to set
      */
@@ -508,9 +482,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Getter for the field <code>privileges</code>.
-     * </p>
      *
      * @return the privileges
      */
@@ -568,9 +540,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Setter for the field <code>privileges</code>.
-     * </p>
      *
      * @param privileges the privileges to set
      */
@@ -809,9 +779,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Getter for the field <code>overridingLicenseTypes</code>.
-     * </p>
      *
      * @return the overridsenLicenseTypes
      */
@@ -820,9 +788,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * Setter for the field <code>overriddenLicenseTypes</code>.
-     * </p>
      *
      * @param overriddenLicenseTypes the overriddenLicenseTypes to set
      */
@@ -1003,9 +969,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     }
 
     /**
-     * <p>
      * addCoreLicenseTypesToDB.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

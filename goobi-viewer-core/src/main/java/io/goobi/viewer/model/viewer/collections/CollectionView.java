@@ -53,9 +53,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * <p>
  * CollectionView class.
- * </p>
  */
 public class CollectionView implements Serializable {
 
@@ -79,9 +77,7 @@ public class CollectionView implements Serializable {
     private List<String> ignoreList = new ArrayList<>();
 
     /**
-     * <p>
-     * Constructor for CollectionView.
-     * </p>
+     * Creates a new CollectionView instance.
      *
      * @param field a {@link java.lang.String} object.
      * @param dataProvider a {@link io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider} object.
@@ -95,7 +91,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * Creates a new CollectionView from an already existing one, keeping only the list of all collections without any display information
+     * Creates a new CollectionView from an already existing one, keeping only the list of all collections without any display information.
      *
      * @param blueprint a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      */
@@ -110,9 +106,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * populateCollectionList.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
@@ -187,18 +181,14 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * calculateVisibleDcElements.
-     * </p>
      */
     public void calculateVisibleDcElements() {
         calculateVisibleDcElements(true);
     }
 
     /**
-     * <p>
      * calculateVisibleDcElements.
-     * </p>
      *
      * @param loadDescriptions If true, associated CMS collection configurations will be loaded
      */
@@ -281,9 +271,7 @@ public class CollectionView implements Serializable {
 
     /**
      * 
-     * <p>
      * associateElementsWithCMSData.
-     * </p>
      */
     public void associateElementsWithCMSData() {
         try {
@@ -295,10 +283,8 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * associateElementsWithCMSData.
-     * </p>
-     * 
+     *
      * @param cmsCollections collection data with which to enricht the browse elements
      */
     public void associateElementsWithCMSData(List<CMSCollection> cmsCollections) {
@@ -312,10 +298,9 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * associateWithCMSCollections.
-     * </p>
-     * returns the 'collection' parameter
+     *
+     * <p>returns the 'collection' parameter
      *
      * @param collections a {@link java.util.List} object.
      * @param cmsCollections
@@ -341,9 +326,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * getVisibleDcElements.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -375,7 +358,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * Count the hierarchy level of the given collection name
+     * Counts the hierarchy level of the given collection name.
      * 
      * @param collectionName
      * @param splittingChar
@@ -389,9 +372,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * resetCollectionList.
-     * </p>
      */
     public void resetCollectionList() {
         synchronized (this) {
@@ -400,9 +381,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * showChildren.
-     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
@@ -435,9 +414,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * hideChildren.
-     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
@@ -451,9 +428,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * toggleChildren.
-     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @return a {@link java.lang.String} object.
@@ -534,7 +509,6 @@ public class CollectionView implements Serializable {
 
     /**
      * Add all collections within the second list into the first list as they fit in the hierarchy.
-     *
      *
      * @param collections
      * @param unsortedSubCollections
@@ -639,7 +613,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * Sets all descendants of this element to visible
+     * Sets all descendants of this element to visible.
      *
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
@@ -648,7 +622,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * Sets all descendants of this element to visible, but not beyond level 'depth'
+     * Sets all descendants of this element to visible, but not beyond level 'depth'.
      *
      * @param depth a int.
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
@@ -664,14 +638,14 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * Sets all collection elements visible
+     * Sets all collection elements visible.
      */
     public void expandAll() {
         expandAll(-1, true);
     }
 
     /**
-     * Sets all collection elements visible up to 'depth' levels into the hierarchy
+     * Sets all collection elements visible up to 'depth' levels into the hierarchy.
      *
      * @param depth a int.
      * @param loadDescriptions
@@ -690,9 +664,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * getCompleteList.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -701,9 +673,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>baseElementName</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -712,9 +682,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>baseElementName</code>.
-     * </p>
      *
      * @param baseElementName a {@link java.lang.String} object.
      */
@@ -723,9 +691,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * showAll.
-     * </p>
      *
      * @throws IllegalRequestException
      */
@@ -739,9 +705,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * hideAll.
-     * </p>
      *
      * @throws IllegalRequestException
      */
@@ -776,9 +740,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * getBaseElementLevel.
-     * </p>
      *
      * @return a int.
      */
@@ -787,9 +749,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>showAllHierarchyLevels</code>.
-     * </p>
      *
      * @param showAllHierarchyLevels the showAllHierarchyLevels to set
      */
@@ -798,9 +758,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * isShowAllHierarchyLevels.
-     * </p>
      *
      * @return the showAllHierarchyLevels
      */
@@ -809,9 +767,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * getCollectionUrl.
-     * </p>
      *
      * @param collection a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -825,9 +781,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * loadCollection.
-     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @return a {@link java.lang.String} object.
@@ -840,9 +794,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * getCollectionUrl.
-     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @return a {@link java.lang.String} object.
@@ -857,9 +809,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * getCollectionUrl.
-     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @param field a {@link java.lang.String} object.
@@ -961,9 +911,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * setIgnore.
-     * </p>
      *
      * @param collectionName a {@link java.lang.String} object.
      */
@@ -972,9 +920,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * setIgnore.
-     * </p>
      *
      * @param collectionNames a {@link java.util.Collection} object.
      */
@@ -983,9 +929,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * resetIgnore.
-     * </p>
      */
     public void resetIgnore() {
         this.ignoreList = new ArrayList<>();
@@ -993,7 +937,7 @@ public class CollectionView implements Serializable {
 
     /**
      * Set the {@link io.goobi.viewer.model.viewer.collections.BrowseElementInfo} of the
-     * {@link io.goobi.viewer.model.viewer.collections.BrowseDcElement} with the given name to the given info object
+     * {@link io.goobi.viewer.model.viewer.collections.BrowseDcElement} with the given name to the given info object.
      *
      * @param name The collection name
      * @param info The info to apply
@@ -1045,9 +989,7 @@ public class CollectionView implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>field</code>.
-     * </p>
      *
      * @return the field
      */

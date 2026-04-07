@@ -91,7 +91,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(RECORDS_PAGES)
 @ViewerRestServiceBinding
@@ -294,7 +293,8 @@ public class RecordPageResource {
 
     /**
      * Validates that the given page number is at least 1.
-     * The schema documents minimum=1, but JAX-RS does not enforce schema constraints server-side.
+     *
+     * <p>The schema documents minimum=1, but JAX-RS does not enforce schema constraints server-side.
      * Without this check, pageNo=0 returns an empty annotation collection instead of a 400.
      *
      * @param pageNo the page number path parameter value

@@ -58,9 +58,7 @@ import io.goobi.viewer.controller.model.alto.TextEnricher;
 import io.goobi.viewer.model.search.FuzzySearchTerm;
 
 /**
- * <p>
  * ALTOTools class.
- * </p>
  */
 public final class ALTOTools {
 
@@ -80,7 +78,7 @@ public final class ALTOTools {
     }
 
     /**
-     * Read the plain full-text from an alto file. Don't merge line breaks.
+     * Reads the plain full-text from an alto file. Don't merge line breaks.
      *
      * @param path
      * @param encoding
@@ -93,9 +91,7 @@ public final class ALTOTools {
     }
 
     /**
-     * <p>
      * getFullText.
-     * </p>
      *
      * @param alto a {@link java.lang.String} object.
      * @param charset
@@ -114,9 +110,7 @@ public final class ALTOTools {
     }
 
     /**
-     * <p>
      * getNERTags.
-     * </p>
      *
      * @param alto a {@link java.lang.String} object.
      * @param inCharset
@@ -199,9 +193,7 @@ public final class ALTOTools {
     }
 
     /**
-     * <p>
      * alto2Txt.
-     * </p>
      *
      * @param alto a {@link java.lang.String} object.
      * @param charset ALTO charset
@@ -239,9 +231,7 @@ public final class ALTOTools {
     }
 
     /**
-     * <p>
      * getWordCoords.
-     * </p>
      *
      * @param altoString a {@link java.lang.String} object.
      * @param charset
@@ -253,9 +243,7 @@ public final class ALTOTools {
     }
 
     /**
-     * <p>
      * getRotatedCoordinates.
-     * </p>
      *
      * @param inCoords a {@link java.lang.String} object.
      * @param rotation a int.
@@ -312,9 +300,7 @@ public final class ALTOTools {
     }
 
     /**
-     * <p>
      * rotate.
-     * </p>
      *
      * @param rect a {@link java.awt.Rectangle} object.
      * @param rotation a int.
@@ -385,9 +371,7 @@ public final class ALTOTools {
     }
 
     /**
-     * <p>
      * getMatchALTOWord.
-     * </p>
      *
      * @param eleWord a {@link de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word} object.
      * @param words an array of {@link java.lang.String} objects.
@@ -432,9 +416,7 @@ public final class ALTOTools {
     }
 
     /**
-     * <p>
      * getALTOCoords.
-     * </p>
      *
      * @param element a {@link de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData} object.
      * @return a {@link java.lang.String} object.

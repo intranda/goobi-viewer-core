@@ -36,9 +36,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
- * <p>
  * TranslationListSerializer class.
- * </p>
  *
  * @author florian
  */

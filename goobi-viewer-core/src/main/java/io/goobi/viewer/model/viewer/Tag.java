@@ -65,7 +65,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
-     ********************************* Getter and Setter **************************************
+     ********************************* Getter and Setter **************************************.
      *
      * @return a {@link java.lang.String} object.
      */
@@ -74,9 +74,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>css</code>.
-     * </p>
      *
      * @param css a {@link java.lang.String} object.
      */
@@ -85,9 +83,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>size</code>.
-     * </p>
      *
      * @param size the size to set
      */
@@ -96,9 +92,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>size</code>.
-     * </p>
      *
      * @return the size
      */
@@ -107,9 +101,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
      * @param name the name to set
      */
@@ -118,9 +110,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
      * @return the name
      */
@@ -129,9 +119,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
-     * <p>
      * getEscapedName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -144,9 +132,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>field</code>.
-     * </p>
      *
      * @return the field
      */
@@ -155,9 +141,7 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>field</code>.
-     * </p>
      *
      * @param field the field to set
      */

@@ -108,7 +108,6 @@ public final class DateTools {
     public static final DateTimeFormatter FORMATTERFILENAME = DateTimeFormatter.ofPattern("yyyy-MM-dd-HHmmssSSS");
 
     /**
-     * 
      */
     private DateTools() {
         //
@@ -215,9 +214,7 @@ public final class DateTools {
     }
 
     /**
-     * <p>
      * parseDateTimeFromString.
-     * </p>
      *
      * @param dateString a {@link java.lang.String} object.
      * @param fromUTC a boolean.
@@ -315,9 +312,7 @@ public final class DateTools {
     }
 
     /**
-     * <p>
      * parseDateFromString.
-     * </p>
      *
      * @param dateString a {@link java.lang.String} object.
      * @return a {@link java.util.Date} object.

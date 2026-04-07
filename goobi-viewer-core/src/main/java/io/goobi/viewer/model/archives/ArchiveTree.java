@@ -71,9 +71,7 @@ public class ArchiveTree implements Serializable {
     private final boolean expandEntryOnSelection;
 
     /**
-     * <p>
-     * Constructor for TOC.
-     * </p>
+     * Creates a new TOC instance.
      */
     public ArchiveTree() {
         logger.trace("new EADTree()");
@@ -140,9 +138,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * <p>
      * getViewForGroup.
-     * </p>
      *
      * @param group a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -157,9 +153,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * <p>
      * getTreeViewForGroup.
-     * </p>
      *
      * @param group a {@link java.lang.String} object.
      * @should call buildTree and set maxTocDepth correctly
@@ -174,9 +168,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * <p>
      * getFlatView.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -186,9 +178,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * <p>
      * getTreeView.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -352,9 +342,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * <p>
      * expandAll.
-     * </p>
      */
     public void expandAll() {
         logger.trace("expandAll");
@@ -371,9 +359,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * <p>
      * collapseAll.
-     * </p>
      */
     public void collapseAll() {
         if (entryMap == null) {
@@ -414,9 +400,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * <p>
      * getTocElements.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -429,7 +413,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * Get the hierarchical tree as a flat list
+     * Gets the hierarchical tree as a flat list.
      *
      * @return List<ArchiveEntry>
      */
@@ -445,8 +429,8 @@ public class ArchiveTree implements Serializable {
 
     /**
      *
-     * @return the {@link ArchiveEntry} with the given identifier if it exists in the tree; null otherwise
      * @param identifier
+     * @return the {@link ArchiveEntry} with the given identifier if it exists in the tree; null otherwise
      */
     public ArchiveEntry getEntryById(String identifier) {
         return findEntry(identifier, getRootElement()).orElse(null);

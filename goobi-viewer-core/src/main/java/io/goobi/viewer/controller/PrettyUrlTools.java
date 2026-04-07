@@ -42,7 +42,6 @@ import io.goobi.viewer.solr.SolrTools;
 
 /**
  * @author florian
- *
  */
 public final class PrettyUrlTools {
 

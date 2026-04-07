@@ -48,9 +48,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>
  * Abstract HttpAuthenticationProvider class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -77,9 +75,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     protected String redirectUrl;
 
     /**
-     * <p>
-     * Constructor for HttpAuthenticationProvider.
-     * </p>
+     * Creates a new HttpAuthenticationProvider instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
@@ -99,9 +95,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>
      * Getter for the field <code>timeoutMillis</code>.
-     * </p>
      *
      * @return the timeoutMillis
      */
@@ -116,9 +110,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
      * @return the label
      */
@@ -127,9 +119,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>
      * Getter for the field <code>url</code>.
-     * </p>
      *
      * @return the url
      */
@@ -138,9 +128,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>
      * Getter for the field <code>image</code>.
-     * </p>
      *
      * @return the image
      */
@@ -149,9 +137,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>
      * getImageUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -204,9 +190,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>
      * post.
-     * </p>
      *
      * @param url a {@link java.net.URI} object.
      * @param requestEntity a {@link java.lang.String} object.
@@ -237,9 +221,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     }
 
     /**
-     * <p>
      * get.
-     * </p>
      *
      * @param url a {@link java.net.URI} object.
      * @return a {@link java.lang.String} object.

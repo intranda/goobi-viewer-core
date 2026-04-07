@@ -44,7 +44,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
- *
  */
 @Path(ApiUrls.RECORDS_RSS)
 @CORSBinding

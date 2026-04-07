@@ -22,9 +22,7 @@
 package io.goobi.viewer.servlets.oembed;
 
 /**
- * <p>
  * Abstract OEmbedResponse class.
- * </p>
  */
 public abstract class OEmbedResponse {
 
@@ -48,9 +46,7 @@ public abstract class OEmbedResponse {
     protected Integer thumbnailHeight;
 
     /**
-     * <p>
      * Getter for the field <code>version</code>.
-     * </p>
      *
      * @return the version
      */
@@ -59,9 +55,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>version</code>.
-     * </p>
      *
      * @param version the version to set
      */
@@ -70,9 +64,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
      * @return the type
      */
@@ -81,9 +73,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>type</code>.
-     * </p>
      *
      * @param type the type to set
      */
@@ -92,9 +82,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>width</code>.
-     * </p>
      *
      * @return the width
      */
@@ -103,9 +91,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>width</code>.
-     * </p>
      *
      * @param width the width to set
      */
@@ -114,9 +100,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>height</code>.
-     * </p>
      *
      * @return the height
      */
@@ -125,9 +109,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>height</code>.
-     * </p>
      *
      * @param height the height to set
      */
@@ -136,9 +118,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>title</code>.
-     * </p>
      *
      * @return the title
      */
@@ -147,9 +127,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>title</code>.
-     * </p>
      *
      * @param title the title to set
      */
@@ -158,9 +136,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>authorName</code>.
-     * </p>
      *
      * @return the authorName
      */
@@ -169,9 +145,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>authorName</code>.
-     * </p>
      *
      * @param authorName the authorName to set
      */
@@ -180,9 +154,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>authorUrl</code>.
-     * </p>
      *
      * @return the authorUrl
      */
@@ -191,9 +163,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>authorUrl</code>.
-     * </p>
      *
      * @param authorUrl the authorUrl to set
      */
@@ -202,9 +172,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>providerName</code>.
-     * </p>
      *
      * @return the providerName
      */
@@ -213,9 +181,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>providerName</code>.
-     * </p>
      *
      * @param providerName the providerName to set
      */
@@ -224,9 +190,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>providerUrl</code>.
-     * </p>
      *
      * @return the providerUrl
      */
@@ -235,9 +199,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>providerUrl</code>.
-     * </p>
      *
      * @param providerUrl the providerUrl to set
      */
@@ -246,9 +208,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>cacheAge</code>.
-     * </p>
      *
      * @return the cacheAge
      */
@@ -257,9 +217,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>cacheAge</code>.
-     * </p>
      *
      * @param cacheAge the cacheAge to set
      */
@@ -268,9 +226,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>thumbnailUrl</code>.
-     * </p>
      *
      * @return the thumbnailUrl
      */
@@ -279,9 +235,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>thumbnailUrl</code>.
-     * </p>
      *
      * @param thumbnailUrl the thumbnailUrl to set
      */
@@ -290,9 +244,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>thumbnailWidth</code>.
-     * </p>
      *
      * @return the thumbnailWidth
      */
@@ -301,9 +253,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>thumbnailWidth</code>.
-     * </p>
      *
      * @param thumbnailWidth the thumbnailWidth to set
      */
@@ -312,9 +262,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>thumbnailHeight</code>.
-     * </p>
      *
      * @return the thumbnailHeight
      */
@@ -323,9 +271,7 @@ public abstract class OEmbedResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>thumbnailHeight</code>.
-     * </p>
      *
      * @param thumbnailHeight the thumbnailHeight to set
      */

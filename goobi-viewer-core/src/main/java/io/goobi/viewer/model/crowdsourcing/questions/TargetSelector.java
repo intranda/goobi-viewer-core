@@ -29,15 +29,15 @@ package io.goobi.viewer.model.crowdsourcing.questions;
  */
 public enum TargetSelector {
     /**
-     * Target is the entire source, usually a iiif manifest
+     * Target is the entire source, usually a iiif manifest.
      */
     WHOLE_SOURCE,
     /**
-     * Target is the canvas of the current page
+     * Target is the canvas of the current page.
      */
     WHOLE_PAGE,
     /**
-     * Target is a rectangular area within the current canvas, described by a FragmentSelector
+     * Target is a rectangular area within the current canvas, described by a FragmentSelector.
      */
     RECTANGLE;
 

@@ -25,9 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Context;
 
 /**
- * <p>
  * TestObject class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -37,9 +35,7 @@ public class TestObject {
     private HttpServletRequest servletRequest;
 
     /**
-     * <p>
      * getRequest.
-     * </p>
      *
      * @return a {@link jakarta.servlet.http.HttpServletRequest} object.
      */

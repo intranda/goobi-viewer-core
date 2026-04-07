@@ -31,9 +31,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * <p>
  * CMSProperty class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -47,7 +45,7 @@ public class CMSProperty implements Serializable {
     /** Constant <code>KEY_EMPTY="EMPTY"</code> */
     public static final String KEY_EMPTY = "EMPTY";
     /**
-     * Boolean specifying that a page list should separate child pages by tag and prepend each group with a header
+     * Boolean specifying that a page list should separate child pages by tag and prepend each group with a header.
      */
     //    public static final String KEY_DISPLAY_CHILD_TAGS_AS_HEADERS = "DISPLAY_CHILD_TAGS_AS_HEADERS";
 
@@ -68,17 +66,13 @@ public class CMSProperty implements Serializable {
     //    private CMSPage owner;
 
     /**
-     * <p>
-     * Constructor for CMSProperty.
-     * </p>
+     * Creates a new CMSProperty instance.
      */
     public CMSProperty() {
     }
 
     /**
-     * <p>
-     * Constructor for CMSProperty.
-     * </p>
+     * Creates a new CMSProperty instance.
      *
      * @param key a {@link java.lang.String} object.
      */
@@ -98,7 +92,7 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * Creates a clone of the given property
+     * Creates a clone of the given property.
      *
      * @param original a {@link io.goobi.viewer.model.cms.CMSProperty} object.
      */
@@ -112,9 +106,7 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -123,9 +115,7 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -134,9 +124,7 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>key</code>.
-     * </p>
      *
      * @return the key
      */
@@ -145,9 +133,7 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>key</code>.
-     * </p>
      *
      * @param key the key to set
      */
@@ -156,9 +142,7 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
      * @return the value
      */
@@ -167,9 +151,7 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>value</code>.
-     * </p>
      *
      * @param value the value to set
      */
@@ -187,9 +169,7 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * <p>
      * getBooleanValue.
-     * </p>
      *
      * @return a boolean.
      */
@@ -198,9 +178,7 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * <p>
      * getLongValue.
-     * </p>
      *
      * @return a {@link java.lang.Long} object.
      */
@@ -213,9 +191,7 @@ public class CMSProperty implements Serializable {
     }
 
     /**
-     * <p>
      * getDoubleValue.
-     * </p>
      *
      * @return a {@link java.lang.Double} object.
      */

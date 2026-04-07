@@ -54,9 +54,7 @@ public class DatabaseUpdater {
     private final CMSTemplateManager templateManager;
 
     /**
-     * <p>
-     * Constructor for DatabaseUpdater.
-     * </p>
+     * Creates a new DatabaseUpdater instance.
      *
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
      * @param templateManager
@@ -67,9 +65,7 @@ public class DatabaseUpdater {
     }
 
     /**
-     * <p>
      * update.
-     * </p>
      */
     public void update() {
         List<IModelUpdate> updates = instantiateUpdater();

@@ -111,9 +111,7 @@ public class CalendarView implements Serializable {
     }
 
     /**
-     * <p>
      * getVolumeYears.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -139,9 +137,7 @@ public class CalendarView implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>year</code>.
-     * </p>
      *
      * @return the year
      */
@@ -150,9 +146,7 @@ public class CalendarView implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>year</code>.
-     * </p>
      *
      * @param year the year to set
      */
@@ -167,7 +161,8 @@ public class CalendarView implements Serializable {
 
     /**
      * Returns the parent identifier used for calendar queries.
-     * For anchor volumes this is the anchor PI, for group members it is the group identifier value
+     *
+     * <p>For anchor volumes this is the anchor PI, for group members it is the group identifier value
      * (i.e. the PI of the GROUP document).
      *
      * @return the anchorPi
@@ -178,7 +173,8 @@ public class CalendarView implements Serializable {
 
     /**
      * Returns the Solr field name used for parent lookups.
-     * For anchor volumes this is {@code PI_ANCHOR}, for group members it is the group identifier field
+     *
+     * <p>For anchor volumes this is {@code PI_ANCHOR}, for group members it is the group identifier field
      * (e.g. {@code GROUPID_NEWSPAPER}).
      *
      * @return the anchorField
@@ -188,9 +184,7 @@ public class CalendarView implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>calendarItems</code>.
-     * </p>
      *
      * @return the calendarItems
      */

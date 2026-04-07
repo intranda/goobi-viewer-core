@@ -30,7 +30,6 @@ public class SelectPageItem extends SelectItem {
     private boolean doublePageMode = false;
 
     /**
-     *
      */
     public SelectPageItem() {
         super();

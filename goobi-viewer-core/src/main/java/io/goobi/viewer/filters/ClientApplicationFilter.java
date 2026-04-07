@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -36,7 +36,6 @@ import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 
 /**
  * @author florian
- *
  */
 public class ClientApplicationFilter implements Filter {
 

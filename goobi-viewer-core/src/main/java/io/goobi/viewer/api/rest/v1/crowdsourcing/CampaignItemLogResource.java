@@ -61,7 +61,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  * Request filter to ensure only users with sufficient rights may access campaign resources.
  *
  * @author florian
- *
  */
 @Hidden
 @Path("/crowdsourcing/campaigns/{campaignId}")
@@ -80,10 +79,8 @@ public class CampaignItemLogResource {
     private final Long campaignId;
 
     /**
-     * <p>
-     * Constructor for CampaignItemResource.
-     * </p>
-     * 
+     * Creates a new CampaignItemResource instance.
+     *
      * @param servletRequest
      * @param campaignId
      */

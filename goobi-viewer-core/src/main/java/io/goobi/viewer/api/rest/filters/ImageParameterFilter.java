@@ -89,9 +89,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
     }
 
     /**
-     * <p>
      * addRepositoryPathIfRequired.
-     * </p>
      *
      * @param request a {@link jakarta.ws.rs.container.ContainerRequestContext} object.
      * @param pi a {@link java.lang.String} object.

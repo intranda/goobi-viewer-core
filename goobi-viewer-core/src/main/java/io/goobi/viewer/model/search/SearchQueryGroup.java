@@ -36,7 +36,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 
 /**
- * Search query group for the advanced search.
+ * Searches query group for the advanced search.
  */
 public class SearchQueryGroup implements Serializable {
 
@@ -60,9 +60,7 @@ public class SearchQueryGroup implements Serializable {
     private SearchQueryGroupOperator operator = SearchQueryGroupOperator.AND;
 
     /**
-     * <p>
-     * Constructor for SearchQueryGroup.
-     * </p>
+     * Creates a new SearchQueryGroup instance.
      *
      * @param fieldConfigs
      * @param template
@@ -157,9 +155,7 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>
      * getAvailableOperators.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @should return all enum values
@@ -169,9 +165,7 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>queryItems</code>.
-     * </p>
      *
      * @return the queryItems
      */
@@ -180,10 +174,8 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>
      * addNewQueryItem.
-     * </p>
-     * 
+     *
      * @param field Index field for the new item
      * @param afterIndex Item index after which to place new new item
      * @return true if operation successful; false otherwise
@@ -202,9 +194,7 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>
      * removeQueryItem.
-     * </p>
      *
      * @param item a {@link io.goobi.viewer.model.search.SearchQueryItem} object.
      * @should remove item correctly
@@ -220,9 +210,7 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>operator</code>.
-     * </p>
      *
      * @return the operator
      */
@@ -231,9 +219,7 @@ public class SearchQueryGroup implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>operator</code>.
-     * </p>
      *
      * @param operator the operator to set
      */

@@ -38,7 +38,6 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 
 /**
  * @author florian
- *
  */
 public class SqlCommentLister implements AnnotationLister<Comment> {
 

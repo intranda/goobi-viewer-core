@@ -24,7 +24,7 @@ package io.goobi.viewer.model.cms;
 import java.io.Serializable;
 
 /**
- * An entity holding an object which can be selected or unselected
+ * An entity holding an object which can be selected or unselected.
  *
  * @author florian
  * @param <T>
@@ -37,9 +37,7 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
     private boolean selected;
 
     /**
-     * <p>
-     * Constructor for Selectable.
-     * </p>
+     * Creates a new Selectable instance.
      *
      * @param value a T object.
      * @param selected a boolean.
@@ -50,9 +48,7 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
      * @return the value
      */
@@ -61,9 +57,7 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
     }
 
     /**
-     * <p>
      * isSelected.
-     * </p>
      *
      * @return the selected
      */
@@ -72,9 +66,7 @@ public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>selected</code>.
-     * </p>
      *
      * @param selected the selected to set
      */

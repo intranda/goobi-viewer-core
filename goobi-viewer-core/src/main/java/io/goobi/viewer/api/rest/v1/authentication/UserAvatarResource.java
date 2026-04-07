@@ -86,7 +86,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(USERS_USER_AVATAR_IMAGE)
 @CORSBinding

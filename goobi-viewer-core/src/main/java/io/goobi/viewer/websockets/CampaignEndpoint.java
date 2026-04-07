@@ -261,7 +261,7 @@ public class CampaignEndpoint {
     }
 
     /**
-     * Remove a registered crowdsourcing page lock after session end and notify the assiciated websocket session that the session has ended
+     * Removes a registered crowdsourcing page lock after session end and notify the assiciated websocket session that the session has ended.
      *
      * @param sessionId
      * @throws DAOException
@@ -273,7 +273,7 @@ public class CampaignEndpoint {
     }
 
     /**
-     * Checks if the given http session id has a registered lock
+     * Checks if the given http session id has a registered lock.
      *
      * @param sessionId
      * @return true if given sesisonId has a registered lock; false otherwise

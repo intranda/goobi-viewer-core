@@ -51,9 +51,9 @@ public class MessageEntry implements Comparable<MessageEntry> {
      * @param keyPrefix Message key prefix (optional)
      * @param keySuffix Message key suffix (or entire key if no prefix)
      * @param allLocales List of locales
-     * @throws IllegalArgumentException if keySuffix or allLocales is null
      * @return new <code>MessageEntry</code>
      * @should create MessageEntry correctly
+     * @throws IllegalArgumentException if keySuffix or allLocales is null
      */
     public static MessageEntry create(final String keyPrefix, String keySuffix, List<Locale> allLocales) throws IllegalArgumentException {
         if (keySuffix == null) {

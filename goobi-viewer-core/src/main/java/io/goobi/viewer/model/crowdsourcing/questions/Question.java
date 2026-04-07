@@ -127,7 +127,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * constructor setting the owning campaign
+     * Constructor setting the owning campaign.
      *
      * @param owner a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      */
@@ -138,7 +138,7 @@ public class Question implements Serializable {
 
     /**
      *
-     * constructor setting the owning campaign as well ass the type of annotation to be generated
+     * Constructor setting the owning campaign as well as the type of annotation to be generated.
      *
      * @param questionType a {@link io.goobi.viewer.model.crowdsourcing.questions.QuestionType} object.
      * @param targetSelector a {@link io.goobi.viewer.model.crowdsourcing.questions.TargetSelector} object.
@@ -167,7 +167,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * Create a clone of the given question with the given campaign as owner
+     * Creates a clone of the given question with the given campaign as owner.
      *
      * @param orig
      * @param campaign
@@ -178,7 +178,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * Call when metadata list changes
+     * Call when metadata list changes.
      */
     public void serializeMetadataFields() {
         if (QuestionType.METADATA.equals(getQuestionType())) {
@@ -188,9 +188,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * getAvailableQuestionTypes.
-     * </p>
      *
      * @return available values of the QuestionType enum
      */
@@ -200,9 +198,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * getAvailableTargetSelectors.
-     * </p>
      *
      * @return available values of the TargetSelector enum
      */
@@ -212,9 +208,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -224,9 +218,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -235,9 +227,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
      * @return the owner
      */
@@ -246,9 +236,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
      * @param owner the owner to set
      */
@@ -264,9 +252,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>questionType</code>.
-     * </p>
      *
      * @return the questionType
      */
@@ -275,9 +261,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>questionType</code>.
-     * </p>
      *
      * @param questionType the questionType to set
      */
@@ -286,9 +270,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>targetSelector</code>.
-     * </p>
      *
      * @return the targetSelector
      */
@@ -297,9 +279,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>targetSelector</code>.
-     * </p>
      *
      * @param targetSelector the targetSelector to set
      */
@@ -308,9 +288,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>targetFrequency</code>.
-     * </p>
      *
      * @return the targetFrequency
      */
@@ -379,9 +357,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>targetFrequency</code>.
-     * </p>
      *
      * @param targetFrequency the targetFrequency to set
      */
@@ -390,7 +366,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * get the {@link #id} of a question from an URI identifier
+     * Get the {@link #id} of a question from an URI identifier.
      *
      * @param idAsURI a {@link java.net.URI} object.
      * @return a {@link java.lang.Long} object.
@@ -407,7 +383,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign#id} of the owning campaign from an URI identifier of a question
+     * Get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign#id} of the owning campaign from an URI identifier of a question.
      *
      * @param idAsURI a {@link java.net.URI} object.
      * @return a {@link java.lang.Long} object.
@@ -424,9 +400,7 @@ public class Question implements Serializable {
     }
 
     /**
-     * <p>
      * getIdAsURI.
-     * </p>
      *
      * @return The URI identifier for this question from the question and campaign id
      */

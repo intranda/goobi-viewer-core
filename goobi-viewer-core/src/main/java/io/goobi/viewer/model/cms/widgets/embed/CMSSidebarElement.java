@@ -51,10 +51,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 /**
- * <p>
  * CMSSidebarElement class.
- * </p>
- * Wrapper to link sidebar widgets to cms-pages. Has a subclass for each type of sidebar widget
+ *
+ * <p>Wrapper to link sidebar widgets to cms-pages. Has a subclass for each type of sidebar widget
  */
 @Entity
 @Table(name = "cms_page_sidebar_elements")
@@ -101,14 +100,14 @@ public class CMSSidebarElement implements Serializable {
     private WidgetContentType contentType;
 
     /**
-     * Empty constructor for the DAO
+     * Empty constructor for the DAO.
      */
     public CMSSidebarElement() {
 
     }
 
     /**
-     * Default constructor for a certain type of widget
+     * Default constructor for a certain type of widget.
      * 
      * @param type
      */
@@ -118,7 +117,7 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * Default constructor for a certain type of widget
+     * Default constructor for a certain type of widget.
      * 
      * @param type
      * @param owner
@@ -129,7 +128,7 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * Default constructor for a certain type of widget
+     * Default constructor for a certain type of widget.
      * 
      * @param type
      * @param owner
@@ -140,7 +139,7 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * Default constructor for a certain type of widget and owning CMSPage
+     * Default constructor for a certain type of widget and owning CMSPage.
      * 
      * @param orig
      * @param owner
@@ -153,7 +152,7 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * Default constructor for a certain type of widget and owning CMSPageTemplate
+     * Default constructor for a certain type of widget and owning CMSPageTemplate.
      * 
      * @param orig
      * @param owner
@@ -206,7 +205,7 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * the database id
+     * The database id.
      * 
      * @return the id
      */
@@ -222,7 +221,7 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * the {@link CMSPage} containing the element
+     * The {@link CMSPage} containing the element.
      * 
      * @return the ownerPage
      */
@@ -262,7 +261,7 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * the {@link WidgetGenerationType} of the underlying widget
+     * The {@link WidgetGenerationType} of the underlying widget.
      * 
      * @return the generationType
      */
@@ -278,7 +277,7 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * the {@link WidgetContentType} of the underlying widget
+     * The {@link WidgetContentType} of the underlying widget.
      * 
      * @return the contentType
      */
@@ -294,7 +293,7 @@ public class CMSSidebarElement implements Serializable {
     }
 
     /**
-     * The title displayed for this element when editing the owning CMSPage
+     * The title displayed for this element when editing the owning CMSPage.
      * 
      * @return {@link TranslatedText}
      */

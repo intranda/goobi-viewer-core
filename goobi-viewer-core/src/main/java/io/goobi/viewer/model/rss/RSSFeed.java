@@ -75,13 +75,10 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * <p>
  * RSSFeed class.
- * </p>
  */
 public final class RSSFeed {
     /**
-     *
      */
     private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
 
@@ -97,16 +94,13 @@ public final class RSSFeed {
     private static final String HTML_STRONG_PUBLISHED = "<strong>Published: </strong>";
 
     /**
-     * 
      */
     private RSSFeed() {
         //
     }
 
     /**
-     * <p>
      * createRss.
-     * </p>
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -123,9 +117,7 @@ public final class RSSFeed {
     }
 
     /**
-     * <p>
      * getFieldsWithTranslation.
-     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a {@link java.util.List} object.
@@ -446,9 +438,7 @@ public final class RSSFeed {
     }
 
     /**
-     * <p>
      * createRssFeed.
-     * </p>
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -465,9 +455,7 @@ public final class RSSFeed {
     }
 
     /**
-     * <p>
      * createRssFeed.
-     * </p>
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param query a {@link java.lang.String} object.
@@ -714,9 +702,7 @@ public final class RSSFeed {
     }
 
     /**
-     * <p>
      * createLink.
-     * </p>
      *
      * @param rootPath a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.

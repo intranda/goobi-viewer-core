@@ -82,9 +82,7 @@ public class SearchFacets implements Serializable {
     private String tempValue;
 
     /**
-     * <p>
      * resetAvailableFacets.
-     * </p>
      */
     public void resetAvailableFacets() {
         logger.trace("resetAvailableFacets");
@@ -93,10 +91,8 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * resetCurrentFacets.
-     * </p>
-     * 
+     *
      * @should reset facets correctly
      */
     public void resetActiveFacets() {
@@ -104,9 +100,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * resetSliderRange.
-     * </p>
      */
     public void resetSliderRange() {
         logger.trace("resetSliderRange");
@@ -292,9 +286,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * isFacetListSizeSufficient.
-     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a boolean.
@@ -326,12 +318,10 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * getActiveFacetsSizeForField.
-     * </p>
      *
-     * @return Size of <code>activeFacets</code>.
      * @param field a {@link java.lang.String} object.
+     * @return Size of <code>activeFacets</code>.
      */
     public int getActiveFacetsSizeForField(String field) {
         return getActiveFacetsForField(field).size();
@@ -487,9 +477,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * isDisplayFacetCollapseLink.
-     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a boolean.
@@ -668,9 +656,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * getHierarchicalFacets.
-     * </p>
      *
      * @param facetString a {@link java.lang.String} object.
      * @param facetFields a {@link java.util.List} object.
@@ -697,9 +683,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * splitHierarchicalFacet.
-     * </p>
      *
      * @param facet a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -719,9 +703,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentMinRangeValue.
-     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return Current min value, if facet in use; otherwise absolute min value for that field
@@ -742,9 +724,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentMaxRangeValue.
-     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return Current max value, if facet in use; otherwise absolute max value for that field
@@ -883,9 +863,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * resetActiveFacetString.
-     * </p>
      */
     public void resetActiveFacetString() {
         logger.trace("resetActivetFacetString");
@@ -896,7 +874,6 @@ public class SearchFacets implements Serializable {
      * Returns a URL encoded value returned by generateFacetPrefix() for regular facets. Returns an empty string instead a hyphen if empty.
      *
      * @return a {@link java.lang.String} object.
-     *
      */
     public String getActiveFacetStringPrefix() {
         return getActiveFacetStringPrefix(null, true);
@@ -961,9 +938,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * removeFacetAction.
-     * </p>
      *
      * @param facetQuery a {@link java.lang.String} object.
      * @should remove facet correctly
@@ -1019,9 +994,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * isFacetCollapsed.
-     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a boolean.
@@ -1066,9 +1039,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * Returns configured facet fields of regular and hierarchical type only.
-     * </p>
      *
      * @return a {@link java.util.Map} object.
      * @should return all facet items in correct order
@@ -1119,9 +1090,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * getConfiguredSubelementFacetFields.
-     * </p>
      *
      * @return Configured subelement fields names only
      */
@@ -1138,9 +1107,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>availableFacets</code>.
-     * </p>
      *
      * @return the availableFacets
      */
@@ -1149,9 +1116,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>activeFacets</code>.
-     * </p>
      *
      * @return the activeFacets
      */
@@ -1160,9 +1125,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * Get a shallow copy of <code>activeFacets</code>.
-     * </p>
      *
      * @return a new ArrayList containing all activeFacets
      */
@@ -1175,9 +1138,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>tempValue</code>.
-     * </p>
      *
      * @return the tempValue
      */
@@ -1186,9 +1147,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>tempValue</code>.
-     * </p>
      *
      * @param tempValue the tempValue to set
      */
@@ -1211,9 +1170,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * getFacetValue.
-     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -1223,9 +1180,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * getFacetDescription.
-     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -1239,9 +1194,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * getFirstHierarchicalFacetValue.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1250,9 +1203,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
      * getFirstHierarchicalFacetDescription.
-     * </p>
      *
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.

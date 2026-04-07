@@ -44,7 +44,6 @@ import jakarta.faces.context.FacesContext;
  * Wraps a {@link CMSContent} within a {@link CMSPage}
  * 
  * @author florian
- *
  */
 public class CMSContentItem {
 
@@ -157,7 +156,7 @@ public class CMSContentItem {
     }
 
     /**
-     * Two CMSContentItems are equal if their {@link #itemId}s are equal
+     * Two CMSContentItems are equal if their {@link #itemId}s are equal.
      */
     @Override
     public boolean equals(Object obj) {

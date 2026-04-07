@@ -32,9 +32,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * <p>
  * BrowsingMenuFieldConfig class.
- * </p>
  */
 public class BrowsingMenuFieldConfig implements Serializable {
 
@@ -92,9 +90,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>field</code>.
-     * </p>
      *
      * @return the field
      */
@@ -115,9 +111,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortField</code>.
-     * </p>
      *
      * @return the sortField
      */
@@ -126,9 +120,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>filterQueries</code>.
-     * </p>
      *
      * @return the filterQueries
      */

@@ -22,16 +22,14 @@
 package io.goobi.viewer.exceptions;
 
 /**
- * Exception to use when failing to retrieve CMS content
+ * Exception to use when failing to retrieve CMS content.
  *
  * @author Florian Alpers
  */
 public class CmsElementNotFoundException extends PresentationException {
 
     /**
-     * <p>
-     * Constructor for CmsElementNotFoundException.
-     * </p>
+     * Creates a new CmsElementNotFoundException instance.
      *
      * @param string a {@link java.lang.String} object.
      * @param e a {@link java.lang.Throwable} object.
@@ -41,9 +39,7 @@ public class CmsElementNotFoundException extends PresentationException {
     }
 
     /**
-     * <p>
-     * Constructor for CmsElementNotFoundException.
-     * </p>
+     * Creates a new CmsElementNotFoundException instance.
      *
      * @param string a {@link java.lang.String} object.
      */

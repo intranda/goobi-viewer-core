@@ -45,7 +45,6 @@ import io.goobi.viewer.solr.SolrTools;
  * the same 'MD_REFID'. They each represent a translation for a different language for the same data. The language is taken from the value of 'LABEL'.
  * 
  * @author florian
- *
  */
 public final class ComplexMetadata {
 

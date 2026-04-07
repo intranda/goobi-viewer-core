@@ -25,9 +25,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * <p>
  * AlphabetIterator class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -36,18 +34,14 @@ public class AlphabetIterator implements Iterator<String> {
     private char currentValue;
 
     /**
-     * <p>
-     * Constructor for AlphabetIterator.
-     * </p>
+     * Creates a new AlphabetIterator instance.
      */
     public AlphabetIterator() {
         currentValue = decrement('a');
     }
 
     /**
-     * <p>
-     * Constructor for AlphabetIterator.
-     * </p>
+     * Creates a new AlphabetIterator instance.
      *
      * @param firstLetter a char.
      */

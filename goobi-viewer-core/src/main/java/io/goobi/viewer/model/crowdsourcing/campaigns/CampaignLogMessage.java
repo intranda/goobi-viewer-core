@@ -35,7 +35,6 @@ import io.goobi.viewer.model.log.LogMessage;
 
 /**
  * @author florian
- *
  */
 @Entity
 @Table(name = "cs_campaign_log")

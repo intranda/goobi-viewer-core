@@ -32,10 +32,9 @@ import jakarta.persistence.Converter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Store simple strings in single database field
+ * Store simple strings in single database field.
  *
  * @author florian
- *
  */
 @Converter
 public class StringListConverter implements AttributeConverter<List<String>, String> {

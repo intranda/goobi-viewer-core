@@ -41,7 +41,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     private final String matchRegex;
 
     /**
-     * internal constructor.
+     * Internal constructor.
      * 
      * @param action whether to pass or block matching entities
      * @param matchRegex a regex which must match the value parameter for the filter to match
@@ -52,7 +52,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * get a filter which passes all matches.
+     * Get a filter which passes all matches.
      * 
      * @param matchRegex a regex which must match the value parameter for the filter to match
      * @return a new {@link PassedValueFilter}
@@ -62,7 +62,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * get a filter which blocks all matches.
+     * Get a filter which blocks all matches.
      * 
      * @param matchRegex a regex which must match the value parameter for the filter to match
      * @return a new {@link PassedValueFilter}
@@ -72,7 +72,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Create a new filter from a configuration block.
+     * Creates a new filter from a configuration block.
      * 
      * @param config an xml configuration
      * @return a new {@link PassedValueFilter}
@@ -118,7 +118,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Test the match condition on a variable replacer.
+     * Tests the match condition on a variable replacer.
      * 
      * @param value the value to test. May contain {@link VariableReplacer} expressions
      * @param vr a variable replacer containing values to test
@@ -139,7 +139,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Get get {@link #matchRegex}
+     * Gets get {@link #matchRegex}
      * 
      * @return the matchRegex
      */

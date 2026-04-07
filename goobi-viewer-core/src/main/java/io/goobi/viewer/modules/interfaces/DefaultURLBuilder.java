@@ -41,9 +41,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
- * <p>
  * DefaultURLBuilder class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -172,9 +170,7 @@ public class DefaultURLBuilder implements IURLBuilder {
     }
 
     /**
-     * <p>
      * getPageType.
-     * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.search.BrowseElement} object.
      * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
@@ -191,9 +187,7 @@ public class DefaultURLBuilder implements IURLBuilder {
     }
 
     /**
-     * <p>
      * buildSearchUrl.
-     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param fieldValue a {@link java.lang.String} object.

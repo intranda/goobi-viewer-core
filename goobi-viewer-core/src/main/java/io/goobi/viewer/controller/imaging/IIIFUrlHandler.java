@@ -50,15 +50,12 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 
 /**
- * <p>
  * IIIFUrlHandler class.
- * </p>
  *
  * @author Florian Alpers
  */
 public class IIIFUrlHandler {
     /**
-     *
      */
     private static final Logger logger = LogManager.getLogger(IIIFUrlHandler.class);
 
@@ -99,7 +96,7 @@ public class IIIFUrlHandler {
     }
 
     /**
-     * Returns a link to the actual image of the given page, delivered via IIIF api using the given parameters
+     * Returns a link to the actual image of the given page, delivered via IIIF api using the given parameters.
      *
      * @param apiUrl
      * @param inFileUrl a {@link java.lang.String} object.
@@ -211,7 +208,7 @@ public class IIIFUrlHandler {
     }
 
     /**
-     * Appends image request parameter paths to the given baseUrl
+     * Appends image request parameter paths to the given baseUrl.
      *
      * @param baseUrl a {@link java.lang.String} object.
      * @param region a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest} object.
@@ -234,7 +231,7 @@ public class IIIFUrlHandler {
     }
 
     /**
-     * Replaces the image request parameters in an IIIF URL with the given ones
+     * Replaces the image request parameters in an IIIF URL with the given ones.
      *
      * @param url a {@link java.lang.String} object.
      * @should replace dimensions correctly

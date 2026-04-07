@@ -22,7 +22,6 @@
 package io.goobi.viewer.model.viewer;
 
 /**
- *
  */
 public class PhysicalElementBuilder {
 

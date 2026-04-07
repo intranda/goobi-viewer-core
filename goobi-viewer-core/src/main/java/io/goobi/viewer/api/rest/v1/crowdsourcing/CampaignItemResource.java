@@ -85,7 +85,7 @@ import jakarta.ws.rs.core.MediaType;
  * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the
  * campaign status.
  *
- * The following api points are defined:
+ * <p>The following api points are defined:
  * <ul>
  * <li>/crowdsourcing/campaigns/{campaignId}/{pi}/ <br/>
  * GET a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} for the given campaignId and pi, or PUT the status for that
@@ -111,10 +111,8 @@ public class CampaignItemResource {
     private HttpServletRequest servletRequest;
 
     /**
-     * <p>
-     * Constructor for CampaignItemResource.
-     * </p>
-     * 
+     * Creates a new CampaignItemResource instance.
+     *
      * @param servletRequest
      * @param campaignId
      */
@@ -136,8 +134,8 @@ public class CampaignItemResource {
     }
 
     /**
-     * Get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} for a campaign and work, containing the URL of the targeted resource
-     * (IIIF manifest) and all information to create a GUI for the campaign's questions.
+     * Gets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} for a campaign and work, containing the URL of the targeted
+     * resource (IIIF manifest) and all information to create a GUI for the campaign's questions.
      *
      * @param persistentIdentifier a {@link java.lang.String} object.
      * @param servletRequest
@@ -346,7 +344,7 @@ public class CampaignItemResource {
     }
 
     /**
-     * Get all annotations for the given campaign and work, sorted by target.
+     * Gets all annotations for the given campaign and work, sorted by target.
      *
      * @param pi a {@link java.lang.String} object.
      * @param request
@@ -468,7 +466,6 @@ public class CampaignItemResource {
      * Used to create or read a list of WebAnnotations sorted by their target (a iiif manifest or canvas).
      *
      * @author florian
-     *
      */
     public static class AnnotationPage {
         private String id;

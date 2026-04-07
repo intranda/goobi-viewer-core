@@ -151,9 +151,7 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     }
 
     /**
-     * <p>
      * getTileGridUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.

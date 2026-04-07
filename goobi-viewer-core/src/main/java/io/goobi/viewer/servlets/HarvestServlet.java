@@ -66,9 +66,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
     private static final String ERROR_DB = "Database error";
 
     /**
-     * <p>
-     * Constructor for HarvestServlet.
-     * </p>
+     * Creates a new HarvestServlet instance.
      *
      * @see HttpServlet#HttpServlet()
      */
@@ -492,9 +490,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
     }
 
     /**
-     * <p>
      * convertToJSON.
-     * </p>
      *
      * @param totalCount a long.
      * @param objects a {@link java.util.List} object.

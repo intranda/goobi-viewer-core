@@ -42,7 +42,6 @@ import io.goobi.viewer.model.viewer.ViewManager;
 
 /**
  * @author florian
- *
  */
 public class TocResourceBuilder {
 

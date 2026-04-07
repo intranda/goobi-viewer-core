@@ -66,7 +66,6 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 
 /**
  * @author florian
- *
  */
 public class AnnotationConverter {
 
@@ -97,7 +96,7 @@ public class AnnotationConverter {
     }
 
     /**
-     * Get the annotation target as an WebAnnotation {@link de.intranda.api.annotation.IResource} java object
+     * Gets the annotation target as an WebAnnotation {@link de.intranda.api.annotation.IResource} java object.
      * 
      * @param anno
      * @return a {@link de.intranda.api.annotation.IResource} object.
@@ -148,7 +147,7 @@ public class AnnotationConverter {
     }
 
     /**
-     * Get the annotation target as an OpenAnnotation {@link de.intranda.api.annotation.IResource} java object
+     * Gets the annotation target as an OpenAnnotation {@link de.intranda.api.annotation.IResource} java object.
      *
      * @param anno
      * @return a {@link de.intranda.api.annotation.IResource} object.
@@ -169,7 +168,7 @@ public class AnnotationConverter {
     }
 
     /**
-     * Get the
+     * Gets the body of the given annotation as a resource.
      *
      * @param anno
      * @return a {@link de.intranda.api.annotation.IResource} object.
@@ -189,10 +188,8 @@ public class AnnotationConverter {
     }
 
     /**
-     * <p>
      * getBodyAsOAResource.
-     * </p>
-     * 
+     *
      * @param anno
      * @return a {@link de.intranda.api.annotation.IResource} object.
      * @throws java.io.IOException if any.
@@ -224,10 +221,8 @@ public class AnnotationConverter {
     }
 
     /**
-     * <p>
      * getBodyAsOAResource.
-     * </p>
-     * 
+     *
      * @param anno
      * @return a {@link de.intranda.api.annotation.IResource} object.
      * @throws java.io.IOException if any.
@@ -247,7 +242,7 @@ public class AnnotationConverter {
     }
 
     /**
-     * Get the annotation as an {@link de.intranda.api.annotation.wa.WebAnnotation} java object
+     * Gets the annotation as an {@link de.intranda.api.annotation.wa.WebAnnotation} java object.
      *
      * @param anno
      * @return a {@link de.intranda.api.annotation.wa.WebAnnotation} object.
@@ -286,7 +281,7 @@ public class AnnotationConverter {
     }
 
     /**
-     * Get the annotation as an {@link de.intranda.api.annotation.oa.OpenAnnotation} java object
+     * Gets the annotation as an {@link de.intranda.api.annotation.oa.OpenAnnotation} java object.
      *
      * @param anno
      * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.

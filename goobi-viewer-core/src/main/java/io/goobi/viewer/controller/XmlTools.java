@@ -86,9 +86,7 @@ public final class XmlTools {
     }
 
     /**
-     * <p>
      * readXmlFile.
-     * </p>
      *
      * @param filePath a {@link java.lang.String} object.
      * @should build document from string correctly
@@ -121,9 +119,7 @@ public final class XmlTools {
     }
 
     /**
-     * <p>
      * readXmlFile.
-     * </p>
      *
      * @param path a {@link java.nio.file.Path} object.
      * @should build document from path correctly
@@ -139,9 +135,7 @@ public final class XmlTools {
     }
 
     /**
-     * <p>
      * writeXmlFile.
-     * </p>
      *
      * @param doc a {@link org.jdom2.Document} object.
      * @param filePath a {@link java.lang.String} object.
@@ -178,9 +172,7 @@ public final class XmlTools {
     }
 
     /**
-     * <p>
      * getStringFromElement.
-     * </p>
      *
      * @param element a {@link java.lang.Object} object.
      * @param encoding a {@link java.lang.String} object.
@@ -303,9 +295,7 @@ public final class XmlTools {
     }
 
     /**
-     * <p>
      * determineFileFormat.
-     * </p>
      *
      * @param xml a {@link java.lang.String} object.
      * @param encoding a {@link java.lang.String} object.
@@ -382,7 +372,7 @@ public final class XmlTools {
     }
 
     /**
-     * Create an XMLOutputter with default encoding and system linebreaks
+     * Creates an XMLOutputter with default encoding and system linebreaks.
      * 
      * @return a new XMLOutputter instance with standard format settings
      */

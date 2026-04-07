@@ -62,7 +62,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
- *
  */
 @Path(RECORDS_CHANGES)
 @CORSBinding
@@ -82,7 +81,8 @@ public class ChangeDiscoveryResource {
     /**
      * Provides a view of the entire list of all activities by linking to the first and last page of the collection. The pages contain the actual
      * activity entries and are provided by {@link #getPage(int, String startDate, String filterQuery) /iiif/discovery/activities/&lt;pageNo&gt;/}.
-     * This resource also contains a count of the total number of activities
+     *
+     * <p>This resource also contains a count of the total number of activities
      * 
      * @param startDate If not null, must have the form 'yyyy-MM-dd'. Then only activities at or after this date will be listed
      * @param filterQuery If not null or empty, must be a valid SOLR query string which is used to filter the results

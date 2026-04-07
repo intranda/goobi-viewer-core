@@ -40,18 +40,14 @@ import io.goobi.viewer.model.security.authentication.model.XServiceAuthenticatio
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>
  * XServiceProvider class.
- * </p>
  */
 public class XServiceProvider extends VuFindProvider {
 
     private static final Logger logger = LogManager.getLogger(XServiceProvider.class);
 
     /**
-     * <p>
-     * Constructor for XServiceProvider.
-     * </p>
+     * Creates a new XServiceProvider instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.

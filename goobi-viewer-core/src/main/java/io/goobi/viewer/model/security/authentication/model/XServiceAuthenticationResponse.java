@@ -85,9 +85,7 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
-     * <p>
      * isValid.
-     * </p>
      *
      * @return true if all relevant data indicates the account is valid; false otherwise
      */
@@ -96,9 +94,7 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>errorMsg</code>.
-     * </p>
      *
      * @return the errorMsg
      */
@@ -107,9 +103,7 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>errorMsg</code>.
-     * </p>
      *
      * @param errorMsg the errorMsg to set
      */
@@ -118,9 +112,7 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -129,9 +121,7 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
-     * <p>
      * isExpired.
-     * </p>
      *
      * @return the expired
      */
@@ -140,9 +130,7 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Getter for the field <code>request</code>.
-     * </p>
      *
      * @return the request
      */
@@ -151,9 +139,7 @@ public class XServiceAuthenticationResponse {
     }
 
     /**
-     * <p>
      * Setter for the field <code>request</code>.
-     * </p>
      *
      * @param request the request to set
      */

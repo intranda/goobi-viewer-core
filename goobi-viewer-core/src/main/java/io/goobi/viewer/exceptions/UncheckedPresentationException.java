@@ -22,27 +22,21 @@
 package io.goobi.viewer.exceptions;
 
 /**
- * <p>
  * UncheckedPresentationException class.
- * </p>
  *
  * @author florian
  */
 public class UncheckedPresentationException extends RuntimeException {
 
     /**
-     * <p>
-     * Constructor for UncheckedPresentationException.
-     * </p>
+     * Creates a new UncheckedPresentationException instance.
      */
     public UncheckedPresentationException() {
         super();
     }
 
     /**
-     * <p>
-     * Constructor for UncheckedPresentationException.
-     * </p>
+     * Creates a new UncheckedPresentationException instance.
      *
      * @param arg0 a {@link java.lang.String} object.
      * @param arg1 a {@link java.lang.Throwable} object.
@@ -54,9 +48,7 @@ public class UncheckedPresentationException extends RuntimeException {
     }
 
     /**
-     * <p>
-     * Constructor for UncheckedPresentationException.
-     * </p>
+     * Creates a new UncheckedPresentationException instance.
      *
      * @param arg0 a {@link java.lang.String} object.
      * @param arg1 a {@link java.lang.Throwable} object.
@@ -66,9 +58,7 @@ public class UncheckedPresentationException extends RuntimeException {
     }
 
     /**
-     * <p>
-     * Constructor for UncheckedPresentationException.
-     * </p>
+     * Creates a new UncheckedPresentationException instance.
      *
      * @param arg0 a {@link java.lang.String} object.
      */
@@ -77,9 +67,7 @@ public class UncheckedPresentationException extends RuntimeException {
     }
 
     /**
-     * <p>
-     * Constructor for UncheckedPresentationException.
-     * </p>
+     * Creates a new UncheckedPresentationException instance.
      *
      * @param arg0 a {@link java.lang.Throwable} object.
      */

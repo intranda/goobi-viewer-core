@@ -122,9 +122,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 /**
- * <p>
  * JPADAO class.
- * </p>
  */
 public class JPADAO implements IDAO {
 
@@ -157,9 +155,7 @@ public class JPADAO implements IDAO {
     private Object viewerMessageLock = new Object();
 
     /**
-     * <p>
-     * Constructor for JPADAO.
-     * </p>
+     * Creates a new JPADAO instance.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -168,9 +164,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>
-     * Constructor for JPADAO.
-     * </p>
+     * Creates a new JPADAO instance.
      *
      * @param inPersistenceUnitName a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -214,7 +208,6 @@ public class JPADAO implements IDAO {
 
     /**
      * @throws DAOException
-     * 
      */
     private boolean init() throws DAOException {
         try {
@@ -230,9 +223,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>
      * Getter for the field <code>factory</code>.
-     * </p>
      *
      * @return a {@link jakarta.persistence.EntityManagerFactory} object.
      */
@@ -242,10 +233,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>
      * Get a new {@link EntityManager} from the {@link JPADAO#factory}
-     *
-     * </p>
      *
      * @return {@link jakarta.persistence.EntityManager} for the current thread
      */
@@ -256,7 +244,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * Operation to call after a query or other kind of transaction is complete
+     * Operation to call after a query or other kind of transaction is complete.
      *
      * @param em
      * @throws DAOException
@@ -731,7 +719,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * (non-Javadoc)
+     * <p>(non-Javadoc)
      *
      * @see io.goobi.viewer.dao.IDAO#updateUserGroup(io.goobi.viewer.model.security.user.UserGroup)
      * @should set id on new license
@@ -850,7 +838,6 @@ public class JPADAO implements IDAO {
      * @should return correct row for name
      * @should return correct row for name and user
      * @should return null if no result found
-     * 
      */
     @Override
     public BookmarkList getBookmarkList(String name, User user) throws DAOException {
@@ -2459,7 +2446,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Gets all page numbers (order) within a work with the given pi which contain comments
+     * <p>Gets all page numbers (order) within a work with the given pi which contain comments
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -3957,7 +3944,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * currently noop since no persistence entity manager is kept
+     * Currently noop since no persistence entity manager is kept.
      */
     public void clear() {
         //noop
@@ -3973,9 +3960,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>
      * Operation to call before getting an entity manager. currently noop
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -4569,9 +4554,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * <p>
      * createCMSPageFilter.
-     * </p>
      *
      * @param params a {@link java.util.Map} object.
      * @param pageParameter a {@link java.lang.String} object.
@@ -4726,7 +4709,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Persist a new {@link CMSCategory} object
+     * <p>Persist a new {@link CMSCategory} object
      */
     @Override
     public boolean addCategory(CMSCategory category) throws DAOException {
@@ -4748,7 +4731,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Update an existing {@link CMSCategory} object in the persistence context
+     * <p>Update an existing {@link CMSCategory} object in the persistence context
      */
     @Override
     public boolean updateCategory(CMSCategory category) throws DAOException {
@@ -4770,7 +4753,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Delete a {@link CMSCategory} object from the persistence context
+     * <p>Delete a {@link CMSCategory} object from the persistence context
      */
     @Override
     public boolean deleteCategory(CMSCategory category) throws DAOException {
@@ -4793,7 +4776,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Search the persistence context for a {@link CMSCategory} with the given name.
+     * <p>Search the persistence context for a {@link CMSCategory} with the given name.
      */
     @Override
     public CMSCategory getCategoryByName(String name) throws DAOException {
@@ -4812,7 +4795,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Search the persistence context for a {@link CMSCategory} with the given unique id.
+     * <p>Search the persistence context for a {@link CMSCategory} with the given unique id.
      */
     @Override
     public CMSCategory getCategory(Long id) throws DAOException {
@@ -4830,7 +4813,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Check if the database contains a table of the given name. Used by backward-compatibility routines
+     * <p>Check if the database contains a table of the given name. Used by backward-compatibility routines
      *
      * @throws SQLException
      */
@@ -4858,7 +4841,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Check if the database contains a column in a table with the given names. Used by backward-compatibility routines
+     * <p>Check if the database contains a column in a table with the given names. Used by backward-compatibility routines
      */
     @Override
     public boolean columnsExists(String tableName, String columnName) throws SQLException, DAOException {
@@ -4935,7 +4918,7 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      *
-     * Get all annotations associated with the work of the given pi
+     * <p>Get all annotations associated with the work of the given pi
      *
      * @should return correct rows
      */

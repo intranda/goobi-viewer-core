@@ -154,9 +154,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * Default constructor.
-     * </p>
      */
     public Metadata() {
         this.ownerStructElementIddoc = "";
@@ -166,9 +164,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * Constructor with a single metadata value.
-     * </p>
      *
      * @param ownerIddoc
      * @param label a {@link java.lang.String} object.
@@ -195,9 +191,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * Constructor with a {@link MetadataParameter} list.
-     * </p>
      *
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
@@ -208,9 +202,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * Constructor with a {@link MetadataParameter} list.
-     * </p>
      *
      * @param label a {@link java.lang.String} object.
      * @param key a {@link java.lang.String} object.
@@ -225,9 +217,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for Metadata.
-     * </p>
+     * Creates a new Metadata instance.
      *
      * @param ownerIddoc
      * @param label a {@link java.lang.String} object.
@@ -293,9 +283,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * isHasLabel.
-     * </p>
      *
      * @return a boolean.
      */
@@ -304,9 +292,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
      * @return the label
      */
@@ -315,9 +301,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>masterValue</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @should return placeholders for every parameter for group metadata if masterValue empty
@@ -341,9 +325,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
      * @return the type
      */
@@ -389,9 +371,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>values</code>.
-     * </p>
      *
      * @return the values
      */
@@ -434,9 +414,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * setParamValue.
-     * </p>
      *
      * @param valueIndex a int.
      * @param paramIndex a int.
@@ -755,9 +733,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>params</code>.
-     * </p>
      *
      * @return the params
      */
@@ -774,9 +750,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * hasParam.
-     * </p>
      *
      * @param paramName a {@link java.lang.String} object.
      * @return a boolean.
@@ -1079,7 +1053,7 @@ public class Metadata implements MetadataListElement, Serializable {
                 return false;
             }
             /**
-             * Load data of related documents if any params are of type "related". Otherwise generate an empty RelationshipMetadataContainer
+             * Loads data of related documents if any params are of type "related". Otherwise generate an empty RelationshipMetadataContainer
              */
             RelationshipMetadataContainer relatedDocuments = new RelationshipMetadataContainer(Collections.emptyList(),
                     Collections.emptyMap());
@@ -1239,7 +1213,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * Return all values from the given map for either the given key, or - preferably - the given key suffixed by "_LANG_{locale.language}", i.e. the
+     * Returns all values from the given map for either the given key, or - preferably - the given key suffixed by "_LANG_{locale.language}", i.e. the
      * language specific values for that key ( = metadata field) The return value may be null if neither the key nor the suffix key is in the map
      *
      * @param metadataMap
@@ -1286,9 +1260,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>number</code>.
-     * </p>
      *
      * @return a int.
      */
@@ -1306,9 +1278,7 @@ public class Metadata implements MetadataListElement, Serializable {
     }
 
     /**
-     * <p>
      * isGroup.
-     * </p>
      *
      * @return the group
      */
@@ -1513,7 +1483,6 @@ public class Metadata implements MetadataListElement, Serializable {
     /**
      * @param indentation the indentation to set
      * @return this
-     *
      */
     public Metadata setIndentation(int indentation) {
         this.indentation = indentation;

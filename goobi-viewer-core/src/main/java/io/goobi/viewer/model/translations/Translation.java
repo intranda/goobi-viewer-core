@@ -36,9 +36,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 
 /**
- * <p>
  * Abstract Translation class.
- * </p>
  */
 @MappedSuperclass
 public class Translation {
@@ -63,17 +61,13 @@ public class Translation {
     protected String translationValue;
 
     /**
-     * <p>
-     * Constructor for Translation.
-     * </p>
+     * Creates a new Translation instance.
      */
     public Translation() {
     }
 
     /**
-     * <p>
-     * Constructor for Translation.
-     * </p>
+     * Creates a new Translation instance.
      *
      * @param language a {@link java.lang.String} object.
      * @param translationValue a {@link java.lang.String} object.
@@ -84,9 +78,7 @@ public class Translation {
     }
 
     /**
-     * <p>
-     * Constructor for Translation.
-     * </p>
+     * Creates a new Translation instance.
      *
      * @param language a {@link java.lang.String} object.
      * @param tag a {@link java.lang.String} object.
@@ -99,7 +91,7 @@ public class Translation {
     }
 
     /**
-     * Clone constructor
+     * Clones constructor.
      * 
      * @param t
      */
@@ -111,9 +103,7 @@ public class Translation {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
      * @param tag a {@link java.lang.String} object.
      * @param lang a {@link java.lang.String} object.
@@ -125,9 +115,7 @@ public class Translation {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
      * @param tag a {@link java.lang.String} object.
      * @param lang a {@link java.lang.String} object.
@@ -174,9 +162,7 @@ public class Translation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -185,9 +171,7 @@ public class Translation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -196,9 +180,7 @@ public class Translation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>tag</code>.
-     * </p>
      *
      * @return the tag
      */
@@ -207,9 +189,7 @@ public class Translation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>tag</code>.
-     * </p>
      *
      * @param tag the tag to set
      */
@@ -218,9 +198,7 @@ public class Translation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>language</code>.
-     * </p>
      *
      * @return the language
      */
@@ -229,9 +207,7 @@ public class Translation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>language</code>.
-     * </p>
      *
      * @param language the language to set
      */
@@ -240,9 +216,7 @@ public class Translation {
     }
 
     /**
-     * <p>
      * Getter for the field <code>translationValue</code>.
-     * </p>
      *
      * @return the translationValue
      */
@@ -251,9 +225,7 @@ public class Translation {
     }
 
     /**
-     * <p>
      * Setter for the field <code>translationValue</code>.
-     * </p>
      *
      * @param translationValue the translationValue to set
      */
@@ -271,7 +243,7 @@ public class Translation {
     }
 
     /**
-     * Hash code is build from hashCode of language
+     * Hash code is build from hashCode of language.
      */
     @Override
     public int hashCode() {
@@ -282,7 +254,7 @@ public class Translation {
     }
 
     /**
-     * Two Translations are equal if they are of the same class and both tag and language match
+     * Two Translations are equal if they are of the same class and both tag and language match.
      */
     @Override
     public boolean equals(Object obj) {

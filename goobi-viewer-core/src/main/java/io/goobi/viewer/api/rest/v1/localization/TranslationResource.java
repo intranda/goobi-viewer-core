@@ -51,9 +51,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * <p>
  * TranslationResource class.
- * </p>
  *
  * @author florian
  */
@@ -64,9 +62,7 @@ public class TranslationResource {
     private static final Logger logger = LogManager.getLogger(TranslationResource.class);
 
     /**
-     * <p>
      * getTranslations.
-     * </p>
      *
      * @param inKeys a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.api.rest.v1.localization.TranslationResource.TranslationList} object.

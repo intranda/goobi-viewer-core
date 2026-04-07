@@ -29,7 +29,6 @@ import org.json.JSONObject;
 
 /**
  * @author florian
- *
  */
 public class Polygon implements IArea {
 

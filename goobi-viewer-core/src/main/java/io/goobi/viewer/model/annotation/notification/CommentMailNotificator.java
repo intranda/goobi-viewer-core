@@ -38,7 +38,6 @@ import jakarta.mail.MessagingException;
 
 /**
  * @author florian
- *
  */
 public class CommentMailNotificator implements ChangeNotificator {
 

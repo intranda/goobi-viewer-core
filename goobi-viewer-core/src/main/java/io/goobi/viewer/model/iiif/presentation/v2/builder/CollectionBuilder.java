@@ -62,9 +62,7 @@ import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>
  * CollectionBuilder class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -73,7 +71,7 @@ public class CollectionBuilder extends AbstractBuilder {
     private static final Logger logger = LogManager.getLogger(CollectionBuilder.class);
 
     /**
-     * Required field to create manifest stubs for works in collection
+     * Required field to create manifest stubs for works in collection.
      */
     public static final String[] CONTAINED_WORKS_QUERY_FIELDS =
             { SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.MIMETYPE, SolrConstants.PI, SolrConstants.TITLE,
@@ -84,15 +82,13 @@ public class CollectionBuilder extends AbstractBuilder {
     public static final String RSS_FEED_FORMAT = "Rss feed";
 
     /**
-     * Caching for collections
+     * Caching for collections.
      */
     private static Map<String, String> facetFieldMap = new HashMap<>();
     //    private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
 
     /**
-     * <p>
-     * Constructor for CollectionBuilder.
-     * </p>
+     * Creates a new CollectionBuilder instance.
      *
      * @param apiUrlManager
      * @throws java.net.URISyntaxException if any.
@@ -102,9 +98,7 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * generateCollection.
-     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
@@ -178,9 +172,7 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * addContainedWorks.
-     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
@@ -223,9 +215,7 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * createCollectionQuery.
-     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
@@ -243,9 +233,7 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * createCollection.
-     * </p>
      *
      * @param baseElement a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @param collectionView a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
@@ -373,9 +361,7 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * getCollectionView.
-     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param groupingField a {@link java.lang.String} object.
@@ -415,9 +401,7 @@ public class CollectionBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * getFacetField.
-     * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.

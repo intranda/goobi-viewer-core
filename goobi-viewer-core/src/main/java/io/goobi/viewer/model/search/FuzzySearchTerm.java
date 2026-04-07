@@ -31,7 +31,6 @@ import io.goobi.viewer.controller.StringTools;
  * {@link SearchHelper#addFuzzySearchToken(String, String, String)}
  *
  * @author florian
- *
  */
 public class FuzzySearchTerm {
 
@@ -52,7 +51,7 @@ public class FuzzySearchTerm {
      */
     public static final String WORD_PATTERN = "[\\p{L}=-_\\d⸗¬]+";
     /**
-     * Regex matching anything not matching {@link #WORD_PATTERN}, including an empty string
+     * Regex matching anything not matching {@link #WORD_PATTERN}, including an empty string.
      */
     public static final String NOT_WORD_PATTERN = "[^\\p{L}=-_\\d⸗¬]*";
     /**
@@ -109,7 +108,7 @@ public class FuzzySearchTerm {
     }
 
     /**
-     * Test if a given text containing a single word
+     * Tests if a given text containing a single word.
      * 
      * @param text
      * @return boolean

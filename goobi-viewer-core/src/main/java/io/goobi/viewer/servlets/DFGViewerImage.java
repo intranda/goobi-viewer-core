@@ -51,9 +51,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>
  * DFGViewerImage class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -62,14 +60,11 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
     private static final Logger logger = LogManager.getLogger(DFGViewerImage.class);
 
     /**
-     *
      */
     private static final long serialVersionUID = 683037127834153441L;
 
     /**
-     * <p>
-     * Constructor for DFGViewerImage.
-     * </p>
+     * Creates a new DFGViewerImage instance.
      */
     public DFGViewerImage() {
         super();
@@ -121,9 +116,7 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
     }
 
     /**
-     * <p>
      * parseScale.
-     * </p>
      *
      * @param widthString a {@link java.lang.String} object
      * @return a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object

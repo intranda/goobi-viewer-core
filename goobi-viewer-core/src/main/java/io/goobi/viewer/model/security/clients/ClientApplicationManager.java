@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -32,17 +32,16 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 
 /**
- * Class managing registration and log-in of {@link ClientApplication}s
+ * Class managing registration and log-in of {@link ClientApplication}s.
  * 
  * @author florian
- *
  */
 public class ClientApplicationManager {
 
     private static final Logger logger = LogManager.getLogger(ClientApplicationManager.class);
 
     /**
-     * client identifier for the core clientApplication representing all clients
+     * Client identifier for the core clientApplication representing all clients.
      */
     public static final String GENERAL_CLIENT_IDENTIFIER = "74b2b989-753f-4eea-a3f9-8fa7243f3966";
 
@@ -54,7 +53,7 @@ public class ClientApplicationManager {
     private ClientApplication allClients;
 
     /**
-     * General constructor
+     * General constructor.
      * 
      * @param dao The database storing the {@link ClientApplication}s
      * @throws DAOException
@@ -65,7 +64,7 @@ public class ClientApplicationManager {
     }
 
     /**
-     * Internal use for mocking
+     * Internal use for mocking.
      */
     public ClientApplicationManager() {
         try {
@@ -133,7 +132,7 @@ public class ClientApplicationManager {
     }
 
     /**
-     * Get the client stored in the given session by {@link #registerClientInSession(ClientApplication, HttpSession)}, if any
+     * Gets the client stored in the given session by {@link #registerClientInSession(ClientApplication, HttpSession)}, if any.
      * 
      * @param session the session possibly containing the client
      * @return An optional containing the client if one exists
@@ -149,7 +148,7 @@ public class ClientApplicationManager {
     }
 
     /**
-     * Get the client stored in the given request calling {@link #getClientFromSession(HttpSession)} on the requests session, if any
+     * Gets the client stored in the given request calling {@link #getClientFromSession(HttpSession)} on the requests session, if any.
      * 
      * @param request the request from which to get the client. If null, an empty Optional will be returned
      * @return An optional containing the client if one exists
@@ -162,7 +161,7 @@ public class ClientApplicationManager {
     }
 
     /**
-     * Get the client with the given {@link ClientApplication#getClientIdentifier()} from the database
+     * Gets the client with the given {@link ClientApplication#getClientIdentifier()} from the database.
      * 
      * @param clientIdentifier
      * @return An optional containing the client if one matches the identifier
@@ -176,7 +175,7 @@ public class ClientApplicationManager {
     }
 
     /**
-     * The the client identifier from a request header
+     * The the client identifier from a request header.
      * 
      * @param request
      * @return The identifier or null if non is in the header
@@ -186,7 +185,7 @@ public class ClientApplicationManager {
     }
 
     /**
-     * Create a new {@link ClientApplication} with the given identifier and IP of the given request and store it in the database
+     * Creates a new {@link ClientApplication} with the given identifier and IP of the given request and store it in the database.
      * 
      * @param clientIdentifier the identifier transmitted by the client
      * @param request the request made by the client
@@ -208,7 +207,7 @@ public class ClientApplicationManager {
     }
 
     /**
-     * check if the given client is the client instance representing all clients
+     * Check if the given client is the client instance representing all clients.
      * 
      * @param client
      * @return true if the client does not represent all clients
@@ -218,7 +217,7 @@ public class ClientApplicationManager {
     }
 
     /**
-     * check if the given client is the client instance representing all clients
+     * Check if the given client is the client instance representing all clients.
      * 
      * @param client
      * @return true if the client represents all clients
@@ -228,7 +227,7 @@ public class ClientApplicationManager {
     }
 
     /**
-     * Load the "all clients" ClientApplication directly from the database, so it comes with all licenses
+     * Loads the "all clients" ClientApplication directly from the database, so it comes with all licenses.
      * 
      * @return the client
      */

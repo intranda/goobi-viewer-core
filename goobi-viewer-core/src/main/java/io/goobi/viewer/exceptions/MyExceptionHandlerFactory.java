@@ -25,18 +25,14 @@ import jakarta.faces.context.ExceptionHandler;
 import jakarta.faces.context.ExceptionHandlerFactory;
 
 /**
- * <p>
  * MyExceptionHandlerFactory class.
- * </p>
  */
 public class MyExceptionHandlerFactory extends ExceptionHandlerFactory {
 
     private ExceptionHandlerFactory parent;
 
     /**
-     * <p>
-     * Constructor for MyExceptionHandlerFactory.
-     * </p>
+     * Creates a new MyExceptionHandlerFactory instance.
      *
      * @param parent a {@link jakarta.faces.context.ExceptionHandlerFactory} object.
      */

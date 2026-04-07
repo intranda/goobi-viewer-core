@@ -45,9 +45,7 @@ import io.goobi.viewer.model.security.authentication.model.VuAuthenticationRespo
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>
  * VuFindProvider class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -59,9 +57,7 @@ public class VuFindProvider extends HttpAuthenticationProvider {
     private VuAuthenticationResponse authenticationResponse;
 
     /**
-     * <p>
-     * Constructor for VuFindProvider.
-     * </p>
+     * Creates a new VuFindProvider instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.

@@ -57,10 +57,9 @@ import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
- * Contains data to create a geomap for a record containing complex metadata (metadata documents) with geo coordinates
+ * Contains data to create a geomap for a record containing complex metadata (metadata documents) with geo coordinates.
  * 
  * @author florian
- *
  */
 public class RecordGeoMap {
 
@@ -96,7 +95,7 @@ public class RecordGeoMap {
     }
 
     /**
-     * empty geomap without features
+     * Empty geomap without features.
      */
     public RecordGeoMap() {
         this.dao = null;

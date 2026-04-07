@@ -70,9 +70,7 @@ public class BibliothecaAuthenticationResponse {
     }
 
     /**
-     * <p>
      * isValid.
-     * </p>
      *
      * @return true if all relevant data indicates the account is valid; false otherwise
      */
@@ -109,9 +107,7 @@ public class BibliothecaAuthenticationResponse {
     }
 
     /**
-     * <p>
      * isExpired.
-     * </p>
      *
      * @return the expired
      */

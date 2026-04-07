@@ -38,9 +38,7 @@ import org.json.JSONObject;
 import io.goobi.viewer.controller.DateTools;
 
 /**
- * <p>
  * Version class.
- * </p>
  */
 public final class Version {
     /** Constant <code>APPLICATION_NAME</code> */

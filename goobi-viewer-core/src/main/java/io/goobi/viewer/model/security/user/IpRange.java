@@ -52,9 +52,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 /**
- * <p>
  * IpRange class.
- * </p>
  */
 @Entity
 @Table(name = "ip_ranges")
@@ -116,9 +114,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * matchIp.
-     * </p>
      *
      * @param inIp a {@link java.lang.String} object.
      * @return a boolean.
@@ -154,9 +150,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * canSatisfyAllAccessConditions.
-     * </p>
      *
      * @param requiredAccessConditions a {@link java.util.Set} object.
      * @param privilegeName a {@link java.lang.String} object.
@@ -188,9 +182,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -199,9 +191,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -216,9 +206,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
      * @param name the name to set
      */
@@ -227,9 +215,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>subnetMask</code>.
-     * </p>
      *
      * @return the subnetMask
      */
@@ -238,9 +224,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>subnetMask</code>.
-     * </p>
      *
      * @param subnetMask the subnetMask to set
      */
@@ -249,9 +233,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
      * @return the description
      */
@@ -260,9 +242,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
      * @param description the description to set
      */
@@ -276,9 +256,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     }
 
     /**
-     * <p>
      * main.
-     * </p>
      *
      * @param args an array of {@link java.lang.String} objects.
      */

@@ -73,9 +73,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * <p>
  * AccessConditionUtils class.
- * </p>
  */
 public final class AccessConditionUtils {
 
@@ -89,9 +87,7 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * <p>
      * checkAccess.
-     * </p>
      *
      * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @param action a {@link java.lang.String} object.
@@ -110,9 +106,7 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * <p>
      * checkAccess.
-     * </p>
      *
      * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @param action a {@link java.lang.String} object.
@@ -619,7 +613,7 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Checks if the record with the given identifier should allow access to the given request
+     * Checks if the record with the given identifier should allow access to the given request.
      *
      * @param identifier The PI of the work to check
      * @param request The HttpRequest which may provide a {@link jakarta.servlet.http.HttpSession} to store the access map
@@ -677,8 +671,8 @@ public final class AccessConditionUtils {
      *
      * @param imageUrn Image URN.
      * @param request Calling HttpServiceRequest.
-     * @return {@link AccessPermission}
      * @param privilegeName a {@link java.lang.String} object.
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -721,9 +715,7 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * <p>
      * checkAccessPermission.
-     * </p>
      *
      * @param requiredAccessConditions a {@link java.util.Set} object.
      * @param privilegeName a {@link java.lang.String} object.
@@ -831,9 +823,7 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * <p>
      * checkAccessPermissionByIdentifierAndFilePathWithSessionMap.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param filePath FILENAME_ALTO or FILENAME_FULLTEXT value
@@ -848,9 +838,7 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * <p>
      * checkAccessPermissionByIdentifierAndFilePathWithSessionMap.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param filePath FILENAME_ALTO or FILENAME_FULLTEXT value
@@ -991,9 +979,7 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * <p>
      * Base method for checking access permissions of various types.
-     * </p>
      *
      * @param allLicenseTypes a {@link java.util.List} object.
      * @param requiredAccessConditions Set of access condition names to satisfy (one suffices).
@@ -1354,7 +1340,7 @@ public final class AccessConditionUtils {
 
     /**
      * List all licenses ("rights") that the given user and ipAddress is entitled to, either because they are directly given to the user, a group the
-     * user belongs to or to the given ipAddress, whether or not the given user exists
+     * user belongs to or to the given ipAddress, whether or not the given user exists.
      * 
      * @param user
      * @param ipAddress

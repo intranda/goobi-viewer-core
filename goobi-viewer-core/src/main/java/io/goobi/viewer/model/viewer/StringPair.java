@@ -25,9 +25,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * <p>
  * StringPair class.
- * </p>
  */
 public class StringPair implements Comparable<StringPair>, Serializable {
 
@@ -37,9 +35,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     private String two;
 
     /**
-     * <p>
-     * Constructor for StringPair.
-     * </p>
+     * Creates a new StringPair instance.
      *
      * @param one a {@link java.lang.String} object.
      * @param two a {@link java.lang.String} object.
@@ -101,7 +97,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     /**
      * {@inheritDoc}
      *
-     * Compare by translation.
+     * <p>Compare by translation.
      */
     @Override
     public int compareTo(StringPair o) {
@@ -109,9 +105,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>one</code>.
-     * </p>
      *
      * @return the one
      */
@@ -120,9 +114,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>one</code>.
-     * </p>
      *
      * @param one the one to set
      */
@@ -131,9 +123,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>two</code>.
-     * </p>
      *
      * @return the two
      */
@@ -142,9 +132,7 @@ public class StringPair implements Comparable<StringPair>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>two</code>.
-     * </p>
      *
      * @param two the two to set
      */

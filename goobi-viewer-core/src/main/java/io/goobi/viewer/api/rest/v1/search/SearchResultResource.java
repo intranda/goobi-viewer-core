@@ -57,9 +57,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * <p>
  * SearchResultResource class.
- * </p>
  */
 @Path(ApiUrls.SEARCH)
 @ViewerRestServiceBinding

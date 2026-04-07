@@ -183,9 +183,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     private final List<Metadata> metadata = new ArrayList<>();
 
     /**
-     * <p>
-     * Constructor for PhysicalElement.
-     * </p>
+     * Creates a new PhysicalElement instance.
      *
      * @param physId Physical element ID
      * @param filePath Path to the file
@@ -221,9 +219,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * determineFileName.
-     * </p>
      *
      * @param filePath a {@link java.lang.String} object.
      * @should cut off everything but the file name for normal file paths
@@ -297,9 +293,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getUrl.
-     * </p>
      *
      * @return the url to the media content of the page, for example the
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -332,9 +326,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getSandboxedUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -347,9 +339,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getWatermarkText.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -402,9 +392,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getThumbnailUrl.
-     * </p>
      *
      * @return {@link java.lang.String}
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -417,9 +405,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getThumbnailUrl.
-     * </p>
      *
      * @param width a int.
      * @param height a int.
@@ -529,9 +515,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getId.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -566,9 +550,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getFilepath.
-     * </p>
      *
      * @return {@link java.lang.String} Path zu Image Datei.
      */
@@ -609,9 +591,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>order</code>.
-     * </p>
      *
      * @return a int.
      */
@@ -620,9 +600,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>orderLabel</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -631,9 +609,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>urn</code>.
-     * </p>
      *
      * @return the urn
      */
@@ -642,9 +618,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>purlPart</code>.
-     * </p>
      *
      * @param purlPart the purlPart to set
      */
@@ -653,9 +627,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>purlPart</code>.
-     * </p>
      *
      * @return the purlPart
      */
@@ -678,9 +650,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getFullMimeType.
-     * </p>
      *
      * @param mimeType a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
@@ -714,9 +684,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>mimeType</code>.
-     * </p>
      *
      * @return the mimeType
      */
@@ -725,9 +693,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>mimeType</code>.
-     * </p>
      *
      * @param mimeType the mimeType to set
      */
@@ -736,9 +702,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>width</code>.
-     * </p>
      *
      * @param width the width to set
      */
@@ -747,9 +711,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>height</code>.
-     * </p>
      *
      * @param height the height to set
      */
@@ -758,9 +720,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>fileIdRoot</code>.
-     * </p>
      *
      * @return the fileIdRoot
      */
@@ -769,9 +729,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>fileIdRoot</code>.
-     * </p>
      *
      * @param fileIdRoot the fileIdRoot to set
      */
@@ -845,9 +803,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * isFulltextAvailableForPage.
-     * </p>
      *
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -882,9 +838,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * isFulltextAvailable.
-     * </p>
      *
      * @return the fulltextAvailable
      */
@@ -914,9 +868,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>fulltextAvailable</code>.
-     * </p>
      *
      * @param fulltextAvailable the fulltextAvailable to set
      */
@@ -925,9 +877,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * isAltoAvailableForPage.
-     * </p>
      *
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -952,9 +902,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * isTeiAvailableForPage.
-     * </p>
      *
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -965,9 +913,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>fulltextFileName</code>.
-     * </p>
      *
      * @return the fulltextFileName
      */
@@ -976,9 +922,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>fulltextFileName</code>.
-     * </p>
      *
      * @param fulltextFileName the fulltextFileName to set
      */
@@ -987,9 +931,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>altoFileName</code>.
-     * </p>
      *
      * @return the altoFileName
      */
@@ -998,9 +940,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>altoFileName</code>.
-     * </p>
      *
      * @param altoFileName the altoFileName to set
      */
@@ -1009,9 +949,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>fullText</code>.
-     * </p>
      *
      * @return the fullText
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -1083,9 +1021,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>fullText</code>.
-     * </p>
      *
      * @param fullText the fullText to set
      */
@@ -1122,9 +1058,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getWordCoords.
-     * </p>
      *
      * @param searchTerms a {@link java.util.Set} object.
      * @return a {@link java.util.List} object.
@@ -1213,9 +1147,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>fileNames</code>.
-     * </p>
      *
      * @return the fileNames
      */
@@ -1224,9 +1156,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>fileNames</code>.
-     * </p>
      *
      * @param fileNames the fileNames to set
      */
@@ -1258,9 +1188,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getFileNameBase.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1269,9 +1197,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getFileNameExtension.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1280,9 +1206,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getFileNameForFormat.
-     * </p>
      *
      * @param format a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -1296,9 +1220,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getImageToPdfUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1369,9 +1291,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getVideoWidth.
-     * </p>
      *
      * @return a int.
      */
@@ -1384,9 +1304,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getVideoHeight.
-     * </p>
      *
      * @return a int.
      */
@@ -1417,9 +1335,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getPhysicalImageHeight.
-     * </p>
      *
      * @return a int.
      */
@@ -1428,7 +1344,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * Return the zoom factor for this image depending on its actual size.
+     * Returns the zoom factor for this image depending on its actual size.
      *
      * @return a int.
      */
@@ -1437,9 +1353,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getImageUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1448,9 +1362,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getImageUrl.
-     * </p>
      *
      * @param size a int.
      * @return a {@link java.lang.String} object.
@@ -1461,7 +1373,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * Return the bare width as read from the index (0 if none available).
+     * Returns the bare width as read from the index (0 if none available).
      *
      * @return a int.
      */
@@ -1470,9 +1382,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getPhysicalImageWidth.
-     * </p>
      *
      * @return a int.
      */
@@ -1481,9 +1391,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
      * @return the pi
      */
@@ -1492,9 +1400,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>accessConditions</code>.
-     * </p>
      *
      * @return the accessConditions
      */
@@ -1503,9 +1409,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>accessConditions</code>.
-     * </p>
      *
      * @param accessConditions the accessConditions to set
      */
@@ -1514,9 +1418,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getPageLinkLabel.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1603,7 +1505,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * checks if the user has the privilege {@link io.goobi.viewer.model.security.IPrivilegeHolder#PRIV_ZOOM_IMAGES} If the check fails and
+     * Checks if the user has the privilege {@link io.goobi.viewer.model.security.IPrivilegeHolder#PRIV_ZOOM_IMAGES} If the check fails and
      * {@link Configuration#getUnzoomedImageAccessMaxWidth()} is greater than 0, false is returned.
      *
      * @return true exactly if the user is allowed to zoom images. false otherwise
@@ -1643,9 +1545,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * isAccessPermissionPdf.
-     * </p>
      *
      * @return true if PDF download is allowed for this page; false otherwise
      */
@@ -1674,9 +1574,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * isAccessPermissionBornDigital.
-     * </p>
      *
      * @return true if access is allowed for born digital files; false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1778,9 +1676,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getFooterHeight.
-     * </p>
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -1792,9 +1688,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getFooterHeight.
-     * </p>
      *
      * @param pageType a {@link java.lang.String} object.
      * @return a int.
@@ -1805,9 +1699,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getComments.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1820,9 +1712,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * deleteCommentAction.
-     * </p>
      *
      * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1837,7 +1727,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * return true if this image has its own width/height measurements, and does not rely on default width/height.
+     * Return true if this image has its own width/height measurements, and does not rely on default width/height.
      *
      * @return a boolean.
      */
@@ -1846,9 +1736,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>altoText</code>.
-     * </p>
      *
      * @return the altoText
      */
@@ -1884,9 +1772,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>wordCoordsFormat</code>.
-     * </p>
      *
      * @return the wordCoordsFormat
      */
@@ -1895,9 +1781,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>dataRepository</code>.
-     * </p>
      *
      * @return the dataRepository
      */
@@ -1906,9 +1790,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Getter for the field <code>fileSize</code>.
-     * </p>
      *
      * @return the fileSize
      */
@@ -1917,9 +1799,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * Setter for the field <code>fileSize</code>.
-     * </p>
      *
      * @param fileSize the fileSize to set
      */
@@ -1928,9 +1808,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getFileSizeAsString.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1939,9 +1817,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * getImageType.
-     * </p>
      *
      * @return a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
      */
@@ -1968,9 +1844,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * <p>
      * isDisplayPagePdfLink.
-     * </p>
      *
      * @return true if page pdf link is allowed in configuration and no access conditions prevent PDF download; false otherwise
      */
@@ -1986,7 +1860,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
-     * List of struct elements that start on this page. For example, if a page contains multiple elements that only cover a certain area of the page
+     * Lists of struct elements that start on this page. For example, if a page contains multiple elements that only cover a certain area of the page
      * (using coordinates), this method can be used to get all shape coordinates for these elemets for visualization.
      *
      * @return List of <code>/StructElement<code>s

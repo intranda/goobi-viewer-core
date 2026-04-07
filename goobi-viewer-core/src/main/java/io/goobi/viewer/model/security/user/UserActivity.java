@@ -33,7 +33,6 @@ import io.goobi.viewer.model.search.Search;
 
 /**
  * @author florian
- *
  */
 public class UserActivity {
 
@@ -155,7 +154,7 @@ public class UserActivity {
     }
 
     /**
-     * Equals if label and type are equal
+     * Equals if label and type are equal.
      */
     @Override
     public boolean equals(Object obj) {
@@ -167,7 +166,7 @@ public class UserActivity {
     }
 
     /**
-     * Build from label and type
+     * Builds from label and type.
      */
     @Override
     public int hashCode() {

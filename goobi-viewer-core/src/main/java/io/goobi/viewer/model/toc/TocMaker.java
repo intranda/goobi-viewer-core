@@ -74,9 +74,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * <p>
  * TocMaker class.
- * </p>
  */
 public final class TocMaker {
 
@@ -135,7 +133,7 @@ public final class TocMaker {
     }
 
     /**
-     * Generate the TOC.
+     * Generates the TOC.
      *
      * @param toc The TOC object (only required to set the number of volumes for anchor TOCs.
      * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -394,7 +392,7 @@ public final class TocMaker {
     }
 
     /**
-     * Create a manually sorted map of docs, since the order can be contained in different GROUPORDER_* fields.
+     * Creates a manually sorted map of docs, since the order can be contained in different GROUPORDER_* fields.
      *
      * @param groupMemberDocs
      * @param groupIdFields
@@ -800,9 +798,7 @@ public final class TocMaker {
     }
 
     /**
-     * <p>
      * getFirstFieldValue.
-     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param footerIdField a {@link java.lang.String} object.
@@ -931,9 +927,7 @@ public final class TocMaker {
     }
 
     /**
-     * <p>
      * createMultiLanguageValue.
-     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param field Index field

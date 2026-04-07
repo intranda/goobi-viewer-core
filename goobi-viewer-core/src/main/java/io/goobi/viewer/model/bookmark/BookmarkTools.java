@@ -34,9 +34,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
- * <p>
  * BookmarkTools class.
- * </p>
  */
 public final class BookmarkTools {
 
@@ -49,9 +47,7 @@ public final class BookmarkTools {
     }
 
     /**
-     * <p>
      * getBookmarkListsSharedWithUser.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @should return shared bookmark lists

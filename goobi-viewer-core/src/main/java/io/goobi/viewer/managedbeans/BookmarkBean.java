@@ -62,9 +62,7 @@ import io.goobi.viewer.model.viewer.ViewManager;
 import jakarta.mail.MessagingException;
 
 /**
- * <p>
  * BookmarkBean class.
- * </p>
  */
 @Named
 @SessionScoped
@@ -111,9 +109,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * init.
-     * </p>
      */
     @PostConstruct
     public void init() {
@@ -250,9 +246,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * prepareItemForBookmarkList.
-     * </p>
      *
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -365,9 +359,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * getBookmarkListsSharedWithUser.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a {@link java.util.List} object.
@@ -378,7 +370,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * Returns a list of all existing bookmark lists owned by current user
+     * Returns a list of all existing bookmark lists owned by current user.
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -391,9 +383,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * getBookmarkListsForUser.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return a {@link java.util.List} object.
@@ -404,9 +394,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * selectBookmarkListAction.
-     * </p>
      *
      * @param event a {@link jakarta.faces.event.ValueChangeEvent} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -417,9 +405,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * isNewBookmarkList.
-     * </p>
      *
      * @return a boolean.
      */
@@ -431,9 +417,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * createNewBookmarkListAction.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -443,9 +427,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * userGroupSelectedAction.
-     * </p>
      *
      * @param event {@link jakarta.faces.event.ValueChangeEvent}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -455,9 +437,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * validateName.
-     * </p>
      *
      * @param context a {@link jakarta.faces.context.FacesContext} object.
      * @param toValidate a {@link jakarta.faces.component.UIComponent} object.
@@ -493,9 +473,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * isCurrentBookmarkListMine.
-     * </p>
      *
      * @return a boolean.
      */
@@ -506,9 +484,7 @@ public class BookmarkBean implements Serializable {
     /*********************************** Getter and Setter ***************************************/
 
     /**
-     * <p>
      * Getter for the field <code>currentBookmarkList</code>.
-     * </p>
      *
      * @return the currentBookmarkList
      */
@@ -517,9 +493,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * isCurrentBookmarkListShared.
-     * </p>
      *
      * @return true if currentBookmarkListSharedKey matches the shared key value of currentBookmarkList; false otherwise;
      */
@@ -529,9 +503,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentBookmarkListNames.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -550,9 +522,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentBookmarkList</code>.
-     * </p>
      *
      * @param currentBookmarkList the currentBookmarkList to set
      */
@@ -561,9 +531,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentBookmarkListId.
-     * </p>
      *
      * @return Identifier of currentBookmarkList; null if none loaded
      */
@@ -575,9 +543,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * setCurrentBookmarkListId.
-     * </p>
      *
      * @param bookmarkListId a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -606,9 +572,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * viewBookmarkListAction.
-     * </p>
      *
      * @param bookmarkList a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      * @return a {@link java.lang.String} object.
@@ -623,9 +587,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * editBookmarkListAction.
-     * </p>
      *
      * @param bookmarkList a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      * @return a {@link java.lang.String} object.
@@ -640,9 +602,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentBookmark</code>.
-     * </p>
      *
      * @return the currentBookmark
      */
@@ -651,9 +611,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentBookmark</code>.
-     * </p>
      *
      * @param currentBookmark the currentBookmark to set
      */
@@ -662,9 +620,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentUserGroup</code>.
-     * </p>
      *
      * @return the currentUserGroup
      */
@@ -673,9 +629,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentUserGroup</code>.
-     * </p>
      *
      * @param currentUserGroup the currentUserGroup to set
      */
@@ -684,9 +638,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>sessionBookmarkListEmail</code>.
-     * </p>
      *
      * @param sessionBookmarkListEmail the sessionBookmarkListEmail to set
      */
@@ -695,9 +647,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sessionBookmarkListEmail</code>.
-     * </p>
      *
      * @return the sessionBookmarkListEmail
      */
@@ -726,9 +676,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * getShareLink.
-     * </p>
      *
      * @param bookmarkList a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      * @return Absolute share URLto the given bookmark list
@@ -764,9 +712,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * getShareKey.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -779,9 +725,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * setShareKey.
-     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -801,9 +745,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * sendSessionBookmarkListAsMail.
-     * </p>
      */
     public void sendSessionBookmarkListAsMail() {
         if (StringUtils.isBlank(getSessionBookmarkListEmail())) {
@@ -840,9 +782,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * <p>
      * countSessionBookmarkListItems.
-     * </p>
      *
      * @return Size of items in the session bookmark list
      */

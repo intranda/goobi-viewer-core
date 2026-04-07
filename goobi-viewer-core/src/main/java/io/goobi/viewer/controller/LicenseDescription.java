@@ -25,7 +25,6 @@ package io.goobi.viewer.controller;
  * @author florian
  *
  *         Contains descriptive information, like a label and an icon toa license type url
- *
  */
 public class LicenseDescription {
 

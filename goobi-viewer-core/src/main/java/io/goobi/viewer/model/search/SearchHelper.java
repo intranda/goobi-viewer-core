@@ -145,7 +145,7 @@ public final class SearchHelper {
     public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
     /**
      * Constant <code>FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit
-     * distance to search. {p} and {s} are prefix and suffix to be applied to the search term
+     * distance to search. {p} and {s} are prefix and suffix to be applied to the search term.
      */
     public static final String FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST = "{p}{t}{s} {t}~{d}";
     /**
@@ -200,7 +200,6 @@ public final class SearchHelper {
             Pattern.compile("(\\w++:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]++ TO [\\wäáàâöóòôüúùûëéèêßñ]++\\]\\))"); //NOSONAR
 
     /**
-     *
      */
     private SearchHelper() {
         //
@@ -710,9 +709,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * getFirstRecordMetadataWithFieldValue.
-     * </p>
      *
      * @param luceneField a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -1002,9 +999,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * searchCalendar.
-     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @param facetFields a {@link java.util.List} object.
@@ -1025,9 +1020,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * getMinMaxYears.
-     * </p>
      *
      * @param subQuery a {@link java.lang.String} object.
      * @return int[]
@@ -1064,9 +1057,9 @@ public final class SearchHelper {
     }
 
     /**
-     * search method for auto suggestion
+     * Search method for auto suggestion.
      *
-     * <li>First search in field "DEFAULT" and analyze values tokenized, check with startsWith</li>
+     * <p><li>First search in field "DEFAULT" and analyze values tokenized, check with startsWith</li>
      * <li>Then search in field "TITLE" and check with contains</li>
      *
      * @param suggest the search string
@@ -1162,9 +1155,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * getDiscriminatorFieldFilterSuffix.
-     * </p>
      *
      * @param discriminatorField a {@link java.lang.String} object.
      * @should construct subquery correctly
@@ -1707,9 +1698,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * replaceHighlightingPlaceholders.
-     * </p>
      *
      * @param phrase a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -2739,7 +2728,7 @@ public final class SearchHelper {
     }
 
     /**
-     * Remove '*' at the start or end of the given value
+     * Removes '*' at the start or end of the given value.
      *
      * @param value
      * @return value without truncation
@@ -2764,9 +2753,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * generateQueryParams.
-     * </p>
      *
      * @param termQuery
      * @return a {@link java.util.Map} object.
@@ -2786,9 +2773,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * facetifyList.
-     * </p>
      *
      * @param sourceList a {@link java.util.List} object.
      * @return a {@link java.util.List} object. * @should facetify correctly
@@ -2810,9 +2795,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * facetifyField.
-     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -2834,9 +2817,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * sortifyField.
-     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -2847,9 +2828,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * boolifyField.
-     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -2957,9 +2936,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * defacetifyField.
-     * </p>
      *
      * @param fieldName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -3200,9 +3177,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * getExpandQueryFieldList.
-     * </p>
      *
      * @param searchType a int.
      * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
@@ -3291,9 +3266,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * prepareQuery.
-     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -3392,7 +3365,6 @@ public final class SearchHelper {
      * @param aggregationType {@link SearchAggregationType}
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     *
      */
     public static String buildFinalQuery(String rawQuery, boolean boostTopLevelDocstructs, SearchAggregationType aggregationType) {
         return buildFinalQuery(rawQuery, boostTopLevelDocstructs, null, aggregationType);
@@ -3485,9 +3457,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * exportSearchAsExcel.
-     * </p>
      *
      * @param wb {@link SXSSFWorkbook} to populate
      * @param finalQuery Complete query with suffixes.
@@ -3572,9 +3542,7 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
      * parseSortString.
-     * </p>
      *
      * @param sortString a {@link java.lang.String} object.
      * @param navigationHelper a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
@@ -3858,7 +3826,7 @@ public final class SearchHelper {
 
     /**
      * Separate leading and trailing wildcard token ('*') from the actual term and return an array of length 3 with the values [leadingWildCard,
-     * tokenWithoutWildcards, trailingWildcard] If leading/trailing wildcards are missing, the corresponding array entries are empty strings
+     * tokenWithoutWildcards, trailingWildcard] If leading/trailing wildcards are missing, the corresponding array entries are empty strings.
      *
      * @param term
      * @return array of prefix, token, suffix

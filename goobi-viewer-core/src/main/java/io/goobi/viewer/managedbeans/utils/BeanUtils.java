@@ -92,7 +92,7 @@ public final class BeanUtils {
     }
 
     /**
-     * Gets the current Request from the faces context
+     * Gets the current Request from the faces context.
      *
      * @return a {@link jakarta.servlet.http.HttpServletRequest} object.
      */
@@ -109,9 +109,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getRequest.
-     * </p>
      *
      * @param context a {@link jakarta.faces.context.FacesContext} object.
      * @return a {@link jakarta.servlet.http.HttpServletRequest} object.
@@ -125,9 +123,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getSession.
-     * </p>
      *
      * @return HttpSession from current request
      */
@@ -161,9 +157,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * hasJsfContext.
-     * </p>
      *
      * @return a boolean.
      */
@@ -172,9 +166,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getServletImagesPathFromRequest.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param theme a {@link java.lang.String} object.
@@ -194,9 +186,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getServletContext.
-     * </p>
      *
      * @return a {@link jakarta.servlet.ServletContext} object.
      */
@@ -210,9 +200,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getInitialLocale.
-     * </p>
      *
      * @return Currently selected or default {@link java.util.Locale}
      */
@@ -248,9 +236,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getLocale.
-     * </p>
      *
      * @return Current Locale in {@link io.goobi.viewer.managedbeans.NavigationHelper}; default locale if none found
      */
@@ -264,9 +250,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getDefaultLocale.
-     * </p>
      *
      * @return a {@link java.util.Locale} object.
      */
@@ -313,16 +297,14 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getBeanByName.
-     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @param clazz a {@link java.lang.Class} object.
-     * @throws ContextNotActiveException if no jsf context is available to retrieve the bean from
      * @return a {@link java.lang.Object} object.
      * @should throw IllegalArgumentException if named bean of different class
      * @should throw IllegalStateException if named bean of different class
+     * @throws ContextNotActiveException if no jsf context is available to retrieve the bean from
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Object getBeanByName(String name, Class clazz) throws ContextNotActiveException {
@@ -344,9 +326,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getNavigationHelper.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
      */
@@ -360,9 +340,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getAdminBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.AdminBean} object.
      */
@@ -371,9 +349,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getCollectionViewBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CollectionViewBean} object
      */
@@ -382,9 +358,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getActiveDocumentBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.ActiveDocumentBean} object.
      */
@@ -393,9 +367,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getPersistentStorageBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.storage.ApplicationBean} object
      */
@@ -404,9 +376,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getSearchBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.SearchBean} object.
      */
@@ -415,9 +385,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getBookmarkBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.BookmarkBean} object
      */
@@ -426,9 +394,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getCreateRecordBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CreateRecordBean} object
      */
@@ -437,9 +403,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getCMSCollectionsBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CmsCollectionsBean} object.
      */
@@ -448,9 +412,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getMetadataBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.MetadataBean} object.
      */
@@ -459,9 +421,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getCmsBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CmsBean} object.
      */
@@ -470,9 +430,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getCmsMediaBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CmsMediaBean} object.
      */
@@ -481,9 +439,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getCalendarBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CalendarBean} object.
      */
@@ -492,9 +448,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getCaptchaBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CaptchaBean} object.
      */
@@ -503,21 +457,17 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getUserBean.
-     * </p>
-     * 
-     * @throws ContextNotActiveException if no jsf context is available to retrieve the bean from
+     *
      * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
+     * @throws ContextNotActiveException if no jsf context is available to retrieve the bean from
      */
     public static UserBean getUserBean() throws ContextNotActiveException {
         return (UserBean) getBeanByName("userBean", UserBean.class);
     }
 
     /**
-     * <p>
      * getSessionBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.storage.SessionBean} object
      */
@@ -531,9 +481,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getImageDeliveryBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
      */
@@ -556,9 +504,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getBrowseBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.BrowseBean} object.
      */
@@ -567,9 +513,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getUserBean.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.ContentBean} object.
      */
@@ -578,9 +522,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getUserBeanFromSession.
-     * </p>
      *
      * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
@@ -604,9 +546,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getBeanFromSession.
-     * </p>
      *
      * @param session a {@link jakarta.servlet.http.HttpSession} object
      * @param beanName a {@link java.lang.String} object
@@ -628,10 +568,8 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getUserFromSession. This performs a scan of the whole session and may be expensive. Prefer using {@link #getUserBean()} and
      * #{@link UserBean#getUser()}
-     * </p>
      *
      * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @return a {@link io.goobi.viewer.model.security.user.User} object.
@@ -646,9 +584,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * escapeCriticalUrlChracters.
-     * </p>
      *
      * @param value a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -658,9 +594,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * findInstanceInSessionAttributes.
-     * </p>
      *
      * @param session a {@link jakarta.servlet.http.HttpSession} object
      * @param clazz a {@link java.lang.Class} object
@@ -686,9 +620,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getResponse.
-     * </p>
      *
      * @return a {@link jakarta.servlet.http.HttpServletResponse} object.
      */
@@ -702,9 +634,7 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>
      * getManagedBeanValue.
-     * </p>
      *
      * @param expr a {@link java.lang.String} object
      * @return a {@link java.lang.Object} object

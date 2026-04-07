@@ -59,7 +59,6 @@ import io.goobi.viewer.solr.SolrTools;
  * Loads and holds archive tree models. This class should have an application wide scope
  *
  * @author florian
- *
  */
 public class ArchiveManager implements Serializable {
 
@@ -77,25 +76,24 @@ public class ArchiveManager implements Serializable {
 
     public enum DatabaseState {
         /**
-         * State before the first query to the server
+         * State before the first query to the server.
          */
         NOT_INITIALIZED,
         /**
-         * Archive names are queried from the server
+         * Archive names are queried from the server.
          */
         ARCHIVES_LOADED,
         /**
-         * State only applicable to a single database if it was successfully loaded into memory
+         * State only applicable to a single database if it was successfully loaded into memory.
          */
         ARCHIVE_TREE_LOADED,
         /**
-         * url call not returned
+         * Url call not returned.
          */
         ERROR_NOT_REACHABLE;
     }
 
     /**
-     * 
      */
     public ArchiveManager() {
         ArchiveParser parser = null;
@@ -113,7 +111,7 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
-     * Constructor for unit tests.
+     * Creates a new unit tests instance.
      * 
      * @param eadParser
      */
@@ -293,7 +291,7 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
-     * In the list of archive document search hits, find the id of the entry just before the given one
+     * In the list of archive document search hits, find the id of the entry just before the given one.
      *
      * @param entryId
      * @return the neighboring entry id if it exists

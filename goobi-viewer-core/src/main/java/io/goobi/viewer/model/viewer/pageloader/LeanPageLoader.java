@@ -65,9 +65,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
     private int lastPageOrder = 1;
 
     /**
-     * <p>
      * Package private constructor for LeanPageLoader.
-     * </p>
      *
      * @param topElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param numPages a int.
@@ -211,9 +209,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
     }
 
     /**
-     * <p>
      * setFirstAndLastPageOrder.
-     * </p>
      *
      * @should set first page order correctly
      * @should set last page order correctly
@@ -250,9 +246,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
     }
 
     /**
-     * <p>
      * loadPage.
-     * </p>
      *
      * @param pageNumber a int.
      * @param fileName a {@link java.lang.String} object.

@@ -524,7 +524,6 @@ public final class TranslationGroup {
      * @should select fully translated entries if all are fully translated
      * @should resume at the end when moving past first element
      * @should resume at the beginning when moving past last element
-     *
      */
     void selectEntry(int step) {
         // logger.trace("selectEntry: {}", step); //NOSONAR Debug
@@ -618,7 +617,7 @@ public final class TranslationGroup {
     }
 
     /**
-     * Resets the counts for fully translated and untranslated entries to update the translation process
+     * Resets the counts for fully translated and untranslated entries to update the translation process.
      */
     public void resetStatusCount() {
         this.fullyTranslatedEntryCount = null;

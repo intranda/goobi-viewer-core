@@ -61,7 +61,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author florian
- *
  */
 public class AnnotationsResourceBuilder {
 

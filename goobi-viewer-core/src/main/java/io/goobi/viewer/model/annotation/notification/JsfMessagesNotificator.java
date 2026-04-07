@@ -28,7 +28,6 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
  * @author florian
- *
  */
 public class JsfMessagesNotificator implements ChangeNotificator {
 

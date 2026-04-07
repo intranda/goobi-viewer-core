@@ -51,7 +51,6 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  * that day. Should run in its own thread
  * 
  * @author florian
- *
  */
 public class StatisticsIndexTask {
 
@@ -65,7 +64,7 @@ public class StatisticsIndexTask {
     private final SolrSearchIndex solrIndex;
 
     /**
-     * Default constructor
+     * Default constructor.
      * 
      * @param dao the DAO from which to collect the usage statistics
      * @param indexer the {@link StatisticsIndexer} to use for indexing
@@ -89,7 +88,7 @@ public class StatisticsIndexTask {
     }
 
     /**
-     * Start the indexint
+     * Starts the indexint.
      * 
      * @throws DAOException
      * @throws IOException

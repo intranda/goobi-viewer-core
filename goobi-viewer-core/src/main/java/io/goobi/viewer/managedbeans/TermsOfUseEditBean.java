@@ -44,7 +44,6 @@ import io.goobi.viewer.model.translations.Translation;
  * Used to edit terms of use in admin backend. Creates a local copy of the global terms of use object and overwrites the global object on save
  *
  * @author florian
- *
  */
 @Named("termsOfUseEditBean")
 @ViewScoped

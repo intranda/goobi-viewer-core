@@ -29,18 +29,14 @@ import java.time.LocalDateTime;
 public interface Harvestable {
 
     /**
-     * <p>
      * getPi.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getPi();
 
     /**
-     * <p>
      * getDateUpdated.
-     * </p>
      *
      * @return a {@link java.time.LocalDateTime} object.
      */

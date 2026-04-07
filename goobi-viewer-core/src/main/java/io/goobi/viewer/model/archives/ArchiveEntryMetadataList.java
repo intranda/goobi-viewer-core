@@ -48,7 +48,7 @@ public class ArchiveEntryMetadataList {
     private static final Logger logger = LogManager.getLogger(ArchiveEntryMetadataList.class);
 
     /**
-     * id referencing an archiveEntry
+     * Id referencing an archiveEntry
      */
     private final String id;
 
@@ -251,7 +251,7 @@ public class ArchiveEntryMetadataList {
     }
 
     /**
-     * Add the metadata to the configured level.
+     * Adds the metadata to the configured level.
      *
      * @param entry
      * @param metadata

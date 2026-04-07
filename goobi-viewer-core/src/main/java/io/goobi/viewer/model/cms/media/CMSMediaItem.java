@@ -70,9 +70,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
  * CMSMediaItem class.
- * </p>
  */
 @Entity
 @Table(name = "cms_media_items")
@@ -133,13 +131,13 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     private transient FileTime lastModifiedTime = null;
 
     /**
-     * default constructor
+     * Default constructor.
      */
     public CMSMediaItem() {
     }
 
     /**
-     * copy constructor
+     * Copy constructor.
      *
      * @param orig a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
@@ -248,9 +246,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -259,9 +255,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -270,9 +264,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Getter for the field <code>fileName</code>.
-     * </p>
      *
      * @return the fileName
      */
@@ -281,9 +273,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Setter for the field <code>fileName</code>.
-     * </p>
      *
      * @param fileName the fileName to set
      */
@@ -293,9 +283,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Setter for the field <code>alternativeText</code>.
-     * </p>
      *
      * @param alternativeText the alternativeText to set
      */
@@ -305,9 +293,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getMetadataForLocale.
-     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return media item metadata for the given locale; null if no locale given
@@ -321,9 +307,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getMetadataForLanguage.
-     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return media item metadata for the given locale
@@ -342,9 +326,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadata</code>.
-     * </p>
      *
      * @return the metadata
      */
@@ -353,9 +335,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Setter for the field <code>metadata</code>.
-     * </p>
      *
      * @param metadata the metadata to set
      */
@@ -377,9 +357,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getCurrentLanguageMetadata.
-     * </p>
      *
      * @return metadata list for the current language
      */
@@ -399,9 +377,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * hasCateories.
-     * </p>
      *
      * @return a boolean.
      */
@@ -414,9 +390,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Setter for the field <code>categories</code>.
-     * </p>
      *
      * @param categories a {@link java.util.List} object.
      */
@@ -425,9 +399,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * removeCategory.
-     * </p>
      *
      * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      * @return a boolean.
@@ -437,9 +409,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * addCategory.
-     * </p>
      *
      * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      * @return a boolean.
@@ -456,9 +426,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * setImportant.
-     * </p>
      *
      * @param important a boolean.
      */
@@ -474,9 +442,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Setter for the field <code>priority</code>.
-     * </p>
      *
      * @param priority the priority to set
      */
@@ -485,9 +451,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getLinkURI.
-     * </p>
      *
      * @return a {@link java.net.URI} object.
      */
@@ -523,9 +487,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Getter for the field <code>link</code>.
-     * </p>
      *
      * @return the entered link url
      */
@@ -534,7 +496,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * set the link for this media item
+     * Set the link for this media item.
      *
      * @param linkUrl a {@link java.lang.String} object.
      * @throws java.net.URISyntaxException if any.
@@ -636,9 +598,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Setter for the field <code>displayOrder</code>.
-     * </p>
      *
      * @param displayOrder the displayOrder to set
      */
@@ -647,9 +607,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getImageURI.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -682,9 +640,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getTranslationsForDescription.
-     * </p>
      *
      * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */
@@ -696,9 +652,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getTranslationsForAlternativeText.
-     * </p>
      *
      * @return a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      */
@@ -710,9 +664,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * isFinished.
-     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a boolean.
@@ -722,9 +674,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getFinishedLocales.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -753,9 +703,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * Getter for the field <code>lastModifiedTime</code>.
-     * </p>
      *
      * @return the lastModifiedTime. May be null only if no file exists or last modified time cannot be read
      */
@@ -775,9 +723,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * getFilePath.
-     * </p>
      *
      * @return a {@link java.nio.file.Path} object.
      */
@@ -788,12 +734,10 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     }
 
     /**
-     * <p>
      * wrapCategories.
-     * </p>
      *
-     * @return the categoryMap. Never null. If it isn't defined yet, create a map from all categories
      * @param categories a {@link java.util.List} object.
+     * @return the categoryMap. Never null. If it isn't defined yet, create a map from all categories
      */
     public synchronized List<Selectable<CMSCategory>> wrapCategories(List<CMSCategory> categories) {
         return categories.stream().map(cat -> new Selectable<>(cat, this.getCategories().contains(cat))).collect(Collectors.toList());

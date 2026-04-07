@@ -25,7 +25,6 @@ import io.goobi.viewer.model.search.FacetItem.FacetType;
 
 /**
  * @author florian
- *
  */
 public interface IFacetItem {
 

@@ -26,9 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * <p>
  * PersistentTableDataProvider class.
- * </p>
  *
  * @author Florian Alpers
  * @param <T>
@@ -40,9 +38,7 @@ public class PersistentTableDataProvider<T> extends TableDataProvider<T> {
     private Optional<List<T>> currentList = Optional.empty();
 
     /**
-     * <p>
-     * Constructor for PersistentTableDataProvider.
-     * </p>
+     * Creates a new PersistentTableDataProvider instance.
      *
      * @param source a {@link io.goobi.viewer.managedbeans.tabledata.TableDataSource} object.
      */
@@ -60,9 +56,7 @@ public class PersistentTableDataProvider<T> extends TableDataProvider<T> {
     }
 
     /**
-     * <p>
      * resetCurrentList.
-     * </p>
      */
     @Override
     protected void resetCurrentList() {

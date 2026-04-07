@@ -25,9 +25,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * <p>
  * CalendarItemMonth class.
- * </p>
  */
 public class CalendarItemMonth extends AbstractCalendarItem implements Serializable {
 
@@ -38,9 +36,7 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
     private List<CalendarItemDay> daysOfMonth;
 
     /**
-     * <p>
-     * Constructor for CalendarItemMonth.
-     * </p>
+     * Creates a new CalendarItemMonth instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param value a int.
@@ -51,9 +47,7 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
     }
 
     /**
-     * <p>
      * Getter for the field <code>daysOfMonth</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -62,9 +56,7 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
     }
 
     /**
-     * <p>
      * Setter for the field <code>daysOfMonth</code>.
-     * </p>
      *
      * @param daysOfMonth a {@link java.util.List} object.
      */
@@ -73,9 +65,7 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
     }
 
     /**
-     * <p>
      * Getter for the field <code>weeksOfMonth</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -84,9 +74,7 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
     }
 
     /**
-     * <p>
      * Setter for the field <code>weeksOfMonth</code>.
-     * </p>
      *
      * @param weeksOfMonth a {@link java.util.List} object.
      */

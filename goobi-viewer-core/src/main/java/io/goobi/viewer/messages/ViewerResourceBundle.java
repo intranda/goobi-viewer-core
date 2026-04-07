@@ -76,9 +76,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.servlet.ServletContext;
 
 /**
- * <p>
  * ViewerResourceBundle class.
- * </p>
  */
 public class ViewerResourceBundle extends ResourceBundle {
 
@@ -100,9 +98,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     private static List<Locale> allLocales = null;
 
     /**
-     * <p>
-     * Constructor for ViewerResourceBundle.
-     * </p>
+     * Creates a new ViewerResourceBundle instance.
      */
     public ViewerResourceBundle() {
         registerFileChangedService(Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath()));
@@ -189,9 +185,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * Getter for the field <code>defaultLocale</code>.
-     * </p>
      *
      * @return a {@link java.util.Locale} object.
      */
@@ -296,7 +290,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     /**
      * {@inheritDoc}
      *
-     * This is the method that is called for HTML translations.
+     * <p>This is the method that is called for HTML translations.
      */
     @Override
     protected Object handleGetObject(final String key) {
@@ -304,9 +298,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
@@ -317,9 +309,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * getTranslationWithParameters.
-     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
@@ -368,9 +358,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
@@ -394,9 +382,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
      * @param key Message key to translate
      * @param locale Desired locale
@@ -410,9 +396,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * getTranslation.
-     * </p>
      *
      * @param key Message key to translate
      * @param inLocale Desired locale
@@ -594,9 +578,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * getMessagesValues.
-     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @param keyPrefix a {@link java.lang.String} object.
@@ -626,7 +608,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * Returns a Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
+     * Returns a Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found.
      *
      * @param key the message key
      * @return A Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
@@ -657,9 +639,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * <p>
      * Getter for the field <code>allLocales</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      * @should return English if no other locales found
@@ -713,7 +693,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * Get locales configured in faces-config, ordered by appearance in file
+     * Gets locales configured in faces-config, ordered by appearance in file.
      *
      * @param servletContext
      * @return a list of Locale objects, or null if the list could not be retrieved

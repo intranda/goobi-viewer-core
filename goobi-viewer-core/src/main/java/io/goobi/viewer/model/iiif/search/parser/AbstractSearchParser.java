@@ -30,18 +30,14 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * <p>
  * Abstract AbstractSearchParser class.
- * </p>
  *
  * @author florian
  */
 public abstract class AbstractSearchParser {
 
     /**
-     * <p>
      * getPrecedingText.
-     * </p>
      *
      * @param text a {@link java.lang.String} object.
      * @param hitStartIndex a int.
@@ -65,9 +61,7 @@ public abstract class AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getSucceedingText.
-     * </p>
      *
      * @param text a {@link java.lang.String} object.
      * @param hitEndIndex a int.
@@ -91,9 +85,7 @@ public abstract class AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getSingleWordRegex.
-     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @return a regex matching a single word matching the given query regex (ignoring case)
@@ -104,9 +96,7 @@ public abstract class AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getContainedWordRegex.
-     * </p>
      *
      * @param query a {@link java.lang.String} object.
      * @return a regex matching any text containing the given query regex as single word
@@ -117,12 +107,10 @@ public abstract class AbstractSearchParser {
     }
 
     /**
-     * <p>
      * getQueryRegex.
-     * </p>
      *
-     * @return a regex matching any word or sequence of words of the given query with '*' matching any number of word characters and ignoring case
      * @param query a {@link java.lang.String} object.
+     * @return a regex matching any word or sequence of words of the given query with '*' matching any number of word characters and ignoring case
      */
     public static String getQueryRegex(final String query) {
         String useQuery = query.replace("(?i)", ""); //remove any possible ignore case flags
@@ -147,7 +135,7 @@ public abstract class AbstractSearchParser {
 
     /**
      * Create a regular expression matching all anything starting with the given query followed by an arbitrary number of word characters and ignoring
-     * case
+     * case.
      *
      * @param query a {@link java.lang.String} object.
      * @return the regular expression {@code (?i){query}[\w\d-]*}

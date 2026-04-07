@@ -40,9 +40,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * <p>
  * SolrSearchParser class.
- * </p>
  *
  * @author florian
  */
@@ -55,9 +53,7 @@ public class SolrSearchParser extends AbstractSearchParser {
     private Map<Integer, Dimension> pageSizes = new HashMap<>();
 
     /**
-     * <p>
      * getPageSize.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param pageNo a {@link java.lang.Integer} object.

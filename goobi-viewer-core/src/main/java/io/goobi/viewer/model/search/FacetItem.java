@@ -48,9 +48,7 @@ import io.goobi.viewer.model.search.FacetSorting.SortingMap;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>
  * FacetItem class.
- * </p>
  */
 public class FacetItem implements Serializable, IFacetItem {
 
@@ -78,7 +76,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * Constructor for active facets received via the URL. The Solr query is split into individual field/value.
+     * Creates a new FacetItem for active facets received via the URL. The Solr query is split into individual field/value.
      *
      * @param link a {@link java.lang.String} object.
      * @param hierarchical a boolean.
@@ -90,7 +88,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * Constructor for active facets received via the URL. The Solr query is split into individual field/value.
+     * Creates a new FacetItem for active facets received via the URL. The Solr query is split into individual field/value.
      *
      * @param link a {@link java.lang.String} object.
      * @param label
@@ -511,9 +509,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>field</code>.
-     * </p>
      *
      * @return the field
      */
@@ -523,9 +519,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>field</code>.
-     * </p>
      *
      * @param field the field to set
      */
@@ -535,9 +529,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * getFullValue.
-     * </p>
      *
      * @return Range of value - value2; just value if value2 empty
      * @should build full value correctly
@@ -552,9 +544,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
      * @return the value
      */
@@ -564,9 +554,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>value</code>.
-     * </p>
      *
      * @param value the value to set
      */
@@ -576,9 +564,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>value2</code>.
-     * </p>
      *
      * @return the value2
      */
@@ -588,9 +574,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>value2</code>.
-     * </p>
      *
      * @param value2 the value2 to set
      */
@@ -600,9 +584,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>link</code>.
-     * </p>
      *
      * @return the link
      */
@@ -612,9 +594,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>link</code>.
-     * </p>
      *
      * @param link the link to set
      */
@@ -633,9 +613,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
      * @return the label
      */
@@ -645,9 +623,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>label</code>.
-     * </p>
      *
      * @param label the label to set
      * @return this
@@ -659,9 +635,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>translatedLabel</code>.
-     * </p>
      *
      * @return the translatedLabel
      */
@@ -685,9 +659,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Getter for the field <code>count</code>.
-     * </p>
      *
      * @return the count
      */
@@ -697,9 +669,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>count</code>.
-     * </p>
      *
      * @param count the count to set
      * @return this
@@ -715,7 +685,6 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * 
      */
     @Override
     public boolean isGroup() {
@@ -723,7 +692,6 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * 
      */
     @Override
     public IFacetItem setGroup(boolean group) {
@@ -732,9 +700,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * <p>
      * isHierarchial.
-     * </p>
      *
      * @return the hierarchial
      */

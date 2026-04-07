@@ -77,10 +77,9 @@ import jakarta.ws.rs.core.UriBuilder;
 import mil.nga.sf.geojson.Geometry;
 
 /**
- * Utility methods for converting geo-coordinated between different formats
+ * Utility methods for converting geo-coordinated between different formats.
  * 
  * @author florian
- *
  */
 public class GeoCoordinateConverter {
 
@@ -122,7 +121,7 @@ public class GeoCoordinateConverter {
     }
 
     /**
-     * Collect all point coordinate in the given coordinate fields from solr documents returned by the given solr query
+     * Collects all point coordinates in the given coordinate fields from solr documents returned by the given solr query.
      * 
      * @param query Solr query to get documents
      * @param filterQueries filter for solr query
@@ -278,7 +277,7 @@ public class GeoCoordinateConverter {
     }
 
     /**
-     * Collect all point coordinate in the given metadata field within the given solr document
+     * Collects all point coordinates in the given metadata field within the given solr document.
      * 
      * @param doc the document containing the coordinates
      * @param children
@@ -456,7 +455,7 @@ public class GeoCoordinateConverter {
     }
 
     /**
-     * Parse geo-coordinates from all fields of the given name fromt the given list of SOLR documents
+     * Parses geo-coordinates from all fields of the given name from the given list of SOLR documents.
      * 
      * @param solrFieldName Name of the SOLR fields to parse
      * @param results Documents to parse
@@ -487,7 +486,7 @@ public class GeoCoordinateConverter {
     }
 
     /**
-     * Parse geo-coordinates from the value of a SOLR field
+     * Parses geo-coordinates from the value of a SOLR field.
      * 
      * @param o SOLR field value
      * @return a list of {@link IArea} representing the locations from the given value

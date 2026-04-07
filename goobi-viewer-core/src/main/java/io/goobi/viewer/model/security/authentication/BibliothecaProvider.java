@@ -40,18 +40,14 @@ import io.goobi.viewer.model.security.authentication.model.BibliothecaAuthentica
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>
  * BibliothecaProvider class.
- * </p>
  */
 public class BibliothecaProvider extends HttpAuthenticationProvider {
 
     private static final Logger logger = LogManager.getLogger(BibliothecaProvider.class);
 
     /**
-     * <p>
-     * Constructor for XServiceProvider.
-     * </p>
+     * Creates a new XServiceProvider instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.

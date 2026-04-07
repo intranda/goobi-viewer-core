@@ -43,7 +43,6 @@ import jakarta.persistence.Table;
 
 /**
  * @author florian
- *
  */
 @Entity
 @Table(name = "terms_of_use")
@@ -168,7 +167,7 @@ public class TermsOfUse {
     }
 
     /**
-     * Remove all empty translations from the translations list.
+     * Removes all empty translations from the translations list.
      * 
      * @should clear the list
      */

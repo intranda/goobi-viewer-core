@@ -218,9 +218,7 @@ public final class IndexerTools {
     }
 
     /**
-     * <p>
      * reIndexPage.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
@@ -262,9 +260,7 @@ public final class IndexerTools {
     }
 
     /**
-     * <p>
      * reIndexPage.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param page a int.
@@ -333,9 +329,7 @@ public final class IndexerTools {
     }
 
     /**
-     * <p>
      * deleteRecord.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param createTraceDocument a boolean.

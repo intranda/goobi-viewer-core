@@ -53,7 +53,6 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 
 /**
  * @author florian
- *
  */
 public abstract class AbstractBookmarkResourceBuilder {
 
@@ -88,9 +87,7 @@ public abstract class AbstractBookmarkResourceBuilder {
     public abstract Collection2 createCollection(BookmarkList list, AbstractApiUrlManager urls);
 
     /**
-     * <p>
      * getPageOrder.
-     * </p>
      *
      * @param pageString a {@link java.lang.String} object.
      * @return a {@link java.lang.Integer} object.
@@ -130,9 +127,7 @@ public abstract class AbstractBookmarkResourceBuilder {
     }
 
     /**
-     * <p>
      * getAsCollection.
-     * </p>
      *
      * @param sharedKey
      * @param urls

@@ -52,7 +52,6 @@ import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * @author florian
- *
  */
 public class AnnotationUpdate implements IModelUpdate {
 

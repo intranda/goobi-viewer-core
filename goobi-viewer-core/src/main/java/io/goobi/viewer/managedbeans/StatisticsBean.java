@@ -92,9 +92,7 @@ public class StatisticsBean implements Serializable {
     private transient Map<String, StatisticsSummary> recordUsageStatisticsMap = new ConcurrentHashMap<>();
 
     /**
-     * <p>
      * getImportedRecordsTrend.
-     * </p>
      *
      * @param days a int.
      * @param dataPoints a int.
@@ -293,9 +291,7 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getCoreVersion.
-     * </p>
      *
      * @return goobi-viewer-core version
      */
@@ -304,9 +300,7 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getConnectorVersion.
-     * </p>
      *
      * @return goobi-viewer-connector version
      */
@@ -315,9 +309,7 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getContentServerVersion.
-     * </p>
      *
      * @return intrandaContentServer version
      */
@@ -333,9 +325,7 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getIndexerVersion.
-     * </p>
      *
      * @return goobi-viewer-indexer version
      */
@@ -344,9 +334,7 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getUsageStatisticsForRecord.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object
      * @return {@link io.goobi.viewer.model.statistics.usage.StatisticsSummary}
@@ -378,9 +366,7 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * getLastUsageStatisticsCheck.
-     * </p>
      *
      * @return a {@link java.time.LocalDate} object
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -406,9 +392,7 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>
      * isUsageStatisticsActive.
-     * </p>
      *
      * @return a boolean
      */

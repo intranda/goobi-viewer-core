@@ -44,9 +44,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>
  * MetadataElement class.
- * </p>
  */
 public class MetadataElement implements Serializable {
 
@@ -412,9 +410,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * getMetadata.
-     * </p>
      *
      * @param fields a {@link java.util.List} object.
      * @return List of Metadata objects that match the given field names
@@ -436,9 +432,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>metadataList</code>.
-     * </p>
      *
      * @param metadataList the metadataList to set
      */
@@ -447,9 +441,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadataList</code>.
-     * </p>
      *
      * @return the oneMetadataList
      */
@@ -458,9 +450,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadataList</code>.
-     * </p>
      *
      * @param beforeFold if true, only list metadata before index #{@link #metadataFoldIndex}
      * @return the MetadataList
@@ -485,9 +475,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * hasMetadata.
-     * </p>
      *
      * @return a boolean.
      */
@@ -520,9 +508,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * hasSidebarMetadata.
-     * </p>
      *
      * @return a boolean.
      */
@@ -534,9 +520,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarMetadataList</code>.
-     * </p>
      *
      * @return the sidebarMetadataList
      */
@@ -545,9 +529,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>sidebarMetadataList</code>.
-     * </p>
      *
      * @param sidebarMetadataList the sidebarMetadataList to set
      */
@@ -556,9 +538,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * isHasSidebarMetadata.
-     * </p>
      *
      * @return a boolean.
      */
@@ -582,9 +562,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -596,9 +574,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>label</code>.
-     * </p>
      *
      * @param label a {@link java.lang.String} object.
      */
@@ -607,9 +583,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>title</code>.
-     * </p>
      *
      * @return the title
      */
@@ -618,9 +592,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>url</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -629,9 +601,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>url</code>.
-     * </p>
      *
      * @param url a {@link java.lang.String} object.
      */
@@ -649,9 +619,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>docType</code>.
-     * </p>
      *
      * @return the docType
      */
@@ -660,9 +628,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>docStructType</code>.
-     * </p>
      *
      * @return the docStructType
      */
@@ -699,9 +665,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * isAnchor.
-     * </p>
      *
      * @return a boolean.
      */
@@ -710,9 +674,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * isFilesOnly.
-     * </p>
      *
      * @return a boolean.
      */
@@ -728,9 +690,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * getFirstMetadataValue.
-     * </p>
      *
      * @param name The name of the metadata
      * @return the best available metadata value, or an empty string if no metadata was found
@@ -751,9 +711,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * getFirstMetadataValueIfExists.
-     * </p>
      *
      * @param name a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.
@@ -767,9 +725,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * getFirstMetadataValue.
-     * </p>
      *
      * @param prefix a {@link java.lang.String} object.
      * @param name a {@link java.lang.String} object.
@@ -785,9 +741,7 @@ public class MetadataElement implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>selectedRecordLanguage</code>.
-     * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return this

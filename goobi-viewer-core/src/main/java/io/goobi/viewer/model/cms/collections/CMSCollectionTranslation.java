@@ -46,17 +46,13 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
     private CMSCollection owner;
 
     /**
-     * <p>
-     * Constructor for CMSCollectionTranslation.
-     * </p>
+     * Creates a new CMSCollectionTranslation instance.
      */
     public CMSCollectionTranslation() {
     }
 
     /**
-     * <p>
-     * Constructor for CMSCollectionTranslation.
-     * </p>
+     * Creates a new CMSCollectionTranslation instance.
      *
      * @param language a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -80,9 +76,7 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
      * @return the owner
      */
@@ -91,9 +85,7 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
      * @param owner the owner to set
      */

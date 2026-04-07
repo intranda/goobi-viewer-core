@@ -36,7 +36,6 @@ import org.json.JSONObject;
 
 /**
  * @author florian
- *
  */
 public class GeoCoordinateFeature {
 
@@ -71,7 +70,7 @@ public class GeoCoordinateFeature {
     }
 
     /**
-     * Initialize as a polygon feature with the given points as vertices
+     * Initializes as a polygon feature with the given points as vertices.
      * 
      * @param points
      * @param predicate

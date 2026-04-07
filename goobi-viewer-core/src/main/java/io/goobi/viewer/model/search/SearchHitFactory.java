@@ -103,9 +103,7 @@ public class SearchHitFactory {
     }
 
     /**
-     * <p>
      * createSearchHit.
-     * </p>
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param ownerDoc a {@link org.apache.solr.common.SolrDocument} object.
@@ -267,7 +265,7 @@ public class SearchHitFactory {
     /**
      * 
      * @param user the user for whom access conditions of the search hits should be calculated. If ommitted, the user is fetched from the jsfContext
-     *            if one exists
+     *            If one exists
      * @return this
      */
     public SearchHitFactory setUser(User user) {
@@ -276,7 +274,7 @@ public class SearchHitFactory {
     }
 
     /**
-     * replaces any terms with a fuzzy search token with the matching strings found in the values of fields
+     * Replaces any terms with a fuzzy search token with the matching strings found in the values of fields
      *
      * @param origTerms
      * @param resultFields

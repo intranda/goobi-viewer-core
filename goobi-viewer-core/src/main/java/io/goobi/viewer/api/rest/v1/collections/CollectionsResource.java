@@ -62,7 +62,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(COLLECTIONS)
 @ViewerRestServiceBinding

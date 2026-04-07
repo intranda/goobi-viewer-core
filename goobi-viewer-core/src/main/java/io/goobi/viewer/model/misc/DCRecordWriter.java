@@ -41,7 +41,6 @@ import io.goobi.viewer.controller.XmlTools;
  *
  *         Creates a xml document representing a simple Dublin Core record. Each instance of this class creates a single record which can be filled
  *         with metadata and eventually written to the file system
- *
  */
 public class DCRecordWriter {
 
@@ -53,7 +52,7 @@ public class DCRecordWriter {
     private final Document doc;
 
     /**
-     * Creates a new jdom document with an empty record element
+     * Creates a new jdom document with an empty record element.
      */
     public DCRecordWriter() {
         doc = new Document();
@@ -63,7 +62,7 @@ public class DCRecordWriter {
     }
 
     /**
-     * Add a metadata element with namespace "dc" to the record element
+     * Adds a metadata element with namespace "dc" to the record element.
      *
      * @param name
      * @param value
@@ -77,7 +76,7 @@ public class DCRecordWriter {
     }
 
     /**
-     * Reads the value of the given metadata from the jdom document
+     * Reads the value of the given metadata from the jdom document.
      *
      * @param name
      * @return Metadata value from the XML tree; null if none found
@@ -92,7 +91,7 @@ public class DCRecordWriter {
     }
 
     /**
-     * Get the base jdom2 document
+     * Gets the base jdom2 document.
      *
      * @return the jdom2 document representing the record
      */

@@ -30,7 +30,6 @@ import java.util.Set;
  * Contains additional information of collections searched by {@link SearchHelper#findAllCollectionsFromField}
  *
  * @author florian
- *
  */
 public class CollectionResult implements Serializable {
 

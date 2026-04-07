@@ -35,7 +35,6 @@ import jakarta.persistence.JoinColumn;
  * Wrapper element for custom (user created) sidebar widgets. Linked to an instance of {@link CustomSidebarWidget} providing the data to display
  * 
  * @author florian
- *
  */
 @Entity
 @DiscriminatorValue("CUSTOM")
@@ -47,7 +46,7 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     private CustomSidebarWidget widget;
 
     /**
-     * Empty contructor for the DAO
+     * Empty contructor for the DAO.
      */
     public CMSSidebarElementCustom() {
     }
@@ -69,7 +68,7 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     }
 
     /**
-     * Cloning constructor with a CMSPage to set as owner
+     * Cloning constructor with a CMSPage to set as owner.
      * 
      * @param orig
      * @param owner
@@ -85,7 +84,7 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     }
 
     /**
-     * Get the {@link CustomSidebarWidget} providing the data
+     * Gets the {@link CustomSidebarWidget} providing the data.
      * 
      * @return the widget
      */
@@ -102,7 +101,7 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     }
 
     /**
-     * Get the title of the underlying widget
+     * Gets the title of the underlying widget.
      * 
      * @return the title
      */

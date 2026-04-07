@@ -86,9 +86,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     private PageType pageType = PageType.viewMetadata;
 
     /**
-     * <p>
-     * Constructor for TOCElement.
-     * </p>
+     * Creates a new TOCElement instance.
      *
      * @param label a {@link de.intranda.metadata.multilanguage.IMetadataValue} object.
      * @param pageNo a {@link java.lang.String} object.
@@ -180,9 +178,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * getContentServerPdfUrl.
-     * </p>
      *
      * @return {@link java.lang.String}
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -218,9 +214,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>thumbnailUrl</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -229,9 +223,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>thumbnailUrl</code>.
-     * </p>
      *
      * @param width a int.
      * @param height a int.
@@ -270,9 +262,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
      * @return the label
      */
@@ -286,33 +276,27 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
      * @param locale a {@link java.util.Locale} object.
+     * @return the label
      */
     public String getLabel(Locale locale) {
         return label.getValue(locale).orElse(label.getValue().orElse(""));
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
-     * @return the label
      * @param locale a {@link java.lang.String} object.
+     * @return the label
      */
     public String getLabel(String locale) {
         return label.getValue(locale).orElse(label.getValue().orElse(""));
     }
 
     /**
-     * <p>
      * Getter for the field <code>metadata</code>.
-     * </p>
      *
      * @return the metadata
      */
@@ -321,9 +305,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * getMetadataValue.
-     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -333,9 +315,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageNo</code>.
-     * </p>
      *
      * @return the pageNo
      */
@@ -344,9 +324,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>iddoc</code>.
-     * </p>
      *
      * @return the iddoc
      */
@@ -355,9 +333,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageNoLabel</code>.
-     * </p>
      *
      * @return the pageNoLabel
      */
@@ -366,9 +342,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>topStructPi</code>.
-     * </p>
      *
      * @return the topStructPi
      */
@@ -377,7 +351,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * gibt die logID aus der Mets Datei zurück
+     * Gibt die logID aus der Mets Datei zurück.
      *
      * @return the logID
      */
@@ -386,9 +360,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>level</code>.
-     * </p>
      *
      * @return a int.
      */
@@ -397,9 +369,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * getUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -444,9 +414,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * getFullscreenUrl.
-     * </p>
      *
      * @return the fullscreenUrl
      */
@@ -455,9 +423,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * isVisible.
-     * </p>
      *
      * @return a boolean.
      */
@@ -466,9 +432,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>visible</code>.
-     * </p>
      *
      * @param visible a boolean.
      */
@@ -477,9 +441,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>parentId</code>.
-     * </p>
      *
      * @return a int.
      */
@@ -488,9 +450,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>parentId</code>.
-     * </p>
      *
      * @param parentId a int.
      */
@@ -499,9 +459,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * getID.
-     * </p>
      *
      * @return a int.
      */
@@ -510,9 +468,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * setID.
-     * </p>
      *
      * @param iD a int.
      */
@@ -521,9 +477,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * isExpanded.
-     * </p>
      *
      * @return a boolean.
      */
@@ -532,9 +486,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>expanded</code>.
-     * </p>
      *
      * @param expanded a boolean.
      */
@@ -543,9 +495,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * isHasChild.
-     * </p>
      *
      * @return a boolean.
      */
@@ -554,9 +504,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>hasChild</code>.
-     * </p>
      *
      * @param hasChild a boolean.
      */
@@ -565,9 +513,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>groupIds</code>.
-     * </p>
      *
      * @return the groupIds
      */
@@ -576,9 +522,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>groupIds</code>.
-     * </p>
      *
      * @param groupIds the groupIds to set
      */
@@ -587,9 +531,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>recordMimeType</code>.
-     * </p>
      *
      * @return the recordMimeType
      */
@@ -598,9 +540,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     }
 
     /**
-     * <p>
      * isEmpty.
-     * </p>
      *
      * @return true if label is null, empty or blank
      */

@@ -38,7 +38,6 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
  * @author florian
- *
  */
 @Named
 @ViewScoped

@@ -36,7 +36,6 @@ import jakarta.persistence.JoinColumn;
  * Wrapper for automatic widgets contained in a CMSPage. Currently always bound to a {@link GeoMap} object to display in this widget
  * 
  * @author florian
- *
  */
 @Entity
 @DiscriminatorValue("AUTOMATIC")
@@ -48,7 +47,7 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     private GeoMap map;
 
     /**
-     * Empty constructor for the DAO
+     * Empty constructor for the DAO.
      */
     public CMSSidebarElementAutomatic() {
         super();
@@ -71,7 +70,7 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     }
 
     /**
-     * Cloning constructor assigning the given CMSPage as owner
+     * Cloning constructor assigning the given CMSPage as owner.
      * 
      * @param orig
      * @param owner
@@ -101,7 +100,7 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     }
 
     /**
-     * The title of the underlying geomap
+     * The title of the underlying geomap.
      * 
      * @return the title
      */

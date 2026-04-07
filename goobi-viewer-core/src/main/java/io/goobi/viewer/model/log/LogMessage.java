@@ -45,7 +45,6 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * @author florian
- *
  */
 @MappedSuperclass
 public class LogMessage implements Serializable, Comparable<LogMessage> {
@@ -171,7 +170,7 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     }
 
     /**
-     * Set the value of {@link #creator} from the value of {@link #creatorId}. If creatorId is null or an exception occurs while retrieving the user
+     * Sets the value of {@link #creator} from the value of {@link #creatorId}. If creatorId is null or an exception occurs while retrieving the user
      * data, the creator is set to {@link #UNASSIGNED}. If no creator could be found by the given id, the creator is set to {@link #ANONYMOUS} A
      * {@link HttpServletRequest request} may be passed to create an absolute URL for the creator avatar.
      * 

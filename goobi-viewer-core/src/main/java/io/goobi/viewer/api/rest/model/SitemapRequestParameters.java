@@ -34,9 +34,7 @@ public class SitemapRequestParameters extends TaskParameter {
     private String outputPath;
 
     /**
-     * <p>
      * Getter for the field <code>outputPath</code>.
-     * </p>
      *
      * @return the outputPath
      */
@@ -45,9 +43,7 @@ public class SitemapRequestParameters extends TaskParameter {
     }
 
     /**
-     * <p>
      * Setter for the field <code>outputPath</code>.
-     * </p>
      *
      * @param outputPath the outputPath to set
      */

@@ -69,9 +69,9 @@ public final class FilterTools {
      * 
      * @param pi
      * @param request
-     * @throws RecordNotFoundException if no record was found
      * @return false if the view limit is already exceeded and the record may not be viewed, true otherwise
      * @should throw exception if record not found
+     * @throws RecordNotFoundException if no record was found
      */
     public static boolean checkForConcurrentViewLimit(String pi, HttpServletRequest request) {
         // logger.trace("filterForConcurrentViewLimit: {}", request.getSession().getId()); //NOSONAR Debug
@@ -117,10 +117,8 @@ public final class FilterTools {
     }
 
     /**
-     * <p>
      * Check if the request contains a size and region parameter (and is this a IIIF image request) and if so wether they describe a request for a
      * full image not larger than {@link Configuration#getThumbnailImageAccessMaxWidth()}.
-     * </p>
      *
      * @param servletRequest The servlet request for the resource
      * @return true if the request is for a IIIF image resource which is considered a thumbnail

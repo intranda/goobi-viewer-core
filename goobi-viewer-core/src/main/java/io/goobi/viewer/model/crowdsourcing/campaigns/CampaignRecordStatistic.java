@@ -163,9 +163,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -174,9 +172,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -185,9 +181,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateCreated</code>.
-     * </p>
      *
      * @return the dateCreated
      */
@@ -196,9 +190,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateCreated</code>.
-     * </p>
      *
      * @param dateCreated the dateCreated to set
      */
@@ -207,9 +199,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateUpdated</code>.
-     * </p>
      *
      * @return the dateUpdated
      */
@@ -218,9 +208,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateUpdated</code>.
-     * </p>
      *
      * @param dateUpdated the dateUpdated to set
      */
@@ -229,9 +217,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>owner</code>.
-     * </p>
      *
      * @return the owner
      */
@@ -240,9 +226,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>owner</code>.
-     * </p>
      *
      * @param owner the owner to set
      */
@@ -251,9 +235,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
      * @return the pi
      */
@@ -262,9 +244,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
      * @param pi the pi to set
      */
@@ -287,9 +267,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>status</code>.
-     * </p>
      *
      * @return the status
      */
@@ -298,9 +276,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>status</code>.
-     * </p>
      *
      * @param status the status to set
      */
@@ -309,9 +285,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>annotators</code>.
-     * </p>
      *
      * @return the annotators
      */
@@ -320,9 +294,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>annotators</code>.
-     * </p>
      *
      * @param annotators the annotators to set
      */
@@ -331,9 +303,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>reviewers</code>.
-     * </p>
      *
      * @return the reviewers
      */
@@ -342,9 +312,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>reviewers</code>.
-     * </p>
      *
      * @param reviewers the reviewers to set
      */
@@ -353,9 +321,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * addAnnotater.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      */
@@ -366,9 +332,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * <p>
      * addReviewer.
-     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      */
@@ -379,7 +343,7 @@ public class CampaignRecordStatistic implements Serializable {
     }
 
     /**
-     * Check both record status and all page status to check if any matches the given status
+     * Checks both record status and all page status to check if any matches the given status.
      *
      * @param status
      * @return false if status is null, otherwise true exactly if {@link #getStatus()} equals status or if any

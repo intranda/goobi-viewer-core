@@ -29,16 +29,12 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.License.AccessType;
 
 /**
- * <p>
  * ILicensee interface.
- * </p>
  */
 public interface ILicensee {
 
     /**
-     * <p>
      * getName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -51,9 +47,7 @@ public interface ILicensee {
     public AccessType getAccessType();
 
     /**
-     * <p>
      * getLicenses.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */

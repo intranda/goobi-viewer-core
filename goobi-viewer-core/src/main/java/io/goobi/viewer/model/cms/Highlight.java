@@ -148,7 +148,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * Check whether an image is set for this object
+     * Checks whether an image is set for this object.
      * 
      * @return true if the image is taken from the record identifier or if it is taken from a media item and the media item is set
      */
@@ -164,7 +164,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * Get the URI to the image representing the object
+     * Gets the URI to the image representing the object.
      * 
      * @param width
      * @param height
@@ -226,7 +226,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * Check if the object is active at the given date
+     * Checks if the object is active at the given date.
      * 
      * @param date
      * @return true if startTime is before now (or null) and endTime is after now (or null)
@@ -275,7 +275,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
     }
 
     /**
-     * Check if this object may be active at all
+     * Checks if this object may be active at all.
      * 
      * @return true if data enabled; false otherwise
      */

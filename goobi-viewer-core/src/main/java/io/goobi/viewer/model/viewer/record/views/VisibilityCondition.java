@@ -46,7 +46,7 @@ import io.goobi.viewer.model.viewer.ViewManager;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * A class containing all conditions to possibly check for when deciding whether to display a page element for a record page
+ * A class containing all conditions to possibly check for when deciding whether to display a page element for a record page.
  */
 public class VisibilityCondition {
 

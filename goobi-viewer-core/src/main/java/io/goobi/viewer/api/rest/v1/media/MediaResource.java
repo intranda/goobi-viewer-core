@@ -75,9 +75,7 @@ public class MediaResource {
     }
 
     /**
-     * <p>
      * serveMediaContent.
-     * </p>
      *
      * @param format a {@link java.lang.String} object.
      * @param filename a {@link java.lang.String} object.
@@ -102,9 +100,7 @@ public class MediaResource {
     }
 
     /**
-     * <p>
      * serveMediaContent.
-     * </p>
      *
      * @param format a {@link java.lang.String} object.
      * @param filename a {@link java.lang.String} object.
@@ -156,9 +152,7 @@ public class MediaResource {
     }
 
     /**
-     * <p>
      * checkAccess.
-     * </p>
      *
      * @param action a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.

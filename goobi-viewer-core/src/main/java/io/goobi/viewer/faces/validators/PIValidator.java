@@ -66,9 +66,7 @@ public class PIValidator implements Validator<String> {
     }
 
     /**
-     * <p>
      * validatePi.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @should return true if pi good

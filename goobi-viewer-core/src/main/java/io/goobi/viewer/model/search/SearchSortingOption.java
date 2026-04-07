@@ -32,7 +32,6 @@ import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * @author florian
- *
  */
 public class SearchSortingOption implements Serializable {
 
@@ -49,7 +48,7 @@ public class SearchSortingOption implements Serializable {
     private boolean defaultOption = false;
 
     /**
-     * Constructor for default sorting
+     * Creates a new default sorting instance.
      */
     public SearchSortingOption() {
         this.field = "";
@@ -73,7 +72,7 @@ public class SearchSortingOption implements Serializable {
     }
 
     /**
-     * Constructor for sort field
+     * Creates a new sort field instance.
      *
      * @param field
      * @param ascending
@@ -161,7 +160,7 @@ public class SearchSortingOption implements Serializable {
 
     /**
      * Two SearchSortingOptions are equal if they either both have an empty {@link #getField()} or if both {@link #getField()} and
-     * {@link #isAscending()} are equal
+     * {@link #isAscending()} are equal.
      *
      * @should return true if both options are random
      */

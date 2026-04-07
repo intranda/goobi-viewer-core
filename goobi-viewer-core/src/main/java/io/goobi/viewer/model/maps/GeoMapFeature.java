@@ -46,7 +46,6 @@ import mil.nga.sf.geojson.Position;
 
 /**
  * @author florian
- *
  */
 public class GeoMapFeature {
 

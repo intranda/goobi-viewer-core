@@ -49,10 +49,9 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.model.cms.CMSCategory;
 
 /**
- * Simple representation of a cms-media-item
+ * Simple representation of a cms-media-item.
  * 
  * @author florian
- *
  */
 @JsonInclude(Include.NON_NULL)
 public class MediaItem {

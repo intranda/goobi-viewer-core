@@ -31,43 +31,33 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
- * <p>
  * IPageLoader interface.
- * </p>
  */
 public interface IPageLoader extends Serializable {
 
     /**
-     * <p>
      * getNumPages.
-     * </p>
      *
      * @return a int.
      */
     public int getNumPages();
 
     /**
-     * <p>
      * getFirstPageOrder.
-     * </p>
      *
      * @return a int.
      */
     public int getFirstPageOrder();
 
     /**
-     * <p>
      * getLastPageOrder.
-     * </p>
      *
      * @return a int.
      */
     public int getLastPageOrder();
 
     /**
-     * <p>
      * getPage.
-     * </p>
      *
      * @param pageOrder a int.
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
@@ -77,9 +67,7 @@ public interface IPageLoader extends Serializable {
     public PhysicalElement getPage(int pageOrder) throws IndexUnreachableException;
 
     /**
-     * <p>
      * getPageForFileName.
-     * </p>
      *
      * @param fileName a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
@@ -90,9 +78,7 @@ public interface IPageLoader extends Serializable {
     public PhysicalElement getPageForFileName(String fileName) throws PresentationException, IndexUnreachableException, DAOException;
 
     /**
-     * <p>
      * getOwnerIddocForPage.
-     * </p>
      *
      * @param pageOrder a int.
      * @return a {@link java.lang.Long} object.
@@ -102,9 +88,7 @@ public interface IPageLoader extends Serializable {
     public String getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException;
 
     /**
-     * <p>
      * generateSelectItems.
-     * </p>
      *
      * @param dropdownPages Image view drop-down item
      * @param dropdownFulltext Full-text view drop-down item list

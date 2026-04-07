@@ -45,7 +45,6 @@ import jakarta.persistence.Table;
  * {@link CMSContentItem} which itself is contained in a {@link CMSComponent}.
  * 
  * @author florian
- *
  */
 @Entity
 @Table(name = "cms_content")
@@ -125,7 +124,7 @@ public abstract class CMSContent {
     public abstract List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException;
 
     /**
-     * Method to call when loading a CMSPage including this content item
+     * Method to call when loading a CMSPage including this content item.
      * 
      * @param resetResults
      * @param component

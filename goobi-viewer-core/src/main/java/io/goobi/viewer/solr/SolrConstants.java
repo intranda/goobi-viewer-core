@@ -26,7 +26,7 @@ import java.util.Locale;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
- * This class provides constants for Lucene in alphabetical order.
+ * Provides constants for Lucene in alphabetical order.
  */
 public final class SolrConstants {
 

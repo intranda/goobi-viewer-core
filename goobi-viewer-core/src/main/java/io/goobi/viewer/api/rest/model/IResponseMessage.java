@@ -24,9 +24,7 @@ package io.goobi.viewer.api.rest.model;
 public interface IResponseMessage {
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
      * @return the message
      */

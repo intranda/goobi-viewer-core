@@ -109,16 +109,16 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     private static final long serialVersionUID = 3169479611322444516L;
 
     /**
-     * The visibility of the campaign to other users
+     * The visibility of the campaign to other users.
      */
     public enum CampaignVisibility {
         /**
-         * Hidden for all users except in the admin backend
+         * Hidden for all users except in the admin backend.
          */
         PRIVATE,
 
         /**
-         * Visible by all users
+         * Visible by all users.
          */
         PUBLIC;
 
@@ -370,9 +370,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getCampaignVisibilityValues.
-     * </p>
      *
      * @return available values of the CampaignVisibility enum
      */
@@ -382,9 +380,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getNumRecords.
-     * </p>
      *
      * @return total number of records encompassed by the configured solrQuery
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -427,9 +423,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getNumRecordsForStatus.
-     * </p>
      *
      * @param status a {@link java.lang.String} object.
      * @return number of records with the given status
@@ -464,9 +458,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getNumRecordsToAnnotate.
-     * </p>
      *
      * @return Number of records whose status is neither REVIEW nor FINISHED
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -548,7 +540,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * FINISHED records in percent
+     * FINISHED records in percent.
      *
      * @return percentage of records marked as finished relative to the total number or records
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -594,9 +586,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getDaysLeftAsString.
-     * </p>
      *
      * @return number of days left as string; infinity symbol if no dateEnd
      */
@@ -609,9 +599,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * isHasStarted.
-     * </p>
      *
      * @return true if dateStart lies after now; false otherwise
      * @should return true if dateStart null
@@ -630,9 +618,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * isHasEnded.
-     * </p>
      *
      * @return true if dateEnd lies before now; false otherwise
      * @should return false if dateEnd null
@@ -653,8 +639,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * Checks whether the given user may annotate or review records based on the given status.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @return true if the given user is allowed to perform the action associated with the given status; false otherwise
      * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} object.
+     * @return true if the given user is allowed to perform the action associated with the given status; false otherwise
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -746,9 +732,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * setTitle.
-     * </p>
      *
      * @param title a {@link java.lang.String} object.
      * @should set value correctly
@@ -769,9 +753,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getMenuTitleOrElseTitle.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -784,9 +766,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getMenuTitleOrElseTitle.
-     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @param useFallback a boolean.
@@ -801,9 +781,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * setMenuTitle.
-     * </p>
      *
      * @should set value correctly
      * @param menuTitle a {@link java.lang.String} object.
@@ -824,9 +802,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * setDescription.
-     * </p>
      *
      * @should set value correctly
      * @param description a {@link java.lang.String} object.
@@ -836,9 +812,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getTitle.
-     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -848,22 +822,18 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getTitle.
-     * </p>
      *
      * @param lang a {@link java.lang.String} object.
-     * @return the title of the given language or if it doesn't exist the title of the default language
      * @param useFallback a boolean.
+     * @return the title of the given language or if it doesn't exist the title of the default language
      */
     public String getTitle(String lang, boolean useFallback) {
         return Translation.getTranslation(translations, lang, "title", useFallback);
     }
 
     /**
-     * <p>
      * getDescription.
-     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -873,9 +843,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getDescription.
-     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @param useFallback a boolean.
@@ -886,9 +854,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getMenuTitle.
-     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -898,9 +864,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getMenuTitle.
-     * </p>
      *
      * @param lang a {@link java.lang.String} object.
      * @param useFallback a boolean.
@@ -920,9 +884,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -931,9 +893,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @param idAsURI a {@link java.net.URI} object.
      * @return a {@link java.lang.Long} object.
@@ -950,9 +910,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getIdAsURI.
-     * </p>
      *
      * @return a {@link java.net.URI} object.
      */
@@ -962,9 +920,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -973,9 +929,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateCreated</code>.
-     * </p>
      *
      * @return the dateCreated
      */
@@ -984,9 +938,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateCreated</code>.
-     * </p>
      *
      * @param dateCreated the dateCreated to set
      */
@@ -995,9 +947,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateUpdated</code>.
-     * </p>
      *
      * @return the dateUpdated
      */
@@ -1006,9 +956,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateUpdated</code>.
-     * </p>
      *
      * @param dateUpdated the dateUpdated to set
      */
@@ -1017,9 +965,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>visibility</code>.
-     * </p>
      *
      * @return the visibility
      */
@@ -1028,9 +974,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>visibility</code>.
-     * </p>
      *
      * @param visibility the visibility to set
      */
@@ -1063,9 +1007,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateStart</code>.
-     * </p>
      *
      * @return the dateStart
      */
@@ -1074,9 +1016,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateStart</code>.
-     * </p>
      *
      * @param dateStart the dateStart to set
      */
@@ -1109,9 +1049,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateEnd</code>.
-     * </p>
      *
      * @return the dateEnd
      */
@@ -1120,9 +1058,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateEnd</code>.
-     * </p>
      *
      * @param dateEnd the dateEnd to set
      */
@@ -1131,9 +1067,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>solrQuery</code>.
-     * </p>
      *
      * @return the solrQuery
      */
@@ -1142,9 +1076,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>solrQuery</code>.
-     * </p>
      *
      * @param solrQuery the solrQuery to set
      */
@@ -1155,9 +1087,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>permalink</code>.
-     * </p>
      *
      * @return the permalink
      */
@@ -1166,9 +1096,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>permalink</code>.
-     * </p>
      *
      * @param permalink the permalink to set
      */
@@ -1177,9 +1105,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>breadcrumbParentCmsPageId</code>.
-     * </p>
      *
      * @return the breadcrumbParentCmsPageId
      */
@@ -1188,9 +1114,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>breadcrumbParentCmsPageId</code>.
-     * </p>
      *
      * @param breadcrumbParentCmsPageId the breadcrumbParentCmsPageId to set
      */
@@ -1199,9 +1123,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>translations</code>.
-     * </p>
      *
      * @return the translations
      */
@@ -1210,9 +1132,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>translations</code>.
-     * </p>
      *
      * @param translations the translations to set
      */
@@ -1221,9 +1141,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>questions</code>.
-     * </p>
      *
      * @return the questions
      */
@@ -1232,9 +1150,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>questions</code>.
-     * </p>
      *
      * @param questions the questions to set
      */
@@ -1243,9 +1159,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>statistics</code>.
-     * </p>
      *
      * @return the statistics
      */
@@ -1254,9 +1168,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>statistics</code>.
-     * </p>
      *
      * @param statistics the statistics to set
      */
@@ -1265,9 +1177,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectedLocale</code>.
-     * </p>
      *
      * @return the selectedLocale
      */
@@ -1277,9 +1187,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * Setter for the field <code>selectedLocale</code>.
-     * </p>
      *
      * @param selectedLocale the selectedLocale to set
      */
@@ -1414,10 +1322,11 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * Check if the given user may annotate/review (depending on status) a specific pi within this campaign
+     * Checks if the given user may annotate/review (depending on status) a specific pi within this campaign.
      *
      * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} object.
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
+     * @param pi a {@link java.lang.String} object.
      * @return true if
      *         <ul>
      *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#REVIEW REVIEW} and the user is not contained
@@ -1426,7 +1335,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      *         contained in the reviewers list</li> or
      *         <li>The user is admin</li> or
      *         <li>The user is null</li>
-     * @param pi a {@link java.lang.String} object.
      */
     public boolean isEligibleToEdit(String pi, CrowdsourcingStatus status, User user) {
         if (user != null) {
@@ -1447,7 +1355,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * check if the given user is eligible to review any records
+     * Check if the given user is eligible to review any records.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if there are any records in review status for which {@link #isEligibleToEdit(String, CrowdsourcingStatus, User)} returns true
@@ -1462,7 +1370,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * check if the given user is eligible to annotate any records
+     * Check if the given user is eligible to annotate any records.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if there are any records in annotate status for which {@link #isEligibleToEdit(String, CrowdsourcingStatus, User)} returns true
@@ -1477,7 +1385,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * check if the user is allowed to annotate the given pi for this campaign
+     * Check if the user is allowed to annotate the given pi for this campaign.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param pi a {@link java.lang.String} object.
@@ -1490,7 +1398,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * check if the user is allowed to review the given pi for this campaign
+     * Check if the user is allowed to review the given pi for this campaign.
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param pi a {@link java.lang.String} object.
@@ -1515,12 +1423,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     }
 
     /**
-     * <p>
      * getRecordStatus.
-     * </p>
      *
-     * @return record status for the given pi
      * @param pi a {@link java.lang.String} object.
+     * @return record status for the given pi
      */
     public CrowdsourcingStatus getRecordStatus(String pi) {
         return Optional.ofNullable(statistics.get(pi)).map(CampaignRecordStatistic::getStatus).orElse(CrowdsourcingStatus.ANNOTATE);

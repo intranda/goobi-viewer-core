@@ -31,9 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
 /**
- * <p>
  * BrowseTerm class.
- * </p>
  */
 public class BrowseTerm implements Serializable {
 
@@ -100,9 +98,7 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>term</code>.
-     * </p>
      *
      * @return the term
      */
@@ -111,9 +107,7 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>sortTerm</code>.
-     * </p>
      *
      * @return the sortTerm
      */
@@ -129,9 +123,7 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>
      * addToHitCount.
-     * </p>
      *
      * @param num a int.
      * @should add to hit count correctly
@@ -141,9 +133,7 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>hitCount</code>.
-     * </p>
      *
      * @return the hitCount
      */
@@ -161,9 +151,7 @@ public class BrowseTerm implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>piList</code>.
-     * </p>
      *
      * @return the piList
      */

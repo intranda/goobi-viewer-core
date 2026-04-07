@@ -104,9 +104,7 @@ public class ThumbnailHandler {
     private final IIIFUrlHandler iiifUrlHandler;
 
     /**
-     * <p>
-     * Constructor for ThumbnailHandler.
-     * </p>
+     * Creates a new ThumbnailHandler instance.
      *
      * @param iiifUrlHandler a {@link io.goobi.viewer.controller.imaging.IIIFUrlHandler} object.
      * @param staticImagesPath a {@link java.lang.String} object.
@@ -121,9 +119,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * <p>
      * getThumbnailPath.
-     * </p>
      *
      * @param filename a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.
@@ -332,9 +328,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * <p>
      * getPage.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param order a int.
@@ -396,9 +390,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * <p>
      * getThumbnailUrl.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
@@ -413,9 +405,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * <p>
      * getThumbnailUrl.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
@@ -581,9 +571,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * <p>
      * getThumbnailUrl.
-     * </p>
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pi a {@link java.lang.String} object.
@@ -631,22 +619,18 @@ public class ThumbnailHandler {
     }
 
     /**
-     * <p>
      * getFullImageUrl.
-     * </p>
      *
+     * @param page a {)@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return the url of the entire, max-size image in the original format. If no Watermark needs to be included and forwarding images is allowed in
      *         contentServer, then this streams the original image file to the client
-     * @param page a {)@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      */
     public String getFullImageUrl(PhysicalElement page) {
         return getFullImageUrl(page, Scale.MAX, "MASTER");
     }
 
     /**
-     * <p>
      * getFullImageUrl.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.

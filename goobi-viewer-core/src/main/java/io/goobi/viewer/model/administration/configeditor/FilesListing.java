@@ -54,7 +54,6 @@ public class FilesListing implements Serializable {
     }
 
     /**
-     * 
      */
     public void refresh() {
         logger.trace("refresh");

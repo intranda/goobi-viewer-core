@@ -51,7 +51,6 @@ import io.goobi.viewer.solr.SolrTools;
  * translations in several languages Used in {@link GeoCoordinateConverter} to add translatable metadata entites to geomap features.
  * 
  * @author florian
- *
  */
 public class MetadataContainer {
 
@@ -148,7 +147,7 @@ public class MetadataContainer {
     }
 
     /**
-     * Get all values of the default language (or any value of no default langauge value exists) for the given field
+     * Gets all values of the default language (or any value of no default langauge value exists) for the given field.
      * 
      * @param key the field name for which to get the metadata value
      * @return List<String>

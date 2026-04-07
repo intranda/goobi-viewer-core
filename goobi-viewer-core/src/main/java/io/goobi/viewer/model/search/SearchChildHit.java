@@ -58,9 +58,7 @@ public class SearchChildHit {
     }
 
     /**
-     * <p>
      * Getter for the field <code>type</code>.
-     * </p>
      *
      * @return the type
      */

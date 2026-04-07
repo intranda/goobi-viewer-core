@@ -29,24 +29,19 @@ import java.util.stream.Collectors;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 
 /**
- * <p>
  * CollectionLabeledLink class.
- * </p>
  *
  * @author Florian Alpers
  */
 public class CollectionLabeledLink extends CompoundLabeledLink {
 
     /**
-     *
      */
     private static final long serialVersionUID = -318199786884811710L;
     private final CollectionView collection;
 
     /**
-     * <p>
-     * Constructor for CollectionLabeledLink.
-     * </p>
+     * Creates a new CollectionLabeledLink instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param url a {@link java.lang.String} object.

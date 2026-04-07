@@ -57,7 +57,6 @@ import jakarta.ws.rs.core.MediaType;
 
 /**
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(RECORDS_SECTIONS)
 @ViewerRestServiceBinding

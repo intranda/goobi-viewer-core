@@ -29,7 +29,6 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
  * info is always preserved
  *
  * @author florian
- *
  */
 public class TranslatedTextSerializer extends WebAnnotationMetadataValueSerializer {
 

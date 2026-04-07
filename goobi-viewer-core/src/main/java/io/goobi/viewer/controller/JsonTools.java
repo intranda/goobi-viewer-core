@@ -67,9 +67,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * <p>
  * JsonTools class.
- * </p>
  */
 public final class JsonTools {
 
@@ -499,7 +497,7 @@ public final class JsonTools {
     }
 
     /**
-     * Return the string value of the given key in the json object or within another json object nested somewhere within the original object. If the
+     * Returns the string value of the given key in the json object or within another json object nested somewhere within the original object. If the
      * key is not found anywhere within the object, an empty string is returned. If the value to the key is anything other than a string, a
      * stringified version of the object is returned. This method cannot parse arrays within array. If the key is within that, an empty string is also
      * returned

@@ -32,9 +32,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * <p>
  * DocumentReference class.
- * </p>
  */
 @JsonInclude(Include.NON_NULL)
 public class DocumentReference {
@@ -43,9 +41,7 @@ public class DocumentReference {
     private List<TagGroup> pageRanges;
 
     /**
-     * <p>
-     * Constructor for DocumentReference.
-     * </p>
+     * Creates a new DocumentReference instance.
      */
     public DocumentReference() {
         super();
@@ -54,9 +50,7 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
-     * Constructor for DocumentReference.
-     * </p>
+     * Creates a new DocumentReference instance.
      *
      * @param piTopStruct a {@link java.lang.String} object.
      */
@@ -67,9 +61,7 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -78,9 +70,7 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * Setter for the field <code>pageRanges</code>.
-     * </p>
      *
      * @param ranges a {@link java.util.List} object.
      */
@@ -90,9 +80,7 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * addPageRange.
-     * </p>
      *
      * @param range a {@link io.goobi.viewer.api.rest.model.ner.TagGroup} object.
      */
@@ -102,9 +90,7 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * addPageRanges.
-     * </p>
      *
      * @param ranges a {@link java.util.Collection} object.
      */
@@ -114,9 +100,7 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pageRanges</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -126,9 +110,7 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * getPageRange.
-     * </p>
      *
      * @param startPage a int.
      * @return a {@link io.goobi.viewer.api.rest.model.ner.TagGroup} object.
@@ -158,9 +140,7 @@ public class DocumentReference {
     }
 
     /**
-     * <p>
      * getRangeSize.
-     * </p>
      *
      * @return a int.
      */

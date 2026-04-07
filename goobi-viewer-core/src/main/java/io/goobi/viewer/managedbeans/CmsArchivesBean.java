@@ -145,9 +145,7 @@ public class CmsArchivesBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelArchiveConfigurations</code>.
-     * </p>
      *
      * @return the lazyModelArchiveConfigurations
      */
@@ -156,9 +154,7 @@ public class CmsArchivesBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPageArchiveWrappers.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */

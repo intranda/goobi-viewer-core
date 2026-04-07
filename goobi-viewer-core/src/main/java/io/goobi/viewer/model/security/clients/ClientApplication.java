@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
@@ -56,9 +56,8 @@ import jakarta.persistence.Table;
 /**
  * @author florian
  *
- *         This class represents clients accessing the viewer not through web-browsers but using dedicated client-applications which must register
+ *         Represents clients accessing the viewer not through web-browsers but using dedicated client-applications which must register
  *         with the server to view any data but which may also enjoy unique viewing rights via dedicated {@link License Licenses}
- *
  */
 @Entity
 @Table(name = "client_applications")
@@ -151,22 +150,21 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     private AccessStatus accessStatus;
 
     /**
-     * Status describing if the client is eligible to receive viewing privileges
+     * Status describing if the client is eligible to receive viewing privileges.
      * 
      * @author florian
-     *
      */
     public enum AccessStatus {
         /**
-         * only used for the "all clients" core ClientApplication instance
+         * Only used for the "all clients" core ClientApplication instance.
          */
         NON_APPLICABLE,
         /**
-         * The client has requested access but has not been granted it
+         * The client has requested access but has not been granted it.
          */
         REQUESTED,
         /**
-         * The client has been granted access to viewing privileges
+         * The client has been granted access to viewing privileges.
          */
         GRANTED,
         /**
@@ -176,14 +174,14 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * internal constructor for deserializing from database
+     * Internal constructor for deserializing from database.
      */
     public ClientApplication() {
 
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      * 
      * @param source
      */
@@ -200,7 +198,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * constructor to create a new ClientApplication from a client request
+     * Constructor to create a new ClientApplication from a client request.
      * 
      * @param identifier the client identifier
      */
@@ -369,7 +367,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Check if this client requires approval of its registration
+     * Checks if this client requires approval of its registration.
      * 
      * @return true if the {@link #accessStatus} is {@link AccessStatus#REQUESTED}
      */
@@ -379,7 +377,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Check if this client requires approval of its registration or this approval has been denied
+     * Checks if this client requires approval of its registration or this approval has been denied.
      * 
      * @return true if the {@link #accessStatus} is {@link AccessStatus#REQUESTED} or {@link AccessStatus#DENIED}
      */
@@ -401,7 +399,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Two clients are equal if heir {@link #clientIdentifier}s are equals
+     * Two clients are equal if heir {@link #clientIdentifier}s are equals.
      */
     @Override
     public boolean equals(Object obj) {
@@ -512,7 +510,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * Check if the given IP address matches the {@link #subnetMask} of this client
+     * Checks if the given IP address matches the {@link #subnetMask} of this client.
      *
      * @param inIp a {@link java.lang.String} object.
      * @return a boolean.
@@ -546,7 +544,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
     }
 
     /**
-     * If no subnet mask has been set, use the clientIp if available with a '/32' mask
+     * If no subnet mask has been set, use the clientIp if available with a '/32' mask.
      */
     public void initializeSubnetMask() {
         if (subnetMask == null && StringUtils.isNotBlank(clientIp)) {

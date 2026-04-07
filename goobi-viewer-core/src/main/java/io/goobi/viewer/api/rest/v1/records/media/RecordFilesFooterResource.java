@@ -42,7 +42,6 @@ import jakarta.ws.rs.core.Context;
 
 /**
  * @author florian
- *
  */
 @Path(RECORDS_FILES_FOOTER)
 @ContentServerBinding

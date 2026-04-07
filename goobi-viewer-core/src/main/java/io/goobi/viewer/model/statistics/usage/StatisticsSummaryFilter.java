@@ -27,19 +27,18 @@ import java.time.Month;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * A class holding values by which a {@link StatisticsSummary} instance should be filtered
+ * A class holding values by which a {@link StatisticsSummary} instance should be filtered.
  * 
  * @author florian
- *
  */
 public final class StatisticsSummaryFilter {
 
     /**
-     * {@link LOCAL_DATE_MIN} is not accepted as date by SQL, so this is the min date to use, 0000-01-01
+     * {@link LOCAL_DATE_MIN} is not accepted as date by SQL, so this is the min date to use, 0000-01-01.
      */
     public static final LocalDate LOCAL_DATE_MIN = LocalDate.of(0, Month.JANUARY, 1);
     /**
-     * {@link LOCAL_DATE_MAX} is not accepted as date by SQL, so this is the max date to use, 3000-12-31
+     * {@link LOCAL_DATE_MAX} is not accepted as date by SQL, so this is the max date to use, 3000-12-31.
      */
     public static final LocalDate LOCAL_DATE_MAX = LocalDate.of(3000, Month.DECEMBER, 31);
 
@@ -90,7 +89,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Create an instance filtering by a single date
+     * Creates an instance filtering by a single date.
      * 
      * @param date
      * @return {@link StatisticsSummaryFilter}
@@ -100,7 +99,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Create an instance for a range of dates
+     * Creates an instance for a range of dates.
      * 
      * @param start the first date to include
      * @param end the last date to include
@@ -111,7 +110,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Create an instance for a single record identifier
+     * Creates an instance for a single record identifier.
      * 
      * @param pi
      * @return {@link StatisticsSummaryFilter}
@@ -121,7 +120,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Create an instance for all records within a single digital collection
+     * Creates an instance for all records within a single digital collection.
      * 
      * @param collectionName
      * @return {@link StatisticsSummaryFilter}
@@ -132,7 +131,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Create an instance for all records returned by a SOLR query
+     * Creates an instance for all records returned by a SOLR query.
      * 
      * @param query the SOLR query returning all record identifiers which to include in the summary
      * @return {@link StatisticsSummaryFilter}
@@ -142,7 +141,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Create an instance of a date range and a SOLR query
+     * Creates an instance of a date range and a SOLR query.
      * 
      * @param start the first date to include
      * @param end the last date to include
@@ -154,7 +153,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Check if a {@link #startDate} has been set for this filter
+     * Checks if a {@link #startDate} has been set for this filter.
      * 
      * @return true if a {@link #startDate} has been set
      */
@@ -163,7 +162,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Check if a {@link #endDate} has been set for this filter
+     * Checks if a {@link #endDate} has been set for this filter.
      * 
      * @return true if a {@link #endDate} has been set
      */
@@ -172,7 +171,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Check if the filter is set for a range of dates
+     * Checks if the filter is set for a range of dates.
      * 
      * @return true if the filter is set for a range of dates (more than a single date
      */
@@ -181,7 +180,7 @@ public final class StatisticsSummaryFilter {
     }
 
     /**
-     * Check if a SOLR query has been set for the filter
+     * Checks if a SOLR query has been set for the filter.
      * 
      * @return true if a {@link #filterQuery} has been set for this filter
      */

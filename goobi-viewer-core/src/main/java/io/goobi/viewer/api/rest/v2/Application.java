@@ -44,9 +44,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
- * <p>
  * ViewerApplication class.
- * </p>
  */
 @ApplicationPath(ApiUrls.API)
 @ViewerRestServiceBinding
@@ -55,7 +53,7 @@ public class Application extends ResourceConfig {
     private static final Logger logger = LogManager.getLogger(Application.class);
 
     /**
-     * Constructor for ViewerApplication.
+     * Creates a new ViewerApplication instance.
      * 
      * @param servletConfig
      */

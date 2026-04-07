@@ -156,10 +156,8 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     }
 
     /**
-     * <p>
      * Getter for the field <code>nestedPages</code>.
-     * </p>
-     * 
+     *
      * @param random
      * @param templateManager
      * @return a {@link java.util.List} object.
@@ -173,9 +171,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     }
 
     /**
-     * <p>
      * Getter for the field <code>nestedPages</code>.
-     * </p>
      *
      * @param random
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
@@ -195,9 +191,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     }
 
     /**
-     * <p>
      * resetData.
-     * </p>
      */
     public void resetData() {
         nestedPages = null;
@@ -241,9 +235,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
 
     /**
      * @
-     *   <p>
      *   Getter for the field <code>nestedPagesCount</code>.
-     *   </p>
      *
      * @return a int.
      */
@@ -252,9 +244,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     }
 
     /**
-     * <p>
      * Setter for the field <code>nestedPagesCount</code>.
-     * </p>
      *
      * @param nestedPages a int.
      */
@@ -263,10 +253,8 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     }
 
     /**
-     * <p>
      * getSortedCategories.
-     * </p>
-     * 
+     *
      * @param random
      * @param templateManager
      * @return a {@link java.util.List} object.
@@ -294,10 +282,8 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     }
 
     /**
-     * <p>
      * getSortedCategories.
-     * </p>
-     * 
+     *
      * @param pageNo
      * @param random
      * @param paged

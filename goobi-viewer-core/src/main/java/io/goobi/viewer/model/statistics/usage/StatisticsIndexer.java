@@ -40,10 +40,9 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 
 /**
- * Writes Indexing files for SOLR indexer
+ * Writes Indexing files for SOLR indexer.
  * 
  * @author florian
- *
  */
 public class StatisticsIndexer {
 
@@ -53,7 +52,7 @@ public class StatisticsIndexer {
     private final Path hotfolder;
 
     /**
-     * default constructor
+     * Default constructor.
      * 
      * @param hotfolder the {@link #hotfolder}
      */

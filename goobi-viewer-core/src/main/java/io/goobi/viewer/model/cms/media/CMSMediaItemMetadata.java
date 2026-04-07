@@ -27,9 +27,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 /**
- * <p>
  * CMSMediaItemMetadata class.
- * </p>
  */
 @Embeddable
 public class CMSMediaItemMetadata implements Serializable {
@@ -49,14 +47,14 @@ public class CMSMediaItemMetadata implements Serializable {
     private String alternativeText = "";
 
     /**
-     * default constructor
+     * Default constructor.
      */
     public CMSMediaItemMetadata() {
 
     }
 
     /**
-     * copy constructor
+     * Copy constructor.
      *
      * @param orig a {@link io.goobi.viewer.model.cms.media.CMSMediaItemMetadata} object.
      */
@@ -100,9 +98,7 @@ public class CMSMediaItemMetadata implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>language</code>.
-     * </p>
      *
      * @return the language
      */
@@ -111,9 +107,7 @@ public class CMSMediaItemMetadata implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>language</code>.
-     * </p>
      *
      * @param language the language to set
      */
@@ -122,9 +116,7 @@ public class CMSMediaItemMetadata implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
      * @return the name
      */
@@ -133,9 +125,7 @@ public class CMSMediaItemMetadata implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
      * @param name the name to set
      */
@@ -144,9 +134,7 @@ public class CMSMediaItemMetadata implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
      * @return the description
      */
@@ -155,9 +143,7 @@ public class CMSMediaItemMetadata implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
      * @param description the description to set
      */

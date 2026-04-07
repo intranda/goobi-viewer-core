@@ -38,9 +38,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
 /**
- * <p>
  * CmsDynamicContentBean class.
- * </p>
  *
  * @author florian
  */
@@ -55,9 +53,7 @@ public class CmsDynamicContentBean implements Serializable {
     private CMSPage cmsPage = null;
 
     /**
-     * <p>
      * getTopBarContent.
-     * </p>
      *
      * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
      */
@@ -74,9 +70,7 @@ public class CmsDynamicContentBean implements Serializable {
     }
 
     /**
-     * <p>
      * setTopBarContent.
-     * </p>
      *
      * @param topBarGroup the topBarGroup to set
      */

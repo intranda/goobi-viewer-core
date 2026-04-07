@@ -23,7 +23,6 @@ package io.goobi.viewer.model.viewer.collections;
 
 /**
  * @author florian
- *
  */
 public enum Sorting {
 

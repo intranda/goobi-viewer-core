@@ -24,9 +24,7 @@ package io.goobi.viewer.model.calendar;
 import java.text.DecimalFormat;
 
 /**
- * <p>
  * Abstract AbstractCalendarItem class.
- * </p>
  */
 public abstract class AbstractCalendarItem implements ICalendarItem {
 
@@ -43,9 +41,7 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
     }
 
     /**
-     * <p>
-     * Constructor for AbstractCalendarItem.
-     * </p>
+     * Creates a new AbstractCalendarItem instance.
      *
      * @param name a {@link java.lang.String} object.
      * @param value a int.

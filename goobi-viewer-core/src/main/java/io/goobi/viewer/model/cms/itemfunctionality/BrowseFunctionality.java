@@ -31,7 +31,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * @author florian
- *
  */
 public class BrowseFunctionality implements Functionality {
 
@@ -63,7 +62,7 @@ public class BrowseFunctionality implements Functionality {
     }
 
     /**
-     * Set the SOLR field which to browse to create the list
+     * Sets the SOLR field which to browse to create the list.
      *
      * @param field
      */
@@ -72,7 +71,7 @@ public class BrowseFunctionality implements Functionality {
     }
 
     /**
-     * Get the SOLR field which to browse to create the list
+     * Gets the SOLR field which to browse to create the list.
      *
      * @return the browseField
      */
@@ -81,7 +80,7 @@ public class BrowseFunctionality implements Functionality {
     }
 
     /**
-     * Set an additional filter to restrict the list to a subset of all records
+     * Sets an additional filter to restrict the list to a subset of all records.
      *
      * @param field
      * @param value
@@ -95,7 +94,7 @@ public class BrowseFunctionality implements Functionality {
     }
 
     /**
-     * Set the start character for which results should be displayed
+     * Sets the start character for which results should be displayed.
      *
      * @param start
      */
@@ -104,7 +103,7 @@ public class BrowseFunctionality implements Functionality {
     }
 
     /**
-     * Get the start character for which results should be displayed
+     * Gets the start character for which results should be displayed.
      *
      * @return String
      */
@@ -124,7 +123,7 @@ public class BrowseFunctionality implements Functionality {
     }
 
     /**
-     * Resets the current browse page and the current string filter
+     * Resets the current browse page and the current string filter.
      */
     public void reset() {
         bean.setCurrentStringFilter("");

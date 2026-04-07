@@ -24,9 +24,7 @@ package io.goobi.viewer.model.search;
 import java.io.Serializable;
 
 /**
- * <p>
  * SearchFilter class.
- * </p>
  */
 public class SearchFilter implements Serializable {
 
@@ -83,9 +81,7 @@ public class SearchFilter implements Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for SearchFilter.
-     * </p>
+     * Creates a new SearchFilter instance.
      *
      * @param label a {@link java.lang.String} object.
      * @param field a {@link java.lang.String} object.
@@ -99,9 +95,7 @@ public class SearchFilter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>label</code>.
-     * </p>
      *
      * @return the label
      */
@@ -110,9 +104,7 @@ public class SearchFilter implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>label</code>.
-     * </p>
      *
      * @param label the label to set
      */
@@ -121,9 +113,7 @@ public class SearchFilter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>field</code>.
-     * </p>
      *
      * @return the field
      */
@@ -132,9 +122,7 @@ public class SearchFilter implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>field</code>.
-     * </p>
      *
      * @param field the field to set
      */

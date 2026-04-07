@@ -24,9 +24,7 @@ package io.goobi.viewer.exceptions;
 import java.io.Serializable;
 
 /**
- * <p>
  * HTTPException class.
- * </p>
  */
 public class HTTPException extends Exception implements Serializable {
 
@@ -35,9 +33,7 @@ public class HTTPException extends Exception implements Serializable {
     private final int code;
 
     /**
-     * <p>
-     * Constructor for HTTPException.
-     * </p>
+     * Creates a new HTTPException instance.
      *
      * @param string {@link java.lang.String}
      * @param code a int.
@@ -48,9 +44,7 @@ public class HTTPException extends Exception implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>code</code>.
-     * </p>
      *
      * @return the code
      */

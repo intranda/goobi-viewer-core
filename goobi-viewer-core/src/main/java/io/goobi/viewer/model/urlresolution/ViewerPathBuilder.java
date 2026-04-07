@@ -47,7 +47,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * This class offers static methods to create {@link ViewerPath ViewerPaths} from a http request.
+ * Offers static methods to create {@link ViewerPath ViewerPaths} from a http request.
  *
  * @author Florian Alpers
  */
@@ -61,9 +61,9 @@ public final class ViewerPathBuilder {
 
     /**
      * Returns the request path of the given {@code httpRequest} as a {@link io.goobi.viewer.model.urlresolution.ViewerPath}, including information on
-     * associated CMSPage and targeted PageType
+     * associated CMSPage and targeted PageType.
      *
-     * If the url has a pretty-url context and only consists of the server url, "/index" is appended to the url to redirect to the index
+     * <p>If the url has a pretty-url context and only consists of the server url, "/index" is appended to the url to redirect to the index
      * pretty-mapping Any occurrences of "index.(x)html" are removed from the url to get the actual pretty url
      *
      * @param httpRequest The request from which the path is generated
@@ -86,9 +86,7 @@ public final class ViewerPathBuilder {
     }
 
     /**
-     * <p>
      * createPath.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param baseUrl a {@link java.lang.String} object.
@@ -112,7 +110,8 @@ public final class ViewerPathBuilder {
     /**
      * Create a combined path from the given url.
      *
-     * If the url leads to a known PageType, associates the PageType with the combined path. If the path leads to a cmsPage, either through direct url
+     * <p>If the url leads to a known PageType, associates the PageType with the combined path. If the path leads to a cmsPage, either through direct
+     * url
      * {@code /cmds/...}, the cmsPages alternative url or a static page mapping, the cmsPage is associated with this path
      *
      * @param applicationUrl The absolute url of the web-application including the application name ('viewer')
@@ -191,7 +190,7 @@ public final class ViewerPathBuilder {
     }
 
     /**
-     * Gets the best matching CMSPage which alternative url ('persistent url') matches the beginning of the given path
+     * Gets the best matching CMSPage which alternative url ('persistent url') matches the beginning of the given path.
      *
      * @param servicePath a {@link java.net.URI} object.
      * @return a {@link java.util.Optional} object.
@@ -217,9 +216,7 @@ public final class ViewerPathBuilder {
     }
 
     /**
-     * <p>
      * getCampaign.
-     * </p>
      *
      * @param servicePath a {@link java.net.URI} object.
      * @return a {@link java.util.Optional} object.
@@ -242,7 +239,7 @@ public final class ViewerPathBuilder {
     }
 
     /**
-     * Gets the {@link io.goobi.viewer.model.viewer.PageType} that the given path refers to, if any
+     * Gets the {@link io.goobi.viewer.model.viewer.PageType} that the given path refers to, if any.
      *
      * @param servicePath a {@link java.net.URI} object.
      * @return a {@link java.util.Optional} object.
@@ -332,9 +329,7 @@ public final class ViewerPathBuilder {
     }
 
     /**
-     * <p>
      * resolve.
-     * </p>
      *
      * @param master a {@link java.net.URI} object.
      * @param slave a {@link java.net.URI} object.
@@ -357,9 +352,7 @@ public final class ViewerPathBuilder {
     }
 
     /**
-     * <p>
      * resolve.
-     * </p>
      *
      * @param master a {@link java.net.URI} object.
      * @param slave a {@link java.lang.String} object.

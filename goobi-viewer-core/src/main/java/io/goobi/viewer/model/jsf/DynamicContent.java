@@ -27,7 +27,6 @@ import java.util.Map;
 
 /**
  * @author florian
- *
  */
 public class DynamicContent implements Serializable {
 

@@ -38,10 +38,9 @@ import jakarta.persistence.Entity;
 
 /**
  * A subtype of {@link CustomSidebarWidget} to display a list of possible values of a given SOLR field and link to a search listing of items with a
- * specific value
+ * specific value.
  *
  * @author florian
- *
  */
 @Entity
 @DiscriminatorValue("FacetFieldSidebarWidget")
@@ -57,14 +56,14 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     private int numEntries = 5;
 
     /**
-     * Empty default constructor
+     * Empty default constructor.
      */
     public FacetFieldSidebarWidget() {
 
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      *
      * @param o
      */
@@ -76,7 +75,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Contains the SOLR field holding the values to list
+     * Contains the SOLR field holding the values to list.
      * 
      * @return the facetField
      */
@@ -85,7 +84,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Set the SOLR field for which to list values
+     * Sets the SOLR field for which to list values.
      * 
      * @param facetField the facetField to set
      */
@@ -154,7 +153,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Set the number of field values displayed in the widget
+     * Sets the number of field values displayed in the widget.
      * 
      * @param numEntries
      */
@@ -163,7 +162,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Override default title to always show the selected facetField
+     * Override default title to always show the selected facetField.
      */
     @Override
     public TranslatedText getTitle() {

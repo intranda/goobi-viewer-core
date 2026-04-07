@@ -51,9 +51,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
- * <p>
  * WatermarkHandler class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -75,7 +73,7 @@ public class WatermarkHandler implements Serializable {
             SolrConstants.ISWORK, SolrConstants.ISANCHOR, SolrConstants.DOCSTRCT, SolrConstants.DATAREPOSITORY };
 
     /**
-     * caches all watermark texts for documents by document pi.
+     * Caches all watermark texts for documents by document pi.
      */
     private final Map<String, String> documentWatermarkTextMap = new HashMap<>();
     private final List<String> watermarkTextConfiguration;
@@ -83,9 +81,7 @@ public class WatermarkHandler implements Serializable {
     private final String servletPath;
 
     /**
-     * <p>
-     * Constructor for WatermarkHandler.
-     * </p>
+     * Creates a new WatermarkHandler instance.
      *
      * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
      * @param servletPath a {@link java.lang.String} object.
@@ -302,7 +298,7 @@ public class WatermarkHandler implements Serializable {
     }
 
     /**
-     * Return the watermark id for the given {@link io.goobi.viewer.model.viewer.StructElement}.
+     * Returns the watermark id for the given {@link io.goobi.viewer.model.viewer.StructElement}.
      *
      * @param topDocument a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.util.Optional} object.

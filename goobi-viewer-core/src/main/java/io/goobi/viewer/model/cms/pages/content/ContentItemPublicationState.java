@@ -22,19 +22,18 @@
 package io.goobi.viewer.model.cms.pages.content;
 
 /**
- * The publication state of a content item, determining what kind of users may see the item on a page
+ * The publication state of a content item, determining what kind of users may see the item on a page.
  * 
  * @author florian
- *
  */
 public enum ContentItemPublicationState {
 
     /**
-     * Viewable for all users
+     * Viewable for all users.
      */
     PUBLISHED,
     /**
-     * Viewable for users with administration rights
+     * Viewable for users with administration rights.
      */
     ADMINISTRATOR;
 }

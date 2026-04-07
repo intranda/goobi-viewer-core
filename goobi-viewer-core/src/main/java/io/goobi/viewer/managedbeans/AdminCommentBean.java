@@ -53,7 +53,7 @@ import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * <p>AdminCommentBean class.</p>
+ * <p>AdminCommentBean class.
  */
 @Named
 @SessionScoped
@@ -73,7 +73,7 @@ public class AdminCommentBean implements Serializable {
     private Comment currentComment = null;
 
     /**
-     * <p>init.</p>
+     * <p>init.
      *
      * @should sort lazyModelComments by dateCreated desc by default
      */
@@ -155,7 +155,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>isUserCommentsEnabled.</p>
+     * <p>isUserCommentsEnabled.
      *
      * @return true if comments enabled; false otherwise
      */
@@ -168,7 +168,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>userBean</code>.</p>
+     * <p>Setter for the field <code>userBean</code>.
      *
      * @param userBean a {@link io.goobi.viewer.managedbeans.UserBean} object
      */
@@ -177,7 +177,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>userBean</code>.</p>
+     * <p>Getter for the field <code>userBean</code>.
      *
      * @return a {@link io.goobi.viewer.managedbeans.UserBean} object
      */
@@ -186,7 +186,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>setUserCommentsEnabled.</p>
+     * <p>setUserCommentsEnabled.
      *
      * @param userCommentsEnabled a boolean
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -199,7 +199,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>getAllCommentGroups.</p>
+     * <p>getAllCommentGroups.
      *
      * @return All comment groups in the database
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -209,7 +209,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>getCommentGroupsForUser.</p>
+     * <p>getCommentGroupsForUser.
      *
      * @param user Current user
      * @return Filtered list of available {@link io.goobi.viewer.model.annotation.comments.CommentGroup}s to the given user
@@ -238,14 +238,14 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>resetCurrentCommentGroupAction.</p>
+     * <p>resetCurrentCommentGroupAction.
      */
     public void resetCurrentCommentGroupAction() {
         currentCommentGroup = null;
     }
 
     /**
-     * <p>newCurrentCommentGroupAction.</p>
+     * <p>newCurrentCommentGroupAction.
      */
     public void newCurrentCommentGroupAction() {
         logger.trace("newCurrentCommentGroupAction");
@@ -253,7 +253,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>saveCurentCommentGroupAction.</p>
+     * <p>saveCurentCommentGroupAction.
      *
      * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -263,9 +263,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * saveCommentGroupAction.
-     * </p>
      *
      * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
      * @return Navigation outcome
@@ -292,9 +290,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteCommentGroupAction.
-     * </p>
      *
      * @param commentGroup a {@link io.goobi.viewer.model.annotation.comments.CommentGroup} object.
      * @return Navigation outcome
@@ -313,16 +309,14 @@ public class AdminCommentBean implements Serializable {
     // Comments
 
     /**
-     * <p>resetCurrentCommentAction.</p>
+     * <p>resetCurrentCommentAction.
      */
     public void resetCurrentCommentAction() {
         currentComment = null;
     }
 
     /**
-     * <p>
      * saveCommentAction.
-     * </p>
      *
      * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -349,9 +343,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * deleteCommentAction.
-     * </p>
      *
      * @param comment a {@link io.goobi.viewer.model.annotation.comments.Comment} object.
      * @return a {@link java.lang.String} object.
@@ -368,9 +360,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>lazyModelComments</code>.
-     * </p>
      *
      * @return the lazyModelComments
      */
@@ -379,9 +369,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * getPageComments.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
@@ -390,7 +378,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentCommentGroup</code>.</p>
+     * <p>Getter for the field <code>currentCommentGroup</code>.
      *
      * @return the currentCommentGroup
      */
@@ -399,7 +387,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentCommentGroup</code>.</p>
+     * <p>Setter for the field <code>currentCommentGroup</code>.
      *
      * @param currentCommentGroup the currentCommentGroup to set
      */
@@ -444,9 +432,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectedComment</code>.
-     * </p>
      *
      * @return the selectedComment
      */
@@ -455,9 +441,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>selectedComment</code>.
-     * </p>
      *
      * @param selectedComment the selectedComment to set
      */

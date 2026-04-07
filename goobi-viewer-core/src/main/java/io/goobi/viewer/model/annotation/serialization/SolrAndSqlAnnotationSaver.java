@@ -30,7 +30,6 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
  * @author florian
- *
  */
 public class SolrAndSqlAnnotationSaver implements AnnotationSaver {
 

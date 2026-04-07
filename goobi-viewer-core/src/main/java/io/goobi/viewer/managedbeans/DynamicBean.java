@@ -42,7 +42,6 @@ import io.goobi.viewer.model.jsf.DynamicContentType;
 
 /**
  * @author florian
- *
  */
 @Named
 @ViewScoped
@@ -90,7 +89,6 @@ public class DynamicBean implements Serializable {
     }
 
     /**
-     *
      */
     private void loadHeadGroup() {
         this.headGroup = new HtmlPanelGroup();
@@ -103,7 +101,6 @@ public class DynamicBean implements Serializable {
 
     /**
      * @throws DAOException
-     *
      */
     private void loadFormGroup() {
 

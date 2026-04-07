@@ -67,9 +67,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.WebApplicationException;
 
 /**
- * <p>
  * DownloadBean class.
- * </p>
  */
 @Named
 @ViewScoped
@@ -91,9 +89,7 @@ public class DownloadBean implements Serializable {
     private String email = BeanUtils.getUserBean().getEmail();
 
     /**
-     * <p>
      * reset.
-     * </p>
      */
     public void reset() {
         synchronized (this) {
@@ -103,9 +99,7 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * openDownloadAction.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -135,9 +129,7 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * getQueuePosition.
-     * </p>
      *
      * @return a int
      */
@@ -150,9 +142,7 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.controller.mq.ViewerMessage} object
      */
@@ -161,9 +151,7 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * downloadFileAction.
-     * </p>
      *
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
@@ -224,9 +212,7 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>downloadIdentifier</code>.
-     * </p>
      *
      * @return the downloadIdentifier
      */
@@ -243,9 +229,7 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>downloadIdentifier</code>.
-     * </p>
      *
      * @param downloadIdentifier the downloadIdentifier to set
      */

@@ -45,10 +45,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
 
 /**
- * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget
+ * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget.
  *
  * @author florian
- *
  */
 @Entity
 @DiscriminatorValue("MULTI")
@@ -181,7 +180,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
 
     /**
      * Check if the given pi is a match for the query of the record note The pi is a match if the record note query combined with a query for the
-     * given pi returns at least one result
+     * given pi returns at least one result.
      *
      * @param pi
      * @return true if pi matches query; false otherwise

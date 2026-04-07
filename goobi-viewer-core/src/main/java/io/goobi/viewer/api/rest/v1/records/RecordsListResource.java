@@ -69,10 +69,9 @@ import jakarta.ws.rs.core.Response;
 
 /**
  *
- * provides listings of records in reduced iiif form.
+ * Provides listings of records in reduced iiif form.
  *
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(RECORDS_LIST)
 @ViewerRestServiceBinding
@@ -80,7 +79,6 @@ import jakarta.ws.rs.core.Response;
 public class RecordsListResource {
 
     /**
-     *
      */
     private static final int DEFAULT_MAX_ROWS = 100;
     private static final Logger logger = LogManager.getLogger(RecordsListResource.class);

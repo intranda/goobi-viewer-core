@@ -52,11 +52,11 @@ public class RecordLockManager {
      * @param pi Record identifier
      * @param sessionId HTTP session ID
      * @param limit Optional number of concurrent views for the record
+     * @return a {@link LockRecordResult}, indicating that either a lock has been set, the lock limit was exceeded or that no action was necessary
      * @throws IllegalArgumentException if the given pi is null
      * @should add record lock to map correctly
      * @should do nothing if limit null
      * @should do nothing if session id already in list
-     * @return a {@link LockRecordResult}, indicating that either a lock has been set, the lock limit was exceeded or that no action was necessary
      */
     public synchronized LockRecordResult lockRecord(String pi, String sessionId, Integer limit) {
         logger.trace("lockRecord: {}", pi);

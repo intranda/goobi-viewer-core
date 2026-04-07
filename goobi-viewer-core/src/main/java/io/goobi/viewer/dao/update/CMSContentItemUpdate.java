@@ -40,7 +40,6 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
  * from all entries and writes them into the table again as Text
  *
  * @author florian
- *
  */
 public class CMSContentItemUpdate implements IModelUpdate {
 

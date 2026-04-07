@@ -86,9 +86,7 @@ public class RelatedPIValidator extends PIValidator {
     }
 
     /**
-     * <p>
      * validatePi.
-     * </p>
      *
      * @param pi a {@link java.lang.String} object.
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.

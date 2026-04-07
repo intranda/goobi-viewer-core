@@ -53,9 +53,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * <p>
  * CollectionBuilder class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -64,7 +62,7 @@ public class CollectionBuilder extends AbstractBuilder {
     private static final Logger logger = LogManager.getLogger(CollectionBuilder.class);
 
     /**
-     * Required field to create manifest stubs for works in collection
+     * Required field to create manifest stubs for works in collection.
      */
     public static final String[] CONTAINED_WORKS_QUERY_FIELDS =
             { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,

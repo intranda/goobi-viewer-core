@@ -40,7 +40,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * An authentication provider using the local login provided by the viewer database
+ * An authentication provider using the local login provided by the viewer database.
  *
  * @author Florian Alpers
  */
@@ -57,9 +57,7 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     private BCrypt bcrypt = new BCrypt();
 
     /**
-     * <p>
-     * Constructor for LocalAuthenticationProvider.
-     * </p>
+     * Creates a new LocalAuthenticationProvider instance.
      *
      * @param name a {@link java.lang.String} object.
      */

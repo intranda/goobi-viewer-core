@@ -75,7 +75,6 @@ import jakarta.ws.rs.core.StreamingOutput;
  * @author florian
  *
  *         Used to call ContentServer with external image resource URLs
- *
  */
 @Path(EXTERNAL_IMAGES)
 @ContentServerBinding

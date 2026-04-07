@@ -24,9 +24,7 @@ package io.goobi.viewer.model.metadata;
 import java.io.Serializable;
 
 /**
- * <p>
  * MetadataReplaceRule class.
- * </p>
  */
 public class MetadataReplaceRule implements Serializable {
 

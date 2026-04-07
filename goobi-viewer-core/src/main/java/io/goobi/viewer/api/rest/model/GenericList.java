@@ -27,10 +27,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * <p>
  * GenericList class.
- * </p>
- * 
+ *
  * @param <T>
  */
 public class GenericList<T> {
@@ -38,18 +36,14 @@ public class GenericList<T> {
     private List<T> list;
 
     /**
-     * <p>
-     * Constructor for GenericList.
-     * </p>
+     * Creates a new GenericList instance.
      */
     public GenericList() {
         this.list = Collections.emptyList();
     }
 
     /**
-     * <p>
-     * Constructor for GenericList.
-     * </p>
+     * Creates a new GenericList instance.
      *
      * @param theList a {@link java.util.List} object.
      */
@@ -58,9 +52,7 @@ public class GenericList<T> {
     }
 
     /**
-     * <p>
      * Getter for the field <code>list</code>.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */

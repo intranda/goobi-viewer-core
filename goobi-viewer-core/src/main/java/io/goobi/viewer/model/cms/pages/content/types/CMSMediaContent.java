@@ -210,9 +210,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
     }
 
     /**
-     * <p>
      * getMediaName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -222,9 +220,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
     }
 
     /**
-     * <p>
      * getMediaDescription.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -234,9 +230,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder, Compa
     }
 
     /**
-     * <p>
      * getMediaMetadata.
-     * </p>
      *
      * @return The media item metadata object of the current language associated with the contentItem with the given itemId. May return null if no
      *         such item exists

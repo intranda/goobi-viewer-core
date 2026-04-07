@@ -22,9 +22,7 @@
 package io.goobi.viewer.model.security.authentication.model;
 
 /**
- * <p>
  * UserPasswordAuthenticationRequest class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -34,17 +32,13 @@ public class UserPasswordAuthenticationRequest {
     protected String password;
 
     /**
-     * <p>
-     * Constructor for XServiceAuthenticationRequest.
-     * </p>
+     * Creates a new XServiceAuthenticationRequest instance.
      */
     public UserPasswordAuthenticationRequest() {
     }
 
     /**
-     * <p>
-     * Constructor for XServiceAuthenticationRequest.
-     * </p>
+     * Creates a new XServiceAuthenticationRequest instance.
      *
      * @param username a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
@@ -56,9 +50,7 @@ public class UserPasswordAuthenticationRequest {
     }
 
     /**
-     * <p>
      * Getter for the field <code>username</code>.
-     * </p>
      *
      * @return the username
      */
@@ -67,9 +59,7 @@ public class UserPasswordAuthenticationRequest {
     }
 
     /**
-     * <p>
      * Getter for the field <code>password</code>.
-     * </p>
      *
      * @return the password
      */
@@ -78,9 +68,7 @@ public class UserPasswordAuthenticationRequest {
     }
 
     /**
-     * <p>
      * Setter for the field <code>username</code>.
-     * </p>
      *
      * @param username the username to set
      */
@@ -89,9 +77,7 @@ public class UserPasswordAuthenticationRequest {
     }
 
     /**
-     * <p>
      * Setter for the field <code>password</code>.
-     * </p>
      *
      * @param password the password to set
      */

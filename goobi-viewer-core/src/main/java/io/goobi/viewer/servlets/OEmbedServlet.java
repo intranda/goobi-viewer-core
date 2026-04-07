@@ -65,9 +65,7 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
     private static final Logger logger = LogManager.getLogger(OEmbedServlet.class);
 
     /**
-     * <p>
-     * Constructor for OEmbedServlet.
-     * </p>
+     * Creates a new OEmbedServlet instance.
      *
      * @see HttpServlet#HttpServlet()
      */

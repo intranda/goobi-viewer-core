@@ -92,7 +92,7 @@ public class IIIFSearchBuilder {
     private final HttpServletRequest request;
 
     /**
-     * Initializes the builder with all required parameters
+     * Initializes the builder with all required parameters.
      *
      * @param urls
      * @param query the query string
@@ -108,9 +108,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>query</code>.
-     * </p>
      *
      * @return the query
      */
@@ -119,9 +117,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
      * @return the pi
      */
@@ -130,9 +126,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Setter for the field <code>motivation</code>.
-     * </p>
      *
      * @param motivation the motivation to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
@@ -145,9 +139,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>motivation</code>.
-     * </p>
      *
      * @return the motivation
      */
@@ -163,9 +155,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Setter for the field <code>user</code>.
-     * </p>
      *
      * @param user the user to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
@@ -176,9 +166,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>user</code>.
-     * </p>
      *
      * @return the user
      */
@@ -187,9 +175,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Setter for the field <code>date</code>.
-     * </p>
      *
      * @param date the date to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
@@ -200,9 +186,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>date</code>.
-     * </p>
      *
      * @return the date
      */
@@ -211,9 +195,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>min</code>.
-     * </p>
      *
      * @return the min
      */
@@ -222,9 +204,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Setter for the field <code>min</code>.
-     * </p>
      *
      * @param min the min to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
@@ -235,9 +215,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Setter for the field <code>page</code>.
-     * </p>
      *
      * @param page the page to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
@@ -250,9 +228,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>page</code>.
-     * </p>
      *
      * @return the page
      */
@@ -261,9 +237,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>hitsPerPage</code>.
-     * </p>
      *
      * @return the hitsPerPage
      */
@@ -272,9 +246,7 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * <p>
      * Setter for the field <code>hitsPerPage</code>.
-     * </p>
      *
      * @param hitsPerPage the hitsPerPage to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.

@@ -28,9 +28,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * <p>
  * TableDataFilter class.
- * </p>
  */
 public class TableDataFilter implements Serializable {
 
@@ -42,9 +40,7 @@ public class TableDataFilter implements Serializable {
     private final TableDataProvider<?> owner;
 
     /**
-     * <p>
-     * Constructor for TableDataFilter.
-     * </p>
+     * Creates a new TableDataFilter instance.
      *
      * @param owner a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object.
      * @param columns a {@link java.lang.String} object.
@@ -57,7 +53,7 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>Constructor for TableDataFilter.</p>
+     * <p>Constructor for TableDataFilter.
      *
      * @param columns a {@link java.lang.String} object
      */
@@ -66,9 +62,7 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>column</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -77,7 +71,7 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>getName.</p>
+     * <p>getName.
      *
      * @return a {@link java.lang.String} object
      */
@@ -86,9 +80,7 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>value</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -97,9 +89,7 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>value</code>.
-     * </p>
      *
      * @param value a {@link java.lang.String} object.
      */
@@ -112,9 +102,7 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>joinTable</code>.
-     * </p>
      *
      * @return the joinTable
      */
@@ -123,7 +111,7 @@ public class TableDataFilter implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>joinTable</code>.</p>
+     * <p>Setter for the field <code>joinTable</code>.
      *
      * @param joinTable a {@link java.lang.String} object
      */

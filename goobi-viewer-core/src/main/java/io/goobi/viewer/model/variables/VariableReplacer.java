@@ -83,7 +83,7 @@ public class VariableReplacer {
     private final Map<String, Map<String, List<String>>> replacementsMap;
 
     /**
-     * Take variable values from current struct element and page of the given navigationHelper
+     * Take variable values from current struct element and page of the given navigationHelper.
      * 
      * @param viewManager
      * @throws IndexUnreachableException
@@ -121,7 +121,7 @@ public class VariableReplacer {
     }
 
     /**
-     * Specifically replace the variables defined in the given replacement map
+     * Specifically replace the variables defined in the given replacement map.
      * 
      * @param replacementsMap
      */
@@ -131,7 +131,7 @@ public class VariableReplacer {
     }
 
     /**
-     * Only replace configuration variables
+     * Only replace configuration variables.
      * 
      * @param configuration
      */
@@ -140,7 +140,7 @@ public class VariableReplacer {
     }
 
     /**
-     * Take variable values from global configuration and the given struct element
+     * Take variable values from global configuration and the given struct element.
      * 
      * @param struct
      */
@@ -165,7 +165,7 @@ public class VariableReplacer {
     }
 
     /**
-     * Return a single string which only uses the first replacement values for each variable if there is more than one
+     * Returns a single string which only uses the first replacement values for each variable if there is more than one.
      * 
      * @param template
      * @return the string with replaced variables
@@ -175,7 +175,7 @@ public class VariableReplacer {
     }
 
     /**
-     * Concatenate all returned strings of {@link #replace(String)}, separated by the given separator
+     * Concatenate all returned strings of {@link #replace(String)}, separated by the given separator.
      * 
      * @param template
      * @param separator
@@ -186,7 +186,7 @@ public class VariableReplacer {
     }
 
     /**
-     * Add a custom replacement variable
+     * Adds a custom replacement variable.
      * 
      * @param s
      * @param value
@@ -197,7 +197,7 @@ public class VariableReplacer {
     }
 
     /**
-     * return a new {@link Metadata} object with the replaced values of the given metadata object as values
+     * Return a new {@link Metadata} object with the replaced values of the given metadata object as values.
      * 
      * @param metadata
      * @return a new metadata object
@@ -207,7 +207,7 @@ public class VariableReplacer {
     }
 
     /**
-     * return a new {@link IMetadataValue} object with the replaced values of the given object as values
+     * Return a new {@link IMetadataValue} object with the replaced values of the given object as values.
      * 
      * @param value
      * @return a new IMetadata value

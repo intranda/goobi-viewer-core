@@ -53,7 +53,6 @@ import io.goobi.viewer.solr.SolrTools;
 
 /**
  * @author florian
- *
  */
 public class AbstractAnnotationBuilder {
 
@@ -84,7 +83,7 @@ public class AbstractAnnotationBuilder {
     }
 
     /**
-     * Search for both UGC docs with given IDDOC and with MD_ANNOTATION_ID = "annotation_<id>". Searching for IDDOC is only included for backwards
+     * Searches for both UGC docs with given IDDOC and with MD_ANNOTATION_ID = "annotation_<id>". Searching for IDDOC is only included for backwards
      * compatibility purposes. The correct identifier is MD_ANNOTATION_ID since it reflects the original sql identifier
      *
      * @param id
@@ -108,7 +107,7 @@ public class AbstractAnnotationBuilder {
     }
 
     /**
-     * Return sort fields to sort results ascending after topstruct PI, then page order, then IDDOC;
+     * Returns sort fields to sort results ascending after topstruct PI, then page order, then IDDOC;
      *
      * @return sort fields for PI_TOPSTRUCT, ORDER and IDDOC
      */

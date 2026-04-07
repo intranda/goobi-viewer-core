@@ -101,7 +101,6 @@ import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(RECORDS_FILES)
 @ViewerRestServiceBinding
@@ -136,7 +135,7 @@ public class RecordFileResource {
         this.servletResponse = response;
         this.pi = pi;
         /**
-         * required to count download statistics in {@link RecordFileDownloadFilter}
+         * Required to count download statistics in {@link RecordFileDownloadFilter}
          */
         servletRequest.setAttribute("pi", pi);
     }

@@ -68,9 +68,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     private boolean randomizeItems = false;
 
     /**
-     * <p>
-     * Constructor for CMSContentItemTemplate.
-     * </p>
+     * Creates a new CMSContentItemTemplate instance.
      *
      * @param type a CMSContentItemType object.
      */
@@ -91,9 +89,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /**
-     * <p>
      * Setter for the field <code>mode</code>.
-     * </p>
      *
      * @param mode the mode to set
      */
@@ -119,9 +115,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /**
-     * <p>
      * Setter for the field <code>inlineHelp</code>.
-     * </p>
      *
      * @param inlineHelp the inlineHelp to set
      */
@@ -134,9 +128,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /**
-     * <p>
      * Setter for the field <code>mediaFilter</code>.
-     * </p>
      *
      * @param mediaFilter the mediaFilter to set
      */
@@ -153,9 +145,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /**
-     * <p>
      * Setter for the field <code>preview</code>.
-     * </p>
      *
      * @param preview the preview to set
      */

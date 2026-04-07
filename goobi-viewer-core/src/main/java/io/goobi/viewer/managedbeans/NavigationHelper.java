@@ -168,9 +168,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * init.
-     * </p>
      */
     @PostConstruct
     public void init() {
@@ -184,7 +182,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Required setter for ManagedProperty injection
+     * Required setter for ManagedProperty injection.
      *
      * @param breadcrumbBean the breadcrumbBean to set
      */
@@ -193,9 +191,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * searchPage.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -205,9 +201,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * homePage.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -217,9 +211,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * browsePage.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -229,9 +221,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>currentPage</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -240,9 +230,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * isCmsPage.
-     * </p>
      *
      * @return the isCmsPage
      */
@@ -251,9 +239,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setCmsPage.
-     * </p>
      *
      * @param isCmsPage the isCmsPage to set
      */
@@ -262,7 +248,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Produce an identifier string for a cms page to use for identifying the page in the navigation bar
+     * Produce an identifier string for a cms page to use for identifying the page in the navigation bar.
      *
      * @param cmsPage
      * @return {@link String}
@@ -296,9 +282,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentPage</code>.
-     * </p>
      *
      * @param currentPage a {@link java.lang.String} object.
      */
@@ -310,7 +294,8 @@ public class NavigationHelper implements Serializable {
     /**
      * Sets the current page for the error page, mapping generic error types (general, general_no_url)
      * to the "error" page name so that the browser title shows "Fehler" instead of unrelated translations.
-     * Specific error types (e.g. recordNotFound, download) are passed through directly so that
+     *
+     * <p>Specific error types (e.g. recordNotFound, download) are passed through directly so that
      * their own message keys are used as the page title.
      *
      * @param errorType the error type string set by the exception handler; may be null
@@ -324,9 +309,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentPage</code>.
-     * </p>
      *
      * @param currentPage a {@link java.lang.String} object.
      * @param resetBreadcrubs a boolean.
@@ -338,9 +321,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>currentPage</code>.
-     * </p>
      *
      * @param currentPage a {@link java.lang.String} object.
      * @param resetBreadcrubs a boolean.
@@ -366,9 +347,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setCurrentBreadcrumbPage.
-     * </p>
      *
      * @param pageName a {@link java.lang.String} object.
      * @param pageWeight a {@link java.lang.String} object.
@@ -407,18 +386,14 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setCurrentPageIndex.
-     * </p>
      */
     public void setCurrentPageIndex() {
         setCurrentPage(HOME_PAGE, true, true);
     }
 
     /**
-     * <p>
      * setCurrentPageSearch.
-     * </p>
      */
     public void setCurrentPageSearch() {
         setCurrentPage(SEARCH_PAGE, true, true);
@@ -426,9 +401,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setCurrentPageBrowse.
-     * </p>
      */
     public void setCurrentPageBrowse() {
         setCurrentPage(BROWSE_PAGE, true, true);
@@ -436,9 +409,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setCurrentPageBrowse.
-     * </p>
      *
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      */
@@ -452,9 +423,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setCurrentPageTags.
-     * </p>
      */
     public void setCurrentPageTags() {
         setCurrentPage(TAGS_PAGE, true, true);
@@ -463,9 +432,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setCurrentPageStatistics.
-     * </p>
      */
     public void setCurrentPageStatistics() {
         setCurrentPage("statistics", true, true);
@@ -474,7 +441,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Set the current page to a crowdsourcing annotation page with the given campaign as parent and the given pi as current identifier
+     * Sets the current page to a crowdsourcing annotation page with the given campaign as parent and the given pi as current identifier.
      *
      * @param campaign a {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign} object.
      * @param pi a {@link java.lang.String} object.
@@ -499,18 +466,14 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setCurrentPageUser.
-     * </p>
      */
     public void setCurrentPageUser() {
         setCurrentPage("user", false, true);
     }
 
     /**
-     * <p>
      * setCurrentPageAdmin.
-     * </p>
      *
      * @param pageName a {@link java.lang.String} object.
      */
@@ -571,18 +534,14 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setCurrentPageAdmin.
-     * </p>
      */
     public void setCurrentPageAdmin() {
         setCurrentPageAdmin("adminAllUsers");
     }
 
     /**
-     * <p>
      * setCurrentPageSitelinks.
-     * </p>
      */
     public void setCurrentPageSitelinks() {
         setCurrentPage("sitelinks", true, true);
@@ -592,9 +551,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setCurrentPageTimeMatrix.
-     * </p>
      */
     public void setCurrentPageTimeMatrix() {
         setCurrentPage("timeMatrix", true, true);
@@ -602,18 +559,14 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setCurrentPageSearchTermList.
-     * </p>
      */
     public void setCurrentPageSearchTermList() {
         setCurrentPage(SEARCH_TERM_LIST_PAGE, false, true);
     }
 
     /**
-     * <p>
      * resetCurrentPage.
-     * </p>
      */
     public void resetCurrentPage() {
         logger.trace("resetCurrentPage");
@@ -621,9 +574,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getViewAction.
-     * </p>
      *
      * @param view a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -633,9 +584,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentView.
-     * </p>
      *
      * @return the currentView
      * @should return value correctly
@@ -657,9 +606,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getDefaultLocale.
-     * </p>
      *
      * @return a {@link java.util.Locale} object.
      */
@@ -672,9 +619,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>locale</code>.
-     * </p>
      *
      * @return a {@link java.util.Locale} object.
      */
@@ -684,9 +629,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * Returns the language code of the current <code>locale</code> in the ISO 639-1 (two-character) format.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -695,9 +638,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getSupportedLocales.
-     * </p>
      *
      * @return a {@link java.util.Iterator} object.
      */
@@ -737,9 +678,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setLocaleString.
-     * </p>
      *
      * @param inLocale a {@link java.lang.String} object.
      */
@@ -778,9 +717,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getDatePattern.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -853,18 +790,14 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * reload.
-     * </p>
      */
     public void reload() {
         //noop
     }
 
     /**
-     * <p>
      * getApplicationUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -887,9 +820,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -905,9 +836,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getRssUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -920,12 +849,10 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getRequestPath.
-     * </p>
      *
-     * @return the complete Request Path, eg http://hostname.de/viewer/pathxyz/pathxyz/
      * @param externalContext a {@link jakarta.faces.context.ExternalContext} object.
+     * @return the complete Request Path, eg http://hostname.de/viewer/pathxyz/pathxyz/
      */
     public String getRequestPath(ExternalContext externalContext) {
         ExternalContext exContext = externalContext;
@@ -937,9 +864,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getRequestPath.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param prettyFacesURI a {@link java.lang.String} object.
@@ -970,9 +895,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getFullRequestUrl.
-     * </p>
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param prettyFacesURI a {@link java.lang.String} object.
@@ -1006,9 +929,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getTimeZone.
-     * </p>
      *
      * @return a {@link java.util.TimeZone} object.
      */
@@ -1017,9 +938,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setMenuPage.
-     * </p>
      *
      * @param page a {@link java.lang.String} object.
      * @should set value correctly
@@ -1029,9 +948,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getMenuPage.
-     * </p>
      *
      * @should return value correctly
      * @return a {@link java.lang.String} object.
@@ -1041,9 +958,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>theme</code>.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1069,7 +984,6 @@ public class NavigationHelper implements Serializable {
      *
      * @return the subtheme name determined from current cmsPage or current document. If {@link Configuration#getSubthemeDiscriminatorField} is blank,
      *         always return an empty string
-     *
      */
     public String determineCurrentSubThemeDiscriminatorValue() {
         // Automatically set the sub-theme discriminator value to the
@@ -1101,9 +1015,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setSubThemeDiscriminatorValue.
-     * </p>
      *
      * @param subThemeDiscriminatorValue a {@link java.lang.String} object.
      * @should set value correctly
@@ -1141,9 +1053,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * resetTheme.
-     * </p>
      */
     public void resetTheme() {
         logger.trace("resetTheme");
@@ -1154,9 +1064,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getObjectUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1165,9 +1073,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getImageUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1181,9 +1087,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getImageActiveUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1192,9 +1096,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getCalendarUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @deprecated Calendar view has been retired; use <code>getTocUrl()</code>
@@ -1205,9 +1107,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getCalendarActiveUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @deprecated Calendar view has been retired; use <code>getTocActiveUrl()</code>
@@ -1218,9 +1118,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getTocUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1229,9 +1127,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getTocActiveUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1240,9 +1136,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getThumbsUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1251,9 +1145,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getThumbsActiveUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1262,9 +1154,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getMetadataUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1273,9 +1163,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getMetadataActiveUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1284,9 +1172,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getFulltextUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1295,9 +1181,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getMeiActiveUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1306,9 +1190,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getMeiUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1317,9 +1199,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getFulltextActiveUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1344,9 +1224,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getSearchUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1355,9 +1233,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getAdvancedSearchUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1366,9 +1242,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getPageUrl.
-     * </p>
      *
      * @param pageType a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -1383,9 +1257,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getPageUrl.
-     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @return a {@link java.lang.String} object.
@@ -1395,9 +1267,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getSearchUrl.
-     * </p>
      *
      * @param activeSearchType a int.
      * @return a {@link java.lang.String} object.
@@ -1407,9 +1277,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getSearchUrl.
-     * </p>
      *
      * @param activeSearchType a int.
      * @param cmsPage
@@ -1433,9 +1301,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getTermUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1444,9 +1310,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getBrowseUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1455,9 +1319,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getSortUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1515,9 +1377,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getMessageValueList.
-     * </p>
      *
      * @param keyPrefix a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -1530,9 +1390,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setSelectedNewsArticle.
-     * </p>
      *
      * @param art a {@link java.lang.String} object.
      * @should set value correctly
@@ -1542,9 +1400,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getSelectedNewsArticle.
-     * </p>
      *
      * @should return value correctly
      * @return a {@link java.lang.String} object.
@@ -1581,9 +1437,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getLastRequestTimestamp.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1602,9 +1456,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getStatusMapValue.
-     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @should return value correctly
@@ -1615,9 +1467,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * setStatusMapValue.
-     * </p>
      *
      * @param key a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
@@ -1628,9 +1478,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>statusMap</code>.
-     * </p>
      *
      * @return the statusMap
      */
@@ -1639,9 +1487,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>statusMap</code>.
-     * </p>
      *
      * @param statusMap the statusMap to set
      */
@@ -1666,7 +1512,8 @@ public class NavigationHelper implements Serializable {
 
     /**
      * Returns the translation for the given <code>msgKey</code> and replaces all {i} placeholders with values from the given <code>params</code>.
-     * Does not carry out character escaping
+     *
+     * <p>Does not carry out character escaping
      *
      * @param msgKey Message key to translate
      * @param params One or more parameter values to replace the placeholders.
@@ -1745,9 +1592,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getSubThemeDiscriminatorQuerySuffix.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1766,9 +1611,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getPreviousViewUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1782,9 +1625,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * redirectToPreviousView.
-     * </p>
      *
      * @throws java.io.IOException if any.
      */
@@ -1802,9 +1643,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getCurrentViewUrl.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1872,9 +1711,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * redirectToCurrentView.
-     * </p>
      *
      * @throws java.io.IOException if any.
      */
@@ -1892,9 +1729,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * urlEncode.
-     * </p>
      *
      * @param s a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -1904,9 +1739,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * urlEncodeUnicode.
-     * </p>
      *
      * @param s a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -1916,9 +1749,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getThemeOrSubtheme.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1936,9 +1767,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * isSubthemeSelected.
-     * </p>
      *
      * @return true exactly if {@link #getSubThemeDiscriminatorValue()} is not blank
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1948,9 +1777,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getVersion.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1959,9 +1786,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getBuildDate.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1970,9 +1795,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getBuildVersion.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1981,9 +1804,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
      * getApplicationName.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -2125,7 +1946,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Get the current time in milliseconds as string
+     * Gets the current time in milliseconds as string.
      * 
      * @return the current time in milliseconds as string
      */

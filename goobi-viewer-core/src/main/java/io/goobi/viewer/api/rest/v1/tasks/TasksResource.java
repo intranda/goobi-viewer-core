@@ -75,10 +75,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * Create and monitor (possibly time consuming) {@link Task tasks} within the viewer. These tasks are managed by the {@link TaskManager}
+ * Creates and monitor (possibly time consuming) {@link Task tasks} within the viewer. These tasks are managed by the {@link TaskManager}
  *
  * @author florian
- *
  */
 @Path(TASKS)
 @ViewerRestServiceBinding

@@ -89,9 +89,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>
  * ManifestBuilder class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -102,9 +100,7 @@ public class ManifestBuilder extends AbstractBuilder {
     private BuildMode buildMode = BuildMode.IIIF;
 
     /**
-     * <p>
-     * Constructor for ManifestBuilder.
-     * </p>
+     * Creates a new ManifestBuilder instance.
      *
      * @param apiUrlManager
      */
@@ -113,9 +109,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * generateManifest.
-     * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pagesToInclude
@@ -190,9 +184,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * populate.
-     * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param manifest a {@link de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2} object.
@@ -563,9 +555,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * addVolumes.
-     * </p>
      *
      * @param anchor a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @param volumes a {@link java.util.List} object.
@@ -585,9 +575,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * addAnchor.
-     * </p>
      *
      * @param manifest a {@link de.intranda.api.iiif.presentation.v2.Manifest2} object.
      * @param anchorPI a {@link java.lang.String} object.
@@ -661,9 +649,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * Getter for the field <code>buildMode</code>.
-     * </p>
      *
      * @return the buildMode
      */
@@ -672,9 +658,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * Setter for the field <code>buildMode</code>.
-     * </p>
      *
      * @param buildMode the buildMode to set
      * @return a {@link io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder} object.

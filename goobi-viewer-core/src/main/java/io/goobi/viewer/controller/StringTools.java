@@ -65,9 +65,7 @@ import com.ibm.icu.text.CharsetMatch;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
- * <p>
  * StringTools class.
- * </p>
  */
 public final class StringTools {
 
@@ -119,9 +117,7 @@ public final class StringTools {
     }
 
     /**
-     * <p>
      * encodeUrl.
-     * </p>
      *
      * @param string String to encode
      * @param escapeCriticalUrlCharacters If true, slashes etc. will be manually escaped prior to URL encoding
@@ -145,9 +141,7 @@ public final class StringTools {
     }
 
     /**
-     * <p>
      * decodeUrl.
-     * </p>
      *
      * @param string a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -175,8 +169,8 @@ public final class StringTools {
      *
      * @param text The String in which to search
      * @param regex The regex to search for
-     * @return An optional containing the first String within the {@code text} matched by {@code regex}, or an empty optional if no match was found
      * @param group a int.
+     * @return An optional containing the first String within the {@code text} matched by {@code regex}, or an empty optional if no match was found
      */
     public static Optional<String> findFirstMatch(String text, String regex, int group) {
         Matcher matcher = Pattern.compile(regex).matcher(text);
@@ -320,9 +314,7 @@ public final class StringTools {
     }
 
     /**
-     * <p>
      * stripJS.
-     * </p>
      *
      * @param s
      * @return String sans any script-tag blocks
@@ -386,9 +378,7 @@ public final class StringTools {
     }
 
     /**
-     * <p>
      * escapeQuotes.
-     * </p>
      *
      * @param s a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -454,7 +444,6 @@ public final class StringTools {
      * @throws UnsupportedEncodingException
      * @should return true if string contains url encoded characters
      * @should return false if string not encoded
-     *
      */
     public static boolean isStringUrlEncoded(String s, String charset) throws UnsupportedEncodingException {
         if (StringUtils.isEmpty(s)) {
@@ -472,9 +461,7 @@ public final class StringTools {
     }
 
     /**
-     * <p>
      * escapeCriticalUrlChracters.
-     * </p>
      *
      * @param value a {@link java.lang.String} object.
      * @param escapePercentCharacters a boolean.
@@ -499,9 +486,7 @@ public final class StringTools {
     }
 
     /**
-     * <p>
      * unescapeCriticalUrlChracters.
-     * </p>
      *
      * @param value a {@link java.lang.String} object.
      * @should replace characters correctly
@@ -521,9 +506,7 @@ public final class StringTools {
     }
 
     /**
-     * <p>
      * isImageUrl.
-     * </p>
      *
      * @param url a {@link java.lang.String} object.
      * @return true if this is an image URL; false otherwise
@@ -596,9 +579,7 @@ public final class StringTools {
     }
 
     /**
-     * <p>
      * getHierarchyForCollection.
-     * </p>
      *
      * @param collection a {@link java.lang.String} object.
      * @param split a {@link java.lang.String} object.
@@ -654,9 +635,7 @@ public final class StringTools {
     }
 
     /**
-     * <p>
      * getMatch.
-     * </p>
      *
      * @param s a {@link java.lang.String} object.
      * @param pattern a {@link java.lang.String} object.
@@ -675,9 +654,7 @@ public final class StringTools {
     }
 
     /**
-     * <p>
      * intern.
-     * </p>
      *
      * @param string a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.

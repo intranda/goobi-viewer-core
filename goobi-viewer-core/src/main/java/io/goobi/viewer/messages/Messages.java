@@ -28,9 +28,7 @@ import jakarta.faces.application.FacesMessage.Severity;
 import jakarta.faces.context.FacesContext;
 
 /**
- * <p>
  * Messages class.
- * </p>
  */
 public final class Messages {
 
@@ -42,9 +40,7 @@ public final class Messages {
     }
 
     /**
-     * <p>
      * error.
-     * </p>
      *
      * @param targetId a {@link java.lang.String} object.
      * @param message a {@link java.lang.String} object.
@@ -55,9 +51,7 @@ public final class Messages {
     }
 
     /**
-     * <p>
      * error.
-     * </p>
      *
      * @param message a {@link java.lang.String} object.
      */
@@ -66,9 +60,7 @@ public final class Messages {
     }
 
     /**
-     * <p>
      * info.
-     * </p>
      *
      * @param targetId a {@link java.lang.String} object.
      * @param message a {@link java.lang.String} object.
@@ -79,9 +71,7 @@ public final class Messages {
     }
 
     /**
-     * <p>
      * info.
-     * </p>
      *
      * @param message a {@link java.lang.String} object.
      */
@@ -90,9 +80,7 @@ public final class Messages {
     }
 
     /**
-     * <p>
      * warn.
-     * </p>
      *
      * @param message a {@link java.lang.String} object.
      */
@@ -101,9 +89,7 @@ public final class Messages {
     }
 
     /**
-     * <p>
      * warn.
-     * </p>
      *
      * @param targetId a {@link java.lang.String} object.
      * @param message a {@link java.lang.String} object.
@@ -114,9 +100,7 @@ public final class Messages {
     }
 
     /**
-     * <p>
      * clear.
-     * </p>
      */
     public static void clear() {
         FacesContext fc = FacesContext.getCurrentInstance();
@@ -137,9 +121,7 @@ public final class Messages {
     }
 
     /**
-     * <p>
      * translate.
-     * </p>
      *
      * @param inMessage a {@link java.lang.String} object.
      * @param messageParams a {@link java.lang.String} object.

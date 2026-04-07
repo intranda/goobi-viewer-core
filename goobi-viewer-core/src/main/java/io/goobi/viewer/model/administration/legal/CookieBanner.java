@@ -42,7 +42,6 @@ import io.goobi.viewer.model.translations.TranslatedText;
  * Class to persist settings for the cookie banner. Only one instance of this class should be persisted in the database
  *
  * @author florian
- *
  */
 @Entity
 @Table(name = "cookie_banner")
@@ -84,14 +83,14 @@ public class CookieBanner implements Serializable {
     private List<Long> ignoreList = new ArrayList<>();
 
     /**
-     * empty default constructor
+     * Empty default constructor.
      */
     public CookieBanner() {
 
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      * 
      * @param orig
      */
@@ -132,7 +131,7 @@ public class CookieBanner implements Serializable {
     }
 
     /**
-     * set the database id
+     * Set the database id.
      * 
      * @param id
      */

@@ -37,9 +37,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>
  * TocFunctionality class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -56,9 +54,7 @@ public class TocFunctionality implements Functionality {
     private final String pi;
 
     /**
-     * <p>
-     * Constructor for TocFunctionality.
-     * </p>
+     * Creates a new TocFunctionality instance.
      *
      * @param pi a {@link java.lang.String} object.
      */
@@ -67,9 +63,7 @@ public class TocFunctionality implements Functionality {
     }
 
     /**
-     * <p>
-     * Constructor for TocFunctionality.
-     * </p>
+     * Creates a new TocFunctionality instance.
      *
      * @param blueprint a {@link io.goobi.viewer.model.cms.itemfunctionality.TocFunctionality} object.
      */
@@ -81,9 +75,7 @@ public class TocFunctionality implements Functionality {
     }
 
     /**
-     * <p>
      * getBannerUrl.
-     * </p>
      *
      * @param width a int.
      * @param height a int.
@@ -108,9 +100,7 @@ public class TocFunctionality implements Functionality {
     }
 
     /**
-     * <p>
      * Getter for the field <code>toc</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.toc.TOC} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -126,9 +116,7 @@ public class TocFunctionality implements Functionality {
     }
 
     /**
-     * <p>
      * Getter for the field <code>docStruct</code>.
-     * </p>
      *
      * @return a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -170,9 +158,7 @@ public class TocFunctionality implements Functionality {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
      * @return the piPeriodical
      */

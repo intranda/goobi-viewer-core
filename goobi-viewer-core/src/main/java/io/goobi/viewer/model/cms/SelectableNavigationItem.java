@@ -37,18 +37,14 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     private boolean selected = false;
 
     /**
-     * <p>
-     * Constructor for SelectableNavigationItem.
-     * </p>
+     * Creates a new SelectableNavigationItem instance.
      */
     public SelectableNavigationItem() {
         super();
     }
 
     /**
-     * <p>
-     * Constructor for SelectableNavigationItem.
-     * </p>
+     * Creates a new SelectableNavigationItem instance.
      *
      * @param original a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
@@ -57,9 +53,7 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     }
 
     /**
-     * <p>
-     * Constructor for SelectableNavigationItem.
-     * </p>
+     * Creates a new SelectableNavigationItem instance.
      *
      * @param cmsPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
@@ -68,9 +62,7 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     }
 
     /**
-     * <p>
-     * Constructor for SelectableNavigationItem.
-     * </p>
+     * Creates a new SelectableNavigationItem instance.
      *
      * @param targetUrl a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
@@ -80,9 +72,7 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     }
 
     /**
-     * <p>
      * Setter for the field <code>selected</code>.
-     * </p>
      *
      * @param selected the selected to set
      */
@@ -91,9 +81,7 @@ public class SelectableNavigationItem extends CMSNavigationItem {
     }
 
     /**
-     * <p>
      * isSelected.
-     * </p>
      *
      * @return the selected
      */

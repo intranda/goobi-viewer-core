@@ -24,7 +24,6 @@ package io.goobi.viewer.model.security;
 import java.io.Serializable;
 
 /**
- * 
  */
 public class CopyrightIndicatorStatus implements Serializable {
 

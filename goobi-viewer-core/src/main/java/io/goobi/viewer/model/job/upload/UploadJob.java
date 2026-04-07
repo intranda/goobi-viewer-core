@@ -77,9 +77,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * <p>
  * Abstract DownloadJob class.
- * </p>
  */
 @Entity
 @Table(name = "upload_jobs")
@@ -287,7 +285,6 @@ public class UploadJob implements Serializable {
      * @return true if status changed; false otherwise
      * @throws PresentationException
      * @throws IndexUnreachableException
-     * 
      */
     public boolean updateStatus() throws IndexUnreachableException, PresentationException {
         boolean ret = updateStatus(getJobStatus(processId));
@@ -296,9 +293,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * getJobStatus.
-     * </p>
      *
      * @param processId Process ID to check
      * @return a {@link java.lang.String} object.
@@ -326,10 +321,8 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * updateStatus.
-     * </p>
-     * 
+     *
      * @param psr {@link ProcessStatusResponse}
      * @return true if status has changed; false otherwise
      * 
@@ -404,9 +397,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -415,9 +406,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -468,9 +457,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>status</code>.
-     * </p>
      *
      * @return the status
      */
@@ -482,9 +469,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>status</code>.
-     * </p>
      *
      * @param status the status to set
      */
@@ -493,9 +478,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>message</code>.
-     * </p>
      *
      * @return the message
      */
@@ -504,9 +487,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>message</code>.
-     * </p>
      *
      * @param message the message to set
      */
@@ -515,9 +496,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>pi</code>.
-     * </p>
      *
      * @return the pi
      */
@@ -526,9 +505,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>pi</code>.
-     * </p>
      *
      * @param pi the pi to set
      */
@@ -565,9 +542,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
      * @return the description
      */
@@ -576,9 +551,7 @@ public class UploadJob implements Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
      * @param description the description to set
      */

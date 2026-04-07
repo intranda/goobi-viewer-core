@@ -30,7 +30,6 @@ import org.json.JSONObject;
  * Determines the visible area of a {@link GeoMap}. Consists of a zoom factor and a center point
  * 
  * @author florian
- *
  */
 public class View {
 

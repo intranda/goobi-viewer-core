@@ -64,7 +64,6 @@ import jakarta.persistence.Transient;
 
 /**
  * @author florian
- *
  */
 @Entity
 @Table(name = "cms_geomap")
@@ -127,14 +126,14 @@ public class GeoMap implements Serializable {
     private boolean showPopover = true;
 
     /**
-     * Empty Constructor
+     * Empty Constructor.
      */
     public GeoMap() {
         //
     }
 
     /**
-     * Clone constructor
+     * Clones constructor.
      *
      * @param blueprint
      */
@@ -292,7 +291,7 @@ public class GeoMap implements Serializable {
     }
 
     /**
-     * Link to the html page to render for oembed
+     * Link to the html page to render for oembed.
      *
      * @return {@link URI}
      */

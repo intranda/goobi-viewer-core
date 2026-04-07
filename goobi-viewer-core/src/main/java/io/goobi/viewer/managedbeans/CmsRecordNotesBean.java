@@ -55,10 +55,9 @@ import jakarta.inject.Named;
 
 /**
  *
- * Bean used for listing and retrieving {@link CMSRecordNote}s
+ * Bean used for listing and retrieving {@link CMSRecordNote}s.
  *
  * @author florian
- *
  */
 @Named
 @SessionScoped
@@ -106,7 +105,7 @@ public class CmsRecordNotesBean implements Serializable {
     }
 
     /**
-     * get the thumbnail url for the record related to the note
+     * Get the thumbnail url for the record related to the note.
      *
      * @param note
      * @return Thumbnail URL
@@ -122,7 +121,7 @@ public class CmsRecordNotesBean implements Serializable {
     }
 
     /**
-     * get the thumbnail url for the record related to the note for given width and height
+     * Get the thumbnail url for the record related to the note for given width and height.
      *
      * @param note
      * @param width

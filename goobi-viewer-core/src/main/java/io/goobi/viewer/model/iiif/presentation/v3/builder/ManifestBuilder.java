@@ -89,9 +89,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * <p>
  * ManifestBuilder class.
- * </p>
  *
  * @author Florian Alpers
  */
@@ -102,9 +100,7 @@ public class ManifestBuilder extends AbstractBuilder {
     private final CanvasBuilder canvasBuilder;
 
     /**
-     * <p>
-     * Constructor for ManifestBuilder.
-     * </p>
+     * Creates a new ManifestBuilder instance.
      *
      * @param apiUrlManager
      * @param request
@@ -268,9 +264,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * generateManifest.
-     * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link de.intranda.api.iiif.presentation.IPresentationModelElement} object.
@@ -335,9 +329,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * <p>
      * populate.
-     * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.

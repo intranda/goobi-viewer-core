@@ -35,7 +35,6 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * @author florian
- *
  */
 @FacesConverter("localDateConverter")
 public class LocalDateConverter implements Converter<LocalDate> {

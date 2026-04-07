@@ -54,10 +54,9 @@ import jakarta.persistence.Transient;
  * subclasses. This main class should be considered effectively abstract, even though it cannot be marked as abstract due to dao persistence
  * restrictions. The exact type of custom widget can be gathered from #{CustomSidebarWidget{@link #getType()}
  *
- * Each inheriting class must implement a cloning constructor, i.e. a constructor taking an argument of the same class and copying all its data
+ * <p>Each inheriting class must implement a cloning constructor, i.e. a constructor taking an argument of the same class and copying all its data
  *
  * @author florian
- *
  */
 @Entity
 @Table(name = "custom_sidebar_widgets")
@@ -196,7 +195,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     }
 
     /**
-     * Set the css style class to use for this widget
+     * Sets the css style class to use for this widget.
      * 
      * @param styleClass
      */
@@ -212,7 +211,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
     }
 
     /**
-     * Set this widget to be displayed as a collapseable
+     * Sets this widget to be displayed as a collapseable.
      * 
      * @param collapsed the collapsed to set
      */

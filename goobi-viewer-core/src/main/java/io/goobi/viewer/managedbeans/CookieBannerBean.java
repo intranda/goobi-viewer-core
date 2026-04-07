@@ -71,7 +71,7 @@ public class CookieBannerBean implements Serializable {
     }
 
     /**
-     * Default constructor using the IDAO from the {@link DataManager} class
+     * Default constructor using the IDAO from the {@link DataManager} class.
      */
     public CookieBannerBean() {
         dao = retrieveDAO();
@@ -84,7 +84,7 @@ public class CookieBannerBean implements Serializable {
     }
 
     /**
-     * Constructor for testing purposes
+     * Creates a new testing purposes instance.
      * 
      * @param dao the IDAO implementation to use
      */
@@ -214,7 +214,7 @@ public class CookieBannerBean implements Serializable {
     }
 
     /**
-     * Return a json object to use a configuration object to the viewerJS.cookieBanner.js javascript
+     * Returns a json object to use a configuration object to the viewerJS.cookieBanner.js javascript.
      * 
      * @return a json config object
      */

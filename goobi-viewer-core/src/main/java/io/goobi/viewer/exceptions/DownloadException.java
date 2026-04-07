@@ -22,18 +22,14 @@
 package io.goobi.viewer.exceptions;
 
 /**
- * <p>
  * DownloadException class.
- * </p>
  */
 public class DownloadException extends PresentationException {
 
     private static final long serialVersionUID = -5686409226129811010L;
 
     /**
-     * <p>
-     * Constructor for DownloadException.
-     * </p>
+     * Creates a new DownloadException instance.
      *
      * @param string a {@link java.lang.String} object.
      * @param e a {@link java.lang.Throwable} object.
@@ -43,9 +39,7 @@ public class DownloadException extends PresentationException {
     }
 
     /**
-     * <p>
-     * Constructor for DownloadException.
-     * </p>
+     * Creates a new DownloadException instance.
      *
      * @param string a {@link java.lang.String} object.
      */

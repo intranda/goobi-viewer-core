@@ -42,9 +42,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
- * <p>
  * UserEndpoint class.
- * </p>
  */
 @Path(ApiUrls.USERS)
 public class UserEndpoint {
@@ -56,7 +54,8 @@ public class UserEndpoint {
 
     /**
      * Returns the client IP address and, if a user is logged in, the current user's information.
-     * When no user is authenticated, the {@code user} field is omitted from the response.
+     *
+     * <p>When no user is authenticated, the {@code user} field is omitted from the response.
      *
      * @return a {@link jakarta.ws.rs.core.Response} object containing a {@link CurrentUserResponse}
      */

@@ -32,10 +32,9 @@ import io.goobi.viewer.model.variables.NoopVariableReplacer;
 import io.goobi.viewer.model.variables.VariableReplacer;
 
 /**
- * Bundles configuration for a web resource containing a URI and a label
+ * Bundles configuration for a web resource containing a URI and a label.
  *
  * @author florian
- *
  */
 public class WebResourceConfiguration {
 

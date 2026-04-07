@@ -31,7 +31,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * @author florian
- *
  */
 public class MultiLanguageValue implements IPolyglott {
 

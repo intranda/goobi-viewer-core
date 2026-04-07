@@ -37,7 +37,6 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * @author florian
- *
  */
 public class LocalUserAvatar implements UserAvatar {
 

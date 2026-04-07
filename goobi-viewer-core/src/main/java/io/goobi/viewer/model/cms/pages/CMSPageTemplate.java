@@ -79,10 +79,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * <p>
  * Template to create a {@link CMSPage}. Contains some general information about the template as well as a list of {@link CMSComponent components} and
  * {@link CMSSidebarElement sidebar widgets} to be included in the page
- * </p>
  */
 @Entity
 @Table(name = "cms_page_templates")
@@ -105,7 +103,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     private LocalDateTime dateUpdated;
 
     /**
-     * Set to true to disallow users to change {@link CMSComponent}s contained in a page created from this template. The content of those components
+     * Sets to true to disallow users to change {@link CMSComponent}s contained in a page created from this template. The content of those components
      * may still be edited
      */
     @Column(name = "lock_components")
@@ -169,16 +167,14 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     private boolean cmsComponentsInitialized = false;
 
     /**
-     * <p>
-     * Constructor for CMSPage.
-     * </p>
+     * Creates a new CMSPage instance.
      */
     public CMSPageTemplate() {
         this.dateCreated = LocalDateTime.now();
     }
 
     /**
-     * creates a deep copy of the original CMSPage. Only copies persisted properties and performs initialization for them
+     * Creates a deep copy of the original CMSPage. Only copies persisted properties and performs initialization for them
      *
      * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
      */
@@ -313,9 +309,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * addSidebarElement.
-     * </p>
      *
      * @param element a {@link io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement} object.
      */
@@ -326,9 +320,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -337,9 +329,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -348,9 +338,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Getter for the field <code>dateCreated</code>.
-     * </p>
      *
      * @return the dateCreated
      */
@@ -359,9 +347,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateCreated</code>.
-     * </p>
      *
      * @param dateCreated the dateCreated to set
      */
@@ -374,9 +360,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Setter for the field <code>dateUpdated</code>.
-     * </p>
      *
      * @param dateUpdated the dateUpdated to set
      */
@@ -385,9 +369,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * isPublished.
-     * </p>
      *
      * @return the published
      */
@@ -396,9 +378,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Setter for the field <code>published</code>.
-     * </p>
      *
      * @param published the published to set
      */
@@ -407,9 +387,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * isUseDefaultSidebar.
-     * </p>
      *
      * @return the useDefaultSidebar
      */
@@ -418,9 +396,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Setter for the field <code>useDefaultSidebar</code>.
-     * </p>
      *
      * @param useDefaultSidebar the useDefaultSidebar to set
      */
@@ -429,9 +405,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarElements</code>.
-     * </p>
      *
      * @return the sidebarElements
      */
@@ -440,9 +414,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Setter for the field <code>sidebarElements</code>.
-     * </p>
      *
      * @param sidebarElements the sidebarElements to set
      */
@@ -524,9 +496,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Getter for the field <code>categories</code>.
-     * </p>
      *
      * @return the classifications
      */
@@ -535,9 +505,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Setter for the field <code>categories</code>.
-     * </p>
      *
      * @param categories a {@link java.util.List} object.
      */
@@ -546,9 +514,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * addCategory.
-     * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      */
@@ -559,9 +525,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * removeCategory.
-     * </p>
      *
      * @param category a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      */
@@ -570,9 +534,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Getter for the field <code>sidebarElementString</code>.
-     * </p>
      *
      * @return the sidebarElementString
      */
@@ -581,9 +543,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Setter for the field <code>sidebarElementString</code>.
-     * </p>
      *
      * @param sidebarElementString the sidebarElementString to set
      */
@@ -593,9 +553,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * isLanguageComplete.
-     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a boolean.
@@ -615,9 +573,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * getTitle.
-     * </p>
      *
      * @return a {@link java.lang.String} object.
      */
@@ -626,9 +582,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * getTitle.
-     * </p>
      *
      * @param locale a {@link java.util.Locale} object.
      * @return a {@link java.lang.String} object.
@@ -650,9 +604,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Getter for the field <code>subTheme</code>.
-     * </p>
      *
      * @return the subTheme
      */
@@ -661,9 +613,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Setter for the field <code>subTheme</code>.
-     * </p>
      *
      * @param subTheme the subTheme to set
      */
@@ -672,9 +622,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * isHasSidebarElements.
-     * </p>
      *
      * @return a boolean.
      */
@@ -702,9 +650,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Getter for the field <code>wrapperElementClass</code>.
-     * </p>
      *
      * @return the {@link #wrapperElementClass}
      */
@@ -713,9 +659,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Setter for the field <code>wrapperElementClass</code>.
-     * </p>
      *
      * @param wrapperElementClass the {@link #wrapperElementClass} to set
      */
@@ -724,7 +668,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list. Saving the
+     * Retrieves all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list. Saving the
      * categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
      */
     public void writeSelectableCategories() {
@@ -748,9 +692,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * <p>
      * Getter for the field <code>selectableCategories</code>.
-     * </p>
      *
      * @return the selectableCategories
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -858,7 +800,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     /**
-     * Set the order attribute of the {@link PersistentCMSComponent} belonging to the given {@link CMSComponent} to the given order value. Also, sets
+     * Sets the order attribute of the {@link PersistentCMSComponent} belonging to the given {@link CMSComponent} to the given order value. Also, sets
      * the order value of all Components which previously had the given order to the order value of the given component
      * 
      * @param component

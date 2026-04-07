@@ -31,9 +31,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.Role;
 
 /**
- * <p>
  * RoleConverter class.
- * </p>
  */
 @FacesConverter("roleConverter")
 public class RoleConverter implements Converter {

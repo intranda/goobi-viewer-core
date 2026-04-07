@@ -113,7 +113,6 @@ import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
- *
  */
 @Path(INDEX)
 @CORSBinding

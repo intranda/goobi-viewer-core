@@ -59,7 +59,6 @@ import jakarta.ws.rs.core.Response;
 
 /**
  * @author florian
- *
  */
 @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_IMAGE)
 @CORSBinding

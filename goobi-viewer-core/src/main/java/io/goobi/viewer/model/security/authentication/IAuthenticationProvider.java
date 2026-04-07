@@ -25,14 +25,14 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Interface of all user authentication related actions, particularly logging in and out of a viewer user account
+ * Interface of all user authentication related actions, particularly logging in and out of a viewer user account.
  *
  * @author Florian Alpers
  */
 public interface IAuthenticationProvider {
 
     /**
-     * Returns an unique name for the authentication provider implementation
+     * Returns an unique name for the authentication provider implementation.
      *
      * @return The name of the provider
      */
@@ -48,22 +48,22 @@ public interface IAuthenticationProvider {
      *
      * @param password A string to be used as a password or similar for login. If the provider does not require such a string, this can be left empty
      *            or null
+     * @param loginName a {@link java.lang.String} object.
      * @return A {@link java.util.concurrent.CompletableFuture} which is resolved once login is completed and contains a
      *         {@link io.goobi.viewer.model.security.authentication.LoginResult}
-     * @param loginName a {@link java.lang.String} object.
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      */
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException;
 
     /**
-     * Logs the user out
+     * Logs the user out.
      *
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
      */
     public void logout() throws AuthenticationProviderException;
 
     /**
-     * Check whether this authentication service allows user to edit their password or to reset it
+     * Checks whether this authentication service allows user to edit their password or to reset it.
      *
      * @return true if the authentication service provides means to change or reset the user password
      */
@@ -71,43 +71,36 @@ public interface IAuthenticationProvider {
 
     /**
      * The provider type. This should either be "local", "userpassword" or "openId". This value is used to determine where this provider is displayed.
-     * Providers with the same type are displayed together
+     *
+     * <p>Providers with the same type are displayed together
      *
      * @return The type of the provider
      */
     public String getType();
 
     /**
-     * <p>
      * allowsNicknameChange.
-     * </p>
      *
      * @return true if the nickname may be changed and is not essential for user identification
      */
     public boolean allowsNicknameChange();
 
     /**
-     * <p>
      * allowsEmailChange.
-     * </p>
      *
      * @return true if the email may be changed and is not essential for user identification
      */
     public boolean allowsEmailChange();
 
     /**
-     * <p>
      * getAddUserToGroups.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */
     public List<String> getAddUserToGroups();
 
     /**
-     * <p>
      * setAddUserToGroups.
-     * </p>
      *
      * @param addUserToGroups a {@link java.util.List} object.
      */

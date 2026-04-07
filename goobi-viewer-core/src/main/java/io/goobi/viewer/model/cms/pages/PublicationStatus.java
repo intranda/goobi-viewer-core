@@ -22,10 +22,9 @@
 package io.goobi.viewer.model.cms.pages;
 
 /**
- * Describes whether a {@link CMSPage} is published or not
+ * Describes whether a {@link CMSPage} is published or not.
  * 
  * @author florian
- *
  */
 public enum PublicationStatus {
     /**
@@ -33,7 +32,7 @@ public enum PublicationStatus {
      */
     PRIVATE,
     /**
-     * Visible to everyone
+     * Visible to everyone.
      */
     PUBLISHED;
 }

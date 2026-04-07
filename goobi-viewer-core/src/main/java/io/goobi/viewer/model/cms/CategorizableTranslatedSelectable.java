@@ -39,9 +39,7 @@ public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T
     private List<Selectable<CMSCategory>> categories;
 
     /**
-     * <p>
-     * Constructor for CategorizableTranslatedSelectable.
-     * </p>
+     * Creates a new CategorizableTranslatedSelectable instance.
      *
      * @param value a T object.
      * @param selected a boolean.
@@ -54,9 +52,7 @@ public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T
     }
 
     /**
-     * <p>
      * Getter for the field <code>categories</code>.
-     * </p>
      *
      * @return the categories
      */
@@ -65,9 +61,7 @@ public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T
     }
 
     /**
-     * <p>
      * Setter for the field <code>categories</code>.
-     * </p>
      *
      * @param categories a {@link java.util.List} object.
      */
@@ -76,9 +70,7 @@ public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T
     }
 
     /**
-     * <p>
      * getSelectedCategories.
-     * </p>
      *
      * @return a {@link java.util.List} object.
      */

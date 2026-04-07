@@ -33,9 +33,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * <p>
  * CMSCategory class.
- * </p>
  *
  * @author florian
  */
@@ -58,18 +56,14 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     private String description;
 
     /**
-     * <p>
-     * Constructor for CMSCategory.
-     * </p>
+     * Creates a new CMSCategory instance.
      */
     public CMSCategory() {
 
     }
 
     /**
-     * <p>
-     * Constructor for CMSCategory.
-     * </p>
+     * Creates a new CMSCategory instance.
      *
      * @param name a {@link java.lang.String} object.
      */
@@ -80,9 +74,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     }
 
     /**
-     * <p>
-     * Constructor for CMSCategory.
-     * </p>
+     * Creates a new CMSCategory instance.
      *
      * @param blueprint a {@link io.goobi.viewer.model.cms.CMSCategory} object.
      * @param keepId a boolean.
@@ -104,9 +96,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>id</code>.
-     * </p>
      *
      * @return the id
      */
@@ -115,9 +105,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>id</code>.
-     * </p>
      *
      * @param id the id to set
      */
@@ -126,9 +114,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>name</code>.
-     * </p>
      *
      * @return the name
      */
@@ -137,9 +123,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>name</code>.
-     * </p>
      *
      * @param name the name to set
      */
@@ -148,9 +132,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     }
 
     /**
-     * <p>
      * Getter for the field <code>description</code>.
-     * </p>
      *
      * @return the description
      */
@@ -159,9 +141,7 @@ public class CMSCategory implements Comparable<CMSCategory>, Serializable {
     }
 
     /**
-     * <p>
      * Setter for the field <code>description</code>.
-     * </p>
      *
      * @param description the description to set
      */

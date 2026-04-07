@@ -31,7 +31,6 @@ import jakarta.persistence.Entity;
  * records
  *
  * @author florian
- *
  */
 @Entity
 @DiscriminatorValue("RssFeedSidebarWidget")
@@ -49,14 +48,14 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     private int numEntries = 5;
 
     /**
-     * Empty default constructor
+     * Empty default constructor.
      */
     public RssFeedSidebarWidget() {
 
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      * 
      * @param o
      */
@@ -69,7 +68,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * If this query is not empty only records matching this SOLR query are listed
+     * If this query is not empty only records matching this SOLR query are listed.
      * 
      * @return the filterQuery
      */
@@ -105,7 +104,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Whether the records are selected and sorted ins descending order
+     * Returns whether records are sorted in descending order.
      * 
      * @return the descendingSorting
      */
@@ -123,7 +122,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * The number of entries to display
+     * The number of entries to display.
      * 
      * @return The number of entries to display
      */
@@ -132,7 +131,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     }
 
     /**
-     * Set the number of entries to display
+     * Sets the number of entries to display.
      * 
      * @param numEntries the numEntries to set
      */

@@ -22,19 +22,18 @@
 package io.goobi.viewer.model.cms.pages;
 
 /**
- * Used to select whether sidebar widgets or main content is being edited in adminCmsCreatePage
+ * Used to select whether sidebar widgets or main content is being edited in adminCmsCreatePage.
  * 
  * @author florian
- *
  */
 public enum CMSPageEditState {
 
     /**
-     * Editing main page content, including CMSComponents
+     * Editing main page content, including CMSComponents.
      */
     CONTENT,
     /**
-     * Editing sidebar widgets
+     * Editing sidebar widgets.
      */
     SIDEBAR
 
