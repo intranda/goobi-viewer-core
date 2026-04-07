@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.job.download;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jdom2.JDOMException;
 
 import de.intranda.digiverso.convert.EpubConverter;
+import de.intranda.digiverso.convert.messages.MessagesHelper;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -83,6 +85,10 @@ public class EpubDownloadJob extends DownloadJob {
 
         try (FileOutputStream fos = new FileOutputStream(getTempPath().toFile())) {
             EpubConverter converter = new EpubConverter();
+            // Provide viewer's local messages directory to the epub library so it can look up translations.
+            // MessagesHelper falls back to classpath bundle names that don't exist in this app if not configured.
+            File messagesDir = new File(DataManager.getInstance().getConfiguration().getConfigLocalPath());
+            MessagesHelper.getINSTANCE().setLocalBundle(messagesDir);
             Path xmlFolder = work.getAltoFolderPath();
             Path imageFolder = work.getMediaFolderPath();
             Path metsFile = work.getMetadataFilePath();
