@@ -929,14 +929,17 @@ public class SearchBean implements SearchInterface, Serializable {
             logger.trace("Using default sorting: {}", searchSortingOption.getSortString());
         }
 
-        // Init search object
-        currentSearch = new Search(activeSearchType, currentSearchFilter, getResultGroupsForSearchExecution());
-        currentSearch.setUserInput(searchString);
-        currentSearch.setQuery(searchStringInternal);
-        currentSearch.setPage(currentPage);
-        currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
-        currentSearch.setFacetString(facets.getActiveFacetString());
-        currentSearch.setProximitySearchDistance(proximitySearchDistance);
+        // Init search object using a local variable first to avoid NPE from concurrent
+        // resetSearchResults() calls (SearchBean is @SessionScoped and may be accessed by
+        // multiple request threads simultaneously; assigning to currentSearch only once,
+        // after full initialization, ensures the local reference stays non-null throughout).
+        Search newSearch = new Search(activeSearchType, currentSearchFilter, getResultGroupsForSearchExecution());
+        newSearch.setUserInput(searchString);
+        newSearch.setQuery(searchStringInternal);
+        newSearch.setPage(currentPage);
+        newSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
+        newSearch.setFacetString(facets.getActiveFacetString());
+        newSearch.setProximitySearchDistance(proximitySearchDistance);
         StringBuilder sbFilterQuery = new StringBuilder();
         String templateQuery = DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateQuery(advancedSearchFieldTemplate);
         if (StringUtils.isNotEmpty(templateQuery)) {
@@ -954,7 +957,7 @@ public class SearchBean implements SearchInterface, Serializable {
             sbFilterQuery.append(this.filterQuery);
         }
 
-        currentSearch.setCustomFilterQuery(sbFilterQuery.toString().trim());
+        newSearch.setCustomFilterQuery(sbFilterQuery.toString().trim());
         // logger.trace("Custom filter query: {}", sbFilterQuery.toString().trim());
 
         // When searching in MONTHDAY, add a term so that an expand query is created
@@ -989,14 +992,16 @@ public class SearchBean implements SearchInterface, Serializable {
             if (StringUtils.isEmpty(expandQuery) && activeSearchType == SearchHelper.SEARCH_TYPE_TERMS) {
                 expandQuery = searchStringInternal;
             }
-            currentSearch.setExpandQuery(expandQuery);
+            newSearch.setExpandQuery(expandQuery);
         }
 
         // Override default result groups config if active group selected
         if (activeResultGroup != null) {
-            currentSearch.setResultGroups(Collections.singletonList(activeResultGroup));
+            newSearch.setResultGroups(Collections.singletonList(activeResultGroup));
         }
 
+        // Publish the fully initialized search object to the instance field
+        currentSearch = newSearch;
         currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale());
 
         // Make sure the current page isn't higher than the number of pages (e.g. when changing the number of hits per page)
