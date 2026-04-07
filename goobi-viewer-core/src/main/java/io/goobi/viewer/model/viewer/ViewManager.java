@@ -4242,7 +4242,10 @@ public class ViewManager implements Serializable {
     public List<CopyrightIndicatorStatus> getCopyrightIndicatorStatuses() {
         // logger.trace("getCopyrightIndicatorStatuses");
         if (copyrightIndicatorStatuses == null) {
-            copyrightIndicatorStatuses = new ArrayList<>();
+            // Build list into a local variable first, then assign atomically to prevent
+            // concurrent threads from iterating a partially-populated list via c:forEach,
+            // which would cause a ConcurrentModificationException.
+            List<CopyrightIndicatorStatus> statuses = new ArrayList<>();
             String field = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusField();
             StringBuilder sbUnconfiguredAccessConditions = new StringBuilder();
             if (StringUtils.isNotEmpty(field)) {
@@ -4251,7 +4254,7 @@ public class ViewManager implements Serializable {
                     for (String value : values) {
                         CopyrightIndicatorStatus status = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue(value);
                         if (status != null) {
-                            copyrightIndicatorStatuses.add(status);
+                            statuses.add(status);
                         } else {
                             if (sbUnconfiguredAccessConditions.length() > 0) {
                                 sbUnconfiguredAccessConditions.append(", ");
@@ -4262,10 +4265,11 @@ public class ViewManager implements Serializable {
                 }
             }
             // Default
-            if (copyrightIndicatorStatuses.isEmpty()) {
+            if (statuses.isEmpty()) {
                 // If no statuses are configured for existing values, set to locked and add all values to the description
-                copyrightIndicatorStatuses.add(new CopyrightIndicatorStatus(Status.LOCKED, sbUnconfiguredAccessConditions.toString()));
+                statuses.add(new CopyrightIndicatorStatus(Status.LOCKED, sbUnconfiguredAccessConditions.toString()));
             }
+            copyrightIndicatorStatuses = statuses;
         }
 
         return copyrightIndicatorStatuses;
