@@ -894,6 +894,19 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see ViewManager#getFulltextUrl()
+     * @verifies return empty string if current page is null
+     */
+    @Test
+    void getFulltextUrl_shouldReturnEmptyStringIfCurrentPageIsNull() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assertions.assertNotNull(se);
+        // currentImageOrder defaults to -1, so getCurrentPage() returns null
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
+        Assertions.assertEquals("", viewManager.getFulltextUrl());
+    }
+
+    /**
      * @see ViewManager#getMimeTypesForLoadedPages()
      * @verifies return empty map if LeanPageLoader returns null for current page
      */

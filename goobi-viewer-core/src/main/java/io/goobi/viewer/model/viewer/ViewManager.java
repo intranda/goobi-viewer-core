@@ -2052,6 +2052,10 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getFulltextUrl() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
+        // Guard against null current page (e.g. when the record has no pages yet)
+        if (getCurrentPage() == null) {
+            return "";
+        }
         String plaintextFilename = null;
         try {
             plaintextFilename = FileTools.getFilenameFromPathString(getCurrentPage().getFulltextFileName());
