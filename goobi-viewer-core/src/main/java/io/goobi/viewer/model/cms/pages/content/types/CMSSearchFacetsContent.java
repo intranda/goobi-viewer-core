@@ -37,6 +37,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
+/**
+ * CMS content type that renders a search facets panel on a CMS page, allowing configuration of
+ * which Solr facet field is exposed to the user.
+ */
 @Entity
 @DiscriminatorValue("searchfacets")
 public class CMSSearchFacetsContent extends CMSContent {

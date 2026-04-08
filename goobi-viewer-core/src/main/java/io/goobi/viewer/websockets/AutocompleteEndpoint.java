@@ -41,6 +41,10 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 import jakarta.ws.rs.core.Context;
 
+/**
+ * WebSocket server endpoint that handles real-time search autocomplete requests by querying
+ * the Solr index and returning JSON-formatted suggestion lists to the connected client.
+ */
 @ServerEndpoint(value = "/search/autocomplete.socket", configurator = GetHttpSessionConfigurator.class)
 public class AutocompleteEndpoint {
 

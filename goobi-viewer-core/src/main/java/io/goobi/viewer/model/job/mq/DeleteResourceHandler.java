@@ -36,6 +36,9 @@ import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.model.job.TaskType;
 
+/**
+ * Message handler that deletes a file or directory at a given path from the local filesystem.
+ */
 public class DeleteResourceHandler implements MessageHandler<MessageStatus> {
 
     public static final String PARAMETER_RESOURCE_PATH = "path";

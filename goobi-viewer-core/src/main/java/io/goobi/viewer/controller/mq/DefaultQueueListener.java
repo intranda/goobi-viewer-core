@@ -41,6 +41,11 @@ import jakarta.jms.MessageConsumer;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
 
+/**
+ * Background listener that continuously polls an ActiveMQ queue and dispatches incoming messages
+ * to the appropriate message handler. Runs on a dedicated daemon thread and supports graceful
+ * shutdown as well as configurable redelivery policies.
+ */
 public class DefaultQueueListener {
 
     private static final Logger log = LogManager.getLogger(DefaultQueueListener.class);

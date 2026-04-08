@@ -30,6 +30,9 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.StringTools;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * Parses the {@code filterQuery} parameter from an HTTP request's query string and returns it as a decoded Solr filter query string.
+ */
 public class FilterQueryParser {
 
     private static final String FILTER_QUERY_REGEX = "[?&]?filterQuery=([^&]+)";

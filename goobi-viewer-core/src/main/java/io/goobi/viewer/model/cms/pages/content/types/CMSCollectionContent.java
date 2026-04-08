@@ -55,6 +55,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * CMS content type that displays a digital collection hierarchy for a configurable Solr field,
+ * supporting sorting, filtering by sub-collection, and integration with the collection view.
+ */
 @Entity
 @Table(name = "cms_content_collection")
 @DiscriminatorValue("collection")

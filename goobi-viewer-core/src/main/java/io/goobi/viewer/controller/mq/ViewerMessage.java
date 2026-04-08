@@ -55,6 +55,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
 
+/**
+ * JPA entity representing a message in the internal message queue. Stores the task type,
+ * a unique message identifier, arbitrary key-value properties, execution status, and
+ * timestamps for scheduling and tracking asynchronous background jobs.
+ */
 @Entity
 @Table(name = "mq_messages")
 @JsonInclude(Include.NON_EMPTY)

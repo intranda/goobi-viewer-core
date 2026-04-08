@@ -38,6 +38,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
+/**
+ * CMS content type that embeds the EAD archive tree browser into a CMS page, optionally
+ * displaying the selected archive entry in an overlay.
+ */
 @Entity
 @DiscriminatorValue("archive")
 public class CMSArchiveContent extends CMSContent {

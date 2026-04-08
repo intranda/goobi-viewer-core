@@ -56,6 +56,10 @@ import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
 import io.goobi.viewer.model.resources.download.ResourceDownload;
 import jakarta.inject.Inject;
 
+/**
+ * Message handler that downloads external resource files (e.g. ZIP archives) from a remote URI and stores them in the local data repository.
+ * Download progress is tracked and made available via the application-scoped storage bean.
+ */
 public class DownloadExternalResourceHandler implements MessageHandler<MessageStatus> {
 
     private static final String PARAMETER_PI = "pi";

@@ -43,6 +43,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
+/**
+ * JPA entity storing the persistent configuration for a highlighted content item, including its
+ * name, display date range, enabled state, target type, and associated media.
+ */
 @Entity
 @Table(name = "cms_highlights")
 public class HighlightData implements Serializable {

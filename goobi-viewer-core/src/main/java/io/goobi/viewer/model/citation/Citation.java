@@ -32,6 +32,10 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.output.Bibliography;
 
+/**
+ * Represents a formatted citation for a digitized record, wrapping a CSL citation processor with
+ * item metadata to generate bibliography output in a given citation style.
+ */
 public class Citation {
 
     private static final Logger logger = LogManager.getLogger(Citation.class);

@@ -39,6 +39,11 @@ import java.nio.charset.StandardCharsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Runnable that drains an {@link java.io.InputStream} (typically stdout or stderr of a child
+ * process) into a string buffer. Intended to be run on a dedicated thread to prevent the process
+ * from blocking when its output pipe fills up.
+ */
 public class ProcessOutputReader implements Runnable {
 
     private static final Logger logger = LogManager.getLogger(ProcessOutputReader.class);

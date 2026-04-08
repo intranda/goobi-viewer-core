@@ -43,6 +43,10 @@ import jakarta.faces.component.UIComponent;
 import jakarta.faces.component.html.HtmlPanelGroup;
 import jakarta.faces.context.FacesContext;
 
+/**
+ * Represents a reusable UI component on a CMS page, combining a JSF component reference with
+ * ordered content items, display metadata, and optional access restrictions.
+ */
 public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     private static final long serialVersionUID = -6820973601918866139L;

@@ -46,6 +46,11 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Utility class providing shared helper methods for JAX-RS request filters. Handles access
+ * control checks such as concurrent view limits, image size restrictions, and record-level
+ * permission evaluation against the Solr index.
+ */
 public final class FilterTools {
 
     private static final Logger logger = LogManager.getLogger(FilterTools.class);

@@ -24,6 +24,14 @@ package io.goobi.viewer.controller.model;
 import java.util.LinkedHashMap;
 import java.util.function.Function;
 
+/**
+ * A thread-safe, size-bounded {@link java.util.LinkedHashMap} that evicts the eldest entry
+ * when the map exceeds its configured maximum capacity. Suitable as a simple in-memory LRU
+ * cache for moderate data volumes.
+ *
+ * @param <K> the type of keys maintained by this map
+ * @param <V> the type of mapped values
+ */
 public class CachingMap<K, V> extends LinkedHashMap<K, V> {
 
     private static final long serialVersionUID = 1882556825980074260L;

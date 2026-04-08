@@ -56,6 +56,10 @@ import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+/**
+ * JPA entity representing a CMS component instance persisted to the database, storing its
+ * ordering, translated labels, content items, and the association to a CMS page or template.
+ */
 @Entity
 @Table(name = "cms_components")
 public class PersistentCMSComponent implements IPolyglott, Serializable, Comparable<PersistentCMSComponent> {

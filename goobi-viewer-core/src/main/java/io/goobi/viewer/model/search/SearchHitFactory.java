@@ -59,6 +59,10 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 
+/**
+ * Factory class that constructs {@link SearchHit} objects from Solr documents, enriching them with metadata,
+ * thumbnails, child hits, and access permission information.
+ */
 public class SearchHitFactory {
 
     private static final Logger logger = LogManager.getLogger(SearchHitFactory.class);

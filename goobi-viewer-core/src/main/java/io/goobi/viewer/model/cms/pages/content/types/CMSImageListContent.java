@@ -59,6 +59,10 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * CMS content type that displays a filterable list of CMS media images on a CMS page, supporting
+ * category-based filtering, a configurable items-per-page limit, and random ordering.
+ */
 @Entity
 @Table(name = "cms_content_imagelist")
 @DiscriminatorValue("imagelist")

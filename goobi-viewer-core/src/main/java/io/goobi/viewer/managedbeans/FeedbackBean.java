@@ -46,6 +46,10 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.mail.MessagingException;
 
+/**
+ * JSF request-scoped backing bean for the user feedback form. Collects and validates user input,
+ * then sends the feedback as an e-mail to the configured recipient address.
+ */
 @Named
 @RequestScoped
 public class FeedbackBean implements Serializable {

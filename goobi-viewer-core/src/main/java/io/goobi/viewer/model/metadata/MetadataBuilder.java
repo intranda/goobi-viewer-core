@@ -52,6 +52,10 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.viewer.StructElement;
 
+/**
+ * Builds localised metadata values from Solr documents and struct elements by applying
+ * configured {@link io.goobi.viewer.model.metadata.MetadataParameter} definitions.
+ */
 public class MetadataBuilder {
 
     private static final String IDENTIFIER_WHITESPACE_REPLACEMENT = "_";

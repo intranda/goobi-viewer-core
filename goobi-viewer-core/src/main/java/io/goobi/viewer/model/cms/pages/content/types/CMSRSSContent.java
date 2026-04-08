@@ -35,6 +35,10 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
+/**
+ * CMS content type that renders an RSS feed widget on a CMS page, supporting a configurable
+ * item count and an optional Solr filter query to restrict the displayed entries.
+ */
 @Entity
 @Table(name = "cms_content_rss")
 @DiscriminatorValue("rss")

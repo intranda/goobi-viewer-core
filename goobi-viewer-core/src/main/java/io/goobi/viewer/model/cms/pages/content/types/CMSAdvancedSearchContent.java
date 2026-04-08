@@ -45,6 +45,10 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
+/**
+ * CMS content type that embeds the advanced search form into a CMS page, allowing editors to
+ * configure the search template and result group used for the advanced search interface.
+ */
 @Entity
 @Table(name = "cms_content_advanced_search")
 @DiscriminatorValue("advancedsearch")

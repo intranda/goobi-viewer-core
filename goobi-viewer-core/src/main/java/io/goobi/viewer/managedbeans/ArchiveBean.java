@@ -62,6 +62,10 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 
+/**
+ * JSF backing bean for the archive view. Manages loading, searching, and navigating EAD-based
+ * archive trees, and maintains the selected archive resource and entry state per user session.
+ */
 @Named
 @SessionScoped
 public class ArchiveBean implements Serializable {

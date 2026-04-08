@@ -60,6 +60,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
+/**
+ * CMS content type that holds a reference to a single CMS media item (image or file) and renders
+ * it on a CMS page; serves as the base class for more specific media content types.
+ */
 @Entity
 @Table(name = "cms_content_media")
 @DiscriminatorValue("media")

@@ -57,6 +57,11 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
+/**
+ * JSF view-scoped backing bean for the CMS page template editor. Allows administrators to create,
+ * edit, and delete CMS page templates, including managing their components and associated sidebar
+ * widgets.
+ */
 @Named("cmsPageTemplateEditBean")
 @ViewScoped
 public class CMSPageTemplateEditBean implements Serializable {

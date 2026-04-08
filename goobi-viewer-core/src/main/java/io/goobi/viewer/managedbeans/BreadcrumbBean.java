@@ -65,6 +65,11 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * JSF session-scoped backing bean that manages the breadcrumb navigation trail. Builds and
+ * maintains the ordered list of labeled links representing the user's current navigation path
+ * through collections, records, and CMS pages.
+ */
 @Named
 @SessionScoped
 public class BreadcrumbBean implements Serializable {

@@ -42,6 +42,10 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+/**
+ * Abstract base class for entities (users and user groups) that can hold access licenses.
+ * Provides shared logic for license retrieval, access permission evaluation, and privilege checks.
+ */
 public abstract class AbstractLicensee implements ILicensee {
 
     /** Logger for this class. */

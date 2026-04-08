@@ -42,6 +42,10 @@ import org.jdom2.JDOMException;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.model.jsf.JsfComponent;
 
+/**
+ * Reads CMS component definitions from XML template files and constructs {@link CMSComponent}
+ * instances including their JSF component references, content items, and metadata.
+ */
 public class CMSComponentReader {
 
     private static final Logger logger = LogManager.getLogger(CMSComponentReader.class);

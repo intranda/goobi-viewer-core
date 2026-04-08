@@ -50,6 +50,10 @@ import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 
+/**
+ * REST resource builder for bookmark lists owned by an authenticated user. Implements bookmark
+ * list operations backed by the database, including support for sharing lists with user groups.
+ */
 public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder {
 
     private static final Logger logger = LogManager.getLogger(UserBookmarkResourceBuilder.class);

@@ -60,6 +60,10 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
+/**
+ * Servlet context listener that initializes and shuts down the Quartz scheduler on application startup and shutdown.
+ * It registers all configured recurring task triggers and makes the message queue manager available to scheduled jobs.
+ */
 @WebListener
 public class QuartzListener implements ServletContextListener {
 

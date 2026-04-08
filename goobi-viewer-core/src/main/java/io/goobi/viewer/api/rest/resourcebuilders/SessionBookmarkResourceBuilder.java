@@ -49,6 +49,11 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 
+/**
+ * REST resource builder for bookmark lists stored in the HTTP session. Provides bookmark
+ * list operations for unauthenticated users whose bookmarks are held transiently in the
+ * current session rather than persisted in the database.
+ */
 public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder {
 
     private static final Logger logger = LogManager.getLogger(SessionBookmarkResourceBuilder.class);

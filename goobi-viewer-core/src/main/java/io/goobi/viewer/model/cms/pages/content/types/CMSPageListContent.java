@@ -60,6 +60,10 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * CMS content type that displays a list of CMS pages on a CMS page, with optional category
+ * filtering, configurable item count, and random ordering support.
+ */
 @Entity
 @Table(name = "cms_content_pagelist")
 @DiscriminatorValue("pagelist")

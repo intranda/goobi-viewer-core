@@ -36,6 +36,9 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.modules.IModule;
 
+/**
+ * Utility class providing static helper methods for user account management operations such as deleting a user and all associated data.
+ */
 public final class UserTools {
 
     /** Logger for this class. */

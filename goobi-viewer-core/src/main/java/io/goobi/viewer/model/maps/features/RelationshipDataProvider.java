@@ -34,6 +34,10 @@ import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
+/**
+ * Feature data provider that extends {@link MetadataDataProvider} to additionally resolve
+ * relationship metadata by loading related Solr documents for each retrieved metadata group.
+ */
 public class RelationshipDataProvider extends MetadataDataProvider {
 
     private static final Logger logger = LogManager.getLogger(RelationshipDataProvider.class);

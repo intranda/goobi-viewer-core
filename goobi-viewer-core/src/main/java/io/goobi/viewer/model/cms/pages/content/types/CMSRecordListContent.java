@@ -60,6 +60,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * CMS content type that displays a paginated list of digitized records matching a configurable
+ * Solr query on a CMS page, supporting custom sort fields and items-per-page settings.
+ */
 @Entity
 @Table(name = "cms_content_record_list")
 @DiscriminatorValue("recordlist")

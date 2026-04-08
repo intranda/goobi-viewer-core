@@ -40,6 +40,11 @@ import de.intranda.api.services.Service;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
+/**
+ * Utility class for building IIIF Authorization Flow v2 service descriptions. Assembles
+ * probe, access, token, and logout service objects for protected resources and attaches
+ * them to IIIF manifests or content resources.
+ */
 public final class AuthorizationFlowTools {
 
     public static final String PATH_PROBE = "/probe/";

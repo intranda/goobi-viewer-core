@@ -53,6 +53,10 @@ import io.goobi.viewer.solr.SolrTools;
 import jakarta.ws.rs.core.UriBuilder;
 import mil.nga.sf.geojson.Geometry;
 
+/**
+ * Converts {@link MetadataDocument} objects retrieved from Solr into GeoJSON
+ * {@link io.goobi.viewer.model.maps.GeoMapFeature} instances for rendering on geo maps.
+ */
 public class FeatureGenerator {
 
     private static final Logger logger = LogManager.getLogger(FeatureGenerator.class);

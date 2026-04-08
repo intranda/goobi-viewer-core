@@ -31,6 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Manages concurrent view limits and access condition caches for individual records.
+ * Tracks active record locks per session and caches Solr-derived access conditions to avoid redundant queries.
+ */
 public class RecordLockManager {
 
     /** Logger for this class. */

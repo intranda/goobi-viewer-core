@@ -27,6 +27,11 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+/**
+ * Manages login security by tracking failed login attempts per user name and IP address.
+ * Enforces configurable delays and CAPTCHA requirements after repeated failed attempts to
+ * protect against brute-force attacks.
+ */
 public class SecurityManager {
 
     /** Logger for this class. */

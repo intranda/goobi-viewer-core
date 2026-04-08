@@ -40,6 +40,10 @@ import de.undercouch.citeproc.csl.CSLNameBuilder;
 import de.undercouch.citeproc.csl.CSLType;
 import io.goobi.viewer.controller.DateTools;
 
+/**
+ * Implements the CSL {@link de.undercouch.citeproc.ItemDataProvider} interface by mapping Goobi
+ * Viewer metadata fields to CSL item data for citation formatting.
+ */
 public class CitationDataProvider implements ItemDataProvider {
 
     public static final String AUTHOR = "author";

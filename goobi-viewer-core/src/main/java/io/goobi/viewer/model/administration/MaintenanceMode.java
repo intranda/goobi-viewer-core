@@ -48,6 +48,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * JPA entity that stores the maintenance mode configuration, including its enabled state and
+ * multilingual message text displayed to visitors during scheduled downtime.
+ */
 @Entity
 @Table(name = "maintenance_mode")
 public class MaintenanceMode implements IPolyglott {

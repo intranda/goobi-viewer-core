@@ -60,6 +60,10 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
+/**
+ * Wraps a {@link HighlightData} entity to provide a view-layer object for a highlighted content
+ * item, including thumbnail generation, metadata loading, and multilingual label support.
+ */
 public class Highlight implements CMSMediaHolder, IPolyglott {
 
     private static final Logger logger = LogManager.getLogger(Highlight.class);

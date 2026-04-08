@@ -46,6 +46,10 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 
+/**
+ * Utility class providing static helper methods for building and resolving citation links from
+ * Solr documents, supporting record, docstruct, and image level citations.
+ */
 public final class CitationTools {
 
     /** Logger for this class. */

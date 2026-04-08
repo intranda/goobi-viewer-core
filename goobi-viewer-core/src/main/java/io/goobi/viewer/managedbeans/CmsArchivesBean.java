@@ -47,6 +47,11 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 
+/**
+ * JSF backing bean for the CMS archive administration view. Manages the list of archive resources
+ * and their CMS configurations, and supports editing display settings such as image modes for
+ * archive tiles and headers.
+ */
 @Named
 @SessionScoped
 public class CmsArchivesBean implements Serializable {

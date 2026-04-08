@@ -43,6 +43,10 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
+/**
+ * Abstract base class for parsing EAD archive structures and resolving associated Goobi viewer
+ * record identifiers from the Solr index.
+ */
 public abstract class ArchiveParser implements Serializable {
 
     private static final long serialVersionUID = -7986836324388942249L;

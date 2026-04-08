@@ -60,6 +60,10 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Transient;
 
+/**
+ * A {@link FeatureSet} implementation that generates geo map features by executing a configurable
+ * Solr query and converting the matching documents into GeoJSON features.
+ */
 @Entity
 @DiscriminatorValue("solr")
 public class SolrFeatureSet extends FeatureSet {

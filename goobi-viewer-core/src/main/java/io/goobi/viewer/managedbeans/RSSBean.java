@@ -41,6 +41,10 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 
+/**
+ * JSF request-scoped backing bean for RSS feed generation. Provides methods to retrieve Solr-based
+ * RSS feed entries and channel information for use in Facelets templates.
+ */
 @Named("rssBean")
 @RequestScoped
 public class RSSBean {

@@ -44,6 +44,9 @@ import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 
+/**
+ * Sends plain-text and HTML e-mails via a configured SMTP server, supporting SSL, STARTTLS, and authenticated connections.
+ */
 public class EMailSender {
 
     private static final Logger logger = LogManager.getLogger(EMailSender.class);

@@ -43,6 +43,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.viewer.Dataset;
 
+/**
+ * Download job that generates an EPUB file for a given digitized record using the intranda EPUB converter library.
+ */
 public class EpubDownloadJob extends DownloadJob {
 
     public static final String TYPE = "epub";

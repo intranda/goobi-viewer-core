@@ -54,6 +54,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+/**
+ * CMS content type that embeds the standard search results view into a CMS page, managing
+ * search state, pagination, hit list layout, and search facets configuration.
+ */
 @Entity
 @Table(name = "cms_content_search")
 @DiscriminatorValue("search")

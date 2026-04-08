@@ -45,6 +45,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.variables.VariableReplacer;
 
+/**
+ * Message handler that pulls the latest version of the configured viewer theme from its version control repository via a shell command.
+ */
 public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(PullThemeHandler.class);
